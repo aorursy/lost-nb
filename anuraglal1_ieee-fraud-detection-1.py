@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -31,13 +30,11 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 get_ipython().run_cell_magic('time', '', "train_transaction = pd.read_csv('../input/train_transaction.csv', index_col='TransactionID')\ntest_transaction = pd.read_csv('../input/test_transaction.csv', index_col='TransactionID')\n\ntrain_identity = pd.read_csv('../input/train_identity.csv', index_col='TransactionID')\ntest_identity = pd.read_csv('../input/test_identity.csv', index_col='TransactionID')\n\nsample_submission = pd.read_csv('../input/sample_submission.csv', index_col='TransactionID')\n\ntrain = train_transaction.merge(train_identity, how='left', left_index=True, right_index=True)\ntest = test_transaction.merge(test_identity, how='left', left_index=True, right_index=True)\n\nprint(train.shape)\nprint(test.shape)")
 
 
-# In[3]:
 
 
 #Based on this great kernel https://www.kaggle.com/arjanso/reducing-dataframe-memory-size-by-65
@@ -103,7 +100,6 @@ def reduce_mem_usage(df):
     return df, NAlist
 
 
-# In[4]:
 
 
 train, NAlist = reduce_mem_usage(train)
@@ -115,7 +111,6 @@ print("")
 print(NAlist)
 
 
-# In[5]:
 
 
 test, NAlist = reduce_mem_usage(test)
@@ -127,7 +122,6 @@ print("")
 print(NAlist)
 
 
-# In[6]:
 
 
 y_train = train['isFraud'].copy()
@@ -140,13 +134,11 @@ X_test = test.copy()
 del train, test
 
 
-# In[7]:
 
 
 X_train.shape
 
 
-# In[8]:
 
 
 X_train = X_train.fillna(-999)
@@ -161,32 +153,27 @@ for f in X_train.columns:
         X_test[f] = lbl.transform(list(X_test[f].values)) 
 
 
-# In[9]:
 
 
 X_train.head(10)
 
 
-# In[10]:
 
 
 X=pd.concat([X_train,y_train],axis=1)
 
 
-# In[11]:
 
 
 #X.groupby('isFraud').count()
 X['isFraud'].value_counts()
 
 
-# In[12]:
 
 
 ax = sns.countplot(x="isFraud", data=X)
 
 
-# In[13]:
 
 
 #X=pd.concat([X_train,y_train],axis=1)
@@ -208,7 +195,6 @@ upsampled = pd.concat([not_fraud, fraud_upsampled])
 upsampled.isFraud.value_counts()
 
 
-# In[14]:
 
 
 y=upsampled.isFraud.value_counts()
@@ -217,19 +203,16 @@ plt.title('upsampled data class count')
 plt.ylabel('count')
 
 
-# In[15]:
 
 
 upsampled.shape
 
 
-# In[16]:
 
 
 corr1 = upsampled.corr()['isFraud'] #array of correlation values for each variable vs. SalePrice 
 
 
-# In[17]:
 
 
 columns = []
@@ -240,27 +223,23 @@ corr = corr.drop_duplicates().sort_values('isFraud',ascending = False)
 corr.shape
 
 
-# In[18]:
 
 
 corr.head()
 
 
-# In[19]:
 
 
 columns = corr.index
 columns
 
 
-# In[20]:
 
 
 filter_data = upsampled[columns]
 filter_data.shape
 
 
-# In[21]:
 
 
 X_train_1 = filter_data
@@ -268,13 +247,11 @@ X_train_1 = X_train_1.drop(columns = ['isFraud'] , axis =1)
 y_train_1 = filter_data['isFraud']
 
 
-# In[22]:
 
 
 columns[0:]
 
 
-# In[23]:
 
 
 col = columns[1:]
@@ -282,14 +259,12 @@ X_test_1 = X_test[col]
 X_test_1.shape
 
 
-# In[24]:
 
 
 X_train_1.shape
 y_train_1.head()
 
 
-# In[25]:
 
 
 #from sklearn.linear_model import LogisticRegression
@@ -300,14 +275,12 @@ y_train_1.head()
 #prob = prob[:,1]
 
 
-# In[26]:
 
 
 #sample_submission['isFraud'] = prob
 #sample_submission.to_csv('logistic_regression.csv')
 
 
-# In[27]:
 
 
 clf = xgb.XGBClassifier(
@@ -322,20 +295,17 @@ clf = xgb.XGBClassifier(
 )
 
 
-# In[28]:
 
 
 get_ipython().run_line_magic('time', 'clf.fit(X_train_1, y_train_1)')
 
 
-# In[29]:
 
 
 sample_submission['isFraud'] = clf.predict_proba(X_test_1)[:,1]
 sample_submission.to_csv('simple_xgboost_2.csv')
 
 
-# In[30]:
 
 
 n_fold = 5
@@ -343,7 +313,6 @@ folds = TimeSeriesSplit(n_splits=n_fold)
 folds = KFold(n_splits=5)
 
 
-# In[31]:
 
 
 def train_model_classification(X, X_test, y, params, folds, model_type='lgb', eval_metric='auc', columns=None, plot_feature_importance=False, model=None,
@@ -488,7 +457,6 @@ def train_model_classification(X, X_test, y, params, folds, model_type='lgb', ev
     return result_dict
 
 
-# In[32]:
 
 
 def eval_auc(y_true, y_pred):
@@ -498,7 +466,6 @@ def eval_auc(y_true, y_pred):
     return 'auc', fast_auc(y_true, y_pred), True
 
 
-# In[33]:
 
 
 def fast_auc(y_true, y_prob):
@@ -518,7 +485,6 @@ def fast_auc(y_true, y_prob):
     return auc
 
 
-# In[34]:
 
 
 import lightgbm as lgb

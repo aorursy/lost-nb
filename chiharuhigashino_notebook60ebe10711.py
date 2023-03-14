@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 
@@ -21,7 +20,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 np.random.seed(151)  # noqa
@@ -57,7 +55,6 @@ from sklearn.ensemble import RandomForestRegressor,
 from sklearn.cross_validation import KFold;
 
 
-# In[3]:
 
 
 # Load in the train and test datasets
@@ -65,13 +62,11 @@ train = pd.read_csv('../input/train.csv')
 test = pd.read_csv('../input/test.csv')
 
 
-# In[4]:
 
 
 train.head(10)
 
 
-# In[5]:
 
 
 def scale(train):
@@ -86,7 +81,6 @@ train_f = scale(train_cor)
 train_cor.describe()
 
 
-# In[6]:
 
 
 # training set
@@ -101,7 +95,6 @@ print(trainY.shape)
 trainX
 
 
-# In[7]:
 
 
 # Random Forest Regressor(n_estimators=10, criterion='mse', max_depth=None, min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='auto', max_leaf_nodes=None, min_impurity_split=1e-07, bootstrap=True, oob_score=False, n_jobs=1, random_state=None, verbose=0, warm_start=False)
@@ -110,7 +103,6 @@ rfr.fit(trainX,trainY)
 predictY = rfr.predict(trainX)
 
 
-# In[8]:
 
 
 # check difference
@@ -123,7 +115,6 @@ pd.options.display.float_format = '{:,.0f}'.format
 compare
 
 
-# In[9]:
 
 
 colormap = plt.cm.viridis
@@ -132,13 +123,11 @@ plt.title('Correlation of P-Variables', y=1.05, size=15)
 sns.heatmap(train_cor.astype(float).corr(),linewidths=0.1,vmax=1.0, square=True, cmap=colormap, linecolor='white', annot=True)
 
 
-# In[10]:
 
 
 
 
 
-# In[10]:
 
 
 

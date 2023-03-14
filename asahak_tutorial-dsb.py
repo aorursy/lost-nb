@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,13 +21,11 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -39,7 +36,6 @@ train = pd.read_csv("../input/data-science-bowl-2019/train.csv")
 train_labels = pd.read_csv("../input/data-science-bowl-2019/train_labels.csv")
 
 
-# In[3]:
 
 
 
@@ -63,50 +59,42 @@ from matplotlib import pyplot
 import shap
 
 
-# In[4]:
 
 
 os.listdir('../input/data-science-bowl-2019')
 
 
-# In[5]:
 
 
 get_ipython().run_cell_magic('time', '', "keep_cols = ['event_id', 'game_session', 'installation_id', 'event_count',\n             'event_code','title' ,'game_time', 'type', 'world','timestamp']\ntrain=pd.read_csv('../input/data-science-bowl-2019/train.csv',usecols=keep_cols)\ntrain_labels=pd.read_csv('../input/data-science-bowl-2019/train_labels.csv',\n                         usecols=['installation_id','game_session','accuracy_group'])\ntest=pd.read_csv('../input/data-science-bowl-2019/test.csv',usecols=keep_cols)\nsubmission=pd.read_csv('../input/data-science-bowl-2019/sample_submission.csv')")
 
 
-# In[6]:
 
 
 get_ipython().run_cell_magic('time', '', 'train.shape,train_labels.shape')
 
 
-# In[7]:
 
 
 get_ipython().run_cell_magic('time', '', "x=train_labels['accuracy_group'].value_counts()\nsns.barplot(x.index,x)")
 
 
-# In[8]:
 
 
 train_labels.head()
 
 
-# In[9]:
 
 
 train.head()
 
 
-# In[10]:
 
 
 not_req=(set(train.installation_id.unique()) - set(train_labels.installation_id.unique()))
 #labelにないデータidの集合を作成
 
 
-# In[11]:
 
 
 train_new=~train['installation_id'].isin(not_req)
@@ -115,13 +103,11 @@ train.dropna(inplace=True)
 train['event_code']=train.event_code.astype(int)
 
 
-# In[12]:
 
 
 train.shape
 
 
-# In[13]:
 
 
 #時間の特徴量を丁寧に記述する
@@ -136,7 +122,6 @@ def extract_time_features(df):
     return df
 
 
-# In[14]:
 
 
 time_features=['month','hour','year','dayofweek','weekofyear']
@@ -173,7 +158,6 @@ def prepare_data(df):
     return join_five
 
 
-# In[15]:
 
 
 join_train=prepare_data(train)
@@ -181,7 +165,6 @@ cols=join_train.columns.to_list()[2:-3]
 join_train[cols]=join_train[cols].astype('int16')
 
 
-# In[16]:
 
 
 join_test=prepare_data(test)
@@ -189,7 +172,6 @@ cols=join_test.columns.to_list()[2:-3]
 join_test[cols]=join_test[cols].astype('int16')
 
 
-# In[17]:
 
 
 cols=join_test.columns[2:-12].to_list()
@@ -197,7 +179,6 @@ cols.append('event_id count')
 cols.append('installation_id')
 
 
-# In[18]:
 
 
 final_train=pd.merge(train_labels,join_train,on=['installation_id','game_session'],
@@ -207,31 +188,26 @@ final_test=join_test.groupby('installation_id',as_index=False,sort=False).last()
 #final_test=(df.join(df_two)).join(df_three.join(df_four)).drop('installation_id',axis=1)
 
 
-# In[19]:
 
 
 final_train.shape,final_test.shape
 
 
-# In[20]:
 
 
 set(final_train.columns[i] for i in range(len(final_train.columns)))-set(final_test.columns[i] for i in range(len(final_test.columns)))
 
 
-# In[21]:
 
 
 final_train.drop(['installation_id'],axis=1)
 
 
-# In[22]:
 
 
 final_train.shape,final_test.shape
 
 
-# In[23]:
 
 
 final=pd.concat([final_train,final_test])
@@ -245,14 +221,12 @@ final_train=final[:len(final_train)]
 final_test=final[len(final_train):]
 
 
-# In[24]:
 
 
 X_train=final_train.drop('accuracy_group',axis=1)
 y_train=final_train['accuracy_group']
 
 
-# In[25]:
 
 
 def model(X_train,y_train,final_test,n_splits=3):
@@ -306,44 +280,37 @@ def model(X_train,y_train,final_test,n_splits=3):
     return xgb_model,pred
 
 
-# In[26]:
 
 
 X_train=X_train.drop('installation_id',axis=1)
 
 
-# In[27]:
 
 
 X_train.columns
 
 
-# In[28]:
 
 
 final_test.columns
 
 
-# In[29]:
 
 
 final_test=final_test.drop('installation_id',axis=1)
 
 
-# In[30]:
 
 
 xgb_model,pred=model(X_train,y_train,final_test,5)
 
 
-# In[31]:
 
 
 sub=pd.DataFrame({'installation_id':submission.installation_id,'accuracy_group':pred})
 sub.to_csv('submission.csv',index=False)
 
 
-# In[ ]:
 
 
 

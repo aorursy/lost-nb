@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -29,7 +28,6 @@ assert not test[cat_vars].isnull().any().any()
 train[cat_vars].nunique()
 
 
-# In[2]:
 
 
 def encode_onehot(train, test, categ_variables):
@@ -40,7 +38,6 @@ train_onehot, test_onehot = encode_onehot(train, test, cat_vars)
 train_onehot.shape
 
 
-# In[3]:
 
 
 encod_type = train.groupby('type')['adoptionspeed'].mean()
@@ -49,13 +46,11 @@ train.loc[:, 'type_mean_enc'] = train['type'].map(encod_type)
 train[['type','type_mean_enc']].head()
 
 
-# In[4]:
 
 
 (train.groupby('breed1').size() / len(train)).nlargest(10)
 
 
-# In[5]:
 
 
 def encode_target_smooth(data, target, categ_variables, smooth):
@@ -91,7 +86,6 @@ def encode_target_smooth(data, target, categ_variables, smooth):
     return train_target, code_map, default_map
 
 
-# In[6]:
 
 
 train_target_smooth, target_map, default_map = encode_target_smooth(train, 'adoptionspeed', cat_vars, 500)
@@ -100,13 +94,11 @@ for v in cat_vars:
     test_target_smooth.loc[:, v] = test_target_smooth[v].map(target_map[v])
 
 
-# In[7]:
 
 
 train_target_smooth[cat_vars].head()
 
 
-# In[8]:
 
 
 def impact_coding_leak(data, feature, target, n_folds=20, n_inner_folds=10):
@@ -220,19 +212,16 @@ def encode_target_cv(data, target, categ_variables, impact_coder=impact_coding):
     return train_target, code_map, default_map
 
 
-# In[9]:
 
 
 train_target_cv, code_map, default_map = encode_target_cv(train, 'adoptionspeed', cat_vars, impact_coder=impact_coding)
 
 
-# In[10]:
 
 
 train_target_cv[cat_vars].head()
 
 
-# In[11]:
 
 
 corr_map = dict()
@@ -243,14 +232,12 @@ reg_correl = pd.Series(corr_map)
 num_categories = train[cat_vars].nunique()
 
 
-# In[12]:
 
 
 reg_correl.plot(kind='barh', color='green', alpha=0.3)
 _ = plt.title('Correlation between mean-encoded-variables\n using smoothing and CV', fontsize=16)
 
 
-# In[13]:
 
 
 fig = plt.figure(figsize=(10, 5))
@@ -259,14 +246,12 @@ _ = sns.kdeplot(train_target_cv['breed1'], label='cross-validation')
 _ = plt.title('Cross-validation regularisation introduced more variation than simple smoothing')
 
 
-# In[14]:
 
 
 train[cat_vars].nunique().plot(kind='barh')
 _ = plt.title('Number of unique categories')
 
 
-# In[15]:
 
 
 fig, ax = plt.subplots()
@@ -277,13 +262,11 @@ for i, txt in enumerate(num_categories.index):
     ax.annotate(txt, (num_categories[i], reg_correl[i]))
 
 
-# In[16]:
 
 
 train.groupby('health').size()
 
 
-# In[17]:
 
 
 def get_categor_spread(data, categ_variables):
@@ -294,7 +277,6 @@ def get_categor_spread(data, categ_variables):
     return spread
 
 
-# In[18]:
 
 
 spread = pd.Series(get_categor_spread(train, cat_vars))
@@ -302,7 +284,6 @@ spread.plot(kind='barh')
 _ = plt.title('Larger spread indicates bigger difference between value\n with highest and lowest number of observations')
 
 
-# In[19]:
 
 
 fig, ax = plt.subplots()
@@ -313,7 +294,6 @@ for i, txt in enumerate(num_categories.index):
     ax.annotate(txt, (num_categories[i], reg_correl[i]))
 
 
-# In[20]:
 
 
 from sklearn.ensemble import GradientBoostingClassifier
@@ -328,7 +308,6 @@ skf = StratifiedKFold(n_splits=10, random_state=20190301)
 kappa_scorer = make_scorer(cohen_kappa_score, weights='quadratic')
 
 
-# In[21]:
 
 
 def cross_validate_encoder(X, target, categorical_vars, encoder,
@@ -371,7 +350,6 @@ def cross_validate_encoder(X, target, categorical_vars, encoder,
     return np.array(metric_cvs)
 
 
-# In[22]:
 
 
 print('Evaluating one-hot... ')
@@ -387,7 +365,6 @@ score_target_cv_gbc = cross_validate_encoder(train, 'adoptionspeed', cat_vars,
                                              encode_target_cv, gbc)
 
 
-# In[23]:
 
 
 summary_gb = pd.DataFrame({'kappa_cv10_mean': [score_onehot_gbc.mean(), 
@@ -404,7 +381,6 @@ summary_gb = pd.DataFrame({'kappa_cv10_mean': [score_onehot_gbc.mean(),
 summary_gb
 
 
-# In[24]:
 
 
 summary_gb['kappa_cv10_mean'].plot(kind='barh', color='lightblue', xerr=summary_gb.kappa_cv10_std, ecolor='red')
@@ -412,13 +388,11 @@ _ = plt.xlabel('10-CV kappa average', fontsize=14)
 _ = plt.title('Comparison of encoding schemes', fontsize=16, y=1.01)
 
 
-# In[25]:
 
 
 from sklearn.metrics import roc_auc_score
 
 
-# In[26]:
 
 
 def generate_data(n_obs=10000, n_lev=500, variance=1):
@@ -447,14 +421,12 @@ def generate_data(n_obs=10000, n_lev=500, variance=1):
     return df
 
 
-# In[27]:
 
 
 df = generate_data()
 df.head()
 
 
-# In[28]:
 
 
 df_train = df.loc[df.split_group!='test'].reset_index(drop=True)
@@ -462,7 +434,6 @@ df_test = df.loc[df.split_group=='test'].reset_index(drop=True)
 cat_cols = ['x_bad1', 'x_bad2', 'x_good1', 'x_good2']
 
 
-# In[29]:
 
 
 def encode_onehot(train, test, categ_variables):
@@ -473,7 +444,6 @@ train_onehot, test_onehot = encode_onehot(df_train, df_test, cat_cols)
 train_onehot.shape
 
 
-# In[30]:
 
 
 gbc = GradientBoostingClassifier(n_estimators=10, random_state=20190325)
@@ -489,7 +459,6 @@ print(roc_auc_score(df_test['y'], gbc.predict_proba(test_onehot)[:, 1]))
 pd.Series(index=train_onehot.columns, data=gbc.feature_importances_).nlargest(10)
 
 
-# In[31]:
 
 
 def encode_target_naive(train, test):
@@ -504,13 +473,11 @@ def encode_target_naive(train, test):
     return df_train_naive, df_test_naive
 
 
-# In[32]:
 
 
 df_train_naive, df_test_naive = encode_target_naive(df_train, df_test)
 
 
-# In[33]:
 
 
 gbc = GradientBoostingClassifier(random_state=20190325, n_estimators=10)
@@ -518,13 +485,11 @@ gbc.fit(df_train_naive[cat_cols], df_train_naive['y'])
 pd.Series(gbc.feature_importances_, index=cat_cols)
 
 
-# In[34]:
 
 
 pd.Series(gbc.feature_importances_, index=cat_cols)
 
 
-# In[35]:
 
 
 # train
@@ -532,7 +497,6 @@ roc_auc_score(y_true=df_train_naive['y'],
               y_score = gbc.predict_proba(df_train_naive[cat_cols])[:, 1])
 
 
-# In[36]:
 
 
 # test
@@ -540,7 +504,6 @@ roc_auc_score(y_true=df_test_naive['y'],
               y_score = gbc.predict_proba(df_test_naive[cat_cols])[:, 1])
 
 
-# In[37]:
 
 
 gbc = GradientBoostingClassifier(random_state=20190325)
@@ -548,7 +511,6 @@ gbc.fit(df_train_naive[cat_cols], df_train_naive['y'])
 pd.Series(gbc.feature_importances_, index=cat_cols)
 
 
-# In[38]:
 
 
 # train
@@ -556,7 +518,6 @@ roc_auc_score(y_true=df_train_naive['y'],
               y_score = gbc.predict_proba(df_train_naive[cat_cols])[:, 1])
 
 
-# In[39]:
 
 
 # test
@@ -564,7 +525,6 @@ roc_auc_score(y_true=df_test_naive['y'],
               y_score = gbc.predict_proba(df_test_naive[cat_cols])[:, 1])
 
 
-# In[40]:
 
 
 from sklearn.metrics import roc_auc_score
@@ -608,7 +568,6 @@ def cross_validate_encoder(X, target, categorical_vars, encoder,
     return np.array(metric_cvs)
 
 
-# In[41]:
 
 
 gbc = GradientBoostingClassifier(n_estimators=10, random_state=20190325)
@@ -620,19 +579,16 @@ print('Evaluating mean encoding with cross-validation...')
 score_target_cv_gbc = cross_validate_encoder(df_train, 'y', cat_cols, encode_target_cv, gbc)
 
 
-# In[42]:
 
 
 score_target_smooth_gbc.mean(), score_target_cv_gbc.mean()
 
 
-# In[43]:
 
 
 score_target_smooth_gbc.mean(), score_target_cv_gbc.mean()
 
 
-# In[44]:
 
 
 gbc = GradientBoostingClassifier(random_state=20190325, n_estimators=10)
@@ -645,13 +601,11 @@ for v in cat_cols:
 gbc.fit(df_train_smooth[cat_cols], df_train_smooth['y'])
 
 
-# In[45]:
 
 
 pd.Series(gbc.feature_importances_, index=cat_cols)
 
 
-# In[46]:
 
 
 # train
@@ -659,14 +613,12 @@ roc_auc_score(y_true=df_train_smooth['y'],
               y_score = gbc.predict_proba(df_train_smooth[cat_cols])[:, 1])
 
 
-# In[47]:
 
 
 # test
 roc_auc_score(y_true=df_test_smooth['y'], y_score = gbc.predict_proba(df_test_smooth[cat_cols])[:, 1])
 
 
-# In[48]:
 
 
 gbc = GradientBoostingClassifier(random_state=20190325, n_estimators=10)
@@ -679,19 +631,16 @@ for v in cat_cols:
 gbc.fit(df_train_cv[cat_cols], df_train_cv['y'])    
 
 
-# In[49]:
 
 
 pd.Series(gbc.feature_importances_, index=cat_cols)
 
 
-# In[50]:
 
 
 roc_auc_score(y_true=df_train_cv['y'], y_score = gbc.predict_proba(df_train_cv[cat_cols])[:, 1])
 
 
-# In[51]:
 
 
 roc_auc_score(y_true=df_test_cv['y'], y_score = gbc.predict_proba(df_test_cv[cat_cols])[:, 1])

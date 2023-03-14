@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -36,7 +35,6 @@ stop_words = set(stopwords.words('english'))
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 EMBEDDING_DIM = 300 # how big is each word vector
@@ -48,7 +46,6 @@ batch_size = 256
 num_epochs = 2 
 
 
-# In[ ]:
 
 
 train_comments = pd.read_csv("../input/manifestos-aus/train-aus.csv", sep=',', header=0)
@@ -62,14 +59,12 @@ print("num train: ", train_comments.shape[0])
 train_comments.head()
 
 
-# In[ ]:
 
 
 label_names = ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
 y_train = train_comments[label_names].values
 
 
-# In[ ]:
 
 
 test_comments = pd.read_csv("../input/jigsaw-toxic-comment-classification-challenge/test.csv", sep=',', header=0)
@@ -78,7 +73,6 @@ print("num test: ", test_comments.shape[0])
 test_comments.head()
 
 
-# In[ ]:
 
 
 def standardize_text(df, text_field):
@@ -91,7 +85,6 @@ def standardize_text(df, text_field):
     return df
 
 
-# In[ ]:
 
 
 train_comments.fillna('_NA_')
@@ -100,7 +93,6 @@ train_comments.to_csv("train_clean_data.csv")
 train_comments.head()
 
 
-# In[ ]:
 
 
 test_comments.fillna('_NA_')
@@ -109,7 +101,6 @@ test_comments.to_csv("test_clean_data.csv")
 test_comments.head()
 
 
-# In[ ]:
 
 
 tokenizer = RegexpTokenizer(r'\w+')
@@ -123,7 +114,6 @@ clean_train_comments["tokens"] = clean_train_comments["tokens"].apply(lambda vec
 clean_train_comments.head()
 
 
-# In[ ]:
 
 
 clean_test_comments = pd.read_csv("test_clean_data.csv")
@@ -135,7 +125,6 @@ clean_test_comments["tokens"] = clean_test_comments["tokens"].apply(lambda vec: 
 clean_test_comments.head()
 
 
-# In[ ]:
 
 
 all_training_words = [word for tokens in clean_train_comments["tokens"] for word in tokens]
@@ -146,7 +135,6 @@ print("Max sentence length is %s" % max(training_sentence_lengths))
 #print(clean_train_comments["tokens"])
 
 
-# In[ ]:
 
 
 all_test_words = [word for tokens in clean_test_comments["tokens"] for word in tokens]
@@ -156,7 +144,6 @@ print("%s words total, with a vocabulary size of %s" % (len(all_test_words), len
 print("Max sentence length is %s" % max(test_sentence_lengths))
 
 
-# In[ ]:
 
 
 word2vec_path = "../input/googles-trained-word2vec-model-in-python/GoogleNews-vectors-negative300.bin.gz"
@@ -180,14 +167,12 @@ def get_word2vec_embeddings(vectors, clean_comments, generate_missing=False):
     return list(embeddings)
 
 
-# In[ ]:
 
 
 training_embeddings = get_word2vec_embeddings(word2vec, clean_train_comments, generate_missing=True)
 # test_embeddings = get_word2vec_embeddings(word2vec, clean_test_comments, generate_missing=True)
 
 
-# In[ ]:
 
 
 tokenizer = Tokenizer(num_words=MAX_VOCAB_SIZE, lower=True, char_level=False)
@@ -209,7 +194,6 @@ print("-----------=====-----------")
 print(train_embedding_weights.shape)
 
 
-# In[ ]:
 
 
 test_sequences = tokenizer.texts_to_sequences(clean_test_comments["comment_text"].tolist())
@@ -218,7 +202,6 @@ print(test_sequences[4])
 test_cnn_data = pad_sequences(test_sequences, maxlen=MAX_SEQUENCE_LENGTH)
 
 
-# In[ ]:
 
 
 from keras.layers.merge import concatenate, add
@@ -275,7 +258,6 @@ def ConvNet(embeddings, max_sequence_length, num_words, embedding_dim, labels_in
     return model
 
 
-# In[ ]:
 
 
 x_train = train_cnn_data
@@ -283,13 +265,11 @@ y_tr = y_train
 print(len(list(label_names)))
 
 
-# In[ ]:
 
 
 model = ConvNet(train_embedding_weights, MAX_SEQUENCE_LENGTH, len(train_word_index)+1, EMBEDDING_DIM, len(list(label_names)), False)
 
 
-# In[ ]:
 
 
 #define callbacks
@@ -297,19 +277,16 @@ early_stopping = EarlyStopping(monitor='val_loss', min_delta=0.01, patience=4, v
 callbacks_list = [early_stopping]
 
 
-# In[ ]:
 
 
 hist = model.fit(x_train, y_tr, epochs=num_epochs, callbacks=callbacks_list, validation_split=0.1, shuffle=True, batch_size=batch_size)
 
 
-# In[ ]:
 
 
 y_test = model.predict(test_cnn_data, batch_size=1024, verbose=1)
 
 
-# In[ ]:
 
 
 #create a submission
@@ -319,7 +296,6 @@ submission_df[label_names] = y_test
 submission_df.to_csv("./cnn_submission.csv", index=False)
 
 
-# In[ ]:
 
 
 #generate plots
@@ -333,7 +309,6 @@ plt.legend(loc='upper right')
 plt.show()
 
 
-# In[ ]:
 
 
 plt.figure()
@@ -346,7 +321,6 @@ plt.legend(loc='upper left')
 plt.show()
 
 
-# In[ ]:
 
 
 from keras.preprocessing import sequence 
@@ -355,14 +329,12 @@ from keras.layers import Dense, Dropout, Embedding, LSTM
 num_words = 1000
 
 
-# In[ ]:
 
 
 x_train = sequence.pad_sequences(x_train, maxlen=200) 
 x_test = sequence.pad_sequences(y_tr, maxlen=200)
 
 
-# In[ ]:
 
 
 #Define network architecture and compile 
@@ -376,7 +348,6 @@ model.add(Dense(1, activation='sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy']) 
 
 
-# In[ ]:
 
 
 print("ok")

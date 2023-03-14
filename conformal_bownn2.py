@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -308,7 +307,6 @@ def model(len_sparse_data_name, len_sparse_data_brandcat, len_sparse_data_desc):
     return m
 
 
-# In[2]:
 
 
 gc.collect()
@@ -316,7 +314,6 @@ path = "../input/"
 x, y, test = get_sample(path + "train.tsv", path + "test_stg2.tsv", max_text_length=60)
 
 
-# In[3]:
 
 
 m = model(x["sparse_data_name"].shape[1], x["sparse_data_brandcat"].shape[1],
@@ -324,7 +321,6 @@ m = model(x["sparse_data_name"].shape[1], x["sparse_data_brandcat"].shape[1],
 m.summary()
 
 
-# In[4]:
 
 
 m.fit(x, y - np.mean(y), 2048, epochs=3)
@@ -344,7 +340,6 @@ del m
 gc.collect()
 
 
-# In[ ]:
 
 
 

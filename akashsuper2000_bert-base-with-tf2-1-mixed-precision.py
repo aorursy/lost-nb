@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -24,7 +23,6 @@ tf.config.optimizer.set_experimental_options(
     {"auto_mixed_precision": True})
 
 
-# In[2]:
 
 
 # read csv files
@@ -48,7 +46,6 @@ TOKENIZER = BertWordPieceTokenizer(f"{PATH}/vocab.txt", lowercase=True, add_spec
 train_df.head(10)
 
 
-# In[3]:
 
 
 
@@ -179,7 +176,6 @@ class TweetSentimentDataset(tf.data.Dataset):
         
 
 
-# In[4]:
 
 
 class BertQAModel(TFBertPreTrainedModel):
@@ -326,7 +322,6 @@ def jaccard(str1, str2):
     return float(len(c)) / (len(a) + len(b) - len(c))
 
 
-# In[5]:
 
 
 num_folds = 5
@@ -411,7 +406,6 @@ submission_df.loc[:, 'selected_text'] = selected_text_pred
 submission_df.to_csv("submission.csv", index=False)
 
 
-# In[ ]:
 
 
 

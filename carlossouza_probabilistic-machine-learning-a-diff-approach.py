@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -10,14 +9,12 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/train.csv')
 test = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/test.csv')
 
 
-# In[3]:
 
 
 def chart(patient_id, ax):
@@ -34,7 +31,6 @@ chart('ID00009637202177434476278', axes[1])
 chart('ID00010637202177584971671', axes[2])
 
 
-# In[4]:
 
 
 # Kaggle, please add Pyro/PyTorch support!
@@ -44,7 +40,6 @@ import arviz as az
 from sklearn import preprocessing
 
 
-# In[5]:
 
 
 # Very simple pre-processing: adding patient class
@@ -67,7 +62,6 @@ def patient_class(row):
 train['Class'] = train.apply(patient_class, axis=1)
 
 
-# In[6]:
 
 
 # Very simple pre-processing: adding FVC and week baselines
@@ -80,7 +74,6 @@ aux['FVC'] = aux['FVC'].astype(int)
 train = pd.merge(train, aux, how='left', on='Patient', suffixes=('', '_base'))
 
 
-# In[7]:
 
 
 # Very simple pre-processing: creating patient indexes
@@ -93,13 +86,11 @@ fvc_data = train[['Patient', 'PatientID', 'Weeks', 'FVC']]
 patients.head()
 
 
-# In[8]:
 
 
 fvc_data.head()
 
 
-# In[9]:
 
 
 FVC_b = patients['FVC_base'].values
@@ -142,7 +133,6 @@ with pm.Model() as hierarchical_model:
                           sigma=sigma, observed=FVC_obs)
 
 
-# In[10]:
 
 
 # Inference button (TM)!
@@ -150,14 +140,12 @@ with hierarchical_model:
     trace = pm.sample(2000, tune=2000, target_accept=.9)
 
 
-# In[11]:
 
 
 with hierarchical_model:
     pm.traceplot(trace);
 
 
-# In[12]:
 
 
 def chart(patient_id, ax):
@@ -187,7 +175,6 @@ chart('ID00009637202177434476278', axes[1])
 chart('ID00010637202177584971671', axes[2])
 
 
-# In[13]:
 
 
 # Very simple pre-processing: adding patient class
@@ -212,7 +199,6 @@ test = test.rename(columns={'FVC': 'FVC_base', 'Weeks': 'Weeks_base'})
 test.head()
 
 
-# In[14]:
 
 
 # prepare submission dataset
@@ -229,7 +215,6 @@ submission = pd.concat(submission).reset_index(drop=True)
 submission.head()
 
 
-# In[15]:
 
 
 FVC_b = test['FVC_base'].values
@@ -286,7 +271,6 @@ with pm.Model() as new_model:
                         shape=submission.shape[0])
 
 
-# In[16]:
 
 
 with new_model:
@@ -295,14 +279,12 @@ with new_model:
 trace2['FVC_est'].shape
 
 
-# In[17]:
 
 
 with new_model:
     pm.traceplot(trace2);
 
 
-# In[18]:
 
 
 preds = pd.DataFrame(data=trace2['FVC_est'].T)
@@ -319,7 +301,6 @@ submission = submission[['Patient', 'Weeks', 'Patient_Week',
                          'FVC', 'Confidence']]
 
 
-# In[19]:
 
 
 temp = pd.merge(train[['Patient', 'Weeks', 'FVC']], 
@@ -333,7 +314,6 @@ temp = temp.groupby('Patient')
 temp = temp.tail(3)
 
 
-# In[20]:
 
 
 sigma_clipped = temp['Confidence'].apply(lambda s: max(s, 70))
@@ -342,7 +322,6 @@ metric = -np.sqrt(2) * delta / sigma_clipped - np.log(np.sqrt(2) * sigma_clipped
 metric.mean()
 
 
-# In[21]:
 
 
 submission = submission[['Patient_Week', 'FVC', 'Confidence']]
@@ -350,7 +329,6 @@ submission.to_csv('submission.csv', index=False)
 submission.head()
 
 
-# In[ ]:
 
 
 

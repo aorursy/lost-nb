@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.a
 
 
-# In[ ]:
 
 
 import numpy as np
@@ -35,20 +33,17 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[ ]:
 
 
 train = pd.read_csv('../input/train_V2.csv')
 test = pd.read_csv('../input/test_V2.csv')
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 
@@ -56,7 +51,6 @@ train.head()
 train = train[train['winPlacePerc'].isna() != True]
 
 
-# In[ ]:
 
 
 
@@ -64,7 +58,6 @@ train = train[train['winPlacePerc'].isna() != True]
 train['playersJoined'] = train.groupby('matchId')['matchId'].transform('count')
 
 
-# In[ ]:
 
 
 train['killsNorm'] = train['kills']*((100-train['playersJoined'])/100 + 1)
@@ -80,7 +73,6 @@ train['DBNOsNorm'] = train['DBNOs']*((100-train['playersJoined'])/100 + 1)
 train['revivesNorm'] = train['revives']*((100-train['playersJoined'])/100 + 1
 
 
-# In[ ]:
 
 
 # Features to remove
@@ -88,20 +80,17 @@ train = train.drop([ 'kills', 'headshotKills', 'killPlace', 'killPoints', 'killS
  'longestKill', 'roadKills', 'teamKills', 'damageDealt', 'DBNOs', 'revives'],axis=1)
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 # Total distance travelled
 train['totalDistance'] = train['walkDistance'] + train['rideDistance'] + train['swimDistance']
 
 
-# In[ ]:
 
 
 def standardize_matchType(data):
@@ -126,13 +115,11 @@ data = standardize_matchType(train)
 #print (set(data['matchType']))
 
 
-# In[ ]:
 
 
 data.head()
 
 
-# In[ ]:
 
 
 solo = data[data['matchType'] == 'Solo']
@@ -141,7 +128,6 @@ squad = data[data['matchType'] == 'Squad']
 other = data[data['matchType'] == 'Other']
 
 
-# In[ ]:
 
 
 solo_features = ['boosts','heals', 'rideDistance','walkDistance','weaponsAcquired',
@@ -154,7 +140,6 @@ solo = solo[solo_features]
 solo.head()
 
 
-# In[ ]:
 
 
 f,ax = plt.subplots(figsize=(15, 15))
@@ -162,7 +147,6 @@ sns.heatmap(solo.corr(), annot=True, linewidths=.5, fmt= '.2f',ax=ax)
 plt.show()
 
 
-# In[ ]:
 
 
 duo_features = ['assists','boosts', 'heals','rideDistance','walkDistance',
@@ -176,7 +160,6 @@ duo = duo[duo_features]
 duo.head()
 
 
-# In[ ]:
 
 
 f,ax = plt.subplots(figsize=(15, 15))
@@ -184,7 +167,6 @@ sns.heatmap(duo.corr(), annot=True, linewidths=.5, fmt= '.2f',ax=ax)
 plt.show()
 
 
-# In[ ]:
 
 
 squad_features = ['assists','boosts','heals','rideDistance',
@@ -198,7 +180,6 @@ squad = squad[squad_features]
 squad.head()
 
 
-# In[ ]:
 
 
 f,ax = plt.subplots(figsize=(15, 15))
@@ -206,7 +187,6 @@ sns.heatmap(squad.corr(), annot=True, linewidths=.5, fmt= '.2f',ax=ax)
 plt.show()
 
 
-# In[ ]:
 
 
 other_features = ['assists','boosts','heals','rideDistance',
@@ -220,7 +200,6 @@ other = other[other_features]
 other.head()
 
 
-# In[ ]:
 
 
 f,ax = plt.subplots(figsize=(15, 15))
@@ -228,7 +207,6 @@ sns.heatmap(other.corr(), annot=True, linewidths=.5, fmt= '.2f',ax=ax)
 plt.show()
 
 
-# In[ ]:
 
 
 import math
@@ -241,7 +219,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[ ]:
 
 
 df0 = pd.read_csv("../input/train_V2.csv")
@@ -249,7 +226,6 @@ df = df0.head(20000)
 df.info()
 
 
-# In[ ]:
 
 
 data = df.copy()
@@ -260,7 +236,6 @@ sns.distplot(data['walkDistance'])
 plt.show()
 
 
-# In[ ]:
 
 
 # Define the input feature: total_rooms.
@@ -288,33 +263,28 @@ feature_columns = [tf.feature_column.numeric_column("heals"),
 targets = df["winPlacePerc"]
 
 
-# In[ ]:
 
 
 print(data.shape)
 data.head
 
 
-# In[ ]:
 
 
 data.maxPlace.plot(kind='hist')
 
 
-# In[ ]:
 
 
 import matplotlib.pyplot as  plt
 import seaborn as sns
 
 
-# In[ ]:
 
 
 print('There are {} unique maxPlace.'.format(len(data.maxPlace.unique())))
 
 
-# In[ ]:
 
 
 data_store_by_maxPlace = {}
@@ -322,7 +292,6 @@ for x in data.maxPlace.unique():
     data_store_by_maxPlace[x] = data.loc[data.maxPlace==x]
 
 
-# In[ ]:
 
 
 f, ax = plt. subplots(figsize=(15, 15))
@@ -330,7 +299,6 @@ sns.heatmap(my_feature.corr(), annot=True, linewidths=.5, ax=ax)
 plt.show()
 
 
-# In[ ]:
 
 
 
@@ -339,7 +307,6 @@ def adjust_pred(x, maxPlace):
     return np.round(x / space) * space
 
 
-# In[ ]:
 
 
 def generate_lgb_model(data, for_eval):
@@ -379,7 +346,6 @@ def generate_lgb_model(data, for_eval):
         return model
 
 
-# In[ ]:
 
 
 my_optimizer=tf.train.GradientDescentOptimizer(learning_rate=0.001)
@@ -393,7 +359,6 @@ linear_regressor = tf.estimator.LinearClassifier(
 )
 
 
-# In[ ]:
 
 
 def my_input_fn(features, targets, batch_size=1, shuffle=True, num_epochs=None):
@@ -425,7 +390,6 @@ def my_input_fn(features, targets, batch_size=1, shuffle=True, num_epochs=None):
     return features, labels
 
 
-# In[ ]:
 
 
 _ = linear_regressor.train(
@@ -433,7 +397,6 @@ _ = linear_regressor.train(
     steps=5000)
 
 
-# In[ ]:
 
 
 # Create an input function for predictions.
@@ -456,19 +419,16 @@ print("Mean Squared Error (on training data): %0.3f" % mean_squared_error)
 print("Root Mean Squared Error (on training data): %0.3f" % root_mean_squared_error)
 
 
-# In[ ]:
 
 
 predictions_prob[0:15]
 
 
-# In[ ]:
 
 
 df.head(15)
 
 
-# In[ ]:
 
 
 test_df0 = pd.read_csv("../input/test_V2.csv")
@@ -477,19 +437,16 @@ test_df = test_df0.copy()
 test_df.info()
 
 
-# In[ ]:
 
 
 predictions_prob[0:15]
 
 
-# In[ ]:
 
 
 df.head(15)
 
 
-# In[ ]:
 
 
 test_df0 = pd.read_csv("../input/test_V2.csv")
@@ -498,7 +455,6 @@ test_df = test_df0.copy()
 test_df.info()
 
 
-# In[ ]:
 
 
 pred_my_feature = test_df[["heals", "kills","killPlace"]]
@@ -516,38 +472,32 @@ predictions_prob = np.array([item['probabilities'][1] for item in predictions])
 predictions_prob[0:15]
 
 
-# In[ ]:
 
 
 test_id = test_df["Id"]
 result = pd.DataFrame({"Id": test_id, "winPlacePerc": predictions_prob})
 
 
-# In[ ]:
 
 
 result
 
 
-# In[ ]:
 
 
 test_df0.head()
 
 
-# In[ ]:
 
 
 result.to_csv("submission.csv", index = False)
 
 
-# In[ ]:
 
 
 print(os.listdir("."))
 
 
-# In[ ]:
 
 
 

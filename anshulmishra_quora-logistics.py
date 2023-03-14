@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -29,7 +27,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model.logistic import LogisticRegression
 
 
-# In[3]:
 
 
 df = pd.read_csv('../input/train.csv')
@@ -41,7 +38,6 @@ ans=df.target
 id1=test.qid
 
 
-# In[4]:
 
 
 vect=TfidfVectorizer(stop_words='english')
@@ -49,20 +45,17 @@ X_train=vect.fit_transform(text)
 X_test=vect.transform(testxt)
 
 
-# In[5]:
 
 
 clas=LogisticRegression()
 clas.fit(X_train, ans)
 
 
-# In[6]:
 
 
 f=clas.predict(X_test)
 
 
-# In[7]:
 
 
 sub = pd.DataFrame()
@@ -71,7 +64,6 @@ sub['prediction'] = f
 sub.to_csv('submission.csv',index=False)
 
 
-# In[8]:
 
 
 

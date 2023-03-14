@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # coding = utf-8
@@ -18,19 +17,16 @@ from mxnet import nd as F, gluon
 from gluoncv import model_zoo as gm
 
 
-# In[2]:
 
 
 get_ipython().run_line_magic('pylab', 'inline')
 
 
-# In[3]:
 
 
 ls ../input/mxnet-gluon-baseline/model/
 
 
-# In[4]:
 
 
 from gluoncv.model_zoo.resnetv1b import resnet50_v1s, resnet101_v1s, resnet152_v1s
@@ -74,7 +70,6 @@ class ResNetBackbone(mx.gluon.HybridBlock):
         return c1, c2, c3, c4
 
 
-# In[5]:
 
 
 import mxnet as mx
@@ -300,7 +295,6 @@ class ConvBlock(HybridBlock):
         return self.body(x)
 
 
-# In[6]:
 
 
 
@@ -349,7 +343,6 @@ class Classification_head(HybridBlock):
         return F.squeeze(logits)
 
 
-# In[7]:
 
 
 ctx = mx.gpu()
@@ -359,7 +352,6 @@ cls_net.load_parameters('../input/mxnet-gluon-classification/unet_4_0.0.params')
 cls_net.collect_params().reset_ctx(ctx)
 
 
-# In[8]:
 
 
 
@@ -368,7 +360,6 @@ unet.load_parameters('../input/mxnet-gluon-baseline/unet_34_-1.params')
 unet.collect_params().reset_ctx(ctx)
 
 
-# In[9]:
 
 
 def mask2rle(mask):
@@ -388,7 +379,6 @@ def mask2rle(mask):
     return EncodedPixel
 
 
-# In[10]:
 
 
 import cv2
@@ -403,7 +393,6 @@ def remove_small_one(predict, min_size):
     return predict
 
 
-# In[11]:
 
 
 def sharpen(p,t=0.5):
@@ -413,7 +402,6 @@ def sharpen(p,t=0.5):
             return p
 
 
-# In[12]:
 
 
 import random
@@ -514,7 +502,6 @@ dur = time.time() - t1
 print("cost time:{}".format(dur))
 
 
-# In[13]:
 
 
 submission =  pd.read_csv("../input/severstal-steel-defect-detection/sample_submission.csv")
@@ -528,13 +515,11 @@ for i, encoded in zip(ImageId_ClassIds,EncodedPixels):
 submission.to_csv('submission.csv',index=False)
 
 
-# In[14]:
 
 
 submission.head(10)
 
 
-# In[15]:
 
 
 fig, ax1 = plt.subplots(figsize=(50, 50))

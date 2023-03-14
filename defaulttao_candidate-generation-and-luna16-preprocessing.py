@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -37,7 +36,6 @@ slice[slice == -2000] = 0
 plt.imshow(slice, cmap=plt.cm.gray)
 
 
-# In[2]:
 
 
 def read_ct_scan(folder_name):
@@ -53,13 +51,11 @@ def read_ct_scan(folder_name):
         return slices
 
 
-# In[3]:
 
 
 ct_scan = read_ct_scan('../input/sample_images/00cba091fa4ad62cc3200a657aeb957e/') 
 
 
-# In[4]:
 
 
 def plot_ct_scan(scan):
@@ -69,13 +65,11 @@ def plot_ct_scan(scan):
         plots[int(i / 20), int((i % 20) / 5)].imshow(scan[i], cmap=plt.cm.bone) 
 
 
-# In[5]:
 
 
 plot_ct_scan(ct_scan)
 
 
-# In[6]:
 
 
 def get_segmented_lungs(im, plot=False):
@@ -158,34 +152,29 @@ def get_segmented_lungs(im, plot=False):
     return im
 
 
-# In[7]:
 
 
 get_segmented_lungs(ct_scan[71], True)
 
 
-# In[8]:
 
 
 def segment_lung_from_ct_scan(ct_scan):
     return np.asarray([get_segmented_lungs(slice) for slice in ct_scan])
 
 
-# In[9]:
 
 
 segmented_ct_scan = segment_lung_from_ct_scan(ct_scan)
 plot_ct_scan(segmented_ct_scan)
 
 
-# In[10]:
 
 
 segmented_ct_scan[segmented_ct_scan < 604] = 0
 plot_ct_scan(segmented_ct_scan)
 
 
-# In[11]:
 
 
 selem = ball(2)
@@ -215,7 +204,6 @@ for r in regionprops(label_scan):
         index = (max((max_x - min_x), (max_y - min_y), (max_z - min_z))) / (min((max_x - min_x), (max_y - min_y) , (max_z - min_z)))
 
 
-# In[12]:
 
 
 def plot_3d(image, threshold=-300):
@@ -243,13 +231,11 @@ def plot_3d(image, threshold=-300):
     plt.show()
 
 
-# In[13]:
 
 
 plot_3d(segmented_ct_scan, 604)
 
 
-# In[14]:
 
 
 '''
@@ -290,7 +276,6 @@ def voxel_2_world(voxel_coordinates, origin, spacing):
     return world_coordinates
 
 
-# In[15]:
 
 
 def seq(start, stop, step=1):
@@ -383,7 +368,6 @@ def create_nodule_mask(imagePath, maskPath, cands):
         
 
 
-# In[16]:
 
 
 # change the loss function

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -16,7 +15,6 @@ pd.options.mode.chained_assignment = None  # default='warn'
 pd.set_option('display.max_columns', 500)
 
 
-# In[2]:
 
 
 train_df = pd.read_csv('../input/train.csv', parse_dates=['timestamp'])
@@ -24,7 +22,6 @@ test_df = pd.read_csv('../input/test.csv', parse_dates=['timestamp'])
 macro_df = pd.read_csv('../input/macro.csv', parse_dates=['timestamp'])
 
 
-# In[3]:
 
 
 # Fill in the line of code below so that it applies the head() method to train_df
@@ -36,25 +33,21 @@ macro_df = pd.read_csv('../input/macro.csv', parse_dates=['timestamp'])
 train_df. 
 
 
-# In[4]:
 
 
 train_df.tail() # this will show us the last five records in the training set
 
 
-# In[5]:
 
 
 test_df.head()
 
 
-# In[6]:
 
 
 macro_df.head()
 
 
-# In[7]:
 
 
 # To apply the method shape to a data frame called df_, type df_.shape. 
@@ -66,7 +59,6 @@ print(test_df.)
 print(macro_df.)
 
 
-# In[8]:
 
 
 # In the line below, fill in the 'dtypes' method after the period
@@ -75,7 +67,6 @@ data_types = train_df.
 print(data_types)
 
 
-# In[9]:
 
 
 # Find the type of each column and store the results in a data frame
@@ -90,7 +81,6 @@ df_dataTypes.head(10)
 # In the next code chunk we use split-apply-combine to summarise it..
 
 
-# In[10]:
 
 
 # Now use split-apply-combine to get the result
@@ -103,7 +93,6 @@ df_dataTypes[["count","dtype"]].groupby(by = "dtype").aggregate(len).reset_index
 # Are most of the columns numeric, strings (i.e. 'object') or dates?
 
 
-# In[11]:
 
 
 # Run the code below to produce a bar chart showing the count of each data type.
@@ -118,7 +107,6 @@ plt.yticks(fontsize=18)
 plt.show()
 
 
-# In[12]:
 
 
 # Run the code below to create a dot plot of all the prices, in increasing order
@@ -132,7 +120,6 @@ plt.yticks(fontsize=18)
 plt.show()
 
 
-# In[13]:
 
 
 # Run the code below to create a histogram of the distrubtion of prices.
@@ -144,7 +131,6 @@ plt.xticks(fontsize = 16)
 plt.show()
 
 
-# In[14]:
 
 
 # Run the code below to view the distribution of the (natural) log of the prices.
@@ -158,7 +144,6 @@ plt.xlabel('log of price', fontsize = 24)
 plt.show()
 
 
-# In[15]:
 
 
 # For convenience create a new feature which is the year and month of the sale
@@ -167,7 +152,6 @@ train_df['month'] = train_df['timestamp'].dt.month
 train_df['yearmonth'] = train_df['timestamp'].dt.strftime("%Y%m")
 
 
-# In[16]:
 
 
 # Now use split-apply-combine to find the median price of sale in each month
@@ -189,7 +173,6 @@ df_grouped = (train_df[['yearmonth', 'price_doc']]
 df_grouped.head()
 
 
-# In[17]:
 
 
 # Now run the following code chunk to plot the trend in median price
@@ -208,7 +191,6 @@ plt.yticks(fontsize=18)
 plt.show()
 
 
-# In[18]:
 
 
 # Run the code below to create a heat map of the correlations.
@@ -221,7 +203,6 @@ sns.heatmap(heatmap_data, annot=True)
 plt.show()
 
 
-# In[19]:
 
 
 # Find the frequency of property by build year.
@@ -231,7 +212,6 @@ print(grouped_data_count.head())
 print(grouped_data_count.tail())
 
 
-# In[20]:
 
 
 # Print the tail of grouped_data_count, can you see any outliers?
@@ -243,7 +223,6 @@ print()
 print()
 
 
-# In[21]:
 
 
 train_missing = train_df.isnull().sum()/len(train_df)

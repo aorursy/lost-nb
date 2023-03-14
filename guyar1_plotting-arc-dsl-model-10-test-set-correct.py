@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -82,7 +81,6 @@ def startup(dataset='train', printsample=False):
     return alltasks, tasknames
 
 
-# In[2]:
 
 
 #  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -658,7 +656,6 @@ class FullPatTask(FullTask):
             self.testinputimg = self.testinputimg + [ntpis]
 
 
-# In[3]:
 
 
 #  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1395,7 +1392,6 @@ def toplevel1(task):
     return a        
 
 
-# In[4]:
 
 
 #  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2480,7 +2476,6 @@ def findnextrule(fulltask, subtaskdonelist, symbols=True):
         return acc, fulltask
 
 
-# In[5]:
 
 
 ############################# PLOTTING FUNCTIONS ###############################
@@ -2606,7 +2601,6 @@ def plotarcclass(task):
     plt.show()
 
 
-# In[6]:
 
 
 def singlesolution(task, patmodel):
@@ -2723,7 +2717,6 @@ if os.path.isfile('/kaggle/input/patmodel/patternmodel.pckl'):
     cloudpickle.dump(model, fl)
 
 
-# In[7]:
 
 
 from ipywidgets import Layout, Button, VBox, Label, Box, Output
@@ -2760,7 +2753,6 @@ carousel = Box(children=items, layout=box_layout)
 VBox([Label('Tasks to select:'), carousel])
 
 
-# In[8]:
 
 
 display(output_task)

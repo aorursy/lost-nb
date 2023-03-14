@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import pathlib
@@ -11,7 +10,6 @@ import imageio
 import numpy as np
 
 
-# In[ ]:
 
 
 train_path = pathlib.Path('../input/train/images').glob('*.png')
@@ -19,28 +17,24 @@ train_path = pathlib.Path('../input/train/images').glob('*.png')
 # be empty if we wish to iterate twice over the generator train_path
 
 
-# In[ ]:
 
 
 # for x in train_path:
 #     print(x)
 
 
-# In[ ]:
 
 
 # for x in train_path:
 #     print(x)
 
 
-# In[ ]:
 
 
 train_path_sorted = sorted([x for x in train_path])
 # the piece of code sorts the concerned path of images
 
 
-# In[ ]:
 
 
 im_path = train_path_sorted[41]
@@ -48,73 +42,62 @@ im_path = train_path_sorted[41]
 # we may get out of bound error if we iterate over the train_path second time
 
 
-# In[ ]:
 
 
 #print(im_path.parts)
 
 
-# In[ ]:
 
 
 #print(im_path.parts[-1][0:-4])
 
 
-# In[ ]:
 
 
 type(im_path)
 
 
-# In[ ]:
 
 
 im = imageio.imread(str(im_path))
 # the im_path which is a posixPath is first converted to string and then the corresponding image is read
 
 
-# In[ ]:
 
 
 im.shape
 # the presence of three dimensions suggests that the colour scale is RGB
 
 
-# In[ ]:
 
 
 print("image original shape :{}".format(im.shape))
 # helps to print the shape of the image
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 from skimage.color import rgb2gray
 # the rgb2gray compute the illuminance of an RGB image
 
 
-# In[ ]:
 
 
 im_gray = rgb2gray(im)
 # calculating the illuminance apparantly gives us the gray scale of the image
 
 
-# In[ ]:
 
 
 print("the shape of the image in the grayScale :{}".format(im_gray.shape))
 # here we get two dimensional image matrix, significant for grayScale images
 
 
-# In[ ]:
 
 
 #import matplotlib.pyplot as plt
@@ -128,7 +111,6 @@ print("the shape of the image in the grayScale :{}".format(im_gray.shape))
 # plt.subplot(212, facecolor='y') # creates 2nd subplot with yellow background
 
 
-# In[ ]:
 
 
 import matplotlib.pyplot as plt
@@ -156,7 +138,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[ ]:
 
 
 # to remove the image and the background, there is method of seperation (i am not very sure if this approach of seperation will help in any way..
@@ -170,7 +151,6 @@ plt.show()
 #to find the optimal seperation between the image and its background
 
 
-# In[ ]:
 
 
 from skimage.filters import threshold_otsu
@@ -179,14 +159,12 @@ thres_val = threshold_otsu(im_gray)
 # for that particular image
 
 
-# In[ ]:
 
 
 mask = np.where(im_gray > thres_val,1,0)
 #the np.where(,[1,0]) returns the value 1 for true and the value 0 for false
 
 
-# In[ ]:
 
 
 # we are considering the larger portion of he mask as the background
@@ -194,7 +172,6 @@ if np.sum(mask==0) < np.sum(mask==1):
     mask = np.where(mask,0,1)
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(10,4))
@@ -209,7 +186,6 @@ plt.ylim([0,50000])
 plt.title('Grayscale Histogram')
 
 
-# In[ ]:
 
 
 plt.subplot(1,2,2)
@@ -223,7 +199,6 @@ plt.title('Image w/ Mask')
 plt.show()
 
 
-# In[ ]:
 
 
 #we assign a label to each component in the mask and add each label to 
@@ -236,7 +211,6 @@ labels, nlabels = ndimage.label(mask)
 #with the labels 
 
 
-# In[ ]:
 
 
 label_arrays = []
@@ -246,7 +220,6 @@ for label_num in range(1, nlabels+1):
 print('There are {} seperate components/objects/features detected.'.format(nlabels))
 
 
-# In[ ]:
 
 
 #listedColourMap maps a color from a list of color, after creating an object of colourMap
@@ -254,13 +227,11 @@ from matplotlib.colors import ListedColormap
 rand_cmap = ListedColormap(np.random.rand(256,3))
 
 
-# In[ ]:
 
 
 type(rand_cmap)
 
 
-# In[ ]:
 
 
 labels_for_display = np.where(labels > 0, labels, np.nan)
@@ -271,7 +242,6 @@ plt.title('Labeled Objects ({} Objects)'.format(nlabels))
 plt.show()
 
 
-# In[ ]:
 
 
 labels_for_display = np.where(labels > 0, labels, np.nan)
@@ -283,7 +253,6 @@ plt.title('Labeled Objects ({} Objects)'.format(nlabels))
 plt.show()
 
 
-# In[ ]:
 
 
 #now we can use the ndimage.find_objects to iterate over 
@@ -305,7 +274,6 @@ labels, nlabels = ndimage.label(mask)
 print('There are now {} separate components / objects detected.'.format(nlabels))
 
 
-# In[ ]:
 
 
 ig, axes = plt.subplots(1,6, figsize=(10,6))
@@ -320,7 +288,6 @@ plt.tight_layout()
 plt.show() 
 
 
-# In[ ]:
 
 
 #shrinking the mask so as to get the components more confidently is called mask erosion
@@ -331,19 +298,16 @@ cell_mask = mask[two_cell_indices]
 cell_mask_opened = ndimage.binary_opening(cell_mask, iterations=8)
 
 
-# In[ ]:
 
 
 dots = np.where(label_mask.T.flatten()==1)[0]
 
 
-# In[ ]:
 
 
 dots
 
 
-# In[ ]:
 
 
 # run_lengths = []
@@ -358,7 +322,6 @@ dots
 #     prev = b
 
 
-# In[ ]:
 
 
 def rle_encoding(x):
@@ -378,7 +341,6 @@ def rle_encoding(x):
 print('RLE Encoding for the current mask is: {}'.format(rle_encoding(label_mask)))
 
 
-# In[ ]:
 
 
 from skimage.color import rgb2gray
@@ -386,7 +348,6 @@ im_gray = rgb2gray(im)
 thres_val = threshold_otsu(im_gray)
 
 
-# In[ ]:
 
 
 # now we combine together all of the function that we have created above and then process all of the images for a submission
@@ -436,7 +397,6 @@ def analyze_list_of_images(im_path_list):
     return all_df
 
 
-# In[ ]:
 
 
 testing = pathlib.Path('../input/train/images').glob('*.png')
@@ -444,7 +404,6 @@ df = analyze_list_of_images(list(testing))
 df.to_csv('submission.csv', index=None)
 
 
-# In[ ]:
 
 
 

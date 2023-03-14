@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -81,7 +80,6 @@ NUM_BRANDS = 4000
 NUM_CATEGORIES = 1000
 
 
-# In[2]:
 
 
 #LOAD DATA
@@ -93,7 +91,6 @@ print(test.shape)
 train.head(3)
 
 
-# In[3]:
 
 
 start_time = time.time()
@@ -132,7 +129,6 @@ print('[{}] category variable labelled completed'.format(time.time() - start_tim
 merge.head(3)
 
 
-# In[4]:
 
 
 #EXTRACT DEVELOPTMENT TEST
@@ -150,7 +146,6 @@ Y_train =  np.log1p(np.array(dtrain.price))
 Y_valid =  np.log1p(np.array(dvalid.price))
 
 
-# In[5]:
 
 
 MAX_TEXT = np.max([np.max(merge.seq_name.max()), np.max(merge.seq_item_description.max())])+2
@@ -166,7 +161,6 @@ print(MAX_subcat_2)
 print(MAX_BRAND)
 
 
-# In[6]:
 
 
 #KERAS MODEL DEFINITION
@@ -246,7 +240,6 @@ model = get_model()
 model.summary()
 
 
-# In[7]:
 
 
 #FITTING THE MODEL
@@ -259,7 +252,6 @@ model.fit(X_train, Y_train, epochs=epochs, batch_size=BATCH_SIZE
           , verbose=1)
 
 
-# In[8]:
 
 
 #CREATE PREDICTIONS
@@ -268,7 +260,6 @@ submission["price"] = np.expm1(preds)
 submission.to_csv("./myNNsubmission.csv", index=False)
 
 
-# In[9]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -29,7 +28,6 @@ def post_process(probability, threshold, min_size):
     return predictions
 
 
-# In[2]:
 
 
 get_ipython().system('mkdir -p /tmp/pip/cache/')
@@ -38,7 +36,6 @@ get_ipython().system('cp /kaggle/input/segmentation-models-zip-003/pretrainedmod
 get_ipython().system('cp /kaggle/input/segmentation-models-zip-003/segmentation_models_pytorch-0.0.3.xyz /tmp/pip/cache/segmentation_models_pytorch-0.0.3.tar.gz')
 
 
-# In[3]:
 
 
 get_ipython().system('pip install --no-index --find-links /tmp/pip/cache/ efficientnet-pytorch')
@@ -46,7 +43,6 @@ get_ipython().system('pip install --no-index --find-links /tmp/pip/cache/ segmen
 get_ipython().system('pip install /kaggle/input/tta-pytorch/ttach-0.0.1-py3-none-any.whl')
 
 
-# In[4]:
 
 
 import warnings
@@ -67,7 +63,6 @@ import ttach as tta
 from severstal_utils import rle2mask, mask2rle
 
 
-# In[5]:
 
 
 unet_se_resnext50_32x4d =     load('/kaggle/input/severstalmodels/unet_se_resnext50_32x4d.pth').cuda()
@@ -75,7 +70,6 @@ unet_mobilenet2 = load('/kaggle/input/severstalmodels/unet_mobilenet2.pth').cuda
 unet_resnet34 = load('/kaggle/input/severstalmodels/unet_resnet34.pth').cuda()
 
 
-# In[6]:
 
 
 from typing import Callable, Dict
@@ -247,7 +241,6 @@ class TtaWrap(Dataset):
         return a
 
 
-# In[7]:
 
 
 class Model:
@@ -266,7 +259,6 @@ class Model:
 model = Model([unet_se_resnext50_32x4d, unet_mobilenet2, unet_resnet34])
 
 
-# In[8]:
 
 
 def create_transforms(additional):
@@ -296,7 +288,6 @@ datasets = [TtaWrap(ImageDataset(img_folder=img_folder, transforms=t), tfms=t) f
 loaders = [DataLoader(d, num_workers=num_workers, batch_size=batch_size, shuffle=False) for d in datasets]
 
 
-# In[9]:
 
 
 thresholds = [0.50, 0.50, 0.50, 0.50]
@@ -344,7 +335,6 @@ df = pd.DataFrame(res)
 df.to_csv('submission.csv', index=False)	
 
 
-# In[10]:
 
 
 df = pd.DataFrame(res)
@@ -352,7 +342,6 @@ df = df.fillna('')
 df.to_csv('submission.csv', index=False)
 
 
-# In[11]:
 
 
 df['Image'] = df['ImageId_ClassId'].map(lambda x: x.split('_')[0])

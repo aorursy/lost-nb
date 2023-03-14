@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # The first thing we need to do is to import all of the relevant python libraries that we will need for our analysis. 
@@ -56,7 +55,6 @@ import random
 from IPython.display import display, HTML
 
 
-# In[2]:
 
 
 # Get the path from where I could import my data.
@@ -64,7 +62,6 @@ import os
 os.getcwd()
 
 
-# In[3]:
 
 
 # I have the dataset available in an easily accessible CSV, and I can use the convenient pandas method read_csv() to load it into our environment.
@@ -81,7 +78,6 @@ train.head()
 # was filed for that policy holder.
 
 
-# In[4]:
 
 
 # Import test data. In this dataset we have not the target column which we are called to predict.
@@ -89,7 +85,6 @@ test = pd.read_csv('../input/test.csv')
 test.head()
 
 
-# In[5]:
 
 
 ## Exploration and Cleaning
@@ -105,7 +100,6 @@ trainshape = np.shape(train)
 print("This train dataset is a 2D array and contains {0} rows and columns".format(trainshape))
 
 
-# In[6]:
 
 
 print("Number of rows: ", train.shape[0])
@@ -119,20 +113,17 @@ display(
 )
 
 
-# In[7]:
 
 
 datacolumns = train.columns
 
 
-# In[8]:
 
 
 target = train.target
 target.count(), target.min(), target.max(), target.mean(), target.std()
 
 
-# In[9]:
 
 
 # Let’s now take a look at the number of instances (rows) that belong to each class. We can view this as an absolute count.
@@ -146,14 +137,12 @@ plt.ylabel('Number of vehicles')
 sns.despine
 
 
-# In[10]:
 
 
 # Let's see the type of our variables:
 train.dtypes
 
 
-# In[11]:
 
 
 # The first rows of the float64 type variables are:
@@ -161,7 +150,6 @@ float_types = train.select_dtypes(include=['float64'])
 float_types.head()
 
 
-# In[12]:
 
 
 # And the first 5 rows of the int64 type variables are:
@@ -169,7 +157,6 @@ int_types = train.select_dtypes(include=['int64'])
 int_types.head()
 
 
-# In[13]:
 
 
 # At this stage we would normally begin the process of cleaning our data set, which could involve: Filling in missing values
@@ -177,7 +164,6 @@ int_types.head()
 train.isnull().any()
 
 
-# In[14]:
 
 
 # But in our dataset we have the NAs as -1. Let's see how many -1 we have per column.
@@ -185,14 +171,12 @@ train.isnull().any()
 # As we can see we have a lot of NAs as -1 in the columns: ps_reg_03, ps_car_03_cat, ps_car_05_cat, ps_car_07_cat and ps_car_14.
 
 
-# In[15]:
 
 
 # For the test dataset we have:
 (test==-1).sum()
 
 
-# In[16]:
 
 
 # From the dataset description we know that some features fall into a number of groups; this is indicated by a prefix (for example, ind_, ps_, car_).
@@ -209,7 +193,6 @@ catdata = [x for x in datacolumns if x[-3:]=='cat']
 bindata = [x for x in datacolumns if x[-3:]=='bin']
 
 
-# In[17]:
 
 
 # For the other categorical variables with missing values, we can leave the missing value -1 as it is.
@@ -243,7 +226,6 @@ test['ps_car_14'] = mode_imp.fit_transform(test[['ps_car_14']]).ravel()
 test['ps_car_11'] = mode_imp.fit_transform(test[['ps_car_11']]).ravel()
 
 
-# In[18]:
 
 
 # Let's see if we have any missing values after the changes we made.
@@ -251,14 +233,12 @@ test['ps_car_11'] = mode_imp.fit_transform(test[['ps_car_11']]).ravel()
 (train==-1).sum()
 
 
-# In[19]:
 
 
 # We leave the two variables ps_car_03_cat and ps_car_05_cat as they are for now because we will need them in the process below.
 (test==-1).sum()
 
 
-# In[20]:
 
 
 for column in catdata:    
@@ -276,7 +256,6 @@ for column in catdata:
     plt.show();
 
 
-# In[21]:
 
 
 # As we can see the ps_car_11_cat column has a lot of unique values as a categorical variable. 
@@ -284,7 +263,6 @@ for column in catdata:
 len(set(train['ps_car_11_cat']))
 
 
-# In[22]:
 
 
 for column in bindata:    
@@ -302,7 +280,6 @@ for column in bindata:
     plt.show();
 
 
-# In[23]:
 
 
 # Correlation matrix for binary data.
@@ -311,7 +288,6 @@ f, ax = plt.subplots(figsize=(12, 9))
 sns.heatmap(corrbin, cbar=True, annot=True, square=True, fmt='.2f', annot_kws={'size': 10})
 
 
-# In[24]:
 
 
 # Zoomed correlation matrix because of possible relationship between ps_ind_11_bin, ps_ind_12_bin and ps_ind_13_bin.
@@ -324,7 +300,6 @@ hm = sns.heatmap(cm, cbar=True, annot=True, square=True, fmt='.2f', annot_kws={'
 plt.show()
 
 
-# In[25]:
 
 
 # Correlation matrix for numeric data.
@@ -333,7 +308,6 @@ f, ax = plt.subplots(figsize=(15, 15))
 sns.heatmap(corrnum, square=True, cbar=True, annot=True, fmt='.2f', annot_kws={'size': 10})
 
 
-# In[26]:
 
 
 # My attention goes on two different relationship squares. So, I will have a zoomed correlation matrix.
@@ -348,7 +322,6 @@ hm = sns.heatmap(cm, cbar=True, annot=True, square=True, fmt='.2f', annot_kws={'
 plt.show()
 
 
-# In[27]:
 
 
 # Correlation matrix for categorical data.
@@ -357,7 +330,6 @@ f, ax = plt.subplots(figsize=(12, 9))
 sns.heatmap(corrcat, square=True, cbar=True, annot=True, fmt='.2f', annot_kws={'size': 10})
 
 
-# In[28]:
 
 
 # My attention goes on two different relationship squares. So, I will have a zoomed correlation matrix.
@@ -372,7 +344,6 @@ hm = sns.heatmap(cm, cbar=True, annot=True, square=True, fmt='.2f', annot_kws={'
 plt.show()
 
 
-# In[29]:
 
 
 #scatterplot Binary data
@@ -382,7 +353,6 @@ sns.pairplot(train[cols], size = 2.5)
 plt.show();
 
 
-# In[30]:
 
 
 #scatterplot Numeric data
@@ -392,7 +362,6 @@ sns.pairplot(train[cols], size = 3)
 plt.show();
 
 
-# In[31]:
 
 
 #scatterplot Categorical data
@@ -402,7 +371,6 @@ sns.pairplot(train[cols], size = 3)
 plt.show();
 
 
-# In[32]:
 
 
 # We see that ps_car_03_cat and ps_car_05_cat have a large proportion of records with missing values. 
@@ -414,7 +382,6 @@ del test["ps_car_03_cat"]
 del test["ps_car_05_cat"]
 
 
-# In[33]:
 
 
 # Drop the columns that we have decided won't be used in prediction
@@ -423,7 +390,6 @@ features = train.drop(["target"], axis=1).columns
 test = test.drop(["ps_calc_15_bin", "ps_calc_16_bin", "ps_calc_17_bin", "ps_calc_18_bin", "ps_calc_19_bin", "ps_calc_20_bin", "ps_ind_06_bin", "ps_ind_07_bin", "ps_ind_08_bin", "ps_ind_09_bin"], axis=1)
 
 
-# In[34]:
 
 
 # Drop the columns that we have decided won't be used in prediction
@@ -432,7 +398,6 @@ features = train.drop(["target"], axis=1).columns
 test = test.drop(["ps_calc_01", "ps_calc_02", "ps_calc_03", "ps_calc_04", "ps_calc_05", "ps_calc_06", "ps_calc_07", "ps_calc_08", "ps_calc_09", "ps_calc_10", "ps_calc_11", "ps_calc_12", "ps_calc_13", "ps_calc_14"], axis=1)
 
 
-# In[35]:
 
 
 # Correlation matrix for all variables:
@@ -441,7 +406,6 @@ f, ax = plt.subplots(figsize=(12, 9))
 sns.heatmap(corrmat, vmax=.8, square=True);
 
 
-# In[36]:
 
 
 # At this point I can construct my model. The first thing to do is split our train dataset into training and test sets.
@@ -449,7 +413,6 @@ sns.heatmap(corrmat, vmax=.8, square=True);
 df_train, df_test = train_test_split(train, test_size=0.3)
 
 
-# In[37]:
 
 
 # Set up our RandomForestClassifier instance and fit to data
@@ -457,7 +420,6 @@ clf = RandomForestClassifier(n_estimators=30)
 clf.fit(df_train[features], df_train["target"])
 
 
-# In[38]:
 
 
 # Make predictions
@@ -466,7 +428,6 @@ probs = clf.predict_proba(df_test[features])
 display(predictions)
 
 
-# In[39]:
 
 
 # Let's see the Accuracy of RandomForest Classifier:
@@ -474,7 +435,6 @@ score = clf.score(df_test[features], df_test["target"])
 print("Accuracy: ", score)
 
 
-# In[40]:
 
 
 # Actual False and True predictions
@@ -487,7 +447,6 @@ confusion_matrix = pd.DataFrame(
 display(confusion_matrix)
 
 
-# In[41]:
 
 
 # Calculate the fpr and tpr for all thresholds of the classification
@@ -502,7 +461,6 @@ plt.xlabel('False Positive Rate')
 plt.show()
 
 
-# In[42]:
 
 
 # In the following results we will see the id as a high important label but we know that it is not true. 
@@ -522,7 +480,6 @@ plt.yticks(index, df_f["labels"])
 plt.show()
 
 
-# In[43]:
 
 
 df_test["prob_true"] = probs[:, 1]
@@ -530,7 +487,6 @@ df_risky = df_test[df_test["prob_true"] > 0.5]
 display(df_risky.head(5)[["prob_true"]])
 
 
-# In[44]:
 
 
 # We need to separate the target "dataset" from the whole dataset
@@ -541,7 +497,6 @@ train_y = train.target
 np.unique(train_y)
 
 
-# In[45]:
 
 
 kf = StratifiedKFold(n_splits=5,random_state=5,shuffle=True)
@@ -563,7 +518,6 @@ for train_index,test_index in kf.split(train_x, train_y):
     i+=1
 
 
-# In[46]:
 
 
 # Make predictions
@@ -572,7 +526,6 @@ probs = lr.predict_proba(test[features])
 display(predictions)
 
 
-# In[47]:
 
 
 test_pred = test_full/5
@@ -580,7 +533,6 @@ submit = pd.DataFrame({'id':test['id'],'target':test_pred})
 submit.head()
 
 
-# In[48]:
 
 
 # Let's split again our train dataset in train and test datasets.
@@ -590,7 +542,6 @@ train_x_train, train_x_test = model_selection.train_test_split(train_x, test_siz
 train_y_train, train_y_test = model_selection.train_test_split(train_y, test_size=test_size, random_state=seed)
 
 
-# In[49]:
 
 
 np.random.seed(0)
@@ -598,7 +549,6 @@ indices = np.random.permutation(len(train_x))
 indices
 
 
-# In[50]:
 
 
 # And let's test a KNN Classifier
@@ -606,7 +556,6 @@ knn = KNeighborsClassifier()
 knn.fit(train_x_train, train_y_train)
 
 
-# In[51]:
 
 
 # And let's see the Accuracy of KNN Classifier:
@@ -614,7 +563,6 @@ score = knn.score(train_x_test, train_y_test)
 print("Accuracy: ", score)
 
 
-# In[52]:
 
 
 # The same method about LogisticRegression now
@@ -626,7 +574,6 @@ score = logistic.score(train_x_test, train_y_test)
 print("Accuracy: ", score)
 
 
-# In[53]:
 
 
 # Predictions and probs about LogisticRegression:
@@ -635,7 +582,6 @@ probs = lr.predict_proba(train_x_test)
 display(predictions)
 
 
-# In[54]:
 
 
 # From scikil_learn I found these graphs where you can clearly see the comparison of classification of the classifiers.
@@ -708,7 +654,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[55]:
 
 
 # LogisticRegression returns well calibrated predictions as it directly optimizes log-loss.

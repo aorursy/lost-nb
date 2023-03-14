@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -11,7 +10,6 @@ import os
 import gc
 
 
-# In[2]:
 
 
 DATA_ROOT = '../input/'
@@ -19,7 +17,6 @@ ORIGINAL_DATA_FOLDER = os.path.join(DATA_ROOT, 'movie-review-sentiment-analysis-
 TREEBANK_DATA_FOLDER = os.path.join(DATA_ROOT, 'stanford-sentiment-treebank')
 
 
-# In[3]:
 
 
 train_data_path = os.path.join(ORIGINAL_DATA_FOLDER, 'train.tsv')
@@ -31,7 +28,6 @@ test_df = pd.read_csv(test_data_path, sep="\t")
 sub_df = pd.read_csv(sub_data_path, sep=",")
 
 
-# In[4]:
 
 
 class LabeledTextBinaryTreeNode(object):  # a node in the tree
@@ -145,7 +141,6 @@ def read_parse_ptb_tree_bank_file(file_path):
     return tree_list
 
 
-# In[5]:
 
 
 def read_tree_bank_file(file_path):
@@ -162,39 +157,33 @@ test_trees = read_tree_bank_file(test_data_path)
 dev_trees = read_tree_bank_file(dev_data_path)
 
 
-# In[6]:
 
 
 import seaborn as sns
 from sklearn.feature_extraction import text as sktext
 
 
-# In[7]:
 
 
 train_df.head()
 
 
-# In[8]:
 
 
 test_df.head()
 
 
-# In[9]:
 
 
 sub_df.head()
 
 
-# In[10]:
 
 
 overlapped = pd.merge(train_df[["Phrase", "Sentiment"]], test_df, on="Phrase", how="inner")
 overlap_boolean_mask_test = test_df['Phrase'].isin(overlapped['Phrase'])
 
 
-# In[11]:
 
 
 print("training and testing data sentences hist:")
@@ -202,7 +191,6 @@ sns.distplot(train_df['SentenceId'], kde_kws={"label": "train"})
 sns.distplot(test_df['SentenceId'], kde_kws={"label": "test"})
 
 
-# In[12]:
 
 
 print("The number of overlapped SentenceId between training and testing data:")
@@ -213,7 +201,6 @@ del train_overlapped_sentence_id_df
 gc.collect()
 
 
-# In[13]:
 
 
 pd.options.display.max_colwidth = 250
@@ -224,7 +211,6 @@ sample_sentence_group_df = train_df[train_df['SentenceId'] == sample_sentence_id
 sample_sentence_group_df
 
 
-# In[14]:
 
 
 from keras.preprocessing import sequence
@@ -232,7 +218,6 @@ import gensim
 from sklearn import preprocessing as skp
 
 
-# In[15]:
 
 
 max_len = 50
@@ -240,7 +225,6 @@ embed_size = 300
 max_features = 30000
 
 
-# In[16]:
 
 
 tree_bank_texts = list(map(
@@ -253,14 +237,12 @@ treebank_text_to_tree = dict(
 )
 
 
-# In[17]:
 
 
 text = test_df[test_df['SentenceId'] == test_df.sample(1)['SentenceId'].values[0]].iloc[0]['Phrase'].strip().lower()
 print(treebank_text_to_tree[text])
 
 
-# In[18]:
 
 
 train_sents = train_df.groupby('SentenceId').apply(lambda chunk: chunk.iloc[0]['Phrase'].strip().lower())
@@ -277,13 +259,11 @@ train_data_trees = list(filter(
 print(len(train_data_trees)) 
 
 
-# In[19]:
 
 
 train_df[train_df['SentenceId'] == 76]
 
 
-# In[20]:
 
 
 train_sents_set = set(train_sents)
@@ -303,7 +283,6 @@ gc.collect()
 print(len(test_data_trees))
 
 
-# In[21]:
 
 
 def load_embed(file):
@@ -315,21 +294,18 @@ def load_embed(file):
     return embeddings_index
 
 
-# In[22]:
 
 
 pretrained_w2v_path = os.path.join(DATA_ROOT, "fasttext-crawl-300d-2m/crawl-300d-2M.vec")
 w2v_fasttext = load_embed(pretrained_w2v_path)
 
 
-# In[23]:
 
 
 UNKNOWN_TOKEN = '<UNK>'
 EMB_DIM = 300
 
 
-# In[24]:
 
 
 flatten = lambda l: [item for sublist in l for item in sublist]
@@ -347,7 +323,6 @@ for vo in vocab:
         wv[word2index[vo]] = w2v_fasttext[vo]
 
 
-# In[25]:
 
 
 import collections
@@ -363,7 +338,6 @@ from torch import nn
 from torch import optim
 
 
-# In[26]:
 
 
 
@@ -844,7 +818,6 @@ def _unbundle(state):
     return torch.split(torch.cat(state, 1), 1, 0)
 
 
-# In[27]:
 
 
 MAX_LEN = 0
@@ -858,33 +831,28 @@ pad_token_index = 0
 MAX_LEN = 60
 
 
-# In[28]:
 
 
 model = ThinStackHybridLSTM(wv, hidden_size, tracker_size, output_size, pad_token_index, trainable_embed=False, use_gpu=False)
 
 
-# In[29]:
 
 
 model.init_weight()
 model.train_model_from_trees(train_data_trees, word2index, MAX_LEN, validation_trees=test_data_trees, epochs=20, batch_size=32)
 
 
-# In[30]:
 
 
 del model, wv
 gc.collect()
 
 
-# In[31]:
 
 
 # model.predict_label_for_trees(test_data_trees)
 
 
-# In[32]:
 
 
 import keras
@@ -900,7 +868,6 @@ import keras.backend as K
 from keras.preprocessing import text as ktext
 
 
-# In[33]:
 
 
 def build_birnn_cnn_model(
@@ -1014,7 +981,6 @@ def build_birnn_cnn_model(
     return model
 
 
-# In[34]:
 
 
 def get_text_label(root, text_label_dict):
@@ -1048,7 +1014,6 @@ for tree in test_data_trees:
     get_text_label(tree, test_label_map)
 
 
-# In[35]:
 
 
 train_texts = list(train_label_map.keys())
@@ -1066,7 +1031,6 @@ X_train = sequence.pad_sequences(train_tokenized, maxlen = 60)
 X_test = sequence.pad_sequences(test_tokenized, maxlen = 60)
 
 
-# In[36]:
 
 
 word_index = tk.word_index
@@ -1083,14 +1047,12 @@ del w2v_fasttext
 gc.collect()
 
 
-# In[37]:
 
 
 y_train = [train_label_map[text] for text in train_texts]
 y_test = [test_label_map[text] for text in test_texts]
 
 
-# In[38]:
 
 
 def build_model3():
@@ -1120,14 +1082,12 @@ def build_model3():
     )
 
 
-# In[39]:
 
 
 model, rc_cl = build_model3()
 print(model.summary())
 
 
-# In[40]:
 
 
 adam = ko.Nadam(clipnorm=2.0)

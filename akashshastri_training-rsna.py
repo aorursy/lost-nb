@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,38 +22,32 @@ from fastai.vision import *
 from fastai.callbacks import *
 
 
-# In[2]:
 
 
 from pathlib import Path
 Path.ls = lambda x: list(x.iterdir())
 
 
-# In[3]:
 
 
 path_train = Path('/kaggle/input/')
 
 
-# In[4]:
 
 
 (path_train/'rsna-train-stage-1-images-png-224x/').ls()
 
 
-# In[5]:
 
 
 train_files = sorted(glob("../input/rsna-train-stage-1-images-png-224x/stage_1_train_png_224x/*.png"))
 
 
-# In[6]:
 
 
 len(train_files)
 
 
-# In[7]:
 
 
 train = pd.read_csv(os.path.join('/kaggle/input/rsna-intracranial-hemorrhage-detection', 'stage_1_train.csv'))
@@ -66,7 +59,6 @@ train['Image'] = 'ID_' + train['Image']
 train.head()
 
 
-# In[8]:
 
 
 dir_csv = '../input/rsna-intracranial-hemorrhage-detection'
@@ -74,7 +66,6 @@ dir_train_img = '../input/rsna-train-stage-1-images-png-224x/stage_1_train_png_2
 dir_test_img = '../input/rsna-test-stage-1-images-png-224x/stage_1_test_png_224x'
 
 
-# In[9]:
 
 
 png = glob(os.path.join(dir_train_img, '*.png'))
@@ -85,7 +76,6 @@ train = train[train['Image'].isin(png)]
 train.to_csv('train.csv', index=False)
 
 
-# In[10]:
 
 
 src = (ImageList.from_df(df = train,
@@ -97,13 +87,11 @@ src = (ImageList.from_df(df = train,
        )
 
 
-# In[11]:
 
 
 tfms = get_transforms(do_flip = True)
 
 
-# In[12]:
 
 
 data = (src
@@ -111,45 +99,38 @@ data = (src
        .normalize(imagenet_stats))
 
 
-# In[13]:
 
 
 data
 
 
-# In[14]:
 
 
 acc_02 = partial(accuracy_thresh, thresh=0.2)
 f_score = partial(fbeta, thresh=0.2)
 
 
-# In[15]:
 
 
 data.c
 
 
-# In[16]:
 
 
 import torch
 model = torch.hub.load('facebookresearch/WSL-Images', 'resnext101_32x8d_wsl')
 
 
-# In[17]:
 
 
 model
 
 
-# In[18]:
 
 
 get_ipython().run_line_magic('pinfo2', 'Learner')
 
 
-# In[19]:
 
 
 learn = Learner(data,
@@ -160,57 +141,48 @@ learn = Learner(data,
                 wd=1e-3)
 
 
-# In[20]:
 
 
 #learn = cnn_learner(data, base_arch=models.resnet50, metrics = [acc_02, f_score], callback_fns=[partial(EarlyStoppingCallback, monitor='acc_02', min_delta=0.01, patience=3)], path = '/kaggle/working', model_dir = '/kaggle/working' )
 
 
-# In[21]:
 
 
 learn.lr_find()
 learn.recorder.plot()
 
 
-# In[22]:
 
 
 learn.fit_one_cycle(2, max_lr = 5e-2)
 
 
-# In[23]:
 
 
 learn.unfreeze()
 
 
-# In[24]:
 
 
 learn.lr_find()
 learn.recorder.plot()
 
 
-# In[25]:
 
 
 learn.fit_one_cycle(5, max_lr = slice(8e-5, 3e-5), wd = 1e-1)
 
 
-# In[26]:
 
 
 learn.plot_losses()
 
 
-# In[27]:
 
 
 learn.export('trained_1.pkl')
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -19,26 +18,22 @@ import warnings
 warnings.simplefilter('ignore')
 
 
-# In[2]:
 
 
 train=pd.read_csv(r"../input/covid19-global-forecasting-week-2/train.csv")
 test=pd.read_csv(r"../input/covid19-global-forecasting-week-2/test.csv")
 
 
-# In[3]:
 
 
 train.sample(6)
 
 
-# In[4]:
 
 
 test.sample(6)
 
 
-# In[5]:
 
 
 df = train.fillna('NA').groupby(['Country_Region','Province_State','Date'])['ConfirmedCases'].sum()                           .groupby(['Country_Region','Province_State']).max().sort_values()                           .groupby(['Country_Region']).sum().sort_values(ascending = False)
@@ -47,7 +42,6 @@ top10 = pd.DataFrame(df).head(10)
 top10
 
 
-# In[6]:
 
 
 fig = px.bar(top10, x=top10.index, y='ConfirmedCases', labels={'x':'Country'},
@@ -56,7 +50,6 @@ fig.update_layout(title_text='Confirmed COVID-19 cases by country')
 fig.show()
 
 
-# In[7]:
 
 
 df_by_date = pd.DataFrame(train.fillna('NA').groupby(['Country_Region','Date'])['ConfirmedCases'].sum().sort_values().reset_index())
@@ -67,7 +60,6 @@ fig.update_layout(title_text='Confirmed COVID-19 cases per day in US')
 fig.show()
 
 
-# In[8]:
 
 
 df_by_date = pd.DataFrame(train.fillna('NA').groupby(['Country_Region','Date'])['ConfirmedCases'].sum().sort_values().reset_index())
@@ -78,7 +70,6 @@ fig.update_layout(title_text='Confirmed COVID-19 cases per day in Italy')
 fig.show()
 
 
-# In[9]:
 
 
 df_by_date = pd.DataFrame(train.fillna('NA').groupby(['Country_Region','Date'])['ConfirmedCases'].sum().sort_values().reset_index())
@@ -89,7 +80,6 @@ fig.update_layout(title_text='Confirmed COVID-19 cases per day in China')
 fig.show()
 
 
-# In[10]:
 
 
 df_by_date = pd.DataFrame(train.fillna('NA').groupby(['Country_Region','Date'])['ConfirmedCases'].sum().sort_values().reset_index())
@@ -100,7 +90,6 @@ fig.update_layout(title_text='Confirmed COVID-19 cases per day in Spain')
 fig.show()
 
 
-# In[11]:
 
 
 df_by_date = pd.DataFrame(train.fillna('NA').groupby(['Country_Region','Date'])['ConfirmedCases'].sum().sort_values().reset_index())
@@ -111,7 +100,6 @@ fig.update_layout(title_text='Confirmed COVID-19 cases per day in Germany')
 fig.show()
 
 
-# In[12]:
 
 
 df_by_date = pd.DataFrame(train.fillna('NA').groupby(['Country_Region','Date'])['ConfirmedCases'].sum().sort_values().reset_index())
@@ -122,14 +110,12 @@ fig.update_layout(title_text='Confirmed COVID-19 cases per day in India')
 fig.show()
 
 
-# In[13]:
 
 
 df=train.groupby(['Date','Country_Region']).agg('sum').reset_index()
 df.tail(5)
 
 
-# In[14]:
 
 
 def pltCountry_cases(ConfirmedCases,*argv):
@@ -144,7 +130,6 @@ def pltCountry_cases(ConfirmedCases,*argv):
   
 
 
-# In[15]:
 
 
 def pltCountry_fatalities(Fatalities,*argv):
@@ -158,28 +143,24 @@ def pltCountry_fatalities(Fatalities,*argv):
         ax.set(title='Evolution of the number of fatalities' )
 
 
-# In[16]:
 
 
 pltCountry_cases('ConfirmedCases','China')
 pltCountry_fatalities('Fatalities','China')
 
 
-# In[17]:
 
 
 pltCountry_cases('ConfirmedCases', 'Germany','Spain','France','US')
 pltCountry_fatalities('Fatilities','Germany','Spain','France','US')
 
 
-# In[18]:
 
 
 test['Date'] = pd.to_datetime(test['Date'])
 train['Date'] = pd.to_datetime(train['Date'])
 
 
-# In[19]:
 
 
 case='ConfirmedCases'
@@ -202,7 +183,6 @@ def timeCompare(time,*argv):
     ax.set(title=' Evolution of cases in %d days difference '%time ,ylabel='Number of %s cases'%case )
 
 
-# In[20]:
 
 
 timeCompare(8,'Italy','France')
@@ -211,7 +191,6 @@ timeCompare(7,'Italy','Germany')
 timeCompare(7,'Italy','US')
 
 From the above graph we can conclude that with 7 days difference, US crossed Italy in Cases
-# In[21]:
 
 
 timeCompare(8,'US','China')
@@ -220,7 +199,6 @@ timeCompare(7,'US','Germany')
 timeCompare(7,'US','India')
 
 
-# In[22]:
 
 
 case='Fatalities'
@@ -243,7 +221,6 @@ def timeCompare_f(time,*argv):
     ax.set(title=' Evolution of Fatalities in %d days difference '%time ,ylabel='Number of %s cases'%case )
 
 
-# In[23]:
 
 
 timeCompare_f(8,'Italy','France')
@@ -253,7 +230,6 @@ timeCompare_f(7,'Italy','US')
 timeCompare_f(7,'Italy','China')
 
 
-# In[24]:
 
 
 timeCompare_f(8,'US','China')
@@ -262,7 +238,6 @@ timeCompare_f(7,'US','Germany')
 timeCompare_f(7,'US','India')
 
 
-# In[25]:
 
 
 sns.set(palette = 'Set1',style='darkgrid')
@@ -293,73 +268,62 @@ def rollPlot(country, case='ConfirmedCases'):
     plt.xticks([])
 
 
-# In[26]:
 
 
 tsC1=roll('China')
 rollPlot('China')
 
 
-# In[27]:
 
 
 tsC2=roll('US')
 rollPlot('US')
 
 
-# In[28]:
 
 
 tsC3=roll('Italy')
 rollPlot('Italy')
 
 
-# In[29]:
 
 
 tsC4=roll('Spain')
 rollPlot('Spain')
 
 
-# In[30]:
 
 
 tsC5=roll('Germany')
 rollPlot('Germany')
 
 
-# In[31]:
 
 
 #Decomposing the ts to find its properties
 fig=sm.tsa.seasonal_decompose(tsC1.values,freq=7).plot()
 
 
-# In[32]:
 
 
 fig=sm.tsa.seasonal_decompose(tsC2.values,freq=7).plot()
 
 
-# In[33]:
 
 
 fig=sm.tsa.seasonal_decompose(tsC3.values,freq=7).plot()
 
 
-# In[34]:
 
 
 fig=sm.tsa.seasonal_decompose(tsC4.values,freq=7).plot()
 
 
-# In[35]:
 
 
 fig=sm.tsa.seasonal_decompose(tsC5.values,freq=7).plot()
 
 
-# In[36]:
 
 
 #Function to check the stationarity of the time serie using Dickey fuller test
@@ -376,7 +340,6 @@ tsC=tsC1['ConfirmedCases'].values
 stationarity(tsC)
 
 
-# In[37]:
 
 
 #For US
@@ -384,7 +347,6 @@ tsC=tsC2['ConfirmedCases'].values
 stationarity(tsC)
 
 
-# In[38]:
 
 
 #For Italy
@@ -392,7 +354,6 @@ tsC=tsC3['ConfirmedCases'].values
 stationarity(tsC)
 
 
-# In[39]:
 
 
 #For Spain
@@ -400,7 +361,6 @@ tsC=tsC4['ConfirmedCases'].values
 stationarity(tsC)
 
 
-# In[40]:
 
 
 #For Germany
@@ -408,7 +368,6 @@ tsC=tsC5['ConfirmedCases'].values
 stationarity(tsC)
 
 
-# In[41]:
 
 
 def corr(ts):
@@ -420,35 +379,30 @@ def corr(ts):
 corr(tsC1)
 
 
-# In[42]:
 
 
 #For US
 corr(tsC2)
 
 
-# In[43]:
 
 
 #For Italy
 corr(tsC3)
 
 
-# In[44]:
 
 
 #For Spain
 corr(tsC4)
 
 
-# In[45]:
 
 
 #For Germany
 corr(tsC5)
 
 
-# In[46]:
 
 
 #test['Date'] = pd.to_datetime(test['Date'])
@@ -457,7 +411,6 @@ train = train.set_index(['Date'])
 test = test.set_index(['Date'])
 
 
-# In[47]:
 
 
 
@@ -482,7 +435,6 @@ def create_features(df,label=None):
     return X
 
 
-# In[48]:
 
 
 train_features=pd.DataFrame(create_features(train))
@@ -500,7 +452,6 @@ def FunLabelEncoder(df):
 features_and_target_train= FunLabelEncoder(features_and_target_train)
 
 
-# In[49]:
 
 
 x_train= features_and_target_train[['Country_Region','month', 'dayofyear', 'dayofmonth' , 'weekofyear']]
@@ -509,7 +460,6 @@ y2 =features_and_target_train[['Fatalities']]
 x_test = features_and_target_test[['Country_Region', 'month', 'dayofyear', 'dayofmonth' , 'weekofyear']]
 
 
-# In[50]:
 
 
 #Mean absolute percentage error
@@ -566,7 +516,6 @@ train,test=split(tsC)
 pred=arima(train,test)
 
 
-# In[51]:
 
 
 #Mean absolute percentage error

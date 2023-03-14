@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # my imports
@@ -37,7 +36,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 stop_words = set(stopwords.words('english')) 
 
 
-# In[2]:
 
 
 # lets Load the data:
@@ -46,7 +44,6 @@ train = pd.read_csv(os.path.join(JIGSAW_PATH,'train.csv'), index_col='id')
 test = pd.read_csv(os.path.join(JIGSAW_PATH,'test.csv'), index_col='id')
 
 
-# In[3]:
 
 
 train = train.dropna(subset = ['comment_text'], axis=0)
@@ -54,7 +51,6 @@ train.isna().sum()
 train.shape
 
 
-# In[4]:
 
 
 class Preprocess_:
@@ -108,7 +104,6 @@ class Preprocess_:
                 for word in given_text.split()])     
 
 
-# In[5]:
 
 
 def fit_get_pr_curve(y_test, y_score, title_=''):
@@ -132,7 +127,6 @@ def fit_get_pr_curve(y_test, y_score, title_=''):
     return precision, recall, thresholds
 
 
-# In[6]:
 
 
 # cleanining the text:
@@ -145,13 +139,11 @@ def tokenize(s):
     return text.sub(r' \1 ', s).split()
 
 
-# In[7]:
 
 
 train.comment_text = clean_text(train.comment_text)
 
 
-# In[8]:
 
 
 #let's build our first model - we will use a TFIDF vectorizer with 1 to 3 grams:
@@ -170,19 +162,16 @@ vectorizer.fit(train.comment_text)
 #             | set(voc_) }
 
 
-# In[9]:
 
 
 X = vectorizer.transform(train.comment_text)
 
 
-# In[10]:
 
 
 model = LogisticRegression(C=1.0, dual=False, n_jobs=1)
 
 
-# In[11]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(X,
@@ -191,60 +180,51 @@ X_train, X_test, y_train, y_test = train_test_split(X,
                  random_state=42)
 
 
-# In[12]:
 
 
 model.fit(X_train, y_train)
 
 
-# In[13]:
 
 
 predicions_train = model.predict(X_train)
 predicions_test = model.predict(X_test)
 
 
-# In[14]:
 
 
 print(classification_report(y_test, predicions_test))
 # confusion_matrix()
 
 
-# In[15]:
 
 
 test.head()
 
 
-# In[16]:
 
 
 os.listdir(JIGSAW_PATH)
 
 
-# In[17]:
 
 
 df_submit = pd.read_csv(os.path.join(JIGSAW_PATH,'sample_submission.csv'), index_col='id')
 df_submit.head()
 
 
-# In[18]:
 
 
 predictions = model.predict_proba(vectorizer.transform(clean_text(test.comment_text)))[:,1]
 df_submit.prediction = predictions
 
 
-# In[19]:
 
 
 df_submit.to_csv(os.path.join('submission.csv'), index=True)
 df_submit.head()
 
 
-# In[20]:
 
 
 df = pd.read_csv(os.path.join('submission.csv'))

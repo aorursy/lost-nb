@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_cell_magic('javascript', '', '/* Disable autoscrolling in kernel notebook */\nIPython.OutputArea.auto_scroll_threshold = -1')
 
 
-# In[2]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -28,7 +26,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[3]:
 
 
 from datetime import datetime, timedelta
@@ -52,14 +49,12 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import xgboost as xgb
 
 
-# In[4]:
 
 
 # set seaborn to work better with jupyter dark theme
 sns.set_style("whitegrid")
 
 
-# In[5]:
 
 
 class CTL:
@@ -130,7 +125,6 @@ class CTL:
 CTL.active_model = CTL.model_xgboost
 
 
-# In[6]:
 
 
 train_df = pd.read_csv(os.path.join(CTL.input_dir, CTL.train_file_name), index_col='id')
@@ -146,7 +140,6 @@ print("Shape of raw train data:", train_df.shape)
 print("Shape of raw test data :", test_df.shape)
 
 
-# In[7]:
 
 
 # This is minor modification of GitHub PR "RFC Implement Pipeline get feature names #12627"
@@ -290,7 +283,6 @@ class OneToOneMixin(object):
                              " input feature names for {}".format(self))
 
 
-# In[8]:
 
 
 def int2str(x, width):
@@ -595,7 +587,6 @@ def ascii_ord(s):
     return acc
 
 
-# In[9]:
 
 
 ###############################################################################################
@@ -696,7 +687,6 @@ print("Feature Preprocessor:")
 print(str(feature_preprocessor))
 
 
-# In[10]:
 
 
 t = print_stamp("Splitting train and validation data...")
@@ -715,7 +705,6 @@ print("y_train shape:", y_train.shape)
 print("y_valid shape:", y_valid.shape)
 
 
-# In[11]:
 
 
 t = print_stamp("Setting up model...")
@@ -786,7 +775,6 @@ print("AUC: {0:.05f}".format(auc))
 print("")
 
 
-# In[12]:
 
 
 print("Details of best model (validation AUC={0:.05f}):".format(auc))
@@ -835,7 +823,6 @@ if feature_weights.shape[0] > 15:
 print()
 
 
-# In[13]:
 
 
 t = print_stamp("Training best model...")
@@ -844,7 +831,6 @@ print_stamp("Training complete", t)
 print("")
 
 
-# In[14]:
 
 
 X_test = test_df
@@ -870,7 +856,6 @@ print("Submission file:", sub_filename)
 submission.to_csv(sub_filename, index=False)
 
 
-# In[ ]:
 
 
 

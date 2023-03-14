@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import time
@@ -9,7 +8,6 @@ notebookstart = time.time()
 notebookstart
 
 
-# In[2]:
 
 
 import warnings
@@ -18,7 +16,6 @@ warnings.simplefilter(action='ignore', category=DeprecationWarning)
 warnings.simplefilter(action='ignore', category=UserWarning)
 
 
-# In[3]:
 
 
 import platform
@@ -28,7 +25,6 @@ import multiprocessing
 import random
 
 
-# In[4]:
 
 
 import numpy as np
@@ -40,7 +36,6 @@ np.random.seed(321)
 pd.options.display.max_columns = 9999
 
 
-# In[5]:
 
 
 import matplotlib as mpl
@@ -60,7 +55,6 @@ from IPython.display import set_matplotlib_formats
 set_matplotlib_formats('retina')
 
 
-# In[6]:
 
 
 import seaborn as sns
@@ -72,19 +66,16 @@ sns.set(context='notebook', style='darkgrid', font='sans-serif',
 sns.color_palette(mcolors.TABLEAU_COLORS);
 
 
-# In[7]:
 
 
 import missingno as msno
 
 
-# In[8]:
 
 
 import scikitplot as skplt
 
 
-# In[9]:
 
 
 import sklearn
@@ -103,49 +94,42 @@ from sklearn.utils import shuffle, resample
 from sklearn.base import BaseEstimator, ClassifierMixin
 
 
-# In[10]:
 
 
 from sklearn.cluster import KMeans
 from sklearn.ensemble import RandomForestClassifier
 
 
-# In[11]:
 
 
 import xgboost as xgb
 from xgboost import XGBClassifier
 
 
-# In[12]:
 
 
 import lightgbm as lgbm
 from lightgbm import LGBMClassifier
 
 
-# In[13]:
 
 
 import catboost
 from catboost import CatBoostClassifier
 
 
-# In[14]:
 
 
 import skopt
 from skopt import BayesSearchCV
 
 
-# In[15]:
 
 
 import imblearn
 from imblearn.over_sampling import SMOTE, SMOTENC
 
 
-# In[16]:
 
 
 print('Operating system version........', platform.platform())
@@ -164,7 +148,6 @@ print('scikit-optimize version is......', skopt.__version__)
 print('imblearn version is.............', imblearn.__version__)
 
 
-# In[17]:
 
 
 def getDatasetInformation(csv_filepath, is_corr_required=True):
@@ -219,7 +202,6 @@ def getDatasetInformation(csv_filepath, is_corr_required=True):
         ]
 
 
-# In[18]:
 
 
 def getHighlyCorrelatedColumns(dataset, NoOfCols=6):
@@ -234,7 +216,6 @@ def getHighlyCorrelatedColumns(dataset, NoOfCols=6):
     return df_corr.head(NoOfCols)
 
 
-# In[19]:
 
 
 def createFeatureEngineeredColumns(dataset):
@@ -269,7 +250,6 @@ def createFeatureEngineeredColumns(dataset):
     return dataset
 
 
-# In[20]:
 
 
 def getZeroStdColumns(dataset):
@@ -277,7 +257,6 @@ def getZeroStdColumns(dataset):
     return columnsWithZeroStd
 
 
-# In[21]:
 
 
 def getUniqueValueColumns(dataset, valueToCheck=0):
@@ -286,7 +265,6 @@ def getUniqueValueColumns(dataset, valueToCheck=0):
     return columnsWithUniqueValue
 
 
-# In[22]:
 
 
 def plotCategoricalVariableDistributionGraph(target_value, title='', xticksrotation=0):
@@ -315,7 +293,6 @@ def plotCategoricalVariableDistributionGraph(target_value, title='', xticksrotat
     plt.show()
 
 
-# In[23]:
 
 
 def plot_distplot(dataset):
@@ -340,7 +317,6 @@ def plot_distplot(dataset):
     plt.show()
 
 
-# In[24]:
 
 
 def convertIntFloatToInt(dictObj):
@@ -352,7 +328,6 @@ def convertIntFloatToInt(dictObj):
     return dictObj
 
 
-# In[25]:
 
 
 (
@@ -376,164 +351,137 @@ def convertIntFloatToInt(dictObj):
     ) = getDatasetInformation('../input/test.csv', False)
 
 
-# In[26]:
 
 
 dataset_sctp_train.head()
 
 
-# In[27]:
 
 
 df_train_shape
 
 
-# In[28]:
 
 
 df_train_dtypes
 
 
-# In[29]:
 
 
 df_train_describe
 
 
-# In[30]:
 
 
 df_train_unique
 
 
-# In[31]:
 
 
 df_train_missing
 
 
-# In[32]:
 
 
 msno.matrix(dataset_sctp_train, color=(33 / 255, 102 / 255, 172 / 255));
 
 
-# In[33]:
 
 
 dataset_sctp_test.head()
 
 
-# In[34]:
 
 
 df_test_shape
 
 
-# In[35]:
 
 
 df_test_dtypes
 
 
-# In[36]:
 
 
 df_test_describe
 
 
-# In[37]:
 
 
 df_test_unique
 
 
-# In[38]:
 
 
 df_test_missing
 
 
-# In[39]:
 
 
 msno.matrix(dataset_sctp_test, color=(33 / 255, 102 / 255, 172 / 255));
 
 
-# In[40]:
 
 
 del(df_train_shape, df_train_dtypes, df_train_describe, df_train_unique, df_train_missing, df_train_corr)
 del(df_test_shape, df_test_dtypes, df_test_describe, df_test_unique, df_test_missing, df_test_corr)
 
 
-# In[41]:
 
 
 plot_distplot(dataset_sctp_train.iloc[:, 2:29])
 
 
-# In[42]:
 
 
 plot_distplot(dataset_sctp_train.iloc[:, 29:56])
 
 
-# In[43]:
 
 
 plot_distplot(dataset_sctp_train.iloc[:, 56:83])
 
 
-# In[44]:
 
 
 plot_distplot(dataset_sctp_train.iloc[:, 83:110])
 
 
-# In[45]:
 
 
 plot_distplot(dataset_sctp_train.iloc[:, 110:137])
 
 
-# In[46]:
 
 
 plot_distplot(dataset_sctp_train.iloc[:, 137:164])
 
 
-# In[47]:
 
 
 plot_distplot(dataset_sctp_train.iloc[:, 164:191])
 
 
-# In[48]:
 
 
 plot_distplot(dataset_sctp_train.iloc[:, 191:204])
 
 
-# In[49]:
 
 
 dataset_sctp_train.target.unique()
 
 
-# In[50]:
 
 
 dataset_sctp_train.target.value_counts()
 
 
-# In[51]:
 
 
 plotCategoricalVariableDistributionGraph(dataset_sctp_train.target, 'Target (feature) - Distribution', xticksrotation=90)
 
 
-# In[52]:
 
 
 dataset_sctp_train_majority = dataset_sctp_train[dataset_sctp_train.target==0]
@@ -545,13 +493,11 @@ dataset_sctp_train_upsampled = pd.concat([dataset_sctp_train_majority, dataset_s
 dataset_sctp_train_upsampled.target.value_counts()
 
 
-# In[53]:
 
 
 plotCategoricalVariableDistributionGraph(dataset_sctp_train_upsampled.target, 'Target (feature) - Distribution', xticksrotation=90)
 
 
-# In[54]:
 
 
 #y=dataset_sctp_train['target']
@@ -581,7 +527,6 @@ sns.heatmap(
     );
 plt.title('Correlation Matrix', fontsize=18)
 plt.show()
-# In[55]:
 
 
 getHighlyCorrelatedColumns(X, 20)
@@ -596,25 +541,21 @@ X.drop(columns=to_drop, axis=1, inplace=True)
 dataset_sctp_test.drop(columns=to_drop, axis=1, inplace=True)
 
 (X.shape, dataset_sctp_test.shape)
-# In[56]:
 
 
 X=createFeatureEngineeredColumns(X)
 
 
-# In[57]:
 
 
 dataset_sctp_test=createFeatureEngineeredColumns(dataset_sctp_test)
 
 
-# In[58]:
 
 
 (X.shape, dataset_sctp_test.shape)
 
 
-# In[59]:
 
 
 columnsWithZeroStdToRemove = getZeroStdColumns(X)
@@ -626,7 +567,6 @@ dataset_sctp_test.drop(columnsWithZeroStdToRemove, axis=1, inplace=True)
 (X.shape, dataset_sctp_test.shape)
 
 
-# In[60]:
 
 
 X_columns_one_unique_value = getUniqueValueColumns(X, 1)
@@ -638,7 +578,6 @@ dataset_sctp_test.drop(X_columns_one_unique_value, axis=1, inplace=True)
 (X.shape, dataset_sctp_test.shape)
 
 
-# In[61]:
 
 
 X_columns_zero_unique_value = getUniqueValueColumns(X, 0)
@@ -650,7 +589,6 @@ dataset_sctp_test.drop(X_columns_zero_unique_value, axis=1, inplace=True)
 (X.shape, dataset_sctp_test.shape)
 
 del(df_train_corr)
-# In[62]:
 
 
 n_cpus_avaliable = multiprocessing.cpu_count()
@@ -658,14 +596,12 @@ n_cpus_avaliable = multiprocessing.cpu_count()
 print(f'We\'ve got {n_cpus_avaliable} cpus to work with.')
 
 
-# In[63]:
 
 
 model_scores = pd.DataFrame(columns=['Classification_Type', 'Model_Name',
                             'Accuracy_Score'])
 
 
-# In[64]:
 
 
 (X_train, X_test, y_train, y_test) = train_test_split(X, y,
@@ -751,7 +687,6 @@ feature_importance = feature_importance.sort_values(['imp', 'col'], ascending=[T
 feature_importance.plot(kind='barh', x='col', y='imp', color=mcolors.TABLEAU_COLORS);
 plt.title('Binomial Classification (LightGBM - Feature Importance(s))', fontsize=18)
 plt.show()
-# In[65]:
 
 
 dataset_sctp_train_lgbm = lgbm.Dataset(data=X, label=y)
@@ -794,7 +729,6 @@ lgbm_twoclass_model = lgbm.train(
     )
 
 
-# In[66]:
 
 
 y_pred_proba = lgbm_twoclass_model.predict(X_test)
@@ -819,14 +753,12 @@ skplt.metrics.plot_confusion_matrix(y_test, y_pred, title='Binomial Classificati
                                    );
 
 
-# In[67]:
 
 
 ax = lgbm.plot_metric(evaluation_results)
 plt.show()
 
 
-# In[68]:
 
 
 ax = lgbm.plot_importance(lgbm_twoclass_model, max_num_features=30, color=mcolors.TABLEAU_COLORS)
@@ -911,7 +843,6 @@ feature_importance = feature_importance.sort_values(['imp', 'col'], ascending=[T
 feature_importance.plot(kind='barh', x='col', y='imp', color=mcolors.TABLEAU_COLORS);
 plt.title('Binomial Classification (XGBoost - Feature Importance(s))', fontsize=18)
 plt.show()
-# In[69]:
 
 
 dtrain = xgb.DMatrix(X, label=y)
@@ -952,7 +883,6 @@ xgb_twoclass_model = xgb.train(
     )
 
 
-# In[70]:
 
 
 y_pred_proba = xgb_twoclass_model.predict(dtest)
@@ -977,14 +907,12 @@ skplt.metrics.plot_confusion_matrix(y_test, y_pred, title='Binomial Classificati
                                    );
 
 
-# In[71]:
 
 
 model_scores.Accuracy_Score = model_scores.Accuracy_Score.astype('float32')
 model_scores
 
 
-# In[72]:
 
 
 sns.barplot(x='Model_Name', y='Accuracy_Score', data=model_scores);
@@ -992,7 +920,6 @@ plt.xticks(rotation=90)
 plt.show()
 
 
-# In[73]:
 
 
 sctp_predictions_lgbm = lgbm_twoclass_model.predict(dataset_sctp_test)
@@ -1001,7 +928,6 @@ sctp_predictions_lgbm = list(map(int, sctp_predictions_lgbm))
 sctp_predictions_lgbm[:20]
 
 
-# In[74]:
 
 
 dataset_submission = pd.DataFrame()
@@ -1010,7 +936,6 @@ dataset_submission['target'] = sctp_predictions_lgbm
 dataset_submission.to_csv('lgbm_twoclass_model_submission.csv', index=False)
 
 
-# In[75]:
 
 
 dataset_sctp_test_xgb = xgb.DMatrix(dataset_sctp_test)
@@ -1020,7 +945,6 @@ sctp_predictions_xgb = list(map(int, sctp_predictions_xgb))
 sctp_predictions_xgb[:20]
 
 
-# In[76]:
 
 
 dataset_submission = pd.DataFrame()
@@ -1029,7 +953,6 @@ dataset_submission['target'] = sctp_predictions_xgb
 dataset_submission.to_csv('xgb_twoclass_model_submission.csv', index=False)
 
 
-# In[77]:
 
 
 print("Notebook Runtime: %0.2f Minutes"%((time.time() - notebookstart)/60))

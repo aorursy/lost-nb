@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -18,14 +17,12 @@ from torchvision import transforms as T
 import os, time, random, sys, math
 
 
-# In[2]:
 
 
 df_train = pd.read_csv('../input/Kannada-MNIST/train.csv')
 df_test = pd.read_csv('../input/Kannada-MNIST/test.csv')
 
 
-# In[3]:
 
 
 class Identity():
@@ -116,7 +113,6 @@ class ArcMarginProduct(nn.Module):
         return output
 
 
-# In[4]:
 
 
 batch_size = 4*1024
@@ -135,7 +131,6 @@ vds = DataSet(df_train[50000:], transform=trfm)
 vloader = D.DataLoader(vds, batch_size=batch_size, shuffle=False, num_workers=2)
 
 
-# In[5]:
 
 
 class Network(nn.Module):
@@ -181,7 +176,6 @@ class Network(nn.Module):
         return t
 
 
-# In[6]:
 
 
 class Flatten(nn.Module):  
@@ -217,7 +211,6 @@ class ArcModel(nn.Module):
         return x
 
 
-# In[7]:
 
 
 @torch.no_grad()
@@ -250,13 +243,11 @@ def accuracy(output, target, topk=(1,3)):
         return np.array(res)
 
 
-# In[8]:
 
 
 model = ArcModel()
 
 
-# In[9]:
 
 
 criterion = nn.CrossEntropyLoss()
@@ -270,13 +261,11 @@ optimizer = torch.optim.Adam(model.parameters(),
 scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [7, 70], 0.1)
 
 
-# In[10]:
 
 
 model.to(device);
 
 
-# In[11]:
 
 
 epochs = 100
@@ -311,14 +300,12 @@ print('Epoch {:3d} -> Train Loss: {:6.3f}, ACC: {:5.2f}%, TOP-3: {:5.2f}%, Valid
     .format(epoch, losses, accs[0], accs[1], vlosses, vaccs[0], vaccs[1]))
 
 
-# In[12]:
 
 
 tds = DataSet(df_test, transform=trfm, mode='test')
 tloader = D.DataLoader(tds, batch_size=batch_size, shuffle=False, num_workers=2)
 
 
-# In[13]:
 
 
 preds = []
@@ -331,7 +318,6 @@ for x in tloader:
 preds = np.concatenate(preds)
 
 
-# In[14]:
 
 
 submission = pd.read_csv('../input/Kannada-MNIST/sample_submission.csv')

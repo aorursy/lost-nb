@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 fold_number = 1
@@ -27,7 +26,6 @@ label_smoothing = 0.03
 max_epochs = 7
 
 
-# In[2]:
 
 
 get_ipython().run_line_magic('reload_ext', 'autoreload')
@@ -48,7 +46,6 @@ else:
 get_ipython().system('pip install -U pip albumentations==0.4.5 PyYAML pytorch-lightning==0.8.5 efficientnet_pytorch')
 
 
-# In[3]:
 
 
 import os
@@ -89,7 +86,6 @@ dict(
 )
 
 
-# In[4]:
 
 
 # check for torch's native mixed precision support (pt1.6+)
@@ -103,7 +99,6 @@ if gpus and not hasattr(torch.cuda, "amp"):
     # with PyTorch Lightning all you need to do now is set precision=16
 
 
-# In[5]:
 
 
 import os
@@ -150,7 +145,6 @@ seed_everything(seed*6 + fold_number)
 torch.__version__
 
 
-# In[6]:
 
 
 from torch.utils.data import Dataset, DataLoader
@@ -182,7 +176,6 @@ class ImageDataset(Dataset):
         return list(self.labels)
 
 
-# In[7]:
 
 
 def get_train_transforms():
@@ -228,7 +221,6 @@ def get_tta_transforms():
         ], p=1.0)
 
 
-# In[8]:
 
 
 DATA_PATH = '../input/melanoma-merged-external-data-512x512-jpeg'
@@ -242,7 +234,6 @@ _ = df_folds.groupby('fold').target.hist(alpha=0.4)
 df_folds.groupby('fold').target.mean().to_frame('ratio').T
 
 
-# In[9]:
 
 
 df_test = pd.read_csv(f'../input/siim-isic-melanoma-classification/test.csv', index_col='image_name')
@@ -253,7 +244,6 @@ if debug:
 df_folds = df_folds.sample(frac=1.0, random_state=seed*6+fold_number)
 
 
-# In[10]:
 
 
 ds_train = ImageDataset(
@@ -280,7 +270,6 @@ del df_folds
 len(ds_train), len(ds_val), len(ds_test)
 
 
-# In[11]:
 
 
 from efficientnet_pytorch import EfficientNet
@@ -371,7 +360,6 @@ class Model(pl.LightningModule):
 model = Model()
 
 
-# In[12]:
 
 
 # Plot some training images
@@ -387,7 +375,6 @@ _ = plt.imshow(vutils.make_grid(
 targets[:16].reshape([2, 8]) if len(targets) >= 16 else targets
 
 
-# In[13]:
 
 
 # # test the same images
@@ -396,7 +383,6 @@ targets[:16].reshape([2, 8]) if len(targets) >= 16 else targets
 del batch; del targets
 
 
-# In[14]:
 
 
 # # View logs life in tensorboard
@@ -409,7 +395,6 @@ del batch; del targets
 # %tensorboard --logdir lightning_logs/
 
 
-# In[15]:
 
 
 checkpoint_callback = pl.callbacks.ModelCheckpoint("{epoch:02d}_{val_auc:.4f}",
@@ -425,7 +410,6 @@ trainer = pl.Trainer(
 )
 
 
-# In[16]:
 
 
 # clean up gpu in case you are debugging 
@@ -434,25 +418,21 @@ torch.cuda.empty_cache(); gc.collect()
 torch.cuda.empty_cache(); gc.collect()
 
 
-# In[17]:
 
 
 trainer.fit(model)
 
 
-# In[18]:
 
 
 # import pdb; pdb.pm()
 
 
-# In[19]:
 
 
 get_ipython().run_cell_magic('time', '', "for _ in range(tta):\n    trainer.test(ckpt_path='best')")
 
 
-# In[20]:
 
 
 # merge TTA
@@ -471,13 +451,11 @@ submission.hist(bins=100, log=True, alpha=0.6)
 submission.target.describe()
 
 
-# In[21]:
 
 
 submission
 
 
-# In[22]:
 
 
 folds_path = '../input/melanoma-neat-pytorch-lightning'
@@ -485,7 +463,6 @@ get_ipython().system('cp {folds_path}/*_fold*.csv .')
 get_ipython().system('cp {folds_path}/*.ckpt .')
 
 
-# In[23]:
 
 
 folds_sub = pd.read_csv(f'{folds_path}/submission.csv', index_col='image_name')
@@ -500,7 +477,6 @@ submission.hist(bins=100, log=True, alpha=0.6)
 submission.target.describe()
 
 
-# In[24]:
 
 
 if not debug and gpus:

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -33,7 +32,6 @@ stop = stopwords.words('english')
 sns.set(style="white", context="talk")
 
 
-# In[2]:
 
 
 df_train = pd.read_csv('../input/train.csv')
@@ -53,7 +51,6 @@ print(df_train.shape)
 print(df_train.columns.values)
 
 
-# In[3]:
 
 
 df_distribution = df_train[COLUMNS].sum()                            .to_frame()                            .rename(columns={0: 'count'})                            .sort_values('count')
@@ -64,20 +61,17 @@ df_distribution.drop('none').plot.pie(y='count',
                             .legend(loc='center left', bbox_to_anchor=(1.3, 0.5))
 
 
-# In[4]:
 
 
 df_distribution.sort_values('count', ascending=False)
 
 
-# In[5]:
 
 
 df_comb = df_train.groupby(COLUMNS)                    .size()                    .sort_values(ascending=False)                    .reset_index()                    .rename(columns={0: 'count'})
 df_comb.head(n=10)
 
 
-# In[6]:
 
 
 f, ax = plt.subplots(figsize=(9, 6))
@@ -85,7 +79,6 @@ f.suptitle('Correlation matrix for categories')
 sns.heatmap(df_train[COLUMNS].corr(), annot=True, linewidths=.5, ax=ax)
 
 
-# In[7]:
 
 
 
@@ -108,7 +101,6 @@ venn3(subsets = (t, i, t_i, o, t_o, i_o, t_i_o),
 plt.show()
 
 
-# In[8]:
 
 
 
@@ -126,7 +118,6 @@ venn2(subsets = (t, s, t_s),
 plt.show()
 
 
-# In[9]:
 
 
 df_train['total_length'] = df_train['comment_text'].str.len()
@@ -151,7 +142,6 @@ FEATURES = ['total_length',
 COLUMNS += FEATURES
 
 
-# In[10]:
 
 
 f, ax = plt.subplots(figsize=(20, 20))
@@ -159,7 +149,6 @@ f.suptitle('Correlation matrix for categories and features')
 sns.heatmap(df_train[COLUMNS].corr(), annot=True, linewidths=.5, ax=ax)
 
 
-# In[11]:
 
 
 word_counter = {}
@@ -175,7 +164,6 @@ for categ in CATEGORIES:
     word_counter[categ] = pd.DataFrame.from_dict(d, orient='index')                                        .rename(columns={0: 'count'})                                        .sort_values('count', ascending=False)
 
 
-# In[12]:
 
 
 for w in word_counter:

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -25,7 +24,6 @@ import df_pipeline as df_p
 pd.set_option("max_columns", 300)
 
 
-# In[2]:
 
 
 def process_details(data):
@@ -292,7 +290,6 @@ def cv_score(df_train, y_train, kfolds, pipeline, imp_coef=False, predict_proba=
         return oof
 
 
-# In[3]:
 
 
 men_train, men_reg, men_play = prepare_data('men')
@@ -300,7 +297,6 @@ men_train, men_reg, men_play = prepare_data('men')
 men_reg.head()
 
 
-# In[4]:
 
 
 women_train, women_reg, women_play = prepare_data('women')
@@ -308,7 +304,6 @@ women_train, women_reg, women_play = prepare_data('women')
 women_reg.head()
 
 
-# In[5]:
 
 
 fig, ax = plt.subplots(1,2, figsize=(15,6), sharey=True)
@@ -325,7 +320,6 @@ ax[0].axvline(2010, color='r', linestyle='--')
 plt.show()
 
 
-# In[6]:
 
 
 stats = ['Score', 'FGA', 'FGM', 'FGM_perc', 'FGA3', 'FGM3', 'FGM3_perc', 'FT_perc', 
@@ -354,7 +348,6 @@ for col in stats:
     plt.show()
 
 
-# In[7]:
 
 
 def newline(ax, p1, p2, color='black'):
@@ -415,31 +408,26 @@ for stat in stats:
     
 
 
-# In[8]:
 
 
 men_corr = high_corr = exp.plot_correlations(men_train, target='target_points', limit=12, annot=True)
 
 
-# In[9]:
 
 
 exp.corr_target(men_train, 'target_points', list(men_corr[2:].index), x_estimator=None)
 
 
-# In[10]:
 
 
 women_corr = high_corr = exp.plot_correlations(women_train, target='target_points', limit=12, annot=True)
 
 
-# In[11]:
 
 
 exp.corr_target(women_train, 'target_points', list(women_corr[2:].index), x_estimator=None)
 
 
-# In[12]:
 
 
 men_delta = men_train[['Season', 'target', 'target_points'] + [col for col in men_train if 'delta_' in col and 'Loc' not in col]].copy()
@@ -494,19 +482,16 @@ for i, p1, p2 in zip(tot_prob['feat'], tot_prob['Men'], tot_prob['Women']):
 plt.show()
 
 
-# In[13]:
 
 
 exp.segm_target(men_delta, cat='delta_Seed', target='target_points')
 
 
-# In[14]:
 
 
 exp.segm_target(women_delta, cat='delta_Seed', target='target_points')
 
 
-# In[15]:
 
 
 def plot_perc_Season(men, women, feature):
@@ -533,37 +518,31 @@ def plot_perc_Season(men, women, feature):
     plt.show()
 
 
-# In[16]:
 
 
 plot_perc_Season(men_delta, women_delta, 'delta_Seed')
 
 
-# In[17]:
 
 
 plot_perc_Season(men_delta, women_delta, 'delta_FGM')
 
 
-# In[18]:
 
 
 plot_perc_Season(men_delta, women_delta, 'delta_FGM3_perc')
 
 
-# In[19]:
 
 
 plot_perc_Season(men_delta, women_delta, 'delta_FTM')
 
 
-# In[20]:
 
 
 plot_perc_Season(men_delta, women_delta, 'delta_TO')
 
 
-# In[21]:
 
 
 kfolds = KFold(n_splits=7, shuffle=True, random_state=345)
@@ -580,7 +559,6 @@ train = tot_adv.drop(['tourney'] +
                      [col for col in tot_adv if '_rating' in col or 'possessions' in col], axis=1) # dropping some very obvious features
 y_train = tot_adv['tourney']
 
-pipe = Pipeline([('scl', df_p.df_scaler())] + [('forest', RandomForestClassifier(n_estimators=500, 
                                                                                 min_samples_split=40, 
                                                                                 min_samples_leaf=20, 
                                                                                 max_features='sqrt', 
@@ -594,7 +572,6 @@ sns.barplot(x="mean", y="feat",
 plt.show()
 
 
-# In[22]:
 
 
 tsne = TSNE(n_components=2, init='pca', random_state=51, perplexity=100, learning_rate=100)
@@ -612,7 +589,6 @@ ax.legend()
 plt.show()
 
 
-# In[23]:
 
 
 tsne = TSNE(n_components=2, init='pca', random_state=51, perplexity=50, learning_rate=300)

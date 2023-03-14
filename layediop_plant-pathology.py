@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import tensorflow as tf
@@ -16,7 +15,6 @@ from tqdm import tqdm
 tqdm.pandas()
 
 
-# In[2]:
 
 
 IMAGE_PATH = "../input/plant-pathology-2020-fgvc7/images/"
@@ -33,7 +31,6 @@ test_df = pd.read_csv(TEST_PATH)
 train_df.head()
 
 
-# In[3]:
 
 
 x = np.arange(4)
@@ -44,7 +41,6 @@ plt.xticks(x, train_df.columns[1:])
 plt.show()
 
 
-# In[4]:
 
 
 import cv2
@@ -57,7 +53,6 @@ def load_image(image_id):
 train_images = train_df["image_id"][:100].progress_apply(load_image)
 
 
-# In[5]:
 
 
 def visualize_leaves(cond=[0, 0, 0, 0], cond_cols=["healthy"], is_cond=True):
@@ -99,25 +94,21 @@ def visualize_leaves(cond=[0, 0, 0, 0], cond_cols=["healthy"], is_cond=True):
     plt.show()
 
 
-# In[6]:
 
 
 visualize_leaves(cond=[0, 1, 0, 0], cond_cols=["scab"])
 
 
-# In[7]:
 
 
 visualize_leaves(cond=[0, 0, 1, 0], cond_cols=["rust"])
 
 
-# In[8]:
 
 
 visualize_leaves(cond=[0, 0, 0, 1], cond_cols=["multiple_diseases"])
 
 
-# In[9]:
 
 
 from kaggle_datasets import KaggleDatasets
@@ -133,7 +124,6 @@ BATCH_SIZE = 16 * strategy.num_replicas_in_sync
 GCS_DS_PATH = KaggleDatasets().get_gcs_path()
 
 
-# In[10]:
 
 
 from sklearn.model_selection import train_test_split
@@ -148,7 +138,6 @@ train_labels = np.float32(train_df.loc[:, 'healthy':'scab'].values)
 train_paths, valid_paths, train_labels, valid_labels =train_test_split(train_paths, train_labels, test_size=0.15, random_state=2020)
 
 
-# In[11]:
 
 
 def decode_image(filename, label=None, image_size=(512, 512)):
@@ -172,7 +161,6 @@ def data_augment(image, label=None):
         return image, label
 
 
-# In[12]:
 
 
 train_dataset = (
@@ -203,7 +191,6 @@ test_dataset = (
 )
 
 
-# In[13]:
 
 
 from tensorflow.keras.applications import DenseNet121
@@ -236,7 +223,6 @@ with strategy.scope():
     model.summary()
 
 
-# In[14]:
 
 
 EPOCHS = 60
@@ -247,7 +233,6 @@ history = model.fit(train_dataset,
                     validation_data=valid_dataset)
 
 
-# In[15]:
 
 
 import plotly.graph_objects as go
@@ -274,7 +259,6 @@ def display_training_curves(training, validation, yaxis):
     fig.show()
 
 
-# In[16]:
 
 
 display_training_curves(
@@ -283,7 +267,6 @@ display_training_curves(
     'accuracy')
 
 
-# In[17]:
 
 
 sub = pd.read_csv(SUB_PATH)

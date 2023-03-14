@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import math
@@ -11,7 +10,6 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[ ]:
 
 
 df = pd.read_csv('../input/training/training.csv')
@@ -21,7 +19,6 @@ df.dropna(inplace=True)
 df.shape
 
 
-# In[ ]:
 
 
 from joblib import Parallel, delayed
@@ -38,26 +35,22 @@ x = np.stack(x)[..., None]
 x.shape, test.shape
 
 
-# In[ ]:
 
 
 plt.imshow(x[3,:,:,0])
 
 
-# In[ ]:
 
 
 y = df.iloc[:, :-1].values
 y.shape
 
 
-# In[ ]:
 
 
 y[1,:]
 
 
-# In[ ]:
 
 
 def show(x, y=None):
@@ -72,7 +65,6 @@ sample_idx = np.random.choice(len(x))
 show(x[sample_idx], y[sample_idx])
 
 
-# In[ ]:
 
 
 from sklearn.model_selection import train_test_split
@@ -81,7 +73,6 @@ x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=0.2, random_st
 x_train.shape, x_val.shape
 
 
-# In[ ]:
 
 
 # Normalizar las imágenes (1pt) 
@@ -93,13 +84,11 @@ x_train.shape, x_val.shape
 #Se realizó esto en iteraciones previas, el resultado fue peor, se decide no scalar a [0,1] ni utilizar batch normalization
 
 
-# In[ ]:
 
 
 x_train.shape, x_val.shape
 
 
-# In[ ]:
 
 
 # Definir correctamente la red neuronal (5 pts)
@@ -127,13 +116,11 @@ final_model .compile(Adam(lr), loss='mse', metrics=['mae'])
 final_model .summary()
 
 
-# In[ ]:
 
 
 log = final_model.fit(x_train, y_train, batch_size=100, epochs=100,validation_data=[x_val, y_val])
 
 
-# In[ ]:
 
 
 # Resultado del entrenamiento
@@ -145,7 +132,6 @@ log = final_model.fit(x_train, y_train, batch_size=100, epochs=100,validation_da
 print(f'MAE final: {final_model.evaluate(x_val, y_val)[1]}')
 
 
-# In[ ]:
 
 
 # Ver la perdida en el entrenamiento
@@ -165,7 +151,6 @@ def show_results(*logs):
 show_results(log)
 
 
-# In[ ]:
 
 
 # Función para visualizar un resultado
@@ -184,13 +169,11 @@ def show_pred(x, y_real, y_pred):
     axes[1].set_title('Real', size=16)
 
 
-# In[ ]:
 
 
 x_val[0,None].shape
 
 
-# In[ ]:
 
 
 sample_x = x_val[0, None]
@@ -199,7 +182,6 @@ pred = final_model.predict(sample_x)
 show_pred(sample_x, sample_y, pred)
 
 
-# In[ ]:
 
 
 # Mostrar 5 resultados aleatorios del set de validación (1 pt)
@@ -215,7 +197,6 @@ for it in range(5):
     show_pred(sample_x, sample_y, pred)
 
 
-# In[ ]:
 
 
 # Mostrar las 5 mejores predicciones del set de validación (1 pt)
@@ -231,7 +212,6 @@ for idx in indices[0:5]:
     show_pred(sample_x, sample_y, pred)
 
 
-# In[ ]:
 
 
 # Mostrar las 5 peores predicciones del set de validación (1 pt)
@@ -243,7 +223,6 @@ for idx in indices[-5:]:
     show_pred(sample_x, sample_y, pred)
 
 
-# In[ ]:
 
 
 sample_x_test = test[235, None]
@@ -252,7 +231,6 @@ pred = final_model.predict(sample_x)
 show_pred(sample_x_test, sample_y_test, pred)
 
 
-# In[ ]:
 
 
 #labels_area=[['left_eye_center', 'right_eye_center', 'left_eye_inner_corner', 
@@ -265,7 +243,6 @@ show_pred(sample_x_test, sample_y_test, pred)
 #labels_area=np.repeat([labels_area],1783,axis=0).flatten()
 
 
-# In[ ]:
 
 
 #labels_axis =np.array([['_x','_y']])
@@ -273,14 +250,12 @@ show_pred(sample_x_test, sample_y_test, pred)
 #labels_axis.shape
 
 
-# In[ ]:
 
 
 #labels= np.core.defchararray.add(labels_area, labels_axis)
 #labels.shape
 
 
-# In[ ]:
 
 
 #ImageId = np.arange(1,1784)
@@ -288,21 +263,18 @@ show_pred(sample_x_test, sample_y_test, pred)
 #ImageId.shape
 
 
-# In[ ]:
 
 
 #RowId=np.int32(np.arange(1,53491))
 #RowId.shape
 
 
-# In[ ]:
 
 
 results=final_model.predict(test)
 results.shape
 
 
-# In[ ]:
 
 
 #sub = np.array([RowId,ImageId,labels,results])
@@ -310,26 +282,22 @@ results.shape
 #sub.shape
 
 
-# In[ ]:
 
 
 #sub_df = pd.DataFrame(data=sub,columns=['RowId','ImageId','FeatureName','Location'])
 #sub_df.ImageId = pd.to_numeric(sub_df.ImageId)
 
 
-# In[ ]:
 
 
 lookup = pd.read_csv('../input/IdLookupTable.csv')
 
 
-# In[ ]:
 
 
 #sub_df[(sub_df['FeatureName'] == 'left_eye_center_x') & (sub_df['ImageId'] == 1)]
 
 
-# In[ ]:
 
 
 lookid_list = list(lookup['FeatureName'])
@@ -337,7 +305,6 @@ imageID = list(lookup['ImageId']-1)
 pre_list = list(results)
 
 
-# In[ ]:
 
 
 rowid = lookup['RowId']
@@ -345,7 +312,6 @@ rowid=list(rowid)
 len(rowid)
 
 
-# In[ ]:
 
 
 feature = []
@@ -353,13 +319,11 @@ for f in list(lookup['FeatureName']):
     feature.append(lookid_list.index(f))
 
 
-# In[ ]:
 
 
 lookid_list
 
 
-# In[ ]:
 
 
 preded = []
@@ -367,37 +331,31 @@ for x,y in zip(imageID,feature):
     preded.append(results[x][y])
 
 
-# In[ ]:
 
 
 rowid = pd.Series(rowid,name = 'RowId')
 
 
-# In[ ]:
 
 
 loc = pd.Series(preded,name = 'Location')
 
 
-# In[ ]:
 
 
 submission = pd.concat([rowid,loc],axis = 1)
 
 
-# In[ ]:
 
 
 submission.to_csv('submission2.csv',index = False)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

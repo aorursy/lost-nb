@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install tensorwatch')
@@ -9,7 +8,6 @@ get_ipython().system('pip install graphviz')
 get_ipython().system('pip install pretrainedmodels')
 
 
-# In[2]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -44,7 +42,6 @@ warnings.filterwarnings(action='ignore')
 print(torch.__version__)
 
 
-# In[3]:
 
 
 print('Train set:')
@@ -54,7 +51,6 @@ im = Image.open('../input/train/train/cgm/train-cgm-738.jpg')
 print(im.size)
 
 
-# In[4]:
 
 
 Model = 'resnet18' # se_resnext50_32x4d || resnet18
@@ -80,7 +76,6 @@ Alpha = 0.25 # 0.3
 Gamma = 1.5 # 2
 
 
-# In[5]:
 
 
 def setup_seed(seed):
@@ -91,7 +86,6 @@ def setup_seed(seed):
     torch.backends.cudnn.deterministic = True
 
 
-# In[6]:
 
 
 def RandomErasing(im, probability = 0.5, sl = 0.02, sh = 0.4, r1 = 0.3, mean=[128, 128, 128]):
@@ -136,7 +130,6 @@ def RandomErasing(im, probability = 0.5, sl = 0.02, sh = 0.4, r1 = 0.3, mean=[12
         return img
 
 
-# In[7]:
 
 
 # train
@@ -244,7 +237,6 @@ if __name__ == '__main__':
         break
 
 
-# In[8]:
 
 
 def whitening(im):
@@ -314,7 +306,6 @@ class ResNet18(nn.Module):
 #    print(x.size())
 
 
-# In[9]:
 
 
 class se_resnext50_32x4d(nn.Module):
@@ -358,7 +349,6 @@ class se_resnext50_32x4d(nn.Module):
 #     print(x.size())
 
 
-# In[10]:
 
 
 class FocalLoss(nn.Module):
@@ -416,7 +406,6 @@ class FocalLoss(nn.Module):
         return loss
 
 
-# In[11]:
 
 
 class ArcMarginProduct(nn.Module):
@@ -464,7 +453,6 @@ class ArcMarginProduct(nn.Module):
         return output
 
 
-# In[12]:
 
 
 def accuracy(output, target, topk=(1, 5)):
@@ -483,7 +471,6 @@ def accuracy(output, target, topk=(1, 5)):
     return res
 
 
-# In[13]:
 
 
 # validation
@@ -507,7 +494,6 @@ def eval(model, dataloader_valid, criterion):
     return avg_loss, avg_top1
 
 
-# In[14]:
 
 
 # inference
@@ -573,7 +559,6 @@ def inference_TTA(model):
     df.to_csv('sub_tta10.csv', index=False)
 
 
-# In[15]:
 
 
 class GradualWarmupScheduler(_LRScheduler):
@@ -633,7 +618,6 @@ class GradualWarmupScheduler(_LRScheduler):
             self.step_ReduceLROnPlateau(metrics, epoch)
 
 
-# In[16]:
 
 
 class LabelSmoothSoftmaxCE(nn.Module):
@@ -684,7 +668,6 @@ if __name__ == '__main__':
     print('loss:', loss)
 
 
-# In[17]:
 
 
 def mixup_data(x, y, alpha=1.0, use_cuda=True):
@@ -706,7 +689,6 @@ def mixup_data(x, y, alpha=1.0, use_cuda=True):
     return mixed_x, y_a, y_b, lam
 
 
-# In[18]:
 
 
 def train():
@@ -860,7 +842,6 @@ def train():
     plt.show()
 
 
-# In[19]:
 
 
 if __name__ == '__main__':
@@ -868,7 +849,6 @@ if __name__ == '__main__':
     train()
 
 
-# In[20]:
 
 
 get_ipython().system('nvidia-smi')

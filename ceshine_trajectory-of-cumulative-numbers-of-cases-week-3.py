@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_cell_magic('html', '', '<iframe src="https://ourworldindata.org/grapher/covid-confirmed-cases-since-100th-case?country=CAN+MEX+PAN" style="width: 100%; height: 600px; border: 0px none;"></iframe>')
 
 
-# In[2]:
 
 
 import numpy as np
@@ -20,7 +18,6 @@ DATA_FOLDER = "../input/covid19-global-forecasting-week-3/"
 DATA_ALT_FOLDER = "../input/novel-corona-virus-2019-dataset/"
 
 
-# In[3]:
 
 
 df = pd.read_csv(DATA_FOLDER + "train.csv")
@@ -28,14 +25,12 @@ df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
 df.shape
 
 
-# In[4]:
 
 
 df_alt = pd.read_csv(DATA_ALT_FOLDER + "time_series_covid_19_confirmed.csv")
 df_alt.shape
 
 
-# In[5]:
 
 
 df_country_stats = df.groupby(["Country_Region", "Date"])[["ConfirmedCases", "Fatalities"]].sum().reset_index()
@@ -46,7 +41,6 @@ print("# of Countries with confirmed cases:", df_country_stats[df_country_stats.
 df_country_stats.sample(5)
 
 
-# In[6]:
 
 
 # Only keep entries with ConfirmedCases > 0
@@ -54,7 +48,6 @@ df_country_stats = df_country_stats[df_country_stats.ConfirmedCases > 0].reset_i
 df_country_stats[df_country_stats["Country_Region"] == "US"].tail()
 
 
-# In[7]:
 
 
 df_tmp = df_alt.drop(["Lat", "Long"], axis=1).groupby(["Country/Region"]).sum()
@@ -67,7 +60,6 @@ print("# of Countries with confirmed cases:", df_country_stats_alt[df_country_st
 df_country_stats_alt.sample(5)
 
 
-# In[8]:
 
 
 # Only keep entries with ConfirmedCases > 0
@@ -75,7 +67,6 @@ df_country_stats_alt = df_country_stats_alt[df_country_stats_alt.ConfirmedCases 
 df_country_stats_alt[df_country_stats_alt["Country/Region"] == "US"].tail()
 
 
-# In[9]:
 
 
 df_country_stats_alt.rename({"Country/Region": "Country_Region"}, inplace=True, axis=1)
@@ -86,13 +77,11 @@ np.array_equal(df_tmp["ConfirmedCases_x"].values.astype("int"), df_tmp["Confirme
 df_tmp[df_tmp["ConfirmedCases_x"] != df_tmp["ConfirmedCases_y"]]
 
 
-# In[10]:
 
 
 df_country_stats = df_country_stats_alt.rename({"Country_Region": "Country/Region"}, axis=1)
 
 
-# In[11]:
 
 
 SAMPLED_COUNTRIES = ["Iran", "Korea, South", "Japan", "US", "Italy", "France", "Germany", "UK", "Spain"]
@@ -116,7 +105,6 @@ fig.update_layout(
 fig.show()
 
 
-# In[12]:
 
 
 fig = go.Figure(
@@ -139,7 +127,6 @@ fig.update_layout(
 fig.show()
 
 
-# In[13]:
 
 
 fig = go.Figure(
@@ -265,7 +252,6 @@ fig.add_annotation(
 fig.show()
 
 
-# In[ ]:
 
 
 

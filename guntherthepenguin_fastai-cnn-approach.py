@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -42,7 +41,6 @@ class FocalLoss(nn.Module):
             return F_loss
 
 
-# In[2]:
 
 
 from pathlib import Path
@@ -52,44 +50,37 @@ df_label=pd.read_csv(path/'y_train.csv')
 df_test=pd.read_csv(path/'X_test.csv')
 
 
-# In[3]:
 
 
 df_all=pd.concat([df_trn,df_test])
 df_all['train']=['train']*len(df_trn)+['test']*len(df_test)
 
 
-# In[4]:
 
 
 df_all.columns
 
 
-# In[5]:
 
 
 import seaborn as sns
 
 
-# In[6]:
 
 
 sns.pairplot(df_all.sample(frac=0.05),hue='train',vars=['orientation_X','orientation_Y','orientation_Z','orientation_W'])
 
 
-# In[7]:
 
 
 sns.pairplot(df_all.sample(frac=0.05),hue='train',vars=['angular_velocity_X', 'angular_velocity_Y', 'angular_velocity_Z'])
 
 
-# In[8]:
 
 
 sns.pairplot(df_all.sample(frac=0.05),hue='train',vars=['linear_acceleration_X', 'linear_acceleration_Y', 'linear_acceleration_Z'])
 
 
-# In[9]:
 
 
 cols=['linear_acceleration_X','linear_acceleration_Y','linear_acceleration_Z']
@@ -100,14 +91,12 @@ for col in cols:
 cols=['orientation_X','orientation_Y','orientation_Z','orientation_W','angular_velocity_X', 'angular_velocity_Y', 'angular_velocity_Z','linear_acceleration_X','linear_acceleration_Y','linear_acceleration_Z']
 
 
-# In[10]:
 
 
 test_list=df_test.groupby('series_id')
 train_list=df_trn.groupby('series_id')
 
 
-# In[11]:
 
 
 def open_image(self,i):
@@ -120,13 +109,11 @@ def open_image(self,i):
     return pil2tensor(img,np.float32)
 
 
-# In[12]:
 
 
 ImageList.get=open_image
 
 
-# In[13]:
 
 
 src=(ImageList(df_trn.groupby('series_id'),inner_df=df_label).split_by_rand_pct(0.2).label_from_df(cols='surface'))
@@ -136,26 +123,22 @@ stats=data.batch_stats()
 data.normalize(stats);
 
 
-# In[14]:
 
 
 data.show_batch()
 
 
-# In[15]:
 
 
 data.show_batch(ds_type=DatasetType.Test)
 
 
-# In[16]:
 
 
 X=list(df_trn.groupby('series_id').indices.keys())
 label,group=df_label.set_index('series_id').loc[df_trn.groupby('series_id').indices.keys(),'surface'],df_label.set_index('series_id').loc[df_trn.groupby('series_id').indices.keys(),'group_id']
 
 
-# In[17]:
 
 
 sss = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=0)
@@ -164,7 +147,6 @@ idx_train,idx_val = next(sss.split(X, label,group)
 arch=models.resnet50
 
 
-# In[18]:
 
 
 idx_train,idx_val = next(sss.split(X, label,group))
@@ -178,13 +160,11 @@ learn.lr_find(num_it=200)
 learn.recorder.plot()
 
 
-# In[19]:
 
 
 df_sub=pd.read_csv(path/'sample_submission.csv')
 
 
-# In[20]:
 
 
 src_list=ImageList(df_trn.groupby('series_id'),inner_df=df_label)
@@ -193,7 +173,6 @@ sss = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=0)
 sss.get_n_splits(X, label,group)
 
 
-# In[21]:
 
 
 def accuracy_mult(input:Tensor, targs:Tensor)->Rank0Tensor:
@@ -204,13 +183,11 @@ def accuracy_mult(input:Tensor, targs:Tensor)->Rank0Tensor:
     return (input==targs).float().mean()
 
 
-# In[22]:
 
 
 target_probs=[]
 
 
-# In[23]:
 
 
 for i,(idx_train,idx_val) in enumerate(sss.split(X, label,group)):
@@ -228,26 +205,22 @@ for i,(idx_train,idx_val) in enumerate(sss.split(X, label,group)):
     
 
 
-# In[24]:
 
 
 preds,y,losses = learn.get_preds(with_loss=True)
 interp = ClassificationInterpretation(learn, preds, y, losses)
 
 
-# In[25]:
 
 
 interp.plot_confusion_matrix(figsize=(16,9))
 
 
-# In[26]:
 
 
 np.unique(df_label.surface,return_counts=True)
 
 
-# In[27]:
 
 
 def sigmoid(x, derivative=False):
@@ -259,58 +232,49 @@ target_probs_stacked=np.stack(target_probs,axis=2)
 target_probs_stacked
 
 
-# In[28]:
 
 
 x=(target_probs_stacked).mean(axis=2)
 df_sub['mean']=[learn.data.classes[idx] for idx in np.argmax(x,axis=1)]
 
 
-# In[29]:
 
 
 x=np.median((target_probs_stacked),axis=2)
 df_sub['median']=[learn.data.classes[idx] for idx in np.argmax(x,axis=1)]
 
 
-# In[30]:
 
 
 x=(target_probs_stacked).max(axis=2)
 df_sub['max']=[learn.data.classes[idx] for idx in np.argmax(x,axis=1)]
 
 
-# In[31]:
 
 
 x=target_probs_stacked[(target_probs_stacked<target_probs_stacked.max(axis=2)[:,:,None])&(target_probs_stacked>target_probs_stacked.min(axis=2)[:,:,None])].reshape(list(target_probs_stacked.shape[0:2])+[3])
 
 
-# In[32]:
 
 
 x=x.mean(axis=2)
 
 
-# In[33]:
 
 
 df_sub['truncated']=[learn.data.classes[idx] for idx in np.argmax(x,axis=1)]
 
 
-# In[34]:
 
 
 df_sub=df_sub.drop(columns='surface')
 
 
-# In[35]:
 
 
 df_sub=df_sub.set_index('series_id')
 
 
-# In[36]:
 
 
 df_sub['mean'].to_csv('mean.csv',header=['surface'])
@@ -319,7 +283,6 @@ df_sub['max'].to_csv('max.csv',header=['surface'])
 df_sub['truncated'].to_csv('truncated.csv',header=['surface'])
 
 
-# In[37]:
 
 
 for i in range(5):
@@ -327,7 +290,6 @@ for i in range(5):
     df_sub[f'sub_{i}'].to_csv(f'sub{i}.csv',header=['surface'])
 
 
-# In[38]:
 
 
 

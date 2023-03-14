@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,37 +22,28 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 from fastai.vision import *
 
 
-# In[3]:
 
 
-pip freeze
 
 
-# In[4]:
 
 
-pip install chainer
 
 
-# In[5]:
 
 
 #!pip install joypy --progress-bar off
 
 
-# In[6]:
 
 
-pip install cupy --no-cache-dir -vvvv
 
 
-# In[7]:
 
 
 import sys
@@ -65,7 +55,6 @@ sys.path = ["/opt/conda/envs/rapids/lib"] + sys.path
 get_ipython().system('cp /opt/conda/envs/rapids/lib/libxgboost.so /opt/conda/lib/')
 
 
-# In[8]:
 
 
 import numpy as np
@@ -83,7 +72,6 @@ def metric(y_true, y_pred):
     return np.mean(np.sum(np.abs(y_true - y_pred), axis=0)/np.sum(y_true, axis=0))
 
 
-# In[9]:
 
 
 fnc_df = cudf.read_csv("../input/trends-assessment-prediction/fnc.csv")
@@ -104,7 +92,6 @@ df = df[df["is_train"] == True].copy()
 df.shape, test_df.shape
 
 
-# In[10]:
 
 
 # Giving less importance to FNC features since they are easier to overfit due to high dimensionality.
@@ -114,7 +101,6 @@ df[fnc_features] *= FNC_SCALE
 test_df[fnc_features] *= FNC_SCALE
 
 
-# In[11]:
 
 
 
@@ -168,7 +154,6 @@ print("Overal score:", np.round(overal_score, 8))
 print("Overal score:", np.round(overal_score, 4))
 
 
-# In[12]:
 
 
 sub_df = cudf.melt(test_df[["Id", "age", "domain1_var1", "domain1_var2", "domain2_var1", "domain2_var2"]], id_vars=["Id"], value_name="Predicted")
@@ -179,7 +164,6 @@ assert sub_df.shape[0] == test_df.shape[0]*5
 sub_df.head(10)
 
 
-# In[13]:
 
 
 sub_df.to_csv("submission_rapids_ensemble.csv", index=False)

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,13 +22,11 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 get_ipython().system('pip install -U vega_datasets notebook vega')
 
 
-# In[3]:
 
 
 import os
@@ -476,13 +473,11 @@ HTML("".join((
 )))
 
 
-# In[4]:
 
 
 ls ../input/ieee-fraud-detection/
 
 
-# In[5]:
 
 
 folder_path = '../input/ieee-fraud-detection/'
@@ -496,13 +491,11 @@ train = pd.merge(train_transaction, train_identity, on='TransactionID', how='lef
 test = pd.merge(test_transaction, test_identity, on='TransactionID', how='left')
 
 
-# In[6]:
 
 
 train_transaction.head()
 
 
-# In[ ]:
 
 
 def show(df_trans):
@@ -558,19 +551,16 @@ def show(df_trans):
     plt.show()
 
 
-# In[ ]:
 
 
 show(train_transaction)
 
 
-# In[ ]:
 
 
 total = len(train_transaction)
 
 
-# In[ ]:
 
 
 def cardDistribution(df_trans):
@@ -639,7 +629,6 @@ def cardDistribution(df_trans):
     plt.show()
 
 
-# In[ ]:
 
 
 def productFeature(df_trans):
@@ -688,13 +677,11 @@ def productFeature(df_trans):
     plt.show()
 
 
-# In[ ]:
 
 
 productFeature(train_transaction)
 
 
-# In[ ]:
 
 
 def card(df_trans):
@@ -763,13 +750,11 @@ def card(df_trans):
     plt.show()
 
 
-# In[ ]:
 
 
 card(train_transaction)
 
 
-# In[ ]:
 
 
 def resumetable(df):
@@ -847,7 +832,6 @@ def CalcOutliers(df_num):
     return
 
 
-# In[ ]:
 
 
 ## REducing memory
@@ -855,32 +839,27 @@ df_trans = reduce_mem_usage(train_transaction)
 df_id = reduce_mem_usage(train_identity)
 
 
-# In[ ]:
 
 
 train['addr1']
 
 
-# In[ ]:
 
 
 print(f'Train dataset has {train.shape[0]} rows and {train.shape[1]} columns.')
 print(f'Test dataset has {test.shape[0]} rows and {test.shape[1]} columns.')
 
 
-# In[ ]:
 
 
 test.columns
 
 
-# In[ ]:
 
 
 train.columns
 
 
-# In[ ]:
 
 
 set1 = set(test.columns) - set(train.columns)
@@ -888,7 +867,6 @@ set2 = set(train.columns) - set(test.columns)
 set2.remove('isFraud')
 
 
-# In[ ]:
 
 
 list1 = list(set1)
@@ -900,31 +878,26 @@ print(aDict)
 test = test.rename(columns = aDict, inplace = False)
 
 
-# In[ ]:
 
 
 test.head()
 
 
-# In[ ]:
 
 
 del train_identity, train_transaction, test_identity, test_transaction
 
 
-# In[8]:
 
 
 print(f'There are {train.isnull().any().sum()} columns in train dataset with missing values.')
 
 
-# In[9]:
 
 
 print(f'There are {test.isnull().any().sum()} columns in train dataset with missing values.')
 
 
-# In[ ]:
 
 
 one_value_cols = [col for col in train.columns if train[col].nunique() <= 1]
@@ -932,14 +905,12 @@ one_value_cols_test = [col for col in test.columns if test[col].nunique() <= 1]
 one_value_cols == one_value_cols_test
 
 
-# In[ ]:
 
 
 print(f'There are {len(one_value_cols)} columns in train dataset with one unique value.')
 print(f'There are {len(one_value_cols_test)} columns in test dataset with one unique value.')
 
 
-# In[ ]:
 
 
 plt.hist(train['TransactionDT'], label='train');
@@ -948,7 +919,6 @@ plt.legend();
 plt.title('Distribution of transactiond dates');
 
 
-# In[ ]:
 
 
 train['TransactionAmt_to_mean_card1'] = train['TransactionAmt'] / train.groupby(['card1'])['TransactionAmt'].transform('mean')
@@ -992,7 +962,6 @@ test['D15_to_std_addr1'] = test['D15'] / test.groupby(['addr1'])['D15'].transfor
 test['D15_to_std_addr2'] = test['D15'] / test.groupby(['addr2'])['D15'].transform('std')
 
 
-# In[ ]:
 
 
 train[['P_emaildomain_1', 'P_emaildomain_2', 'P_emaildomain_3']] = train['P_emaildomain'].str.split('.', expand=True)
@@ -1001,27 +970,23 @@ test[['P_emaildomain_1', 'P_emaildomain_2', 'P_emaildomain_3']] = test['P_emaild
 test[['R_emaildomain_1', 'R_emaildomain_2', 'R_emaildomain_3']] = test['R_emaildomain'].str.split('.', expand=True)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 many_null_cols = [col for col in train.columns if train[col].isnull().sum() / train.shape[0] > 0.9]
 many_null_cols_test = [col for col in test.columns if test[col].isnull().sum() / test.shape[0] > 0.9]
 
 
-# In[ ]:
 
 
 big_top_value_cols = [col for col in train.columns if train[col].value_counts(dropna=False, normalize=True).values[0] > 0.9]
 big_top_value_cols_test = [col for col in test.columns if test[col].value_counts(dropna=False, normalize=True).values[0] > 0.9]
 
 
-# In[ ]:
 
 
 cols_to_drop = list(set(many_null_cols + many_null_cols_test + big_top_value_cols + big_top_value_cols_test + one_value_cols+ one_value_cols_test))
@@ -1029,14 +994,12 @@ cols_to_drop.remove('isFraud')
 len(cols_to_drop)
 
 
-# In[ ]:
 
 
 train = train.drop(cols_to_drop, axis=1)
 test = test.drop(cols_to_drop, axis=1)
 
 
-# In[ ]:
 
 
 import numpy as np
@@ -1080,7 +1043,6 @@ alt.renderers.enable('notebook')
 get_ipython().run_line_magic('env', 'JOBLIB_TEMP_FOLDER=/tmp')
 
 
-# In[ ]:
 
 
 cat_cols = ['id_12', 'id_13', 'id_14', 'id_15', 'id_16', 'id_17', 'id_18', 'id_19', 'id_20', 'id_21', 'id_22', 'id_23', 'id_24', 'id_25', 'id_26', 'id_27', 'id_28', 'id_29',
@@ -1095,13 +1057,11 @@ for col in cat_cols:
         test[col] = le.transform(list(test[col].astype(str).values)) 
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 X = train.sort_values('TransactionDT').drop(['isFraud', 'TransactionDT', 'TransactionID'], axis=1)
@@ -1112,7 +1072,6 @@ del train
 test = test[["TransactionDT", 'TransactionID']]
 
 
-# In[ ]:
 
 
 # by https://www.kaggle.com/dimartinot
@@ -1124,13 +1083,11 @@ X = clean_inf_nan(X)
 X_test = clean_inf_nan(X_test )
 
 
-# In[ ]:
 
 
 X.head()
 
 
-# In[ ]:
 
 
 n_fold = 5
@@ -1138,7 +1095,6 @@ folds = TimeSeriesSplit(n_splits=n_fold)
 folds = KFold(n_splits=5)
 
 
-# In[ ]:
 
 
 params = {'num_leaves': 256,
@@ -1161,7 +1117,6 @@ result_dict_lgb = train_model_classification(X=X, X_test=X_test, y=y, params=par
                                                       verbose=500, early_stopping_rounds=200, n_estimators=5000, averaging='usual', n_jobs=-1)
 
 
-# In[ ]:
 
 
 import pandas as pd
@@ -1181,7 +1136,6 @@ import matplotlib.patches as mpatches
 from sklearn.metrics import confusion_matrix
 
 
-# In[ ]:
 
 
 folder_path = '../input/ieee-fraud-detection/'
@@ -1195,7 +1149,6 @@ train = pd.merge(train_transaction, train_identity, on='TransactionID', how='lef
 test = pd.merge(test_transaction, test_identity, on='TransactionID', how='left')
 
 
-# In[ ]:
 
 
 x=train_transaction['isFraud'].value_counts().values
@@ -1203,7 +1156,6 @@ sns.barplot([0,1],x)
 plt.title('Target variable count')
 
 
-# In[ ]:
 
 
 train=train_transaction.merge(train_identity,how='left',left_index=True,right_index=True)
@@ -1217,7 +1169,6 @@ del train_transaction,train_identity
 print("Data set merged ")
 
 
-# In[ ]:
 
 
 # From kernel https://www.kaggle.com/gemartin/load-data-reduce-memory-usage
@@ -1261,25 +1212,21 @@ def reduce_mem_usage2(df):
     return df
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'train = reduce_mem_usage2(train)')
 
 
-# In[ ]:
 
 
 X_train,X_test,y_train,y_test=train_test_split(train.drop('isFraud',axis=1),y_train,test_size=.2,random_state=1)
 
 
-# In[ ]:
 
 
 # https://www.kaggle.com/shahules/tackling-class-imbalance
 
 
-# In[ ]:
 
 
 X=pd.concat([X_train,y_train],axis=1)
@@ -1289,19 +1236,16 @@ not_fraud=X[X.isFraud==0]
 fraud=X[X.isFraud==1]
 
 
-# In[ ]:
 
 
 len(not_fraud)
 
 
-# In[ ]:
 
 
 len(fraud)
 
 
-# In[ ]:
 
 
 # upsample minority
@@ -1311,21 +1255,18 @@ fraud_upsampled = resample(fraud,
                           random_state=27) # reproducible results
 
 
-# In[ ]:
 
 
 # combine majority and upsampled minority
 upsampled = pd.concat([not_fraud, fraud_upsampled])
 
 
-# In[ ]:
 
 
 # check new class counts
 upsampled.isFraud.value_counts()
 
 
-# In[ ]:
 
 
 fraud_upsampled

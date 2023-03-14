@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -9,7 +8,6 @@ import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 from sklearn.preprocessing import LabelEncoder
 
 
-# In[2]:
 
 
 # read datasets
@@ -28,7 +26,6 @@ for c in train.columns:
 print('Shape train: {}\nShape test: {}'.format(train.shape, test.shape))
 
 
-# In[3]:
 
 
 from sklearn.decomposition import PCA, FastICA
@@ -56,7 +53,6 @@ y_train = train["y"]
 y_mean = np.mean(y_train)
 
 
-# In[4]:
 
 
 ()# mmm, xgboost, loved by everyone ^-^
@@ -94,7 +90,6 @@ print(num_boost_rounds)
 model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=num_boost_rounds)
 
 
-# In[5]:
 
 
 # check f2-score (to get higher score - increase num_boost_round in previous cell)
@@ -104,7 +99,6 @@ from sklearn.metrics import r2_score
 print(r2_score(dtrain.get_label(), model.predict(dtrain)))
 
 
-# In[6]:
 
 
 # make predictions and save results

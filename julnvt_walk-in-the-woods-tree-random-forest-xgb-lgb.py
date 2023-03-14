@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import matplotlib.pyplot as plt
@@ -45,14 +43,12 @@ from sklearn.metrics import roc_curve
 from sklearn.metrics import make_scorer
 
 
-# In[3]:
 
 
 rawdata_train = pd.read_csv("../input/train.csv", sep = ',',na_values = -1)
 rawdata_test = pd.read_csv("../input/test.csv", sep = ',',na_values = -1)
 
 
-# In[4]:
 
 
 def describe_missing_values(df):
@@ -68,7 +64,6 @@ def describe_missing_values(df):
     plt.show()
 
 
-# In[5]:
 
 
 print("Missing values for train set")
@@ -77,7 +72,6 @@ print("Missing values for test set")
 describe_missing_values(rawdata_test)
 
 
-# In[6]:
 
 
 X = rawdata_train.drop({'target','id','ps_car_03_cat','ps_car_05_cat'},axis=1)
@@ -101,7 +95,6 @@ for col in con_cols:
     X_test[col].fillna(value=X_test[col].mean(), inplace=True)
 
 
-# In[7]:
 
 
 def gini(actual, pred):
@@ -121,7 +114,6 @@ def gini_normalized_score(actual, pred):
 score_gini = make_scorer(gini_normalized_score, greater_is_better=True, needs_threshold = True)
 
 
-# In[8]:
 
 
 depth_gini = []
@@ -136,7 +128,6 @@ plt.ylabel('cv gini score')
 plt.show()
 
 
-# In[9]:
 
 
 parameters = {'max_depth': np.arange(3,15)}
@@ -154,7 +145,6 @@ for params, mean_score, scores in clf.grid_scores_:
 print()
 
 
-# In[10]:
 
 
 clf = tree.DecisionTreeClassifier(max_depth=8)
@@ -164,7 +154,6 @@ Y_pred_proba_clf = clf.predict_proba(X)
 Y_pred_clf = clf.predict(X)
 
 
-# In[11]:
 
 
 dot_data = tree.export_graphviz(clf,out_file=None)
@@ -172,7 +161,6 @@ graph = graphviz.Source(dot_data)
 graph
 
 
-# In[12]:
 
 
 depth_gini = []
@@ -187,7 +175,6 @@ plt.ylabel('cv gini score')
 plt.show()
 
 
-# In[13]:
 
 
 rf = RandomForestClassifier(max_depth=8)
@@ -197,7 +184,6 @@ Y_pred_proba_rf = rf.predict_proba(X)
 Y_pred_rf = rf.predict(X)
 
 
-# In[14]:
 
 
 importances = rf.feature_importances_
@@ -221,13 +207,11 @@ plt.xlim([-1, X.shape[1]])
 plt.show()
 
 
-# In[15]:
 
 
 confusion_matrix(Y,Y_pred_clf)
 
 
-# In[16]:
 
 
 fpr_clf, tpr_clf, thresholds_clf = roc_curve(Y,Y_pred_proba_clf[:,1],pos_label = 1)
@@ -243,7 +227,6 @@ print(auc_clf)
 print(auc_rf)
 
 
-# In[17]:
 
 
 X = rawdata_train.drop({'target','id'},axis=1)
@@ -251,7 +234,6 @@ Y = rawdata_train['target']
 X_test = rawdata_test
 
 
-# In[18]:
 
 
 # Create an XGBoost-compatible metric from Gini
@@ -261,7 +243,6 @@ def gini_xgb(preds, dtrain):
     return [('gini', gini_score)]
 
 
-# In[19]:
 
 
 params = {'eta': 0.2,
@@ -291,7 +272,6 @@ gc.collect()
 submission.head(2)
 
 
-# In[20]:
 
 
 parameters = {'max_depth': np.arange(3,7),
@@ -302,7 +282,6 @@ clf = GridSearchCV(estimator = xgb.XGBClassifier(silent=True), param_grid = para
 clf.fit(X, Y)
 
 
-# In[21]:
 
 
 def gini_lgb(preds, dtrain):
@@ -311,7 +290,6 @@ def gini_lgb(preds, dtrain):
     return [('gini', gini_score, True)]
 
 
-# In[22]:
 
 
 params = {'learning_rate' : 0.2, 'max_depth':6, 'max_bin':10,  'objective': 'binary', 
@@ -336,7 +314,6 @@ gc.collect()
 submission.head(2)
 
 
-# In[23]:
 
 
 submission.to_csv("./submission.csv", index=False, float_format='%.5f')

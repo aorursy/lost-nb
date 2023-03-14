@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -27,7 +26,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import os
@@ -41,32 +39,27 @@ import pandas as pd
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[3]:
 
 
 train = pd.read_csv ('../input/train.csv')
 test = pd.read_csv ('../input/test.csv')
 
 
-# In[4]:
 
 
 train.head(10)
 
 
-# In[5]:
 
 
 train.describe().transpose()
 
 
-# In[6]:
 
 
 train['trip_duration'] = np.log(train['trip_duration'].values)
 
 
-# In[7]:
 
 
 train['pickup_datetime'] = pd.to_datetime(train['pickup_datetime'])
@@ -75,7 +68,6 @@ train['pickup_minute'] = train['pickup_datetime'].dt.minute
 train['pickup_time']=train['pickup_hour']*60 +train['pickup_minute']
 
 
-# In[8]:
 
 
 test['pickup_datetime'] = pd.to_datetime(test['pickup_datetime'])
@@ -84,7 +76,6 @@ test['pickup_minute'] = test['pickup_datetime'].dt.minute
 test['pickup_time']=test['pickup_hour']*60 +test['pickup_minute']
 
 
-# In[9]:
 
 
 from math import radians, cos, sin, asin, sqrt
@@ -100,20 +91,17 @@ def haversine(lat1, lon1, lat2, lon2):
     return 2*R*math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
 
-# In[10]:
 
 
 train['distance'] = train.apply(lambda row: haversine(row['pickup_latitude'],row['pickup_longitude'],row['dropoff_latitude'], row['dropoff_longitude']), axis=1)
 test['distance']  = test.apply(lambda row: haversine(row['pickup_latitude'], row['pickup_longitude'],row['dropoff_latitude'], row['dropoff_longitude']), axis=1)
 
 
-# In[11]:
 
 
 train["distance"].describe().transpose()
 
 
-# In[12]:
 
 
 X = train[['distance','passenger_count','pickup_latitude','dropoff_latitude','pickup_longitude','dropoff_longitude','pickup_time']
@@ -122,7 +110,6 @@ y = train['trip_duration']
 X.shape, y.shape
 
 
-# In[13]:
 
 
 from sklearn.ensemble import RandomForestRegressor
@@ -132,40 +119,34 @@ from sklearn.linear_model import SGDRegressor
 from sklearn.model_selection import ShuffleSplit
 
 
-# In[14]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.10, random_state=42)
 X_train.shape, y_train.shape, X_test.shape, y_test.shape
 
 
-# In[15]:
 
 
 m1 = RandomForestRegressor(n_estimators=30, min_samples_leaf= 3)
 m1.fit(X_train, y_train)
 
 
-# In[16]:
 
 
 X_test=m1.predict(test[['distance','passenger_count','pickup_latitude','dropoff_latitude','pickup_longitude','dropoff_longitude','pickup_time']])
 X_test, len(X_test)
 
 
-# In[17]:
 
 
 submit = pd.read_csv('../input/sample_submission.csv')
 
 
-# In[18]:
 
 
 my_submission = pd.DataFrame({'id': test.id, 'trip_duration':np.exp(X_test)})
 
 
-# In[19]:
 
 
 my_submission.to_csv('submission.csv', index=False)

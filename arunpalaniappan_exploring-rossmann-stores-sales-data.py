@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -12,7 +11,6 @@ import os
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 store = pd.read_csv("../input/store.csv")
@@ -21,37 +19,31 @@ test = pd.read_csv("../input/test.csv",index_col = "Date",parse_dates = ['Date']
 sample_submission = pd.read_csv("../input/sample_submission.csv")
 
 
-# In[3]:
 
 
 train.sample(5)
 
 
-# In[4]:
 
 
 store.sample(5)
 
 
-# In[5]:
 
 
 store.index = store.Store
 
 
-# In[6]:
 
 
 print ("Shape of data set is ",train.shape)
 
 
-# In[7]:
 
 
 train.head(5).sort_values('Date')
 
 
-# In[8]:
 
 
 train['Year'] = train.index.year
@@ -64,7 +56,6 @@ train['SalePerCustomer'].fillna(0)
 train['SalePerCustomer'].describe()
 
 
-# In[9]:
 
 
 import seaborn as sns
@@ -75,26 +66,22 @@ sns.barplot(x=year_records.index,y=year_records.values)
 plt.show()
 
 
-# In[10]:
 
 
 #train = train.loc[ (train.Year == 2013) | (train.Year == 2014)]
 #test = train.loc[ (train.Year == 2015)]
 
 
-# In[11]:
 
 
 store[( store.Store == 322 )]
 
 
-# In[12]:
 
 
 store.sample(5)
 
 
-# In[13]:
 
 
 store_id = store.sample(1).Store.values
@@ -104,7 +91,6 @@ store_data = train[train['Store'] == store_id[0]]
 print ("Number of entries of store ",store_id[0]," is ",store_data.shape[0])
 
 
-# In[14]:
 
 
 plt.figure(figsize=(20,6))
@@ -115,7 +101,6 @@ plt.ylabel("Sales")
 plt.show()
 
 
-# In[15]:
 
 
 from statsmodels.tsa.seasonal import seasonal_decompose
@@ -127,7 +112,6 @@ fig = decomposition.plot()
 plt.show()
 
 
-# In[16]:
 
 
 sale_per_customer = train[train.Open == 1].groupby('StateHoliday')['SalePerCustomer'].sum() /                     train[train.Open == 1].groupby('StateHoliday')['SalePerCustomer'].count()
@@ -138,13 +122,11 @@ plt.ylabel('Sale Per Customer')
 plt.show()
 
 
-# In[17]:
 
 
 data_by_day_of_week = train[train.Open == 1].groupby('DayOfWeek').mean()
 
 
-# In[18]:
 
 
 mean_customer_count = data_by_day_of_week.Customers
@@ -182,7 +164,6 @@ axs[1][1].set_xticklabels(days,rotation = 10)
 plt.show()
 
 
-# In[19]:
 
 
 sales_by_store = train[['Sales','Store','Open']]
@@ -197,7 +178,6 @@ plt.xlabel('Per Day Sales')
 plt.show()
 
 
-# In[20]:
 
 
 #Making of top 3 and bottom 3
@@ -226,7 +206,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[21]:
 
 
 store_and_competitor_distance = store.loc[top_3_bottom_3.Store]
@@ -258,7 +237,6 @@ Store 307 has third least competitor distance and it has the least sale per day.
 Store 817 which has highest sale per day also has competitor at second closes distance.
 
 Let us make a correlation plot between competitor distance and daily sales to understand this a bit further.
-# In[22]:
 
 
 total_sales_by_store['Store'] = total_sales_by_store.index
@@ -269,7 +247,6 @@ sns.jointplot(x="SalePerDay",y="CompetitionDistance",data=joined_df , kind="reg"
 plt.show()
 
 
-# In[23]:
 
 
 corr = joined_df['SalePerDay'].corr(joined_df['CompetitionDistance'])

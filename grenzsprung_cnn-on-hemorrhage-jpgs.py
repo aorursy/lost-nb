@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import tensorflow as tf
@@ -21,7 +20,6 @@ print(tf.__version__)
 print(python_version())
 
 
-# In[2]:
 
 
 # extract filenames from the folder of images
@@ -35,7 +33,6 @@ for root, dirs, files in os.walk('../input/rsna-hemorrhage-jpg/train_jpg/train_j
 len(filenames)
 
 
-# In[3]:
 
 
 col_dir = '../input/rsna-hemorrhage-jpg/train_jpg/train_jpg/*.jpg'
@@ -51,7 +48,6 @@ images = imread_collection(col_dir)
 len(images)
 
 
-# In[4]:
 
 
 # Plot the first image
@@ -64,7 +60,6 @@ plt.show()
 print(images[0])
 
 
-# In[5]:
 
 
 # Check shape
@@ -73,7 +68,6 @@ print(images[1].shape)
 print(images[2].shape)
 
 
-# In[6]:
 
 
 # Select only the first 5000 images
@@ -85,7 +79,6 @@ images_tst = images[25000:30000]
 print(len(images_tst))
 
 
-# In[7]:
 
 
 images_arr_trn = skimage.io.collection.concatenate_images(images_trn)
@@ -93,7 +86,6 @@ images_arr_val = skimage.io.collection.concatenate_images(images_val)
 images_arr_tst = skimage.io.collection.concatenate_images(images_tst)
 
 
-# In[8]:
 
 
 # Import labels and selct only first 5000 labels without any additional columns
@@ -104,7 +96,6 @@ images_arr_tst = skimage.io.collection.concatenate_images(images_tst)
 #print(labels.sum())
 
 
-# In[9]:
 
 
 labels = pd.read_feather('../input/rsna-hemorrhage-jpg/meta/meta/labels.fth')
@@ -118,14 +109,12 @@ labels2 = labels[labels['ID'].isin(idstosearch)]
 labels2.shape
 
 
-# In[10]:
 
 
 labels = labels2.iloc[:, 1]
 print(labels)
 
 
-# In[11]:
 
 
 labels_trn = labels[:20000]
@@ -136,14 +125,12 @@ labels_tst = labels[25000:30000]
 print(len(labels_tst))
 
 
-# In[12]:
 
 
 print(type(labels_trn))
 print(labels_trn.sum())
 
 
-# In[13]:
 
 
 # Transform labels into array
@@ -151,21 +138,18 @@ labels_trn = pd.Series.to_numpy(labels_trn)
 len(labels_trn)
 
 
-# In[14]:
 
 
 labels_val = pd.Series.to_numpy(labels_val)
 len(labels_val)
 
 
-# In[15]:
 
 
 labels_tst = pd.Series.to_numpy(labels_tst)
 len(labels_tst)
 
 
-# In[16]:
 
 
 # Build the model
@@ -176,7 +160,6 @@ len(labels_tst)
 #])
 
 
-# In[17]:
 
 
 # CNN -> train/test accuracy both at 50%
@@ -190,7 +173,6 @@ len(labels_tst)
 #model.add(keras.layers.Dense(2, activation='softmax'))
 
 
-# In[18]:
 
 
 # CNN -> train/test accuracy at 60%/50%
@@ -206,7 +188,6 @@ model.add(keras.layers.Dense(1000, activation='relu'))
 model.add(keras.layers.Dense(2, activation='softmax'))
 
 
-# In[19]:
 
 
 # Compile the model
@@ -217,14 +198,12 @@ model.compile(optimizer='adam',
 # data = train_images.reshape(2000,75,100,1)
 
 
-# In[20]:
 
 
 # Train model
 model.fit(images_arr_trn, labels_trn, epochs=8)
 
 
-# In[21]:
 
 
 # Validate model
@@ -233,7 +212,6 @@ test_loss, test_acc = model.evaluate(images_arr_val, labels_val, verbose=2)
 print('\nTest accuracy:', test_acc)
 
 
-# In[ ]:
 
 
 

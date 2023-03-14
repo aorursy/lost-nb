@@ -1,25 +1,21 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_cell_magic('bash', '', '# Install deps from \n# https://github.com/mwydmuch/ViZDoom/blob/master/doc/Building.md#-linux\napt-get install build-essential zlib1g-dev libsdl2-dev libjpeg-dev \\\nnasm tar libbz2-dev libgtk2.0-dev cmake git libfluidsynth-dev libgme-dev \\\nlibopenal-dev timidity libwildmidi-dev unzip\n\n# Boost libraries\napt-get install libboost-all-dev\n\n# Lua binding dependencies\napt-get install liblua5.1-dev')
 
 
-# In[2]:
 
 
 get_ipython().system('pip install vizdoom')
 
 
-# In[3]:
 
 
 get_ipython().system('git clone https://github.com/simoninithomas/Deep_reinforcement_learning_Course.git')
 
 
-# In[4]:
 
 
 from __future__ import division
@@ -35,13 +31,11 @@ import vizdoom as vzd
 from argparse import ArgumentParser
 
 
-# In[5]:
 
 
 get_ipython().system('cat "Deep_reinforcement_learning_Course/Deep Q Learning/Doom/basic.cfg"')
 
 
-# In[6]:
 
 
 #DEFAULT_MODEL_SAVEFILE = "drive/My Drive/Colab Notebooks/tmp/model"
@@ -49,7 +43,6 @@ DEFAULT_CONFIG = "Deep_reinforcement_learning_Course/Deep Q Learning/Doom/basic.
 DEFAULT_SCN = "Deep_reinforcement_learning_Course/Deep Q Learning/Doom/basic.wad"
 
 
-# In[7]:
 
 
 # Creates and initializes ViZDoom environment.
@@ -67,13 +60,11 @@ def initialize_vizdoom(config_file_path , scenario_file_path):
     return game
 
 
-# In[ ]:
 
 
 doom=initialize_vizdoom(DEFAULT_CONFIG , DEFAULT_SCN)
 
 
-# In[8]:
 
 
 import random
@@ -102,7 +93,6 @@ def test_environment(game):
     game.close()
 
 
-# In[9]:
 
 
 import random                # Handling random number generation
@@ -154,7 +144,6 @@ def stack_frames(stacked_frames , frame , new_episode=False):
         return stack_states , stacked_frames
 
 
-# In[10]:
 
 
 device='cuda:0' if torch.cuda.is_available() else 'cpu'
@@ -187,7 +176,6 @@ class ReplayBuffer :
         return len(self.memory)
 
 
-# In[11]:
 
 
 BATCH_SIZE = 16
@@ -283,14 +271,12 @@ class Agent :
         
 
 
-# In[12]:
 
 
 import torch.nn as nn
 import torch.nn.functional as F
 
 
-# In[13]:
 
 
 def conv_block(in_channels , out_channles , kernel_size =3 , stride=1 , padding=1 , batch_norm=True , maxpool=False ):
@@ -311,7 +297,6 @@ def conv_block(in_channels , out_channles , kernel_size =3 , stride=1 , padding=
     return nn.Sequential(*layers)
 
 
-# In[14]:
 
 
 class DeepQNet(nn.Module):
@@ -355,20 +340,17 @@ class DeepQNet(nn.Module):
         return x
 
 
-# In[15]:
 
 
 agent = Agent(state_size=4, action_size=3, seed=1243)
 
 
-# In[16]:
 
 
 agent.q_local.load_state_dict(torch.load('../input/doom-rl/local_model.pth'))
 agent.q_target.load_state_dict(torch.load('../input/doom-rl/target_model.pth'))
 
 
-# In[18]:
 
 
 # Init the game
@@ -445,14 +427,12 @@ for episode in range(total_episodes):
     explore_probability = max(explore_probability_end, explore_probability*eps_decay)
 
 
-# In[19]:
 
 
 torch.save(agent.q_local.state_dict(),'local_model.pth')
 torch.save(agent.q_target.state_dict(),'target_model.pth')
 
 
-# In[25]:
 
 
 img_frames = []
@@ -506,7 +486,6 @@ while step < max_steps:
         state = next_state
 
 
-# In[38]:
 
 
 data_path='data'
@@ -515,14 +494,12 @@ for idx , image  in enumerate(img_frames):
  PIL.Image.fromarray(image).save('data/{}.png'.format(str(idx)))
 
 
-# In[43]:
 
 
 import os
 os.system('ffmpeg -r 10 -i data/%1d.png -vcodec libx264 -b 10M -y FlowVideo.mp4  ')
 
 
-# In[44]:
 
 
 from IPython.display import HTML
@@ -536,7 +513,6 @@ HTML("""
 """ % data_url)
 
 
-# In[27]:
 
 
 for image in img_frames:
@@ -544,7 +520,6 @@ for image in img_frames:
     plt.show()
 
 
-# In[ ]:
 
 
 

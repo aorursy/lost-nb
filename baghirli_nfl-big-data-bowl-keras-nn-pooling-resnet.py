@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -97,13 +96,11 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 start = tm.time()
 
 
-# In[3]:
 
 
 # choose mode
@@ -111,7 +108,6 @@ prod = 1
 commit = 0
 
 
-# In[4]:
 
 
 if prod == 1:
@@ -125,7 +121,6 @@ print(train.shape)
 train = reduce_mem_usage(train, verbose=True)
 
 
-# In[5]:
 
 
 def handle_windspeed(speed):
@@ -275,7 +270,6 @@ def encode_OP_DP(df, op_dp_columns, column, prefix, mode_="train"):
     return df, op_dp_columns
 
 
-# In[6]:
 
 
 def compound_1_f(play):
@@ -400,7 +394,6 @@ def impute(df, fill_map, mode_="train"):
         df.fillna(fill_map, inplace=True)
 
 
-# In[7]:
 
 
 def major_preprocess(df, mode="train"):
@@ -537,7 +530,6 @@ def major_preprocess(df, mode="train"):
     return df
 
 
-# In[8]:
 
 
 def data_parcels(df, mode="train"):
@@ -566,7 +558,6 @@ def data_parcels(df, mode="train"):
     return df_play_cat, df_play_numeric, df_player_cat, df_player_numeric, df_compound, df_y
 
 
-# In[9]:
 
 
 poor_fill_rate = ['WindDirection', 'Temperature', 'GameWeather', 'StadiumType']
@@ -580,7 +571,6 @@ ss = StandardScaler()
 ss_compound = StandardScaler()
 
 
-# In[10]:
 
 
 Turf = {'Field Turf':0, 'A-Turf Titan':0, 'Grass':1, 'UBU Sports Speed S5-M':0, 
@@ -590,7 +580,6 @@ Turf = {'Field Turf':0, 'A-Turf Titan':0, 'Grass':1, 'UBU Sports Speed S5-M':0,
         'Twenty-Four/Seven Turf':0, 'natural grass':1}
 
 
-# In[11]:
 
 
 play_cat = ['Team', 'Season', 'PossessionTeam', 'FieldPosition', 'OffenseFormation', 'PlayDirection', 'HomeTeamAbbr', 
@@ -628,7 +617,6 @@ total_numeric = play_numeric + player_numeric
 compound = compound_1 + compound_2
 
 
-# In[12]:
 
 
 os.system("echo 'Preprocessing Start'")
@@ -636,7 +624,6 @@ train = major_preprocess(train, mode="train")
 train_play_cat, train_play_numeric, train_player_cat, train_player_numeric, train_compound, train_y = data_parcels(train, mode="train")
 
 
-# In[13]:
 
 
 def crps(y_true, y_pred):
@@ -701,7 +688,6 @@ def print_scores(models):
         pass
 
 
-# In[14]:
 
 
 os.system("echo 'Modeling Start'")
@@ -820,27 +806,23 @@ for train_idx, val_idx in kf.split(train_y):
     models.append(model)
 
 
-# In[15]:
 
 
 models = get_top_models(models, num=2)
 print_scores(models)
 
 
-# In[16]:
 
 
 if commit == 0:
     print(models[0].summary())
 
 
-# In[17]:
 
 
 plot_model(models[0], to_file='model.png')
 
 
-# In[18]:
 
 
 os.system("echo 'Prediction Start'")
@@ -863,7 +845,6 @@ for (test_df, sample_prediction_df) in env.iter_test():
 env.write_submission_file()
 
 
-# In[19]:
 
 
 finish = tm.time()

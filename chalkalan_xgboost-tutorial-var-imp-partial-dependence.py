@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # mathematical library including linear algebra
@@ -16,14 +15,12 @@ from sklearn.metrics import mean_squared_error
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 df_train = pd.read_csv('../input/train.csv', parse_dates=['timestamp'])
 df_test = pd.read_csv('../input/test.csv', parse_dates=['timestamp'])
 
 
-# In[3]:
 
 
 
@@ -49,7 +46,6 @@ del df_test
 df_all = df_all.drop("id", axis=1)
 
 
-# In[4]:
 
 
 # Convert the date into a number (of days since some point)
@@ -58,7 +54,6 @@ df_all['timedelta'] = (df_all['timestamp'] - fromDate).dt.days.astype(int)
 print(df_all[['timestamp', 'timedelta']].head())
 
 
-# In[5]:
 
 
 # Add month-year count - i.e. how many sales in the month 
@@ -83,7 +78,6 @@ df_all['rel_kitch_sq'] = df_all['kitch_sq'] / df_all['full_sq'].astype(float)
 df_all.drop(['timestamp'], axis=1, inplace=True)
 
 
-# In[6]:
 
 
 for c in df_all.columns:
@@ -93,7 +87,6 @@ for c in df_all.columns:
         df_all[c] = lbl.transform(list(df_all[c].values))
 
 
-# In[7]:
 
 
 # Alternative using the rather nice .select_dtypes
@@ -106,14 +99,12 @@ for c in df_all.columns:
 # df_all = pd.concat([df_numeric, df_obj], axis=1)
 
 
-# In[8]:
 
 
 # Fill missing values with  -1.  
 df_all.fillna(-1, inplace = True)
 
 
-# In[9]:
 
 
 # Convert to numpy values
@@ -143,7 +134,6 @@ print('y_val shape is',       ylog1p_val.shape)
 print('X_test shape is',      X_test.shape)
 
 
-# In[10]:
 
 
 ##dtrain_all = xgb.DMatrix(X_train_all, ylog1p_train_all, feature_names = df_columns)
@@ -152,7 +142,6 @@ print('X_test shape is',      X_test.shape)
 dtest      = xgb.DMatrix(X_test,                        feature_names = df_columns)
 
 
-# In[11]:
 
 
 # Choose values for the key parameters - keep the number of estimators low for now - not more than 200
@@ -167,7 +156,6 @@ model = xgb.XGBRegressor(    objective = 'reg:linear'
                            , silent = 1)
 
 
-# In[12]:
 
 
 eval_set  = [( X_train, ylog1p_train), ( X_val, ylog1p_val)]
@@ -180,7 +168,6 @@ model.fit(X = X_train,
           verbose = True)
 
 
-# In[13]:
 
 
 num_boost_round = model.best_iteration 
@@ -190,7 +177,6 @@ num_boost_round
 # what does this tell you?  What should you do about it?
 
 
-# In[14]:
 
 
 # Fill eta below with whatever you used for learning_rate above.
@@ -213,7 +199,6 @@ dtrain_all = xgb.DMatrix(np.vstack((X_train, X_val)), ylog1p_train_all, feature_
 model = xgb.train(xgb_params, dtrain_all, num_boost_round = num_boost_round)
 
 
-# In[15]:
 
 
 # Create a dataframe of the variable importances
@@ -222,7 +207,6 @@ df_ = pd.DataFrame(dict_varImp, index = ['varImp']).transpose().reset_index()
 df_.columns = ['feature', 'fscore']
 
 
-# In[16]:
 
 
 # Plot the relative importance of the top 10 features
@@ -240,13 +224,11 @@ plt.show()
 #plt.gcf().savefig('feature_importance_xgb.png')
 
 
-# In[17]:
 
 
 ### 4b. Partial dependence plots
 
 
-# In[18]:
 
 
 # from https://xiaoxiaowang87.github.io/monotonicity_constraint/
@@ -279,7 +261,6 @@ def partial_dependency(bst, X, y, feature_ids = [], f_id = -1):
     return grid, y_pred
 
 
-# In[19]:
 
 
 lst_f = ['full_sq', 'timedelta', 'floor']
@@ -315,13 +296,11 @@ for f in lst_f:
     plt.show()
 
 
-# In[20]:
 
 
 ## 5. Create the predictions
 
 
-# In[21]:
 
 
 # Create the predictions
@@ -329,7 +308,6 @@ ylog_pred = model.predict(dtest)
 y_pred = np.exp(ylog_pred) - 1
 
 
-# In[22]:
 
 
 output = pd.DataFrame({'id': id_test, 'price_doc': y_pred})

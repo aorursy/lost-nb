@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 use_TPU = False
 
 
-# In[2]:
 
 
 if use_TPU:
@@ -15,7 +13,6 @@ if use_TPU:
     get_ipython().system('python pytorch-xla-env-setup.py --version nightly --apt-packages libomp5 libopenblas-dev')
 
 
-# In[3]:
 
 
 if use_TPU:
@@ -31,14 +28,12 @@ if use_TPU:
     warnings.filterwarnings("ignore")
 
 
-# In[4]:
 
 
 if use_TPU:
     get_ipython().system('export XLA_USE_BF16=1')
 
 
-# In[5]:
 
 
 import copy
@@ -68,7 +63,6 @@ from skimage.segmentation import clear_border
 import pytest
 
 
-# In[6]:
 
 
 root_dir = Path('/kaggle/input/osic-pulmonary-fibrosis-progression')
@@ -92,7 +86,6 @@ else:
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-# In[7]:
 
 
 class ClinicalDataset(Dataset):
@@ -205,7 +198,6 @@ class ClinicalDataset(Dataset):
             sample['metadata'].save_as(Path(cache_dir)/f'{patient_id}.dcm')
 
 
-# In[8]:
 
 
 # Helper function that loads CT scans in a single array. 
@@ -223,7 +215,6 @@ def load_scan(path):
     return image, slices[0]
 
 
-# In[9]:
 
 
 class CropBoundingBox:
@@ -268,7 +259,6 @@ class CropBoundingBox:
         }
 
 
-# In[10]:
 
 
 class ConvertToHU:
@@ -292,7 +282,6 @@ class ConvertToHU:
         }
 
 
-# In[11]:
 
 
 class Resize:
@@ -312,7 +301,6 @@ class Resize:
         }
 
 
-# In[12]:
 
 
 class Clip:
@@ -332,7 +320,6 @@ class Clip:
         }
 
 
-# In[13]:
 
 
 class MaskMethod(Enum):
@@ -389,7 +376,6 @@ class Mask:
         return m
 
 
-# In[14]:
 
 
 class Normalize:
@@ -438,7 +424,6 @@ class ZeroCenter:
         }
 
 
-# In[15]:
 
 
 def show(list_imgs, cmap=cm.bone, rgb=False):
@@ -457,7 +442,6 @@ def show(list_imgs, cmap=cm.bone, rgb=False):
     plt.show()
 
 
-# In[16]:
 
 
 data = ClinicalDataset(
@@ -480,7 +464,6 @@ list_imgs = [data[i]['image'] for i in range(len(data))]
 show(list_imgs)
 
 
-# In[17]:
 
 
 data = ClinicalDataset(
@@ -505,7 +488,6 @@ for i in range(len(data)):
 assert np.mean(means) == pytest.approx(0, abs=2e-3)
 
 
-# In[18]:
 
 
 class QuantModel(nn.Module):
@@ -536,7 +518,6 @@ class QuantModel(nn.Module):
         return x
 
 
-# In[19]:
 
 
 def quantile_loss(preds, target, quantiles):
@@ -550,7 +531,6 @@ def quantile_loss(preds, target, quantiles):
     return loss
 
 
-# In[20]:
 
 
 class AutoEncoder(nn.Module):
@@ -602,7 +582,6 @@ class AutoEncoder(nn.Module):
         return x
 
 
-# In[21]:
 
 
 # Helper function that generates all latent features
@@ -632,7 +611,6 @@ class GenerateLatentFeatures:
         }
 
 
-# In[22]:
 
 
 autoencoder = AutoEncoder()
@@ -655,7 +633,6 @@ for i in trange(len(data)):
     assert sample['latent_features'].shape == (96, 2, 20, 20)
 
 
-# In[23]:
 
 
 dataloader = DataLoader(data, batch_size=batch_size,
@@ -684,7 +661,6 @@ for epoch in bar:
     bar.set_postfix(loss=f'{loss.item():0.1f}')
 
 
-# In[24]:
 
 
 # Helper generator that group splits
@@ -704,7 +680,6 @@ def metric(preds, targets):
     return -np.sqrt(2) * delta / sigma - torch.log(np.sqrt(2) * sigma)
 
 
-# In[25]:
 
 
 # Load the data
@@ -822,7 +797,6 @@ print(f'Training complete! Time: {timedelta(seconds=time() - t0)}')
 models = [model]
 
 
-# In[26]:
 
 
 data = ClinicalDataset(
@@ -843,7 +817,6 @@ data = ClinicalDataset(
 data.cache(latent_dir)
 
 
-# In[27]:
 
 
 data = ClinicalDataset(
@@ -878,14 +851,12 @@ df = df.drop(columns=list(quantiles))
 df.to_csv('submission.csv', index=False)
 
 
-# In[28]:
 
 
 print(len(df))
 df.head()
 
 
-# In[ ]:
 
 
 

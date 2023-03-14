@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 #point this to your data path where you download your data
@@ -33,13 +31,11 @@ targets_series = pd.Series(df_train['breed'])
 one_hot = pd.get_dummies(targets_series, sparse=True)
 
 
-# In[3]:
 
 
 get_ipython().system('mkdir {path+"valid"}')
 
 
-# In[4]:
 
 
 #creates all of the directories you will need
@@ -48,7 +44,6 @@ for i in range(targets_series.unique().shape[0]):
     get_ipython().system('mkdir {path+"valid/"+targets_series.unique()[i]}/')
 
 
-# In[5]:
 
 
 #Change valid percent to how many of your files you want in a validation set

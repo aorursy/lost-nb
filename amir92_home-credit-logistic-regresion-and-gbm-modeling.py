@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import pandas as pd
@@ -18,7 +17,6 @@ from statistics import mean,stdev,median
 from prettytable import PrettyTable
 
 
-# In[ ]:
 
 
 def mis_val_treatment(data,string,percentage):
@@ -90,13 +88,11 @@ def prepare_data(path_to,string="mean",percentage=10,val_size=0.2,test_size=0.2)
     return dict
 
 
-# In[ ]:
 
 
 dict_data = prepare_data(path_to="../input/home-credit-default-risk/application_train.csv")
 
 
-# In[ ]:
 
 
 data_val = dict_data['data_val']
@@ -104,13 +100,11 @@ y_val = data_val['TARGET']
 data_val_model = data_val.drop(['TARGET'], axis=1)
 
 
-# In[ ]:
 
 
 model = LogisticRegression()
 
 
-# In[ ]:
 
 
 def reglog_model_results(model,data_test,y_test):
@@ -177,7 +171,6 @@ def roc_curve_show(model,data_test,y_test):
     plt.show()
 
 
-# In[ ]:
 
 
 def results_model_dict(model,dict_data):
@@ -211,117 +204,99 @@ def results_model_dict(model,dict_data):
     return results_model1
 
 
-# In[ ]:
 
 
 logreg_results = results_model_dict(model,dict_data)
 
 
-# In[ ]:
 
 
 logreg_results['AUC']
 
 
-# In[ ]:
 
 
 logreg_results['Accuracy']
 
 
-# In[ ]:
 
 
 dist = y_val.value_counts()
 dist
 
 
-# In[ ]:
 
 
 cm = logreg_results['Confusion_Matrix']
 confusion_matrix(cm)
 
 
-# In[ ]:
 
 
 tp = round(float(cm[0][0])/float(dist[0])*100,2)
 "True Postive en % = "+str(tp)+" %"
 
 
-# In[ ]:
 
 
 tn = round(float(cm[1][1])/float(dist[1])*100,2)
 "True Negative en % = "+str(tn)+" %"
 
 
-# In[ ]:
 
 
 roc_curve_show(model,data_val_model,y_val)
 
 
-# In[ ]:
 
 
 model_balanced = LogisticRegression(class_weight='balanced')
 
 
-# In[ ]:
 
 
 logreg_results_balanced = results_model_dict(model_balanced,dict_data)
 
 
-# In[ ]:
 
 
 logreg_results_balanced['AUC']
 
 
-# In[ ]:
 
 
 logreg_results_balanced['Accuracy']
 
 
-# In[ ]:
 
 
 dist = y_val.value_counts()
 dist
 
 
-# In[ ]:
 
 
 cm_balanced = logreg_results_balanced['Confusion_Matrix']
 confusion_matrix(cm_balanced)
 
 
-# In[ ]:
 
 
 tp_balanced = round(float(cm_balanced[0][0])/float(dist[0])*100,2)
 "True Postive en % = "+str(tp_balanced)+" %"
 
 
-# In[ ]:
 
 
 tn_balanced = round(float(cm_balanced[1][1])/float(dist[1])*100,2)
 "True Negative en % = "+str(tn_balanced)+" %"
 
 
-# In[ ]:
 
 
 roc_curve_show(model_balanced,data_val_model,y_val)
 
 
-# In[ ]:
 
 
 def resmpling_data(data,val,string="percentage"):
@@ -347,7 +322,6 @@ def resmpling_data(data,val,string="percentage"):
     return data_boot
 
 
-# In[ ]:
 
 
 data = dict_data['data_train']
@@ -356,19 +330,16 @@ percentage_to_sample = round(float(y.value_counts()[1])/float(y.value_counts()[0
 "Percentage_to_sample = "+str(percentage_to_sample)+" %"
 
 
-# In[ ]:
 
 
 data_resampled = resmpling_data(data,9)
 
 
-# In[ ]:
 
 
 model = LogisticRegression()
 
 
-# In[ ]:
 
 
 data_train = dict_data['data_train']
@@ -392,54 +363,46 @@ data_val_model = data_val.drop(['TARGET'], axis=1)
 data_test_model = data_test.drop(['TARGET'], axis=1)
 
 
-# In[ ]:
 
 
 model_subsample = model.fit(data_train_model, y_train)
 logreg_results_resampled = reglog_model_results(model_subsample, data_val_model, y_val)
 
 
-# In[ ]:
 
 
 logreg_results_resampled['AUC']
 
 
-# In[ ]:
 
 
 logreg_results_resampled['Accuracy']
 
 
-# In[ ]:
 
 
 dist = y_val.value_counts()
 dist
 
 
-# In[ ]:
 
 
 cm_resampled = logreg_results_resampled['Confusion_Matrix']
 confusion_matrix(cm_resampled)
 
 
-# In[ ]:
 
 
 tp_resampled = round(float(cm_resampled[0][0])/float(dist[0])*100,2)
 "True Postive en % = "+str(tp_resampled)+" %"
 
 
-# In[ ]:
 
 
 tn_resampled = round(float(cm_resampled[1][1])/float(dist[1])*100,2)
 "True Negative en % = "+str(tn_resampled)+" %"
 
 
-# In[ ]:
 
 
 tab = PrettyTable(['Model', 'Accuracy','AUC','Sensitivity : TP %','Specificity : TN %'])
@@ -449,7 +412,6 @@ tab.add_row(["model_subsample",round(logreg_results_resampled['Accuracy'],5),rou
 print(tab)
 
 
-# In[ ]:
 
 
 data = pd.read_csv("../input/home-credit-default-risk/application_train.csv")
@@ -457,7 +419,6 @@ data_mis_val = mis_val_treatment(data, string="mean",percentage=10)
 data_model = data_model_constuct(data, data_mis_val)
 
 
-# In[ ]:
 
 
 def results_model_data(model,data_model,val_size=0.2,test_size=0.2):
@@ -495,14 +456,12 @@ def results_model_data(model,data_model,val_size=0.2,test_size=0.2):
     return results_model1
 
 
-# In[ ]:
 
 
 auc_results = list()
 accuracy_results = list()
 
 
-# In[ ]:
 
 
 for i in range(0,10):
@@ -512,13 +471,11 @@ for i in range(0,10):
     accuracy_results.append(accuracy)
 
 
-# In[ ]:
 
 
 t = PrettyTable(['Model', 'accuracy','AUC'])
 
 
-# In[ ]:
 
 
 for i in range(0,10):
@@ -531,53 +488,45 @@ t.add_row(["Median",median(accuracy_results),median(auc_results)])
 print(t)
 
 
-# In[ ]:
 
 
 logreg_results_balanced_test = reglog_model_results(model_balanced, data_test_model, y_test)
 
 
-# In[ ]:
 
 
 logreg_results_balanced_test['AUC']
 
 
-# In[ ]:
 
 
 logreg_results_balanced_test['Accuracy']
 
 
-# In[ ]:
 
 
 dist = y_test.value_counts()
 dist
 
 
-# In[ ]:
 
 
 cm_balanced_test = logreg_results_balanced_test['Confusion_Matrix']
 confusion_matrix(cm_balanced_test)
 
 
-# In[ ]:
 
 
 tp_balanced_test = round(float(cm_balanced_test[0][0])/float(dist[0])*100,2)
 "True Postive en % = "+str(tp_balanced_test)+" %"
 
 
-# In[ ]:
 
 
 tn_balanced_test = round(float(cm_balanced_test[1][1])/float(dist[1])*100,2)
 "True Negative en % = "+str(tn_balanced_test)+" %"
 
 
-# In[ ]:
 
 
 tab = PrettyTable(['Dataset', 'Accuracy','AUC','Sensitivity : TP %','Specificity : TN %'])
@@ -586,13 +535,11 @@ tab.add_row(["Test data",round(logreg_results_balanced_test['Accuracy'],5),round
 print(tab)
 
 
-# In[ ]:
 
 
 dict_data = prepare_data(path_to="../input/home-credit-default-risk/application_train.csv")
 
 
-# In[ ]:
 
 
 data_val = dict_data['data_val']
@@ -600,64 +547,54 @@ y_val = data_val['TARGET']
 data_val_model = data_val.drop(['TARGET'], axis=1)
 
 
-# In[ ]:
 
 
 model = GradientBoostingClassifier()
 
 
-# In[ ]:
 
 
 gbm_results = results_model_dict(model,dict_data)
 
 
-# In[ ]:
 
 
 gbm_results['AUC']
 
 
-# In[ ]:
 
 
 gbm_results['Accuracy']
 
 
-# In[ ]:
 
 
 dist = y_val.value_counts()
 dist
 
 
-# In[ ]:
 
 
 cm = gbm_results['Confusion_Matrix']
 confusion_matrix(cm)
 
 
-# In[ ]:
 
 
 "True Postive en % = "+str(round(float(cm[0][0])/float(dist[0])*100,2))+" %"
 
 
-# In[ ]:
 
 
 "True Negative en % = "+str(round(float(cm[1][1])/float(dist[1])*100,2))+" %"
 
 
-# In[ ]:
 
 
 # Import datasets
 data_train = dict_data['data_train']
 
 
-# In[ ]:
 
 
 
@@ -679,7 +616,6 @@ data_val_model = data_val.drop(['TARGET'], axis=1)
 data_test_model = data_test.drop(['TARGET'], axis=1)
 
 
-# In[ ]:
 
 
 # built model
@@ -689,45 +625,38 @@ model_gbm_resample = model.fit(data_train_model, y_train)
 results_model_gbm_resample = reglog_model_results(model_gbm_resample, data_val_model, y_val)
 
 
-# In[ ]:
 
 
 results_model_gbm_resample['AUC']
 
 
-# In[ ]:
 
 
 results_model_gbm_resample['Accuracy']
 
 
-# In[ ]:
 
 
 dist = y_val.value_counts()
 dist
 
 
-# In[ ]:
 
 
 cm_gbm_resample = results_model_gbm_resample['Confusion_Matrix']
 confusion_matrix(cm_gbm_resample)
 
 
-# In[ ]:
 
 
 "True Postive en % = "+str(round(float(cm_gbm_resample[0][0])/float(dist[0])*100,2))+" %"
 
 
-# In[ ]:
 
 
 "True Negative en % = "+str(round(float(cm_gbm_resample[1][1])/float(dist[1])*100,2))+" %"
 
 
-# In[ ]:
 
 
 # Resampling with stratification
@@ -764,71 +693,60 @@ model_gbm_kmeans = model.fit(data_train_model, y_train)
 results_model_gbm_kmeans = reglog_model_results(model_gbm_kmeans, data_val_model, y_val)
 
 
-# In[ ]:
 
 
 results_model_gbm_kmeans['AUC']
 
 
-# In[ ]:
 
 
 results_model_gbm_kmeans['Accuracy']
 
 
-# In[ ]:
 
 
 dist = y_val.value_counts()
 dist
 
 
-# In[ ]:
 
 
 cm_gbm_kmeans = results_model_gbm_kmeans['Confusion_Matrix']
 confusion_matrix(cm_gbm_kmeans)
 
 
-# In[ ]:
 
 
 "True Postive en % = "+str(round(float(cm_gbm_kmeans[0][0])/float(dist[0])*100,2))+" %"
 
 
-# In[ ]:
 
 
 "True negative en % = "+str(round(float(cm_gbm_kmeans[1][1])/float(dist[1])*100,2))+" %"
 
 
-# In[ ]:
 
 
 random_search_output = pd.read_csv("../input/output-random-search/output_random_search.csv")
 
 
-# In[ ]:
 
 
 output_ranked = random_search_output.sort_values("rank_test_score")
 output_ranked
 
 
-# In[ ]:
 
 
 params = list(output_ranked["params"])
 params[0]
 
 
-# In[ ]:
 
 
 model_search_output = GradientBoostingClassifier(n_estimators=500, max_depth=10,learning_rate=0.01)
 
 
-# In[ ]:
 
 
 # Import datasets
@@ -850,93 +768,79 @@ model_search_output_resample = model_search_output.fit(data_train_model, y_train
 results_model_search_resample = reglog_model_results(model_search_output_resample, data_val_model, y_val)
 
 
-# In[ ]:
 
 
 results_model_search_resample['AUC']
 
 
-# In[ ]:
 
 
 results_model_search_resample['Accuracy']
 
 
-# In[ ]:
 
 
 dist = y_val.value_counts()
 dist
 
 
-# In[ ]:
 
 
 cm_gbm_search = results_model_search_resample['Confusion_Matrix']
 confusion_matrix(cm_gbm_search)
 
 
-# In[ ]:
 
 
 tp_gbm_search = round(float(cm_gbm_search[0][0])/float(dist[0])*100,2)
 "True Postive en % = "+str(tp_gbm_search)+" %"
 
 
-# In[ ]:
 
 
 tn_gbm_search = round(float(cm_gbm_search[1][1])/float(dist[1])*100,2)
 "True negative en % = "+str(tn_gbm_search)+" %"
 
 
-# In[ ]:
 
 
 results_model_search_resample_test = reglog_model_results(model_search_output_resample, data_test_model, y_test)
 
 
-# In[ ]:
 
 
 results_model_search_resample_test['AUC']
 
 
-# In[ ]:
 
 
 results_model_search_resample_test['Accuracy']
 
 
-# In[ ]:
 
 
 dist = y_val.value_counts()
 dist
 
 
-# In[ ]:
 
 
 cm_gbm_search_test = results_model_search_resample_test['Confusion_Matrix']
 confusion_matrix(cm_gbm_search_test)
 
 
-# In[ ]:
 
 
 tp_gbm_search_test = round(float(cm_gbm_search_test[0][0])/float(dist[0])*100,2)
 "True Postive en % = "+str(tp_gbm_search_test)+" %"
 
 
-# In[ ]:
 
 
 tn_gbm_search_test= round(float(cm_gbm_search_test[1][1])/float(dist[1])*100,2)
 "True negative en % = "+str(tn_gbm_search_test)+" %"
 
 
-# In[ ]:
 
 
 tab = PrettyTable(['Dataset', 'Accuracy','AUC','Sensitivity : TP %','Specificity : TN %'])
@@ -945,7 +849,6 @@ tab.add_row(["Test data",round(results_model_search_resample_test['Accuracy'],5)
 print(tab)
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('javascript', '', "$.getScript('https://kmahelona.github.io/ipython_notebook_goodies/ipython_notebook_toc.js')")

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # It is defined by the kaggle/python docker image: https://github.com/kaggle/docker-python
@@ -52,13 +51,11 @@ from collections import Counter
 from typing import Dict
 
 
-# In[2]:
 
 
 get_ipython().run_cell_magic('time', '', "LOCAL = False\n\ndef read_data(LOCAL):\n    if LOCAL:\n        PATH  = 'data/'\n    else:\n        PATH = '/kaggle/input/data-science-bowl-2019/'\n\n    print('Reading train.csv file....')\n    train = pd.read_csv(PATH + 'train.csv')\n    print('Training.csv file have {} rows and {} columns'.format(train.shape[0], train.shape[1]))\n\n    print('Reading test.csv file....')\n    test = pd.read_csv(PATH + 'test.csv')\n    print('Test.csv file have {} rows and {} columns'.format(test.shape[0], test.shape[1]))\n\n    print('Reading train_labels.csv file....')\n    train_labels = pd.read_csv(PATH + 'train_labels.csv')\n    print('Train_labels.csv file have {} rows and {} columns'.format(train_labels.shape[0], train_labels.shape[1]))\n\n    print('Reading specs.csv file....')\n    specs = pd.read_csv(PATH + 'specs.csv')\n    print('Specs.csv file have {} rows and {} columns'.format(specs.shape[0], specs.shape[1]))\n\n    print('Reading sample_submission.csv file....')\n    sample_submission = pd.read_csv(PATH + 'sample_submission.csv')\n    print('Sample_submission.csv file have {} rows and {} columns'.format(sample_submission.shape[0], sample_submission.shape[1]))\n    return train, test, train_labels, specs, sample_submission\n\n# read data\ntrain, test, train_labels, specs, sample_submission = read_data(LOCAL)")
 
 
-# In[3]:
 
 
 def encode_title(train, test, train_labels):
@@ -97,7 +94,6 @@ def encode_title(train, test, train_labels):
 train, test, train_labels, win_code, list_of_user_activities, list_of_event_code, activities_labels, assess_titles, list_of_event_id, all_title_event_code = encode_title(train, test, train_labels)
 
 
-# In[4]:
 
 
 def get_data(user_sample, test_set=False):
@@ -543,7 +539,6 @@ def get_data(user_sample, test_set=False):
     return all_assessments
 
 
-# In[5]:
 
 
 asessment_activity_dict = {
@@ -648,7 +643,6 @@ def add_features(df):
     return df
 
 
-# In[6]:
 
 
 # categoricals = ['session_title','hour','weekday']
@@ -669,7 +663,6 @@ def get_test(test):
     return reduce_test
 
 
-# In[7]:
 
 
 reduce_test = get_test(test)
@@ -677,14 +670,12 @@ del test
 gc.collect()
 
 
-# In[8]:
 
 
 reduce_test = add_features(reduce_test)
 gc.collect()
 
 
-# In[9]:
 
 
 reduce_train = get_train(train)
@@ -692,14 +683,12 @@ del train
 gc.collect()
 
 
-# In[10]:
 
 
 reduce_train = add_features(reduce_train)
 gc.collect()
 
 
-# In[11]:
 
 
 # counts = [list_of_event_code, list_of_event_id, activities_labels]
@@ -715,7 +704,6 @@ gc.collect()
 # reduce_test[columns_to_clip] = reduce_test[columns_to_clip].clip(upper=values_to_clip_to, axis=1)
 
 
-# In[12]:
 
 
 import pickle
@@ -725,14 +713,12 @@ with open('reduce_test.pickle', 'wb') as f:
     pickle.dump(reduce_test, f)
 
 
-# In[13]:
 
 
 features = reduce_train.loc[(reduce_train.sum(axis=1) != 0), (reduce_train.sum(axis=0) != 0)].columns # delete useless columns
 features = [x for x in features if x not in ['accuracy_group', 'installation_id']] + ['acc_' + title for title in assess_titles]
 
 
-# In[14]:
 
 
 to_exclude = ['10_duration_goodrounds_mean_sum_259200',
@@ -2260,7 +2246,6 @@ to_exclude = ['10_duration_goodrounds_mean_sum_259200',
 #             print(feature, train_mean, test_mean)
 
 
-# In[15]:
 
 
 from collections import Counter, defaultdict
@@ -2325,7 +2310,6 @@ class RepeatedStratifiedGroupKFold():
                 yield train_indices, test_indices
 
 
-# In[16]:
 
 
 y = reduce_train['accuracy_group']
@@ -2345,14 +2329,12 @@ for idx, s in enumerate(splits):
     splits[idx] = (s[0], list(val.groupby('installation_id').tail(1).index))
 
 
-# In[17]:
 
 
 reduce_train.drop(list(set(reduce_train.columns) & set(cols_to_drop)),axis = 1,inplace = True)
 reduce_test.drop(list(set(reduce_test.columns) & set(cols_to_drop)),axis = 1,inplace = True)
 
 
-# In[18]:
 
 
 reduce_train.columns = ["".join (c if c.isalnum() else "_" for c in str(x)) for x in reduce_train.columns]
@@ -2360,7 +2342,6 @@ reduce_test.columns = ["".join (c if c.isalnum() else "_" for c in str(x)) for x
 categoricals = ["".join (c if c.isalnum() else "_" for c in str(x)) for x in categoricals]
 
 
-# In[19]:
 
 
 params = {
@@ -2393,7 +2374,6 @@ params = {
 }
 
 
-# In[20]:
 
 
 def run_lightgbm(x_train, y_train, x_valid, y_valid, x_test, index):
@@ -2422,13 +2402,11 @@ def run_lightgbm(x_train, y_train, x_valid, y_valid, x_test, index):
     return  model.predict(x_valid_proc), model.predict(x_test_proc), feature_importance
 
 
-# In[21]:
 
 
 get_ipython().run_cell_magic('time', '', "FE = pd.DataFrame(columns=['feature', 'importance'])\n\ntrain_preds_lgb = np.ones((n_repeats, len(reduce_train))) * -1\ntest_preds_lgb = np.zeros((n_repeats, len(reduce_test), n_fold))\n\nfor i, (train_index, val_index) in enumerate(splits):\n    train_preds_lgb[i // n_fold, val_index], test_preds_lgb[i // n_fold, :, i % n_fold], fe = run_lightgbm(reduce_train.iloc[train_index], y.values[train_index],\n                                                                                                             reduce_train.iloc[val_index], y.values[val_index], reduce_test, i)\n    \n    FE = FE.append(fe)")
 
 
-# In[22]:
 
 
 import matplotlib.pyplot as plt
@@ -2444,13 +2422,11 @@ sns.barplot(data = fe_aggr.sort_values(by = "importance", ascending = False).hea
 plt.show()
 
 
-# In[23]:
 
 
 y_train  = y
 
 
-# In[24]:
 
 
 from sklearn.metrics import cohen_kappa_score, mean_squared_error, roc_auc_score
@@ -2478,21 +2454,18 @@ print('MEDIAN_CAPPA_', np.median(SCORES))
 print('STD_CAPPA_', np.std(SCORES))
 
 
-# In[25]:
 
 
 all_preds = test_preds_lgb.mean(axis = 0).mean(axis = 1)
 fixed_scores = fix_distribution(y_train, np.array(all_preds))
 
 
-# In[26]:
 
 
 sample_submission['accuracy_group'] = fixed_scores.astype(int)
 sample_submission.to_csv('submission.csv', index=False)
 
 
-# In[27]:
 
 
 sample_submission['accuracy_group'].value_counts(normalize=True)

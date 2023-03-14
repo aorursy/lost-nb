@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -17,7 +16,6 @@ import bson
 import io
 
 
-# In[2]:
 
 
 import os
@@ -30,7 +28,6 @@ train_path = os.path.join(INPUT_PATH, 'train.bson')
 #train_path = "../input/cdiscount-image-classification-challenge/train.bson"
 
 
-# In[3]:
 
 
 import os.path as path
@@ -46,7 +43,6 @@ def split():
 ids, categories = split()
 
 
-# In[4]:
 
 
 import random
@@ -62,7 +58,6 @@ split_df = split_df.set_index(['id'])
 split_df.head(11)
 
 
-# In[5]:
 
 
 #if self._split.loc[example['_id']]['split'] == name:
@@ -70,7 +65,6 @@ split_df.head(11)
 #split_df.loc[11]['split'] == 'valid'
 
 
-# In[6]:
 
 
 from sklearn.cross_validation import train_test_split
@@ -82,13 +76,11 @@ print(ids_train[0], ids_test[0])
 #print(X_train.shape,X_test.shape,Y_train.shape,Y_test.shape)
 
 
-# In[7]:
 
 
 #10 in ids, 10 in ids_train, 10 in ids_test
 
 
-# In[8]:
 
 
 #data.category_id.values
@@ -98,13 +90,11 @@ print(len(category_names['category_id'].unique()))
 category_names.head()
 
 
-# In[9]:
 
 
 num_classes = 5270
 
 
-# In[10]:
 
 
 from keras.utils import np_utils
@@ -117,14 +107,12 @@ encoder.fit(category_names['category_id'])
 #dummy_y.shape
 
 
-# In[11]:
 
 
 #encoder.fit([1000010653])
 np_utils.to_categorical(encoder.transform([1000010653]), num_classes=num_classes).shape
 
 
-# In[12]:
 
 
 im_size = 180
@@ -164,7 +152,6 @@ validation_steps=2
 #val_split=words_per_epoch - val_words
 
 
-# In[13]:
 
 
 import cv2
@@ -207,7 +194,6 @@ def generate_arrays_from_file(path, batch_size):
         f.close()
 
 
-# In[14]:
 
 
 def convert2onehot(category_id):
@@ -217,7 +203,6 @@ def convert2onehot(category_id):
 #convert2onehot(1000010653)
 
 
-# In[15]:
 
 
 # https://www.kaggle.com/theblackcat/loading-bson-data-for-keras-fit-generator
@@ -278,7 +263,6 @@ def data_generator(path, ids, batch_size=128, start_image=0, name=''):
 #list(data_generator(batch_size=2))
 
 
-# In[16]:
 
 
 #from sklearn.cross_validation import train_test_split
@@ -286,7 +270,6 @@ def data_generator(path, ids, batch_size=128, start_image=0, name=''):
 #print(X_train.shape,X_test.shape,Y_train.shape,Y_test.shape)
 
 
-# In[17]:
 
 
 import keras
@@ -299,7 +282,6 @@ from keras import backend as K
 K.set_image_dim_ordering('tf')
 
 
-# In[18]:
 
 
 from keras.applications.inception_v3 import InceptionV3
@@ -319,7 +301,6 @@ keras_models_dir = "../input/keras inception v3 notop v0.5"
 base_model.load_weights('%s/inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5' % keras_models_dir)
 
 
-# In[19]:
 
 
 # add a global spatial average pooling layer
@@ -343,7 +324,6 @@ predictions = Dense(num_classes, activation='softmax')(x)
 model = Model(inputs=base_model.input, outputs=predictions)
 
 
-# In[20]:
 
 
 # first: train only the top layers (which were randomly initialized)
@@ -355,7 +335,6 @@ for layer in base_model.layers:
 model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
 
 
-# In[21]:
 
 
 # train the model on the new data for a few epochs
@@ -387,7 +366,6 @@ else:
                   validation_data=(X_test, Y_test))
 
 
-# In[22]:
 
 
 # at this point, the top layers are well trained and we can start fine-tuning
@@ -414,7 +392,6 @@ model.compile(optimizer=SGD(lr=0.0001, momentum=0.9),
               metrics=['accuracy'])
 
 
-# In[23]:
 
 
 # we train our model again (this time fine-tuning the top 2 inception blocks
@@ -448,7 +425,6 @@ else:
                   validation_data=(X_test, Y_test))
 
 
-# In[24]:
 
 
 def plot_train(hist):
@@ -468,13 +444,11 @@ def plot_train(hist):
 plot_train(hist)
 
 
-# In[25]:
 
 
 #hist.history
 
 
-# In[26]:
 
 
 # https://www.kaggle.com/saptak7/2-layer-cnn-adam-optimizer-and-5-epochs
@@ -521,13 +495,11 @@ with open('../input/cdiscount-image-classification-challenge/test.bson', 'rb') a
 print('Finished')
 
 
-# In[27]:
 
 
 submission.to_csv('new_submission.csv.gz', compression='gzip')
 
 
-# In[28]:
 
 
 #encoder.inverse_transform(model.predict(x[None]))

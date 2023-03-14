@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #!/usr/bin/env python
@@ -189,7 +188,6 @@ if __name__ == '__main__':
     main()
 
 
-# In[2]:
 
 
 from subprocess import check_output

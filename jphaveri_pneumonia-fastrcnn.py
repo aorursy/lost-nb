@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,13 +22,11 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 ls
 
 
-# In[3]:
 
 
 # setting path for each of the files
@@ -38,13 +35,11 @@ labels_path='/kaggle/input/rsna-pneumonia-detection-challenge/stage_2_train_labe
 Image_train_path='/kaggle/input/rsna-pneumonia-detection-challenge/stage_2_train_images/'
 
 
-# In[4]:
 
 
 get_ipython().system('git clone https://github.com/kbardool/keras-frcnn.git')
 
 
-# In[5]:
 
 
 df = pd.read_csv(class_path)
@@ -54,7 +49,6 @@ df_refine = df_1.drop("Target",axis =1)
 last = pd.concat([df_refine,df_class],axis = 1 )
 
 
-# In[6]:
 
 
 l = []
@@ -62,19 +56,16 @@ for i in last['patientId']:
     l.append('/kaggle/input/rsna-pneumonia-detection-challenge/stage_2_train_images/' + i+'.jpg')
 
 
-# In[7]:
 
 
 print(l)
 
 
-# In[8]:
 
 
 del last["patientId"]
 
 
-# In[9]:
 
 
 patientId = pd.Series(l,name='patientId')
@@ -84,45 +75,38 @@ df_n
 df_n.dropna(inplace= True)
 
 
-# In[10]:
 
 
 df_n.to_csv("new.txt",index= None)
 
 
-# In[11]:
 
 
 df_n['x-max'] = df_n['x'] + df_n['width']
 df_n['y-max'] = df_n['y'] + df_n['height']
 
 
-# In[12]:
 
 
 final = pd.DataFrame(df_n[['patientId','x','x-max','y','y-max','class']])
 
 
-# In[13]:
 
 
 final.to_csv("annotation.txt",index=None)
 
 
-# In[14]:
 
 
 ls
 
 
-# In[15]:
 
 
 import os
 os.mkdir('/kaggle/working/train/')
 
 
-# In[16]:
 
 
 import cv2
@@ -141,7 +125,6 @@ for f in train_list:   # remove "[:10]" to convert all images
     cv2.imwrite(outdir + f.replace('.dcm','.jpg'),img) # write png image
 
 
-# In[17]:
 
 
 from __future__ import division
@@ -179,7 +162,6 @@ from keras.engine import Layer, InputSpec
 from keras import initializers, regularizers
 
 
-# In[18]:
 
 
 class Config:
@@ -239,7 +221,6 @@ class Config:
 		self.model_path = None
 
 
-# In[19]:
 
 
 def get_data(input_path):
@@ -335,7 +316,6 @@ def get_data(input_path):
 		return all_data, classes_count, class_mapping
 
 
-# In[20]:
 
 
 class RoiPoolingConv(Layer):
@@ -420,7 +400,6 @@ class RoiPoolingConv(Layer):
         return dict(list(base_config.items()) + list(config.items()))
 
 
-# In[21]:
 
 
 def get_img_output_length(width, height):
@@ -475,7 +454,6 @@ def nn_base(input_tensor=None, trainable=False):
     return x
 
 
-# In[22]:
 
 
 def rpn_layer(base_layers, num_anchors):
@@ -503,7 +481,6 @@ def rpn_layer(base_layers, num_anchors):
     return [x_class, x_regr, base_layers]
 
 
-# In[23]:
 
 
 def classifier_layer(base_layers, input_rois, num_rois, nb_classes = 4):
@@ -545,7 +522,6 @@ def classifier_layer(base_layers, input_rois, num_rois, nb_classes = 4):
     return [out_class, out_regr]
 
 
-# In[24]:
 
 
 def union(au, bu, area_intersection):
@@ -577,7 +553,6 @@ def iou(a, b):
 	return float(area_i) / float(area_u + 1e-6)
 
 
-# In[25]:
 
 
 def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_length_calc_function):
@@ -777,7 +752,6 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
 	return np.copy(y_rpn_cls), np.copy(y_rpn_regr), num_pos
 
 
-# In[26]:
 
 
 def get_new_img_size(width, height, img_min_side=300):
@@ -862,7 +836,6 @@ def augment(img_data, config, augment=True):
 	return img_data_aug, img
 
 
-# In[27]:
 
 
 def get_anchor_gt(all_img_data, C, img_length_calc_function, mode='train'):
@@ -936,7 +909,6 @@ def get_anchor_gt(all_img_data, C, img_length_calc_function, mode='train'):
 				continue
 
 
-# In[28]:
 
 
 lambda_rpn_regr = 1.0
@@ -948,7 +920,6 @@ lambda_cls_class = 1.0
 epsilon = 1e-4
 
 
-# In[29]:
 
 
 def rpn_loss_regr(num_anchors):
@@ -1014,7 +985,6 @@ def class_loss_cls(y_true, y_pred):
     return lambda_cls_class * K.mean(categorical_crossentropy(y_true[0, :, :], y_pred[0, :, :]))
 
 
-# In[30]:
 
 
 def non_max_suppression_fast(boxes, probs, overlap_thresh=0.9, max_boxes=300):
@@ -1235,7 +1205,6 @@ def calc_iou(R, img_data, C, class_mapping):
     return np.expand_dims(X, axis=0), np.expand_dims(Y1, axis=0), np.expand_dims(Y2, axis=0), IoUs
 
 
-# In[31]:
 
 
 def rpn_to_roi(rpn_layer, regr_layer, C, dim_ordering, use_regr=True, max_boxes=300,overlap_thresh=0.9):
@@ -1341,7 +1310,6 @@ def rpn_to_roi(rpn_layer, regr_layer, C, dim_ordering, use_regr=True, max_boxes=
 	return result
 
 
-# In[32]:
 
 
 base_path = '/kaggle/working'
@@ -1364,31 +1332,26 @@ base_weight_path = os.path.join(base_path, 'model/vgg16_weights_tf_dim_ordering_
 config_output_filename = os.path.join(base_path, 'model_vgg_config.pickle')
 
 
-# In[33]:
 
 
 mkdir model
 
 
-# In[34]:
 
 
 cd model/
 
 
-# In[35]:
 
 
 get_ipython().system('wget https://github.com/fchollet/deep-learning-models/releases/download/v0.1/vgg16_weights_tf_dim_ordering_tf_kernels.h5')
 
 
-# In[ ]:
 
 
 
 
 
-# In[36]:
 
 
 # Create the config
@@ -1405,7 +1368,6 @@ C.num_rois = num_rois
 C.base_net_weights = base_weight_path
 
 
-# In[37]:
 
 
 #--------------------------------------------------------#
@@ -1417,7 +1379,6 @@ print()
 print('Spend %0.2f mins to load the data' % ((time.time()-st)/60) )
 
 
-# In[38]:
 
 
 if 'bg' not in classes_count:

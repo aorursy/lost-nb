@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -25,25 +24,21 @@ from tqdm.auto import tqdm
 tqdm.pandas()
 
 
-# In[2]:
 
 
 get_ipython().system('ls ../input')
 
 
-# In[3]:
 
 
 ls ../input/dogs-vs-cats/test1
 
 
-# In[4]:
 
 
 #!ls ../input/resnet50/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5
 
 
-# In[5]:
 
 
 train_dir = "../input/dogs-vs-cats/train/train"
@@ -55,13 +50,11 @@ labels = []
 df_train = pd.DataFrame()
 
 
-# In[6]:
 
 
 get_ipython().run_cell_magic('time', '', 'idx = 0\nimg_sizes = []\nwidths = np.zeros(TRAIN_TOTAL, dtype=int)\nheights = np.zeros(TRAIN_TOTAL, dtype=int)\naspect_ratios = np.zeros(TRAIN_TOTAL) #defaults to type float\nfor filename in file_list:\n    if "cat" in filename.lower():\n        labels.append(CAT)\n    else:\n        labels.append(DOG)\n    img = PIL.Image.open(f"{train_dir}/{filename}")\n    img_size = img.size\n    img_sizes.append(img_size)\n    widths[idx] = img_size[0]\n    heights[idx] = img_size[1]\n    aspect_ratios[idx] = img_size[0]/img_size[1]\n    img.close()\n    idx += 1')
 
 
-# In[7]:
 
 
 df_train["filename"] = file_list
@@ -75,63 +68,53 @@ df_train["aspect_ratio"] = aspect_ratios
 df_train.head()
 
 
-# In[8]:
 
 
 df_train["aspect_ratio"].max()
 
 
-# In[9]:
 
 
 df_train["aspect_ratio"].min()
 
 
-# In[10]:
 
 
 max_idx = df_train["aspect_ratio"].values.argmax()
 max_idx
 
 
-# In[11]:
 
 
 df_train.iloc[max_idx]
 
 
-# In[12]:
 
 
 filename = df_train.iloc[max_idx]["filename"]
 img = PIL.Image.open(f"{train_dir}/{filename}")
 
 
-# In[13]:
 
 
 ### The Broadest Image in the Set
 
 
-# In[14]:
 
 
 plt.imshow(img)
 
 
-# In[15]:
 
 
 img.close()
 
 
-# In[16]:
 
 
 df_sorted = df_train.sort_values(by="aspect_ratio")
 
 
-# In[17]:
 
 
 def plot_first_9(df_to_plot):
@@ -146,49 +129,41 @@ def plot_first_9(df_to_plot):
         plt.title(title_str)
 
 
-# In[18]:
 
 
 plot_first_9(df_sorted)
 
 
-# In[19]:
 
 
 df_sorted = df_train.sort_values(by="aspect_ratio", ascending=False)
 
 
-# In[20]:
 
 
 plot_first_9(df_sorted)
 
 
-# In[21]:
 
 
 df_sorted.drop(df_sorted.index[:3], inplace=True)
 
 
-# In[22]:
 
 
 plot_first_9(df_sorted)
 
 
-# In[23]:
 
 
 df_train = df_sorted
 
 
-# In[24]:
 
 
 df_train.dtypes
 
 
-# In[25]:
 
 
 #This batch size seemed to work without memory issues
@@ -199,7 +174,6 @@ img_size = 299 #TODO: 224
 epochs = 7
 
 
-# In[26]:
 
 
 from keras.applications.resnet50 import preprocess_input
@@ -263,31 +237,26 @@ def create_generators(validation_perc, shuffle=False, horizontal_flip=False,
     return train_generator, valid_generator, train_datagen
 
 
-# In[27]:
 
 
 
 
 
-# In[27]:
 
 
 train_generator, valid_generator, train_datagen = create_generators(0, False, False, 0, 0, 0)
 
 
-# In[28]:
 
 
 train_generator.class_indices
 
 
-# In[29]:
 
 
 class_map = {v: k for k, v in train_generator.class_indices.items()}
 
 
-# In[30]:
 
 
 import matplotlib
@@ -299,7 +268,6 @@ font = {'family' : 'normal',
 matplotlib.rc('font', **font)
 
 
-# In[31]:
 
 
 def plot_batch_9():
@@ -320,13 +288,11 @@ def plot_batch_9():
     plt.show()
 
 
-# In[32]:
 
 
 plot_batch_9()
 
 
-# In[33]:
 
 
 def show_img(idx):
@@ -336,19 +302,16 @@ def show_img(idx):
     img.close()
 
 
-# In[34]:
 
 
 show_img(2)
 
 
-# In[35]:
 
 
 show_img(1)
 
 
-# In[36]:
 
 
 train_generator, valid_generator, train_datagen = create_generators(validation_perc = 0, 
@@ -359,13 +322,11 @@ train_generator, valid_generator, train_datagen = create_generators(validation_p
                                                                     h_shift = 0)
 
 
-# In[37]:
 
 
 plot_batch_9()
 
 
-# In[38]:
 
 
 train_generator, valid_generator, train_datagen = create_generators(validation_perc = 0, 
@@ -376,13 +337,11 @@ train_generator, valid_generator, train_datagen = create_generators(validation_p
                                                                     h_shift = 0)
 
 
-# In[39]:
 
 
 plot_batch_9()
 
 
-# In[40]:
 
 
 train_generator, valid_generator, train_datagen = create_generators(validation_perc = 0, 
@@ -393,13 +352,11 @@ train_generator, valid_generator, train_datagen = create_generators(validation_p
                                                                     h_shift = 0.2)
 
 
-# In[41]:
 
 
 plot_batch_9()
 
 
-# In[42]:
 
 
 train_generator, valid_generator, train_datagen = create_generators(validation_perc = 0, 
@@ -411,13 +368,11 @@ train_generator, valid_generator, train_datagen = create_generators(validation_p
                                                                    fill_zeros = True)
 
 
-# In[43]:
 
 
 plot_batch_9()
 
 
-# In[44]:
 
 
 train_generator, valid_generator, train_datagen = create_generators(validation_perc = 0, 
@@ -430,13 +385,11 @@ train_generator, valid_generator, train_datagen = create_generators(validation_p
                                                                    rotation_range=20)
 
 
-# In[45]:
 
 
 plot_batch_9()
 
 
-# In[46]:
 
 
 train_generator, valid_generator, train_datagen = create_generators(validation_perc = 0, 
@@ -449,13 +402,11 @@ train_generator, valid_generator, train_datagen = create_generators(validation_p
                                                                    shear_range=20)
 
 
-# In[47]:
 
 
 plot_batch_9()
 
 
-# In[48]:
 
 
 train_generator, valid_generator, train_datagen = create_generators(validation_perc = 0, 
@@ -468,13 +419,11 @@ train_generator, valid_generator, train_datagen = create_generators(validation_p
                                                                    shear_range=90)
 
 
-# In[49]:
 
 
 plot_batch_9()
 
 
-# In[50]:
 
 
 from keras.applications import resnet50
@@ -490,25 +439,21 @@ train_generator, valid_generator, train_datagen = create_generators(validation_p
                                                                    shear_range=10)
 
 
-# In[51]:
 
 
 plot_batch_9()
 
 
-# In[52]:
 
 
 df_train.head()
 
 
-# In[53]:
 
 
 
 
 
-# In[53]:
 
 
 #the total number of images we have:
@@ -523,7 +468,6 @@ valid_steps = valid_size/batch_size
 valid_steps = int(2*valid_steps) 
 
 
-# In[54]:
 
 
 from keras.regularizers import l2
@@ -565,7 +509,6 @@ def create_model(trainable_layer_count):
     return model
 
 
-# In[55]:
 
 
 # create callbacks list
@@ -591,14 +534,12 @@ callbacks_list = [checkpoint, csv_logger, early]
 # callbacks_list = [checkpoint, csv_logger, reduceLROnPlat]
 
 
-# In[56]:
 
 
 model = create_model("all")
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
 
-# In[57]:
 
 
 fit_history = model.fit_generator(
@@ -614,19 +555,16 @@ fit_history = model.fit_generator(
 model.load_weights("../working/Resnet50_best.h5")
 
 
-# In[58]:
 
 
 fit_history.history
 
 
-# In[59]:
 
 
 pd.DataFrame(fit_history.history).head(20)
 
 
-# In[60]:
 
 
 def plot_loss_and_accuracy(fit_history):
@@ -649,20 +587,17 @@ def plot_loss_and_accuracy(fit_history):
     plt.show()
 
 
-# In[61]:
 
 
 plot_loss_and_accuracy(fit_history)
 
 
-# In[62]:
 
 
 model = create_model(0)
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
 
-# In[63]:
 
 
 train_generator.reset()
@@ -679,32 +614,27 @@ fit_history = model.fit_generator(
 model.load_weights("../working/Resnet50_best.h5")
 
 
-# In[64]:
 
 
 pd.DataFrame(fit_history.history).head(20)
 
 
-# In[65]:
 
 
 plot_loss_and_accuracy(fit_history)
 
 
-# In[66]:
 
 
 
 
 
-# In[66]:
 
 
 model = create_model(5)
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
 
-# In[67]:
 
 
 train_generator.reset()
@@ -721,26 +651,22 @@ fit_history = model.fit_generator(
 model.load_weights("../working/Resnet50_best.h5")
 
 
-# In[68]:
 
 
 pd.DataFrame(fit_history.history).head(20)
 
 
-# In[69]:
 
 
 plot_loss_and_accuracy(fit_history)
 
 
-# In[70]:
 
 
 valid_generator.reset()
 df_valid = pd.DataFrame()
 
 
-# In[71]:
 
 
 np.set_printoptions(suppress=True)
@@ -766,13 +692,11 @@ for filename in tqdm(valid_generator.filenames):
     predictions.append(score_predict)
 
 
-# In[72]:
 
 
 max(diffs)
 
 
-# In[73]:
 
 
 df_valid["filename"] = valid_generator.filenames
@@ -782,13 +706,11 @@ df_valid["diff"] = diffs
 df_valid["prediction"] = predictions
 
 
-# In[74]:
 
 
 df_valid.sort_values(by="diff", ascending=False).head()
 
 
-# In[75]:
 
 
 def show_diff_imgs(n):
@@ -817,19 +739,16 @@ def show_diff_imgs(n):
             break
 
 
-# In[76]:
 
 
 show_diff_imgs(10)
 
 
-# In[77]:
 
 
 get_ipython().system('ls ../input')
 
 
-# In[78]:
 
 
 test_dir = "../input/dogs-vs-cats/test1/test1"
@@ -840,7 +759,6 @@ test_df = pd.DataFrame({
 nb_samples = test_df.shape[0]
 
 
-# In[79]:
 
 
 np.set_printoptions(suppress=True)
@@ -854,7 +772,6 @@ for filename in tqdm(test_filenames):
     predictions.append(score_predict)
 
 
-# In[80]:
 
 
 #1=dog,0=cat
@@ -863,13 +780,11 @@ test_df['probability'] = predictions
 test_df['category'] = np.where(test_df['probability'] > threshold, 1,0)
 
 
-# In[81]:
 
 
 test_df.head()
 
 
-# In[82]:
 
 
 filename = test_df.iloc[1]["filename"]
@@ -877,7 +792,6 @@ img = PIL.Image.open(f'{test_dir}/{filename}')
 plt.imshow(img)
 
 
-# In[83]:
 
 
 submission_df = test_df.copy()

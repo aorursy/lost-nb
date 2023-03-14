@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,13 +21,10 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
-pip install imutils
 
 
-# In[3]:
 
 
 
@@ -42,7 +38,6 @@ import os
 import argparse
 
 
-# In[4]:
 
 
 def image_to_feature_vector(image, size=(32, 32)):
@@ -74,7 +69,6 @@ for (i, imagePath) in enumerate(imagePaths):
         print("[INFO] processed {}/{}".format(i, len(imagePaths)))
 
 
-# In[5]:
 
 
 
@@ -92,7 +86,6 @@ else:
     (trainRI, testRI, trainRL, testRL) = train_test_split(rawImages_subset, labels_subset, test_size=0.25, random_state=42)
 
 
-# In[6]:
 
 
 print("[INFO] evaluating raw pixel accuracy...")
@@ -105,7 +98,6 @@ for k in neighbors:
     print("[INFO] raw pixel accuracy: {:.2f}%".format(acc * 100))
 
 
-# In[7]:
 
 
 dataset_test = "/content/input2/test1/"
@@ -130,7 +122,6 @@ for(i,imagePath_test) in enumerate(imagePaths_test):
       print("[INFO] processed {}/{}".format(i,len(imagePaths_test)))
 
 
-# In[8]:
 
 
 model = KNeighborsClassifier(n_neighbors= 5)
@@ -139,7 +130,6 @@ a=model.fit(trainRI, trainRL)
 result=a.predict(rawImages_test)
 
 
-# In[9]:
 
 
 import pandas as pd

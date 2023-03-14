@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,26 +21,22 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import pandas as pd
 train = pd.read_csv('/kaggle/input/expedia-hotel-recommendations/train.csv', usecols = ['user_id'])
 
 
-# In[3]:
 
 
 users = train['user_id'].unique()
 
 
-# In[4]:
 
 
 users.shape
 
 
-# In[5]:
 
 
 import numpy as np
@@ -49,13 +44,11 @@ select_users = np.random.choice(users, 100000, replace=False)
 select_users.shape
 
 
-# In[6]:
 
 
 select_users
 
 
-# In[7]:
 
 
 y = pd.DataFrame(select_users)
@@ -63,7 +56,6 @@ y.columns = ['id']
 y
 
 
-# In[8]:
 
 
 import pandas as pd
@@ -73,25 +65,21 @@ select = pd.concat([chunk.loc[chunk.user_id.isin(y['id'])] for chunk in iter_csv
 select.head()
 
 
-# In[9]:
 
 
 df = select
 
 
-# In[10]:
 
 
 df.shape
 
 
-# In[11]:
 
 
 df.columns
 
 
-# In[12]:
 
 
 df['date'] = pd.to_datetime(df['date_time'])
@@ -102,7 +90,6 @@ df['hours'] = df['hours'].dt.hour
 df = df.sort_values(by = 'month-year')
 
 
-# In[13]:
 
 
 import seaborn as sns
@@ -126,28 +113,24 @@ sns.countplot(df['is_booking'], ax=ax)
 plt.show()
 
 
-# In[14]:
 
 
 sns.barplot(df['hotel_cluster'], hue =df['is_booking'])
 plt.xticks(rotation=90)
 
 
-# In[15]:
 
 
 sns.countplot(x=df['hotel_cluster'], hue=df['is_booking'])
 plt.xticks(rotation=90)
 
 
-# In[16]:
 
 
 sns.countplot(df['is_booking'])
 plt.show()
 
 
-# In[17]:
 
 
 sns.countplot(df['month-year'],hue=df['is_booking'])
@@ -155,7 +138,6 @@ plt.xticks(rotation=90)
 plt.show()
 
 
-# In[18]:
 
 
 import seaborn as sns
@@ -175,7 +157,6 @@ sns.distplot(df['srch_adults_cnt'], ax=ax)
 plt.show()
 
 
-# In[19]:
 
 
 sns.FacetGrid(df, hue="is_booking", size=6)    .map(plt.hist, "hotel_cluster")    .add_legend()
@@ -183,26 +164,22 @@ plt.title('book or click')
 plt.show()
 
 
-# In[20]:
 
 
 df['day'] = pd.to_datetime(df['date']).dt.day
 df['month'] = pd.to_datetime(df['date']).dt.month
 
 
-# In[21]:
 
 
 df.head().transpose()
 
 
-# In[22]:
 
 
 df.columns
 
 
-# In[23]:
 
 
 df_1 = df[['site_name', 'posa_continent', 'user_location_country',
@@ -213,14 +190,12 @@ df_1 = df[['site_name', 'posa_continent', 'user_location_country',
        'hotel_cluster', 'day', 'month', 'hours']]
 
 
-# In[24]:
 
 
 x = pd.DataFrame(df_1.groupby(['user_location_country']).size())
 x.transpose()
 
 
-# In[25]:
 
 
 df_1['is_clicking'] = df_1['is_booking']
@@ -229,44 +204,37 @@ df_1.is_clicking[df_1.is_clicking == 1] = 0
 df_1.is_clicking[df_1.is_clicking == 2] = 1
 
 
-# In[26]:
 
 
 df_1[['is_booking', 'is_clicking']].head()
 
 
-# In[27]:
 
 
 df_2 = df_1.groupby(['user_id', 'hotel_cluster', 'site_name', 'posa_continent', 'user_location_country','channel', 'hotel_continent', 'hotel_country', 'hotel_market']).sum()[['is_booking', 'is_clicking', 'is_mobile', 'is_package', 'cnt']].reset_index()
 df_2.head
 
 
-# In[28]:
 
 
 df_2.tail(20).transpose()
 
 
-# In[29]:
 
 
 df_2.head(20).transpose()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[30]:
 
 
 df_1.user_location_country[df_1.user_location_country == "NaN"] = 1000001
@@ -280,7 +248,6 @@ df_1.hotel_country[df_1.hotel_country == "NaN"] = 1000001
 df_1.hotel_market[df_1.hotel_market == "NaN"] = 1000001
 
 
-# In[31]:
 
 
 site_name = pd.get_dummies(df_1["site_name"], prefix = 'site_name: ')
@@ -295,7 +262,6 @@ hotel_country = pd.get_dummies(df_1["hotel_country"], prefix = 'hotel_country: '
 #hotel_market = pd.get_dummies(df_1["hotel_market"], prefix = 'hotel_market: ')
 
 
-# In[32]:
 
 
 df_2 = pd.concat([df_1.drop(['site_name', 'posa_continent',"user_location_country","user_location_region","srch_destination_type_id", "hotel_continent", "hotel_country"], axis = 1), 
@@ -303,13 +269,11 @@ df_2 = pd.concat([df_1.drop(['site_name', 'posa_continent',"user_location_countr
                  hotel_continent, hotel_country], axis = 1)
 
 
-# In[33]:
 
 
 df_2.head()
 
 
-# In[34]:
 
 
 from sklearn import datasets 
@@ -334,19 +298,16 @@ print (accuracy)
 cm = confusion_matrix(y_test, gnb_predictions) 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

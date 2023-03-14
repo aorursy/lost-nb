@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import re
@@ -24,7 +23,6 @@ from keras.layers.normalization import BatchNormalization
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 
 
-# In[2]:
 
 
 # -----------------------------------
@@ -219,7 +217,6 @@ def build_model(max_seq_len, word_index, embedding_dim, embedding_matrix):
     return model
 
 
-# In[3]:
 
 
 # --- Step 1 Preprocessing texts (texts to numerical values)
@@ -231,7 +228,6 @@ test_file = '../input/quora-insincere-questions-classification/test.csv'
 train_x, train_y, val_x, val_y, test_x, test_ids, word_index = preprocess_data(train_file, test_file, max_seq_len, split_ratio)
 
 
-# In[4]:
 
 
 # --- Step 2 Prepare embedding matrix
@@ -256,7 +252,6 @@ f.close()
 #embeddings_matrix = generate_embedding_layer(word_index, embeddings_index)
 
 
-# In[5]:
 
 
 # --- Step 3 Build and train model
@@ -269,7 +264,6 @@ model.compile(loss='binary_crossentropy',
 model.summary()
 
 
-# In[6]:
 
 
 nb_epoches = 200
@@ -285,7 +279,6 @@ best_val_score = min(hist.history['val_loss'])
 print('Min val loss is', best_val_score)
 
 
-# In[7]:
 
 
 # --- Final step: submission

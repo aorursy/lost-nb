@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -36,13 +35,11 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 
 
 
-# In[2]:
 
 
 train_transaction = pd.read_csv('/kaggle/input/ieee-fraud-detection/train_transaction.csv', index_col='TransactionID')
@@ -57,20 +54,17 @@ train = train_transaction.merge(train_identity, how='left', left_index=True, rig
 test = test_transaction.merge(test_identity, how='left', left_index=True, right_index=True)
 
 
-# In[3]:
 
 
 train.head()
 
 
-# In[4]:
 
 
 # Number of unique classes in each object column
 train_transaction.select_dtypes('object').apply(pd.Series.nunique, axis = 0)
 
 
-# In[5]:
 
 
 train_transaction['TransactionDT'].plot(kind='hist',
@@ -85,13 +79,11 @@ plt.legend()
 plt.show()
 
 
-# In[6]:
 
 
 print('  {:.4f}% of Transactions that are fraud in train '.format(train_transaction['isFraud'].mean() * 100))
 
 
-# In[7]:
 
 
 train_transaction.groupby('isFraud').count() .plot(kind='barh',
@@ -100,7 +92,6 @@ train_transaction.groupby('isFraud').count() .plot(kind='barh',
 plt.show()
 
 
-# In[8]:
 
 
 train_transaction['TransactionAmt'] .apply(np.log).plot(kind='hist',
@@ -110,7 +101,6 @@ train_transaction['TransactionAmt'] .apply(np.log).plot(kind='hist',
 plt.show()
 
 
-# In[9]:
 
 
 train_transaction.groupby('ProductCD').count().sort_index().plot(kind='barh',
@@ -119,7 +109,6 @@ train_transaction.groupby('ProductCD').count().sort_index().plot(kind='barh',
 plt.show()
 
 
-# In[10]:
 
 
 train_transaction.groupby('ProductCD')['isFraud']     .mean()     .sort_index()     .plot(kind='barh',
@@ -128,14 +117,12 @@ train_transaction.groupby('ProductCD')['isFraud']     .mean()     .sort_index() 
 plt.show()
 
 
-# In[11]:
 
 
 card_cols = [c for c in train_transaction.columns if 'card' in c]
 train_transaction[card_cols].head()
 
 
-# In[12]:
 
 
 color_pal = [x['color'] for x in plt.rcParams['axes.prop_cycle']]
@@ -151,7 +138,6 @@ for c in card_cols:
     plt.show()
 
 
-# In[13]:
 
 
 train_transaction_fr = train_transaction.loc[train_transaction['isFraud'] == 1]
@@ -164,20 +150,17 @@ train_transaction_nofr.groupby('card6')['card6'].count().plot(kind='barh', ax=ax
 plt.show()
 
 
-# In[ ]:
 
 
 
 
 
-# In[14]:
 
 
 m_cols = [c for c in train_transaction if c[0] == 'M']
 train_transaction[m_cols].head()
 
 
-# In[15]:
 
 
 (train_transaction[m_cols] == 'T').sum().plot(kind='bar',
@@ -197,7 +180,6 @@ plt.show()
 plt.show()
 
 
-# In[16]:
 
 
 import gc
@@ -207,7 +189,6 @@ del test_transaction, test_identity
 gc.collect()
 
 
-# In[17]:
 
 
 def reduce_mem_usage(df):
@@ -249,20 +230,17 @@ def reduce_mem_usage(df):
     return df
 
 
-# In[18]:
 
 
 get_ipython().run_cell_magic('time', '', 'train = reduce_mem_usage(train)\ntest = reduce_mem_usage(test)')
 
 
-# In[19]:
 
 
 isna = train.isna().sum(axis=1)
 isna_test = test.isna().sum(axis=1)
 
 
-# In[20]:
 
 
 plt.hist(isna, normed=True, bins=30, alpha=0.4, label='train')
@@ -271,27 +249,23 @@ plt.xlabel('Number of features which are NaNs')
 plt.legend()
 
 
-# In[21]:
 
 
 training_missing = train.isna().sum(axis=0) / train.shape[0] 
 test_missing = test.isna().sum(axis=0) / test.shape[0] 
 
 
-# In[22]:
 
 
 change = (training_missing / test_missing).sort_values(ascending=False)
 change = change[change<1e6] # remove the divide by zero errors
 
 
-# In[23]:
 
 
 change
 
 
-# In[24]:
 
 
 fig, axs = plt.subplots(ncols=2)
@@ -309,13 +283,11 @@ fig.set_size_inches(7,3)
 plt.tight_layout()
 
 
-# In[25]:
 
 
 isna_df = pd.DataFrame({'missing_count':isna,'isFraud':train['isFraud']})
 
 
-# In[26]:
 
 
 plt.plot(isna_df.groupby('missing_count').mean(), 'k.')
@@ -324,7 +296,6 @@ plt.xlabel('Number of missing variables')
 plt.axhline(0)
 
 
-# In[27]:
 
 
 def make_day_feature(df, offset=0, tname='TransactionDT'):
@@ -361,7 +332,6 @@ def make_hour_feature(df, tname='TransactionDT'):
     return encoded_hours
 
 
-# In[28]:
 
 
 vals = plt.hist(train['TransactionDT'] / (3600*24), bins=1800)
@@ -371,7 +341,6 @@ plt.ylabel('Number of transactions')
 plt.ylim(0,1000)
 
 
-# In[29]:
 
 
 train['weekday'] = make_day_feature(train, offset=0.58)
@@ -391,7 +360,6 @@ ax.set_ylabel('Fraction of fraudulent transactions')
 ax2.set_ylabel('Number of transactions')
 
 
-# In[30]:
 
 
 train['hours'] = make_hour_feature(train)
@@ -405,13 +373,11 @@ ax.set_ylabel('Fraction of fraudulent transactions')
 ax2.set_ylabel('Number of transactions')
 
 
-# In[31]:
 
 
 train.info()
 
 
-# In[32]:
 
 
 useful_features = ['TransactionAmt', 'ProductCD', 'card1', 'card2', 'card3', 'card4', 'card5', 'card6', 'addr1', 'addr2', 'dist1',
@@ -437,7 +403,6 @@ useful_features = ['TransactionAmt', 'ProductCD', 'card1', 'card2', 'card3', 'ca
                    'browser_id_31', 'version_id_31', 'screen_width', 'screen_height', 'had_id',"weekday","hours"]
 
 
-# In[33]:
 
 
 cols_to_drop = [col for col in train.columns if col not in useful_features]
@@ -445,14 +410,12 @@ cols_to_drop.remove('isFraud')
 cols_to_drop.remove('TransactionDT')
 
 
-# In[34]:
 
 
 train = train.drop(cols_to_drop, axis=1)
 test = test.drop(cols_to_drop, axis=1)
 
 
-# In[35]:
 
 
 columns_a = ['TransactionAmt', 'id_02', 'D15']
@@ -465,7 +428,6 @@ for col_a in columns_a:
             df[f'{col_a}_to_std_{col_b}'] = df[col_a] / df.groupby([col_b])[col_a].transform('std')
 
 
-# In[36]:
 
 
 # New feature - log of transaction amount.
@@ -477,7 +439,6 @@ train['TransactionAmt_decimal'] = ((train['TransactionAmt'] - train['Transaction
 test['TransactionAmt_decimal'] = ((test['TransactionAmt'] - test['TransactionAmt'].astype(int)) * 1000).astype(int)
 
 
-# In[37]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -506,7 +467,6 @@ for feature in ['id_01', 'id_31', 'id_33', 'id_36']:
     test[feature + '_count_dist'] = test[feature].map(test[feature].value_counts(dropna=False))
 
 
-# In[38]:
 
 
 emails = {'gmail': 'google', 'att.net': 'att', 'twc.com': 'spectrum', 
@@ -543,19 +503,16 @@ for c in ['P_emaildomain', 'R_emaildomain']:
     test[c + '_suffix'] = test[c + '_suffix'].map(lambda x: x if str(x) not in us_emails else 'us')
 
 
-# In[39]:
 
 
 train['P_emaildomain']
 
 
-# In[40]:
 
 
 get_ipython().run_cell_magic('time', '', "\nfor col in train.columns:\n    if train[col].dtype == 'object':\n        le = LabelEncoder()\n        le.fit(list(train[col].astype(str).values) + list(test[col].astype(str).values))\n        train[col] = le.transform(list(train[col].astype(str).values))\n        test[col] = le.transform(list(test[col].astype(str).values))")
 
 
-# In[41]:
 
 
 X = train.sort_values('TransactionDT').drop(['isFraud', 'TransactionDT'], axis=1)
@@ -567,14 +524,12 @@ del train, test
 gc.collect()
 
 
-# In[42]:
 
 
 from sklearn.model_selection import KFold
 import lightgbm as lgb
 
 
-# In[43]:
 
 
 params = {}
@@ -588,19 +543,16 @@ params['min_data']=50
 params['max_depth']=10
 
 
-# In[44]:
 
 
 X.head()
 
 
-# In[45]:
 
 
 get_ipython().run_cell_magic('time', '', '\nNFOLDS = 2\nfolds = KFold(n_splits=NFOLDS)\n\ncolumns = X.columns\nsplits = folds.split(X, y)\ny_preds = np.zeros(X_test.shape[0])\ny_oof = np.zeros(X.shape[0])\nscore = 0\n\nfeature_importances = pd.DataFrame()\nfeature_importances[\'feature\'] = columns\n  \nfor fold_n, (train_index, valid_index) in enumerate(splits):\n    X_train, X_valid = X[columns].iloc[train_index], X[columns].iloc[valid_index]\n    y_train, y_valid = y.iloc[train_index], y.iloc[valid_index]\n    \n    dtrain = lgb.Dataset(X_train, label=y_train)\n    dvalid = lgb.Dataset(X_valid, label=y_valid)\n\n    clf = lgb.train(params, dtrain, 100, valid_sets = [dtrain, dvalid], verbose_eval=200, early_stopping_rounds=500)\n    \n    feature_importances[f\'fold_{fold_n + 1}\'] = clf.feature_importance()\n    \n    y_pred_valid = clf.predict(X_valid)\n    y_oof[valid_index] = y_pred_valid\n    print(f"Fold {fold_n + 1} | AUC: {roc_auc_score(y_valid, y_pred_valid)}")\n    \n    score += roc_auc_score(y_valid, y_pred_valid) / NFOLDS\n    y_preds += clf.predict(X_test) / NFOLDS\n    \n    del X_train, X_valid, y_train, y_valid\n    gc.collect()\n    \nprint(f"\\nMean AUC = {score}")\nprint(f"Out of folds AUC = {roc_auc_score(y, y_oof)}")')
 
 
-# In[46]:
 
 
 feature_importances['average'] = feature_importances[[f'fold_{fold_n + 1}' for fold_n in range(folds.n_splits)]].mean(axis=1)
@@ -611,7 +563,6 @@ sns.barplot(data=feature_importances.sort_values(by='average', ascending=False).
 plt.title('50 TOP feature importance over {} folds average'.format(folds.n_splits));
 
 
-# In[47]:
 
 
 train_transaction = pd.read_csv('/kaggle/input/ieee-fraud-detection/train_transaction.csv', index_col='TransactionID')
@@ -623,7 +574,6 @@ test_identity = pd.read_csv('/kaggle/input/ieee-fraud-detection/test_identity.cs
 sample_submission = pd.read_csv('/kaggle/input/ieee-fraud-detection/sample_submission.csv', index_col='TransactionID')
 
 
-# In[48]:
 
 
 train = train_transaction.merge(train_identity, how='left', left_index=True, right_index=True)
@@ -636,7 +586,6 @@ del test_transaction, test_identity
 gc.collect()
 
 
-# In[49]:
 
 
 def fill_pairs(train, test, pairs):
@@ -674,7 +623,6 @@ def fill_pairs(train, test, pairs):
     return train, test
 
 
-# In[50]:
 
 
 card_features = ['card1', 'card2', 'card3', 'card4', 'card5', 'card6']
@@ -682,7 +630,6 @@ train[card_features].head()
 pd.concat([train[card_features].isna().sum(), test[card_features].isna().sum()], axis=1).rename(columns={0: 'train_NaNs', 1: 'test_NaNs'})
 
 
-# In[51]:
 
 
 pairs = [('card1', 'card2'), ('card1', 'card3')]
@@ -690,13 +637,11 @@ pairs = [('card1', 'card2'), ('card1', 'card3')]
 train, test = fill_pairs(train, test, pairs)
 
 
-# In[52]:
 
 
 pd.concat([train[card_features].isna().sum(), test[card_features].isna().sum()], axis=1).rename(columns={0: 'train_NaNs', 1: 'test_NaNs'})
 
 
-# In[53]:
 
 
 import lightgbm as lgb
@@ -708,13 +653,11 @@ y = train.iloc[:, train.columns == 'isFraud']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
 
 
-# In[54]:
 
 
 d_train = lgb.Dataset(X_train, label= y_train)
 
 
-# In[55]:
 
 
 params = {}
@@ -728,7 +671,6 @@ params['min_data']=50
 params['max_depth']=10
 
 
-# In[56]:
 
 
 from sklearn import preprocessing
@@ -742,20 +684,17 @@ for f in X_train.columns:
         X_test[f] = lbl.transform(list(X_test[f].values)) 
 
 
-# In[57]:
 
 
 clf = lgb.train(params, d_train, 100)
 
 
-# In[58]:
 
 
 clf = lgb.train(params, d_train, 100)
 y_pred = clf.predict(X_test)
 
 
-# In[59]:
 
 
 #convert into binary values
@@ -768,7 +707,6 @@ for i in range(0,len(X_test.index)):
 len(y_pred)   
 
 
-# In[60]:
 
 
 from sklearn.metrics import accuracy_score
@@ -776,7 +714,6 @@ accuracy = accuracy_score(y_pred, y_test)
 accuracy
 
 
-# In[61]:
 
 
 from sklearn.metrics import confusion_matrix
@@ -784,7 +721,6 @@ cm = confusion_matrix(y_test, y_pred)
 cm
 
 
-# In[62]:
 
 
 from sklearn.metrics import roc_curve, auc
@@ -803,7 +739,6 @@ plt.xlabel('False Positive Rate')
 plt.show();
 
 
-# In[63]:
 
 
 import matplotlib.pyplot as plt
@@ -815,13 +750,11 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 feature_imp = pd.DataFrame(sorted(zip(clf.feature_importance(),X_train.columns)), columns=['Value','Feature'])
 
 
-# In[64]:
 
 
 feature_imp = feature_imp.sort_values(by="Value", ascending=False)
 
 
-# In[65]:
 
 
 plt.figure(figsize=(20, 10))
@@ -832,7 +765,6 @@ plt.show()
 plt.savefig('lgbm_importances-01.png')
 
 
-# In[ ]:
 
 
 

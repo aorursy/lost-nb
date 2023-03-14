@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import copy
@@ -29,7 +28,6 @@ from torchvision import transforms
 import warnings
 
 
-# In[2]:
 
 
 root_dir = '/kaggle/input/osic-cached-dataset'
@@ -50,7 +48,6 @@ tensorboard_dir = '/kaggle/working/runs'
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-# In[3]:
 
 
 class CTScansDataset(Dataset):
@@ -113,7 +110,6 @@ class CTScansDataset(Dataset):
         return image, slices[0]
 
 
-# In[4]:
 
 
 class CropBoundingBox:
@@ -153,7 +149,6 @@ class CropBoundingBox:
         return {'image': image, 'metadata': data}
 
 
-# In[5]:
 
 
 class ConvertToHU:
@@ -172,7 +167,6 @@ class ConvertToHU:
         return {'image': image, 'metadata': data}
 
 
-# In[6]:
 
 
 class Resize:
@@ -187,7 +181,6 @@ class Resize:
         return {'image': image, 'metadata': data}
 
 
-# In[7]:
 
 
 class Clip:
@@ -202,7 +195,6 @@ class Clip:
         return {'image': image, 'metadata': data}
 
 
-# In[8]:
 
 
 class MaskWatershed:
@@ -300,7 +292,6 @@ class MaskWatershed:
         return marker_internal, marker_external, marker_watershed
 
 
-# In[9]:
 
 
 class Normalize:
@@ -335,7 +326,6 @@ class ZeroCenter:
         return tensor - self.pre_calculated_mean
 
 
-# In[10]:
 
 
 def show(list_imgs, cmap=cm.bone):
@@ -353,7 +343,6 @@ def show(list_imgs, cmap=cm.bone):
     plt.show()
 
 
-# In[11]:
 
 
 test = CTScansDataset(
@@ -371,7 +360,6 @@ list_imgs = [test[i]['image'] for i in range(len(test))]
 show(list_imgs)
 
 
-# In[12]:
 
 
 class CTTensorsDataset(Dataset):
@@ -410,7 +398,6 @@ class CTTensorsDataset(Dataset):
         return random_split(self, [num_train, num_val])
 
 
-# In[13]:
 
 
 train = CTTensorsDataset(
@@ -425,7 +412,6 @@ for i in range(len(train)):
 assert cum / len(train) == pytest.approx(0)
 
 
-# In[14]:
 
 
 class VarAutoEncoder(nn.Module):
@@ -509,7 +495,6 @@ class VarAutoEncoder(nn.Module):
         return x, mu, log_var
 
 
-# In[15]:
 
 
 t0 = time()
@@ -544,7 +529,6 @@ log_dir = Path(tensorboard_dir) / f'{date_time}'
 writer = SummaryWriter(log_dir)
 
 
-# In[16]:
 
 
 # Training loop
@@ -605,7 +589,6 @@ model.load_state_dict(best_model_wts)
 print(f'Done! Time {timedelta(seconds=time() - t0)}')
 
 
-# In[17]:
 
 
 slc = 0.5
@@ -635,7 +618,6 @@ plt.show()
 print(f'Latent features: {latent_features} \nLoss: {rmse}')
 
 
-# In[18]:
 
 
 from IPython.display import HTML
@@ -644,7 +626,6 @@ HTML('<br/><img src="https://i.ibb.co/gFxgRq6/sample-input.gif" style="float: le
      '<p style="clear: both;">')
 
 
-# In[ ]:
 
 
 

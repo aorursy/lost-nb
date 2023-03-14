@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -58,13 +57,11 @@ print(features.shape, ids.shape, names.shape)
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 
 
 
-# In[2]:
 
 
 def random_batch(batch_num = 200):
@@ -72,7 +69,6 @@ def random_batch(batch_num = 200):
     return (features[index], ids[index], labels[index])
 
 
-# In[3]:
 
 
 x = tf.placeholder(tf.float32, shape = (None, D, F))
@@ -112,7 +108,6 @@ correct_prediction = tf.equal(y, y_pred)
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 
-# In[4]:
 
 
 sess = tf.InteractiveSession()
@@ -129,21 +124,18 @@ accuracy = sess.run([accuracy], feed_dict={x: val_xs, y: val_labels})
 print("accuracy: ", accuracy)
 
 
-# In[5]:
 
 
 prob = sess.run([prob], feed_dict={x: testing_features})
 prob_array = np.asarray(prob[0])
 
 
-# In[6]:
 
 
 #for i in range(C):
     #print(name_unique[i])
 
 
-# In[7]:
 
 
 for i in range(prob_array.shape[0]):

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -29,14 +28,12 @@ IMAGE_RGB_STD  = [0.229, 0.224, 0.225]
 DEFECT_COLOR = [(0,0,0),(0,0,255),(0,255,0),(255,0,0),(0,255,255)]
 
 
-# In[2]:
 
 
 SPLIT_DIR = '../input/hengs-split'
 DATA_DIR = '../input/severstal-steel-defect-detection'
 
 
-# In[3]:
 
 
 class FourBalanceClassSampler(Sampler):
@@ -77,7 +74,6 @@ class FourBalanceClassSampler(Sampler):
         return self.length
 
 
-# In[4]:
 
 
 # UNet
@@ -166,7 +162,6 @@ class Net(nn.Module):
         return logit
 
 
-# In[5]:
 
 
 # Class which is used by the infor object in __get_item__
@@ -373,7 +368,6 @@ class NullScheduler():
         return string
 
 
-# In[6]:
 
 
 # import pdb; 
@@ -384,7 +378,6 @@ class NullScheduler():
 # abc()
 
 
-# In[7]:
 
 
 schduler = NullScheduler(lr=0.001)
@@ -394,7 +387,6 @@ loss_weight = None#[5,5,2,5] #
 train_sampler = FourBalanceClassSampler #RandomSampler
 
 
-# In[8]:
 
 
 class SteelDataset(Dataset):
@@ -475,7 +467,6 @@ class SteelDataset(Dataset):
             return self.augment(image, mask, infor)
 
 
-# In[9]:
 
 
 def do_valid(net, valid_loader, displays=None):
@@ -536,7 +527,6 @@ def do_valid(net, valid_loader, displays=None):
     return valid_loss
 
 
-# In[10]:
 
 
 def run_train():
@@ -720,7 +710,6 @@ def run_train():
     pass #-- end of all iterations --
 
 
-# In[11]:
 
 
 print('                      |-------------------------------- VALID-----------------------------|---------- TRAIN/BATCH ------------------------------\n')

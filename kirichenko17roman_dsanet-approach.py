@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 week = 4
 
 
-# In[2]:
 
 
 import numpy as np 
@@ -17,7 +15,6 @@ import os
 import matplotlib.pyplot as plt
 
 
-# In[3]:
 
 
 train = pd.read_csv(f"/kaggle/input/covid19-global-forecasting-week-{week}/train.csv")
@@ -30,7 +27,6 @@ print(f"Dataset has training data untill : {str(train_last_date)[:10]}")
 print(f"Training dates: {len(train.Date.unique())}")
 
 
-# In[4]:
 
 
 world_pop = pd.read_csv("/kaggle/input/population-by-country-2020/population_by_country_2020.csv")
@@ -38,7 +34,6 @@ world_pop = pd.read_csv("/kaggle/input/population-by-country-2020/population_by_
 world_pop
 
 
-# In[5]:
 
 
 additional_pop = {
@@ -199,7 +194,6 @@ additional_pop = pd.DataFrame({
 additional_pop
 
 
-# In[6]:
 
 
 world_pop = train.loc[:, ['geo']].rename(columns={'geo': 'Country_Region'}).drop_duplicates()     .merge(
@@ -210,19 +204,16 @@ world_pop = train.loc[:, ['geo']].rename(columns={'geo': 'Country_Region'}).drop
 world_pop
 
 
-# In[7]:
 
 
 _ = train.groupby(['Date']).agg({'ConfirmedCases': np.sum}).plot()
 
 
-# In[8]:
 
 
 _ = train.groupby(['Date']).agg({'Fatalities': np.sum}).plot()
 
 
-# In[9]:
 
 
 all_countries = train.groupby(['Date']).agg({'ConfirmedCases': np.sum}).reset_index()
@@ -235,7 +226,6 @@ all_countries = all_countries.set_index("Date")
 _ = all_countries['sh'].plot()
 
 
-# In[10]:
 
 
 all_countries = train.groupby(['Date']).agg({'Fatalities': np.sum}).reset_index()
@@ -248,7 +238,6 @@ all_countries = all_countries.set_index("Date")
 _ = all_countries['sh'].plot()
 
 
-# In[11]:
 
 
 test = pd.read_csv(f"/kaggle/input/covid19-global-forecasting-week-{week}/test.csv")
@@ -258,13 +247,11 @@ test_last_date = test.loc[:, 'Date'].values[-1]
 print(f'Test period from {str(test_first_date)[:10]} to {str(test_last_date)[:10]}')
 
 
-# In[12]:
 
 
 period = (np.array(test_last_date, dtype='datetime64[D]').astype(np.int64) - np.array(train_last_date, dtype='datetime64[D]').astype(np.int64))
 
 
-# In[13]:
 
 
 print(f"Prediction days: {(np.array(test_last_date, dtype='datetime64[D]').astype(np.int64) - np.array(train_last_date, dtype='datetime64[D]').astype(np.int64))+1}")
@@ -272,21 +259,18 @@ print(f"Public set: {(np.array(train_last_date, dtype='datetime64[D]').astype(np
 print(f"Full prediction set: {(np.array(test_last_date, dtype='datetime64[D]').astype(np.int64) - np.array(test_first_date, dtype='datetime64[D]').astype(np.int64))+1}")
 
 
-# In[14]:
 
 
 win = 15
 hor = 1
 
 
-# In[15]:
 
 
 base_1 = train.pivot(index='Date', columns="geo", values='ConfirmedCases').iloc[-(win+1),:].values
 base_2 = train.pivot(index='Date', columns="geo", values='Fatalities').iloc[-(win+1),:].values
 
 
-# In[16]:
 
 
 #train = train.merge(world_pop.rename(columns={'Country_Region': 'geo'}), how='left', on=['geo'])
@@ -294,31 +278,26 @@ base_2 = train.pivot(index='Date', columns="geo", values='Fatalities').iloc[-(wi
 #train
 
 
-# In[17]:
 
 
 #train.loc[train['geo'] == 'Diamond Princess', :]
 
 
-# In[18]:
 
 
 #train.loc[train['geo'] == 'MS Zaandam', :]
 
 
-# In[19]:
 
 
 geo_dict = {j:i for i, j in enumerate(train.loc[:, 'geo'].unique())}
 
 
-# In[20]:
 
 
 #train = train.loc[train.loc[:, 'geo'].isin(['MS Zaandam', 'Diamond Princess']) == False, :]
 
 
-# In[21]:
 
 
 train.loc[:, 'ConfirmedCases'] = ((train.loc[:, 'ConfirmedCases'] - train.groupby('geo')['ConfirmedCases'].shift(periods=1))) #/ np.log(train.loc[:, 'population'])) # * 10000
@@ -331,7 +310,6 @@ train.loc[train.loc[:, 'Fatalities'] < 0, 'Fatalities'] = 0.0
 train
 
 
-# In[22]:
 
 
 train_cases = train.pivot(index='Date', columns="geo", values='ConfirmedCases').iloc[:-hor,:].values
@@ -341,43 +319,36 @@ train_fatal = train.pivot(index='Date', columns="geo", values='Fatalities').iloc
 valid_fatal = train.pivot(index='Date', columns="geo", values='Fatalities').iloc[-(win+hor):,:].values
 
 
-# In[23]:
 
 
 train.sort_values("Fatalities").tail(30)#.pivot(index='Date', columns="geo", values='ConfirmedCases').reset_index().
 
 
-# In[24]:
 
 
 _ = plt.plot(train_cases)
 
 
-# In[25]:
 
 
 _ = plt.plot(valid_cases)
 
 
-# In[26]:
 
 
 _ = plt.plot(train_fatal)
 
 
-# In[27]:
 
 
 _ = plt.plot(valid_fatal)
 
 
-# In[28]:
 
 
 get_ipython().run_cell_magic('bash', '', '\npip install pytorch_lightning')
 
 
-# In[29]:
 
 
 import torch.nn as nn
@@ -390,14 +361,12 @@ from torch.utils.data import DataLoader
 from collections import OrderedDict
 
 
-# In[30]:
 
 
 def rmsle(predict, target): 
     return torch.sqrt(((torch.log(predict + 1) - torch.log(target + 1))**2).mean())
 
 
-# In[31]:
 
 
 class MTSFDataset(torch.utils.data.Dataset):
@@ -449,7 +418,6 @@ class MTSFDataset(torch.utils.data.Dataset):
         return sample
 
 
-# In[32]:
 
 
 class ScaledDotProductAttention(nn.Module):
@@ -900,7 +868,6 @@ class DSANet(ptl.LightningModule):
         return self.__dataloader(train='validation')
 
 
-# In[33]:
 
 
 model_cases = DSANet(np.array([train_fatal, train_cases]), np.array([valid_fatal, valid_cases]), train_cases.shape[1], window=win, 
@@ -910,7 +877,6 @@ trainer = ptl.Trainer(val_check_interval=1, max_steps=10000, gpus=1, show_progre
 trainer.fit(model_cases) 
 
 
-# In[34]:
 
 
 from glob import glob
@@ -919,14 +885,12 @@ sd = torch.load(glob("/kaggle/working/lightning_logs/version_0/checkpoints/*.ckp
 model_cases.load_state_dict(sd['state_dict'])
 
 
-# In[35]:
 
 
 #(train.pivot(index='Date', columns="geo", values='Fatalities').iloc[-win:,:].values * \
 #np.log(train.pivot(index='Date', columns="geo", values='population').iloc[-win:,:].values)) #/ 100000
 
 
-# In[36]:
 
 
 input = np.array([
@@ -942,25 +906,21 @@ for i in range(period+1):
     input = np.concatenate([input, np.array(pred.detach().cpu().numpy(), dtype=np.int)], axis=1)
 
 
-# In[37]:
 
 
 #input.max()
 
 
-# In[38]:
 
 
 #input = input * np.log(train.pivot(index='Date', columns="geo", values='population').iloc[win:,:].values[0, :]) #/ 100000
 
 
-# In[39]:
 
 
 pred_size = (np.array(test_last_date, dtype='datetime64[D]').astype(np.int64) - np.array(test_first_date, dtype='datetime64[D]').astype(np.int64))+1
 
 
-# In[40]:
 
 
 pd.DataFrame(np.array(input[1,:,:].cumsum(0) + base_1, 
@@ -968,7 +928,6 @@ pd.DataFrame(np.array(input[1,:,:].cumsum(0) + base_1,
              columns=train.pivot(index='Date', columns="geo", values='ConfirmedCases').columns).loc[:, ['US_New York', 'Ukraine', 'Italy', 'Spain']]
 
 
-# In[41]:
 
 
 pd.DataFrame(np.array(input[0, :, :].cumsum(0) + base_2, 
@@ -976,14 +935,12 @@ pd.DataFrame(np.array(input[0, :, :].cumsum(0) + base_2,
              columns=train.pivot(index='Date', columns="geo", values='ConfirmedCases').columns).loc[:, ['US_New York', 'Ukraine', 'Italy', 'Spain']]
 
 
-# In[42]:
 
 
 input[1, :, :] = input[1, :, :].cumsum(0) + base_1
 input[0, :, :] = input[0, :, :].cumsum(0) + base_2
 
 
-# In[43]:
 
 
 import datetime 
@@ -1006,7 +963,6 @@ res['Country_Region'] = [i.split("_")[0] for i in res['geo']]
 res
 
 
-# In[44]:
 
 
 sub = pd.read_csv(f"/kaggle/input/covid19-global-forecasting-week-{week}/submission.csv")
@@ -1019,13 +975,11 @@ sub["ConfirmedCases"] = np.array(sub["ConfirmedCases"], dtype=np.int)
 sub
 
 
-# In[45]:
 
 
 sub.to_csv("submission.csv", index=False)
 
 
-# In[ ]:
 
 
 

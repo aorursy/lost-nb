@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -16,39 +15,33 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 BASE_DIR = '../input'
 
 
-# In[3]:
 
 
 df_train = pd.read_csv(os.path.join(BASE_DIR, 'train.csv'))
 df_train.head()
 
 
-# In[4]:
 
 
 df_train.nunique()
 
 
-# In[5]:
 
 
 df_pixel_stats = pd.read_csv(os.path.join(BASE_DIR, 'pixel_stats.csv')).set_index(['id_code','site', 'channel'])
 df_pixel_stats.head()
 
 
-# In[6]:
 
 
 OUTPUT_DIR = '../output'
 
 
-# In[7]:
 
 
 DATA_PATH_FORMAT = os.path.join(BASE_DIR, 'train/{experiment}/Plate{plate}/{well}_s{sample}_w{channel}.png')
@@ -72,13 +65,11 @@ def transform_image(sample_data, pixel_data):
     return np.stack(x).T.astype(np.byte)
 
 
-# In[8]:
 
 
 get_ipython().system('mkdir -p {OUTPUT_DIR}/np_arrays/train/')
 
 
-# In[9]:
 
 
 for _, sample in tqdm(df_train.iterrows(), total=len(df_train)):
@@ -87,7 +78,6 @@ for _, sample in tqdm(df_train.iterrows(), total=len(df_train)):
     np.save(os.path.join(OUTPUT_DIR, 'np_arrays/train/{sample_id}.npy').format(sample_id=sample.id_code), x)
 
 
-# In[10]:
 
 
 # base sample : https://stanford.edu/~shervine/blog/keras-how-to-generate-data-on-the-fly
@@ -158,14 +148,12 @@ class DataGenerator(keras.utils.Sequence):
             return X, y
 
 
-# In[11]:
 
 
 # Generators
 training_generator = DataGenerator(df=df_train, shuffle=True)
 
 
-# In[12]:
 
 
 n_classes = df_train['sirna'].nunique()
@@ -184,7 +172,6 @@ model = keras.Sequential([
 ])
 
 
-# In[13]:
 
 
 model.compile(optimizer='nadam',
@@ -192,7 +179,6 @@ model.compile(optimizer='nadam',
               metrics=['accuracy'])
 
 
-# In[14]:
 
 
 # Train model on dataset
@@ -202,7 +188,6 @@ model.fit_generator(epochs=1,
                     workers=2)
 
 
-# In[15]:
 
 
 # Clean train data
@@ -210,13 +195,11 @@ get_ipython().system('rm -rf {OUTPUT_DIR}/np_arrays/train/')
 get_ipython().system('mkdir -p {OUTPUT_DIR}/np_arrays/test/')
 
 
-# In[16]:
 
 
 df_test = pd.read_csv( os.path.join(BASE_DIR, 'test.csv'))
 
 
-# In[17]:
 
 
 DATA_PATH_FORMAT = os.path.join(BASE_DIR, 'test/{experiment}/Plate{plate}/{well}_s{sample}_w{channel}.png')
@@ -227,25 +210,21 @@ for _, sample in tqdm(df_test.iterrows(), total=len(df_test)):
     np.save(os.path.join(OUTPUT_DIR, 'np_arrays/test/{sample_id}.npy').format(sample_id=sample.id_code), x)
 
 
-# In[ ]:
 
 
 test_generator = DataGenerator(df=df_test, mode='test', shuffle=False)
 
 
-# In[19]:
 
 
 predictions = model.predict_generator(test_generator, steps=1000, verbose=1)
 
 
-# In[20]:
 
 
 get_ipython().system('rm -rf {OUTPUT_DIR}/np_arrays/test/')
 
 
-# In[21]:
 
 
 classes = predictions.argmax(axis=1)

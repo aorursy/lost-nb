@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 AS_DEMO = True
@@ -12,7 +11,6 @@ else:
     NROUNDS = 6500  # Warning: needs to run overnight on multiple cores
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -21,7 +19,6 @@ from catboost import CatBoostRegressor
 from tqdm import tqdm
 
 
-# In[3]:
 
 
 # similar to the1owl
@@ -34,14 +31,12 @@ def add_date_features(df):
     return df
 
 
-# In[4]:
 
 
 properties2016 = pd.read_csv('../input/properties_2016.csv', low_memory = False)
 properties2017 = pd.read_csv('../input/properties_2017.csv', low_memory = False)
 
 
-# In[5]:
 
 
 train2016 = pd.read_csv('../input/train_2016_v2.csv', parse_dates=['transactiondate'], low_memory=False)
@@ -57,7 +52,6 @@ train_df = pd.concat([train2016, train2017], axis = 0)
 print("Train: ", train_df.shape)
 
 
-# In[6]:
 
 
 sample_submission = pd.read_csv('../input/sample_submission.csv', low_memory = False).rename(columns = {'ParcelId': 'parcelid'})
@@ -66,7 +60,6 @@ test_df = pd.merge(sample_submission[['parcelid']], properties2017, how = 'left'
 print("Test: ", test_df.shape)
 
 
-# In[7]:
 
 
 missing_perc_thresh = 0.98
@@ -83,7 +76,6 @@ print("We exclude: %s" % exclude_missing)
 print(len(exclude_missing))
 
 
-# In[8]:
 
 
 # exclude where we only have one unique value :D
@@ -98,7 +90,6 @@ print("We exclude: %s" % exclude_unique)
 print(len(exclude_unique))
 
 
-# In[9]:
 
 
 exclude_other = ['parcelid', 'logerror']  # for indexing/training only
@@ -112,7 +103,6 @@ print("We use these for training: %s" % train_features)
 print(len(train_features))
 
 
-# In[10]:
 
 
 cat_feature_inds = []
@@ -125,7 +115,6 @@ for i, c in enumerate(train_features):
 print("Cat features are: %s" % [train_features[ind] for ind in cat_feature_inds])
 
 
-# In[11]:
 
 
 # some out of range int is a good choice
@@ -133,7 +122,6 @@ train_df.fillna(-999, inplace=True)
 test_df.fillna(-999, inplace=True)
 
 
-# In[12]:
 
 
 X_train = train_df[train_features]
@@ -141,7 +129,6 @@ y_train = train_df.logerror
 print(X_train.shape, y_train.shape)
 
 
-# In[13]:
 
 
 test_df['transactiondate'] = pd.Timestamp('2016-12-01')  # Dummy
@@ -150,7 +137,6 @@ X_test = test_df[train_features]
 print(X_test.shape)
 
 
-# In[14]:
 
 
 num_ensembles = 10
@@ -171,7 +157,6 @@ for i in tqdm(range(num_ensembles)):
 y_pred /= num_ensembles
 
 
-# In[15]:
 
 
 submission = pd.DataFrame({
@@ -197,7 +182,6 @@ submission.to_csv(
     index=False)
 
 
-# In[16]:
 
 
 

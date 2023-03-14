@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # this code get the resulting dataset that i uploaded from my databricks code and commits.
@@ -13,7 +12,6 @@ submission25 = pd.read_csv('../input/test_data/model25.csv')
 submission25.to_csv('submission25.csv', index=False)
 
 
-# In[ ]:
 
 
 from pyspark.sql import Window
@@ -30,7 +28,6 @@ get_weekday = udf(lambda x: x.weekday())
 serie_has_null = F.udf(lambda x: reduce((lambda x, y: x and y), x))
 
 
-# In[ ]:
 
 
 import json
@@ -39,7 +36,6 @@ from keras.models import model_from_json
 unlist = lambda x: [float(i[0]) for i in x]
 
 
-# In[ ]:
 
 
 def prepare_data(data):
@@ -85,7 +81,6 @@ def load_model(model_path, weights_path):
     return model
 
 
-# In[ ]:
 
 
 class DateConverter(Transformer):
@@ -253,7 +248,6 @@ class YearQuarterExtractor(Transformer):
                                  .otherwise(3))))
 
 
-# In[ ]:
 
 
 from pyspark.ml.feature import VectorAssembler
@@ -264,7 +258,6 @@ train_data = spark.sql("select * from store_item_demand_train_csv")
 train, validation = train_data.randomSplit([0.8,0.2], seed=1234)
 
 
-# In[ ]:
 
 
 # Feature extraction
@@ -285,13 +278,10 @@ scaler = MinMaxScaler(inputCol="features", outputCol="scaledFeatures")
 # Serialize data
 sm = SerieMaker(inputCol='scaledFeatures', dateCol='date', idCol=['store', 'item'], serieSize=15)
 
-pipeline = Pipeline(stages=[dc, dex, mex, yex, wdex, wex, mbex, meex, yqex, va, scaler, sm])
 
 
-# In[ ]:
 
 
-pipiline_model = pipeline.fit(train)
 
 train_transformed = pipiline_model.transform(train)
 validation_transformed = pipiline_model.transform(validation)
@@ -300,7 +290,6 @@ train_transformed.write.saveAsTable('train_transformed_15', mode='overwrite')
 validation_transformed.write.saveAsTable('validation_transformed_15', mode='overwrite')
 
 
-# In[ ]:
 
 
 test_data = spark.sql("select * from store_item_demand_test_csv")
@@ -308,7 +297,6 @@ test_transformed = pipiline_model.transform(test_data)
 test_transformed.write.saveAsTable('test_transformed_15', mode='overwrite')
 
 
-# In[ ]:
 
 
 from keras import optimizers
@@ -327,7 +315,6 @@ serie_size = len(train_x[0])
 n_features = len(train_x[0][0])
 
 
-# In[ ]:
 
 
 # hyperparameters
@@ -348,7 +335,6 @@ model.compile(loss='mae', optimizer=adam, metrics=['mse', 'msle'])
 history = model.fit(train_x, train_y, epochs=epochs, batch_size=batch, validation_data=(validation_x, validation_y), verbose=2, shuffle=False)
 
 
-# In[ ]:
 
 
 model_path = '/dbfs/user/model1.json'
@@ -373,7 +359,6 @@ validation_mae = mae_evaluator.evaluate(df_predictions)
 print("RMSE: %f, MSE: %f, MAE: %f" % (validation_rmse, validation_mse, validation_mae))
 
 
-# In[ ]:
 
 
 model_path = '/dbfs/user/model1.json'

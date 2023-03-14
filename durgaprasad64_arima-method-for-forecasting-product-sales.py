@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -14,7 +13,6 @@ warnings.filterwarnings('ignore') #to ignore if any warnings takes place during 
 #import statsmodels.api as sm
 
 
-# In[2]:
 
 
 #read the data
@@ -22,7 +20,6 @@ df=pd.read_csv('../input/train.csv')
 df.head()
 
 
-# In[3]:
 
 
 #check for missing values in train data
@@ -30,7 +27,6 @@ df.head()
  #No missing valuues
 
 
-# In[4]:
 
 
 df['date'] = pd.to_datetime(df['date'], format="%Y-%m-%d") #If need extract year, month and day to new columns:
@@ -48,25 +44,21 @@ train_df['weekday'] = df['date'].dt.weekday
 train_df.head()
 
 
-# In[5]:
 
 
 sns.lineplot(x="date", y="sales",legend = 'full' , data=train_df)
 
 
-# In[6]:
 
 
 sns.lineplot(x="date", y="sales",legend = 'full' , data=train_df[:28])
 
 
-# In[7]:
 
 
 sns.boxplot(x="weekday", y="sales", data=train_df)
 
 
-# In[8]:
 
 
 train_df = train_df.set_index('date')
@@ -74,7 +66,6 @@ train_df['sales'] = train_df['sales'].astype(float)
 train_df.head()
 
 
-# In[9]:
 
 
 
@@ -85,7 +76,6 @@ fig = result.plot()
 fig.set_size_inches(15, 12)
 
 
-# In[10]:
 
 
 from statsmodels.tsa.stattools import adfuller
@@ -123,13 +113,11 @@ def test_stationarity(timeseries, window = 12, cutoff = 0.01):
     
 
 
-# In[11]:
 
 
 test_stationarity(train_df['sales'])
 
 
-# In[12]:
 
 
 #this is for reducing trend and seasonality
@@ -138,7 +126,6 @@ first_diff = first_diff.dropna(inplace = False)
 test_stationarity(first_diff, window = 12)
 
 
-# In[13]:
 
 
 import statsmodels.api as sm
@@ -150,7 +137,6 @@ ax2 = fig.add_subplot(212)
 fig = sm.graphics.tsa.plot_pacf(train_df.sales, lags=40, ax=ax2)      #lags=40
 
 
-# In[14]:
 
 
 fig = plt.figure(figsize=(12,8))
@@ -164,14 +150,12 @@ fig = sm.graphics.tsa.plot_pacf(first_diff, lags=40, ax=ax2)
 # significant seasonal thing going on. Then we should start to consider SARIMA to take seasonality into accuont
 
 
-# In[15]:
 
 
 arima_mod6 = sm.tsa.ARIMA(train_df.sales, (6,1,0)).fit(disp=False)
 print(arima_mod6.summary())
 
 
-# In[16]:
 
 
 from scipy import stats
@@ -204,14 +188,12 @@ ax2 = fig.add_subplot(212)
 fig = sm.graphics.tsa.plot_pacf(arima_mod6.resid, lags=40, ax=ax2)
 
 
-# In[17]:
 
 
 sarima_mod6 = sm.tsa.statespace.SARIMAX(train_df.sales, trend='n', order=(6,1,0)).fit()
 print(sarima_mod6.summary())
 
 
-# In[18]:
 
 
 resid = sarima_mod6.resid
@@ -239,7 +221,6 @@ ax2 = fig.add_subplot(212)
 fig = sm.graphics.tsa.plot_pacf(arima_mod6.resid, lags=40, ax=ax2)
 
 
-# In[19]:
 
 
 start_index = 1730
@@ -248,7 +229,6 @@ train_df['forecast'] = sarima_mod6.predict(start = start_index, end= end_index, 
 train_df[start_index:end_index][['sales', 'forecast']].plot(figsize=(12, 8))
 
 
-# In[20]:
 
 
 def smape_kun(y_true, y_pred):
@@ -257,7 +237,6 @@ def smape_kun(y_true, y_pred):
     print('MAPE: %.2f %% \nSMAPE: %.2f'% (mape,smape), "%")
 
 
-# In[21]:
 
 
 smape_kun(train_df[1730:1825]['sales'],train_df[1730:1825]['forecast'])

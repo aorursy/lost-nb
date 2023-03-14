@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from IPython.display import Image
 Image("../input/covid19-forecast-week-2/COVID-19 forecast - week 2.png")
 
 
-# In[2]:
 
 
 import pandas as pd

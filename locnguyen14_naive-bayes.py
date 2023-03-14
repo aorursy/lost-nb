@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 #Loading in dataset
@@ -36,7 +34,6 @@ print('Number of sincere questions:',len(data[data['target_encode']=='sincere'])
 print('Number of sincere questions:',len(data[data['target_encode']=='insincere']))
 
 
-# In[3]:
 
 
 import string
@@ -63,7 +60,6 @@ def text_process(mess):
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
 
-# In[4]:
 
 
 # Naives Bayes model
@@ -72,14 +68,12 @@ from sklearn.naive_bayes import MultinomialNB
 # Create a data pipeline for training and testing our models
 from sklearn.pipeline import Pipeline
 
-pipeline = Pipeline([
     ('bow', CountVectorizer(analyzer=text_process)),  # strings to token integer counts
     ('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
     ('classifier', MultinomialNB()),  # train on TF-IDF vectors w/ Naive Bayes classifier
 ])
 
 
-# In[5]:
 
 
 from sklearn.model_selection import train_test_split
@@ -90,13 +84,11 @@ print("Number of Training Instances:",len(X_train))
 print("Number of Testing Instances:",len(X_test))
 
 
-# In[6]:
 
 
 training_data = pd.DataFrame({'questions_text':X_train,'target':Y_train})
 
 
-# In[7]:
 
 
 # Downsampling the dataset so the ratio of sincere:insincere apprximmately 1:1
@@ -109,14 +101,11 @@ data_downsample = pd.concat([data_insincere, data_sincere_downsample], axis=0)
 print(data_downsample.target.value_counts())
 
 
-# In[8]:
 
 
 # Train the model
-pipeline.fit(data_downsample['questions_text'],data_downsample['target'])
 
 
-# In[9]:
 
 
 # Predict on the testing set and evaluate the model
@@ -127,7 +116,6 @@ from sklearn.metrics import classification_report
 print(classification_report(predictions,Y_test))
 
 
-# In[10]:
 
 
 # Read in test data and check the dataframes

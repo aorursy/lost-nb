@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -21,13 +20,11 @@ sys.path.insert(0, '../input')
 from mask_functions import rle2mask
 
 
-# In[2]:
 
 
 ls '../input/sample images/'
 
 
-# In[3]:
 
 
 IMAGE_PATH = '../input/sample images/'
@@ -35,14 +32,12 @@ IMAGE_MEDIA_TYPE = '.dcm'
 IMAGE_SIZE = 1024
 
 
-# In[4]:
 
 
 train_rle_sample = pd.read_csv(IMAGE_PATH + 'train-rle-sample.csv', header=None, index_col=0)
 train_rle_sample.head(10).reset_index()
 
 
-# In[5]:
 
 
 def bounding_box(img):
@@ -108,73 +103,61 @@ def show_image(image_name):
         plot_with_mask_and_bbox(dataset, mask_encoded)
 
 
-# In[6]:
 
 
 show_image('1.2.276.0.7230010.3.1.4.8323329.1000.1517875165.878027')
 
 
-# In[7]:
 
 
 show_image('1.2.276.0.7230010.3.1.4.8323329.10000.1517875220.938530')
 
 
-# In[8]:
 
 
 show_image('1.2.276.0.7230010.3.1.4.8323329.10001.1517875220.930580')
 
 
-# In[9]:
 
 
 show_image('1.2.276.0.7230010.3.1.4.8323329.10002.1517875220.939397')
 
 
-# In[10]:
 
 
 show_image('1.2.276.0.7230010.3.1.4.8323329.10003.1517875220.942420')
 
 
-# In[11]:
 
 
 show_image('1.2.276.0.7230010.3.1.4.8323329.4904.1517875185.355709')
 
 
-# In[12]:
 
 
 show_image('1.2.276.0.7230010.3.1.4.8323329.1314.1517875167.222290')
 
 
-# In[13]:
 
 
 show_image('1.2.276.0.7230010.3.1.4.8323329.4440.1517875182.865105')
 
 
-# In[14]:
 
 
 show_image('1.2.276.0.7230010.3.1.4.8323329.4982.1517875185.837576')
 
 
-# In[15]:
 
 
 show_image('1.2.276.0.7230010.3.1.4.8323329.12743.1517875241.599591')
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

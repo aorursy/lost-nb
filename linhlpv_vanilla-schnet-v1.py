@@ -1,19 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install ase==3.17 schnetpack==0.2.1')
 
 
-# In[2]:
 
 
 get_ipython().system('ls ../input')
 
 
-# In[3]:
 
 
 import numpy as np
@@ -30,14 +27,12 @@ test['scalar_coupling_constant'] = -1
 # test = test[test.type == coupling_type]
 
 
-# In[4]:
 
 
 J_type = sorted(train.type.unique())
 J_type
 
 
-# In[5]:
 
 
 type_map = {}
@@ -49,38 +44,32 @@ for i, t in enumerate(J_type):
     inverse_type_map[i] = t
 
 
-# In[6]:
 
 
 len(train)
 
 
-# In[7]:
 
 
 train.head()
 
 
-# In[8]:
 
 
 len(test)
 
 
-# In[9]:
 
 
 test.head()
 
 
-# In[10]:
 
 
 train_scalar_couplings = train.groupby('molecule_name')
 test_scalar_couplings = test.groupby('molecule_name')
 
 
-# In[11]:
 
 
 from ase import Atoms
@@ -119,13 +108,11 @@ def create_db(db_path, scalar_couplings, molecule_names):
                 
 
 
-# In[12]:
 
 
 properties=['J_type', 'type_id']
 
 
-# In[13]:
 
 
 import schnetpack
@@ -139,7 +126,6 @@ dataset_molecule_names = train.molecule_name.unique()
 print(len(dataset_molecule_names))
 
 
-# In[14]:
 
 
 champs_path = 'CHAMPS_train_J_type.db' 
@@ -150,19 +136,16 @@ create_db(db_path=champs_path,
 dataset = schnetpack.data.AtomsData(champs_path, properties=properties)
 
 
-# In[15]:
 
 
 #dataset[30]
 
 
-# In[16]:
 
 
 len(dataset)
 
 
-# In[17]:
 
 
 dataset_molecule_names = test.molecule_name.unique()
@@ -174,19 +157,16 @@ create_db(db_path=test_champs_path,
 test_dataset = schnetpack.data.AtomsData(test_champs_path, properties=properties)
 
 
-# In[18]:
 
 
 len(test_dataset)
 
 
-# In[19]:
 
 
 test_dataset[0]
 
 
-# In[20]:
 
 
 import pandas as pd
@@ -209,7 +189,6 @@ torch.manual_seed(21)
 np.random.seed(21)
 
 
-# In[21]:
 
 
 # The original function comes from the following script:
@@ -233,7 +212,6 @@ def evaluate_dataset(metrics, model, loader, device):
     return results
 
 
-# In[22]:
 
 
 import torch.nn as nn
@@ -279,7 +257,6 @@ class MolecularOutput(atm.OutputModule):
         return result
 
 
-# In[23]:
 
 
 def schnet_model():
@@ -290,7 +267,6 @@ def schnet_model():
     return model
 
 
-# In[24]:
 
 
 def train_model(max_epochs=50):
@@ -348,7 +324,6 @@ def train_model(max_epochs=50):
     return test_data
 
 
-# In[25]:
 
 
 def show_history():
@@ -358,7 +333,6 @@ def show_history():
     _ = display(df[['MAE_scc', 'RMSE_scc']].plot())
 
 
-# In[26]:
 
 
 def test_prediction(dataset):
@@ -387,31 +361,26 @@ def test_prediction(dataset):
     return entry_id, predictions
 
 
-# In[27]:
 
 
 get_ipython().run_cell_magic('time', '', 'used_test_data = train_model(max_epochs=1)')
 
 
-# In[28]:
 
 
 split = np.load('split.npz')
 
 
-# In[29]:
 
 
 list(split.keys())
 
 
-# In[30]:
 
 
 used_test_data =  dataset.create_subset(split['test_idx'])
 
 
-# In[31]:
 
 
 def make_submission():
@@ -423,37 +392,31 @@ def make_submission():
     return submission
 
 
-# In[32]:
 
 
 submission = make_submission()
 
 
-# In[33]:
 
 
 submission['J_type'] = submission['J_type'].map(lambda x: inverse_type_map[x])
 
 
-# In[34]:
 
 
 display(submission.head())
 
 
-# In[35]:
 
 
 submission.to_csv('submission_J_type.csv', index=False)
 
 
-# In[36]:
 
 
 display(test[:6956].head())
 
 
-# In[37]:
 
 
 from sklearn import preprocessing
@@ -464,19 +427,16 @@ p = le.transform(submission['J_type'])
 t = le.transform(test[:6956]['type'])
 
 
-# In[38]:
 
 
 p
 
 
-# In[39]:
 
 
 t
 
 
-# In[40]:
 
 
 from sklearn.metrics import accuracy_score

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 #importing dependecies to create dataset
@@ -30,7 +28,6 @@ import os
 import random
 
 
-# In[ ]:
 
 
 #function takes a file name and returns output label in the form of one hot vector
@@ -51,7 +48,6 @@ def load_image(path,width):
     return a
 
 
-# In[ ]:
 
 
 #defining constants to be used to prepare our dataset
@@ -59,7 +55,6 @@ TRAINING_PATH='../input/train'
 ls_train=os.listdir(TRAINING_PATH)
 
 
-# In[ ]:
 
 
 #let's make our training set now
@@ -73,13 +68,11 @@ for s in ls_train:
         print('images processed so far',i)
 
 
-# In[ ]:
 
 
 import tensorflow as tf
 
 
-# In[ ]:
 
 
 #defining placeholders
@@ -87,7 +80,6 @@ X=tf.placeholder(tf.float32,shape=(None,64,64,3))
 Y_=tf.placeholder(tf.float32,shape=[None,2]) #one hot vectors
 
 
-# In[ ]:
 
 
 #defining helper functions for conv2d and max_pooling
@@ -98,7 +90,6 @@ def max_pooling(x):
     return tf.nn.max_pool(x,ksize=[1,2,2,1],strides=[1,2,2,1],padding='SAME')
 
 
-# In[ ]:
 
 
 #defining helper functions for weights and bias
@@ -111,7 +102,6 @@ def bias_variable(shape):
   return tf.Variable(initial)
 
 
-# In[ ]:
 
 
 w1=weight_variable([5,5,3,32])
@@ -123,7 +113,6 @@ h_conv1=tf.nn.relu(conv2d(X,w1)+b1)
 h_pool1=max_pooling(h_conv1)
 
 
-# In[ ]:
 
 
 #defininf second layer of cnn
@@ -133,7 +122,6 @@ h_conv2=tf.nn.relu(conv2d(h_pool1,w2)+b2)
 h_pool2=max_pooling(h_conv2)
 
 
-# In[ ]:
 
 
 h_pool_flat=tf.reshape(h_pool2,[-1,16*16*64])
@@ -143,7 +131,6 @@ b3=bias_variable([1024])
 h_fc1 = tf.nn.relu(tf.matmul(h_pool_flat,w3)+b3)
 
 
-# In[ ]:
 
 
 w4=weight_variable([1024,2])
@@ -151,7 +138,6 @@ b4=bias_variable([2])
 y_conv= tf.matmul(h_fc1,w4)+b4
 
 
-# In[ ]:
 
 
 cross_entropy = tf.reduce_mean(
@@ -161,7 +147,6 @@ correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(Y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 
-# In[ ]:
 
 
 #creating training and testing sets
@@ -171,13 +156,11 @@ train_set = shuffle(train_set)
 train, test=tts(train_set,test_size=0.1,random_state=1)
 
 
-# In[ ]:
 
 
 print(len(train),len(test))
 
 
-# In[ ]:
 
 
 train_features=np.array([i[0]/255.0 for i in train])
@@ -185,7 +168,6 @@ train_labels=np.array([i[1] for i in train])
 print(train_features.shape,train_labels.shape)
 
 
-# In[ ]:
 
 
 init=tf.global_variables_initializer()
@@ -193,13 +175,11 @@ sess=tf.Session()
 sess.run(init)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 print("now entering training")
@@ -227,20 +207,17 @@ plt.plot(costs)
 plt.show()
 
 
-# In[ ]:
 
 
 # 'yo' 'yo' 'yo' 'yo'  'yo' 'yo' 'yo' 'yo' 'yo' 'yo' 'yo' 'yo' 'yo' 'yo' 'yo' 'yo'  'yo' 'yo' 'yo' 'yo
 # 'yo' 'yo' 'yo' 'yo'  'yo' 'yo' 'yo' 'yo' 'yo' 'yo' 'yo' 'yo' 'yo' 'yo' 'yo' 'yo' 'yo' 'yo' 'yo'
 
 
-# In[ ]:
 
 
 print(costs)
 
 
-# In[ ]:
 
 
 test_features=np.array([i[0]/255 for i in test])
@@ -249,7 +226,6 @@ print('calculating accuracy')
 print(sess.run(accuracy,{X:test_features,Y_:test_labels}))
 
 
-# In[ ]:
 
 
 #now trying to predict results for real test set
@@ -259,7 +235,6 @@ ls_test=sorted(os.listdir(TEST_PATH))
 print(len(ls_test))
 
 
-# In[ ]:
 
 
 test_dict={}
@@ -268,7 +243,6 @@ for i in ls_test:
     test_dict[s]=i
 
 
-# In[ ]:
 
 
 #test_features
@@ -279,19 +253,16 @@ for i in range(1,12501):
         print('features loaded successfully',i)
 
 
-# In[ ]:
 
 
 test_features=np.array(test_features)
 
 
-# In[ ]:
 
 
 print(test_features.shape)
 
 
-# In[ ]:
 
 
 ans=tf.argmax(y_conv, 1)
@@ -304,7 +275,6 @@ for i in range(125):
 print(len(test_result))
 
 
-# In[ ]:
 
 
 test_result=np.array(test_result)
@@ -314,7 +284,6 @@ for x in range (1,12501):
 labels=np.array(labels)
 
 
-# In[ ]:
 
 
 df={
@@ -326,13 +295,11 @@ pd_df=pd.DataFrame(data=df)
 pd_df.to_csv('cnn_regularized.csv',index=False)
 
 
-# In[ ]:
 
 
 pd_df 'yo' 'yo'
 
 
-# In[ ]:
 
 
 

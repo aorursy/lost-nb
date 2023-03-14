@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -12,37 +11,31 @@ import numpy as np
 import json
 
 
-# In[2]:
 
 
 get_ipython().system('mkdir data')
 
 
-# In[3]:
 
 
 get_ipython().system('mkdir bertoutput')
 
 
-# In[4]:
 
 
 get_ipython().system('cp -r ../input/bertmodel/cased_l-12_h-768_a-12/* .')
 
 
-# In[5]:
 
 
 get_ipython().system('cp -r cased_L-12_H-768_A-12/* .')
 
 
-# In[6]:
 
 
 get_ipython().system('ls')
 
 
-# In[7]:
 
 
 def preprocess(data):
@@ -59,7 +52,6 @@ def preprocess(data):
     return data
 
 
-# In[8]:
 
 
 train = pd.read_csv('../input/jigsaw-unintended-bias-in-toxicity-classification/train.csv')
@@ -93,13 +85,11 @@ df_calibrated.to_csv('data/train.tsv', sep='\t', index=False, header=False)
 df_bert_test.to_csv('data/test.tsv', sep='\t', index=False, header=True)
 
 
-# In[9]:
 
 
 get_ipython().system("python ../input/bertclassifier/repository/google-research-bert-0fce551/run_classifier.py --task_name=cola --do_train=True --do_predict=True --data_dir='data' --vocab_file='vocab.txt' --bert_config_file='bert_config.json' --init_checkpoint='bert_model.ckpt' --max_seq_length=220 --train_batch_size=8 --learning_rate=2e-5 --num_train_epochs=3.0 --output_dir='bertoutput' --do_lower_case=False")
 
 
-# In[10]:
 
 
 result = pd.read_csv("bertoutput/test_results.tsv",sep="\t",header=None)
@@ -114,13 +104,11 @@ submission_file = pd.DataFrame({'id':preds_id,
 submission_file.to_csv('submission.csv',sep=",",index=None)
 
 
-# In[11]:
 
 
 sub  = pd.read_csv('submission.csv')
 
 
-# In[12]:
 
 
 len(sub)

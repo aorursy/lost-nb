@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 print('SantiAbando')
 
 
-# In[2]:
 
 
 # Identifying Duplicate Questions
@@ -21,7 +19,6 @@ If you have any questions or want to discuss competitions/hardware/games/anythin
 Let's dive right into the data!
 
 
-# In[3]:
 
 
 import numpy as np # linear algebra
@@ -40,7 +37,6 @@ for f in os.listdir('../input'):
         print(f.ljust(30) + str(round(os.path.getsize('../input/' + f) / 1000000, 2)) + 'MB')
 
 
-# In[4]:
 
 
 print('T')
@@ -48,7 +44,6 @@ df_train = pd.read_csv('../input/train.csv')
 df_train.head()
 
 
-# In[5]:
 
 
 print('TTotal number of question pairs for training: {}'.format(len(df_train)))
@@ -67,7 +62,6 @@ plt.ylabel('Number of questions')
 print()
 
 
-# In[6]:
 
 
 from sklearn.metrics import log_loss
@@ -81,7 +75,6 @@ sub.to_csv('naive_submission.csv', index=False)
 sub.head()
 
 
-# In[7]:
 
 
 print('t')
@@ -89,13 +82,11 @@ df_test = pd.read_csv('../input/test.csv')
 df_test.head()
 
 
-# In[8]:
 
 
 print('Tony1 Total number of question pairs for testing: {}'.format(len(df_test)))
 
 
-# In[9]:
 
 
 train_qs = pd.Series(df_train['question1'].tolist() + df_train['question2'].tolist()).astype(str)
@@ -115,7 +106,6 @@ print('tmean-train {:.2f} std-train {:.2f} mean-test {:.2f} std-test {:.2f} max-
                           dist_train.std(), dist_test.mean(), dist_test.std(), dist_train.max(), dist_test.max()))
 
 
-# In[10]:
 
 
 dist_train = train_qs.apply(lambda x: len(x.split(' ')))
@@ -133,7 +123,6 @@ print('tmean-train {:.2f} std-train {:.2f} mean-test {:.2f} std-test {:.2f} max-
                           dist_train.std(), dist_test.mean(), dist_test.std(), dist_train.max(), dist_test.max()))
 
 
-# In[11]:
 
 
 print('t')
@@ -144,7 +133,6 @@ plt.imshow(cloud)
 plt.axis('off')
 
 
-# In[12]:
 
 
 qmarks = np.mean(train_qs.apply(lambda x: '?' in x))
@@ -162,7 +150,6 @@ print('Questions with capital letters: {:.2f}%'.format(capitals * 100))
 print('Questions with numbers: {:.2f}%'.format(numbers * 100))
 
 
-# In[13]:
 
 
 from nltk.corpus import stopwords
@@ -195,7 +182,6 @@ plt.title('Label distribution over word_match_share', fontsize=15)
 plt.xlabel('word_match_share', fontsize=15)
 
 
-# In[14]:
 
 
 from collections import Counter
@@ -214,7 +200,6 @@ counts = Counter(words)
 weights = {word: get_weight(count) for word, count in counts.items()}
 
 
-# In[15]:
 
 
 print('tMost common words and weights: \n')
@@ -223,7 +208,6 @@ print('\nLeast common words and weights: ')
 (sorted(weights.items(), key=lambda x: x[1], reverse=True)[:10])
 
 
-# In[16]:
 
 
 print('t')
@@ -247,7 +231,6 @@ def tfidf_word_match_share(row):
     return R
 
 
-# In[17]:
 
 
 print('t')
@@ -260,7 +243,6 @@ plt.title('Label distribution over tfidf_word_match_share', fontsize=15)
 plt.xlabel('word_match_share', fontsize=15)
 
 
-# In[18]:
 
 
 from sklearn.metrics import roc_auc_score
@@ -268,7 +250,6 @@ print('tOriginal AUC:', roc_auc_score(df_train['is_duplicate'], train_word_match
 print('   TFIDF AUC:', roc_auc_score(df_train['is_duplicate'], tfidf_train_word_match.fillna(0)))
 
 
-# In[19]:
 
 
 print('t')
@@ -283,7 +264,6 @@ x_test['tfidf_word_match'] = df_test.apply(tfidf_word_match_share, axis=1, raw=T
 y_train = df_train['is_duplicate'].values
 
 
-# In[20]:
 
 
 print('t')
@@ -305,7 +285,6 @@ y_train = (np.zeros(len(pos_train)) + 1).tolist() + np.zeros(len(neg_train)).tol
 del pos_train, neg_train
 
 
-# In[21]:
 
 
 print('t')
@@ -315,7 +294,6 @@ from sklearn.cross_validation import train_test_split
 x_train, x_valid, y_train, y_valid = train_test_split(x_train, y_train, test_size=0.2, random_state=4242)
 
 
-# In[22]:
 
 
 print('t')
@@ -336,7 +314,6 @@ watchlist = [(d_train, 'train'), (d_valid, 'valid')]
 bst = xgb.train(params, d_train, 400, watchlist, early_stopping_rounds=50, verbose_eval=10)
 
 
-# In[23]:
 
 
 print('t')
@@ -350,7 +327,6 @@ sub.to_csv('Tony_simple_xgb.csv', index=False)
 print('t2')
 
 
-# In[24]:
 
 
 sub.head()

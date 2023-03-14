@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -35,19 +34,16 @@ import os
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 get_ipython().system('ls ../input/resized-2015-2019-blindness-detection-images/labels')
 
 
-# In[3]:
 
 
 get_ipython().system('ls ../input/aptos2019-blindness-detection')
 
 
-# In[4]:
 
 
 train_on_gpu = torch.cuda.is_available()
@@ -58,21 +54,18 @@ else:
     print('CUDA is available!  Training on GPU ...')
 
 
-# In[5]:
 
 
 df = pd.read_csv("../input/aptos2019-blindness-detection/train.csv")
 df.head()
 
 
-# In[6]:
 
 
 type_percents = df["diagnosis"].value_counts(normalize=True)
 type_percents.values
 
 
-# In[7]:
 
 
 sns.barplot(x=type_percents.index, y=type_percents.values*100)          .set(xlabel="severity of diabetic retinopathy", ylabel='Percent (%)')    
@@ -81,7 +74,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[8]:
 
 
 fig = plt.figure(figsize=(25, 25))
@@ -95,7 +87,6 @@ for idx, img in enumerate(np.random.choice(train_imgs, 15)):
     ax.set_title(f'Label: {lab}')
 
 
-# In[9]:
 
 
 # def crop_image1(img,tol=7):
@@ -124,7 +115,6 @@ for idx, img in enumerate(np.random.choice(train_imgs, 15)):
 #         return img
 
 
-# In[10]:
 
 
 class AptosDrTrainDataset(Dataset):
@@ -154,7 +144,6 @@ class AptosDrTrainDataset(Dataset):
         return image, label
 
 
-# In[11]:
 
 
 # train_transforms = transforms.Compose([transforms.ToPILImage(),
@@ -194,7 +183,6 @@ valid_data_loader = torch.utils.data.DataLoader(dataset, batch_size=64, num_work
                                                 sampler=valid_sampler)
 
 
-# In[12]:
 
 
 for image, label in train_data_loader:
@@ -202,14 +190,12 @@ for image, label in train_data_loader:
     break
 
 
-# In[13]:
 
 
 model = models.resnet152(pretrained=True)
 model
 
 
-# In[14]:
 
 
 model.fc = nn.Sequential(
@@ -223,13 +209,11 @@ model.fc = nn.Sequential(
                          )
 
 
-# In[15]:
 
 
 model
 
 
-# In[16]:
 
 
 # Find total parameters and trainable parameters
@@ -240,13 +224,11 @@ total_trainable_params = sum(
 print(f'{total_trainable_params:,} training parameters.')
 
 
-# In[17]:
 
 
 model.features[28]
 
 
-# In[18]:
 
 
 for param in model.parameters():
@@ -267,7 +249,6 @@ for param in model.fc.parameters():
     param.requires_grad = True
 
 
-# In[19]:
 
 
 criterion = nn.MSELoss()
@@ -275,7 +256,6 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
 
 
-# In[20]:
 
 
 if train_on_gpu:
@@ -373,14 +353,12 @@ for epoch in range(1, n_epochs + 1):
     torch.save(state, 'aptos_resnet_152_9.pt')
 
 
-# In[21]:
 
 
 model.load_state_dict(torch.load("../input/aptos-resnet-152-8/aptos_resnet_152_8.pt")["state_dict"])
 model = model.to(device)
 
 
-# In[22]:
 
 
 for param in model.parameters():
@@ -389,13 +367,11 @@ for param in model.parameters():
 model.eval()
 
 
-# In[23]:
 
 
 get_ipython().system('ls /working')
 
 
-# In[24]:
 
 
 class AptosDrTestDataset(Dataset):
@@ -417,7 +393,6 @@ class AptosDrTestDataset(Dataset):
         return image, label
 
 
-# In[25]:
 
 
 test_transforms = transforms.Compose([transforms.RandomResizedCrop(224),
@@ -429,7 +404,6 @@ test_dataset = AptosDrTestDataset(csv_file='../input/resized-2015-2019-blindness
 test_data_loader = torch.utils.data.DataLoader(test_dataset, batch_size=32, shuffle=False, num_workers=4)
 
 
-# In[26]:
 
 
 preds = np.empty((0,1), int)
@@ -451,7 +425,6 @@ for data, target in valid_data_loader:
     print(target_lst.shape)
 
 
-# In[27]:
 
 
 class OptimizedRounder(object):
@@ -500,25 +473,21 @@ class OptimizedRounder(object):
         return self.coef_['x']
 
 
-# In[28]:
 
 
 preds.shape
 
 
-# In[29]:
 
 
 preds.T.shape
 
 
-# In[30]:
 
 
 target_lst.T
 
 
-# In[31]:
 
 
 optR = OptimizedRounder()
@@ -526,20 +495,17 @@ optR.fit(preds, target_lst)
 coefficients = optR.coefficients()
 
 
-# In[32]:
 
 
 coefficients
 
 
-# In[33]:
 
 
 sample_df = pd.read_csv("../input/aptos2019-blindness-detection/sample_submission.csv")
 sample_df.shape
 
 
-# In[34]:
 
 
 coef = [0.5, 1.5, 2.5, 3.5]
@@ -557,13 +523,11 @@ for i, pred in enumerate(preds):
         preds[i] = 4
 
 
-# In[35]:
 
 
 sample_df.diagnosis = preds
 
 
-# In[36]:
 
 
 sample_df.to_csv("submission.csv", index=False)

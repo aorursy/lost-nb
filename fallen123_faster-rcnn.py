@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,19 +22,16 @@ import os
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 os.listdir('/kaggle/input/faster-rcnn')
 
 
-# In[3]:
 
 
 
 
 
-# In[ ]:
 
 
 
@@ -46,7 +42,6 @@ os.listdir('/kaggle/input/faster-rcnn')
 # d = shutil.copy(src,dst)
 
 
-# In[4]:
 
 
 #  import gdown
@@ -55,7 +50,6 @@ os.listdir('/kaggle/input/faster-rcnn')
 # gdown.download(url, output, quiet=False)
 
 
-# In[ ]:
 
 
 # import pickle
@@ -63,43 +57,36 @@ os.listdir('/kaggle/input/faster-rcnn')
 # config_file = pickle.load(infile)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[5]:
 
 
 from __future__ import division
@@ -123,13 +110,11 @@ from keras.utils import generic_utils
 sys.setrecursionlimit(40000)
 
 
-# In[6]:
 
 
 os.listdir('../input/voctrain/VOCdevkit/VOC2007')
 
 
-# In[8]:
 
 
 train_path = '../input/firstrun/annotation.txt'
@@ -144,7 +129,6 @@ config_filename = '/kaggle/working/config.pickle'
 output_weight_path = '/kaggle/working/model_frcnn.hdf5'
 
 
-# In[9]:
 
 
 from keras import backend as K
@@ -207,7 +191,6 @@ class Config:
 		self.model_path = '/kaggle/input/faster-rcnn/model_frcnn_25.hdf5'
 
 
-# In[10]:
 
 
 def get_weight_path():
@@ -218,7 +201,6 @@ def get_weight_path():
         return '/kaggle/input/firstrun/model_frcnn.hdf5'
 
 
-# In[11]:
 
 
 C = Config()
@@ -249,7 +231,6 @@ else:
 	C.base_net_weights = get_weight_path()
 
 
-# In[12]:
 
 
 import cv2
@@ -316,25 +297,21 @@ def get_data(input_path):
 		return all_data, classes_count, class_mapping
 
 
-# In[ ]:
 
 
 
 
 
-# In[13]:
 
 
 all_imgs, classes_count, class_mapping = get_data(train_path)
 
 
-# In[14]:
 
 
 class_mapping
 
 
-# In[15]:
 
 
 
@@ -364,7 +341,6 @@ train_imgs = [s for s in all_imgs if s['imageset'] == 'trainval']
 val_imgs = [s for s in all_imgs if s['imageset'] == 'test']
 
 
-# In[ ]:
 
 
 # from keras.engine import Layer, InputSpec
@@ -452,14 +428,12 @@ val_imgs = [s for s in all_imgs if s['imageset'] == 'test']
 #         return dict(list(base_config.items()) + list(config.items()))
 
 
-# In[16]:
 
 
 from keras.layers.core import Dense, Dropout, Flatten
 from keras.layers.convolutional import Conv2D, MaxPooling2D, SeparableConv2D
 
 
-# In[ ]:
 
 
 # from keras.layers import Input, Add, Activation, Convolution2D, ZeroPadding2D,AveragePooling2D, TimeDistributed
@@ -689,31 +663,26 @@ from keras.layers.convolutional import Conv2D, MaxPooling2D, SeparableConv2D
 #     return [out_class, out_regr]
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[17]:
 
 
 def nn_base(input_tensor=None, trainable=False):
@@ -766,7 +735,6 @@ def nn_base(input_tensor=None, trainable=False):
     return x
 
 
-# In[18]:
 
 
 from __future__ import print_function
@@ -791,7 +759,6 @@ roi_input = Input(shape=(None, 4))
 shared_layers = nn_base(img_input, trainable=True)
 
 
-# In[19]:
 
 
 def rpn(base_layers, num_anchors):
@@ -804,25 +771,21 @@ def rpn(base_layers, num_anchors):
     return [x_class, x_regr, base_layers]
 
 
-# In[20]:
 
 
 num_anchors = len(C.anchor_box_scales) * len(C.anchor_box_ratios)
 
 
-# In[21]:
 
 
 rpn = rpn(shared_layers, num_anchors)
 
 
-# In[22]:
 
 
 type(rpn)
 
 
-# In[23]:
 
 
 from keras.engine.topology import Layer
@@ -931,7 +894,6 @@ class RoiPoolingConv(Layer):     #Layer is parent class and RoiPoolingConv is su
         return dict(list(base_config.items()) + list(config.items()))
 
 
-# In[24]:
 
 
 def classifier(base_layers, input_rois, num_rois, nb_classes = 21, trainable=False):
@@ -961,33 +923,28 @@ def classifier(base_layers, input_rois, num_rois, nb_classes = 21, trainable=Fal
     return [out_class, out_regr]
 
 
-# In[25]:
 
 
 classifier = classifier(shared_layers, roi_input, C.num_rois, nb_classes=len(classes_count), trainable=True)
 
 
-# In[26]:
 
 
 rpn[:2]
 
 
-# In[27]:
 
 
 model_rpn = Model(img_input, rpn[:2])
 model_classifier = Model([img_input, roi_input], classifier)
 
 
-# In[28]:
 
 
 for layer in model_rpn.layers:
     print(layer.output_shape)
 
 
-# In[29]:
 
 
 for layer in model_classifier.layers:
@@ -995,13 +952,11 @@ for layer in model_classifier.layers:
 #     print (layer.get_weights())
 
 
-# In[30]:
 
 
 model_all = Model([img_input, roi_input], rpn[:2] + classifier)
 
 
-# In[31]:
 
 
 from keras import backend as K
@@ -1048,13 +1003,11 @@ def class_loss_cls(y_true, y_pred):
 	return lambda_cls_class * K.mean(categorical_crossentropy(y_true[0, :, :], y_pred[0, :, :]))
 
 
-# In[ ]:
 
 
 #rpn_weight_path = './rpn_vgg.hdf5'
 
 
-# In[35]:
 
 
 lr = 1e-3
@@ -1066,13 +1019,11 @@ optimizer_classifier = SGD(lr=lr/5, decay=0.0005, momentum=0.9)
  #   optimizer_classifier = SGD(lr=lr/10, decay=0.0005, momentum=0.9)
 
 
-# In[36]:
 
 
 C.base_net_weights = '../input/firstrun/full_model_frcnn.hdf5'
 
 
-# In[37]:
 
 
 model_rpn.load_weights(C.base_net_weights, by_name=True)
@@ -1081,7 +1032,6 @@ model_classifier.load_weights(C.base_net_weights, by_name=True)
 #model_rpn.load_weights(rpn_weight_path, by_name=True)
 
 
-# In[38]:
 
 
 # compile the model AFTER loading weights!
@@ -1090,7 +1040,6 @@ model_classifier.compile(optimizer=optimizer_classifier, loss=[class_loss_cls, c
 model_all.compile(optimizer='sgd', loss='mae')
 
 
-# In[ ]:
 
 
 # optimizer = Adam(lr=1e-5)
@@ -1101,13 +1050,11 @@ model_all.compile(optimizer='sgd', loss='mae')
 # model_all.compile(optimizer='sgd', loss='mae')
 
 
-# In[ ]:
 
 
 
 
 
-# In[39]:
 
 
 def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_length_calc_function):
@@ -1259,7 +1206,6 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
 #     print (x.shape)
 
 
-# In[40]:
 
 
 def union(au, bu, area_intersection):
@@ -1291,7 +1237,6 @@ def iou(a, b):
     return float(area_i) / float(area_u + 1e-6)
 
 
-# In[41]:
 
 
 def get_new_img_size(width, height, img_min_side=300):
@@ -1376,7 +1321,6 @@ def augment(img_data, config, augment=True):
 	return img_data_aug, img
 
 
-# In[42]:
 
 
 def get_anchor_gt(all_img_data, C, img_length_calc_function, mode='train'):
@@ -1451,7 +1395,6 @@ def get_anchor_gt(all_img_data, C, img_length_calc_function, mode='train'):
 				continue
 
 
-# In[43]:
 
 
 def get_img_output_length(width, height):
@@ -1461,7 +1404,6 @@ def get_img_output_length(width, height):
     return get_output_length(width), get_output_length(height) 
 
 
-# In[44]:
 
 
 class SampleSelector:
@@ -1493,7 +1435,6 @@ class SampleSelector:
             return True
 
 
-# In[45]:
 
 
 def get_new_img_size(width, height, img_min_side=600):
@@ -1509,21 +1450,18 @@ def get_new_img_size(width, height, img_min_side=600):
 	return resized_width, resized_height
 
 
-# In[46]:
 
 
 data_gen_train = get_anchor_gt(train_imgs, C, get_img_output_length, mode='train')
 # X, Y, image_data, debug_img, debug_num_pos = next(data_gen_train)
 
 
-# In[ ]:
 
 
 # C.model_path = ''
 # C.base_net_weights = './vgg16_weights_tf_dim_ordering_tf_kernels.h5'
 
 
-# In[ ]:
 
 
 # if not os.path.isfile(C.model_path):
@@ -1566,7 +1504,6 @@ data_gen_train = get_anchor_gt(train_imgs, C, get_img_output_length, mode='train
 # #     print('Already train %dK batches'% (len(record_df)))
 
 
-# In[47]:
 
 
 def rpn_to_roi(rpn_layer, regr_layer, C, dim_ordering, use_regr=True, max_boxes=300,overlap_thresh=0.9):
@@ -1672,7 +1609,6 @@ def rpn_to_roi(rpn_layer, regr_layer, C, dim_ordering, use_regr=True, max_boxes=
 	return result
 
 
-# In[48]:
 
 
 def calc_iou(R, img_data, C, class_mapping):
@@ -1782,7 +1718,6 @@ def calc_iou(R, img_data, C, class_mapping):
     return np.expand_dims(X, axis=0), np.expand_dims(Y1, axis=0), np.expand_dims(Y2, axis=0), IoUs
 
 
-# In[49]:
 
 
 def apply_regr_np(X, T):
@@ -1817,7 +1752,6 @@ def apply_regr_np(X, T):
         return X
 
 
-# In[50]:
 
 
 def non_max_suppression_fast(boxes, probs, overlap_thresh=0.9, max_boxes=300):
@@ -1895,7 +1829,6 @@ def non_max_suppression_fast(boxes, probs, overlap_thresh=0.9, max_boxes=300):
     return boxes, probs
 
 
-# In[51]:
 
 
 def rpn_to_roi(rpn_layer, regr_layer, C, dim_ordering, use_regr=True, max_boxes=300,overlap_thresh=0.9):
@@ -1959,7 +1892,6 @@ def rpn_to_roi(rpn_layer, regr_layer, C, dim_ordering, use_regr=True, max_boxes=
             
 
 
-# In[57]:
 
 
 # total_epochs = len(record_df)
@@ -1983,19 +1915,16 @@ best_loss = np.Inf
 #     best_loss = np.min(r_curr_loss)
 
 
-# In[58]:
 
 
 best_loss
 
 
-# In[59]:
 
 
 C.model_path = '/kaggle/working/full_model_frcnn.hdf5'|
 
 
-# In[60]:
 
 
 start_time = time.time()
@@ -2161,45 +2090,38 @@ for epoch_num in range(num_epochs):
 print('Training complete, exiting.')
 
 
-# In[ ]:
 
 
 import shutil
 dest = shutil.copy("../input/faster-rcnn/annotation.txt", "/kaggle/working/annotation.txt")
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 model_all.save_weights(C.model_path)
 
 
-# In[ ]:
 
 
 C.model_path
 
 
-# In[ ]:
 
 
 os.remove('./vgg16_weights_tf_dim_ordering_tf_kernels.h5')
 # import matplotlib.pyplot
 
 
-# In[ ]:
 
 
 plt.fig
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(15,5))
@@ -2253,31 +2175,26 @@ plt.show()
 # plt.show()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 # from __future__ import division
@@ -2330,7 +2247,6 @@ plt.show()
 # from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 
-# In[ ]:
 
 
 train_df = pd.read_csv('../input/voccsv/train_image_data.csv')
@@ -2338,13 +2254,11 @@ train_df.head()
 # sub_df = pd.read_csv('/kaggle/input/global-wheat-detection/sample_submission.csv')
 
 
-# In[ ]:
 
 
 person_df = train_df[train_df['class_name']=='person']
 
 
-# In[ ]:
 
 
 # def bbox(x):
@@ -2364,33 +2278,28 @@ person_df = train_df[train_df['class_name']=='person']
 # # box.head()
 
 
-# In[ ]:
 
 
 person_df.head()
 
 
-# In[ ]:
 
 
 # train = pd.concat([train_df,box],axis=1)
 person_df.drop("Unnamed: 0",axis=1,inplace=True)
 
 
-# In[ ]:
 
 
 # dir_train = os.listdir("/kaggle/input/global-wheat-detection/train/")
 # dir_test = os.listdir("/kaggle/input/global-wheat-detection/test/")
 
 
-# In[ ]:
 
 
 train_df['path'][0]
 
 
-# In[ ]:
 
 
 def creatingPath(x):
@@ -2398,7 +2307,6 @@ def creatingPath(x):
 person_df["path"] = person_df["image_path"].apply(creatingPath)
 
 
-# In[ ]:
 
 
 # def plot_bbox(img_id):
@@ -2430,7 +2338,6 @@ person_df["path"] = person_df["image_path"].apply(creatingPath)
 #   plt.show()
 
 
-# In[ ]:
 
 
 # least_objects_img_ids = train["image_id"].value_counts().tail(50).index.values
@@ -2438,7 +2345,6 @@ person_df["path"] = person_df["image_path"].apply(creatingPath)
 #     plot_bbox(img_id)
 
 
-# In[ ]:
 
 
 # with open("/kaggle/input/annotation-file/annotation.txt", "r+") as f:
@@ -2446,13 +2352,11 @@ data = pd.read_csv("../input/train-annotation/train-annotations-bbox.csv", sep="
 data.head()
 
 
-# In[ ]:
 
 
 del (data)
 
 
-# In[ ]:
 
 
 with open('/kaggle/working/requirement.txt','w+') as f:
@@ -2464,7 +2368,6 @@ with open('/kaggle/working/requirement.txt','w+') as f:
     f.write('sklearn \n')
 
 
-# In[ ]:
 
 
 import cv2
@@ -2482,13 +2385,11 @@ with open("/kaggle/working/annotation.txt", "w+") as f:
       f.write(fileName + ',' + str(x1) + ',' + str(y1) + ',' + str(x2) + ',' + str(y2) + ',' + className + '\n')
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 network = 'resnet50'
@@ -2538,13 +2439,11 @@ def get_real_coordinates(ratio, x1, y1, x2, y2):
 	return (real_x1, real_y1, real_x2 ,real_y2)
 
 
-# In[ ]:
 
 
 class_to_color = {class_mapping[v]: np.random.randint(0, 255, 3) for v in class_mapping}
 
 
-# In[ ]:
 
 
 num_rois = 300
@@ -2553,7 +2452,6 @@ if C.network == 'resnet50':
 	num_features = 1024
 
 
-# In[ ]:
 
 
 input_shape_img = (None, None, 3)
@@ -2563,7 +2461,6 @@ roi_input = Input(shape=(C.num_rois, 4))
 feature_map_input = Input(shape=input_shape_features)
 
 
-# In[ ]:
 
 
 shared_layers = nn_base(img_input, trainable=True)
@@ -2578,31 +2475,26 @@ model_classifier_only = Model([feature_map_input, roi_input], classifier)
 model_classifier = Model([feature_map_input, roi_input], classifier)
 
 
-# In[ ]:
 
 
 scores = model_classifier_only.evaluate(, Y[test], verbose=0)
 
 
-# In[ ]:
 
 
 os.listdir()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 C.model_path
 
 
-# In[ ]:
 
 
 
@@ -2614,7 +2506,6 @@ model_rpn.compile(optimizer='sgd', loss='mse')
 model_classifier.compile(optimizer='sgd', loss='mse')
 
 
-# In[ ]:
 
 
 all_imgs = []
@@ -2626,19 +2517,16 @@ bbox_threshold = 0.8
 visualise = True
 
 
-# In[ ]:
 
 
 '../input/voctrain/VOCdevkit/VOC2007/JPEGImages/'+str(os.listdir('../input/voctrain/VOCdevkit/VOC2007/JPEGImages/')[0])
 
 
-# In[ ]:
 
 
 os.mkdir('/kaggle/working/test_img')
 
 
-# In[ ]:
 
 
 import shutil
@@ -2649,19 +2537,16 @@ for i in range (0,5):
     
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 img_path = '../input/testrbc'
 
 
-# In[ ]:
 
 
 
@@ -2768,13 +2653,11 @@ for idx, img_name in enumerate(sorted(os.listdir(img_path))):
 
 
 
-# In[ ]:
 
 
 P_regr
 
 
-# In[ ]:
 
 
 

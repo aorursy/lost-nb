@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -18,20 +17,17 @@ get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 sns.set()
 
 
-# In[2]:
 
 
 get_ipython().system('pip install git+http://github.com/brendanhasz/dsutils.git')
 
 
-# In[3]:
 
 
 from dsutils.printing import print_table, describe_df
 from dsutils.eda import countplot2d
 
 
-# In[4]:
 
 
 # Load card data
@@ -52,19 +48,16 @@ test = pd.read_csv('../input/test.csv',
                    dtype=dtypes)
 
 
-# In[5]:
 
 
 describe_df(train)
 
 
-# In[6]:
 
 
 describe_df(test)
 
 
-# In[7]:
 
 
 # Add target col to test
@@ -74,7 +67,6 @@ test['target'] = np.nan
 cards = pd.concat([train, test])
 
 
-# In[8]:
 
 
 print('Num unique in train:  ', test['card_id'].nunique())
@@ -83,32 +75,27 @@ print('The sum:              ', test['card_id'].nunique()+train['card_id'].nuniq
 print('Num unique in merged: ', cards['card_id'].nunique())
 
 
-# In[9]:
 
 
 del train, test
 gc.collect()
 
 
-# In[10]:
 
 
 cards.sample(10)
 
 
-# In[11]:
 
 
 cards['card_id'].apply(len).unique()
 
 
-# In[12]:
 
 
 cards['card_id'].str.slice(5, 15).sample(10)
 
 
-# In[13]:
 
 
 (cards['card_id']
@@ -117,13 +104,11 @@ cards['card_id'].str.slice(5, 15).sample(10)
  .all())
 
 
-# In[14]:
 
 
 #cards['card_id'] = cards['card_id'].apply(lambda x: int(x, 16))
 
 
-# In[15]:
 
 
 # Create a map from card_id to unique int
@@ -136,13 +121,11 @@ card_id_map = dict(zip(
 cards['card_id'] = cards['card_id'].map(card_id_map).astype('uint32')
 
 
-# In[16]:
 
 
 cards.sample(10)
 
 
-# In[17]:
 
 
 # Convert first_active_month to datetime
@@ -150,7 +133,6 @@ cards['first_active_month'] = pd.to_datetime(cards['first_active_month'],
                                              format='%Y-%m')
 
 
-# In[18]:
 
 
 # Make card_id the index
@@ -159,7 +141,6 @@ gc.collect()
 cards.sample(10)
 
 
-# In[19]:
 
 
 # Datatypes of each column
@@ -191,7 +172,6 @@ del new_trans
 gc.collect()
 
 
-# In[20]:
 
 
 # For each column, count merchant_ids w/ >1 unique vals
@@ -206,7 +186,6 @@ print_table(['Column', 'Number unique'],
             [cols, nuniques])
 
 
-# In[21]:
 
 
 # Join trans w/ merchants on merchant_id
@@ -233,7 +212,6 @@ del trans, merchants, df, sames
 gc.collect()
 
 
-# In[22]:
 
 
 # Datatypes of each column
@@ -263,13 +241,11 @@ merchants = pd.read_csv('../input/merchants.csv',
                         dtype=dtypes)
 
 
-# In[23]:
 
 
 merchants.sample(10)
 
 
-# In[24]:
 
 
 # Map merchant_id to integer
@@ -279,7 +255,6 @@ merch_id_map = dict(zip(
 ))
 
 
-# In[25]:
 
 
 def preprocess_merch_data(df):
@@ -317,21 +292,18 @@ def preprocess_merch_data(df):
 preprocess_merch_data(merchants)
 
 
-# In[26]:
 
 
 print("Number of duplicate rows in merchants.csv: %d" 
       % merchants.duplicated().sum())
 
 
-# In[27]:
 
 
 print("Number of duplicate merchant_ids: %d" % 
       merchants['merchant_id'].duplicated().sum())
 
 
-# In[28]:
 
 
 # Show some of the duplicates
@@ -339,7 +311,6 @@ duplicates = merchants['merchant_id'].duplicated(keep=False)
 merchants[duplicates].sort_values('merchant_id').head(6)
 
 
-# In[29]:
 
 
 # Drop duplicate entries
@@ -347,7 +318,6 @@ merchants.drop_duplicates(subset='merchant_id',
                           keep='first', inplace=True)
 
 
-# In[30]:
 
 
 # Datatypes of each column
@@ -377,7 +347,6 @@ new_trans = pd.read_csv('../input/new_merchant_transactions.csv',
                         dtype=dtypes)
 
 
-# In[31]:
 
 
 def preprocess_trans_data(df):
@@ -410,13 +379,11 @@ preprocess_trans_data(hist_trans)
 preprocess_trans_data(new_trans)
 
 
-# In[32]:
 
 
 describe_df(hist_trans)
 
 
-# In[33]:
 
 
 # Histogram of installments
@@ -429,7 +396,6 @@ plt.yscale('log', nonposy='clip')
 plt.show()
 
 
-# In[34]:
 
 
 # Set negative installments to nan
@@ -437,7 +403,6 @@ hist_trans.loc[hist_trans['installments']<0, 'installments'] = np.nan
 new_trans.loc[new_trans['installments']<0, 'installments'] = np.nan
 
 
-# In[35]:
 
 
 # Histogram of city_id and state_id
@@ -460,7 +425,6 @@ plt.yscale('log', nonposy='clip')
 plt.show()
 
 
-# In[36]:
 
 
 # Set negative ids to nan
@@ -470,13 +434,11 @@ hist_trans.loc[hist_trans['state_id']<0, 'state_id'] = np.nan
 new_trans.loc[new_trans['state_id']<0, 'state_id'] = np.nan
 
 
-# In[37]:
 
 
 describe_df(cards)
 
 
-# In[38]:
 
 
 # Loyalty score (aka the target)
@@ -487,7 +449,6 @@ plt.title('Loyalty Score Distribution')
 plt.show()
 
 
-# In[39]:
 
 
 print('Percent of cards with values <20: %0.3f'
@@ -495,13 +456,11 @@ print('Percent of cards with values <20: %0.3f'
               cards['target'].notnull().sum()))
 
 
-# In[40]:
 
 
 cards.loc[cards['target']<-20, 'target'].unique()
 
 
-# In[41]:
 
 
 # Show a log ratio distribution
@@ -513,13 +472,11 @@ plt.title('Log Ratio Distribution')
 plt.show()
 
 
-# In[42]:
 
 
 np.log(1e-14)
 
 
-# In[43]:
 
 
 # Plot first_active_month distribution
@@ -530,7 +487,6 @@ plt.xlabel('first_active_month')
 plt.show()
 
 
-# In[44]:
 
 
 # first_active_month vs loyalty score
@@ -538,7 +494,6 @@ sns.lineplot(x='first_active_month', y='target', data=cards)
 plt.show()
 
 
-# In[45]:
 
 
 # category counts
@@ -553,7 +508,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[46]:
 
 
 # Features vs loyalty score with std dev
@@ -568,7 +522,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[47]:
 
 
 # Features vs loyalty score with std dev
@@ -586,13 +539,11 @@ plt.tight_layout()
 plt.show()
 
 
-# In[48]:
 
 
 describe_df(merchants)
 
 
-# In[49]:
 
 
 # Show number of merchants per merchant group
@@ -605,7 +556,6 @@ plt.ylabel('Number of merchants')
 plt.show()
 
 
-# In[50]:
 
 
 # Raw distributions for numerical cols
@@ -623,7 +573,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[51]:
 
 
 rho, pv = spearmanr(merchants['numerical_1'].values,
@@ -631,13 +580,11 @@ rho, pv = spearmanr(merchants['numerical_1'].values,
 print('Correlation coefficient = %0.3f' % rho)
 
 
-# In[52]:
 
 
 (merchants['numerical_1'] == merchants['numerical_2']).mean()
 
 
-# In[53]:
 
 
 # most_recent_sales_range and most_recent_purchases_range
@@ -654,7 +601,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[54]:
 
 
 rho, pv = spearmanr(merchants['most_recent_sales_range'].values,
@@ -662,7 +608,6 @@ rho, pv = spearmanr(merchants['most_recent_sales_range'].values,
 print('Correlation coefficient = %0.3f' % rho)
 
 
-# In[55]:
 
 
 # Show joint counts
@@ -671,7 +616,6 @@ countplot2d('most_recent_sales_range',
             merchants, log=True)
 
 
-# In[56]:
 
 
 def plothist3(df, cols, bins=30):
@@ -688,7 +632,6 @@ plothist3(merchants,
           bins=np.linspace(-1, 3, 41))
 
 
-# In[57]:
 
 
 plothist3(merchants, 
@@ -698,7 +641,6 @@ plothist3(merchants,
           bins=np.linspace(-1, 3, 41))
 
 
-# In[58]:
 
 
 plothist3(merchants, 
@@ -708,7 +650,6 @@ plothist3(merchants,
           bins=np.linspace(0.5, 12.5, 13))
 
 
-# In[59]:
 
 
 # category_4
@@ -716,7 +657,6 @@ sns.countplot(x='category_4', data=merchants)
 plt.show()
 
 
-# In[60]:
 
 
 # Merge new and historical transactions
@@ -726,7 +666,6 @@ trans = pd.concat([hist_trans, new_trans])
 describe_df(trans)
 
 
-# In[61]:
 
 
 # authorized_flag
@@ -735,7 +674,6 @@ plt.title('Number of authorized transactions')
 plt.show()
 
 
-# In[62]:
 
 
 # card_id
@@ -746,7 +684,6 @@ plt.title('Number of transactions per card_id')
 plt.show()
 
 
-# In[63]:
 
 
 # city_id
@@ -760,7 +697,6 @@ plt.title('Number of transactions per City')
 plt.show()
 
 
-# In[64]:
 
 
 # state_id
@@ -775,7 +711,6 @@ plt.title('Number of transactions per State')
 plt.show()
 
 
-# In[65]:
 
 
 # category_1
@@ -783,7 +718,6 @@ sns.countplot(x='category_1', data=trans)
 plt.show()
 
 
-# In[66]:
 
 
 # category_2
@@ -792,7 +726,6 @@ plt.gca().xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
 plt.show()
 
 
-# In[67]:
 
 
 # category_3
@@ -801,7 +734,6 @@ plt.gca().xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
 plt.show()
 
 
-# In[68]:
 
 
 # Joint distribution of authorized_flag vs category_1
@@ -813,7 +745,6 @@ plt.xlabel('authorized_flag')
 plt.ylabel('category_1')
 
 
-# In[69]:
 
 
 # installments
@@ -825,7 +756,6 @@ plt.yscale('log', nonposy='clip')
 plt.show()
 
 
-# In[70]:
 
 
 # merchant_category_id
@@ -837,7 +767,6 @@ plt.gca().set(xscale='log')
 plt.show()
 
 
-# In[71]:
 
 
 # subsector_id
@@ -848,7 +777,6 @@ plt.yscale('log')
 plt.show()
 
 
-# In[72]:
 
 
 # merchant_id
@@ -862,7 +790,6 @@ plt.yscale('log')
 plt.show()
 
 
-# In[73]:
 
 
 # purchase_amount
@@ -876,7 +803,6 @@ plt.yscale('log')
 plt.show()
 
 
-# In[74]:
 
 
 # Function to plot transactions over time
@@ -896,21 +822,18 @@ def transactions_over_time(df):
 transactions_over_time(trans)
 
 
-# In[75]:
 
 
 # purchase_date
 transactions_over_time(hist_trans)
 
 
-# In[76]:
 
 
 # purchase_date
 transactions_over_time(new_trans)
 
 
-# In[77]:
 
 
 counts = (trans['purchase_date']
@@ -921,7 +844,6 @@ plt.xticks(range(7), ['M', 'T', 'W', 'Th', 'F', 'Sa', 'Su'])
 plt.show()
 
 
-# In[78]:
 
 
 # month_lag

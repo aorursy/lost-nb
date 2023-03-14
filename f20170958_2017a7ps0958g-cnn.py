@@ -1,50 +1,42 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 get_ipython().system('pip install -U -q kaggle --force ')
 
 
-# In[ ]:
 
 
 from google.colab import files
 f=files.upload()
 
 
-# In[ ]:
 
 
 get_ipython().system('mkdir -p ~/.kaggle ')
 
 
-# In[ ]:
 
 
 get_ipython().system('cp kaggle.json ~/.kaggle/')
 
 
-# In[ ]:
 
 
 get_ipython().system('chmod 600 /root/.kaggle/kaggle.json')
 
 
-# In[ ]:
 
 
 get_ipython().system('kaggle competitions download -c nnfl-cnn-lab2')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cd /content\nunzip nnfl-cnn-lab2.zip')
 
 
-# In[ ]:
 
 
 import numpy as np
@@ -58,7 +50,6 @@ import os
 print(os.listdir("../content"))
 
 
-# In[ ]:
 
 
 FAST_RUN = False
@@ -68,19 +59,16 @@ IMAGE_SIZE=(IMAGE_WIDTH, IMAGE_HEIGHT)
 IMAGE_CHANNELS=3
 
 
-# In[ ]:
 
 
 # !unzip ../content/train.zip
 
 
-# In[ ]:
 
 
 # !unzip ../content/test1.zip
 
 
-# In[ ]:
 
 
 # filenames = os.listdir("../content/train")
@@ -99,25 +87,21 @@ IMAGE_CHANNELS=3
 df = pd.read_csv('../content/upload/train_set.csv')
 
 
-# In[ ]:
 
 
 df.head()
 
 
-# In[ ]:
 
 
 df.tail()
 
 
-# In[ ]:
 
 
 df['label'].value_counts().plot.bar()
 
 
-# In[ ]:
 
 
 filenames = os.listdir("../content/upload/train_images/train_images")
@@ -126,7 +110,6 @@ image = load_img("../content/upload/train_images/train_images/"+sample)
 plt.imshow(image)
 
 
-# In[ ]:
 
 
 from tensorflow.python.keras.models import Sequential
@@ -176,19 +159,16 @@ model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['ac
 model.summary()
 
 
-# In[ ]:
 
 
 from tensorflow.python.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 
-# In[ ]:
 
 
 earlystop = EarlyStopping(patience=10)
 
 
-# In[ ]:
 
 
 learning_rate_reduction = ReduceLROnPlateau(monitor='val_accuracy', 
@@ -198,25 +178,21 @@ learning_rate_reduction = ReduceLROnPlateau(monitor='val_accuracy',
                                             min_lr=0.000005)
 
 
-# In[ ]:
 
 
 callbacks = [earlystop, learning_rate_reduction]
 
 
-# In[ ]:
 
 
 df['label'].head()
 
 
-# In[ ]:
 
 
 df["label"] = df["label"].replace({0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f'}) 
 
 
-# In[ ]:
 
 
 train_df, validate_df = train_test_split(df, test_size=0.20, random_state=41)
@@ -224,19 +200,16 @@ train_df = train_df.reset_index(drop=True)
 validate_df = validate_df.reset_index(drop=True)
 
 
-# In[ ]:
 
 
 train_df['label'].value_counts().plot.bar()
 
 
-# In[ ]:
 
 
 validate_df['label'].value_counts().plot.bar()
 
 
-# In[ ]:
 
 
 total_train = train_df.shape[0]
@@ -244,14 +217,12 @@ total_validate = validate_df.shape[0]
 batch_size=15
 
 
-# In[ ]:
 
 
 print(total_train)
 print(total_validate)
 
 
-# In[ ]:
 
 
 train_datagen = ImageDataGenerator(
@@ -275,7 +246,6 @@ train_generator = train_datagen.flow_from_dataframe(
 )
 
 
-# In[ ]:
 
 
 validation_datagen = ImageDataGenerator(rescale=1./255)
@@ -290,7 +260,6 @@ validation_generator = validation_datagen.flow_from_dataframe(
 )
 
 
-# In[ ]:
 
 
 example_df = train_df.sample(n=1).reset_index(drop=True)
@@ -304,7 +273,6 @@ example_generator = train_datagen.flow_from_dataframe(
 )
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(12, 12))
@@ -318,7 +286,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[ ]:
 
 
 epochs=3 if FAST_RUN else 50
@@ -332,13 +299,11 @@ history = model.fit_generator(
 )
 
 
-# In[ ]:
 
 
 model.save_weights("model-9.h5")
 
 
-# In[ ]:
 
 
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 12))
@@ -356,7 +321,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[ ]:
 
 
 # test_filenames = os.listdir("../content/test1/")
@@ -368,19 +332,16 @@ test_df = pd.read_csv("../content/upload/sample_submission.csv")
 # test_df.head(50)
 
 
-# In[ ]:
 
 
 test_df.tail()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 test_gen = ImageDataGenerator(rescale=1./255)
@@ -396,39 +357,33 @@ test_generator = test_gen.flow_from_dataframe(
 )
 
 
-# In[ ]:
 
 
 nb_samples = test_df.shape[0]
 predict = model.predict_generator(test_generator, steps=np.ceil(nb_samples/batch_size))
 
 
-# In[ ]:
 
 
 test_df['label'] = np.argmax(predict, axis=-1)
 
 
-# In[ ]:
 
 
 label_map = dict((v,k) for k,v in train_generator.class_indices.items())
 test_df['label'] = test_df['label'].replace(label_map)
 
 
-# In[ ]:
 
 
 test_df['label'] = test_df['label'].replace({ 'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5 })
 
 
-# In[ ]:
 
 
 test_df['label'].value_counts().plot.bar()
 
 
-# In[ ]:
 
 
 sample_test = test_df.head(18)
@@ -445,7 +400,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[ ]:
 
 
 submission_df = test_df.copy()
@@ -455,13 +409,11 @@ submission_df['label'] = submission_df['label']
 submission_df.head()
 
 
-# In[ ]:
 
 
 submission_df.describe()
 
 
-# In[ ]:
 
 
 submission_df.to_csv('submission9.csv', index=False)

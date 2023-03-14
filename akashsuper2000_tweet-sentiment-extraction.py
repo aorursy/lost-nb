@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
-pip install mglearn
 
 
-# In[2]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -78,7 +75,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[3]:
 
 
 train_df = pd.read_csv('/kaggle/input/tweet-sentiment-extraction/train.csv')
@@ -88,13 +84,11 @@ train_df = train_df.reset_index()
 train_df
 
 
-# In[4]:
 
 
 train_df.info()
 
 
-# In[5]:
 
 
 def word_check(word, list):
@@ -188,7 +182,6 @@ def document_features(document):
     return features
 
 
-# In[6]:
 
 
 stop_words = set(stopwords.words('english'))
@@ -330,7 +323,6 @@ def text_preprocess(text):
    
 
 
-# In[7]:
 
 
 train_df['processed_text'] = None
@@ -340,7 +332,6 @@ for i in range(len(train_df)):
     train_df.processed_text[i] = text_preprocess(train_df.text[i])
 
 
-# In[8]:
 
 
 import matplotlib.pyplot as plt
@@ -349,7 +340,6 @@ ax.set_xlabel('Number of Samples in training Set')
 ax.set_ylabel('Label')
 
 
-# In[9]:
 
 
 from wordcloud import WordCloud
@@ -395,7 +385,6 @@ plt.show()
 wordcloud_pos.to_file('positive_senti_wordcloud.jpg')
 
 
-# In[10]:
 
 
 # wordcloud for frequently occuring bigrams
@@ -471,7 +460,6 @@ plt.show()
 wordCloud.to_file('wordcloud_freq_bigrams.jpg')
 
 
-# In[11]:
 
 
 # function to collect hashtags
@@ -485,7 +473,6 @@ def hashtag_extract(x):
     return hashtags
 
 
-# In[12]:
 
 
 # extracting hashtags from positive tweets
@@ -505,7 +492,6 @@ HT_negative = sum(HT_negative,[])
 HT_neutral = sum(HT_neutral,[])
 
 
-# In[13]:
 
 
 # hashtags contributing to positive tweets
@@ -522,7 +508,6 @@ ax.set(ylabel = 'Count')
 plt.show()
 
 
-# In[14]:
 
 
 # hashtags contributing to negative tweets
@@ -538,7 +523,6 @@ ax.set(ylabel = 'Count')
 plt.show()
 
 
-# In[15]:
 
 
 # hashtags contributing to neutral tweets
@@ -555,7 +539,6 @@ ax.set(ylabel = 'Count')
 plt.show()
 
 
-# In[16]:
 
 
 from sklearn.feature_extraction.text import CountVectorizer
@@ -577,7 +560,6 @@ sorted_dic=sorted(dic.items(),reverse=True,key=operator.itemgetter(1))
 print(sorted_dic[1:])
 
 
-# In[17]:
 
 
 from matplotlib import pyplot as plt
@@ -595,7 +577,6 @@ plt.title('Top words - Count Vectorizer')
 plt.show()
 
 
-# In[18]:
 
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -617,7 +598,6 @@ sorted_dic=sorted(dic.items(),reverse=True,key=operator.itemgetter(1))
 print(sorted_dic[1:])
 
 
-# In[19]:
 
 
 from matplotlib import pyplot as plt
@@ -635,14 +615,12 @@ plt.title('Top words - Count Vectorizer')
 plt.show()
 
 
-# In[20]:
 
 
 plt.figure(figsize=(12,8))
 sns.countplot(x='sentiment',data=train_df)
 
 
-# In[21]:
 
 
 # loading test data
@@ -651,7 +629,6 @@ test_df = test_df[test_df['text'].notna()]
 test_df = test_df.reset_index()
 
 
-# In[22]:
 
 
 from nltk.tokenize import word_tokenize
@@ -667,7 +644,6 @@ text = 'my boss is bullying me...'
 print (text)
 
 
-# In[23]:
 
 
 '''step 1 : lower each word and tokenize each word in sentences (text)'''
@@ -681,7 +657,6 @@ tokenized_sents = word_tokenize(text)
 print (tokenized_sents)
 
 
-# In[24]:
 
 
 '''step 2 : a)Split by delimiters       b)Split by stop word        c)Candidate Keyword'''
@@ -702,7 +677,6 @@ for i in tokenized_sents:
 candi_kw_lst.append(candi_kw)
 
 
-# In[25]:
 
 
 flat_list_keyword = [item for sublist in candi_kw_lst for item in sublist]
@@ -717,7 +691,6 @@ for x in flat_list_keyword:
         flat_unique_list.append(x) 
 
 
-# In[26]:
 
 
 # initializing cooccurance matrix
@@ -726,13 +699,11 @@ matrix_df = pd.DataFrame(0, columns=flat_unique_list, index=flat_unique_list)
 matrix_df
 
 
-# In[27]:
 
 
 candi_kw_lst
 
 
-# In[28]:
 
 
 # creating co-occurance matrix
@@ -750,7 +721,6 @@ for i in range(len(matrix_df)):
             matrix_df.iloc[i,j] = value
 
 
-# In[29]:
 
 
 # sum row wise and create column for word degree
@@ -764,7 +734,6 @@ Word Degree (deg(w)) = word_freq+ # howmany times a word has a interaction with 
 matrix_df['degree'] = matrix_df.sum(axis=1)
 
 
-# In[30]:
 
 
 # word_frequency
@@ -783,7 +752,6 @@ for i in range(len(matrix_df)):
     
 
 
-# In[31]:
 
 
 # calculate keyword score
@@ -797,7 +765,6 @@ for i in range(len(matrix_df)):
 matrix_df
 
 
-# In[32]:
 
 
 #getting keyword_score for each word
@@ -806,7 +773,6 @@ matrix_dict = matrix_df.to_dict()['keyword_score']
 matrix_dict
 
 
-# In[33]:
 
 
 #calculate keyword score for candidate keywords
@@ -826,7 +792,6 @@ candi_kw_score = {k: v for k, v in sorted(candi_kw_score.items(), key=lambda ite
 candi_kw_score
 
 
-# In[34]:
 
 
 # extract top 3 scored candidate keywords
@@ -847,7 +812,6 @@ extracted_keywords = ' '.join(out_list)
 extracted_keywords
 
 
-# In[35]:
 
 
 def extract_keywords(text):
@@ -979,7 +943,6 @@ def extract_keywords(text):
   
 
 
-# In[36]:
 
 
 test_df ['selected_text'] = None
@@ -988,13 +951,11 @@ for i in range(len(test_df)):
     test_df.selected_text[i] = extract_keywords(test_df.text[i])
 
 
-# In[37]:
 
 
 test_df
 
 
-# In[38]:
 
 
 # Remove column name 'A' 
@@ -1002,7 +963,6 @@ test_df1 = test_df.drop(['index','text','sentiment'], axis = 1)
 test_df1
 
 
-# In[39]:
 
 
 test_df1.to_csv('submission.csv', index=False)

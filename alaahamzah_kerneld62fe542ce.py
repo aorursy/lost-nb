@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 #! pip install lightgbm
 
 
-# In[ ]:
 
 
 #import pyximport; pyximport.install()
@@ -30,7 +28,6 @@ NAME_MIN_DF = 10
 MAX_FEATURES_ITEM_DESCRIPTION = 20000
 
 
-# In[ ]:
 
 
 def rmsle(y, y0):
@@ -67,7 +64,6 @@ def to_categorical(dataset):
     dataset['item_condition_id'] = dataset['item_condition_id'].astype('category')
 
 
-# In[ ]:
 
 
 start_time = time.time()
@@ -76,13 +72,11 @@ train = pd.read_table('../input/train.tsv', engine='c')
 test = pd.read_table('../input/test_stg2.tsv', engine='c')
 
 
-# In[ ]:
 
 
 #train[(train.price < 1.0)].index
 
 
-# In[ ]:
 
 
 dftt = train[(train.price < 1.0)]
@@ -98,7 +92,6 @@ merge = pd.concat([train, dftt, test])
 submission = test[['test_id']]
 
 
-# In[ ]:
 
 
 #merge.loc[merge["train_id"]==,:]
@@ -106,20 +99,17 @@ submission = test[['test_id']]
 #submission.head()
 
 
-# In[ ]:
 
 
 merge['general_cat'], merge['subcat_1'], merge['subcat_2'] = zip(*merge['category_name'].apply(lambda x: split_cat(x)))
 merge.drop('category_name', axis=1, inplace=True)
 
 
-# In[ ]:
 
 
 handle_missing_inplace(merge)
 
 
-# In[ ]:
 
 
 numbersList = [1, 2, 3]
@@ -139,7 +129,6 @@ resultSet = set(result)
 print(resultSet)
 
 
-# In[ ]:
 
 
 cutting(merge)
@@ -148,13 +137,11 @@ cutting(merge)
 #.loc[lambda x: x.index != 'missing'].index[:NUM_BRANDS]
 
 
-# In[ ]:
 
 
 to_categorical(merge)
 
 
-# In[ ]:
 
 
 cv = CountVectorizer(min_df=NAME_MIN_DF,ngram_range=(1, 2),
@@ -162,7 +149,6 @@ cv = CountVectorizer(min_df=NAME_MIN_DF,ngram_range=(1, 2),
 X_name = cv.fit_transform(merge['name'])
 
 
-# In[ ]:
 
 
 del train
@@ -174,7 +160,6 @@ X_category2 = cv.fit_transform(merge['subcat_1'])
 X_category3 = cv.fit_transform(merge['subcat_2'])
 
 
-# In[ ]:
 
 
 gc.collect()
@@ -184,20 +169,17 @@ tv = TfidfVectorizer(max_features=MAX_FEATURES_ITEM_DESCRIPTION,
 X_description = tv.fit_transform(merge['item_description'])
 
 
-# In[ ]:
 
 
 gc.collect()
 
 
-# In[ ]:
 
 
 X_dummies = csr_matrix(pd.get_dummies(merge[['item_condition_id', 'shipping']],
                                           sparse=True).values)
 
 
-# In[ ]:
 
 
 lb = LabelBinarizer(sparse_output=True)
@@ -207,7 +189,6 @@ X = sparse_merge[:nrow_train]
 X_test = sparse_merge[nrow_test:]
 
 
-# In[ ]:
 
 
 
@@ -215,7 +196,6 @@ gc.collect()
 print(sparse_merge[1:10,:].todense())
 
 
-# In[ ]:
 
 
 model = Ridge(alpha=.5, copy_X=True, fit_intercept=True, max_iter=100,
@@ -223,13 +203,11 @@ model = Ridge(alpha=.5, copy_X=True, fit_intercept=True, max_iter=100,
 model.fit(X, y)
 
 
-# In[ ]:
 
 
 predsR = model.predict(X=X_test)
 
 
-# In[ ]:
 
 
 # train_X, valid_X, train_y, valid_y = train_test_split(X, y, test_size = 0.15, random_state = 144) 
@@ -238,7 +216,6 @@ predsR = model.predict(X=X_test)
 # watchlist = [d_train, d_valid]
 
 
-# In[ ]:
 
 
 # gc.collect()
@@ -270,14 +247,12 @@ predsR = model.predict(X=X_test)
 # predsL = model.predict(X_test)
 
 
-# In[ ]:
 
 
 submission['price'] = np.expm1(predsR)
 submission.to_csv("submission_Ridge20000.csv", index=False)
 
 
-# In[ ]:
 
 
 

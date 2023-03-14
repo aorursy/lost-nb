@@ -1,27 +1,23 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 get_ipython().system('pip install -q efficientnet')
 
 
-# In[ ]:
 
 
 get_ipython().system('pip install image-classifiers==1.0.0b1')
 from classification_models.tfkeras import Classifiers
 
 
-# In[ ]:
 
 
 get_ipython().system('pip install keras-swa')
 from swa.tfkeras import SWA
 
 
-# In[ ]:
 
 
 import pandas as pd
@@ -59,7 +55,6 @@ get_ipython().system("pip install tensorflow-addons=='0.9.1'")
 import tensorflow_addons as tfa
 
 
-# In[ ]:
 
 
 # for reproducible results :
@@ -74,7 +69,6 @@ def seed_everything(seed=13):
 seed_everything(1234)
 
 
-# In[ ]:
 
 
 try :
@@ -93,7 +87,6 @@ else :
 print('Replicas :',strategy.num_replicas_in_sync)  
 
 
-# In[ ]:
 
 
 AUTO  = tf.data.experimental.AUTOTUNE
@@ -107,7 +100,6 @@ SEED =  1234
 nb_classes = 1
 
 
-# In[ ]:
 
 
 train = pd.read_csv('../input/siim-isic-melanoma-classification/train.csv')
@@ -118,7 +110,6 @@ train_paths = train.image_name.apply(lambda x : GCS_DS_PATH1 + '/train/' +x + '.
 test_paths = test.image_name.apply(lambda x : GCS_DS_PATH1 + '/test/' +x + '.jpg').values
 
 
-# In[ ]:
 
 
 print(train['sex'].value_counts())
@@ -130,19 +121,16 @@ print(train['benign_malignant'].value_counts())
 print(train['target'].value_counts())
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 train.patient_id.duplicated().any()
 
 
-# In[ ]:
 
 
 dup_patients_test = test[test.patient_id.duplicated() == True]
@@ -167,21 +155,18 @@ for i in range(len(images)) :
     plt.imshow(images[i])
 
 
-# In[ ]:
 
 
 dup_patients = train[train.patient_id.duplicated() == True ]
 dup_patients
 
 
-# In[ ]:
 
 
 unique_patient_ids = set(dup_patients['patient_id'])
 len(unique_patient_ids)
 
 
-# In[ ]:
 
 
 mislabeled_patient_ids = []
@@ -193,25 +178,21 @@ for patient_id in unique_patient_ids :
         print(dup_patients[dup_patients['patient_id' ] == patient_id].benign_malignant.value_counts())
 
 
-# In[ ]:
 
 
 len(mislabeled_patient_ids)
 
 
-# In[ ]:
 
 
 dup_patients.loc[dup_patients['patient_id'].isin(mislabeled_patient_ids)]
 
 
-# In[ ]:
 
 
 dup_patients.loc[dup_patients['patient_id'].isin(mislabeled_patient_ids)].target.value_counts()
 
 
-# In[ ]:
 
 
 train_pos = train[train['target'] == 1]
@@ -224,7 +205,6 @@ train_balanced = pd.concat([train_pos,train_neg])
 train_balanced = train_balanced.sample(frac=1).reset_index(drop=True)
 
 
-# In[ ]:
 
 
 train_balanced_paths = train_balanced.image_name.apply(lambda x : GCS_DS_PATH + '/jpeg/train/' + x + '.jpg').values
@@ -234,7 +214,6 @@ from sklearn.model_selection import train_test_split
 X_train_paths, X_valid_paths, Y_train, Y_valid = train_test_split(train_balanced_paths,train_balanced_labels, test_size=0.15, random_state=42)
 
 
-# In[ ]:
 
 
 bool_random_brightness = False # 0.902 no improvement
@@ -253,7 +232,6 @@ micro_aug = False
 hair_aug = True # hair aug can be good
 
 
-# In[ ]:
 
 
 # batch
@@ -308,7 +286,6 @@ def cutmix(image, label, PROBABILITY = cutmix_rate):
     return image2,label2
 
 
-# In[ ]:
 
 
 def mixup(image, label, PROBABILITY = mixup_rate):
@@ -344,7 +321,6 @@ def mixup(image, label, PROBABILITY = mixup_rate):
     return image2,label2
 
 
-# In[ ]:
 
 
 def transform(image, inv_mat, image_shape):
@@ -373,7 +349,6 @@ def transform(image, inv_mat, image_shape):
     return tf.transpose(tf.stack(rotated_image_channel), [1,2,0])
 
 
-# In[ ]:
 
 
 def random_rotate(image, angle, image_shape):
@@ -392,7 +367,6 @@ def random_rotate(image, angle, image_shape):
     return transform(image, rot_mat_inv, image_shape)
 
 
-# In[ ]:
 
 
 def GridMask(image_height, image_width, d1, d2, rotate_angle=1, ratio=0.5):
@@ -442,7 +416,6 @@ def GridMask(image_height, image_width, d1, d2, rotate_angle=1, ratio=0.5):
     return mask
 
 
-# In[ ]:
 
 
 def apply_grid_mask(image, image_shape, PROBABILITY = gridmask_rate):
@@ -468,7 +441,6 @@ def gridmask(img_batch, label_batch):
     return apply_grid_mask(img_batch, (img_size,img_size, 3)), label_batch
 
 
-# In[ ]:
 
 
 def get_mat(rotation, shear, height_zoom, width_zoom, height_shift, width_shift):
@@ -543,7 +515,6 @@ def transform_shear_rot(image,cfg):
     return tf.reshape(d,[DIM,DIM,3])
 
 
-# In[ ]:
 
 
 def decode_image(image_data):
@@ -592,7 +563,6 @@ def data_augment(image, label=None,seed = 2020):
         return image,label 
 
 
-# In[ ]:
 
 
 def create_train_data(train_paths,train_labels) :
@@ -629,7 +599,6 @@ def create_validation_data(valid_paths,valid_labels) :
     return valid_data
 
 
-# In[ ]:
 
 
 #TRAINING_FILENAMES = tf.io.gfile.glob(GCS_DS_PATH2 + '/tfrecords/train*')
@@ -645,7 +614,6 @@ TEST_FILENAMES = tf.io.gfile.glob(GCS_DS_PATH1 + '/test*')
 IMAGE_SIZE = [512, 512] 
 
 
-# In[ ]:
 
 
 #Read train tf Records :
@@ -725,7 +693,6 @@ def get_test_dataset(ordered=False,aug=False):
     return dataset
 
 
-# In[ ]:
 
 
 def count_data_items(filenames):
@@ -739,7 +706,6 @@ STEPS_PER_EPOCH = NUM_TRAINING_IMAGES // BATCH_SIZE
 print('Dataset: {} training images, {} unlabeled test images'.format(NUM_TRAINING_IMAGES, NUM_TEST_IMAGES))
 
 
-# In[ ]:
 
 
 lr_start = 0.00001
@@ -771,7 +737,6 @@ plt.plot(rng,y)
 print("Learning rate schedule: {:.3g} to {:.3g} to {:.3g}".format(y[0], max(y), y[-1]))
 
 
-# In[ ]:
 
 
 reduce_lr =  ReduceLROnPlateau(monitor = "val_loss", factor = 0.5, patience = 10,
@@ -779,19 +744,16 @@ reduce_lr =  ReduceLROnPlateau(monitor = "val_loss", factor = 0.5, patience = 10
   min_lr = 1e-5)
 
 
-# In[ ]:
 
 
 es = EarlyStopping(monitor = "val_loss" , verbose = 1 , mode = 'min' , patience = 50 )
 
 
-# In[ ]:
 
 
 mc = ModelCheckpoint('best_model.h5', monitor = 'loss' , mode = 'min', verbose = 1 , save_best_only = True)
 
 
-# In[ ]:
 
 
 checkpoint_path = "best_model.h5"
@@ -810,7 +772,6 @@ swa_mc = SWA(start_epoch=start_epoch,
           verbose=1)"""
 
 
-# In[ ]:
 
 
 focal_loss = True
@@ -818,7 +779,6 @@ label_smoothing = 0
 SWA = False
 
 
-# In[ ]:
 
 
 def get_model_generalized(name,trainable_layers=20,opt='adam',lr=0.001):
@@ -895,7 +855,6 @@ def get_model_generalized(name,trainable_layers=20,opt='adam',lr=0.001):
     return model
 
 
-# In[ ]:
 
 
 from sklearn.utils import class_weight 
@@ -904,19 +863,16 @@ class_weights = class_weight.compute_class_weight('balanced',
                                                  train.target)
 
 
-# In[ ]:
 
 
 class_weights = { 0 :  0.50897302 , 1 : 28.36130137 }
 
 
-# In[ ]:
 
 
 classweights =[item for k in class_weights for item in (k, class_weights[k])]
 
 
-# In[ ]:
 
 
 with strategy.scope() :
@@ -931,7 +887,6 @@ history = model.fit(
 )
 
 
-# In[ ]:
 
 
 with strategy.scope() :
@@ -947,7 +902,6 @@ history = model.fit(
 )
 
 
-# In[ ]:
 
 
 with strategy.scope() :
@@ -962,7 +916,6 @@ history = model.fit(
 )
 
 
-# In[ ]:
 
 
 with strategy.scope() :
@@ -978,7 +931,6 @@ history = model.fit(
 )
 
 
-# In[ ]:
 
 
 with strategy.scope() :
@@ -994,7 +946,6 @@ history = model.fit(
 )
 
 
-# In[ ]:
 
 
 with strategy.scope() :
@@ -1009,7 +960,6 @@ history = model.fit(
 )
 
 
-# In[ ]:
 
 
 with strategy.scope() :
@@ -1024,7 +974,6 @@ history = model.fit(
 )
 
 
-# In[ ]:
 
 
 with strategy.scope() :
@@ -1039,13 +988,11 @@ history = model.fit(
 )
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 with strategy.scope() :
@@ -1060,7 +1007,6 @@ history = model.fit(
 )
 
 
-# In[ ]:
 
 
 with strategy.scope() :
@@ -1075,7 +1021,6 @@ history = model.fit(
 )
 
 
-# In[ ]:
 
 
 with strategy.scope() :
@@ -1090,7 +1035,6 @@ history = model.fit(
 )
 
 
-# In[ ]:
 
 
 del model
@@ -1098,7 +1042,6 @@ import gc
 gc.collect()
 
 
-# In[ ]:
 
 
 label_smoothing = 0
@@ -1108,7 +1051,6 @@ def LabelSmoothing(encodings , alpha):
     return y_ls
 
 
-# In[ ]:
 
 
 label_smoothing = 0
@@ -1131,13 +1073,11 @@ sub.to_csv('densenet_468img_size_12epochs_fl_0.4cutmix_0.4gridmask_20trainable.c
 sub.head()
 
 
-# In[ ]:
 
 
 sub[sub['target'] > 0.5]
 
 
-# In[ ]:
 
 
 import gc
@@ -1145,25 +1085,21 @@ del model
 gc.collect()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 sub[sub['target']  >  0.8] 
 
 
-# In[ ]:
 
 
 sub[sub['target'] < 0.01]
 
 
-# In[ ]:
 
 
 #model.load_weights('best_model.h5')
@@ -1176,7 +1112,6 @@ for i in range(TTA_NUM):
     probabilities.append(model.predict(test_images_ds).flatten())
 
 
-# In[ ]:
 
 
 tab = np.zeros((len(probabilities[1]),1))
@@ -1193,7 +1128,6 @@ sub.to_csv('e3_468_20epochs_fl_20trainable_3tta_heavy_augs.csv', index=False)
 sub.head()
 
 
-# In[ ]:
 
 
 # batch
@@ -1251,14 +1185,12 @@ def cutmix_v2(data, label, PROBABILITY = cutmix_rate):
     return data,label2
 
 
-# In[ ]:
 
 
 def gridmask_v2(data, label_batch):
     return apply_grid_mask_v2(data, (img_size,img_size, 3)), label_batch
 
 
-# In[ ]:
 
 
 def apply_grid_mask_v2(data, image_shape, PROBABILITY = gridmask_rate):
@@ -1282,7 +1214,6 @@ def apply_grid_mask_v2(data, image_shape, PROBABILITY = gridmask_rate):
         return data
 
 
-# In[ ]:
 
 
 #Read train tf Records :
@@ -1378,7 +1309,6 @@ def test_setup(image,image_name,data) :
     return {'image_data' : image , 'meta_data' : tabular } , image_name
 
 
-# In[ ]:
 
 
 def data_augment(data, label=None,seed = 2020):
@@ -1414,7 +1344,6 @@ def data_augment(data, label=None,seed = 2020):
         return data,label 
 
 
-# In[ ]:
 
 
 '''def crop_microscope(img_to_crop):
@@ -1535,7 +1464,6 @@ class AdvancedHairAugmentation:
 hair = AdvancedHairAugmentation(hairs_folder = '../input/melanoma-hairs')
 
 
-# In[ ]:
 
 
 def get_training_dataset():
@@ -1576,7 +1504,6 @@ def get_test_dataset(ordered=False,aug=False):
     return dataset
 
 
-# In[ ]:
 
 
 focal_loss = True
@@ -1584,7 +1511,6 @@ label_smoothing = 0
 SWA = False
 
 
-# In[ ]:
 
 
 def roc_auc_loss(
@@ -1700,7 +1626,6 @@ def custom_loss_wrapper() :
     return roc_auc_loss    
 
 
-# In[ ]:
 
 
 def get_model_generalized_v2(name,trainable_layers=20,opt='adam',lr=0.001):
@@ -1803,7 +1728,6 @@ def get_model_generalized_v2(name,trainable_layers=20,opt='adam',lr=0.001):
    return model
 
 
-# In[ ]:
 
 
 with strategy.scope() :
@@ -1818,7 +1742,6 @@ with strategy.scope() :
 )
 
 
-# In[ ]:
 
 
 label_smoothing = 0
@@ -1841,7 +1764,6 @@ sub.to_csv('E4_468img_size_20epochs_fl_v2_1024.4_512.4_256.4cnn128.4_64.3_32.3me
 sub.head()
 
 
-# In[ ]:
 
 
 #model.load_weights('best_model.h5')
@@ -1866,25 +1788,21 @@ sub.to_csv('e4_468_20epochs_fl_20trainable_5ttav2.csv', index=False)
 sub.head()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

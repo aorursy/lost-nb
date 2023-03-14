@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # System
@@ -106,7 +105,6 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 print(os.listdir("../input/"))
 
 
-# In[2]:
 
 
 train = pd.read_csv("../input/ashrae-energy-prediction/train.csv")
@@ -118,39 +116,33 @@ test = pd.read_csv("../input/ashrae-energy-prediction/test.csv")
 weather_test = pd.read_csv("../input/ashrae-energy-prediction/weather_test.csv")
 
 
-# In[3]:
 
 
 train.head()
 
 
-# In[4]:
 
 
 weather_train.head()
 
 
-# In[5]:
 
 
 building_metadata.head()
 
 
-# In[6]:
 
 
 train_building_metadata = pd.merge(train, building_metadata, on="building_id")
 train_building_metadata.head()
 
 
-# In[7]:
 
 
 train_building_metadata_weather = pd.merge(train_building_metadata, weather_train, on=["site_id", "timestamp"])
 train_building_metadata_weather.head()
 
 
-# In[8]:
 
 
 cols = train_building_metadata_weather.columns.tolist()
@@ -159,13 +151,11 @@ cols = [cols[4]] + [cols[0]] + [cols[2]] + [cols[1]] + cols[5:] + [cols[3]]
 train_building_metadata_weather = train_building_metadata_weather[cols]
 
 
-# In[9]:
 
 
 train_building_metadata_weather.head()
 
 
-# In[10]:
 
 
 col = "meter"
@@ -176,7 +166,6 @@ sns.countplot(x=col, data=train_building_metadata_weather)
 plt.title(re.sub("_", " ", col).title())
 
 
-# In[11]:
 
 
 col = "site_id"
@@ -187,7 +176,6 @@ sns.countplot(x=col, data=train_building_metadata_weather)
 plt.title(re.sub("_", " ", col).title())
 
 
-# In[12]:
 
 
 col = "primary_use"
@@ -199,7 +187,6 @@ plt.title(re.sub("_", " ", col).title())
 plt.xticks(rotation=90)
 
 
-# In[13]:
 
 
 col = "year_built"
@@ -209,7 +196,6 @@ sns.countplot(y=col, data=train_building_metadata_weather)
 plt.title(re.sub("_", " ", col).title())
 
 
-# In[14]:
 
 
 col = "floor_count"
@@ -220,7 +206,6 @@ plt.title(re.sub("_", " ", col).title())
 plt.xticks(rotation=90)
 
 
-# In[15]:
 
 
 col = "air_temperature"
@@ -234,7 +219,6 @@ sns.distplot(data)
 plt.title(re.sub("_", " ", col).title())
 
 
-# In[16]:
 
 
 figure(num=None, figsize=(18, 6), dpi=80, facecolor='w', edgecolor='k')
@@ -242,7 +226,6 @@ sns.countplot(x="cloud_coverage", data=train_building_metadata_weather)
 plt.title(re.sub("_", " ", col).title())
 
 
-# In[17]:
 
 
 col = "dew_temperature"
@@ -256,7 +239,6 @@ sns.distplot(data)
 plt.title(re.sub("_", " ", col).title())
 
 
-# In[18]:
 
 
 col = "precip_depth_1_hr"
@@ -270,7 +252,6 @@ sns.distplot(data)
 plt.title(re.sub("_", " ", col).title())
 
 
-# In[19]:
 
 
 col = "sea_level_pressure"
@@ -283,7 +264,6 @@ figure(num=None, figsize=(18, 6), dpi=80, facecolor='w', edgecolor='k')
 sns.distplot(data)
 
 
-# In[20]:
 
 
 col = "wind_direction"
@@ -297,7 +277,6 @@ sns.distplot(data)
 plt.title(re.sub("_", " ", col).title())
 
 
-# In[21]:
 
 
 col = "wind_speed"
@@ -311,13 +290,11 @@ sns.distplot(data)
 plt.title(re.sub("_", " ", col).title())
 
 
-# In[22]:
 
 
 train_building_metadata_weather.info()
 
 
-# In[ ]:
 
 
 

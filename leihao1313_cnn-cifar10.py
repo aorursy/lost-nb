@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import random
@@ -38,7 +37,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
         print(os.path.join(dirname, filename))
 
 
-# In[2]:
 
 
 #data sets path
@@ -47,7 +45,6 @@ DATA_PATH = 'dataset/'
 IMAGE_PATH = 'image/'
 
 
-# In[3]:
 
 
 #print progress bar
@@ -113,7 +110,6 @@ def load_CIFAR_10(training_batches=5, test_batches=1):
     return X_train,y_train,X_test,y_test
 
 
-# In[4]:
 
 
 def scatter_two_component(comp1,comp2,y_train,classes,save_as):
@@ -155,7 +151,6 @@ def scatter_two_component(comp1,comp2,y_train,classes,save_as):
 # scatter_two_component(X_train[:,0],X_train[:,1],y_train,classes,'PCA')
 
 
-# In[5]:
 
 
 # try:
@@ -169,7 +164,6 @@ def scatter_two_component(comp1,comp2,y_train,classes,save_as):
 # scatter_two_component(X_embedded[:,0],X_embedded[:,1],y_train,classes,'t-SNE')
 
 
-# In[6]:
 
 
 X_train,y_train,X_test,y_test = load_CIFAR_10()
@@ -184,7 +178,6 @@ H = X_train.shape[2]
 W = X_train.shape[3]
 
 
-# In[7]:
 
 
 # tranform functions
@@ -215,7 +208,6 @@ T2 = Compose([
 ])
 
 
-# In[8]:
 
 
 X_new = torch.stack([T(x) for x in X_train])
@@ -223,7 +215,6 @@ X_train = torch.stack([T2(x) for x in X_train])
 X_test = torch.stack([T2(x) for x in X_test])
 
 
-# In[9]:
 
 
 #augmentation
@@ -231,13 +222,11 @@ X_train = torch.stack([X_new,X_train]).reshape(-1,C,H,W)
 y_train = torch.stack([y_train,y_train]).reshape(-1,)
 
 
-# In[10]:
 
 
 plot_image(X_train)
 
 
-# In[11]:
 
 
 #cnn parameters
@@ -293,7 +282,6 @@ class net(Module):
         return x
 
 
-# In[12]:
 
 
 def test_model(model,batch_size,test_loader,criterion):
@@ -316,7 +304,6 @@ def test_model(model,batch_size,test_loader,criterion):
     return loss, acc
 
 
-# In[13]:
 
 
 def test_class_acc(model,test_loader,classes):
@@ -340,7 +327,6 @@ def test_class_acc(model,test_loader,classes):
             classes[i], 100 * class_correct[i] / class_total[i]))
 
 
-# In[14]:
 
 
 def save_prediction(test_loader):
@@ -358,7 +344,6 @@ def save_prediction(test_loader):
     print("Prediction saved as results.csv")
 
 
-# In[15]:
 
 
 def train_model(model,batch_size,num_epoch,criterion,optimizer,train_loader,test_loader):
@@ -417,7 +402,6 @@ def train_model(model,batch_size,num_epoch,criterion,optimizer,train_loader,test
     return model
 
 
-# In[16]:
 
 
 def model_fit(model,batch_size,num_epoch,criterion,optimizer,X_train,y_train,X_test,y_test=None,pre_trained_model=None):
@@ -452,7 +436,6 @@ def model_fit(model,batch_size,num_epoch,criterion,optimizer,X_train,y_train,X_t
         test_class_acc(model,test_loader,classes)
 
 
-# In[17]:
 
 
 #create new model
@@ -462,7 +445,6 @@ if torch.cuda.is_available():
     moedl = model.cuda()
 
 
-# In[18]:
 
 
 # %%time
@@ -479,7 +461,6 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship'
 model_fit(model,batch_size,num_epoch,criterion,optimizer,X_train,y_train,X_test,y_test,pre_trained_model=None)
 
 
-# In[19]:
 
 
 def plot_activation_image(target):
@@ -513,7 +494,6 @@ def plot_activation_image(target):
     print('finished')
 
 
-# In[20]:
 
 
 model = model.cpu()
@@ -524,7 +504,6 @@ for i in range(10):
 plt.show()
 
 
-# In[ ]:
 
 
 

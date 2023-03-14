@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 from keras.applications.xception import Xception
@@ -40,20 +38,17 @@ import matplotlib.pyplot as plt
 import os
 
 
-# In[3]:
 
 
 os.mkdir('dataset_dogs_vs_cats/')
 
 
-# In[4]:
 
 
 #Copy files
 cp -avr ../input/train/train/ /kaggle/working/dataset_dogs_vs_cats
 
 
-# In[5]:
 
 
 # organize dataset into a useful structure
@@ -73,13 +68,11 @@ for subdir in subdirs:
         makedirs(newdir, exist_ok=True)
 
 
-# In[6]:
 
 
 os.listdir("/kaggle/working/dataset_dogs_vs_cats/")
 
 
-# In[7]:
 
 
 #rm -r '/kaggle/working/dataset_dogs_vs_cats/'
@@ -105,7 +98,6 @@ for file in listdir(src_directory):
         copyfile(src, dst)
 
 
-# In[8]:
 
 
 #Define train and test path
@@ -113,7 +105,6 @@ train_path = '/kaggle/working/dataset_dogs_vs_cats/train/'
 test_path  = '/kaggle/working/dataset_dogs_vs_cats/test/'
 
 
-# In[9]:
 
 
 # plot dog photos from the dogs vs cats dataset
@@ -135,7 +126,6 @@ for i in range(9):
 pyplot.show()
 
 
-# In[10]:
 
 
 # plot dog photos from the dogs vs cats dataset
@@ -157,7 +147,6 @@ for i in range(9):
 pyplot.show()
 
 
-# In[11]:
 
 
 # define cnn model
@@ -179,7 +168,6 @@ def Model_CNN_SGD_No_Regularization():
     return model
 
 
-# In[12]:
 
 
 # define cnn model
@@ -201,7 +189,6 @@ def Model_CNN_ADAM_No_Regularization():
     return model
 
 
-# In[13]:
 
 
 # define cnn model
@@ -223,7 +210,6 @@ def Model_CNN_ADADELTA_No_Regularization():
     return model
 
 
-# In[14]:
 
 
 from keras.preprocessing.image import ImageDataGenerator, load_img
@@ -263,7 +249,6 @@ test_set = test_datagen.flow_from_directory(
         class_mode='binary')
 
 
-# In[15]:
 
 
 #Define Models
@@ -272,7 +257,6 @@ Model_CNN_ADAM_No_Regularization = Model_CNN_ADAM_No_Regularization()
 Model_CNN_ADADELTA_No_Regularization = Model_CNN_ADADELTA_No_Regularization()
 
 
-# In[16]:
 
 
 history_1 = History()
@@ -281,31 +265,26 @@ history_3 = History()
 epochs = 10
 
 
-# In[17]:
 
 
 Model_CNN_SGD_No_Regularization.fit_generator(training_set,steps_per_epoch=len(training_set),epochs=epochs,validation_data=test_set,validation_steps=len(test_set),callbacks=[history_1])
 
 
-# In[18]:
 
 
 Model_CNN_ADAM_No_Regularization.fit_generator(training_set,steps_per_epoch=len(training_set),epochs=epochs,validation_data=test_set,validation_steps=len(test_set),callbacks=[history_2])
 
 
-# In[19]:
 
 
 Model_CNN_ADAM_No_Regularization.fit_generator(training_set,steps_per_epoch=len(training_set),epochs=epochs,validation_data=test_set,validation_steps=len(test_set),callbacks=[history_2])
 
 
-# In[20]:
 
 
 
 
 
-# In[20]:
 
 
 df = pd.DataFrame()
@@ -314,7 +293,6 @@ df['filepath'] = [os.listdir(train_path)[j][:3] for j in range(len(train_path))]
 #Rename files
 
 
-# In[21]:
 
 
 def rename_image_files(path):
@@ -333,13 +311,11 @@ def rename_image_files(path):
     return None
 
 
-# In[22]:
 
 
 df
 
 
-# In[23]:
 
 
 

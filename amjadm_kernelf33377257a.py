@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 import matplotlib as mpl
@@ -52,7 +50,6 @@ import shutil  # For Copying files(checkpoints)
 from sklearn.metrics import classification_report  # For getting a report from the net
 
 
-# In[ ]:
 
 
 class DriverImageDataset(Dataset):
@@ -121,7 +118,6 @@ class DriverImageDataset(Dataset):
             self.driver_imgs_list = self.driver_imgs_list.iloc[limit[0]: limit[1]].                                     reset_index(drop = True)
 
 
-# In[ ]:
 
 
 def show_batch(images, targets = None, predictions = None):
@@ -145,14 +141,12 @@ def show_batch(images, targets = None, predictions = None):
             plt.xlabel("T:{}".format(targets[i].numpy()))
 
 
-# In[ ]:
 
 
 new_shape = (int(640 / 5), int(480 / 5))  # 1/5th of original shape
 new_shape
 
 
-# In[ ]:
 
 
 # Hyperparameters
@@ -184,7 +178,6 @@ test_loader  = DataLoader(testData, batch_size = BATCH_SIZE,
                           num_workers = WORKERS, shuffle = True)
 
 
-# In[ ]:
 
 
 class simpleCNN(nn.Module):
@@ -211,7 +204,6 @@ class simpleCNN(nn.Module):
         return y  # Will learn to treat 'a' as the natural parameters of a multinomial distr. 
 
 
-# In[ ]:
 
 
 cNN_net = simpleCNN()
@@ -223,7 +215,6 @@ print("----")
 print(cNN_net.parameters)
 
 
-# In[ ]:
 
 
 import torch.cuda
@@ -241,7 +232,6 @@ else:
         return x
 
 
-# In[ ]:
 
 
 net = togpu(cNN_net)
@@ -250,7 +240,6 @@ criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(params = net.parameters(), lr = LEARNING_RATE)
 
 
-# In[ ]:
 
 
 def compute_eval_loss(net, criterion, loader):
@@ -268,7 +257,6 @@ def compute_eval_loss(net, criterion, loader):
     return eval_loss
 
 
-# In[ ]:
 
 
 def run_simpleCNN(net, optimizer, criterion, epoch = 2, best_eval_loss = float('inf')):
@@ -315,7 +303,6 @@ def run_simpleCNN(net, optimizer, criterion, epoch = 2, best_eval_loss = float('
                                                           tend-tstart))
 
 
-# In[ ]:
 
 
 import sys, os
@@ -355,7 +342,6 @@ def report(net, evalData):
     print(classification_report(targets, predictions))
 
 
-# In[ ]:
 
 
 b_loss = float('inf')  # Assign infinity
@@ -364,7 +350,6 @@ epoch, b_loss, ehist, thist = resume(net, optimizer, fn = 'simpleCNN-best.pth.ta
 report(net, evalData)
 
 
-# In[ ]:
 
 
 submission_02 = pd.DataFrame({'img':testData.driver_imgs_list.iloc[:, 0], 
@@ -390,13 +375,11 @@ for i  in tqdm.tnrange(len(testData)):
 submission_02
 
 
-# In[ ]:
 
 
 submission_02.to_csv('submission_02_01.csv', index = False)
 
 
-# In[ ]:
 
 
 

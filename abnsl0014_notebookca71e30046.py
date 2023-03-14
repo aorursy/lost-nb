@@ -1,19 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
-pip install mahotas
 
 
-# In[2]:
 
 
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[24]:
 
 
 from pathlib import Path
@@ -39,7 +35,6 @@ import cv2
 from sklearn.metrics import accuracy_score
 
 
-# In[25]:
 
 
 # declaring a class for collecting the data information and data path is set 
@@ -55,14 +50,12 @@ class Configuration:
         self.data_dir = "../input/imgs/train"
 
 
-# In[26]:
 
 
 #creating an config object 
 config = Configuration()
 
 
-# In[27]:
 
 
 #function for finding the max,min  heights and max,min widths. It traverses throught the all folders and count
@@ -87,7 +80,6 @@ def calculateDimension(path):
     return
 
 
-# In[28]:
 
 
 calculateDimension(config.data_dir)
@@ -98,13 +90,11 @@ print("Maximum Height:\t",config.maxheight)
 print("Image Count:\t",config.imgcount)
 
 
-# In[29]:
 
 
 fixed_size = tuple((64, 64))
 
 
-# In[30]:
 
 
 #used global feature descriptors HuMoments functions for gathering the shape details
@@ -115,7 +105,6 @@ def fd_hu_moments(image):
     return feature
 
 
-# In[31]:
 
 
 #used global feature descriptors haralick functions for gatahering the texture details
@@ -126,7 +115,6 @@ def fd_haralick(image):
     return haralick
 
 
-# In[32]:
 
 
 #used global feature descriptors colorhistogram functions for gathering the color details
@@ -139,7 +127,6 @@ def fd_histogram(image, mask=None):
     return hist.flatten()
 
 
-# In[33]:
 
 
 def load_image_files(container_path,dimension=(64, 64)):
@@ -178,13 +165,11 @@ def load_image_files(container_path,dimension=(64, 64)):
     return global_features,target
 
 
-# In[34]:
 
 
 global_features,labels = load_image_files("../input/state-farm-distracted-driver-detection/imgs/train")
 
 
-# In[35]:
 
 
 #encoding the target labels 
@@ -195,13 +180,11 @@ print("training labels encoded")
 print(target)
 
 
-# In[36]:
 
 
 print(global_features[0].shape)
 
 
-# In[37]:
 
 
 # normalize the feature vector in the range (0-1)
@@ -216,21 +199,18 @@ print("target labels shape: {}".format(target.shape))
 print("feature vector size {}".format(np.array(global_features).shape))
 
 
-# In[38]:
 
 
 global_features = np.array(rescaled_features)
 global_labels = np.array(target)
 
 
-# In[39]:
 
 
 (trainDataGlobal, testDataGlobal, trainLabelsGlobal, testLabelsGlobal) = train_test_split(global_features,global_labels,
                                                                 test_size=0.30,random_state=9)
 
 
-# In[40]:
 
 
 print("Train data  : {}".format(trainDataGlobal.shape))
@@ -239,14 +219,12 @@ print("Train labels: {}".format(trainLabelsGlobal.shape))
 print("Test labels : {}".format(testLabelsGlobal.shape))
 
 
-# In[41]:
 
 
 clf = svm.SVC(C=5, gamma=10,kernel='rbf')
 clf.fit(trainDataGlobal, trainLabelsGlobal)
 
 
-# In[42]:
 
 
 y_pred = clf.predict(testDataGlobal)
@@ -254,10 +232,8 @@ print(metrics.classification_report(testLabelsGlobal, y_pred))
 print("Accuracy Score  : {}".format(accuracy_score(testLabelsGlobal, y_pred)))
 
 
-# In[ ]:
 
 
-# In[ ]:
 
 
 

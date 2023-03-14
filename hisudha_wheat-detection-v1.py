@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('ls ../input/best-yolov5x-fold0pt/wheat0.yaml')
 
 
-# In[2]:
 
 
 import numpy as np # linear algebra
@@ -56,7 +54,6 @@ for i, column in enumerate(['x', 'y', 'w', 'h']):
 marking.drop(columns=['bbox'], inplace=True)
 
 
-# In[3]:
 
 
 get_ipython().system('cp -r ../input/yolov5train/* .')
@@ -65,7 +62,6 @@ get_ipython().system('cp -r ../input/yolov5train/* .')
 get_ipython().system('cp -r ../input/weightedboxesfusion/* .')
 
 
-# In[4]:
 
 
 def convertTrainLabel():
@@ -102,7 +98,6 @@ def convertTrainLabel():
                 sh.copy("../input/global-wheat-detection/{}/{}.jpg".format(source,name),'convertor/fold{}/images/{}/{}.jpg'.format(fold,path2save,name))
 
 
-# In[5]:
 
 
 from ensemble_boxes import *
@@ -172,7 +167,6 @@ def detect1Image(img, img0, model, device, aug):
     return np.array(boxes), np.array(scores) 
 
 
-# In[6]:
 
 
 # validate
@@ -466,7 +460,6 @@ def show_result(sample_id, preds, gt_boxes):
     ax.set_title("RED: Predicted | BLUE - Ground-truth")
 
 
-# In[7]:
 
 
 # Bayesian Optimize
@@ -492,7 +485,6 @@ def optimize(space, all_predictions, n_calls=10):
     return gp_minimize(func=score, dimensions=space, n_calls=n_calls)
 
 
-# In[8]:
 
 
 from utils.datasets import *
@@ -564,14 +556,12 @@ def makePseudolabel():
             
 
 
-# In[9]:
 
 
 if PSEUDO or VALIDATE:
     convertTrainLabel()
 
 
-# In[10]:
 
 
 if PSEUDO:
@@ -600,7 +590,6 @@ if PSEUDO:
     
 
 
-# In[11]:
 
 
 if VALIDATE and is_TEST:
@@ -649,7 +638,6 @@ if VALIDATE and is_TEST:
     
 
 
-# In[12]:
 
 
 def format_prediction_string(boxes, scores):
@@ -727,7 +715,6 @@ def detect():
     return results
 
 
-# In[13]:
 
 
 results = detect()
@@ -736,7 +723,6 @@ test_df.to_csv('submission.csv', index=False)
 test_df.head()
 
 
-# In[14]:
 
 
 get_ipython().system('rm -rf convertor')

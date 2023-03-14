@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -16,14 +15,12 @@ sys.path.insert(0, os.path.join("/", "kaggle", "input", "siim-acr-pneumothorax-s
 from mask_functions import rle2mask, mask2rle
 
 
-# In[2]:
 
 
 # read all submissions into daframes and store them in a list
 df_sub_list = [pd.read_csv(f) for f in glob(os.path.join("/", "kaggle", "input", "*", "*.csv"))]
 
 
-# In[3]:
 
 
 # create a list of unique image IDs
@@ -31,7 +28,6 @@ iid_list = df_sub_list[0]["ImageId"].unique()
 print(f"{len(iid_list)} unique image IDs.")
 
 
-# In[4]:
 
 
 # set here the threshold for the final mask
@@ -40,7 +36,6 @@ min_solutions = 3 # a number between 1 and the number of submission files
 assert (min_solutions >= 1 and min_solutions <= len(df_sub_list)),     "min_solutions has to be a number between 1 and the number of submission files"
 
 
-# In[5]:
 
 
 # create empty final dataframe
@@ -79,25 +74,21 @@ for iid in tqdm_notebook(iid_list):
         df_avg_sub_idx += 1 # increment index
 
 
-# In[6]:
 
 
 df_avg_sub.shape
 
 
-# In[7]:
 
 
 df_avg_sub["ImageId"].nunique()
 
 
-# In[8]:
 
 
 df_avg_sub.head()
 
 
-# In[9]:
 
 
 df_avg_sub.to_csv("average_submission.csv", index=False)

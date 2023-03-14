@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import copy
@@ -22,20 +21,17 @@ from torch.utils.data import DataLoader, Dataset
 from tqdm.notebook import tqdm
 
 
-# In[2]:
 
 
 os.listdir("../input")
 
 
-# In[3]:
 
 
 main_data_dir = "../input/covid19-global-forecasting-week-4"
 metadata_dir = "../input/covid19-countrywise-metadata"
 
 
-# In[4]:
 
 
 data_train = pd.read_csv(os.path.join(main_data_dir, "train.csv"))
@@ -44,7 +40,6 @@ sample_sub = pd.read_csv(os.path.join(main_data_dir, "submission.csv"))
 metadata = pd.read_csv(os.path.join(metadata_dir, "covid19_countrywise_metadata.csv"))
 
 
-# In[5]:
 
 
 def generate_loc(x):
@@ -54,62 +49,53 @@ def generate_loc(x):
         return "_".join([x["Country_Region"], x["Province_State"]])
 
 
-# In[6]:
 
 
 def generate_loc_date(x):
     return "_".join([x["location"], x["Date"]])
 
 
-# In[7]:
 
 
 data_train["location"] = data_train.apply(generate_loc, axis=1)
 data_test["location"] = data_test.apply(generate_loc, axis=1)
 
 
-# In[8]:
 
 
 data_train["log_cfm"] = data_train["ConfirmedCases"].map(np.log1p)
 data_train["log_ftl"] = data_train["Fatalities"].map(np.log1p)
 
 
-# In[9]:
 
 
 data_train["loc_date"] = data_train.apply(generate_loc_date, axis=1)
 data_test["loc_date"] = data_test.apply(generate_loc_date, axis=1)
 
 
-# In[10]:
 
 
 data_train_by_loc = data_train.groupby("location")
 
 
-# In[11]:
 
 
 data_train["Date"] = pd.to_datetime(data_train["Date"])
 data_test["Date"] = pd.to_datetime(data_test["Date"])
 
 
-# In[12]:
 
 
 data_train["rel_date"] = data_train.apply(lambda x: (x["Date"] - data_train["Date"].min()), axis=1).dt.days
 data_test["rel_date"] = data_test.apply(lambda x: (x["Date"] - data_train["Date"].min()), axis=1).dt.days
 
 
-# In[13]:
 
 
 data_train["rel_date_pct"] = data_train.rel_date / data_test.rel_date.max()
 data_test["rel_date_pct"] = data_test.rel_date / data_test.rel_date.max()
 
 
-# In[14]:
 
 
 def get_day_zero(df):
@@ -121,7 +107,6 @@ def get_day_zero(df):
     return day_zero_location
 
 
-# In[15]:
 
 
 def get_since_day_zero(row, day_zero):
@@ -131,7 +116,6 @@ def get_since_day_zero(row, day_zero):
     return max(cur_date - cur_day_zero, -1)
 
 
-# In[16]:
 
 
 day_zero_location = get_day_zero(data_train)
@@ -139,14 +123,12 @@ data_train["since_day_zero"] = data_train.apply(get_since_day_zero, axis=1, day_
 data_test["since_day_zero"] = data_test.apply(get_since_day_zero, axis=1, day_zero=day_zero_location)
 
 
-# In[17]:
 
 
 data_train["since_day_zero"] = data_train["since_day_zero"].map(lambda x: -0.1 if x < 0 else x / data_test.since_day_zero.max())
 data_test["since_day_zero"] = data_test["since_day_zero"].map(lambda x: -0.1 if x < 0 else x / data_test.since_day_zero.max())
 
 
-# In[18]:
 
 
 lockdown_cols = ["quarantine", "close_school", "close_public_place", "limit_gathering", "stay_home"]
@@ -155,7 +137,6 @@ for col in lockdown_cols:
     metadata[col] = pd.to_datetime(metadata[col], format="%Y-%m-%d")
 
 
-# In[19]:
 
 
 def add_lockdown_data(df, metadata):
@@ -170,20 +151,17 @@ def add_lockdown_data(df, metadata):
     return pd.concat([df, lockdown_df], axis=1)
 
 
-# In[20]:
 
 
 data_train = add_lockdown_data(data_train, metadata)
 data_test = add_lockdown_data(data_test, metadata)
 
 
-# In[21]:
 
 
 metadata.drop(lockdown_cols, axis=1, inplace=True)
 
 
-# In[22]:
 
 
 def min_max_normalize(data):
@@ -191,33 +169,28 @@ def min_max_normalize(data):
     return scaler.fit_transform(data)
 
 
-# In[23]:
 
 
 num_cols = metadata.columns[3:]
 metadata[num_cols] = min_max_normalize(metadata[num_cols])
 
 
-# In[24]:
 
 
 metadata.drop(["region", "country"], axis=1, inplace=True)
 
 
-# In[25]:
 
 
 metadata.set_index("location", inplace=True)
 
 
-# In[26]:
 
 
 data_test["log_cfm"] = 0
 data_test["log_ftl"] = 0
 
 
-# In[27]:
 
 
 data_test_known = data_test.loc[data_test.rel_date <= data_train.rel_date.max(), :].sort_values(["rel_date", "location"]).reset_index(drop=True)
@@ -225,13 +198,11 @@ data_test_unknown = data_test.loc[data_test.rel_date > data_train.rel_date.max()
 data_train.sort_values(["rel_date", "location"], inplace=True)
 
 
-# In[28]:
 
 
 data_test_known[["log_cfm", "log_ftl"]] = data_train.loc[data_train.rel_date >= data_test.rel_date.min(), ["log_cfm", "log_ftl"]].values
 
 
-# In[29]:
 
 
 data_test_input = pd.concat([data_test_known, data_test_unknown], axis=0)
@@ -240,7 +211,6 @@ data_test_input = pd.concat([data_train.loc[(data_train.rel_date >= data_test_un
     data_test_input], axis=0).sort_values(["rel_date", "location"]).reset_index(drop=True)
 
 
-# In[30]:
 
 
 class TrainDataset(Dataset):
@@ -275,7 +245,6 @@ class TrainDataset(Dataset):
         return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
 
 
-# In[31]:
 
 
 rand_seed = 42
@@ -288,7 +257,6 @@ data_train.reset_index(drop=False, inplace=True)
 data_val.reset_index(drop=False, inplace=True)
 
 
-# In[32]:
 
 
 x_cols = ["log_cfm", "log_ftl", "rel_date_pct", "since_day_zero"] + lockdown_cols
@@ -302,7 +270,6 @@ ds_val = TrainDataset(data_val, metadata, x_cols, y_cols, input_len)
 dl_val = TrainDataset.get_dataloader(ds_val, batch_size, shuffle=False)
 
 
-# In[33]:
 
 
 for _, sample in enumerate(dl_train):
@@ -311,7 +278,6 @@ for _, sample in enumerate(dl_train):
     break
 
 
-# In[34]:
 
 
 class TestDataset(Dataset):
@@ -348,7 +314,6 @@ class TestDataset(Dataset):
         return DataLoader(dataset, batch_size=None, shuffle=shuffle)
 
 
-# In[35]:
 
 
 test_period_len = data_test.rel_date.max() - data_test.rel_date.min() + 1
@@ -356,7 +321,6 @@ ds_test = TestDataset(data_test_input, metadata, x_cols, test_period_len)
 dl_test = TestDataset.get_dataloader(ds_test, shuffle=False)
 
 
-# In[36]:
 
 
 for i, sample in enumerate(dl_test):
@@ -366,7 +330,6 @@ for i, sample in enumerate(dl_test):
         break
 
 
-# In[37]:
 
 
 class CovidTransformer(nn.Module):
@@ -391,7 +354,6 @@ class CovidTransformer(nn.Module):
         return output
 
 
-# In[38]:
 
 
 class RMSLE(nn.Module):
@@ -400,7 +362,6 @@ class RMSLE(nn.Module):
         return torch.sqrt(F.mse_loss(output, target))
 
 
-# In[39]:
 
 
 class Engine(object):
@@ -529,7 +490,6 @@ class Engine(object):
         return output
 
 
-# In[40]:
 
 
 model = CovidTransformer(d_in, 2, d_meta)
@@ -541,26 +501,22 @@ epochs = 20
 scheduler = ExponentialLR(optimizer, 0.707)
 
 
-# In[41]:
 
 
 engine = Engine()
 engine.compile(model, criterion, optimizer, scheduler)
 
 
-# In[42]:
 
 
 engine.fit(epochs, dl_train, dl_val)
 
 
-# In[43]:
 
 
 engine.plot_loss()
 
 
-# In[44]:
 
 
 def make_predictions(dl_test, engine, y_cols):
@@ -581,45 +537,38 @@ def make_predictions(dl_test, engine, y_cols):
     return dl_test.dataset.df
 
 
-# In[45]:
 
 
 predictions = make_predictions(dl_test, engine, y_cols)
 
 
-# In[46]:
 
 
 predictions["ConfirmedCases"] = predictions["log_cfm"].map(np.expm1)
 predictions["Fatalities"] = predictions["log_ftl"].map(np.expm1)
 
 
-# In[47]:
 
 
 predictions = predictions.loc[~predictions.ForecastId.isna(), :]
 
 
-# In[48]:
 
 
 predictions = predictions.sort_values(["ForecastId"]).reset_index(drop=True)
 
 
-# In[49]:
 
 
 predictions
 
 
-# In[50]:
 
 
 submission = predictions[["ForecastId", "ConfirmedCases", "Fatalities"]]
 submission["ForecastId"] = submission["ForecastId"].astype(int)
 
 
-# In[51]:
 
 
 submission.to_csv("submission.csv", index=False)

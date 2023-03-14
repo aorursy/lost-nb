@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -27,7 +26,6 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 sns.set(style='whitegrid', palette='muted', color_codes=True)
 
 
-# In[2]:
 
 
 df_air_reserve = pd.read_csv('../input/air_reserve.csv')
@@ -39,55 +37,46 @@ df_date_info = pd.read_csv('../input/date_info.csv')
 df_store_id_rel = pd.read_csv('../input/store_id_relation.csv')
 
 
-# In[3]:
 
 
 df_air_reserve.head()
 
 
-# In[4]:
 
 
 df_air_store.head()
 
 
-# In[5]:
 
 
 df_air_visit.head()
 
 
-# In[6]:
 
 
 df_hpg_reserve.head()
 
 
-# In[7]:
 
 
 df_hpg_store.head()
 
 
-# In[8]:
 
 
 df_store_id_rel.head()
 
 
-# In[9]:
 
 
 df_date_info.head()
 
 
-# In[10]:
 
 
 df_date_info.groupby('day_of_week')            .agg({'holiday_flg':'sum'})             .sort_values(by='holiday_flg', ascending=False)            .reset_index() 
 
 
-# In[11]:
 
 
 # merge 'air' tables and bring over any 'hpg' store data
@@ -95,7 +84,6 @@ df_air_merged = df_air_reserve.merge(df_air_store,on='air_store_id', how='left')
     df_store_id_rel, on='air_store_id', how='left').merge(df_hpg_store,on='hpg_store_id', how='left',suffixes=('_air','_hpg'))
 
 
-# In[12]:
 
 
 # merge 'hpg' tables and bring over any 'air' store data
@@ -103,7 +91,6 @@ df_hpg_merged = df_hpg_reserve.merge(df_hpg_store,on='hpg_store_id', how='left')
     df_store_id_rel,on='hpg_store_id', how='left').merge(df_air_store,on='air_store_id', how='left',suffixes=('_hpg','_air'))
 
 
-# In[13]:
 
 
 # add source column
@@ -111,7 +98,6 @@ df_air_merged['source'] = 'air'
 df_hpg_merged['source'] = 'hpg'
 
 
-# In[14]:
 
 
 # append tables together
@@ -119,7 +105,6 @@ df_res_merged = df_air_merged.append(df_hpg_merged)
 df_res_merged.reset_index(inplace=True)
 
 
-# In[15]:
 
 
 # format date fields
@@ -132,7 +117,6 @@ df_res_merged['reserve_date'] = df_res_merged.reserve_datetime.dt.date
 df_res_merged['reserve_time'] = df_res_merged.reserve_datetime.dt.time
 
 
-# In[16]:
 
 
 # add month, year, and season
@@ -148,7 +132,6 @@ df_res_merged['reserve_season'] = df_res_merged['reserve_month'].map(seasons)
 df_res_merged['visit_season'] = df_res_merged['visit_month'].map(seasons)
 
 
-# In[17]:
 
 
 # format df_date_info date to merge
@@ -161,7 +144,6 @@ df_res_merged = df_res_merged.merge(df_date_info, on='reserve_date', how='left')
 df_res_merged.rename(columns={"day_of_week": "day_of_week_res", "holiday_flg": "holiday_flag_res"}, inplace=True)
 
 
-# In[18]:
 
 
 # time between reservation and visit
@@ -170,7 +152,6 @@ df_res_merged['res_vs_visit_days'] = df_res_merged['res_vs_visit'].astype('timed
 df_res_merged['res_vs_visit_hours'] = df_res_merged['res_vs_visit'].astype('timedelta64[h]')
 
 
-# In[19]:
 
 
 # holiday the day before and after visit
@@ -180,13 +161,11 @@ df_res_merged['holiday_after_visit'] = df_res_merged.holiday_flag_visit.shift(-1
 df_res_merged.holiday_after_visit.fillna(0,inplace=True)
 
 
-# In[20]:
 
 
 df_res_merged.describe()
 
 
-# In[21]:
 
 
 df_genre = df_res_merged[df_res_merged.hpg_genre_name != 'No Data'].groupby(['hpg_genre_name'])                         .agg({'index':'size', 'reserve_visitors':'mean', 'res_vs_visit_hours':'mean'})                        .reset_index()
@@ -203,7 +182,6 @@ sns.barplot(x='reserve_visitors', y='hpg_genre_name', data=df_genre,
             ax=ax3, color='b')
 
 
-# In[22]:
 
 
 df_genre = df_res_merged[df_res_merged.air_genre_name != 'No Data'].groupby(['air_genre_name'])                         .agg({'index':'size', 'reserve_visitors':'mean', 'res_vs_visit_hours':'mean'})                        .reset_index()
@@ -220,7 +198,6 @@ sns.barplot(x='reserve_visitors', y='air_genre_name', data=df_genre,
             ax=ax3, color='b')
 
 
-# In[23]:
 
 
 # plot holiday vs non holiday
@@ -243,7 +220,6 @@ sns.barplot(x='reserve_visitors', y='hpg_genre_name', data=df_genre_by_holiday,
             ax=ax3, hue='holiday_flag_visit', hue_order=[0,1], color='b')
 
 
-# In[24]:
 
 
 # plot holiday vs non holiday
@@ -266,7 +242,6 @@ sns.barplot(x='reserve_visitors', y='air_genre_name', data=df_genre_by_holiday,
             ax=ax3, hue='holiday_flag_visit', hue_order=[0,1], color='b')
 
 
-# In[25]:
 
 
 # too many genres - amalgamate
@@ -333,7 +308,6 @@ df_res_merged['genre_2']=df_res_merged['hpg_genre_2']
 df_res_merged.loc[df_res_merged['hpg_genre_2']=='No Data',['genre_2']] = df_res_merged['air_genre_2']
 
 
-# In[26]:
 
 
 # plot holiday vs non holiday
@@ -356,7 +330,6 @@ sns.barplot(x='reserve_visitors', y='genre_2', data=df_genre_by_holiday,
             ax=ax3, hue='holiday_flag_visit', hue_order=[0,1], color='b')
 
 
-# In[27]:
 
 
 # Reservation visits per season
@@ -371,7 +344,6 @@ g.map(sns.barplot, "visit_month", "visit_pct", palette=pal, order=['Jan','Feb','
            'Jul','Aug','Sep','Oct','Nov','Dec'])
 
 
-# In[28]:
 
 
 # Reservation visits per season
@@ -381,7 +353,6 @@ sns.barplot("visit_month", "reserve_visitors", data=df_res_visitors_by_season, p
             order=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'])
 
 
-# In[29]:
 
 
 # reservations and visits by day of week
@@ -409,7 +380,6 @@ df_by_dow = df_by_dow.melt(id_vars=['day_of_week'], value_vars=['reservation_cou
 sns.factorplot(x='day_of_week', y='value', data=df_by_dow, hue='variable', aspect=3)
 
 
-# In[30]:
 
 
 
@@ -432,7 +402,6 @@ ax2.grid(b=None, axis='x')
 ax2.xaxis.set_major_locator(ticker.MultipleLocator(base=24))
 
 
-# In[31]:
 
 
 df_res_by_time = df_res_merged.groupby(['reserve_time'])                              .agg({'index':'size'})                              .reset_index() 
@@ -453,7 +422,6 @@ df_by_time = df_by_time.melt(id_vars=['time'], value_vars=['reservation_count', 
 sns.factorplot(x='time', y='value', data=df_by_time, hue='variable', aspect=3).set_xticklabels(rotation=30)
 
 
-# In[32]:
 
 
 f, (ax1, ax2) = plt.subplots(2, 1, sharex=True,figsize=(16, 10))
@@ -474,7 +442,6 @@ ax2.set_xlim(0)
 ax2.grid(b=None, axis='x')
 
 
-# In[33]:
 
 
 # Reservations by visit date and source
@@ -495,7 +462,6 @@ ax2.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
 ax2.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
 
 
-# In[34]:
 
 
 visit_vs_res_top = df_res_merged.groupby(['air_store_id', 'hpg_store_id','air_genre_name', 'hpg_genre_name'])                                .agg({'res_vs_visit_hours':'mean', 'index':'size', 'reserve_visitors':'mean'})                                 .reset_index()                                 .sort_values(by='res_vs_visit_hours', ascending=False)
@@ -505,7 +471,6 @@ visit_vs_res_top = visit_vs_res_top[visit_vs_res_top['No. of reservations']>100]
 visit_vs_res_top.head(10)
 
 
-# In[35]:
 
 
 # format df_date_info and add month, year, and season
@@ -520,7 +485,6 @@ df_air_visit['visit_year'] = df_air_visit.visit_date.apply(lambda x: x.strftime(
 df_air_visit['visit_season'] = df_air_visit['visit_month'].map(seasons)
 
 
-# In[36]:
 
 
 # amalgamate genres like in hpg
@@ -528,7 +492,6 @@ df_air_visit.air_genre_name.fillna('No Data', inplace=True)
 df_air_visit['air_genre_2'] = df_air_visit['air_genre_name'].map(genres)
 
 
-# In[37]:
 
 
 # holiday the day before and after visit
@@ -538,13 +501,11 @@ df_air_visit['holiday_after_visit'] = df_air_visit.holiday_flg.shift(-1)
 df_air_visit.holiday_after_visit.fillna(0,inplace=True)
 
 
-# In[38]:
 
 
 df_air_visit.describe()
 
 
-# In[39]:
 
 
 # visitors by day of week and holiday
@@ -555,7 +516,6 @@ df_visitors_by_dow.sort_values(by='day_of_week', inplace=True)
 sns.factorplot(x='day_of_week', y='visitors', data=df_visitors_by_dow, hue='holiday_flg', aspect=3)
 
 
-# In[40]:
 
 
 # visits by day of week and holiday after visit
@@ -566,7 +526,6 @@ df_visitors_by_dow.sort_values(by='day_of_week', inplace=True)
 sns.factorplot(x='day_of_week', y='visitors', data=df_visitors_by_dow, hue='holiday_after_visit', aspect=3)
 
 
-# In[41]:
 
 
 # Visitors from reservations vs Total visitors
@@ -589,7 +548,6 @@ ax1.set_ylabel('Visitors')
 ax1.legend(['Visitors from reservations', 'Total visitors'])
 
 
-# In[42]:
 
 
 # Plot total daily visitors distribution before and after jump in visitors(Jul 1st 2016)
@@ -603,7 +561,6 @@ sns.kdeplot(df_total_vis[df_total_vis['before_20160701'] == True].visitors, colo
 sns.kdeplot(df_total_vis[df_total_vis['before_20160701'] == False].visitors, color= "g", lw= 3, label= "On/After 2016-07-01")
 
 
-# In[43]:
 
 
 # Reservation visits per season
@@ -616,7 +573,6 @@ sns.barplot("visit_month", "visit_pct", data=df_air_visit_by_season, palette=pal
             order=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'])
 
 
-# In[44]:
 
 
 # Visitors per genre
@@ -634,7 +590,6 @@ plt.subplots_adjust(top=0.9)
 g.fig.suptitle('Daily visitors per genre')
 
 
-# In[45]:
 
 
 df_air_visit['visit_date']= df_air_visit.visit_date.apply(lambda x: pd.to_datetime(x).date())
@@ -648,7 +603,6 @@ plt.subplots_adjust(top=0.9)
 g.fig.suptitle('Mean visitors per day by genre')
 
 
-# In[46]:
 
 
 # Visitors from reservations vs Total visitors by season
@@ -659,7 +613,6 @@ g.fig.set_figwidth(16)
 g.fig.set_figheight(7)
 
 
-# In[47]:
 
 
 f, (ax1,ax2) = plt.subplots(1,2,figsize=(12,7))
@@ -677,7 +630,6 @@ ax2.set_title('HPG')
 plt.tight_layout()
 
 
-# In[48]:
 
 
 # Plot individual restaurants on map based on lat and long
@@ -735,7 +687,6 @@ folium.LayerControl().add_to(m)
 m
 
 
-# In[49]:
 
 
 # plot restaurants as a heatmap
@@ -751,7 +702,6 @@ m.add_child(HeatMap(heat, radius=15, min_opacity=.5))
 m
 
 
-# In[50]:
 
 
 

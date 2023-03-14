@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from kaggle.competitions import nflrush
@@ -14,46 +13,39 @@ from tqdm import tqdm
 env = nflrush.make_env()
 
 
-# In[2]:
 
 
 from sklearn.model_selection import train_test_split
 
 
-# In[3]:
 
 
 from matplotlib import pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[4]:
 
 
 import warnings
 warnings.simplefilter('ignore')
 
 
-# In[5]:
 
 
 df = pd.read_csv('/kaggle/input/nfl-big-data-bowl-2020/train.csv', low_memory=False)
 
 
-# In[6]:
 
 
 iter_test = env.iter_test()
 
 
-# In[7]:
 
 
 #ボールを持っている人のデータのみ抽出
 rusher_df=df[df['NflId']==df['NflIdRusher']]
 
 
-# In[8]:
 
 
 def count_position(df,rusher_df):
@@ -64,7 +56,6 @@ def count_position(df,rusher_df):
     return rusher_df
 
 
-# In[9]:
 
 
 def preprocess(df):
@@ -100,7 +91,6 @@ def preprocess(df):
     return df
 
 
-# In[10]:
 
 
 '''def add_team_yard(rusher_df):
@@ -112,7 +102,6 @@ def preprocess(df):
     return rusher_df,team_yards_df'''
 
 
-# In[11]:
 
 
 def add_team_score(rusher_df):
@@ -129,7 +118,6 @@ def add_team_score(rusher_df):
     return rusher_df
 
 
-# In[12]:
 
 
 def count_yard_to_touchdown(rusher_df):
@@ -139,7 +127,6 @@ def count_yard_to_touchdown(rusher_df):
     return rusher_df
 
 
-# In[13]:
 
 
 def add_personal_yard(rusher_df):
@@ -151,7 +138,6 @@ def add_personal_yard(rusher_df):
     return rusher_df,rusher_yards
 
 
-# In[14]:
 
 
 def add_average_data(df,rusher_df):
@@ -168,7 +154,6 @@ def add_average_data(df,rusher_df):
     
 
 
-# In[15]:
 
 
 def create_datetime(df):
@@ -179,7 +164,6 @@ def create_datetime(df):
     
 
 
-# In[16]:
 
 
 def feature(df):
@@ -206,91 +190,76 @@ def feature(df):
     return features   
 
 
-# In[17]:
 
 
 rusher_df=count_position(df,rusher_df)
 
 
-# In[18]:
 
 
 df=preprocess(df)
 
 
-# In[19]:
 
 
 rusher_df=preprocess(rusher_df)
 
 
-# In[20]:
 
 
 #rusher_df,team_yards_df=add_team_yard(rusher_df)
 
 
-# In[21]:
 
 
 rusher_df=add_team_score(rusher_df)
 
 
-# In[22]:
 
 
 rusher_df=count_yard_to_touchdown(rusher_df)
 
 
-# In[23]:
 
 
 rusher_df,rusher_yards=add_personal_yard(rusher_df)
 
 
-# In[24]:
 
 
 rusher_df=add_average_data(df,rusher_df)
 
 
-# In[25]:
 
 
 rusher_df=create_datetime(rusher_df)
 
 
-# In[26]:
 
 
 rusher_df=rusher_df.dropna()
 
 
-# In[27]:
 
 
 #rusher_df.columns[rusher_df.dtypes=='object']
 
 
-# In[28]:
 
 
 features=feature(rusher_df)
 
 
-# In[29]:
 
 
 #train_mean=features.mean(axis=0)
 
 
-# In[30]:
 
 
 #train_std=features.std(axis=0)
 
 
-# In[31]:
 
 
 '''
@@ -300,31 +269,26 @@ def normalize(features):
 '''
 
 
-# In[32]:
 
 
 X=features
 
 
-# In[33]:
 
 
 target=pd.Series(rusher_df['Yards'])
 
 
-# In[34]:
 
 
 train_X,test_X,train_y,test_y=train_test_split(X,target,test_size=0.2)
 
 
-# In[35]:
 
 
 cattegirical_features= np.where(X.dtypes == np.object)[0]
 
 
-# In[36]:
 
 
 train_pool=Pool(train_X,train_y,cat_features=cattegirical_features)
@@ -332,13 +296,11 @@ test_pool=Pool(test_X,test_y,cat_features=cattegirical_features)
 all_pool=Pool(X,target,cat_features=cattegirical_features)
 
 
-# In[37]:
 
 
 import optuna
 
 
-# In[38]:
 
 
 '''
@@ -383,13 +345,11 @@ def objective(trial):
 '''
 
 
-# In[39]:
 
 
 from optuna.pruners import SuccessiveHalvingPruner
 
 
-# In[40]:
 
 
 '''
@@ -404,7 +364,6 @@ study.optimize(objective,
 '''
 
 
-# In[41]:
 
 
 '''
@@ -414,7 +373,6 @@ study.best_params
 '''
 
 
-# In[42]:
 
 
 #C=0.01300098884071051
@@ -428,40 +386,34 @@ best_params={'iterations': 236,
             }
 
 
-# In[43]:
 
 
 model = CatBoostClassifier(**best_params)
 
 
-# In[44]:
 
 
 #モデルにさらに全データを学習
 CBC=model.fit(all_pool)
 
 
-# In[45]:
 
 
 num_feat_imp=pd.DataFrame(CBC.get_feature_importance,index=X,select_dtypes([int,float]).columns)
 num_feat_imp.sort_values(0,ascending=False)
 
 
-# In[46]:
 
 
 cat_feat_imp=pd.DataFrame(CBC.get_object_importance,index==X,select_dtypes('object').columns)
 cat_feat_imp.sort_values(0,ascending=False)
 
 
-# In[47]:
 
 
 train_df=rusher_df.iloc[:0,:]
 
 
-# In[48]:
 
 
 for (test_df, sample_prediction_df) in tqdm(iter_test):
@@ -492,19 +444,16 @@ for (test_df, sample_prediction_df) in tqdm(iter_test):
     env.predict(sample_prediction_df)
 
 
-# In[49]:
 
 
 sample_prediction_df
 
 
-# In[50]:
 
 
 env.write_submission_file()
 
 
-# In[51]:
 
 
 import os

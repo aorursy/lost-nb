@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -33,7 +32,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 df_train = pd.read_csv('../input/train.csv')
@@ -43,13 +41,11 @@ df_part = df_train[0:2500]
 len(df_train)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 import nltk
@@ -101,7 +97,6 @@ print(clean_tokens1)
 """
 
 
-# In[ ]:
 
 
 """
@@ -113,13 +108,11 @@ print (model['house'])
 """
 
 
-# In[ ]:
 
 
 print(b)
 
 
-# In[ ]:
 
 
 #model = gensim.models.Word2Vec.load('../input/train.csv')
@@ -134,7 +127,6 @@ for i in clean_tokens1:
 #w = word_tokenize(df_part['question1'])
 
 
-# In[ ]:
 
 
 import nltk
@@ -162,7 +154,6 @@ print(clean_tokens1[0])
 model.most_similar([clean_tokens1[0]])
 
 
-# In[ ]:
 
 
 acierto2 =  {} #tabla para porcentajes de aciertos en la estimación
@@ -177,7 +168,6 @@ porcentaje = (counter*100)/len(df_train)
 print(porcentaje)
 
 
-# In[ ]:
 
 
 train_qs = pd.Series(df_train['question1'].tolist() + df_train['question2'].tolist()).astype(str)
@@ -198,7 +188,6 @@ dist_test = test_qs.apply(len)
 #                          dist_train.std(), dist_test.mean(), dist_test.std(), dist_train.max(), dist_test.max()))
 
 
-# In[ ]:
 
 
 from nltk.corpus import stopwords
@@ -224,7 +213,6 @@ def word_match_share(row):
 #print(stops)
 
 
-# In[ ]:
 
 
 train_word_match = df_train.apply(word_match_share, axis=1, raw=True)
@@ -235,7 +223,6 @@ len(df_train)
 #print(duplicados)
 
 
-# In[ ]:
 
 
 for index in range(len(train_word_match)):
@@ -257,7 +244,6 @@ print(porcentaje)
 print(len(decision))
 
 
-# In[ ]:
 
 
 from collections import Counter
@@ -282,7 +268,6 @@ counts = Counter(words)
 weights = {word: get_weight(count) for word, count in counts.items()}#estudiar bien que hace
 
 
-# In[ ]:
 
 
 ratiow3 = []
@@ -311,7 +296,6 @@ print(clean_tokens1)
 print(clean_tokens2)
 
 
-# In[ ]:
 
 
 #funciona bien
@@ -352,7 +336,6 @@ for i in range(len(df_part)):
     
 
 
-# In[ ]:
 
 
 #q1 = pd.Series(df_train['question1'][7]).astype(str)
@@ -390,13 +373,11 @@ n_words = 0
 #print(n_words)     
 
 
-# In[ ]:
 
 
 print(x)
 
 
-# In[ ]:
 
 
 
@@ -440,13 +421,11 @@ for i in range(len(df_part)):
             
 
 
-# In[ ]:
 
 
 print(clean_tokens1 & clean_tokens2)
 
 
-# In[ ]:
 
 
 decision2 = {} #tabla con los datos estimados, duplicados o no.
@@ -472,13 +451,11 @@ porcentaje = (counter*100)/len(df_part)
 print(porcentaje)
 
 
-# In[ ]:
 
 
 print(ratiow2)
 
 
-# In[ ]:
 
 
 stops = set(stopwords.words("english"))
@@ -519,7 +496,6 @@ def same_word_ratio_2(row):
     return ratiow
 
 
-# In[ ]:
 
 
 stops = set(stopwords.words("english"))
@@ -548,7 +524,6 @@ def same_word_ratio(row):
     
 
 
-# In[ ]:
 
 
 decision2 = {} #tabla con los datos estimados, duplicados o no.
@@ -576,7 +551,6 @@ porcentaje = (counter*100)/len(df_part)
 print(porcentaje)
 
 
-# In[ ]:
 
 
 decision2 = {} #tabla con los datos estimados, duplicados o no.
@@ -602,7 +576,6 @@ porcentaje = (counter*100)/404290
 print(porcentaje)
 
 
-# In[ ]:
 
 
 def no_detections(row, df_x ): #row: una matriz de decision con unos y ceros estimados
@@ -628,7 +601,6 @@ def no_detections(row, df_x ): #row: una matriz de decision con unos y ceros est
     return no_detections_q
 
 
-# In[ ]:
 
 
 def falsa_alarma(row, df_x ): #row: una matriz de decision con unos y ceros estimados
@@ -654,27 +626,23 @@ def falsa_alarma(row, df_x ): #row: una matriz de decision con unos y ceros esti
     return falsa_alarma_q
 
 
-# In[ ]:
 
 
 no_detection = no_detections(decision2,df_train)
 #print(no_detection)
 
 
-# In[ ]:
 
 
 falsa_alarma = falsa_alarma(decision2, df_train)
 print(falsa_alarma)
 
 
-# In[ ]:
 
 
 ratiow_test = same_word_ratio(df_test)
 
 
-# In[ ]:
 
 
 decision2_test = {}
@@ -690,7 +658,6 @@ len(ratiow_test)
 #   print(decision2_test[w])
 
 
-# In[ ]:
 
 
 print('Most common words and weights: \n')
@@ -699,7 +666,6 @@ print('\nLeast common words and weights: ')
 (sorted(weights.items(), key=lambda x: x[1], reverse=True)[:10])
 
 
-# In[ ]:
 
 
 def tfidf_word_match_share(row):
@@ -722,7 +688,6 @@ def tfidf_word_match_share(row):
     return R
 
 
-# In[ ]:
 
 
 tfidf_train_word_match = df_train.apply(tfidf_word_match_share, axis=1, raw=True)
@@ -732,7 +697,6 @@ duplicados_tfidf = df_train['is_duplicate'] #tabla con los datos de pares duplic
 print(duplicados_tfidf)
 
 
-# In[ ]:
 
 
 for index in range(len(tfidf_train_word_match)):
@@ -754,13 +718,11 @@ porcentaje_tfidf = (counter*100)/404265
 print(porcentaje_tfidf)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 word_match_test = df_test.apply(word_match_share, axis=1, raw=True)
@@ -770,7 +732,6 @@ len(df_test)
 #print(duplicados)
 
 
-# In[ ]:
 
 
 for index in range(len(word_match_test)):
@@ -784,19 +745,16 @@ for w in range(20):
 len(decision_test)
 
 
-# In[ ]:
 
 
 ratiow_test = same_word_ratio(df_test)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

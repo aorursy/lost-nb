@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -28,7 +27,6 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 relu = np.vectorize(lambda x: x if x>0.0 else 0.0)
@@ -48,7 +46,6 @@ def cross_val_pipeline(pipe, X, y):
     print(f"RMSLE: {mean_res:2.3} +- {std_res:3.2}")
 
 
-# In[3]:
 
 
 df_train = pd.read_csv("../input/tmdb-box-office-prediction/train.csv")
@@ -57,13 +54,11 @@ df_test = pd.read_csv("../input/tmdb-box-office-prediction/test.csv")
 df_train.head()
 
 
-# In[4]:
 
 
 df_train.isna().mean()
 
 
-# In[5]:
 
 
 df_aux = df_train.copy()
@@ -75,7 +70,6 @@ df_aux = df_aux.set_index("release_date").sort_index()
 df_aux["is_american"] = df_aux.production_countries.str.contains("United States of America")
 
 
-# In[6]:
 
 
 plt.figure(figsize=(18,5))
@@ -99,31 +93,26 @@ plt.yticks(fontsize=14)
 plt.show()
 
 
-# In[7]:
 
 
 df_train_clean = pd.read_csv('../input/moviestmdb-datapreparation/train_prep.csv')
 
 
-# In[8]:
 
 
 best_movies = df_train.sort_values(by='revenue', ascending=False).iloc[:10]
 
 
-# In[9]:
 
 
 best_movies[["original_title", "popularity", "budget", "release_date","revenue"]].set_index(np.arange(1,11))
 
 
-# In[10]:
 
 
 ## 5 best actors
 
 
-# In[11]:
 
 
 l_actors = [c for c in df_train_clean.columns if "cast_name" in c]
@@ -136,7 +125,6 @@ df_actors = pd.DataFrame(l_series_of_actors).reset_index()
 df_actors.sort_values(by='revenue', ascending=False).iloc[:10].set_index(np.arange(1,11)).rename(columns={"index":"Actor"})
 
 
-# In[12]:
 
 
 plt.scatter(df_actors.popularity, 
@@ -145,7 +133,6 @@ plt.scatter(df_actors.popularity,
 #             df_actors.revenue)
 
 
-# In[13]:
 
 
 asd =df_train_clean[df_train_clean[l_actors[0]]==1].agg({"revenue":"mean","budget":"mean","popularity":"mean"})
@@ -153,13 +140,11 @@ asd.name=l_actors[0].replace("cast_name_","")
 pd.DataFrame([asd])
 
 
-# In[14]:
 
 
 
 
 
-# In[14]:
 
 
 df_aux = df_train.copy()
@@ -175,7 +160,6 @@ plt.legend()
 plt.show()
 
 
-# In[15]:
 
 
 
@@ -183,7 +167,6 @@ plt.hist(df_aux[df_aux['is_american']].revenue, label='Non American', alpha=0.5)
 plt.hist(df_aux[~df_aux['is_american']].revenue, label='Non American', alpha=0.5)
 
 
-# In[16]:
 
 
 df_aux2 = df_aux[~df_aux.is_american.isna()]
@@ -201,7 +184,6 @@ plt.yticks(fontsize=14)
 plt.show()
 
 
-# In[17]:
 
 
 plt.figure(figsize=(18,5))
@@ -212,19 +194,16 @@ plt.legend()
 plt.show()
 
 
-# In[18]:
 
 
 df_train.status.value_counts()
 
 
-# In[19]:
 
 
 df_train["has_homepage"] = (~df_train.homepage.isna()).astype(int)
 
 
-# In[20]:
 
 
 sns.distplot(df_train[1==df_train.has_homepage].revenue, kde=False)
@@ -232,7 +211,6 @@ sns.distplot(df_train[0==df_train.has_homepage].revenue, kde=False)
 plt.yscale("log")
 
 
-# In[21]:
 
 
 df_aux = df_train.copy().dropna(subset=["production_countries"])
@@ -246,7 +224,6 @@ plt.legend()
 plt.show()
 
 
-# In[22]:
 
 
 df_aux = df_train.copy().dropna(subset=["original_language"])
@@ -260,7 +237,6 @@ plt.legend()
 plt.show()
 
 
-# In[23]:
 
 
 df_aux = df_train.copy()
@@ -274,7 +250,6 @@ plt.legend()
 plt.show()
 
 
-# In[24]:
 
 
 ref_date = pd.datetime(2019, 2, 1)
@@ -301,61 +276,49 @@ custom_transformer = FunctionTransformer(apply_custom_transformations, validate=
 df_FE=custom_transformer.fit_transform(df_train)
 
 
-# In[25]:
 
 
 # sns.pairplot(df_FE, diag_kind='kde', markers = '+')
 # plt.show()
 
 
-# In[26]:
 
 
 sns.heatmap(df_FE.corr())
 
 
-# In[27]:
 
 
 X, y = split_x_y(df_train)
 logy = np.log(y)
 
 
-# In[28]:
 
 
-pipe = make_pipeline(custom_transformer, SimpleImputer(strategy='median'), StandardScaler(), 
                     ElasticNetCV(cv = 5, n_jobs=2))
 cross_val_pipeline(pipe, X, logy)
 
 
-# In[29]:
 
 
-pipe = make_pipeline(custom_transformer, SimpleImputer(strategy='median'), StandardScaler(), 
                     XGBRegressor(booster='gblinear', n_estimators=500, n_jobs=2))
 cross_val_pipeline(pipe, X, logy)
 
 
-# In[30]:
 
 
 model = XGBRegressor(max_depth=5, n_estimators=50)
-pipe = make_pipeline(custom_transformer, SimpleImputer(strategy='median'), StandardScaler(), model)
 cross_val_pipeline(pipe, X, logy)
 
 
-# In[31]:
 
 
 # points = hv.Points(pd.DataFrame([y_pred, np.log(y_val)], index=["y_pred","y_true"]).T)
 # points
 
 
-# In[32]:
 
 
-pipe.fit(X, logy)
 logy_pred_test = pipe.predict(df_test)
 y_pred_test = np.exp(logy_pred_test)
 

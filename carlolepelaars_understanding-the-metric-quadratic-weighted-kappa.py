@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Standard Dependencies
@@ -33,7 +32,6 @@ TRAIN_PATH = PATH + "train_labels.csv"
 SUB_PATH = PATH + "sample_submission.csv"
 
 
-# In[2]:
 
 
 # File sizes and specifications
@@ -43,20 +41,17 @@ for file in os.listdir(PATH):
                              str(round(os.path.getsize(PATH + file) / 1000000, 2))))
 
 
-# In[3]:
 
 
 # Load in data
 df = pd.read_csv(TRAIN_PATH)
 
 
-# In[4]:
 
 
 df.head(3)
 
 
-# In[5]:
 
 
 def sklearn_qwk(y_true, y_pred) -> np.float64:
@@ -71,7 +66,6 @@ def sklearn_qwk(y_true, y_pred) -> np.float64:
     return cohen_kappa_score(y_true, y_pred, weights="quadratic")
 
 
-# In[6]:
 
 
 @jit
@@ -110,14 +104,12 @@ def cpmp_qwk(a1, a2, max_rat=3) -> float:
     return 1 - o / e
 
 
-# In[7]:
 
 
 # Get the ground truth labels
 true_labels = df['accuracy_group']
 
 
-# In[8]:
 
 
 # Check which labels are present
@@ -125,7 +117,6 @@ print("Label Distribution:")
 df['accuracy_group'].value_counts()
 
 
-# In[9]:
 
 
 # Calculate scores for very naive baselines
@@ -135,14 +126,12 @@ print(f"Simply predicting the most common class will yield a QWK score of:\n{dum
 print(f"Random predictions will yield a QWK score of:\n{random_score}")
 
 
-# In[10]:
 
 
 print("Assessment types in the training data:")
 list(set(df['title']))
 
 
-# In[11]:
 
 
 # Group by assessments and take the mode
@@ -154,7 +143,6 @@ mean_mapping = df.groupby('title')['accuracy_group'].mean().round()
 mean_preds = df['title'].map(mean_mapping)
 
 
-# In[12]:
 
 
 # Check which a score a less naive baseline would give
@@ -164,7 +152,6 @@ print(f"The naive grouping of the assessments and taking the mode will yield us 
 print(f"The naive grouping of the assessments and taking the rounded mean will yield us a QWK score of:\n{grouped_mean_score}")
 
 
-# In[13]:
 
 
 # Map the mean based on the assessment title
@@ -172,7 +159,6 @@ raw_mean_mapping = df.groupby('title')['accuracy_group'].mean()
 raw_mean_preds = df['title'].map(raw_mean_mapping)
 
 
-# In[14]:
 
 
 class OptimizedRounder(object):
@@ -247,7 +233,6 @@ class OptimizedRounder(object):
         return self.coef_['x']
 
 
-# In[15]:
 
 
 # Optimize rounding thresholds (No effect since we have naive baselines)
@@ -258,7 +243,6 @@ opt_preds = optR.predict(raw_mean_preds, coefficients)
 new_score = sklearn_qwk(true_labels, opt_preds)
 
 
-# In[16]:
 
 
 print(f"Optimized Thresholds:\n{coefficients}\n")
@@ -266,7 +250,6 @@ print(f"The Quadratic Weighted Kappa (QWK)\nwith optimized rounding thresholds i
 print(f"This is an improvement of {round(new_score - grouped_mean_score, 5)} over the unoptimized rounding.")
 
 
-# In[17]:
 
 
 class QWK(Callback):
@@ -314,7 +297,6 @@ def get_preds_and_labels(model, generator):
     return np.concatenate(preds).ravel(), np.concatenate(labels).ravel()
 
 
-# In[18]:
 
 
 def _cohen_kappa(y_true, y_pred, num_classes, weights=None, metrics_collections=None, updates_collections=None, name=None):
@@ -334,7 +316,6 @@ def cohen_kappa_loss(num_classes, weights=None, metrics_collections=None, update
     return cohen_kappa
 
 
-# In[19]:
 
 
 # Read in Test Data
@@ -345,7 +326,6 @@ test_df['preds'] = test_df['title'].map(mode_mapping)
 final_preds = test_df.groupby('installation_id')['preds'].agg(lambda x:x.value_counts().index[0])
 
 
-# In[20]:
 
 
 # Make submission for Kaggle
@@ -354,7 +334,6 @@ sub_df['accuracy_group'] = list(final_preds.fillna(0).astype(np.uint8))
 sub_df.to_csv("submission.csv", index=False);
 
 
-# In[21]:
 
 
 print('Final predictions:')

@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install ../input/sacremoses/sacremoses-master/')
 get_ipython().system('pip install ../input/transformers/transformers-master/')
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -18,41 +16,35 @@ import matplotlib.pyplot as plt
 DATA_DIR = '../input/google-quest-challenge'
 
 
-# In[3]:
 
 
 get_ipython().system('ls ../input')
 
 
-# In[4]:
 
 
 sub = pd.read_csv(f'{DATA_DIR}/sample_submission.csv')
 sub.head()
 
 
-# In[5]:
 
 
 target_columns = sub.columns.values[1:].tolist()
 target_columns
 
 
-# In[6]:
 
 
 train = pd.read_csv(f'{DATA_DIR}/train.csv')
 train.head()
 
 
-# In[7]:
 
 
 test = pd.read_csv(f'{DATA_DIR}/test.csv')
 test.head()
 
 
-# In[8]:
 
 
 import torch
@@ -232,13 +224,11 @@ def test_test_loader():
         break
 
 
-# In[9]:
 
 
 test_train_loader()
 
 
-# In[10]:
 
 
 from transformers import *
@@ -274,13 +264,11 @@ def test_model():
     print(y)
 
 
-# In[11]:
 
 
 get_ipython().system('ls ../input')
 
 
-# In[12]:
 
 
 def create_model(model_file):
@@ -299,7 +287,6 @@ def create_models():
     return models
 
 
-# In[13]:
 
 
 from tqdm import tqdm
@@ -320,49 +307,41 @@ def predict(models, test_loader):
     return all_scores
 
 
-# In[14]:
 
 
 test_loader = get_test_loader(batch_size=32)
 
 
-# In[15]:
 
 
 models = create_models()
 
 
-# In[16]:
 
 
 preds = predict(models, test_loader)
 
 
-# In[17]:
 
 
 preds[:1]
 
 
-# In[18]:
 
 
 sub[target_columns] = preds
 
 
-# In[19]:
 
 
 sub.to_csv('submission.csv', index=False)
 
 
-# In[20]:
 
 
 sub.head()
 
 
-# In[ ]:
 
 
 

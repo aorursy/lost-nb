@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 get_ipython().system('pip uninstall --y kaggle')
@@ -9,7 +8,6 @@ get_ipython().system('pip install --upgrade pip')
 get_ipython().system('pip install kaggle==1.5.6')
 
 
-# In[ ]:
 
 
 get_ipython().system('mkdir -p ~/.kaggle')
@@ -18,19 +16,16 @@ get_ipython().system('ls -lha kaggle.json')
 get_ipython().system('chmod 600 ~/.kaggle/kaggle.json')
 
 
-# In[ ]:
 
 
 get_ipython().system('kaggle competitions download -c 2020-ai-termproject-18011817')
 
 
-# In[ ]:
 
 
 get_ipython().system('unzip 2020-ai-termproject-18011817.zip')
 
 
-# In[ ]:
 
 
 import pandas as pd
@@ -48,7 +43,6 @@ from torch.utils.data import TensorDataset, DataLoader
 from sklearn.preprocessing import MinMaxScaler
 
 
-# In[ ]:
 
 
 device = torch.device('cuda')
@@ -62,7 +56,6 @@ training_epochs = 6000
 batch_size = 60
 
 
-# In[ ]:
 
 
 xy_train = pd.read_csv('train_seoul_grandpark.csv', header = None, skiprows=1, usecols=range(1, 8))
@@ -82,7 +75,6 @@ y_train = torch.FloatTensor(y_data)
 x_train.shape
 
 
-# In[ ]:
 
 
 train_dataset = TensorDataset(x_train, y_train)
@@ -92,7 +84,6 @@ data_loader = torch.utils.data.DataLoader(dataset = train_dataset,
                                            drop_last = True)
 
 
-# In[ ]:
 
 
 class MishFunction(torch.autograd.Function):
@@ -120,7 +111,6 @@ def to_Mish(model):
             to_Mish(child)
 
 
-# In[ ]:
 
 
 linear1 = torch.nn.Linear(5, 8,bias=True)
@@ -132,7 +122,6 @@ linear5 = torch.nn.Linear(8, 1,bias=True)
 mish = Mish()
 
 
-# In[ ]:
 
 
 torch.nn.init.kaiming_normal_(linear1.weight)
@@ -148,13 +137,11 @@ model = torch.nn.Sequential(linear1,mish,
                             linear5).to(device)
 
 
-# In[ ]:
 
 
 모델 학습
 
 
-# In[ ]:
 
 
 loss = torch.nn.MSELoss().to(device)
@@ -191,13 +178,11 @@ for epoch in range(training_epochs + 1):
 print('Learning finished')
 
 
-# In[ ]:
 
 
 best_model = model_history[np.argmin(err_history)]
 
 
-# In[ ]:
 
 
 xy_test = pd.read_csv('test_seoul_grandpark.csv', header = None, skiprows=1, usecols = range(1, 7))
@@ -211,7 +196,6 @@ with torch.no_grad():
     predict = best_model(x_test)
 
 
-# In[ ]:
 
 
 submit = pd.read_csv('submit_sample.csv')
@@ -222,7 +206,6 @@ submit.to_csv('submit.csv', mode = 'w', index = False, header = True)
 submit
 
 
-# In[ ]:
 
 
 get_ipython().system('kaggle competitions submit -c 2020-ai-termproject-18011817 -f submit.csv -m "14010974_이기택"')

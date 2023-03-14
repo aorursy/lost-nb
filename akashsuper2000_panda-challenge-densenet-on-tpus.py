@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('curl https://raw.githubusercontent.com/pytorch/xla/master/contrib/scripts/env-setup.py -o pytorch-xla-env-setup.py')
@@ -10,7 +9,6 @@ get_ipython().system('export XLA_USE_BF16=1')
 get_ipython().system('pip install -q torchviz')
 
 
-# In[2]:
 
 
 import os
@@ -46,14 +44,12 @@ from torchvision.models import resnet18, densenet121, mobilenet_v2
 from albumentations import RandomRotate90, Flip, Compose, Normalize, RandomResizedCrop
 
 
-# In[3]:
 
 
 np.random.seed(42)
 torch.manual_seed(42)
 
 
-# In[4]:
 
 
 FOLDS = 8
@@ -74,7 +70,6 @@ DATA_PATH = '../input/prostate-cancer-grade-assessment/'
 RESIZED_PATH = '../input/panda-resized-train-data-512x512/train_images/'
 
 
-# In[5]:
 
 
 TEST_DATA_PATH = DATA_PATH + 'test.csv'
@@ -84,7 +79,6 @@ TRAIN_IMG_PATH = RESIZED_PATH + 'train_images/'
 SAMPLE_SUB_PATH = DATA_PATH + 'sample_submission.csv'
 
 
-# In[6]:
 
 
 test_df = pd.read_csv(TEST_DATA_PATH)
@@ -92,7 +86,6 @@ train_df = pd.read_csv(TRAIN_DATA_PATH)
 sample_submission = pd.read_csv(SAMPLE_SUB_PATH)
 
 
-# In[7]:
 
 
 gleason_replace_dict = {0:0, 1:1, 3:2, 4:3, 5:4}
@@ -105,19 +98,16 @@ def process_gleason(gleason):
 train_df.gleason_score = train_df.gleason_score.apply(process_gleason)
 
 
-# In[8]:
 
 
 train_df.head()
 
 
-# In[9]:
 
 
 test_df.head()
 
 
-# In[10]:
 
 
 def display_images(num):
@@ -139,13 +129,11 @@ def display_images(num):
     plt.show()
 
 
-# In[11]:
 
 
 display_images(25)
 
 
-# In[12]:
 
 
 class PANDADataset(Dataset):
@@ -197,7 +185,6 @@ class PANDADataset(Dataset):
             return FloatTensor(image)
 
 
-# In[13]:
 
 
 class DenseNetDetector(nn.Module):
@@ -224,7 +211,6 @@ class DenseNetDetector(nn.Module):
         return torch.cat([isup_prob, gleason_prob_0, gleason_prob_1], axis=1)
 
 
-# In[14]:
 
 
 model = DenseNetDetector()
@@ -233,14 +219,12 @@ y = model(x)
 make_dot(y, params=dict(list(model.named_parameters()) + [('x', x)]))
 
 
-# In[15]:
 
 
 del model, x, y
 gc.collect()
 
 
-# In[16]:
 
 
 val_sets, train_sets = [], []
@@ -254,7 +238,6 @@ for fold in tqdm(range(FOLDS)):
     train_sets.append(pd.concat([train_df[:val_idx[0]], train_df[val_idx[1]:]]))
 
 
-# In[17]:
 
 
 def cel(inp, targ):
@@ -267,7 +250,6 @@ def acc(inp, targ):
     return (inp_idx == targ_idx).float().sum(axis=0)/len(inp_idx)
 
 
-# In[18]:
 
 
 def panda_cel(inp, targ):
@@ -283,7 +265,6 @@ def panda_acc(inp, targ):
     return [isup_accuracy, gleason_accuracy_0, gleason_accuracy_1]
 
 
-# In[19]:
 
 
 def print_metric(data, fold, start, end, metric, typ):
@@ -305,7 +286,6 @@ def print_metric(data, fold, start, end, metric, typ):
     print(string + time)
 
 
-# In[20]:
 
 
 def train(fold):
@@ -379,7 +359,6 @@ def train(fold):
     torch.save(network.state_dict(), MODEL_SAVE_PATH + "_" + str(fold + 1) + ".pt")
 
 
-# In[21]:
 
 
 Parallel(n_jobs=FOLDS, backend="threading")(delayed(train)(i) for i in range(FOLDS))

@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 DATA_ROOT = '../input/imet-2020-fgvc7/'
 
 
-# In[2]:
 
 
 from collections import defaultdict, Counter
@@ -17,7 +15,6 @@ import pandas as pd
 import tqdm
 
 
-# In[3]:
 
 
 def make_folds(n_folds: int) -> pd.DataFrame:
@@ -41,26 +38,22 @@ def make_folds(n_folds: int) -> pd.DataFrame:
     return df
 
 
-# In[4]:
 
 
 df = make_folds(n_folds=5)
 df.to_csv('folds.csv', index=None)
 
 
-# In[5]:
 
 
 folds = pd.read_csv('../input/imet2002folds/folds.csv')
 
 
-# In[6]:
 
 
 folds.head(5)
 
 
-# In[7]:
 
 
 from pathlib import Path
@@ -73,13 +66,11 @@ import torch
 from torch.utils.data import Dataset
 
 
-# In[8]:
 
 
 N_CLASSES = 3474
 
 
-# In[9]:
 
 
 class TrainDataset(Dataset):
@@ -123,7 +114,6 @@ class TTADataset:
         return image, item.id
 
 
-# In[10]:
 
 
 import random
@@ -135,7 +125,6 @@ from torchvision.transforms import (
     RandomHorizontalFlip)
 
 
-# In[11]:
 
 
 train_transform = Compose([
@@ -155,7 +144,6 @@ tensor_transform = Compose([
 ])
 
 
-# In[12]:
 
 
 def load_transform_image(
@@ -177,26 +165,22 @@ def get_ids(root: Path) -> List[str]:
     return sorted({p.name.split('_')[0] for p in root.glob('*.png')})
 
 
-# In[13]:
 
 
 folds = pd.read_csv('../input/imet2002folds/folds.csv')
 
 
-# In[14]:
 
 
 fold = 0
 
 
-# In[15]:
 
 
 train_fold = folds[folds['fold'] != 0]
 valid_fold = folds[folds['fold'] == 0]
 
 
-# In[16]:
 
 
 from itertools import islice
@@ -216,26 +200,22 @@ from torch.optim import Adam
 import tqdm
 
 
-# In[17]:
 
 
 from torch.utils.data import DataLoader
 
 
-# In[18]:
 
 
 train_root = DATA_ROOT + 'train'
 
 
-# In[19]:
 
 
 num_workers = 4
 batch_size = 64
 
 
-# In[20]:
 
 
 def make_loader(df: pd.DataFrame, image_transform) -> DataLoader:
@@ -247,7 +227,6 @@ def make_loader(df: pd.DataFrame, image_transform) -> DataLoader:
         )
 
 
-# In[21]:
 
 
 train_loader = make_loader(train_fold, train_transform)
@@ -256,7 +235,6 @@ print(f'{len(train_loader.dataset):,} items in train, '
       f'{len(valid_loader.dataset):,} in valid')
 
 
-# In[22]:
 
 
 from torch.nn import functional as F
@@ -264,7 +242,6 @@ import torchvision.models as M
 from functools import partial
 
 
-# In[23]:
 
 
 class AvgPool(nn.Module):
@@ -336,31 +313,26 @@ densenet201 = partial(DenseNet, net_cls=M.densenet201)
 densenet161 = partial(DenseNet, net_cls=M.densenet161)
 
 
-# In[24]:
 
 
 criterion = nn.BCEWithLogitsLoss(reduction='none')
 
 
-# In[25]:
 
 
 use_cuda = cuda.is_available()
 
 
-# In[26]:
 
 
 model = resnet50(num_classes=N_CLASSES, pretrained=True)
 
 
-# In[27]:
 
 
 model
 
 
-# In[28]:
 
 
 fresh_params = list(model.fresh_params())
@@ -369,7 +341,6 @@ if use_cuda:
     model = model.cuda()
 
 
-# In[29]:
 
 
 train_kwargs = dict(
@@ -383,7 +354,6 @@ train_kwargs = dict(
        )
 
 
-# In[30]:
 
 
 def load_model(model: nn.Module, path: Path) -> Dict:
@@ -393,14 +363,12 @@ def load_model(model: nn.Module, path: Path) -> Dict:
     return state
 
 
-# In[31]:
 
 
 def _reduce_loss(loss):
     return loss.sum() / loss.shape[0]
 
 
-# In[32]:
 
 
 def binarize_prediction(probabilities, threshold: float, argsorted=None,
@@ -424,7 +392,6 @@ def _make_mask(argsorted, top_n: int):
     return mask
 
 
-# In[33]:
 
 
 def validation(
@@ -463,7 +430,6 @@ def validation(
     return metrics
 
 
-# In[34]:
 
 
 def train( model: nn.Module, criterion, *, params,
@@ -550,13 +516,11 @@ def train( model: nn.Module, criterion, *, params,
     return True
 
 
-# In[35]:
 
 
 train(params=all_params, **train_kwargs)
 
 
-# In[ ]:
 
 
 

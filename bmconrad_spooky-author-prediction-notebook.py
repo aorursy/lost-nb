@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -11,7 +10,6 @@ df_train = pd.read_csv("../input/train.csv")
 df_test = pd.read_csv("../input/test.csv")
 
 
-# In[2]:
 
 
 from sklearn.feature_extraction.text import CountVectorizer
@@ -42,7 +40,6 @@ def get_bag_of_words(X):
     return X_tfidf
 
 
-# In[3]:
 
 
 from sklearn.model_selection import train_test_split
@@ -54,7 +51,6 @@ X_train_tfidf = get_bag_of_words(pd.concat([X_train, X_test]))
 X_test_tfidf = get_bag_of_words(pd.concat([X_test, X_train]))
 
 
-# In[4]:
 
 
 from sklearn.naive_bayes import MultinomialNB
@@ -67,7 +63,6 @@ y_pred = clf.predict(X_test_tfidf[:len(X_test)])
 print("Top 5 Predictions on X_test: ", y_pred[:5])
 
 
-# In[10]:
 
 
 #import entropy/log loss as a metric
@@ -91,7 +86,6 @@ generate_results(y_test, y_pred)
 print(classification_report(y_test, y_pred, target_names=clf.classes_))
 
 
-# In[14]:
 
 
 X_train_tfidf = get_bag_of_words(pd.concat([df_train["text"], df_test['text']]))
@@ -111,7 +105,6 @@ results[clf.classes_] = pd.DataFrame(y_pred)
 results.head()
 
 
-# In[8]:
 
 
 from sklearn.model_selection import KFold
@@ -145,13 +138,11 @@ print("Average Accuracyy After 10 Folds:")
 print(np.mean(scores))
 
 
-# In[ ]:
 
 
 
 
 
-# In[24]:
 
 
 from sklearn.model_selection import GridSearchCV
@@ -198,7 +189,6 @@ def getSVMPipe():
 
 
 
-# In[25]:
 
 
 gs_clf_nb = GridSearchCV(MultinomialNB(), nb_parameters, n_jobs=-1, cv=10)
@@ -209,7 +199,6 @@ y_pred = best_nb_clf_fit.predict_proba(X_test_tfidf[:len(X_test)])
 generate_results(y_pred, y_test)
 
 
-# In[ ]:
 
 
 X_train_tfidf = get_bag_of_words(pd.concat([df_train["text"], df_test['text']]))
@@ -229,7 +218,6 @@ results[clf.classes_] = pd.DataFrame(y_pred)
 results.to_csv("11102017_2_bestNB.csv")
 
 
-# In[26]:
 
 
 from sklearn.cluster import KMeans
@@ -245,7 +233,6 @@ kmeans_column_test = np.matrix(kmeans_column_test).T
 print("Kmeans columns created!")
 
 
-# In[11]:
 
 
 # Append the columns
@@ -261,7 +248,6 @@ y_pred = clf.predict_proba(X_test_new)
 generate_results(y_pred, y_test)
 
 
-# In[ ]:
 
 
 
@@ -279,7 +265,6 @@ pca
 # 5. Predict on NB and report out how well we did
 
 
-# In[ ]:
 
 
 from sklearn.cluster import KMeans
@@ -321,7 +306,6 @@ results.to_csv("11102017_2_kmeans.csv")
 print("Writing out!")
 
 
-# In[8]:
 
 
 gs_clf_xgb = GridSearchCV(ensemble.GradientBoostingClassifier(), xgb_parameters, n_jobs=-1, cv=3)
@@ -332,7 +316,6 @@ y_pred = best_xgb_clf_fit.predict_proba(X_test_tfidf[:len(X_test)])
 generate_results(y_pred, y_test)
 
 
-# In[ ]:
 
 
 gs_clf_xgb = ensemble.GradientBoostingClassifier().fit(np.matrix(X_train_tfidf[:len(X_train)].toarray()),
@@ -343,13 +326,11 @@ print("Classifier predictions casted!!")
 generate_results(y_pred, y_test)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

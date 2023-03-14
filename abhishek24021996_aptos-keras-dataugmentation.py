@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ import os
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import os
@@ -48,7 +46,6 @@ from keras.optimizers import RMSprop, Adam, SGD
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, EarlyStopping
 
 
-# In[3]:
 
 
 data_path = "/kaggle/input/"
@@ -64,13 +61,11 @@ print("num of train images ", len(os.listdir(train_img_path)))
 print("num of test images ",len(os.listdir(test_img_path)))
 
 
-# In[ ]:
 
 
 
 
 
-# In[4]:
 
 
 import matplotlib.pyplot as plt
@@ -78,7 +73,6 @@ df_train['diagnosis'].value_counts().plot(kind = 'bar')
 plt.title("Level of diagnosis")
 
 
-# In[5]:
 
 
 import random
@@ -94,7 +88,6 @@ for i in range(len(samp)):
     plt.imshow(img)
 
 
-# In[6]:
 
 
 import random
@@ -110,7 +103,6 @@ for i in range(len(samp)):
     plt.imshow(img)
 
 
-# In[7]:
 
 
 df_train_img=[]
@@ -124,7 +116,6 @@ for item in train_list:
 df_train_img = np.array(df_train_img, np.float32)/255
 
 
-# In[8]:
 
 
 df_test_img=[]
@@ -136,7 +127,6 @@ for item in df_test["id_code"].tolist():
 df_test_img = np.array(df_test_img, np.float32)
 
 
-# In[9]:
 
 
 y_train = (df_train.iloc[:,1].values).astype('int32')
@@ -144,13 +134,11 @@ y_train = (df_train.iloc[:,1].values).astype('int32')
 # y_train = to_categorical(y_train)
 
 
-# In[10]:
 
 
 y_train
 
 
-# In[11]:
 
 
 from sklearn.model_selection import train_test_split
@@ -159,13 +147,11 @@ Y = y_train
 x_train, x_val, y_train, y_val = train_test_split(df_train_img, y_train, test_size = 0.15, random_state = 42)
 
 
-# In[12]:
 
 
 # df_train_img.reshape(df_train_img.shape[0],150,150,1)
 
 
-# In[13]:
 
 
 # train_datagen = ImageDataGenerator(rescale = 1./255,
@@ -175,7 +161,6 @@ x_train, x_val, y_train, y_val = train_test_split(df_train_img, y_train, test_si
 # test_datagen = ImageDataGenerator(rescale = 1./255)
 
 
-# In[14]:
 
 
 
@@ -184,20 +169,17 @@ from keras.preprocessing import image
 gen = image.ImageDataGenerator()
 
 
-# In[15]:
 
 
 batches = gen.flow(x_train, y_train, batch_size = 64)
 val_batches = gen.flow(x_val, y_val, batch_size = 64)
 
 
-# In[ ]:
 
 
 
 
 
-# In[16]:
 
 
 from keras.models import Sequential
@@ -207,7 +189,6 @@ from keras.layers import Flatten
 from keras.layers import Dense
 
 
-# In[17]:
 
 
 classifier = Sequential()
@@ -222,7 +203,6 @@ classifier.add(Dense(output_dim = 5, activation = 'softmax'))
 classifier.compile(optimizer = 'nadam', loss = 'sparse_categorical_crossentropy', metrics = ['accuracy'])
 
 
-# In[18]:
 
 
 
@@ -232,13 +212,11 @@ hist = classifier.fit_generator(generator=batches, steps_per_epoch = batches.n,
                              validation_steps=val_batches.n)
 
 
-# In[19]:
 
 
 # predictions.count_values()
 
 
-# In[20]:
 
 
 predictions = classifier.predict_classes(df_test_img,verbose=0)
@@ -247,13 +225,11 @@ sudmissions = pd.DataFrame({'id_code':df_test.iloc[:,0].tolist(),
 sudmissions.to_csv("submission.csv", index = False, header = True)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

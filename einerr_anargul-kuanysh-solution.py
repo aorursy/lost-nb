@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -19,7 +18,6 @@ import os
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 import numpy as np
@@ -154,7 +152,6 @@ def data_vars(df1, target):
     return(iv_df,iv)
 
 
-# In[3]:
 
 
 X = pd.read_csv('../input/train.csv')
@@ -162,76 +159,64 @@ y =X['target']
 Z = pd.read_csv('../input/test.csv')
 
 
-# In[4]:
 
 
 X.head()
 
 
-# In[5]:
 
 
 X['education'].value_counts()
 
 
-# In[6]:
 
 
 X['martial'].value_counts()
 
 
-# In[7]:
 
 
 X['repay_sep'].value_counts()
 
 
-# In[8]:
 
 
 X.sort_values(by=['credit_bal'], ascending=True).head(20)
 
 
-# In[9]:
 
 
 X.info()
 
 
-# In[10]:
 
 
 X.columns
 
 
-# In[11]:
 
 
 Z.columns
 
 
-# In[12]:
 
 
 X.drop('id_code', axis=1, inplace=True)
 Z.drop('id_code', axis=1, inplace=True)
 
 
-# In[13]:
 
 
 X['repay_sum'] = X[["repay_sep", "repay_aug", "repay_jul", "repay_jun","repay_may", "repay_april"]].sum(axis = 1)/5
 X["pay_sum"] = X[["pay_sep", "pay_aug", "pay_jul", "pay_jun","pay_may", "pay_apr"]].sum(axis = 1)/5
 
 
-# In[14]:
 
 
 Z['repay_sum'] = Z[["repay_sep", "repay_aug", "repay_jul", "repay_jun","repay_may", "repay_april"]].sum(axis = 1)/5
 Z["pay_sum"] = Z[["pay_sep", "pay_aug", "pay_jul", "pay_jun","pay_may", "pay_apr"]].sum(axis = 1)/5
 
 
-# In[15]:
 
 
 def credit_bal_q(x):
@@ -248,7 +233,6 @@ def credit_bal_q(x):
 X['credit_bal_q'] = X['credit_bal'].apply(lambda x: credit_bal_q(x))
 
 
-# In[16]:
 
 
 def credit_bal_q(x):
@@ -265,70 +249,59 @@ def credit_bal_q(x):
 Z['credit_bal_q'] = Z['credit_bal'].apply(lambda x: credit_bal_q(x))
 
 
-# In[17]:
 
 
 dfiv,iv=data_vars(X, y)
 
 
-# In[18]:
 
 
 dfiv
 
 
-# In[19]:
 
 
 iv.sort_values(by='IV', ascending=False)
 
 
-# In[20]:
 
 
 profile_report = ProfileReport(X)
 profile_report
 
 
-# In[21]:
 
 
 profile_report.get_rejected_variables()
 
 
-# In[22]:
 
 
 X=X.drop(['bill_apr', 'bill_aug', 'bill_jul', 'bill_jun', 'bill_may', 'gender', 'target'], axis=1) 
 Z=Z.drop(['bill_apr', 'bill_aug', 'bill_jul', 'bill_jun', 'bill_may', 'gender'], axis=1)
 
 
-# In[23]:
 
 
 skf = StratifiedKFold(n_splits=10, shuffle=True, random_state=101)
 
 
-# In[24]:
 
 
 X_dummy = pd.get_dummies(X)
 
 
-# In[25]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(X_dummy, y, test_size=0.2, random_state=101)
 
 
-# In[26]:
 
 
 print(X_train.shape, y_train.shape)
 print(X_test.shape, y_test.shape)
 
 
-# In[27]:
 
 
 rf=RandomForestClassifier(random_state=101, n_estimators = 20)
@@ -337,7 +310,6 @@ y_pred_proba_rf=rf.predict_proba(X_test)[:,1]
 roc_auc_score(y_test, y_pred_proba_rf)
 
 
-# In[28]:
 
 
 #params_grid={
@@ -354,7 +326,6 @@ roc_auc_score(y_test, y_pred_proba_rf)
 #gsrt.best_params_
 
 
-# In[29]:
 
 
 gsrt={'bootstrap': True,
@@ -365,7 +336,6 @@ gsrt={'bootstrap': True,
  'n_estimators': 500}
 
 
-# In[30]:
 
 
 rff=RandomForestClassifier(random_state=101, **gsrt)
@@ -374,7 +344,6 @@ y_pred_proba_rff=rff.predict_proba(X_test)[:,1]
 roc_auc_score(y_test, y_pred_proba_rff)
 
 
-# In[31]:
 
 
 feature_importances = pd.DataFrame(rff.feature_importances_,
@@ -383,43 +352,36 @@ feature_importances = pd.DataFrame(rff.feature_importances_,
 feature_importances.head(20)
 
 
-# In[32]:
 
 
 feature_importances.tail(20)
 
 
-# In[33]:
 
 
 X_dummy_test = pd.get_dummies(Z)
 
 
-# In[34]:
 
 
 y_pred_test=rff.predict_proba(X_dummy_test)
 
 
-# In[35]:
 
 
 submission = pd.read_csv('../input/sample_submission.csv')
 
 
-# In[36]:
 
 
 submission['target'] = y_pred_test
 
 
-# In[37]:
 
 
 submission['target'].value_counts()
 
 
-# In[38]:
 
 
 submission.to_csv('submission10.csv', index=False)

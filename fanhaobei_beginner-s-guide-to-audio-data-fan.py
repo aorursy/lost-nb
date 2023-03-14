@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Change this to True to replicate the result
@@ -9,7 +8,6 @@ COMPLETE_RUN = False
 #True代表运行全部数据集，False代表运行部分数据集
 
 
-# In[2]:
 
 
 import numpy as np#矩阵运算
@@ -31,21 +29,18 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 matplotlib.style.use('ggplot')#样式美化
 
 
-# In[3]:
 
 
 train = pd.read_csv("../input/freesound-audio-tagging/train.csv")#pandas 读csv:读训练集
 test = pd.read_csv("../input/freesound-audio-tagging/sample_submission.csv")#pandas 读csv:读提交样本
 
 
-# In[4]:
 
 
 train.head()#pandas head:读前面几行
 #描述了每个wav文件对应的ID，以及它的分类，还有该分类标注是否经过人工审查，如下：
 
 
-# In[5]:
 
 
 print("Number of training examples=", train.shape[0], "  Number of classes=", len(train.label.unique()))
@@ -53,13 +48,11 @@ print("Number of training examples=", train.shape[0], "  Number of classes=", le
 #len(train.label.unique())有多少个独一无二的类
 
 
-# In[6]:
 
 
 print(train.label.unique())#打印出独一无二的类名
 
 
-# In[7]:
 
 
 category_group = train.groupby(['label', 'manually_verified']).count()
@@ -80,7 +73,6 @@ plot.set_xlabel("Category")#x轴标签
 plot.set_ylabel("Number of Samples");#y轴标签
 
 
-# In[8]:
 
 
 print('Minimum samples per category = ', min(train.label.value_counts()))
@@ -89,7 +81,6 @@ print('Maximum samples per category = ', max(train.label.value_counts()))
 # max(train.label.value_counts()) ： train的label列中每个类的数目的最大值
 
 
-# In[9]:
 
 
 import IPython.display as ipd  # To play sound in the notebook 展示
@@ -97,7 +88,6 @@ fname = '/kaggle/input/freesound-audio-tagging/audio_train/audio_train/' + '0004
 ipd.Audio(fname)#播放音频
 
 
-# In[10]:
 
 
 # Using wave library
@@ -108,7 +98,6 @@ print("Total samples (frames) = ", wav.getnframes())#总帧数
 print("Duration = ", wav.getnframes()/wav.getframerate())#时间
 
 
-# In[11]:
 
 
 # Using scipy科学计算
@@ -119,14 +108,12 @@ print("Total samples (frames) = ", data.shape)#数据维度
 print(data)#打印数据
 
 
-# In[12]:
 
 
 plt.plot(data, '-', );
 #matplotlib绘图。鼓声从大到小
 
 
-# In[13]:
 
 
 plt.figure(figsize=(16, 4))#画布大小
@@ -134,7 +121,6 @@ plt.plot(data[:500], '.'); #matplotlib plot . :前500个数据的散点图
 plt.plot(data[:500], '-');#matplotlib plot - :前500个数据的折线图
 
 
-# In[14]:
 
 
 train['nframes'] = train['fname'].apply(lambda f: wave.open('/kaggle/input/freesound-audio-tagging/audio_train/audio_train/' + f).getnframes())
@@ -154,7 +140,6 @@ plt.show()
 #展示
 
 
-# In[15]:
 
 
 fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(16,5))  
@@ -167,7 +152,6 @@ plt.suptitle('Frame Length Distribution in Train and Test', ha='center', fontsiz
 #标题
 
 
-# In[16]:
 
 
 abnormal_length = [707364, 353682, 138474, 184338]
@@ -190,7 +174,6 @@ for length in abnormal_length:
     #展示这个随机音频样本
 
 
-# In[17]:
 
 
 import librosa#音频处理库
@@ -228,7 +211,6 @@ from keras.utils import Sequence, to_categorical
 #keras to_categorical：将类别向量(从0到nb_classes的整数向量)映射为二进制类别矩阵
 
 
-# In[18]:
 
 
 # 配置类
@@ -265,7 +247,6 @@ class Config(object):
             self.dim = (self.audio_length, 1)
 
 
-# In[19]:
 
 
 # 在使用keras训练model的时候，一般会将所有的训练数据加载到内存中，然后喂给网络，但当内存有限，且数据量过大时，此方法则不再可用。
@@ -385,7 +366,6 @@ class DataGenerator(Sequence):
             return X
 
 
-# In[20]:
 
 
 #公式如上
@@ -397,7 +377,6 @@ def audio_norm(data):
     return data-0.5
 
 
-# In[21]:
 
 
 def get_1d_dummy_model(config):
@@ -470,7 +449,6 @@ def get_1d_conv_model(config):
     return model
 
 
-# In[22]:
 
 
 LABELS = list(train.label.unique())
@@ -488,7 +466,6 @@ if not COMPLETE_RUN:#如果之前的COMPLETE_RUN不为空
     test = test[:2000]#测试集取前2000个
 
 
-# In[23]:
 
 
 config = Config(sampling_rate=16000, audio_duration=2, n_folds=10, learning_rate=0.001)
@@ -497,7 +474,6 @@ if not COMPLETE_RUN:#如果COMPLETE_RUN不为空。这里缩小了数据的规�
     config = Config(sampling_rate=100, audio_duration=1, n_folds=2, max_epochs=1)
 
 
-# In[24]:
 
 
 # ```python
@@ -593,7 +569,6 @@ for i, (train_split, val_split) in enumerate(skf):
 #     ```
 
 
-# In[25]:
 
 
 pred_list = []
@@ -633,7 +608,6 @@ test[['fname', 'label']].to_csv("1d_conv_ensembled_submission.csv", index=False)
 #pandas to_cvs : 将DataFrame保存为.csv文件
 
 
-# In[26]:
 
 
 import librosa
@@ -651,7 +625,6 @@ wav = wav[:2*44100]
 #取前2*44100帧
 
 
-# In[27]:
 
 
 mfcc = librosa.feature.mfcc(wav, sr = SAMPLE_RATE, n_mfcc=40)
@@ -659,14 +632,12 @@ mfcc = librosa.feature.mfcc(wav, sr = SAMPLE_RATE, n_mfcc=40)
 mfcc.shape
 
 
-# In[28]:
 
 
 plt.figure(figsize=(16, 4))
 plt.imshow(mfcc, cmap='hot', interpolation='nearest');
 
 
-# In[29]:
 
 
 from keras.layers import (Convolution2D, GlobalAveragePooling2D, BatchNormalization, Flatten,
@@ -689,7 +660,6 @@ from keras import backend as K
 #Keras后端
 
 
-# In[30]:
 
 
 #测试模型
@@ -758,7 +728,6 @@ def get_2d_conv_model(config):
     return model
 
 
-# In[31]:
 
 
 config = Config(sampling_rate=44100, audio_duration=2, n_folds=10, 
@@ -770,7 +739,6 @@ if not COMPLETE_RUN:
                     max_epochs=1, use_mfcc=True, n_mfcc=40)
 
 
-# In[32]:
 
 
 #一些预处理操作，返回梅尔频率倒谱系数
@@ -820,7 +788,6 @@ def prepare_data(df, config, data_dir):
     return X
 
 
-# In[33]:
 
 
 # ```python 这里会生成很多废话，我不知道怎么关，耐心翻吧少年
@@ -838,7 +805,6 @@ fan
 # ```
 
 
-# In[34]:
 
 
 #这里关闭注释，就是归一化
@@ -849,7 +815,6 @@ fan
 # X_test = (X_test - mean)/std#测试集归一化
 
 
-# In[35]:
 
 
 # ```python
@@ -920,7 +885,6 @@ for i, (train_split, val_split) in enumerate(skf):
 # ```
 
 
-# In[36]:
 
 
 pred_list = []
@@ -960,7 +924,6 @@ test[['fname', 'label']].to_csv("1d_conv_ensembled_submission.csv", index=False)
 #pandas to_cvs : 将DataFrame保存为.csv文件
 
 
-# In[37]:
 
 
 pred_list = []

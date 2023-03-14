@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np
@@ -11,25 +10,21 @@ import matplotlib.pyplot as plt
 import sympy
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '-e', "if ! [[ -f ./linkern ]]; then\n  wget http://www.math.uwaterloo.ca/tsp/concorde/downloads/codes/src/co031219.tgz\n  echo 'c3650a59c8d57e0a00e81c1288b994a99c5aa03e5d96a314834c2d8f9505c724  co031219.tgz' | sha256sum -c\n  tar xf co031219.tgz\n  (cd concorde && CFLAGS='-O3 -march=native -mtune=native -fPIC' ./configure)\n  (cd concorde/LINKERN && make -j && cp linkern ../../)\n  rm -rf concorde co031219.tgz\nfi")
 
 
-# In[ ]:
 
 
 cities = pd.read_csv('../input/cities.csv', index_col=['CityId'])
 
 
-# In[ ]:
 
 
 cities1k = cities * 1000
 
 
-# In[ ]:
 
 
 def write_tsp(cities, filename, name='traveling-santa-2018-prime-paths'):
@@ -47,20 +42,17 @@ def write_tsp(cities, filename, name='traveling-santa-2018-prime-paths'):
 write_tsp(cities1k, 'cities1k.tsp')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '-e', 'time ./linkern -s 42 -S linkern.tour -R 1000000000 -t 18000 ./cities1k.tsp >linkern.log')
 
 
-# In[ ]:
 
 
 get_ipython().system("sed -Ene 's/([0-9]+) Steps.*Best: ([0-9]+).*/\\1,\\2/p' linkern.log >linkern.csv")
 pd.read_csv('linkern.csv', index_col=0, names=['TSP tour length']).plot();
 
 
-# In[ ]:
 
 
 def read_tour(filename):
@@ -82,20 +74,17 @@ def write_submission(tour, filename):
     pd.DataFrame({'Path': list(tour) + [0]}).to_csv(filename, index=False)
 
 
-# In[ ]:
 
 
 tour = read_tour('linkern.tour')
 write_submission(tour, 'submission.csv')
 
 
-# In[ ]:
 
 
 score_tour(tour)
 
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')

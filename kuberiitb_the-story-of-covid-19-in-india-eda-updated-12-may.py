@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -55,7 +54,6 @@ ICMR_details['DateTime'] = pd.to_datetime(ICMR_details['DateTime'],dayfirst = Tr
 ICMR_details = ICMR_details.dropna(subset=['TotalSamplesTested', 'TotalPositiveCases'])
 
 
-# In[2]:
 
 
 world_confirmed = confirmed_df[confirmed_df.columns[-1:]].sum()
@@ -82,7 +80,6 @@ plt.axis('equal')
 plt.tight_layout()
 
 
-# In[3]:
 
 
 hotspots = ['China','Germany','Iran','Italy','Spain','US','Korea, South','France','Turkey','United Kingdom','India']
@@ -131,7 +128,6 @@ for i in range(1,12):
 plt.tight_layout(pad=3.0)
 
 
-# In[4]:
 
 
 hotspots = ['China','Germany','Iran','Italy','Spain','United States','South Korea','France','Turkey','United Kingdom','India']
@@ -168,7 +164,6 @@ plt.title("Death Rate per Million in Hotspot Countries",fontsize=20);
 plt.xlabel('Death Rate per Million');
 
 
-# In[5]:
 
 
 labels = list(age_details['AgeGroup'])
@@ -190,7 +185,6 @@ plt.axis('equal')
 plt.tight_layout()
 
 
-# In[6]:
 
 
 labels = ['Missing', 'Male', 'Female']
@@ -209,7 +203,6 @@ plt.axis('equal')
 plt.tight_layout()
 
 
-# In[7]:
 
 
 labels = ['Male', 'Female']
@@ -229,7 +222,6 @@ plt.axis('equal')
 plt.tight_layout()
 
 
-# In[8]:
 
 
 dates = list(confirmed_df.columns[4:])
@@ -237,7 +229,6 @@ dates = list(pd.to_datetime(dates))
 dates_india = dates[8:]
 
 
-# In[9]:
 
 
 df1 = confirmed_df.groupby('Country/Region').sum().reset_index()
@@ -266,7 +257,6 @@ ax3 = plt.plot_date(y= india_deaths,x= dates_india,label = 'Death',linestyle ='-
 plt.legend();
 
 
-# In[10]:
 
 
 countries = ['China','US', 'Italy', 'Spain', 'France','India']
@@ -298,7 +288,6 @@ for i in range(len(countries)):
 plt.legend();
 
 
-# In[11]:
 
 
 ICMR_details['Percent_positive'] = round((ICMR_details['TotalPositiveCases']/ICMR_details['TotalSamplesTested'])*100,1)
@@ -320,7 +309,6 @@ plt.title('Total Samples Tested')
 plt.show()
 
 
-# In[12]:
 
 
 state_cases = india_covid_19.groupby('State/UnionTerritory')['Confirmed','Deaths','Cured'].max().reset_index()
@@ -332,7 +320,6 @@ state_cases["Cure Rate (per 100)"] = np.round(100*state_cases["Cured"]/state_cas
 state_cases.sort_values('Confirmed', ascending= False).fillna(0).style.background_gradient(cmap='Blues',subset=["Confirmed"])                        .background_gradient(cmap='Blues',subset=["Deaths"])                        .background_gradient(cmap='Blues',subset=["Cured"])                        .background_gradient(cmap='Blues',subset=["Active"])                        .background_gradient(cmap='Blues',subset=["Death Rate (per 100)"])                        .background_gradient(cmap='Blues',subset=["Cure Rate (per 100)"])
 
 
-# In[13]:
 
 
 all_state = list(india_covid_19['State/UnionTerritory'].unique())
@@ -394,7 +381,6 @@ for i in range(1,15):
 plt.tight_layout(pad=3.0)
 
 
-# In[14]:
 
 
 def calc_growthRate(values):
@@ -423,7 +409,6 @@ for i in range(1,15):
 plt.tight_layout(pad=3.0)
 
 
-# In[15]:
 
 
 #norm = matplotlib.colors.Normalize(vmin=min(state_cases.Confirmed), vmax=max(state_cases.Confirmed))
@@ -440,7 +425,6 @@ plt.tight_layout(pad=3.0)
 #plt.show()
 
 
-# In[16]:
 
 
 colors_list = ['cyan','teal']
@@ -466,7 +450,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[17]:
 
 
 population['in_million'] = population['Population']/1000000
@@ -505,7 +488,6 @@ plt.title("Death Rate per Million in Hotspot States",fontsize=20);
 plt.xlabel('Death Rate per Million');
 
 
-# In[18]:
 
 
 hospital_beds =hospital_beds.drop([36])
@@ -515,7 +497,6 @@ for cols in cols_object:
     hospital_beds[cols] = hospital_beds[cols].astype(int,errors = 'ignore')
 
 
-# In[19]:
 
 
 top_10_primary = hospital_beds.nlargest(10,'NumPrimaryHealthCenters_HMIS')
@@ -543,7 +524,6 @@ plt.title('District Hospitals')
 plt.barh(top_10_community['State/UT'],top_10_district_hospitals['NumDistrictHospitals_HMIS'],color = '#87479d');
 
 
-# In[20]:
 
 
 top_rural_hos = hospital_beds.nlargest(10,'NumRuralHospitals_NHP18')
@@ -570,7 +550,6 @@ plt.title('Urban Beds')
 plt.barh(top_urban_beds['State/UT'],top_urban_beds['NumUrbanBeds_NHP18'],color = '#9370db');
 
 
-# In[21]:
 
 
 state_test = pd.pivot_table(state_testing, values=['TotalSamples','Negative','Positive'], index='State', aggfunc='max')
@@ -586,7 +565,6 @@ plt.title('Testing statewise insight',fontsize = 20)
 plt.legend(ncol=2, loc="lower right", frameon=True);
 
 
-# In[22]:
 
 
 values = list(ICMR_labs['state'].value_counts())
@@ -598,7 +576,6 @@ plt.title('ICMR Testing Centers in each State', fontsize = 20)
 sns.barplot(x= values, y= names,color = '#9370db');
 
 
-# In[23]:
 
 
 df1 = confirmed_df.groupby('Country/Region').sum().reset_index()
@@ -617,7 +594,6 @@ growth_factor = sum(growth_diff)/len(growth_diff)
 print('Average growth factor',growth_factor)
 
 
-# In[24]:
 
 
 prediction_dates = []
@@ -644,7 +620,6 @@ plt.title("Predicted Values for the next 15 Days" , fontsize = 20)
 ax1 = plt.plot_date(y= predicted_cases,x= prediction_dates,linestyle ='-',color = 'c')
 
 
-# In[25]:
 
 
 train = pd.read_csv('../input/covid19-global-forecasting-week-3/train.csv')
@@ -653,7 +628,6 @@ train['Date'] = pd.to_datetime(train['Date'])
 test['Date'] = pd.to_datetime(test['Date'])
 
 
-# In[26]:
 
 
 k = df1[df1['Country/Region']=='India'].loc[:,'1/22/20':]
@@ -672,7 +646,6 @@ fig = plot_plotly(prop, prop_forecast)
 fig = prop.plot(prop_forecast,xlabel='Date',ylabel='Confirmed Cases')
 
 
-# In[27]:
 
 
 arima = ARIMA(data['y'], order=(5, 1, 0))
@@ -696,7 +669,6 @@ plt.plot_date(y=data['y'],x=data['ds'],linestyle = '-',color = 'blue',label = 'A
 plt.legend();
 
 
-# In[28]:
 
 
 train['day'] = train['Date'].dt.day
@@ -725,7 +697,6 @@ oe = OrdinalEncoder()
 test[['Province_State','Country_Region']] = oe.fit_transform(test.loc[:,['Province_State','Country_Region']])
 
 
-# In[29]:
 
 
 columns = ['day','month','dayofweek','dayofyear','quarter','weekofyear','Province_State', 'Country_Region','ConfirmedCases','Fatalities']
@@ -738,7 +709,6 @@ test = test[test_columns]
 test_india = test[test['Country_Region'] == india_code]
 
 
-# In[30]:
 
 
 models = []
@@ -747,7 +717,6 @@ mae = []
 rmse = []
 
 
-# In[31]:
 
 
 lgbm = LGBMRegressor(n_estimators=1300)
@@ -760,7 +729,6 @@ mae.append(round(mean_absolute_error(pred, y_test),2))
 rmse.append(round(np.sqrt(mean_squared_error(pred, y_test)),2))
 
 
-# In[32]:
 
 
 rf = RandomForestRegressor(n_estimators=100)
@@ -773,7 +741,6 @@ mae.append(round(mean_absolute_error(pred, y_test),2))
 rmse.append(round(np.sqrt(mean_squared_error(pred, y_test)),2))
 
 
-# In[33]:
 
 
 xgb = XGBRegressor(n_estimators=100)
@@ -786,7 +753,6 @@ mae.append(round(mean_absolute_error(pred, y_test),2))
 rmse.append(round(np.sqrt(mean_squared_error(pred, y_test)),2))
 
 
-# In[34]:
 
 
 plt.figure(figsize= (15,10))

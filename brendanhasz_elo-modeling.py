@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import gc
@@ -34,7 +33,6 @@ get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 sns.set()
 
 
-# In[2]:
 
 
 # Load data containing all the features
@@ -43,7 +41,6 @@ cards = pd.read_feather(fname)
 cards.set_index('card_id', inplace=True)
 
 
-# In[3]:
 
 
 # Test indexes
@@ -65,7 +62,6 @@ del cards
 gc.collect()
 
 
-# In[4]:
 
 
 def root_mean_squared_error(y_true, y_pred):
@@ -73,25 +69,21 @@ def root_mean_squared_error(y_true, y_pred):
     return np.sqrt(np.mean(np.square(y_true-y_pred)))
 
 
-# In[5]:
 
 
 rmse_scorer = make_scorer(root_mean_squared_error)
 
 
-# In[6]:
 
 
 root_mean_squared_error(np.mean(y_train), y_train)
 
 
-# In[7]:
 
 
 get_ipython().run_cell_magic('time', '', "\n# Categorical columns\ncat_cols = [c for c in X_train if 'mode' in c] \n\n# Regression pipeline\nmodel = Pipeline([\n    ('targ_enc',  TargetEncoderCV(cols=cat_cols)),\n    ('scaler',    RobustScaler()),\n    ('imputer',   SimpleImputer(strategy='median')),\n    ('regressor', CatBoostRegressor(verbose=False))\n])\n\n# Cross-validated performance\nscores = cross_val_score(model, X_train, y_train, \n                         cv=3, scoring=rmse_scorer)\nprint('Cross-validated MSE: %0.3f +/- %0.3f'\n      % (scores.mean(), scores.std()))")
 
 
-# In[8]:
 
 
 # Show histogram of target
@@ -101,19 +93,16 @@ plt.ylabel('count')
 plt.show()
 
 
-# In[9]:
 
 
 y_train[y_train<-20].unique()
 
 
-# In[10]:
 
 
 print('Percent of targets which are outliers:', 100*np.mean(y_train<-20))
 
 
-# In[11]:
 
 
 def cross_val_metric(model, X, y, cv=3, 
@@ -207,13 +196,11 @@ def cross_val_metric(model, X, y, cv=3,
     return metrics, all_preds
 
 
-# In[12]:
 
 
 get_ipython().run_cell_magic('time', '', "\n# Compute which samples are outliers\nnonoutliers = y_train>-20\n\n# Cross-validated performance training only on non-outliers\ncross_val_metric(model, X_train, y_train, cv=3, \n                 metric=root_mean_squared_error, \n                 train_subset=nonoutliers,\n                 display='RMSE')")
 
 
-# In[13]:
 
 
 # Classification pipeline
@@ -233,7 +220,6 @@ regressor = Pipeline([
 ])
 
 
-# In[14]:
 
 
 def classifier_regressor(X_tr, y_tr, X_te):
@@ -283,13 +269,11 @@ def classifier_regressor(X_tr, y_tr, X_te):
     return y_pred
 
 
-# In[15]:
 
 
 get_ipython().run_cell_magic('time', '', "\n# Performance of mixed classifier + regressor\ncross_val_metric(classifier_regressor, \n                 X_train, y_train,\n                 metric=root_mean_squared_error, \n                 cv=3, display='RMSE')")
 
 
-# In[16]:
 
 
 # XGBoost pipeline
@@ -304,7 +288,6 @@ xgb_pipeline = Pipeline([
 ])
 
 
-# In[17]:
 
 
 # Parameter bounds
@@ -316,7 +299,6 @@ bounds = {
 }
 
 
-# In[18]:
 
 
 """
@@ -339,7 +321,6 @@ print(opt_params)
 #    Wall time: 5h 35min 34s
 
 
-# In[19]:
 
 
 """
@@ -379,7 +360,6 @@ print(opt_params)
 #    Wall time: 5h 20min 3s
 
 
-# In[20]:
 
 
 """
@@ -422,7 +402,6 @@ print(opt_params)
 #    Wall time: 5h 19min 45s
 
 
-# In[21]:
 
 
 """
@@ -465,7 +444,6 @@ print(opt_params)
 #    Wall time: 5h 25min 22s
 
 
-# In[22]:
 
 
 # Bayesian ridge regression
@@ -514,31 +492,26 @@ catboost = Pipeline([
 ])
 
 
-# In[23]:
 
 
 get_ipython().run_cell_magic('time', '', "\n# Bayesian Ridge Regression\nrmse_br, preds_br = cross_val_metric(\n    ridge, X_train, y_train,\n    metric=root_mean_squared_error,\n    cv=3, display='RMSE')")
 
 
-# In[24]:
 
 
 get_ipython().run_cell_magic('time', '', "\n# XGBoost\nrmse_xgb, preds_xgb = cross_val_metric(\n    xgboost, X_train, y_train,\n    metric=root_mean_squared_error,\n    cv=3, display='RMSE')")
 
 
-# In[25]:
 
 
 get_ipython().run_cell_magic('time', '', "\n# LightGBM\nrmse_lgb, preds_lgb = cross_val_metric(\n    lgbm, X_train, y_train,\n    metric=root_mean_squared_error,\n    cv=3, display='RMSE')")
 
 
-# In[26]:
 
 
 get_ipython().run_cell_magic('time', '', "\n# CatBoost\nrmse_cb, preds_cb = cross_val_metric(\n    catboost, X_train, y_train,\n    metric=root_mean_squared_error,\n    cv=3, display='RMSE')")
 
 
-# In[27]:
 
 
 # Construct a DataFrame with each model's predictions
@@ -558,7 +531,6 @@ sns.heatmap(corr, mask=mask, annot=True,
             cbar_kws={'label': 'Correlation coefficient'})
 
 
-# In[28]:
 
 
 # Compute the averaged predictions
@@ -568,7 +540,6 @@ mean_preds = pdf.mean(axis=1)
 root_mean_squared_error(y_train, mean_preds)
 
 
-# In[29]:
 
 
 # Compute the averaged predictions
@@ -578,19 +549,16 @@ mean_preds = pdf[['XGB', 'LGBM', 'CatBoost']].mean(axis=1)
 root_mean_squared_error(y_train, mean_preds)
 
 
-# In[30]:
 
 
 get_ipython().run_cell_magic('time', '', "\n# Create the ensemble regressor\nmodel = StackedRegressor([ridge, xgboost, catboost, lgbm],\n                         meta_learner=BayesianRidge())\n\n# Performance of ensemble\ncross_val_metric(model, X_train, y_train,\n                 metric=root_mean_squared_error,\n                 cv=3, display='RMSE')")
 
 
-# In[31]:
 
 
 get_ipython().run_cell_magic('time', '', "\n# Create the ensemble regressor\nmodel = StackedRegressor([xgboost, catboost, lgbm],\n                         meta_learner=BayesianRidge())\n\n# Performance of ensemble\ncross_val_metric(model, X_train, y_train,\n                 metric=root_mean_squared_error,\n                 cv=3, display='RMSE')")
 
 
-# In[32]:
 
 
 # Fit model on training data

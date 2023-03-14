@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -43,7 +42,6 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import make_pipeline
 
 
-# In[2]:
 
 
 txt = ["He is ::having a great Time, at the park time?",
@@ -51,7 +49,6 @@ txt = ["He is ::having a great Time, at the park time?",
        "she can't be going"]
 
 
-# In[3]:
 
 
 # Initialize a CountVectorizer object: count_vectorizer
@@ -67,14 +64,12 @@ print("Every feature:\n{}".format(count_vec.get_feature_names()))
 print("\nEvery 3rd feature:\n{}".format(count_vec.get_feature_names()[::3]))
 
 
-# In[4]:
 
 
 print("Vocabulary size: {}".format(len(count_train.vocabulary_)))
 print("Vocabulary content:\n {}".format(count_train.vocabulary_))
 
 
-# In[5]:
 
 
 count_vec = CountVectorizer(stop_words="english", analyzer='word', 
@@ -86,7 +81,6 @@ bag_of_words = count_vec.transform(txt)
 print(count_vec.get_feature_names())
 
 
-# In[6]:
 
 
 count_vec = CountVectorizer(stop_words="english", analyzer='word', 
@@ -98,7 +92,6 @@ bag_of_words = count_vec.transform(txt)
 print(count_vec.get_feature_names())
 
 
-# In[7]:
 
 
 count_vec = CountVectorizer(stop_words="english", analyzer='word', 
@@ -111,7 +104,6 @@ print(count_vec.get_feature_names())
 print("\nOnly 'park' becomes the vocabulary of the document term matrix (dtm) because it appears in 2 out of 3 documents, meaning 0.66% of the time.      \nThe rest of the words such as 'big' appear only in 1 out of 3 documents, meaning 0.33%. which is why they don't appear")
 
 
-# In[8]:
 
 
 count_vec = CountVectorizer(stop_words="english", analyzer='word', 
@@ -124,7 +116,6 @@ print(count_vec.get_feature_names())
 print("\nOnly 'park' is ignored because it appears in 2 out of 3 documents, meaning 0.66% of the time.")
 
 
-# In[9]:
 
 
 count_vec = CountVectorizer(stop_words="english", analyzer='word', 
@@ -136,7 +127,6 @@ bag_of_words = count_vec.transform(txt)
 print(count_vec.get_feature_names())
 
 
-# In[10]:
 
 
 txt1 = ['His smile was not perfect', 'His smile was not not not not perfect', 'she not sang']
@@ -146,13 +136,11 @@ txt_transformed = txt_fitted.transform(txt1)
 print ("The text: ", txt1)
 
 
-# In[11]:
 
 
 tf.vocabulary_
 
 
-# In[12]:
 
 
 idf = tf.idf_
@@ -161,13 +149,11 @@ print("\nWe see that the tokens 'sang','she' have the most idf weight because th
 print("\nThe token 'not' appears 6 times but it is also in all documents, so its idf is the lowest")
 
 
-# In[13]:
 
 
 rr = dict(zip(txt_fitted.get_feature_names(), idf))
 
 
-# In[14]:
 
 
 token_weight = pd.DataFrame.from_dict(rr, orient='index').reset_index()
@@ -182,7 +168,6 @@ fig.set_size_inches(10,5)
 plt.show()
 
 
-# In[15]:
 
 
 # get feature names
@@ -194,7 +179,6 @@ print("\nFeatures with highest idf:\n{}".format(
        feature_names[sorted_by_idf[-3:]]))
 
 
-# In[16]:
 
 
 print("The token 'not' has  the largest weight in document #2 because it appears 3 times there. But in document #1\
@@ -202,7 +186,6 @@ print("The token 'not' has  the largest weight in document #2 because it appears
 txt_transformed.toarray()
 
 
-# In[17]:
 
 
 new1 = tf.transform(txt1)
@@ -220,14 +203,12 @@ print("\nFeatures with highest tfidf: \n{}".format(
       feature_names[sort_by_tfidf[-3:]]))
 
 
-# In[18]:
 
 
 train = pd.read_csv('../input/train.csv')
 holdout = pd.read_csv('../input/test.csv').fillna(' ')
 
 
-# In[19]:
 
 
 """Lemmatizing and stemming gives us a lower ROC-AUC score. So we will only clean \\n's, Username, IP and http links"""
@@ -249,7 +230,6 @@ end_time=time.time()
 print("total time",end_time-start_time)
 
 
-# In[20]:
 
 
 # remove '\\n'
@@ -265,20 +245,17 @@ holdout['comment_text'] = holdout['comment_text'].map(lambda x: re.sub("\d{1,3}\
 holdout['comment_text'] = holdout['comment_text'].map(lambda x: re.sub("(http://.*?\s)|(http://.*)",'',str(x)))
 
 
-# In[21]:
 
 
 x = train['comment_text']
 y = train.iloc[:, 2:8]  
 
 
-# In[22]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(x, y, test_size= 0.2, random_state=13)
 
 
-# In[23]:
 
 
 print(X_train.shape)
@@ -287,7 +264,6 @@ print(X_test.shape)
 print(y_test.shape)
 
 
-# In[24]:
 
 
 # Instantiate the vectorizer
@@ -312,7 +288,6 @@ holdout_text = holdout['comment_text']
 holdout_word_features = word_vectorizer.transform(holdout_text)
 
 
-# In[25]:
 
 
 class_names = ['toxic','severe_toxic','obscene', 'threat', 'insult', 'identity_hate']
@@ -347,7 +322,6 @@ print('Total average CV Log_loss score is {}'.format(np.mean(losses)))
 print('Total average CV ROC_AUC score is {}'.format(np.mean(auc)))
 
 
-# In[26]:
 
 
 x = train['comment_text']
@@ -355,12 +329,10 @@ y = train.iloc[:, 2:8]
 X_train, X_test, y_train, y_test = train_test_split(x, y, test_size= 0.2, random_state=13)
 
 
-# In[27]:
 
 
 start_time=time.time()
 
-pipe = make_pipeline(TfidfVectorizer(
                                     stop_words='english',
                                     strip_accents='unicode',
                                     token_pattern=r'\w{1,}', #accept tokens that have 1 or more characters
@@ -379,7 +351,6 @@ end_time=time.time()
 print("total time",end_time-start_time)
 
 
-# In[28]:
 
 
 # Save classifier to a file
@@ -389,7 +360,6 @@ print("total time",end_time-start_time)
 # save_classifier.close() 
 
 
-# In[29]:
 
 
 # Retrieve the saved file and uplaod it to an object
@@ -399,32 +369,27 @@ print("total time",end_time-start_time)
 # vec.close()
 
 
-# In[30]:
 
 
 print(grid3.best_estimator_.named_steps['onevsrestclassifier'])
 print(grid3.best_estimator_.named_steps['tfidfvectorizer'])
 
 
-# In[31]:
 
 
 grid3.best_params_
 
 
-# In[32]:
 
 
 grid3.best_score_
 
 
-# In[33]:
 
 
 predicted_y_test = grid3.predict(X_test)
 
 
-# In[34]:
 
 
 print("Toxic Confusion Matrixs: \n{}".format(confusion_matrix(y_test['toxic'], predicted_y_test[:,0])))
@@ -442,13 +407,11 @@ print("\nInsult: \n{}".format(classification_report(y_test['insult'], predicted_
 print("\nIdentity Hate: \n{}".format(classification_report(y_test['identity_hate'], predicted_y_test[:,5])))
 
 
-# In[35]:
 
 
 # grid3.cv_results_
 
 
-# In[36]:
 
 
 vectorizer = grid3.best_estimator_.named_steps["tfidfvectorizer"]
@@ -470,7 +433,6 @@ print("\nFeatures with highest tfidf: \n{}".format(
       feature_names[sorted_by_tfidf[-20:]]))
 
 
-# In[37]:
 
 
 sorted_by_idf = np.argsort(vectorizer.idf_)
@@ -478,7 +440,6 @@ print("Features with lowest idf:\n{}".format(
        feature_names[sorted_by_idf[:100]]))
 
 
-# In[38]:
 
 
 # print(y_train.columns)
@@ -489,7 +450,6 @@ print("Features with lowest idf:\n{}".format(
 #     feature_names, n_top_features=40)
 
 
-# In[39]:
 
 
 # mglearn.tools.visualize_coefficients(
@@ -497,7 +457,6 @@ print("Features with lowest idf:\n{}".format(
 #     feature_names, n_top_features=40)
 
 
-# In[40]:
 
 
 # mglearn.tools.visualize_coefficients(
@@ -505,7 +464,6 @@ print("Features with lowest idf:\n{}".format(
 #     feature_names, n_top_features=40)
 
 
-# In[41]:
 
 
 holdout_comments = holdout['comment_text']
@@ -513,7 +471,6 @@ holdout_comments = holdout['comment_text']
 twod = grid3.predict_proba(holdout_comments)
 
 
-# In[42]:
 
 
 holdout_predictions = {}
@@ -531,14 +488,12 @@ submission = submission[['id','toxic','severe_toxic','obscene','threat','insult'
 submission.to_csv('submission.csv', index=False)
 
 
-# In[43]:
 
 
 # calculate lenght of characters in each comment
 train['len_character'] = train['comment_text'].apply(lambda x: len(re.findall(r"[\w]", str(x))))
 
 
-# In[44]:
 
 
 from sklearn.preprocessing import FunctionTransformer
@@ -546,7 +501,6 @@ from sklearn.pipeline import FeatureUnion #unites all arrays into one array
 from sklearn.pipeline import Pipeline
 
 
-# In[45]:
 
 
 x = train[['comment_text','len_character']] #these will be our features
@@ -554,7 +508,6 @@ y = train.iloc[:, 2:8]
 X_train, X_test, y_train, y_test = train_test_split(x, y, test_size= 0.2, random_state=13)
 
 
-# In[46]:
 
 
 # Preprocess the numeric data: get_numeric_data
@@ -565,7 +518,6 @@ print(get_text_data.fit_transform(X_train).shape)
 print(get_numeric_data.fit_transform(X_train).shape)
 
 
-# In[47]:
 
 
 pl = Pipeline([
@@ -591,7 +543,6 @@ pl = Pipeline([
     ])
 
 
-# In[48]:
 
 
 param_grid = {'union__text_features__vectorizer__max_features': [10000, 30000],
@@ -602,7 +553,6 @@ grid = GridSearchCV(pl, param_grid, cv=3, scoring='roc_auc')
 grid4 = grid.fit(X_train, y_train)
 
 
-# In[49]:
 
 
 # # Pickle grid4 to your computer
@@ -614,7 +564,6 @@ import dill as pickled
 # save_grid4.close() 
 
 
-# In[50]:
 
 
 import dill as pickled
@@ -625,7 +574,6 @@ import dill as pickled
 # vec4.close()
 
 
-# In[51]:
 
 
 print(grid4.best_score_)
@@ -633,7 +581,6 @@ print(grid4.best_params_)
 print(grid4.estimator)
 
 
-# In[52]:
 
 
 pred_y_test = grid4.predict(X_test)

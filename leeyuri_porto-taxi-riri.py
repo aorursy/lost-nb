@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -19,51 +18,43 @@ from sklearn.ensemble import RandomForestClassifier
 pd.set_option('display.max_columns',100)
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/train.csv')
 test = pd.read_csv('../input/test.csv')
 
 
-# In[3]:
 
 
 train.head()
 
 
-# In[4]:
 
 
 train.tail()
 
 
-# In[5]:
 
 
 train.shape
 
 
-# In[6]:
 
 
 train.drop_duplicates()
 train.shape
 
 
-# In[7]:
 
 
 test.shape
 
 
-# In[8]:
 
 
 train.info()
 
 
-# In[9]:
 
 
 data = []
@@ -108,46 +99,39 @@ meta = pd.DataFrame(data, columns=['varname', 'role', 'level', 'keep', 'dtype'])
 meta.set_index('varname', inplace=True)
 
 
-# In[10]:
 
 
 meta
 
 
-# In[11]:
 
 
 meta[(meta.level == 'nominal') & (meta.keep)].index
 
 
-# In[12]:
 
 
 pd.DataFrame({'count' : meta.groupby(['role', 'level'])['role'].size()}).reset_index()
 
 
-# In[13]:
 
 
 v=meta[(meta.level=='interval') &(meta.keep)].index #행을 기준으로 인덱싱 :행의 이름들과 데이터형태 반환
 train[v].describe() #describe:통계치반환
 
 
-# In[14]:
 
 
 v = meta[(meta.level == 'ordinal') & (meta.keep)].index
 train[v].describe()
 
 
-# In[15]:
 
 
 v = meta[(meta.level == 'binary') & (meta.keep)].index
 train[v].describe()
 
 
-# In[16]:
 
 
 desired_apriori=0.10
@@ -178,7 +162,6 @@ idx_list = list(undersampled_idx) + list(idx_1)
 train = train.loc[idx_list].reset_index(drop=True)
 
 
-# In[17]:
 
 
 vars_with_missing=[]
@@ -194,7 +177,6 @@ for f in train.columns:
         print('In total, ther are {} variables with missing values'.format(len(vars_with_missing)))
 
 
-# In[18]:
 
 
 # Dropping the variables with too many missing values
@@ -213,7 +195,6 @@ train['ps_car_14'] = mean_imp.fit_transform(train[['ps_car_14']]).ravel()
 train['ps_car_11'] = mode_imp.fit_transform(train[['ps_car_11']]).ravel()
 
 
-# In[19]:
 
 
 v= meta[(meta.level == 'nominal') & (meta.keep)].index
@@ -223,7 +204,6 @@ for f in v:
     print('Variable {} has {} distinct values'.format(f,dist_values))
 
 
-# In[20]:
 
 
 #스무딩: 범주형 평균과 이전 평균의 균형을 맞추기 위한 스무딩 효과 /데이터 스무딩은 데이터에서 원치 않는 잡음이나 동작을 제거하는 기법
@@ -277,7 +257,6 @@ def target_encode(trn_series=None,
     return add_noise(ft_trn_series, noise_level), add_noise(ft_tst_series, noise_level)
 
 
-# In[21]:
 
 
 train_encoded, test_encoded = target_encode(train["ps_car_11_cat"], 
@@ -294,7 +273,6 @@ test['ps_car_11_cat_te'] = test_encoded
 test.drop('ps_car_11_cat', axis=1, inplace=True)
 
 
-# In[22]:
 
 
 v = meta[(meta.level == 'nominal') & (meta.keep)].index
@@ -314,7 +292,6 @@ for f in v:
     plt.show();
 
 
-# In[23]:
 
 
 def corr_heatmap(v):
@@ -333,13 +310,11 @@ corr_heatmap(v)
                 
 
 
-# In[24]:
 
 
 s=train.sample(frac=0.1)
 
 
-# In[25]:
 
 
 sns.lmplot(x='ps_reg_02', y='ps_reg_03', data=s, hue='target', palette='Set1', scatter_kws={'alpha':0.3})
@@ -348,7 +323,6 @@ plt.show()
 #hue :X의 유무를 통해 회귀선을 알 수 있다. 
 
 
-# In[26]:
 
 
 sns.lmplot(x='ps_car_12', y='ps_car_13', data=s, hue='target', palette='Set1', scatter_kws={'alpha':0.3   
@@ -357,28 +331,24 @@ sns.lmplot(x='ps_car_12', y='ps_car_13', data=s, hue='target', palette='Set1', s
 plt.show()
 
 
-# In[27]:
 
 
 sns.lmplot(x='ps_car_12', y='ps_car_14', data=s, hue='target', palette='Set1', scatter_kws={'alpha':0.3})
 plt.show()
 
 
-# In[28]:
 
 
 sns.lmplot(x='ps_car_15', y='ps_car_13', data=s, hue='target', palette='Set1', scatter_kws={'alpha':0.3})
 plt.show()
 
 
-# In[29]:
 
 
 v= meta[(meta.level == 'ordinal')&(meta.keep)].index
 corr_heatmap(v)
 
 
-# In[30]:
 
 
 v = meta[(meta.level == 'nominal') & (meta.keep)].index
@@ -387,13 +357,11 @@ train = pd.get_dummies(train, columns=v, drop_first=True)
 print('After dummification we have {} variables in train'.format(train.shape[1]))
 
 
-# In[31]:
 
 
 따라서 더미 변수를 생성하면 52개의 변수가 훈련 세트에 추가된다
 
 
-# In[32]:
 
 
 v = meta[(meta.level == 'interval') & (meta.keep)].index
@@ -406,7 +374,6 @@ train = pd.concat([train, interactions], axis=1)
 print('After creating interactions we have {} variables in train'.format(train.shape[1]))
 
 
-# In[33]:
 
 
 selector = VarianceThreshold(threshold=.01)
@@ -419,7 +386,6 @@ print('{} variables have too low variance.'.format(len(v)))
 print('These variables are {}'.format(list(v)))
 
 
-# In[34]:
 
 
 X_train = train.drop(['id', 'target'], axis=1)
@@ -438,7 +404,6 @@ for f in range(X_train.shape[1]):
     print("%2d) %-*s %f" % (f + 1, 30,feat_labels[indices[f]], importances[indices[f]]))
 
 
-# In[35]:
 
 
 sfm = SelectFromModel(rf, threshold='median', prefit=True)
@@ -448,13 +413,11 @@ print('Number of features after selection: {}'.format(n_features))
 selected_vars = list(feat_labels[sfm.get_support()])
 
 
-# In[36]:
 
 
 train = train[selected_vars + ['target']]
 
 
-# In[37]:
 
 
 scaler = StandardScaler()

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -16,7 +15,6 @@ from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.metrics import make_scorer
 
 
-# In[2]:
 
 
 df_train = pd.read_csv('../input/train.csv')
@@ -24,7 +22,6 @@ df_macro = pd.read_csv('../input/macro.csv')
 df_test = pd.read_csv('../input/test.csv')
 
 
-# In[3]:
 
 
 # Join with macro variables
@@ -32,7 +29,6 @@ df_all = pd.concat([df_train, df_test])
 df = pd.merge_ordered(df_all, df_macro, on='timestamp', how='left')
 
 
-# In[4]:
 
 
 # Change what we can to floats
@@ -48,7 +44,6 @@ for col in df.columns:
             pass
 
 
-# In[5]:
 
 
 # Change again to train and final test
@@ -63,7 +58,6 @@ y_train = df_all['price_doc']
 x_train = df_all.drop(['price_doc', 'id'], axis=1)
 
 
-# In[6]:
 
 
 # Selector coumns by name or type
@@ -111,7 +105,6 @@ class PandasSelector(BaseEstimator, TransformerMixin):
             return np.array(x[selected_cols])
 
 
-# In[7]:
 
 
 # Converter fron string to int (for one hot encoder)
@@ -139,7 +132,6 @@ class StringConverter(BaseEstimator, TransformerMixin):
         return X_int
 
 
-# In[8]:
 
 
 # Adds a column in sparse matrix (because of bug in xgboost)
@@ -151,7 +143,6 @@ class AddDummy(BaseEstimator, TransformerMixin):
         return sp.hstack([X, sp.csr_matrix(np.ones((X.shape[0], 1)))])
 
 
-# In[9]:
 
 
 # Adds features based on date
@@ -182,7 +173,6 @@ class DatesFeaturer(BaseEstimator, TransformerMixin):
         return np.array(new_df)
 
 
-# In[10]:
 
 
 # Adds relative features
@@ -199,7 +189,6 @@ class RelativeFeaturer(BaseEstimator, TransformerMixin):
         return np.array(new_df)
 
 
-# In[11]:
 
 
 # Converts estimator to transform in order to ensemble many estimators
@@ -216,14 +205,12 @@ class EstimatorToTransform(BaseEstimator, TransformerMixin):
         return pred.reshape(-1, 1)
 
 
-# In[12]:
 
 
 def rmsle_score(pred, true):
     return (np.sum((np.log(1 + pred) - np.log(1 + true))**2) / len(pred))**0.5
 
 
-# In[13]:
 
 
 # Defining pipelines
@@ -258,7 +245,6 @@ rel_pipeline = make_pipeline(
     RelativeFeaturer(),
 )
 
-pipeline_ensemble = make_pipeline(
     make_union(
         EstimatorToTransform(
             xgb.XGBRegressor(
@@ -300,7 +286,6 @@ final_pipeline = make_pipeline(
 )
 
 
-# In[14]:
 
 
 # Calculate cross-validate score
@@ -316,27 +301,23 @@ cv_score = cross_val_score(
 np.mean(cv_score)
 
 
-# In[15]:
 
 
 get_ipython().run_cell_magic('time', '', '# Fitting model\nmodel = final_pipeline.fit(x_train, y_train)')
 
 
-# In[16]:
 
 
 pred_train = model.predict(x_train)
 print(rmsle_score(pred_train, y_train))
 
 
-# In[17]:
 
 
 # Predicting
 final_pred = model.predict(x_final)
 
 
-# In[18]:
 
 
 # Creating final submission file

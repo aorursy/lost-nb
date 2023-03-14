@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import os
@@ -25,7 +24,6 @@ for f2 in fileList2:
 #shutil.os.mkdir("./model/model.json")
 
 
-# In[ ]:
 
 
 # So until here we have input : (m,1024,1024,1), output : (m,1)
@@ -222,7 +220,6 @@ def ResNet50(input_shape=(1024, 1024, 1), classes=1):
     return model
 
 
-# In[ ]:
 
 
 import numpy as np # linear algebra
@@ -362,7 +359,6 @@ print("Saved model to disk")
 '''
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Input data files are available in the "../input/" directory.
@@ -16,7 +15,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 #references
@@ -24,7 +22,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 #fit_generator - https://keras.io/models/sequential/
 
 
-# In[3]:
 
 
 import warnings
@@ -51,7 +48,6 @@ from keras.applications.resnet50 import preprocess_input as resnet50_preprocess_
 from keras.models import load_model
 
 
-# In[4]:
 
 
 #constants
@@ -67,7 +63,6 @@ VGG19_MODEL = "vgg19"
 TRANSFER_LEARNING = "TransferLearning"
 
 
-# In[5]:
 
 
 def class_labels_to_integer(label):
@@ -102,7 +97,6 @@ def integer_to_classe_labels(i):
     return "Invalid Class"
 
 
-# In[6]:
 
 
 #filenames - filename of image
@@ -149,7 +143,6 @@ def readTrainData(trainDirectory):
     return data, labels
 
 
-# In[7]:
 
 
 #callbacks for keras modal
@@ -161,7 +154,6 @@ def get_callbacks(patience):
     return [lr_reduce, EarlyStopping()]
 
 
-# In[8]:
 
 
 #create model from scratch
@@ -196,7 +188,6 @@ def createModel(number_of_hidden_layers, activation, optimizer, learning_rate, e
     return model
 
 
-# In[9]:
 
 
 #create modeel from pre trined model
@@ -233,7 +224,6 @@ def createModelFromPreTrainedModel(pretrained_model, number_of_hidden_layers, ac
     return model
 
 
-# In[10]:
 
 
 #train non-pre trained models
@@ -280,7 +270,6 @@ def train(images, labels, epochs, batch_size, learning_rate, cross_validation_fo
     return accuracy, std
 
 
-# In[11]:
 
 
 #train pre-trained models
@@ -331,7 +320,6 @@ def trainPreTrainedModel(pretrained_model, images, labels, epochs, batch_size, l
     return accuracy, std
 
 
-# In[12]:
 
 
 #find best params for models
@@ -385,7 +373,6 @@ def evaluateModels(learning_type):
         print(parameterDictList)
 
 
-# In[13]:
 
 
 def buildModelFromBestParams(pretrained_model, epochs, batch_size, learning_rate, steps_mulitplier, activation, number_of_hidden_layers, optimizer):
@@ -417,7 +404,6 @@ def buildModelFromBestParams(pretrained_model, epochs, batch_size, learning_rate
     model.save("/kaggle/working/best_model")
 
 
-# In[14]:
 
 
 #predict values 
@@ -447,7 +433,6 @@ def predict():
     print("Prediction Completed")
 
 
-# In[15]:
 
 
 def main():
@@ -462,7 +447,6 @@ def main():
     predict()
 
 
-# In[16]:
 
 
 main();

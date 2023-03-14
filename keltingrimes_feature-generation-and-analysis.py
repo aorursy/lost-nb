@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -23,14 +22,12 @@ import matplotlib.pyplot as plt
 from seaborn import kdeplot
 
 
-# In[2]:
 
 
 prerun_data = pd.read_csv("../input/calculating-dlib-facial-landmarks-for-rfiw-images/facial_landmark_coordinates.csv")
 prerun_data.head()
 
 
-# In[3]:
 
 
 point_names = ["jaw"+str(i) for i in range(17)]+["browL"+str(i) for i in range(5)]+            ["browR"+str(i) for i in range(5)]+["nRidge"+str(i) for i in range(4)]+            ["nTip"+str(i) for i in range(5)]+["eyeL"+str(i) for i in range(6)]+            ["eyeR"+str(i) for i in range(6)]+["lipOut"+str(i) for i in range(12)]+            ["lipIn"+str(i) for i in range(8)]
@@ -44,7 +41,6 @@ for i in point_names:
 prerun_data.iloc[0:5,137:205]
 
 
-# In[4]:
 
 
 features = ['jaw0','jaw8','jaw16','browL0','browL4','browR0',
@@ -68,14 +64,12 @@ for i in range(0, len(features)):
 prerun_data.iloc[0:5,205:376]
 
 
-# In[5]:
 
 
 model_path = '../input/facenet-keras/facenet_keras.h5'
 facenet_model = load_model(model_path)
 
 
-# In[6]:
 
 
 def prewhiten(x):
@@ -120,7 +114,6 @@ def calc_embs(filepaths, margin=10, batch_size=512):
 print("Helper functions compiled succesfully.")
 
 
-# In[7]:
 
 
 facenet_embs = calc_embs(prerun_data["path"])
@@ -129,7 +122,6 @@ prerun_data = pd.concat([prerun_data, facenet_embs], axis=1)
 prerun_data.iloc[0:5,376:504]
 
 
-# In[8]:
 
 
 def calc_distance(embs_img1, embs_img2):
@@ -137,20 +129,17 @@ def calc_distance(embs_img1, embs_img2):
     return dists
 
 
-# In[9]:
 
 
 get_ipython().system('pip install git+https://github.com/rcmalli/keras-vggface.git')
 
 
-# In[10]:
 
 
 from keras_vggface.vggface import VGGFace
 vggface_model = VGGFace(include_top=False, input_shape=(160, 160, 3), pooling='avg')
 
 
-# In[11]:
 
 
 def calc_embs_vggface(filepaths, margin=10, batch_size=64):
@@ -165,7 +154,6 @@ def calc_embs_vggface(filepaths, margin=10, batch_size=64):
 print("Helper functions successfully compiled.")
 
 
-# In[12]:
 
 
 vggface_embs = calc_embs_vggface(prerun_data["path"])
@@ -174,7 +162,6 @@ prerun_data = pd.concat([prerun_data, vggface_embs], axis=1)
 prerun_data.iloc[0:5,505:1017]
 
 
-# In[13]:
 
 
 f = plt.figure(figsize=(13,3))
@@ -191,7 +178,6 @@ ax3.set_title('Facenet Embedding 12')
 plt.show()
 
 
-# In[14]:
 
 
 scaler = preprocessing.StandardScaler()
@@ -202,7 +188,6 @@ scaled_data.index = prerun_data.index
 scaled_data.insert(loc=0, column="path", value=prerun_data["path"])
 
 
-# In[15]:
 
 
 random.seed(6242)
@@ -248,13 +233,11 @@ image_files = kin_files + random_files
 print("There are ", len(image_files), " pairs of individuals in the training data")
 
 
-# In[16]:
 
 
 print("There are", pd.isnull(scaled_data).sum()[1], "incorrectly detected images.")  
 
 
-# In[17]:
 
 
 col_names = []
@@ -319,7 +302,6 @@ landmark_data["dist(VGGFace)"] = scaled_dists
 print("We now have", len(landmark_data.index), "pairs of faces.")
 
 
-# In[18]:
 
 
 lm_size = len(landmark_data.index)
@@ -327,7 +309,6 @@ landmark_data = landmark_data.dropna()
 print("There are now", len(landmark_data.index), "pairs left, a loss of", lm_size-len(landmark_data.index))
 
 
-# In[19]:
 
 
 start = time()
@@ -338,14 +319,12 @@ end = time()
 all_coord_time = end - start
 
 
-# In[20]:
 
 
 print("That took about", int(all_coord_time/60), "minutes.", sum(logReg.coef_.reshape(len(landmark_data.columns)-1,) == 0), "coefficients were reduced to zero.")
 print("Lets train it again with only 250 features and see if we can reduce that time.")
 
 
-# In[21]:
 
 
 coefficients = logReg.coef_.reshape(len(landmark_data.columns)-1,)
@@ -363,13 +342,11 @@ end = time()
 coord_time_250 = end - start
 
 
-# In[22]:
 
 
 print("That took about", int(coord_time_250/60), "minutes, much faster. Let's see how it scores.")
 
 
-# In[23]:
 
 
 test_pairs = pd.read_csv('../input/recognizing-faces-in-the-wild/sample_submission.csv')
@@ -435,14 +412,12 @@ print(detection_errors, "pairs have been lost due to errors with dLib's facial d
 print("All missing cases (", round(detection_errors/len(test_pairs.index),3),"%) have been set to 0.5.")
 
 
-# In[24]:
 
 
 test_pairs.to_csv('submission_file.csv', index=False)
 test_pairs_t250.to_csv('submission_file_t250.csv', index=False)
 
 
-# In[25]:
 
 
 feature_coeffs = pd.DataFrame()
@@ -457,7 +432,6 @@ best_coeffs = sorted_coeffs.iloc[0:250,:].reset_index(drop=True)
 middle_coeffs = sorted_coeffs.iloc[250:len(feature_coeffs.index)-len(zero_coeffs.index),:]
 
 
-# In[26]:
 
 
 objects = ("Zero", "Middle", "Top-250")
@@ -500,13 +474,11 @@ ax5.bar(objects, data, align='center', alpha=0.75)
 ax5.set_title('VGGFace Embeddings')
 
 
-# In[27]:
 
 
 feature_coeffs.iloc[2030:2032,:]
 
 
-# In[28]:
 
 
 best_coeffs[abs(best_coeffs["coefficient"]) > 1]

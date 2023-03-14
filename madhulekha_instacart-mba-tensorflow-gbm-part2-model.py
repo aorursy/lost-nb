@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ print(os.listdir("../input"))
 os.chdir('../input/')
 
 
-# In[2]:
 
 
 all_products = pd.read_csv('products.csv') #49688
@@ -32,25 +30,21 @@ prior_orders = pd.read_csv('order_products__prior.csv')
 train_set = pd.read_csv('order_products__train.csv')
 
 
-# In[3]:
 
 
 prior_orders_extended = prior_orders.merge(all_orders,on='order_id',how='left')
 
 
-# In[4]:
 
 
 prior_orders_extended.columns
 
 
-# In[5]:
 
 
 prior_orders_extended.head()
 
 
-# In[6]:
 
 
 cust_attribs1 = prior_orders_extended.groupby('user_id').agg({'product_id':['count','nunique'],'order_id':'nunique','reordered':'sum'})
@@ -59,14 +53,12 @@ cust_attribs1 = cust_attribs1.reset_index().rename(columns=    {'product_id_coun
 cust_attribs1.head()
 
 
-# In[7]:
 
 
 #cust_attribs2 = prior_orders_extended.groupby('user_id')['product_id'].apply(set).reset_index().rename(columns={'product_id':'products_list'})
 #cust_attribs2.head()
 
 
-# In[8]:
 
 
 cust_attribs3 = all_orders.groupby('user_id').agg({'days_since_prior_order' : 'mean','order_id':'count'})
@@ -74,7 +66,6 @@ cust_attribs3 = cust_attribs3.reset_index().rename(columns=    {'days_since_prio
 cust_attribs3.head()
 
 
-# In[9]:
 
 
 #cust_attribs = cust_attribs1.merge(cust_attribs2,how='left',on='user_id').\
@@ -88,7 +79,6 @@ cust_attribs['user_repeatability'] = cust_attribs['reordered_basket_size']/cust_
 cust_attribs.head()
 
 
-# In[10]:
 
 
 t = prior_orders_extended.groupby(['user_id','product_id']).agg({'order_number':['max','count'],'add_to_cart_order':'mean','reordered':'sum'})
@@ -97,14 +87,12 @@ t = t.reset_index().rename(columns=    {'order_number_max':'user_prod_last_order
 t.head()
 
 
-# In[11]:
 
 
 user_prod_attribs = prior_orders_extended[['user_id','product_id','order_id','order_number']].merge(t,how='inner',left_on=['user_id','product_id','order_number'],right_on=['user_id','product_id','user_prod_last_order_num'])
 user_prod_attribs.head()
 
 
-# In[12]:
 
 
 user_prod_attribs.drop('order_number',axis=1,inplace=True)
@@ -112,7 +100,6 @@ user_prod_attribs.rename(columns={'order_id':'user_prod_last_order_id'},inplace=
 user_prod_attribs['user_prod_repeatability'] = user_prod_attribs['user_prod_num_reorders']/     user_prod_attribs['user_prod_num_orders']
 
 
-# In[13]:
 
 
 prod_attribs = prior_orders_extended.groupby('product_id').agg({'reordered':['sum','count']})
@@ -122,7 +109,6 @@ prod_attribs['prod_repeatability'] = prod_attribs['prod_num_reorders']/     prod
 prod_attribs.head()
 
 
-# In[14]:
 
 
 print(train_set.columns)
@@ -131,7 +117,6 @@ train_orders = all_orders[all_orders.eval_set == 'train']
 all_orders.head()
 
 
-# In[15]:
 
 
 print("Number of orders in train_set : ",train_set.order_id.nunique())
@@ -140,13 +125,11 @@ print("Train set: ",train_set.shape)
 print("Train orders: ",train_orders.shape)
 
 
-# In[16]:
 
 
 train_set.reordered.value_counts()
 
 
-# In[17]:
 
 
 train_df = train_set.merge(train_orders,how='left',on='order_id').    merge(prod_attribs,how='left',on='product_id').    merge(cust_attribs,how='left',on='user_id').    merge(all_products,how='left',on='product_id').    merge(user_prod_attribs,how='left',on=['user_id','product_id'])
@@ -161,25 +144,21 @@ train_df.set_index(['user_id','product_id'],inplace=True)
 train_df.head()
 
 
-# In[18]:
 
 
 train_df.isnull().sum()
 
 
-# In[19]:
 
 
 train_df[train_df['user_prod_last_order_id'].isnull()].head(5)
 
 
-# In[20]:
 
 
 prior_orders_extended[(prior_orders_extended['user_id']==112108) & (prior_orders_extended['product_id']==10246)]
 
 
-# In[21]:
 
 
 train_df.user_prod_num_orders.fillna(1,inplace=True)
@@ -190,7 +169,6 @@ train_df.dropna(subset=['prod_num_orders'],inplace=True,axis=0)
 train_df.isnull().sum()
 
 
-# In[22]:
 
 
 num_features = ['order_hour_of_day', 'days_since_prior_order', 'total_basket_size',
@@ -202,13 +180,11 @@ cat_features = ['aisle_id','department_id','order_dow']
 tot_features = list(set(num_features)|set(cat_features))
 
 
-# In[23]:
 
 
 len(num_features)
 
 
-# In[24]:
 
 
 import matplotlib.pyplot as plt
@@ -220,7 +196,6 @@ for i,feature in enumerate(num_features):
      sns.distplot(train_df[feature],ax=flat_ax[i])
 
 
-# In[25]:
 
 
 def get_normalization_parameters(traindf, features):
@@ -244,7 +219,6 @@ normalization_parameters = get_normalization_parameters(train_df, num_features)
 print(normalization_parameters)
 
 
-# In[26]:
 
 
 num_features_s = []
@@ -255,20 +229,17 @@ for feature in num_features:
 tot_features_s = list(set(num_features_s)|set(cat_features))    
 
 
-# In[27]:
 
 
 from sklearn.model_selection import train_test_split
 x_train, x_eval, y_train, y_eval = train_test_split(train_df[tot_features_s], train_df['reordered'], test_size=0.2)
 
 
-# In[28]:
 
 
 del train_df,all_orders,prior_orders_extended,prior_orders,train_set,all_products
 
 
-# In[29]:
 
 
 import tensorflow as tf
@@ -279,7 +250,6 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 tf.set_random_seed(123)
 
 
-# In[30]:
 
 
 fc = tf.feature_column
@@ -302,32 +272,27 @@ for feature_name in num_features_s:
 #Normalizing is creating a problem - check later
 
 
-# In[31]:
 
 
 print(len(all_features))
 all_features
 
 
-# In[32]:
 
 
 example = x_train.head(1)
 
 
-# In[33]:
 
 
 fc.input_layer(dict(example), all_features)
 
 
-# In[34]:
 
 
 x_train.shape,x_eval.shape
 
 
-# In[35]:
 
 
 NUM_EXAMPLES = len(y_train) #1107693
@@ -348,7 +313,6 @@ train_input_fn = make_input_fn(x_train.head(800), y_train.head(800))
 eval_input_fn = make_input_fn(x_eval.head(1000), y_eval.head(1000), shuffle=False, n_epochs=1)
 
 
-# In[36]:
 
 
 linear_est = tf.estimator.LinearClassifier(all_features)
@@ -362,7 +326,6 @@ print('Accuracy : ', results['accuracy'])
 print('Dummy model: ', results['accuracy_baseline'])
 
 
-# In[37]:
 
 
 def populate_features(df,chosen_features):

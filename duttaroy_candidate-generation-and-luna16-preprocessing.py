@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -32,13 +31,11 @@ from subprocess import check_output
 print(check_output(["ls", "../input"]).decode("utf8"))
 
 
-# In[2]:
 
 
 print(check_output(["ls", "../input/sample_images/"]).decode("utf8"))
 
 
-# In[3]:
 
 
 # Any results you write to the current directory are saved as output.
@@ -49,7 +46,6 @@ slice[slice == -2000] = 0
 plt.imshow(slice, cmap=plt.cm.gray)
 
 
-# In[4]:
 
 
 def read_ct_scan(folder_name):
@@ -65,13 +61,11 @@ def read_ct_scan(folder_name):
         return slices
 
 
-# In[5]:
 
 
 ct_scan = read_ct_scan('../input/sample_images/00cba091fa4ad62cc3200a657aeb957e/') 
 
 
-# In[6]:
 
 
 def plot_ct_scan(scan):
@@ -81,13 +75,11 @@ def plot_ct_scan(scan):
         plots[int(i / 20), int((i % 20) / 5)].imshow(scan[i], cmap=plt.cm.bone) 
 
 
-# In[7]:
 
 
 plot_ct_scan(ct_scan)
 
 
-# In[8]:
 
 
 def get_segmented_lungs(im, plot=False):
@@ -170,34 +162,29 @@ def get_segmented_lungs(im, plot=False):
     return im
 
 
-# In[9]:
 
 
 get_segmented_lungs(ct_scan[71], True)
 
 
-# In[10]:
 
 
 def segment_lung_from_ct_scan(ct_scan):
     return np.asarray([get_segmented_lungs(slice) for slice in ct_scan])
 
 
-# In[11]:
 
 
 segmented_ct_scan = segment_lung_from_ct_scan(ct_scan)
 plot_ct_scan(segmented_ct_scan)
 
 
-# In[12]:
 
 
 segmented_ct_scan[segmented_ct_scan < 604] = 0
 plot_ct_scan(segmented_ct_scan)
 
 
-# In[13]:
 
 
 selem = ball(2)
@@ -227,7 +214,6 @@ for r in regionprops(label_scan):
         index = (max((max_x - min_x), (max_y - min_y), (max_z - min_z))) / (min((max_x - min_x), (max_y - min_y) , (max_z - min_z)))
 
 
-# In[14]:
 
 
 def plot_3d(image, threshold=-300):
@@ -255,13 +241,11 @@ def plot_3d(image, threshold=-300):
     plt.show()
 
 
-# In[15]:
 
 
 plot_3d(segmented_ct_scan, 604)
 
 
-# In[16]:
 
 
 '''
@@ -302,7 +286,6 @@ def voxel_2_world(voxel_coordinates, origin, spacing):
     return world_coordinates
 
 
-# In[17]:
 
 
 def seq(start, stop, step=1):
@@ -397,7 +380,6 @@ def create_nodule_mask(imagePath, maskPath, cands):
         
 
 
-# In[18]:
 
 
 # change the loss function
@@ -470,7 +452,6 @@ def unet_model():
 	return model
 
 
-# In[19]:
 
 
 '''
@@ -541,7 +522,6 @@ def create_data(path, train_csv_path):
 			coords, trainY = [], []
 
 
-# In[20]:
 
 
 from keras.models import Sequential

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import matplotlib.pyplot as plt
@@ -20,20 +19,17 @@ from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.metrics import mean_squared_error
 
 
-# In[2]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[3]:
 
 
 DO_XGBOOST = True
 DO_CATBOOST = not DO_XGBOOST
 
 
-# In[4]:
 
 
 train_raw = pd.read_csv('../input/train/train.csv', index_col='id', 
@@ -42,28 +38,24 @@ test_raw = pd.read_csv('../input/test/test.csv', index_col='id',
                        parse_dates=['pickup_datetime'])
 
 
-# In[5]:
 
 
 print('Train set:\n')
 train_raw.info()
 
 
-# In[6]:
 
 
 print('Test set:\n')
 test_raw.info()
 
 
-# In[7]:
 
 
 print('NaN or empty data (train): {}'.format(train_raw.isnull().values.any()))
 print('NaN or empty data (test): {}'.format(test_raw.isnull().values.any()))
 
 
-# In[8]:
 
 
 def check_hidden(*dfs):
@@ -73,7 +65,6 @@ def check_hidden(*dfs):
 check_hidden(train_raw, test_raw)
 
 
-# In[9]:
 
 
 max_dur_hrs = np.max(train_raw["trip_duration"].values) / 3600
@@ -91,14 +82,12 @@ ax0.hist(train_raw['trip_duration'], bins=100);
 ax1.hist(np.log1p(train_raw['trip_duration']), bins=100);
 
 
-# In[10]:
 
 
 train_set = train_raw.copy(deep=True).drop('dropoff_datetime', axis=1)
 test_set = test_raw.copy(deep=True)
 
 
-# In[11]:
 
 
 checkpoints = {
@@ -109,7 +98,6 @@ checkpoints = {
 }
 
 
-# In[12]:
 
 
 def add_checkpoint(key):
@@ -119,14 +107,12 @@ def add_checkpoint(key):
     })
 
 
-# In[13]:
 
 
 def restore_checkpoint(key):
     return checkpoints[key]['train'].copy(deep=True), checkpoints[key]['test'].copy(deep=True)
 
 
-# In[14]:
 
 
 def cat_encode(*dfs):
@@ -135,13 +121,11 @@ def cat_encode(*dfs):
             df[col] = df[col].astype('category').cat.codes
 
 
-# In[15]:
 
 
 cat_encode(train_set, test_set)
 
 
-# In[16]:
 
 
 def extract_date_columns(*dfs):
@@ -152,13 +136,11 @@ def extract_date_columns(*dfs):
         df['pickup_datetime_dow'] = df.pickup_datetime.dt.dayofweek
 
 
-# In[17]:
 
 
 extract_date_columns(train_set, test_set)
 
 
-# In[18]:
 
 
 def _haversine_distance(lat_a, long_a, lat_b, long_b):
@@ -238,19 +220,16 @@ def add_manhattan_haversine_distance(*dfs):
                                                                oob_lat_b, oob_long_b)
 
 
-# In[19]:
 
 
 add_manhattan_haversine_distance(train_set, test_set)
 
 
-# In[20]:
 
 
 add_checkpoint('with_manhattan')
 
 
-# In[21]:
 
 
 _, (ax0, ax1) = plt.subplots(1, 2, figsize=(16, 8))
@@ -270,13 +249,11 @@ ax0.legend()
 ax1.legend();
 
 
-# In[22]:
 
 
 corr = train_set.corr()
 
 
-# In[23]:
 
 
 _, ax = plt.subplots(1, figsize=(12, 12))
@@ -287,7 +264,6 @@ ax.yaxis.set_ticklabels([c for c in corr.columns.values], rotation=0)
 sns.heatmap(corr, annot=True, ax=ax, fmt='.3f');
 
 
-# In[24]:
 
 
 _, ax = plt.subplots(1, figsize=(8, 8))
@@ -297,7 +273,6 @@ ax.set_ylabel('Trip duration (s)')
 ax.scatter(train_set['city_distance'][:500], train_set['trip_duration'][:500]);
 
 
-# In[25]:
 
 
 h = train_set.groupby('pickup_datetime_hour').mean()['trip_duration']
@@ -313,7 +288,6 @@ ax1.set_title('Mean trip duration vs DOW')
 ax1.set_xlabel('Day of week (Sunday-Saturday)');
 
 
-# In[26]:
 
 
 island_long_border = (-74.03, -73.75)
@@ -352,19 +326,16 @@ ax1.scatter(dropoff_long_test, dropoff_lat_test, c='purple', s=0.5);
 ax1.set_title('Dropoff locations (test)');
 
 
-# In[27]:
 
 
 get_ipython().run_cell_magic('time', '', "cluster_set = train_set.loc[:, ['dropoff_latitude', 'dropoff_longitude']]\n\nk = 50\nmbkmeans = MiniBatchKMeans(n_clusters=k, batch_size=32)\nmbkmeans.fit(cluster_set)\ncluster_set['cluster'] = pd.Series(mbkmeans.labels_, index=cluster_set.index)\n\n_, ax = plt.subplots(1, figsize=(12, 12))\n\nisland_long_border = (-74.03, -73.75)\nisland_lat_border = (40.63, 40.85)\n\nlat = cluster_set.iloc[:100000, :]['dropoff_latitude']\nlon = cluster_set.iloc[:100000, :]['dropoff_longitude']\nclusters = cluster_set.iloc[:100000, :]['cluster']\n\nax.scatter(lon.values, lat.values, c=clusters, cmap='tab20c', alpha=0.5, s=1)\nax.set_xlim(island_long_border)\nax.set_ylim(island_lat_border);\n\ntrain_set['dropoff_cluster'] = cluster_set['cluster']\ntest_set['dropoff_cluster'] = \\\n    pd.Series(mbkmeans.predict(test_set.loc[:, ['dropoff_latitude', 'dropoff_longitude']].values),\n              index=test_set.index)\n\ntrain_set['pickup_cluster'] = \\\n    pd.Series(mbkmeans.predict(train_set.loc[:, ['pickup_latitude', 'pickup_longitude']].values),\n              index=train_set.index)\ntest_set['pickup_cluster'] = \\\n    pd.Series(mbkmeans.predict(test_set.loc[:, ['pickup_latitude', 'pickup_longitude']].values),\n              index=test_set.index);")
 
 
-# In[28]:
 
 
 add_checkpoint('post_clustering')
 
 
-# In[29]:
 
 
 train_set.drop('pickup_datetime', axis=1, inplace=True)
@@ -372,20 +343,17 @@ test_set.drop('pickup_datetime', axis=1, inplace=True)
 add_checkpoint('pre_modeling')
 
 
-# In[30]:
 
 
 X = train_set.drop('trip_duration', axis=1)
 y = np.log1p(train_set['trip_duration'])
 
 
-# In[31]:
 
 
 X_train, X_validate, y_train, y_validate = train_test_split(X, y)
 
 
-# In[32]:
 
 
 xgb_train = xgb.DMatrix(X_train, label=y_train)
@@ -408,7 +376,6 @@ xgb_params = {
 }
 
 
-# In[33]:
 
 
 if DO_XGBOOST:
@@ -417,7 +384,6 @@ if DO_XGBOOST:
                               verbose_eval=10)
 
 
-# In[34]:
 
 
 cat_features = [0, 6, 12, 13]
@@ -432,14 +398,12 @@ cat_regressor = CatBoostRegressor(
 )
 
 
-# In[35]:
 
 
 if DO_CATBOOST:
     cat_regressor.fit(train_pool, eval_set=validation_pool)
 
 
-# In[36]:
 
 
 def create_xgb_submission():

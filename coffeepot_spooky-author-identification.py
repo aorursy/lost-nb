@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -12,28 +11,24 @@ import random
 import nltk
 
 
-# In[2]:
 
 
 sample_sub = pd.read_csv("../input/sample_submission.csv")
 sample_sub.head(5)
 
 
-# In[3]:
 
 
 train = pd.read_csv("../input/train.csv")
 train.head(5)
 
 
-# In[4]:
 
 
 test = pd.read_csv("../input/test.csv")
 test.head(5)
 
 
-# In[5]:
 
 
 eap = train.loc[train.author == "EAP"]
@@ -41,7 +36,6 @@ hpl = train.loc[train.author == "HPL"]
 mws = train.loc[train.author == "MWS"]
 
 
-# In[6]:
 
 
 results = pd.DataFrame()
@@ -51,7 +45,6 @@ results["HPL"] = 0
 results["MWS"] = 0
 
 
-# In[7]:
 
 
 for i in results.T:
@@ -66,14 +59,12 @@ for i in results.T:
 results.head(5)
 
 
-# In[8]:
 
 
 # Kaggle Score: 15.77882
 # results.to_csv("../results/random.csv")
 
 
-# In[9]:
 
 
 eap_words = []
@@ -89,13 +80,11 @@ for i in train.T:
         mws_words.append(nltk.word_tokenize(train.text[i]))
 
 
-# In[10]:
 
 
 stopwords = nltk.corpus.stopwords.words('english')
 
 
-# In[11]:
 
 
 eap_words = [for word in wl in eap_words]
@@ -107,7 +96,6 @@ for phrase in mws_words:
     phrase = [word for word in phrase if word.lower() not in stopwords]
 
 
-# In[12]:
 
 
 print(eap_words[0:4])
@@ -115,7 +103,6 @@ print(eap_words[0:4])
 #print(mws_words[0:4])
 
 
-# In[13]:
 
 
 

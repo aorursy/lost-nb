@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import gc
@@ -11,7 +10,6 @@ import lightgbm as lgb
 from  datetime import datetime, timedelta
 
 
-# In[2]:
 
 
 # Correct data types for "calendar.csv"
@@ -43,7 +41,6 @@ for col, colDType in calendarDTypes.items():
 calendar.head()
 
 
-# In[3]:
 
 
 # Correct data types for "sell_prices.csv"
@@ -65,7 +62,6 @@ for col, colDType in priceDTypes.items():
 prices.head()
 
 
-# In[4]:
 
 
 firstDay = 250
@@ -104,7 +100,6 @@ ds = ds.merge(prices, on = ["store_id", "item_id", "wm_yr_wk"], copy = False)
 ds.head()
 
 
-# In[5]:
 
 
 dayLags = [7, 28]
@@ -118,7 +113,6 @@ for window in windows:
         ds[f"rmean_{dayLag}_{window}"] = ds[["id", lagSalesCol]].groupby("id")[lagSalesCol].transform(lambda x: x.rolling(window).mean())
 
 
-# In[6]:
 
 
 dateFeatures = {"wday": "weekday",
@@ -135,19 +129,16 @@ for featName, featFunc in dateFeatures.items():
         ds[featName] = getattr(ds["date"].dt, featFunc).astype("int16")
 
 
-# In[7]:
 
 
 ds.head()
 
 
-# In[8]:
 
 
 ds.info()
 
 
-# In[9]:
 
 
 # Remove all rows with NaN value
@@ -160,7 +151,6 @@ X_train = ds[trainCols]
 y_train = ds["sales"]
 
 
-# In[10]:
 
 
 np.random.seed(777)
@@ -177,13 +167,11 @@ validData = lgb.Dataset(X_train.loc[validInds], label = y_train.loc[validInds],
                         categorical_feature = catFeats, free_raw_data = False)
 
 
-# In[11]:
 
 
 del ds, X_train, y_train, validInds, trainInds ; gc.collect()
 
 
-# In[12]:
 
 
 params = {
@@ -202,21 +190,18 @@ params = {
          }
 
 
-# In[13]:
 
 
 # Train LightGBM model
 m_lgb = lgb.train(params, trainData, valid_sets = [validData], verbose_eval = 20) 
 
 
-# In[14]:
 
 
 # Save the model
 m_lgb.save_model("model.lgb")
 
 
-# In[15]:
 
 
 # Last day used for training
@@ -282,7 +267,6 @@ def create_features(ds):
             ds[featName] = getattr(ds["date"].dt, featFunc).astype("int16")
 
 
-# In[16]:
 
 
 fday = datetime(2016,4, 25) 

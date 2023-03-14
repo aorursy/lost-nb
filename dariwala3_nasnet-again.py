@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -36,7 +35,6 @@ print(os.listdir("../input/"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 df_train = pd.read_csv("../input/histopathologic-cancer-detection/train_labels.csv")
@@ -44,34 +42,29 @@ id_label_map = {k:v for k,v in zip(df_train.id.values, df_train.label.values)}
 df_train.head()
 
 
-# In[3]:
 
 
 def get_id_from_file_path(file_path):
     return file_path.split(os.path.sep)[-1].replace('.tif', '')
 
 
-# In[4]:
 
 
 labeled_files = glob('../input/histopathologic-cancer-detection/train/*.tif')
 test_files = glob('../input/histopathologic-cancer-detection/test/*.tif')
 
 
-# In[5]:
 
 
 print("labeled_files size :", len(labeled_files))
 print("test_files size :", len(test_files))
 
 
-# In[6]:
 
 
 train, val = train_test_split(labeled_files, test_size=0.1, random_state=101010)
 
 
-# In[7]:
 
 
 def chunker(seq, size):
@@ -153,7 +146,6 @@ def data_gen(list_files, id_label_map, batch_size, augment=False):
             yield np.array(X), np.array(Y)
 
 
-# In[8]:
 
 
 def get_model_classif_nasnet():
@@ -173,13 +165,11 @@ def get_model_classif_nasnet():
     return model
 
 
-# In[9]:
 
 
 model = get_model_classif_nasnet()
 
 
-# In[10]:
 
 
 batch_size=32
@@ -205,7 +195,6 @@ history = model.fit_generator(
 model.load_weights(h5_path)
 
 
-# In[11]:
 
 
 '''from IPython.display import SVG
@@ -216,7 +205,6 @@ from keras.utils import plot_model
 plot_model(model, to_file='model.png')
 
 
-# In[12]:
 
 
 # Plot validation and accuracies over epochs
@@ -235,21 +223,18 @@ plt.legend()
 plt.show()
 
 
-# In[13]:
 
 
 # Due to the disk limits I couldn't save the best model during the training process
 print("Validation Accuracy: " + str(history.history['val_acc'][-1:]))
 
 
-# In[14]:
 
 
 preds = []
 ids = []
 
 
-# In[15]:
 
 
 for batch in chunker(test_files, batch_size):
@@ -261,7 +246,6 @@ for batch in chunker(test_files, batch_size):
     ids += ids_batch
 
 
-# In[16]:
 
 
 df = pd.DataFrame({'id':ids, 'label':preds})
@@ -269,14 +253,12 @@ df.to_csv("baseline_nasnet.csv", index=False)
 df.head()
 
 
-# In[17]:
 
 
 validation_classes = [id_label_map[get_id_from_file_path(v)] for v in val]
 print(validation_classes[0:5])
 
 
-# In[18]:
 
 
 predictions = []
@@ -291,7 +273,6 @@ for batch in chunker(val, batch_size):
     
 
 
-# In[19]:
 
 
 validation_predictions = []
@@ -305,7 +286,6 @@ print("Confusion matrix is: ")
 print(confusion_matrix(validation_classes, validation_predictions))
 
 
-# In[20]:
 
 
 from sklearn.metrics import roc_curve, auc
@@ -326,7 +306,6 @@ plt.legend()
 plt.show()
 
 
-# In[21]:
 
 
 

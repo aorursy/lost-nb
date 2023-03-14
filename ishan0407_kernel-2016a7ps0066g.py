@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -9,7 +8,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-# In[2]:
 
 
 data_orig = pd.read_csv("../input/train.csv", sep=',')
@@ -17,13 +15,11 @@ data_test = pd.read_csv("../input/test.csv", sep=',')
 data = data_orig
 
 
-# In[3]:
 
 
 data.info()
 
 
-# In[4]:
 
 
 for i in range (1,9):
@@ -35,7 +31,6 @@ data.loc[data['Worker Class']=='?','Worker Class']=0
 data_test.loc[data_test['Worker Class']=='?','Worker Class']=0
 
 
-# In[5]:
 
 
 for i in range (1,18):
@@ -46,7 +41,6 @@ for i in range (1,18):
 data.groupby(['Schooling']).count()
 
 
-# In[6]:
 
 
 lis=[1,3,4,7,9,10,13,14,16,17]
@@ -57,7 +51,6 @@ for i in lis:
 data.groupby(['Schooling']).count()
 
 
-# In[7]:
 
 
 data.loc[data['Schooling']==5,'Schooling']=3
@@ -75,7 +68,6 @@ data_test.loc[data_test['Schooling']==12,'Schooling']=7
 data_test.loc[data_test['Schooling']==15,'Schooling']=8
 
 
-# In[8]:
 
 
 data2=data
@@ -83,7 +75,6 @@ data2.loc[data2['Timely Income']>0,'Timely Income']=1
 data_test.loc[data_test['Timely Income']>0,'Timely Income']=1
 
 
-# In[9]:
 
 
 data2.loc[data2.Enrolled=='?','Enrolled']=0
@@ -95,7 +86,6 @@ data_test.loc[data_test.Enrolled=='Uni1','Enrolled']=1
 data_test.loc[data_test.Enrolled=='Uni2','Enrolled']=2
 
 
-# In[10]:
 
 
 for i in range(1,8):
@@ -104,21 +94,18 @@ for i in range(1,8):
     data_test.loc[data_test.Married_Life==ss,'Married_Life']=i
 
 
-# In[11]:
 
 
 data2.loc[(data2.MIC=='?') | (data2.MIC=='MIC_G') | (data2.MIC=='MIC_O') | (data2.MIC=='MIC_P') | (data2.MIC=='MIC_U'),'MIC']=1
 data_test.loc[(data_test.MIC=='?') | (data_test.MIC=='MIC_G') | (data_test.MIC=='MIC_O') | (data_test.MIC=='MIC_P') | (data_test.MIC=='MIC_U'),'MIC']=1
 
 
-# In[12]:
 
 
 data2.loc[ data2.MIC!=1 ,'MIC']=2
 data_test.loc[ data_test.MIC!=1 ,'MIC']=2
 
 
-# In[13]:
 
 
 data2.loc[(data2.MOC=='?') | (data2.MOC=='MOC_D') | (data2.MOC=='MOC_G') | (data2.MOC=='MOC_I') | (data2.MOC=='MOC_L'),'MOC']=1
@@ -127,7 +114,6 @@ data_test.loc[(data_test.MOC=='?') | (data_test.MOC=='MOC_D') | (data_test.MOC==
 #data2.groupby(['MOC','Class']).count()
 
 
-# In[14]:
 
 
 data2.loc[ data2.MOC!=1 ,'MOC']=2
@@ -136,7 +122,6 @@ data_test.loc[ data_test.MOC!=1 ,'MOC']=2
 #data2.groupby(['MOC','Class']).count()
 
 
-# In[15]:
 
 
 data2.loc[data2.Cast=='TypeA','Cast']=0
@@ -154,7 +139,6 @@ data_test.loc[data_test.Cast=='TypeE','Cast']=4
 #data2.groupby(['Cast','Class']).count()
 
 
-# In[16]:
 
 
 data2.loc[data2.Hispanic=='HA','Hispanic']=1
@@ -166,7 +150,6 @@ data_test.loc[data_test.Hispanic!=1,'Hispanic']=2
 #data2.groupby(['Hispanic','Class']).count()
 
 
-# In[17]:
 
 
 data2.loc[data2.Sex=='M','Sex']=0
@@ -176,7 +159,6 @@ data_test.loc[data_test.Sex=='M','Sex']=0
 data_test.loc[data_test.Sex=='F','Sex']=1
 
 
-# In[18]:
 
 
 data2.loc[data2.MLU=='?','MLU']=0
@@ -188,7 +170,6 @@ data_test.loc[data_test.MLU=='NO','MLU']=1
 data_test.loc[data_test.MLU=='YES','MLU']=2
 
 
-# In[19]:
 
 
 for i in range(1,6):
@@ -200,7 +181,6 @@ data2.loc[data2.Reason=='?','Reason']=5
 data_test.loc[data_test.Reason=='?','Reason']=5
 
 
-# In[20]:
 
 
 data2.loc[data2['Full/Part']=='FB','Full/Part']=1
@@ -219,7 +199,6 @@ data_test.loc[(data_test['Full/Part']!=1) & (data_test['Full/Part']!=2) & (data_
 #data2.groupby(['Full/Part','Class']).count()
 
 
-# In[21]:
 
 
 bins = [-1,1,7000, 20000, 100005]
@@ -228,13 +207,11 @@ data2['Gain'] = pd.cut(data2['Gain'], bins=bins, labels=labels)
 data_test['Gain'] = pd.cut(data_test['Gain'], bins=bins, labels=labels)
 
 
-# In[22]:
 
 
 data2.groupby(['Gain','Class']).count()
 
 
-# In[23]:
 
 
 for i in range (1,7):
@@ -245,14 +222,12 @@ for i in range (1,7):
 data2.groupby(['Tax Status','Class']).count()
 
 
-# In[24]:
 
 
 data2=data2.drop(['State'],axis=1)
 data_test=data_test.drop(['State'],axis=1)
 
 
-# In[25]:
 
 
 data2.loc[data2.Area=='OUT','Area']=0
@@ -272,14 +247,12 @@ data_test.loc[data_test.Area=='?','Area']=5
 data2.groupby(['Area','Class']).count()
 
 
-# In[26]:
 
 
 data2=data2.drop(['Detailed'],axis=1)
 data_test=data_test.drop(['Detailed'],axis=1)
 
 
-# In[27]:
 
 
 for i in range(1,9):
@@ -290,7 +263,6 @@ for i in range(1,9):
 data2.groupby(['Summary','Class']).count()
 
 
-# In[28]:
 
 
 data2.loc[data2.MSA=='StatusQ','MSA']=0
@@ -314,21 +286,18 @@ data_test.loc[data_test.MSA=='StatusA','MSA']=7
 data_test.loc[data_test.MSA=='?','MSA']=8
 
 
-# In[29]:
 
 
 data2=data2.drop(['REG'],axis=1)
 data_test=data_test.drop(['REG'],axis=1)
 
 
-# In[30]:
 
 
 data2=data2.drop(['MOVE'],axis=1)
 data_test=data_test.drop(['MOVE'],axis=1)
 
 
-# In[31]:
 
 
 data2.loc[data2.Live=='?','Live']=0
@@ -342,7 +311,6 @@ data_test.loc[data_test.Live=='YES','Live']=2
 #data2.groupby(['Live','Class']).count()
 
 
-# In[32]:
 
 
 data2.loc[data2.PREV=='YES','PREV']=0
@@ -354,7 +322,6 @@ data_test.loc[data_test.PREV=='NO','PREV']=1
 data_test.loc[data_test.PREV=='?','PREV']=2
 
 
-# In[33]:
 
 
 data2.loc[data2.Teen=='?','Teen']=0
@@ -372,14 +339,12 @@ data_test.loc[data_test.Teen=='N','Teen']=4
 #data2.groupby(['Teen','Class']).count()
 
 
-# In[34]:
 
 
 data2=data2.drop(['COB FATHER','COB MOTHER','COB SELF'],axis=1)
 data_test=data_test.drop(['COB FATHER','COB MOTHER','COB SELF'],axis=1)
 
 
-# In[35]:
 
 
 for i in range(1,6):
@@ -389,7 +354,6 @@ for i in range(1,6):
 data2.groupby(['Citizen','Class']).count() 
 
 
-# In[36]:
 
 
 data2.loc[data2.Fill=='YES','Fill']=0
@@ -401,14 +365,12 @@ data_test.loc[data_test.Fill=='NO','Fill']=1
 data_test.loc[data_test.Fill=='?','Fill']=2
 
 
-# In[37]:
 
 
 data2=data2.drop(['ID'],axis=1)
 data_test2=data_test.drop(['ID'],axis=1)
 
 
-# In[38]:
 
 
 import seaborn as sns
@@ -418,7 +380,6 @@ sns.heatmap(corr, mask=np.zeros_like(corr, dtype=np.bool), cmap=sns.diverging_pa
             square=True, ax=ax, annot = True);
 
 
-# In[39]:
 
 
 data_test2['Age']=data_test2['Age'].astype(np.int64)
@@ -432,7 +393,6 @@ data2['OC']=data2['OC'].astype(np.int64)
 data2['Gain']=data2['Gain'].astype(np.int64)
 
 
-# In[40]:
 
 
 from sklearn import preprocessing
@@ -447,7 +407,6 @@ np_scaled = min_max_scaler.fit_transform(data_test2[col2])
 data_test2[col2] = pd.DataFrame(np_scaled)
 
 
-# In[41]:
 
 
 col=['Gain','Loss','Stock','Weight','Weaks','Age','IC','OC','Timely Income','NOP']
@@ -459,7 +418,6 @@ np_scaled = std_scaler.fit_transform(data_test2[col])
 data_test2[col] = pd.DataFrame(np_scaled)
 
 
-# In[42]:
 
 
 y=data2['Class']
@@ -467,7 +425,6 @@ X=data2.drop(['Class'],axis=1)
 X.head()
 
 
-# In[43]:
 
 
 #Oversampling more than under
@@ -479,14 +436,12 @@ rus.fit(X, y)
 X_resampled, y_resampled = rus.fit_resample(X,y)
 
 
-# In[44]:
 
 
 from sklearn.model_selection import train_test_split
 X_train, X_val, y_train, y_val = train_test_split(X_resampled, y_resampled, test_size=0.20, random_state=42)
 
 
-# In[45]:
 
 
 from sklearn import preprocessing
@@ -499,7 +454,6 @@ X_val = pd.DataFrame(np_scaled_val)
 #X_train.head()
 
 
-# In[46]:
 
 
 #Validation Score for NB
@@ -513,14 +467,12 @@ y_pred_NB = nb.predict(X_val)
 print(roc_auc_score(y_val, y_pred_NB))
 
 
-# In[47]:
 
 
 from sklearn.metrics import confusion_matrix,classification_report,accuracy_score
 print(classification_report(y_val, y_pred_NB))
 
 
-# In[48]:
 
 
 X=data_test2
@@ -532,14 +484,12 @@ X = pd.DataFrame(np_scaled_val)
 X.head()
 
 
-# In[49]:
 
 
 y_pred_NB = nb.predict(X)
 data_test['Class1']=y_pred_NB
 
 
-# In[50]:
 
 
 from sklearn.tree import DecisionTreeClassifier
@@ -555,7 +505,6 @@ for i in range(1,15):
     test_acc.append(acc_test)
 
 
-# In[51]:
 
 
 plt.figure(figsize=(10,6))
@@ -569,7 +518,6 @@ plt.xlabel('Max Depth')
 plt.ylabel('Score')
 
 
-# In[52]:
 
 
 from sklearn.tree import DecisionTreeClassifier
@@ -585,7 +533,6 @@ for i in range(2,50):
     test_acc.append(acc_test)
 
 
-# In[53]:
 
 
 plt.figure(figsize=(10,6))
@@ -599,7 +546,6 @@ plt.xlabel('Max Depth')
 plt.ylabel('Score')
 
 
-# In[54]:
 
 
 #Decision Tree Cross - Validation Score
@@ -621,13 +567,11 @@ for i in tqdm(range (2,45)):
 print(ma,bi,bj)
 
 
-# In[55]:
 
 
 print(confusion_matrix(y_val, fpred))
 
 
-# In[56]:
 
 
 dTree = DecisionTreeClassifier(max_depth=bi, random_state = bj,min_samples_split=37)
@@ -636,7 +580,6 @@ y_pred_DT = dTree.predict(X)
 data_test['Class2']=y_pred_DT
 
 
-# In[57]:
 
 
 #Cross - Validation for Random Forest
@@ -658,13 +601,11 @@ for i in tqdm(range (1,30) ):
 print(ma,bi,bj)
 
 
-# In[58]:
 
 
 print(confusion_matrix(y_val, fpred))
 
 
-# In[59]:
 
 
 rf = RandomForestClassifier(n_estimators=bi, random_state = bj)
@@ -673,14 +614,12 @@ y_pred_RF = rf.predict(X)
 data_test['Class3']=y_pred_RF
 
 
-# In[60]:
 
 
 data_sub=data_test[['ID','Class3']]
 #data_sub.info()
 
 
-# In[61]:
 
 
 #Cross-Validation for Logistic Regression
@@ -692,13 +631,11 @@ y_pred_LR = lg.predict(X_val)
 print(roc_auc_score(y_val, y_pred_LR))
 
 
-# In[62]:
 
 
 data_test['Class4']=lg.predict(X)
 
 
-# In[63]:
 
 
 from sklearn.neighbors import KNeighborsClassifier
@@ -715,7 +652,6 @@ for i in tqdm(range(1,20)):
     test_acc.append(acc_test)
 
 
-# In[64]:
 
 
 plt.figure(figsize=(10,6))
@@ -729,7 +665,6 @@ plt.xlabel('K neighbors')
 plt.ylabel('Score')
 
 
-# In[65]:
 
 
 #Cross Validation kNN
@@ -739,13 +674,11 @@ y_pred_knn=knn.predict(X_val)
 print(roc_auc_score(y_val,y_pred_knn))
 
 
-# In[66]:
 
 
 data_test['Class5']=knn.predict(X)
 
 
-# In[67]:
 
 
 #Selecting best n_estimators on the basis of cross validation score
@@ -772,7 +705,6 @@ for i in tqdm(range (1,60) ):
 print(ma,bi)
 
 
-# In[68]:
 
 
 plt.figure(figsize=(10,6))
@@ -786,7 +718,6 @@ plt.xlabel('Max Depth')
 plt.ylabel('Score')
 
 
-# In[69]:
 
 
 #Cross - Validation Adaboost
@@ -804,7 +735,6 @@ for j in range (50):
 print(ma,bj)
 
 
-# In[70]:
 
 
 ad = AdaBoostClassifier(n_estimators=44, random_state = 0)
@@ -812,13 +742,11 @@ ad.fit(X_train, y_train)
 fpred = ad.predict(X)
 
 
-# In[71]:
 
 
 data_test['Class6']=fpred
 
 
-# In[72]:
 
 
 #Binning/Assigning weights to different results
@@ -830,13 +758,11 @@ lis+=['Class2','Class3','Class3','Class3','Class6']
 #print(lis)
 
 
-# In[73]:
 
 
 pred = data_test[lis].mean(axis=1)
 
 
-# In[74]:
 
 
 #Selecting threshold
@@ -845,32 +771,27 @@ data_test.loc[data_test.Class<=0.55,'Class']=0
 data_test.loc[data_test.Class>0.55,'Class']=1
 
 
-# In[75]:
 
 
 data_sub=data_test[['ID','Class']]
 data_sub.info()
 
 
-# In[76]:
 
 
 data_sub['Class']=data_sub['Class'].astype(np.int64)
 
 
-# In[77]:
 
 
 data_sub.groupby(['Class']).count()
 
 
-# In[78]:
 
 
 data_sub.to_csv('final_sub.csv', encoding='utf-8', index=False)
 
 
-# In[79]:
 
 
 from IPython.display import HTML import pandas as pd

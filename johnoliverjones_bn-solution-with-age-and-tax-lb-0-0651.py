@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -17,7 +16,6 @@ train_label = pd.read_csv(mdf + 'train_2016_v2.csv', parse_dates = ['transaction
 train.shape
 
 
-# In[2]:
 
 
 # Build features for model. Based on early BN of clusters
@@ -60,7 +58,6 @@ pss = model[model.Tax_Value.isnull() == True].        groupby(['Age_b'])['logerr
 p.head(10)
 
 
-# In[3]:
 
 
 #Use the above tables to look up the expected logerror for each property in train
@@ -76,7 +73,6 @@ df = df.drop('Age', 1)
 df.head(5)
 
 
-# In[4]:
 
 
 s0 = pd.DataFrame()
@@ -104,7 +100,6 @@ df = pd.concat(frames)
 df.shape
 
 
-# In[5]:
 
 
 
@@ -126,7 +121,6 @@ df.to_csv('mean_logerror6.csv', index = False)
 df.shape
 
 
-# In[6]:
 
 
 

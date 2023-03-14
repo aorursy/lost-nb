@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -13,7 +12,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
 
 
 import os
@@ -22,26 +20,22 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
         print(os.path.join(dirname, filename))
 
 
-# In[3]:
 
 
 base_dataset=glob.glob("../input/ieee-fraud-detection/*.csv")
 
 
-# In[4]:
 
 
 base_dataset[1].split("\\")[-1].split(".")[0]=10
 
 
-# In[5]:
 
 
 for i in base_dataset:
     print(i)
 
 
-# In[6]:
 
 
 """ iterate through all the columns of a dataframe and modify the data type
@@ -85,25 +79,21 @@ print('Decreased by {:.1f}%'.format(100 * (start_mem - end_mem) / start_mem))
 print("*******************************************************************************************")
 
 
-# In[7]:
 
 
 train=pd.read_csv("../input/ieee-fraud-detection/train_transaction.csv")
 
 
-# In[8]:
 
 
 train.head()
 
 
-# In[9]:
 
 
 train.shape
 
 
-# In[10]:
 
 
 null_value_table=(train.isna().sum()/train.shape[0])*100
@@ -126,7 +116,6 @@ for i in cont:
     train[i].fillna(train[i].median(),inplace=True)
 
 
-# In[11]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -137,13 +126,11 @@ for i in cat:
     train[i]=x
 
 
-# In[12]:
 
 
 train=train.sample(200000)
 
 
-# In[13]:
 
 
 for i in train.var().sort_values(ascending=False).index[1:10]:
@@ -162,13 +149,11 @@ for i in train.var().sort_values(ascending=False).index[1:10]:
     train[i]=y
 
 
-# In[14]:
 
 
 train["isFraud"].value_counts()
 
 
-# In[15]:
 
 
 X = np.array(train.iloc[:, train.columns != 'isFraud'])
@@ -177,7 +162,6 @@ print('Shape of X: {}'.format(X.shape))
 print('Shape of y: {}'.format(y.shape))
 
 
-# In[16]:
 
 
 from imblearn.over_sampling import SMOTE
@@ -192,7 +176,6 @@ print("Number transactions X_test dataset: ", X_test.shape)
 print("Number transactions y_test dataset: ", y_test.shape)
 
 
-# In[17]:
 
 
 print("Before OverSampling, counts of label '1': {}".format(sum(y_train==1)))
@@ -208,7 +191,6 @@ print("After OverSampling, counts of label '1': {}".format(sum(y_train_res==1)))
 print("After OverSampling, counts of label '0': {}".format(sum(y_train_res==0)))
 
 
-# In[18]:
 
 
 import seaborn as sns
@@ -218,7 +200,6 @@ for i in  train.var().sort_values(ascending=False).index[1:10]:
     plt.show()
 
 
-# In[19]:
 
 
 import seaborn as sns
@@ -229,32 +210,27 @@ for i in  train.var().sort_values(ascending=False).index[1:10]:
         plt.show()
 
 
-# In[20]:
 
 
 train.corr()
 
 
-# In[21]:
 
 
 sns.heatmap(train.corr())
 
 
-# In[22]:
 
 
 y=train['isFraud']
 x=train.drop(['isFraud','M6'],axis=1)
 
 
-# In[23]:
 
 
 x.shape
 
 
-# In[24]:
 
 
 from sklearn.model_selection import train_test_split
@@ -262,7 +238,6 @@ X_train, X_test, y_train, y_test=train_test_split(x,y,test_size=0.2,random_state
 print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
 
-# In[25]:
 
 
 from sklearn.tree import DecisionTreeClassifier
@@ -277,13 +252,11 @@ from sklearn.metrics import accuracy_score
 print("\n\naccuracy_score using DT : ",accuracy_score(y_test,ln.predict(X_test)))
 
 
-# In[26]:
 
 
 ln.predict(X_test)[1:20]
 
 
-# In[27]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -298,25 +271,21 @@ from sklearn.metrics import accuracy_score
 print("\n\naccuracy_score using RF : ",accuracy_score(y_test,rf.predict(X_test)))
 
 
-# In[28]:
 
 
 rf.predict(X_test)[1:20] 
 
 
-# In[29]:
 
 
 test=pd.read_csv("../input/ieee-fraud-detection/test_transaction.csv")
 
 
-# In[30]:
 
 
 test.shape
 
 
-# In[31]:
 
 
 null_value_table=(test.isna().sum()/test.shape[0])*100
@@ -339,7 +308,6 @@ for i in cont:
     test[i].fillna(test[i].median(),inplace=True)
 
 
-# In[32]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -350,53 +318,45 @@ for i in cat:
     test[i]=z
 
 
-# In[33]:
 
 
 pred=rf.predict(test)
 pred=pred.astype(float)
 
 
-# In[34]:
 
 
 final_res=pd.DataFrame([test['TransactionID']]).T
 final_res['isFraud']=pred
 
 
-# In[35]:
 
 
 final_res.head()
 
 
-# In[36]:
 
 
 final_res.to_csv('test_res.csv', index=False)
 
 
-# In[37]:
 
 
 sample=pd.read_csv("../input/ieee-fraud-detection/sample_submission.csv")
 sample.head()
 
 
-# In[38]:
 
 
 sample=sample.drop('isFraud',axis=1)
 sample = pd.merge(sample,final_res , on='TransactionID', how='inner')
 
 
-# In[39]:
 
 
 sample.head()
 
 
-# In[40]:
 
 
 from IPython.display import HTML
@@ -412,13 +372,11 @@ def create_download_link(title = "Download CSV file", filename = "data.csv"):
 create_download_link(filename='submission.csv')
 
 
-# In[41]:
 
 
 create_download_link(filename='test_res.csv')
 
 
-# In[ ]:
 
 
 

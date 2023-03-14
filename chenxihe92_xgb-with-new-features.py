@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -14,7 +13,6 @@ from sklearn import model_selection, preprocessing
 import xgboost as xgb
 
 
-# In[2]:
 
 
 total = pd.read_csv('../input/train.csv')
@@ -36,7 +34,6 @@ print ('macro: ', macro.shape)
 print ('all: ', df_all.shape)
 
 
-# In[3]:
 
 
 def missingPattern(df):
@@ -61,7 +58,6 @@ numGroup, catGroup, missing_data = missingPattern(df_all)
 # missing_data
 
 
-# In[4]:
 
 
 import operator
@@ -79,7 +75,6 @@ def getCorr(df, numGroup, eps, *verbose):
 corr, highCorrList = getCorr(df_all.ix['total',:], numGroup, 0.4, True)
 
 
-# In[5]:
 
 
 # for numerical variable, draw scatter plot(x vs y) and histogram plot(total vs test)    
@@ -96,7 +91,6 @@ def hishplotNum(df, varNum, ax):
     plt.legend(('total','test'))
 
 
-# In[6]:
 
 
 high_missing_data = missing_data[missing_data['Percent'] > 0.5]
@@ -117,7 +111,6 @@ for i in XYcorr:
         plt.show()
 
 
-# In[7]:
 
 
 # remove the heavy missing features
@@ -127,7 +120,6 @@ for i in high_missing_data.index:
 print ('all: ', df_all.shape)
 
 
-# In[8]:
 
 
 # total missing
@@ -138,7 +130,6 @@ print ('missing in basic: ', len(basic_missing))
 print ('missing in macro: ', len(macro_missing))
 
 
-# In[9]:
 
 
 ### for macro info, look at the missing value info(mean, std) groupby yr, year_month
@@ -147,7 +138,6 @@ df_all['year'] = df_all.timestamp.dt.year
 df_all['year_month'] = df_all.timestamp.dt.month + df_all.timestamp.dt.year * 100
 
 
-# In[10]:
 
 
 # life_sq and full_sq are highly related to price_doc
@@ -197,7 +187,6 @@ df_all['kitch_sq'][df_all.kitch_sq > df_all.full_sq] =             df_all['full_
 df_all['max_floor'][df_all.floor > df_all.max_floor] =         df_all['floor'][df_all.floor > df_all.max_floor] + df_all['max_floor'][df_all.floor > df_all.max_floor]
 
 
-# In[11]:
 
 
 # fill the missing value in train and test
@@ -253,13 +242,11 @@ def basicmissingFill(df):
 df_all = basicmissingFill(df_all)
 
 
-# In[12]:
 
 
 print ('basic_missing filling finished: ', df_all[basic_missing].isnull().sum().sum() == 7662)
 
 
-# In[13]:
 
 
 # for Cat features in macro_missing
@@ -280,7 +267,6 @@ print ('macro missing features count: ', len(macro_missing))
 print ('df_all shape: ', df_all.shape)
 
 
-# In[14]:
 
 
 # for num features in macro_missing
@@ -303,7 +289,6 @@ print ('macro_missing filling finished: ', df_all[macro_missing].isnull().sum().
     
 
 
-# In[15]:
 
 
 # running mean price vs timestamp
@@ -358,7 +343,6 @@ k = 60
 px, py = running_mean(df_all, x, y, agg_list, k)
 
 
-# In[16]:
 
 
 # year and housing sq
@@ -373,7 +357,6 @@ df_all['rel_life_sq'] = df_all['rel_life_sq'].fillna(df_all['rel_life_sq'].mean(
 df_all['rel_kitch_sq'] = df_all['rel_kitch_sq'].fillna(df_all['rel_kitch_sq'].mean())
 
 
-# In[17]:
 
 
 numGroup = list(df_all._get_numeric_data().columns)
@@ -396,7 +379,6 @@ print ('minGroup: ', len(minGroup))
 # all positive values in kmGroup, minGroup, cntGroup 
 
 
-# In[18]:
 
 
 # km and minutes to neighborhood feats transformation
@@ -421,7 +403,6 @@ df_all, kmFeats = min_km_trans(df_all, kmGroup)
 df_all, minFeats = min_km_trans(df_all, minGroup)
 
 
-# In[19]:
 
 
 cntFeats = list(set(cntGroup) & set(highCorrList))
@@ -431,7 +412,6 @@ print (len(highCorrList),len(cntFeats),len(kmFeats)/7,len(minFeats)/7,len(extFea
 numFeats = cntFeats + kmFeats + minFeats + extFeats
 
 
-# In[20]:
 
 
 testId = list(test['id'])
@@ -454,7 +434,6 @@ print ('Current test numerical variables count is %d '  %(df_test_num.shape[1]))
 print ('Current test categorical variables count is %d '  %(df_test_cat.shape[1]))
 
 
-# In[21]:
 
 
 # one-hot encoding for categorical variables
@@ -465,7 +444,6 @@ print ('After one-hot encoding, total training cat variables are %d' %(df_total_
 print ('After one-hot encoding, total test cat variables are %d' %(df_test_cat.shape[1]))
 
 
-# In[22]:
 
 
 #Xtotal = pd.concat([df_total_num,df_total_cat], axis = 1)
@@ -476,7 +454,6 @@ dtrain = xgb.DMatrix(Xtotal, Ytotal)
 dtest = xgb.DMatrix(Xtest)
 
 
-# In[23]:
 
 
 xgb_params = {
@@ -496,21 +473,18 @@ cv_output = xgb.cv(xgb_params, dtrain, num_boost_round=1000, early_stopping_roun
 cv_output[['train-rmse-mean', 'test-rmse-mean']].plot()
 
 
-# In[24]:
 
 
 num_boost_rounds = len(cv_output)
 model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round= num_boost_rounds)
 
 
-# In[25]:
 
 
 fig, ax = plt.subplots(1, 1, figsize=(8, 12))
 xgb.plot_importance(model, max_num_features=50, height=0.5, ax=ax)
 
 
-# In[26]:
 
 
 Ypred = model.predict(dtest)
@@ -519,7 +493,6 @@ output = pd.DataFrame({"id": testId, "price_doc": Ypred})
 output.head()
 
 
-# In[27]:
 
 
 output.to_csv('xgb_submission.csv',index=False)

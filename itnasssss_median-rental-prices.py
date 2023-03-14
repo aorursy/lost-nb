@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import seaborn as sns
@@ -28,14 +26,12 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[3]:
 
 
 train = pd.read_json('../input/train.json').set_index('listing_id')
 test = pd.read_json('../input/test.json').set_index('listing_id')
 
 
-# In[4]:
 
 
 # limit number of bedrooms and prices
@@ -48,14 +44,12 @@ for interest in ['low', 'medium', 'high']:
                 c=palette[interest])
 
 
-# In[5]:
 
 
 plt.figure(figsize=(11,10))
 sns.boxplot(x="bedrooms", y="price", hue="interest_level", data=usable_train, palette=palette)
 
 
-# In[6]:
 
 
 def add_median_price(key=None, suffix="", trn_df=None, tst_df=None):
@@ -97,7 +91,6 @@ def add_median_price(key=None, suffix="", trn_df=None, tst_df=None):
     return trn_df, tst_df
 
 
-# In[7]:
 
 
 from sklearn.model_selection import StratifiedKFold
@@ -170,7 +163,6 @@ def run_classifier():
     return train_features, features_imp
 
 
-# In[8]:
 
 
 for df in (train, test):
@@ -182,7 +174,6 @@ train_features, features_imp = run_classifier()
                                              
 
 
-# In[9]:
 
 
 train, test = add_median_price(key=['bedrooms'],
@@ -192,7 +183,6 @@ train, test = add_median_price(key=['bedrooms'],
 train_features, features_imp = run_classifier()
 
 
-# In[10]:
 
 
 imp_df = pd.DataFrame(data={'feature': train_features, 
@@ -201,7 +191,6 @@ imp_df.sort_values(by='importance', ascending=False, inplace=True)
 sns.barplot(x="importance", y="feature", data=imp_df)
 
 
-# In[11]:
 
 
 

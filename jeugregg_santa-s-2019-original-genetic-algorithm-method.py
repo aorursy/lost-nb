@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -40,7 +39,6 @@ import seaborn as sns
 sns.set(color_codes=True, font_scale=1.33)
 
 
-# In[2]:
 
 
 ###
@@ -130,7 +128,6 @@ for dirname, _, filenames in os.walk(PATH_INPUT):
         print(os.path.join(dirname, filename))
 
 
-# In[3]:
 
 
 def find_choice_range(choice_curr):
@@ -710,7 +707,6 @@ def create_seek_ranges(nb_first_seed=NB_FIRST_SEED):
     return df_range 
 
 
-# In[4]:
 
 
 @njit(parallel=True, fastmath=True)
@@ -1037,7 +1033,6 @@ def removeDups(arr):
             
 
 
-# In[5]:
 
 
 def fun_find_choices_sub(my_days):
@@ -1085,7 +1080,6 @@ def plot_delta_choice_pop(df_pop, df_des_choices):
                                                   I*d_plot+d_plot)] - error_margin,'.')
 
 
-# In[6]:
 
 
 fpath = PATH_INPUT + '/santa-2019-workshop-scheduling/family_data.csv'
@@ -1101,19 +1095,16 @@ arr_choice = np.array(data_choice)
 data_choice.head()
 
 
-# In[7]:
 
 
 data.head()
 
 
-# In[8]:
 
 
 submission.head()
 
 
-# In[9]:
 
 
 #family_size_dict[fam_id]
@@ -1153,7 +1144,6 @@ def mutation_day_optim(day_curr, fam_id, nb_mut=1, flag_prob=False,
     return choose_day_prob_optim(choice_new, fam_id)
 
 
-# In[10]:
 
 
 @njit#(parallel=True, fastmath=True)
@@ -1223,7 +1213,6 @@ def fun_vect_mut(arr_pop_in, r_pop_mut=R_POP_MUT, r_mut=R_MUT,
     return arr_pop
 
 
-# In[11]:
 
 
 family_size_dict = data[['n_people']].to_dict()['n_people']
@@ -1239,7 +1228,6 @@ MIN_OCCUPANCY = 125
 days = list(range(N_DAYS,0,-1))
 
 
-# In[12]:
 
 
 def cost_function(prediction, flag_prompt=False):
@@ -1323,7 +1311,6 @@ def cost_function(prediction, flag_prompt=False):
         return penalty
 
 
-# In[13]:
 
 
 """
@@ -1531,7 +1518,6 @@ def build_cost_function(data, N_DAYS=100, MAX_OCCUPANCY=300, MIN_OCCUPANCY=125):
 cost_function_optim = build_cost_function(data)
 
 
-# In[14]:
 
 
 # version build : AVEC les parametres dans le build 
@@ -1658,7 +1644,6 @@ def build_eval_cost_vect_optim(data, N_DAYS=100, MAX_OCCUPANCY=300,
 eval_cost_vect_optim = build_eval_cost_vect_optim(data)
 
 
-# In[15]:
 
 
 # version build : AVEC les parametres dans le build 
@@ -1827,7 +1812,6 @@ def build_boost_diff_browsing_optim(data, flag_seq=True, flag_prompt=True,
 boost_diff_browsing_optim = build_boost_diff_browsing_optim(data)
 
 
-# In[16]:
 
 
 family_size = data.n_people.values
@@ -1941,7 +1925,6 @@ def boost_optim_one_by_one_epochs(arr_pop_in, n_epochs=100, nb_epoch_check=10,
     return arr_pop, arr_score
 
 
-# In[17]:
 
 
 '''
@@ -1965,13 +1948,11 @@ else:
     print("file exists")
 
 
-# In[18]:
 
 
 get_ipython().run_cell_magic('writefile', 'stochprodsearch_03.cpp', '#include <array>\n#include <cassert>\n#include <algorithm>\n#include <cmath>\n#include <fstream>\n#include <iostream>\n#include <vector>\n#include <thread>\n#include <atomic>\n#include <random>\n#include <string.h>\nusing namespace std;\n#include <chrono>\nusing namespace std::chrono;\n\n// V1.1 : 16/02/2020 : extend range to choice 10\n\n//int N_JOBS = 4;\n//int END_TIME = 1*N_JOBS;//in minutes\n\nauto START_TIME = high_resolution_clock::now();\n//constexpr array<uint8_t, 4> DISTRIBUTION{2, 2, 3, 5}; // 82400 -> 72172.8 in 8h (KAGGLE V4)\nconstexpr array<uint8_t, 6> DISTRIBUTION{2, 2, 2, 2, 3, 5}; // 82400 -> 72060.8 in 8h (KAGGLE V5)\n// constexpr array<uint8_t, 15> DISTRIBUTION{2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5};  // You can setup how many families you need for swaps and what best choice use for each family\n// {2, 5} it\'s mean the first random family will brute force for choices 1-2 and the second random family will brute force for choices 1-5\n\nconstexpr int MAX_OCCUPANCY = 300;\nconstexpr int MIN_OCCUPANCY = 125;\nconstexpr int BEST_N = 10;\narray<uint8_t, 5000> n_people;\narray<array<uint8_t, 11>, 5000> choices;\narray<array<uint16_t, 11>, 5000> PCOSTM;\narray<array<double, 176>, 176> ACOSTM;\n\nstruct Index {\n    Index(array<int, 5000> assigned_days_) : assigned_days(assigned_days_)  {\n        setup();\n    }\n    array<int, 5000> assigned_days;\n    array<uint16_t, 100> daily_occupancy_{};\n    int preference_cost_ = 0;\n    void setup() {\n        preference_cost_ = 0;\n        daily_occupancy_.fill(0);\n        for (int j = 0; j < assigned_days.size(); ++j) {\n            daily_occupancy_[choices[j][assigned_days[j]]] += n_people[j];\n            preference_cost_ += PCOSTM[j][assigned_days[j]];\n        }\n    }\n    double calc(const array<uint16_t, 5000>& indices, const array<uint8_t, DISTRIBUTION.size()>& change) {\n        double accounting_penalty = 0.0;\n        auto daily_occupancy = daily_occupancy_;\n        int preference_cost = preference_cost_;\n        for (int i = 0; i < DISTRIBUTION.size(); ++i) {\n            int j = indices[i];\n            daily_occupancy[choices[j][assigned_days[j]]] -= n_people[j];\n            daily_occupancy[choices[j][       change[i]]] += n_people[j];\n            \n            preference_cost += PCOSTM[j][change[i]] - PCOSTM[j][assigned_days[j]];\n        }\n\n        for (auto occupancy : daily_occupancy)\n            if (occupancy < MIN_OCCUPANCY) \n                return 1e12*(MIN_OCCUPANCY-occupancy);\n            else if (occupancy > MAX_OCCUPANCY)\n                return 1e12*(occupancy - MAX_OCCUPANCY);\n\n        for (int day = 0; day < 99; ++day)\n            accounting_penalty += ACOSTM[daily_occupancy[day]-125][daily_occupancy[day+1]-125];\n\n        accounting_penalty += ACOSTM[daily_occupancy[99]-125][daily_occupancy[99]-125];\n        return preference_cost + accounting_penalty;\n    }\n    void reindex(const array<uint16_t, DISTRIBUTION.size()>& indices, const array<uint8_t, DISTRIBUTION.size()>& change) {\n        for (int i = 0; i < DISTRIBUTION.size(); ++i) {\n            assigned_days[indices[i]] = change[i];\n        }\n        setup();\n    }\n};\n\nstatic std::atomic<bool> flag(false);\nstatic Index global_index({});\n\nbool time_exit_fn(int end_time){\n    return duration_cast<seconds>(high_resolution_clock::now()-START_TIME).count() < end_time;\n}\n\nvoid init_data() {\n    ifstream in("family_data.csv");\n    \n    assert(in && "family_data.csv");\n    string header;\n    int n,x;\n    char comma;\n    getline(in, header);\n    for (int fam_id = 0; fam_id < choices.size(); ++fam_id) {\n        in >> x >> comma;\n        for (int n_choice = 0; n_choice < 10; ++n_choice) {\n            in >> x >> comma;\n            choices[fam_id][n_choice] = x-1;\n        }\n        in >> n;\n        n_people[fam_id] = n;\n        //std::cout << fam_id << ", " << (int)n_people[fam_id] << endl;\n    }\n    array<int, 11> pc{0, 50, 50, 100, 200, 200, 300, 300, 400, 500, 500};\n    array<int, 11> pn{0,  0,  9,   9,   9,  18,  18,  36,  36, 235, 434};\n    //cout << endl << "PCOSTM:";\n    for (int j = 0; j < PCOSTM.size(); ++j) {\n        //cout << endl << j << ": ";\n        for (int i = 0; i < 11; ++i) {\n            PCOSTM[j][i] = pc[i] + pn[i] * n_people[j];\n            //cout << PCOSTM[j][i] << " ";\n        }\n    }\n    \n    for (int i = 0; i < 176; ++i)\n        for (int j = 0; j < 176; ++j)\n            ACOSTM[i][j] = i * pow(i+125, 0.5 + abs(i-j) / 50.0) / 400.0;\n}\n// not used (keep for later add-on ?)\narray<int, 5000> read_submission(string filename) {\n    ifstream in(filename);\n    assert(in && "submission.csv");\n    array<int, 5000> assigned_day{};\n    string header;\n    int id, x;\n    char comma;\n    getline(in, header);\n    for (int j = 0; j < choices.size(); ++j) {\n        in >> id >> comma >> x;\n        assigned_day[j] = x-1;\n        auto it = find(begin(choices[j]), end(choices[j]), assigned_day[j]);\n        if (it != end(choices[j]))\n            assigned_day[j] = distance(begin(choices[j]), it);\n    }\n    return assigned_day;\n}\n\n\ndouble calc(const array<int, 5000>& assigned_days, bool print=false) {\n    int preference_cost = 0;\n    double accounting_penalty = 0.0;\n    array<uint16_t, 100> daily_occupancy{};\n    for (int j = 0; j < assigned_days.size(); ++j) {\n        preference_cost += PCOSTM[j][assigned_days[j]];\n        daily_occupancy[choices[j][assigned_days[j]]] += n_people[j];\n        //cout << j  << ", " << (int)assigned_days[j] << ", " << (int)n_people[j] << endl;\n        //cout << j << ", " << n_people[j] << endl;\n    }\n    int K=1;\n    for (auto occupancy : daily_occupancy) {\n        if (occupancy < MIN_OCCUPANCY) {\n            //std::cout << "occ. day " << K << "=" << occupancy << " ! MIN_OCC reached" << endl;\n            return 1e12*(MIN_OCCUPANCY-occupancy);\n        } else if (occupancy > MAX_OCCUPANCY) {\n            //std::cout << "occ. day " << K << "=" << occupancy << " ! MAX_OCC reached" << endl;\n            return 1e12*(occupancy - MAX_OCCUPANCY);\n        }\n        K = K+1;\n    }\n\n    for (int day = 0; day < 99; ++day)\n        accounting_penalty += ACOSTM[daily_occupancy[day]-125][daily_occupancy[day+1]-125];\n\n    accounting_penalty += ACOSTM[daily_occupancy[99]-125][daily_occupancy[99]-125];\n    if (print) {\n        cout << preference_cost+accounting_penalty << ": pc: " << preference_cost << " + ac: " << accounting_penalty << endl;\n    }\n    return preference_cost + accounting_penalty;\n}\n\nvoid save_sub(const array<int, 5000>& assigned_day) {\n    ofstream out("submission.csv");\n    out << "family_id,assigned_day" << endl;\n    for (int i = 0; i < assigned_day.size(); ++i)\n        out << i << "," << choices[i][assigned_day[i]]+1 << endl;\n}\n        \nconst vector<array<uint8_t, DISTRIBUTION.size()>> changes = []() {\n    vector<array<uint8_t, DISTRIBUTION.size()>> arr;\n    array<uint8_t, DISTRIBUTION.size()> tmp{};\n    for (int i = 0; true; ++i) {\n        arr.push_back(tmp);\n        tmp[0] += 1;\n        for (int j = 0; j < DISTRIBUTION.size(); ++j)\n            if (tmp[j] >= DISTRIBUTION[j]) {\n                if (j >= DISTRIBUTION.size()-1)\n                    return arr;\n                tmp[j] = 0;\n                ++tmp[j+1];\n            }\n    }\n    return arr;\n}();\n\n//template<class ExitFunction>\nvoid stochastic_product_search(Index index, int end_time) { // 15\'360\'000it/s  65ns/it  0.065µs/it\n    double best_local_score = calc(index.assigned_days);\n    thread_local std::mt19937 gen(std::random_device{}());\n    uniform_int_distribution<> dis(0, 4999);\n    array<uint16_t, 5000> indices;\n    iota(begin(indices), end(indices), 0);\n    array<uint16_t, DISTRIBUTION.size()> best_indices{};\n    array<uint8_t, DISTRIBUTION.size()> best_change{};\n    for (;time_exit_fn(end_time);) {\n        bool found_better = false;\n        for (int k = 0; k < BEST_N; ++k) {\n            for (int i = 0; i < DISTRIBUTION.size(); ++i) //random swap for n first families\n                swap(indices[i], indices[dis(gen)]);\n            for (const auto& change : changes) {\n                auto score = index.calc(indices, change);\n                if (score < best_local_score) {\n                    found_better = true;\n                    best_local_score = score;\n                    best_change = change;\n                    copy_n(begin(indices), DISTRIBUTION.size(), begin(best_indices));\n                }\n            }\n        }\n\n        if (flag.load() == true){\n            return;\n        }\n\n        if (found_better && flag.load() == false) { // reindex from N best if found better\n            flag = true;\n\n            index.reindex(best_indices, best_change);\n            global_index = index;\n            return;\n        }\n    }\n}\n\n// output function : for python ctypes, needed to add extern "C"\nextern "C" int* sps(int* days, int duration=6, int n_jobs=4) {\n    \n    int N_JOBS = n_jobs;\n    int END_TIME = duration*N_JOBS; //in seconds\n    std::cout << "duration = " << duration << endl; // debug\n    std::cout << "END_TIME = " << END_TIME << endl; // debug\n    \n    init_data();\n    //auto assigned_day = read_submission("../input/first-simple-optimization-santa-submission/submission_535295.5188186927.csv");\n    //auto assigned_day = read_submission("../input/best-result-with-algo-genetic/submission_85181.22055864273.csv");\n    //auto assigned_day = read_submission("../input/santa-workshop-tour-2019/sample_submission.csv");\n    //auto assigned_day = read_submission("submission_82477.85928353199.csv");\n    //auto assigned_day = read_submission("submission_100135.53956452094.csv");\n    //auto assigned_day = read_submission("submission_535295.5188186927.csv");\n    \n    // read input from python\n    array<int, 5000> assigned_day{};\n    // int pointer instead of array format for output to python : it is the best solution found\n    int *assigned_days_out = new int[5000];\n    \n    // read python input pointer days to good format for C++\n    //std::cout << "current choices:";\n    int K = 0;\n    for (int i = 0; i < 2*5000; i+=2) {\n        //std::cout << " " << days[i] << ", ";\n        assigned_day[K] = days[i] - 1;\n        //auto it = find(begin(choices[K]), end(choices[K]), assigned_day[K]);\n        auto it = find(begin(choices[K]), end(choices[K])-1, assigned_day[K]);\n        if (it != end(choices[K])-1) {\n            assigned_day[K] = distance(begin(choices[K]), it);\n            //cout << " " << K << ": " << (int)assigned_day[K];\n        } else {\n            //cout << " " << K << ": " << (int)assigned_day[K]; \n            choices[K][10] = days[i] - 1;\n            assigned_day[K] = 10;\n        }\n        K = K + 1;\n    }\n    \n    Index index(assigned_day);\n    global_index = index;\n    std::cout << "current cost: ";\n    calc(index.assigned_days, true);\n    std::cout << endl << "Start s.p.s V1.1..." << endl;\n    for(;time_exit_fn(END_TIME);){\n\n        std::thread threads[N_JOBS];\n        for(int i = 0; i < N_JOBS; i++){\n            threads[i] = std::thread(stochastic_product_search, index, END_TIME);\n        }\n        for(int i = 0; i < N_JOBS; i++){\n            threads[i].join();\n        }\n\n        auto best_score = calc(global_index.assigned_days, false);\n\n        flag = false;\n        index = global_index;      \n    }\n    \n    // display best cost : \n    std::cout << "Best cost found: ";\n    calc(global_index.assigned_days, true);\n    // creation of output for python\n    //std::cout << endl; // for debug\n    for (int i = 0; i < global_index.assigned_days.size(); ++i) {\n        assigned_days_out[i] = choices[i][global_index.assigned_days[i]]+1;\n        //std::cout << assigned_days_out[i] << ", "; // for debug\n    }\n    \n    return assigned_days_out;\n    //return 0;\n}')
 
 
-# In[19]:
 
 
 if MY_PLATFORM == "Linux":
@@ -1988,19 +1969,16 @@ else:
     print("Unknow platform ! ")
 
 
-# In[20]:
 
 
 get_ipython().run_cell_magic('writefile', 'stochprodsearch_03.py', 'import platform\nimport pandas as pd\nimport numpy as np\nfrom numpy.ctypeslib import ndpointer\nimport ctypes\nfrom ctypes import cdll\nfrom ctypes import c_char_p\nfrom ctypes import c_double\nfrom ctypes import c_int\n\'\'\'\nThis script link C++ executable as a ctypes library in python.\nBut because lib ctypes doesnt execute well twice when used directly in another\npython script, it is needed to used a dirty csv file as output. \n \nHow to use examples : \n- From command line: 6 sec and 4 threads:\n>> python stochprodsearch_03.py my_submission.csv 6 4 \n- From notebooks : run_stochprodsearch(arr_best_curr, end_time=6, nb_jobs=4)\n\'\'\'\n# DEFINTION : \nOUTPOUT_FILE_NAME = "submission_from_sps.csv" # TO BE CHANGED !!!\n# select current platform\nMY_PLATFORM = platform.system()\n#Linux: Linux\n#Mac: Darwin\n#Windows: Windows\n# load lib\nif MY_PLATFORM == "Darwin":\n    lib = cdll.LoadLibrary(\'./libstochprodsearch_03.dylib\')\nelif MY_PLATFORM == "Linux":\n    lib = cdll.LoadLibrary(\'./libstochprodsearch_03.so\')\nelif MY_PLATFORM == "Windows":\n    lib = cdll.LoadLibrary(\'./libstochprodsearch_03.dll\') \nelse:\n    print("Unknow platform ! ")\n    lib = None\n# declare ctypes pointer format for output from C++\nc_int_p = ctypes.POINTER(ctypes.c_int)\n# prepare output from C++ to numpy array of size 5000 \nif lib is not None:\n    lib.sps.restype = ndpointer(dtype=ctypes.c_int, shape=(5000,))\n\ndef sps(arr_in, end_time=6, nb_jobs=4):\n    \'\'\'\n    Stochastic product search ctypes function to link with C++ code\n    \n    arr_in : initial days assigned numpy array\n    end_time : duration of search in seconds\n    nb_jobs : number of threads used for searching\n    \'\'\'\n\n    # cast to integer (security : if needed)\n    arr_in = arr_in.astype(np.int)\n\n    # prepare input for C++ to integer pointer \n    arr_in_p = arr_in.ctypes.data_as(c_int_p)\n    \n    # execute the optimisation product search with inital value arr_in_p\n    arr_best_sps = lib.sps(arr_in_p, c_int(end_time), c_int(nb_jobs))\n    \n    return arr_best_sps\n    #return lib.sps(arr_in_p)\n    \nif __name__ == "__main__":\n    import sys\n    try:\n        csv = sys.argv[1]\n    except:\n        csv = \'submission_100135.53956452094.csv\' \n    try:\n        end_time = int(sys.argv[2])\n    except:\n        end_time= 6\n    try:\n        nb_jobs = int(sys.argv[3])\n    except:\n        nb_jobs = 4\n        \n    submission_test = pd.read_csv(csv, \n                         index_col=\'family_id\')\n    arr_curr = submission_test["assigned_day"].values\n    \n    print("arr_curr : ", arr_curr)\n    # run stochastic product search\n    arr_best = sps(arr_curr, end_time, nb_jobs)\n    print("Days : ", arr_best)\n    # prepare ouput data\n    submission_final = submission_test.copy()\n    submission_final["assigned_day"] = arr_best\n    # FALLBACK : Export res in CSV format (to be read by notebook)\n    submission_final.to_csv(OUTPOUT_FILE_NAME)')
 
 
-# In[21]:
 
 
 get_ipython().run_cell_magic('time', '', 'try:\n    !python stochprodsearch_03.py ../input/santa-2019-for-my-exploration/submission_71447.87946293628_for_sps.csv 6 4\nexcept:\n    print("Module test failed : Try to change csv input file!")')
 
 
-# In[22]:
 
 
 def run_stochprodsearch(arr_best_curr, end_time=6, nb_jobs=4):
@@ -2027,7 +2005,6 @@ def run_stochprodsearch(arr_best_curr, end_time=6, nb_jobs=4):
     return submission_from_sps["assigned_day"].values
 
 
-# In[23]:
 
 
 # show how people choose days : 
@@ -2068,7 +2045,6 @@ for choice in list_choice_last:
 df_day.head()
 
 
-# In[24]:
 
 
 fig = plt.figure(figsize=(12, 22)) 
@@ -2079,7 +2055,6 @@ ax1.set_ylabel("number of days before Christmas [days]");
 ax1.set_title("all choices");
 
 
-# In[25]:
 
 
 fig = plt.figure(figsize=(12, 22)) 
@@ -2102,7 +2077,6 @@ ax3.set_xlabel("max nb people")
 ax3.set_title("last choices");
 
 
-# In[26]:
 
 
 fig = plt.figure(figsize=(12, 6)) 
@@ -2119,7 +2093,6 @@ ax.set_xlabel("number of days before Christmas [days]");
 ax.set_title("Maximum of attendance by days")
 
 
-# In[27]:
 
 
 df_prob_day = pd.DataFrame(df_day["all_choices"])
@@ -2128,13 +2101,11 @@ df_prob_day["prob"] = df_prob_day["prob"] / df_prob_day["prob"].sum()
 df_prob_day["prob"].sum()
 
 
-# In[28]:
 
 
 df_prob_day.head()
 
 
-# In[29]:
 
 
 #df_prob_day["prob"].plot.barh()
@@ -2146,7 +2117,6 @@ ax1.set_ylabel("number of days before Christmas [days]");
 ax1.set_title("Probabilities for each days");
 
 
-# In[30]:
 
 
 def cost_family(n=1, choice=0):
@@ -2178,19 +2148,16 @@ def cost_family(n=1, choice=0):
     return penalty
 
 
-# In[31]:
 
 
 ax = sns.boxplot(x=data["n_people"])
 
 
-# In[32]:
 
 
 ax = sns.boxplot(data)
 
 
-# In[33]:
 
 
 df_fam_cost = pd.DataFrame(index = np.array(range(np.min(data["n_people"]),
@@ -2200,7 +2167,6 @@ df_fam_cost["n"] = df_fam_cost.index
 df_fam_cost
 
 
-# In[34]:
 
 
 df_fam_cost["choice_0"] = df_fam_cost["n"].apply(cost_family, args=(0,))
@@ -2217,7 +2183,6 @@ df_fam_cost["choice_10"] = df_fam_cost["n"].apply(cost_family, args=(10,))
 df_fam_cost
 
 
-# In[35]:
 
 
 fig = plt.figure(figsize=(12, 8))
@@ -2232,7 +2197,6 @@ ax = fig.gca()
 ax.set_xlabel("number of people [-]");
 
 
-# In[36]:
 
 
 fig = plt.figure(figsize=(12, 8))
@@ -2250,7 +2214,6 @@ ax = fig.gca()
 ax.set_xlabel("choice number [-]");
 
 
-# In[37]:
 
 
 def create_df_fam_cost_prob(df_fam_cost, p_min=0.03, p_max=0.1):
@@ -2271,14 +2234,12 @@ def create_df_fam_cost_prob(df_fam_cost, p_min=0.03, p_max=0.1):
     return df_prob  
 
 
-# In[38]:
 
 
 df_prob = create_df_fam_cost_prob(df_fam_cost, p_min=0.01, p_max=1)
 df_prob
 
 
-# In[39]:
 
 
 df_prob
@@ -2288,39 +2249,33 @@ ax = sns.heatmap(df_prob)
 ax.set_ylabel("nb people [-]")
 
 
-# In[40]:
 
 
 # save
 joblib.dump(df_prob, PATH_TO_SAVE_DATA + '/df_prob.pkl')
 
 
-# In[41]:
 
 
 df_prob_fam = create_df_prob_day_fam_optim(df_prob_day, df_prob)
 
 
-# In[42]:
 
 
 df_prob_fam.head()
 
 
-# In[43]:
 
 
 # save
 joblib.dump(df_prob_fam, PATH_SAVE_PROB_FAM)
 
 
-# In[44]:
 
 
 PATH_SAVE_PROB_FAM
 
 
-# In[45]:
 
 
 df_prob_fam = joblib.load(PATH_SAVE_PROB_FAM)
@@ -2330,7 +2285,6 @@ arr_prob = np.array(df_prob)
 arr_prob_fam = np.array(df_prob_fam.astype("float"))
 
 
-# In[46]:
 
 
 #SAVE_POP = 'RANDOM_MUT'
@@ -2339,7 +2293,6 @@ arr_prob_fam = np.array(df_prob_fam.astype("float"))
 #R_FIRST_RANDOM_MUT = 0.2 # RATIO of mutation for first population in random mut
 
 
-# In[47]:
 
 
 if SAVE_POP == 'RANDOM_MUT':
@@ -2383,13 +2336,11 @@ if SAVE_POP == 'RANDOM_MUT':
     df_pop
 
 
-# In[48]:
 
 
 #SAVE_POP = 'RANDOM_CHOICE'
 
 
-# In[49]:
 
 
 if SAVE_POP == 'RANDOM_CHOICE':
@@ -2432,13 +2383,11 @@ if SAVE_POP == 'RANDOM_CHOICE':
     df_pop
 
 
-# In[50]:
 
 
 #SAVE_POP = 'RANDOM_PATH' 
 
 
-# In[51]:
 
 
 if SAVE_POP == 'RANDOM_PATH':
@@ -2472,13 +2421,11 @@ if SAVE_POP == 'RANDOM_PATH':
     df_pop
 
 
-# In[52]:
 
 
 #SAVE_POP = '10R'
 
 
-# In[53]:
 
 
 # OPTIM VERSION 
@@ -2546,7 +2493,6 @@ if SAVE_POP == '10R':
     df_des_choices_0
 
 
-# In[54]:
 
 
 if SAVE_POP == "10R": 
@@ -2573,7 +2519,6 @@ if SAVE_POP == "10R":
     joblib.dump(df_pop, path_df_pop_saved, compress=True)
 
 
-# In[55]:
 
 
 if SAVE_POP == "RANDOM_PATH": 
@@ -2592,7 +2537,6 @@ if SAVE_POP == "RANDOM_PATH":
     print(path_df_pop_saved)
 
 
-# In[56]:
 
 
 if SAVE_POP == "RANDOM_CHOICE": 
@@ -2613,7 +2557,6 @@ if SAVE_POP == "RANDOM_CHOICE":
     print(path_df_pop_saved)
 
 
-# In[57]:
 
 
 if SAVE_POP == "RANDOM_MUT": 
@@ -2636,7 +2579,6 @@ if SAVE_POP == "RANDOM_MUT":
     print(path_df_pop_saved)
 
 
-# In[58]:
 
 
 df_range = create_seek_ranges(nb_first_seed=NB_FIRST_SEED)
@@ -2644,7 +2586,6 @@ arr_range = df_range.values.astype(np.int64) # f(num range, families)
 df_range
 
 
-# In[59]:
 
 
 df_prob_fam = joblib.load(PATH_SAVE_PROB_FAM)
@@ -2670,7 +2611,6 @@ _, df_des_choices_0, _ = pop_choices_info(df_pop)
 df_des_choices_0
 
 
-# In[60]:
 
 
 # create cost dataFrame for all population
@@ -2683,13 +2623,11 @@ df_cost.boxplot()
 df_cost.sort_values(by="cost").head(10)
 
 
-# In[61]:
 
 
 POW_SELECTION = 0.3
 
 
-# In[62]:
 
 
 # Prob for indiv = inverse rank * POW_SELECTION
@@ -2698,14 +2636,12 @@ plt.plot(np.sort(arr_select_prob))
 plt.title("Selection probabilities");
 
 
-# In[63]:
 
 
 arr_pop = np.array(df_pop) # df_pop = f(indiv., families)
 arr_cost = df_cost["cost"].values
 
 
-# In[64]:
 
 
 ## HYPERPARAMETERS
@@ -2906,20 +2842,17 @@ ax.set_xlabel("epochs [-]")
 ax.set_ylabel("cost [$]")
 
 
-# In[65]:
 
 
 arr_cost.min()
 
 
-# In[66]:
 
 
 print("How many same indiv. into population at the end : ")
 find_max_same_indiv(df_pop)
 
 
-# In[67]:
 
 
 print("Pop Info :")
@@ -2927,7 +2860,6 @@ df_choices, df_des_choices, std_mean = pop_choices_info(df_pop)
 df_des_choices
 
 
-# In[68]:
 
 
 fig = plt.figure(figsize=(12, 6))
@@ -2938,7 +2870,6 @@ ax.set_ylabel("Cost $")
 ax.set_xlabel('assignement n#');
 
 
-# In[69]:
 
 
 # POP
@@ -3005,7 +2936,6 @@ joblib.dump(list_best_cost,
 
 
 
-# In[70]:
 
 
 BEST_COST = df_cost.sort_values(by="cost")["cost"].iloc[0]
@@ -3057,7 +2987,6 @@ df_res.to_csv(PATH_TO_SAVE_DATA +               '/res_pop{}_fs{}_rfm{}_dc{}_rm{}
 df_res
 
 
-# In[71]:
 
 
 df_pop_0 = joblib.load(PATH_DF_POP)
@@ -3066,25 +2995,21 @@ df_choices_0, df_des_choices_0, std_mean_0 = pop_choices_info(df_pop_0)
 df_des_choices_0
 
 
-# In[72]:
 
 
 df_choices_0.loc[0].value_counts()
 
 
-# In[73]:
 
 
 best = df_pop.loc[df_cost["cost"].idxmin()].values
 
 
-# In[74]:
 
 
 cost_function_optim(best)
 
 
-# In[75]:
 
 
 penalty, accounting_cost , daily_occupancy = cost_function(best, flag_prompt=True)
@@ -3092,13 +3017,11 @@ df_daily = pd.DataFrame(index=daily_occupancy.keys(), data=list(daily_occupancy.
              columns=['nb_people'])
 
 
-# In[76]:
 
 
 df_daily.describe()
 
 
-# In[77]:
 
 
 submission_opti = pd.read_csv(PATH_TO_EXPLORE_DATA + '/submission_68888.04.csv', 
@@ -3113,7 +3036,6 @@ df_daily["nb_opti"] = df_daily_opti['nb_people']
 df_daily["delta_nb_opti"] = df_daily["nb_opti"] - df_daily['nb_people']
 
 
-# In[78]:
 
 
 fig = plt.figure(figsize=(14, 6))
@@ -3126,7 +3048,6 @@ ax.set_xlabel("Days before Christmas")
 ax.set_ylabel("nb people");
 
 
-# In[79]:
 
 
 arr_choice_best = fun_find_choices_sub(best)
@@ -3139,7 +3060,6 @@ plt.plot(arr_choice_opti, '.', label="opti")
 plt.legend(loc='best');
 
 
-# In[80]:
 
 
 fig = plt.figure(figsize=(14, 8))
@@ -3147,7 +3067,6 @@ plt.title("delta choices : best-opti")
 plt.plot(arr_choice_best-arr_choice_opti, '.')
 
 
-# In[81]:
 
 
 arr_choices = fun_find_choices_sub(best)
@@ -3158,19 +3077,16 @@ df_best["choice_opti"] = arr_choice_opti.astype(np.int64)
 df_best.describe()
 
 
-# In[82]:
 
 
 df_best["choice"].value_counts()
 
 
-# In[83]:
 
 
 df_best["choice_opti"].value_counts()
 
 
-# In[84]:
 
 
 fig = plt.figure(figsize=(14, 6)) 
@@ -3180,37 +3096,31 @@ ax = sns.countplot(y="value", hue="variable",
 ax.set_ylabel("choice #");
 
 
-# In[85]:
 
 
 df_des_choices
 
 
-# In[86]:
 
 
 df_des_choices.loc["std"].max()
 
 
-# In[87]:
 
 
 plot_delta_choice_pop(df_pop, df_des_choices)
 
 
-# In[88]:
 
 
 plot_std_choice_pop(df_pop, df_des_choices)
 
 
-# In[89]:
 
 
 sns.boxplot(df_des_choices.loc["std"])
 
 
-# In[90]:
 
 
 sub_my_best = pd.read_csv(PATH_TO_EXPLORE_DATA +                           '/submission_71447.87946293628_for_sps.csv', 
@@ -3219,7 +3129,6 @@ sub_opti = pd.read_csv(PATH_TO_EXPLORE_DATA +                           '/submis
                    index_col='family_id')
 
 
-# In[91]:
 
 
 
@@ -3233,7 +3142,6 @@ plt.plot(arr_choice_opti, '.', label="opti")
 plt.legend(loc='upper left');
 
 
-# In[92]:
 
 
 fig = plt.figure(figsize=(12, 8))
@@ -3241,7 +3149,6 @@ plt.title("delta choices : best-opti")
 plt.plot(arr_choice_best-arr_choice_opti, '.')
 
 
-# In[93]:
 
 
 penalty, accounting_cost , daily_occupancy =     cost_function(sub_my_best["assigned_day"].values, flag_prompt=True)
@@ -3261,13 +3168,11 @@ df_daily["nb_opti"] = df_daily_opti['nb_people']
 df_daily["delta_nb_opti"] = df_daily["nb_opti"] - df_daily['nb_people']
 
 
-# In[94]:
 
 
 df_daily
 
 
-# In[95]:
 
 
 fig = plt.figure(figsize=(12, 6))
@@ -3280,13 +3185,11 @@ ax.set_xlabel("Days before Christmas")
 ax.set_ylabel("nb people")
 
 
-# In[96]:
 
 
 df_daily["delta_nb_opti"].plot()
 
 
-# In[97]:
 
 
 arr_choices = fun_find_choices_sub(sub_my_best["assigned_day"].values)
@@ -3297,19 +3200,16 @@ df_best["choice_opti"] = arr_choice_opti.astype(np.int64)
 df_best.describe()
 
 
-# In[98]:
 
 
 df_best["choice"].value_counts()
 
 
-# In[99]:
 
 
 df_best["choice_opti"].value_counts()
 
 
-# In[100]:
 
 
 fig = plt.figure(figsize=(14, 6)) 
@@ -3319,7 +3219,6 @@ ax = sns.countplot(y="value", hue="variable",
 ax.set_ylabel("choice #");
 
 
-# In[101]:
 
 
 list_best_cost200_1 = joblib.load(PATH_TO_EXPLORE_DATA + '/' +
@@ -3345,7 +3244,6 @@ ax.set_ylabel("cost [$]")
 ax.set_title("Population size impact");
 
 
-# In[102]:
 
 
 fig = plt.figure(figsize=(12, 8))
@@ -3363,7 +3261,6 @@ ax.set_ylabel("cost [$]")
 ax.set_title("Population size impact");
 
 
-# In[103]:
 
 
 fig = plt.figure(figsize=(12, 8))
@@ -3382,7 +3279,6 @@ ax.set_title("Population size impact");
 ax.set_xlim([0,25000])
 
 
-# In[104]:
 
 
 path_RPM1 = 'list_best_cost1000_fs10_rfm0.05_dc2_rm0.1_nk_20_gen100000_s99225.99788819549.pkl'
@@ -3403,7 +3299,6 @@ ax.set_title("R_POP_MUT impact");
 ax.set_xlim([0 ,50000]);
 
 
-# In[105]:
 
 
 path_RM1 = 'list_best_cost1000_fs10_rfm0.05_dc2_rm0.1_nk_20_gen100000_s99225.99788819549.pkl'
@@ -3424,7 +3319,6 @@ ax.set_title("R_MUT impact");
 ax.set_xlim([0 ,50000]);
 
 
-# In[106]:
 
 
 path_NB1 = 'list_best_cost1000_fs10_rfm0.05_dc2_rm0.1_nk_20_gen200000_s89924.27707458043.pkl'
@@ -3447,7 +3341,6 @@ path_B2_5 = 'list_best_cost1000_fs10_rfm0.05_dc2_rm0.1_nk_20_gen100000_s86868.67
 path_B2_6 = 'list_best_cost1000_fs10_rfm0.05_dc2_rm0.1_nk_20_gen100000_s86508.96967131883.pkl'
 
 
-# In[107]:
 
 
 list_best_cost_NB1 = joblib.load(PATH_TO_EXPLORE_DATA + '/' + path_NB1)
@@ -3490,7 +3383,6 @@ ax.set_title("Simple seq. Boost impact");
 #ax.set_xlim([0 ,50000]);
 
 
-# In[108]:
 
 
 fig = plt.figure(figsize=(12, 8))
@@ -3506,7 +3398,6 @@ ax.set_title("Simple seq. Boost impact [Start Zoom.]");
 ax.set_xlim([0 ,50000]);
 
 
-# In[109]:
 
 
 fig = plt.figure(figsize=(12, 8))
@@ -3523,7 +3414,6 @@ ax.set_xlim([280000, 600000]);
 ax.set_ylim([80000, 100000])
 
 
-# In[110]:
 
 
 path_cr4_1 = 'list_best_cost1000_fs10_rfm0.05_dc2_rm0.1_nk_20_gen200000_s84928.91135928089.pkl'
@@ -3534,7 +3424,6 @@ list_best_cost_cr4 = np.concatenate((list_best_cost_cr4_1,
                                      list_best_cost_cr4_2))
 
 
-# In[111]:
 
 
 fig = plt.figure(figsize=(12, 8))
@@ -3548,7 +3437,6 @@ ax.set_title("CHOICE_RANGE_MAX impact");
 ax.set_xlim([0 ,50000]);
 
 
-# In[112]:
 
 
 fig = plt.figure(figsize=(12, 8))
@@ -3563,7 +3451,6 @@ ax.set_xlim([15000, 50000]);
 ax.set_ylim([80000, 120000]);
 
 
-# In[113]:
 
 
 fig = plt.figure(figsize=(12, 8))
@@ -3578,19 +3465,16 @@ ax.set_title("CHOICE_RANGE_MAX impact [Zoom end.]");
 ax.set_ylim([80000, 100000]);
 
 
-# In[ ]:
 
 
 
 
 
-# In[114]:
 
 
 submission_final
 
 
-# In[ ]:
 
 
 

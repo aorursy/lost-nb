@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import numpy as np
@@ -37,32 +35,27 @@ from tqdm import tqdm_notebook
 import os
 
 
-# In[3]:
 
 
 base_path = "../input/"
 
 
-# In[4]:
 
 
 data_df = pd.read_csv(base_path+'train.csv')
 data_df.head()
 
 
-# In[5]:
 
 
 sample_image = cv2.imread("../input/train/train/008bd3d84a1145e154409c124de7cee9.jpg")
 
 
-# In[6]:
 
 
 plt.imshow(sample_image)
 
 
-# In[7]:
 
 
 X=[]
@@ -78,14 +71,12 @@ y = np.array(y).reshape(-1,1)
 X.shape, y.shape
 
 
-# In[8]:
 
 
 epochs = 1000
 batch_size = 64
 
 
-# In[9]:
 
 
 model_vgg16 = VGG16(include_top = False,
@@ -93,14 +84,12 @@ model_vgg16 = VGG16(include_top = False,
                    input_shape = (32,32,3,))
 
 
-# In[10]:
 
 
 #model_vgg16.trainable = False
 model_vgg16.summary()
 
 
-# In[11]:
 
 
 model = Sequential()
@@ -113,7 +102,6 @@ model.add(Dense(1))
 model.add(Activation('sigmoid'))
 
 
-# In[12]:
 
 
 model.compile(loss='binary_crossentropy',
@@ -121,7 +109,6 @@ model.compile(loss='binary_crossentropy',
               metrics=['accuracy'])
 
 
-# In[13]:
 
 
 history = model.fit(X, y,
@@ -132,13 +119,11 @@ history = model.fit(X, y,
                    verbose=2)
 
 
-# In[14]:
 
 
 model.save('model_cactus.hdf5')
 
 
-# In[15]:
 
 
 plt.plot(history.history['loss'])
@@ -149,7 +134,6 @@ plt.ylabel("Loss")
 plt.legend(["train", "validation"])
 
 
-# In[16]:
 
 
 plt.plot(history.history['acc'])
@@ -160,13 +144,11 @@ plt.ylabel("Accuracy")
 plt.legend(["train", "validation"])
 
 
-# In[17]:
 
 
 result_df = pd.DataFrame(columns=['id', 'has_cactus'])
 
 
-# In[18]:
 
 
 result = {}
@@ -176,14 +158,12 @@ for filepath in tqdm_notebook(os.listdir(base_path+"test/test/")):
     result[filepath] = 1 if model.predict(image.reshape(-1, 32, 32, 3)) > 0.7 else 0
 
 
-# In[19]:
 
 
 for i, val in enumerate(result.items()):
     result_df.loc[i] = val
 
 
-# In[20]:
 
 
 result_df.to_csv("submission.csv", index = False)

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -11,7 +10,6 @@ import seaborn as sns
 from datetime import datetime
 
 
-# In[2]:
 
 
 train_csv = pd.read_csv('../input/train.csv')
@@ -19,13 +17,11 @@ test_csv = pd.read_csv('../input/test.csv')
 sub = pd.read_csv('../input/sampleSubmission.csv')
 
 
-# In[3]:
 
 
 train_csv.head(5)
 
 
-# In[4]:
 
 
 # datetime 변수를 여러개로 나누어 보자.
@@ -35,13 +31,11 @@ train_csv['weekday'] = train_csv.date.apply(lambda dateString : datetime.strptim
 train_csv['month'] = train_csv.date.apply(lambda dateString : datetime.strptime(dateString, '%Y-%m-%d').month)
 
 
-# In[5]:
 
 
 train_csv.describe()
 
 
-# In[6]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -51,14 +45,12 @@ sns.distplot(train_csv['count'].apply(lambda x: np.log1p(x)),ax=axes[1])
 plt.show()
 
 
-# In[7]:
 
 
 sns.boxplot(data = train_csv,y='count',orient='v')
 plt.show()
 
 
-# In[8]:
 
 
 fig,axes = plt.subplots(ncols=2 ,nrows=2)
@@ -73,14 +65,12 @@ fig1.set_size_inches(15,10)
 sns.boxplot(data=train_csv,x='hour',y='count')
 
 
-# In[9]:
 
 
 corrs = train_csv[['temp','atemp','windspeed','humidity','count']].corr()
 sns.heatmap(corrs,annot=True,vmax=3)
 
 
-# In[ ]:
 
 
 fig,axes = plt.subplots(ncols=2,nrows=2)
@@ -92,7 +82,6 @@ sns.regplot(data=train_csv,x='windspeed',y='count',ax=axes[1][1])
 plt.show()
 
 
-# In[ ]:
 
 
 #Remove Outlier
@@ -101,7 +90,6 @@ print("Oulier포함:",train_csv.shape)
 print("Outlier제거:",train_csv_Outliers.shape)
 
 
-# In[ ]:
 
 
 fig,axes = plt.subplots(nrows=2,ncols=2)
@@ -113,7 +101,6 @@ sns.distplot(np.log1p(train_csv['count']),ax=axes[1][1])
 plt.show()
 
 
-# In[ ]:
 
 
 fig,axes = plt.subplots()
@@ -123,20 +110,17 @@ corrs = train_csv[['season', 'holiday', 'workingday', 'weather','date',
 sns.heatmap(corrs,annot=True)
 
 
-# In[ ]:
 
 
 corrs.iloc[:,-1]
 
 
-# In[ ]:
 
 
 Train = pd.read_csv('../input/train.csv')
 Test = pd.read_csv('../input/test.csv')
 
 
-# In[ ]:
 
 
 # datetime 변수를 여러개로 나누어 보자.
@@ -146,7 +130,6 @@ Train['weekday'] = Train.date.apply(lambda dateString : datetime.strptime(dateSt
 Train['month'] = Train.date.apply(lambda dateString : datetime.strptime(dateString, '%Y-%m-%d').month)
 
 
-# In[ ]:
 
 
 # datetime 변수를 여러개로 나누어 보자.
@@ -156,7 +139,6 @@ Test['weekday'] = Test.date.apply(lambda dateString : datetime.strptime(dateStri
 Test['month'] = Test.date.apply(lambda dateString : datetime.strptime(dateString, '%Y-%m-%d').month)
 
 
-# In[ ]:
 
 
 season_dm = pd.get_dummies(Train['season'],prefix='season')
@@ -182,32 +164,27 @@ TestX = TestX.join(weekday_dm1)
 TestX = TestX.join(month_dm1)
 
 
-# In[ ]:
 
 
 print(TestX.shape)
 print(InputX.)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

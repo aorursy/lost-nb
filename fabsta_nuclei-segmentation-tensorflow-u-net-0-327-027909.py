@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # Import necessary modules and set global constants and variables. 
@@ -51,7 +50,6 @@ print('TRAIN_DIR = {}'.format(TRAIN_DIR))
 print('TEST_DIR = {}'.format(TEST_DIR))
 
 
-# In[ ]:
 
 
 # Collection of methods for data operations. Implemented are functions to read  
@@ -151,7 +149,6 @@ def load_raw_data(image_size=(IMG_HEIGHT, IMG_WIDTH)):
     
 
 
-# In[ ]:
 
 
 # Basic properties of images/masks. 
@@ -164,7 +161,6 @@ print('test_df:')
 print(test_df.describe())
 
 
-# In[ ]:
 
 
 # Counting unique image shapes.
@@ -172,7 +168,6 @@ df = pd.DataFrame([[x] for x in zip(train_df['img_height'], train_df['img_width'
 df[0].value_counts()
 
 
-# In[ ]:
 
 
 # Overview of train images/masks. There is a lot of variation concerning
@@ -188,7 +183,6 @@ for i in range(4):
         axs[i,j*2+1].set_title('{}. mask'.format(n))       
 
 
-# In[ ]:
 
 
 # Read images/masks from files and resize them. Each image and mask 
@@ -196,7 +190,6 @@ for i in range(4):
 x_train, y_train, x_test = load_raw_data()
 
 
-# In[ ]:
 
 
 # Study the pixel intensity. On average the red, green and blue channels have similar
@@ -217,7 +210,6 @@ color_df['images'] = ['train']*len(x_train) + ['test']*len(x_test)
 sns.pairplot(color_df, hue = 'images');
 
 
-# In[ ]:
 
 
 # Collection of methods for basic data manipulation like normalizing, inverting, 
@@ -308,7 +300,6 @@ def preprocess_raw_data(x_train, y_train, x_test, grayscale=False, invert=False)
     
 
 
-# In[ ]:
 
 
 # Normalize all images and masks. There is the possibility to transform images 
@@ -317,7 +308,6 @@ def preprocess_raw_data(x_train, y_train, x_test, grayscale=False, invert=False)
 x_train, y_train, x_test = preprocess_raw_data(x_train, y_train, x_test, invert=True)
 
 
-# In[ ]:
 
 
 color_df = img_intensity_pairplot(np.concatenate([x_train, x_test]))
@@ -325,7 +315,6 @@ color_df['images'] = ['train']*len(x_train) + ['test']*len(x_test)
 sns.pairplot(color_df, hue = 'images');
 
 
-# In[ ]:
 
 
 # Check the image transformation procedure (resizing, normalizing, inverting) 
@@ -347,7 +336,6 @@ n = 585 # np.random.randint(0, len(x_train))
 img_comparison_plot(n)
 
 
-# In[ ]:
 
 
 # Generate new images/masks via transformations applied on the original 
@@ -370,7 +358,6 @@ n = 166 # np.random.randint(len(x_train))
 plot_generated_image_mask(n)
 
 
-# In[ ]:
 
 
 """ Collection of methods to compute the score.
@@ -600,7 +587,6 @@ def plot_score_summary(y_true, y_pred):
     axs[1,2].imshow(img, cmap='gray');
 
 
-# In[ ]:
 
 
 # Check the score metric for one sample. The predicted mask is simulated
@@ -618,7 +604,6 @@ pred_mask = np.pad(pred_mask, ((0, offset), (0, offset)), mode="constant")
 plot_score_summary(true_mask, pred_mask) 
 
 
-# In[ ]:
 
 
 # Study how many objects in the masks can be identified. This is a limiting factor
@@ -640,7 +625,6 @@ sum_df = pd.DataFrame(summary, columns=(['true_objects', 'identified_objects', '
 sum_df.describe()
 
 
-# In[ ]:
 
 
 class NeuralNetwork():
@@ -1225,7 +1209,6 @@ class NeuralNetwork():
  
 
 
-# In[ ]:
 
 
 # In case you want to reload and preprocess the raw data.
@@ -1234,7 +1217,6 @@ if False:
     x_train, y_train, x_test = preprocess_raw_data(x_train, y_train, x_test, grayscale=False)
 
 
-# In[ ]:
 
 
 # Create and start training of a new neural network, or continue training of
@@ -1305,7 +1287,6 @@ for i,(train_index, valid_index) in enumerate(kfold.split(x_train)):
 print('Total running time: ', datetime.datetime.now() - start)
 
 
-# In[ ]:
 
 
 # Start TensorBoard visualization. All summaries are written into the
@@ -1314,7 +1295,6 @@ if False:
     get_ipython().system('tensorboard --logdir=./logs')
 
 
-# In[ ]:
 
 
 # Show intermediate losses and scores during the training session.
@@ -1348,7 +1328,6 @@ plt.ylabel('score')
 plt.xlabel('steps');
 
 
-# In[ ]:
 
 
 # Split training and validation data in the same way 
@@ -1364,7 +1343,6 @@ if True:
         break
 
 
-# In[ ]:
 
 
 # Summary of scores for training and validations sets. Note that the score is
@@ -1415,7 +1393,6 @@ if True:
 sess.close()
 
 
-# In[ ]:
 
 
 # Check one sample prediction in more detail.
@@ -1441,7 +1418,6 @@ axs[2].set_title('{}.) predicted mask'.format(n));
 plot_score_summary(y_true, y_pred)
 
 
-# In[ ]:
 
 
 # Collection of methods for run length encoding. 
@@ -1479,7 +1455,6 @@ def rle_to_mask(rle, img_shape):
         
 
 
-# In[ ]:
 
 
 # Load neural network, make prediction for test masks, resize predicted
@@ -1520,7 +1495,6 @@ print('test_pred_ids.shape = {}'.format(np.array(test_pred_ids).shape))
 print('test_pred_rle.shape = {}'.format(np.array(test_pred_rle).shape))
 
 
-# In[ ]:
 
 
 # Inspect a test prediction and check run length encoding.
@@ -1547,7 +1521,6 @@ axs[1,2].imshow(mask_rec[:,:], cm.gray);
 axs[1,2].set_title('{}.) final mask recovered from run length encoding'.format(n));
 
 
-# In[ ]:
 
 
 # Create submission file
@@ -1558,7 +1531,6 @@ sub.to_csv('sub-dsbowl2018-1.csv', index=False)
 sub.head()
 
 
-# In[ ]:
 
 
 

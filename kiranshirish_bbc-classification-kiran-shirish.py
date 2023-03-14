@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 TRAIN_PATH = os.path.join("../input/", "BBC News Train.csv")
@@ -31,7 +29,6 @@ TRAIN_PATH = os.path.join("../input/", "BBC News Train.csv")
 df = pd.read_csv(TRAIN_PATH)
 
 
-# In[3]:
 
 
 # List first 5 entries in dataframe to make sure it was loaded properly
@@ -40,7 +37,6 @@ df = pd.read_csv(TRAIN_PATH)
 df.head()
 
 
-# In[4]:
 
 
 # Associate Category names with numerical index and save it in new column category_id
@@ -50,20 +46,17 @@ df['category_id'] = df['Category'].factorize()[0]
 df['category_id'][0:10]
 
 
-# In[5]:
 
 
 # Create a new pandas dataframe "category_id_df", which only has unique Categories, also sorting this list in order of category_id values
 category_id_df = df[['Category', 'category_id']].drop_duplicates().sort_values('category_id')
 
 
-# In[6]:
 
 
 category_id_df
 
 
-# In[7]:
 
 
 # Create a dictionary ( python datastructure - like a lookup table) that 
@@ -72,34 +65,29 @@ category_to_id = dict(category_id_df.values)
 id_to_category = dict(category_id_df[['category_id', 'Category']].values)
 
 
-# In[8]:
 
 
 id_to_category
 
 
-# In[9]:
 
 
 # Pick 5 random samples from the dataframe
 df.sample(5, random_state=0)
 
 
-# In[10]:
 
 
 # Group the dataframe by categories and count items ( number of news articles) in each category
 df.groupby('Category').category_id.count()
 
 
-# In[11]:
 
 
 #Plot the distribution of news articles by category
 df.groupby('Category').category_id.count().plot.bar(ylim=0)
 
 
-# In[12]:
 
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -113,21 +101,18 @@ features = tfidf.fit_transform(df.Text).toarray() # Remaps the words in the 1490
 labels = df.category_id                           # represents the category of each of the 1490 articles
 
 
-# In[13]:
 
 
 #Get a feel of the features identified by tfidf
 features.shape # How many features are there ? 
 
 
-# In[14]:
 
 
 # Remember the dictionary created to map category names to a number ? 
 category_to_id.items()
 
 
-# In[15]:
 
 
 # The sorted function Converts dictionary items into a (sorted) list. 
@@ -135,7 +120,6 @@ category_to_id.items()
 sorted(category_to_id.items())
 
 
-# In[16]:
 
 
 # Use chi-square analysis to find corelation between features (importantce of words) and labels(news category) 
@@ -155,19 +139,16 @@ for Category, category_id in sorted(category_to_id.items()):
   print("  . Most correlated bigrams:\n       . {}".format('\n       . '.join(bigrams[-N:]))) # Print 3 bigrams with highest Chi squared stat
 
 
-# In[17]:
 
 
 features_chi2
 
 
-# In[18]:
 
 
 features_chi2
 
 
-# In[19]:
 
 
 from sklearn.manifold import TSNE
@@ -179,20 +160,17 @@ indices = np.random.choice(range(len(features)), size=SAMPLE_SIZE, replace=False
 projected_features = TSNE(n_components=2, random_state=0).fit_transform(features[indices]) # Array of all projected features of 30% of Randomly chosen samples 
 
 
-# In[20]:
 
 
 projected_features.shape
 
 
-# In[21]:
 
 
 my_id = 0 # Select a category_id
 projected_features[(labels[indices] == my_id).values]
 
 
-# In[22]:
 
 
 colors = ['pink', 'green', 'midnightblue', 'orange', 'darkgrey']
@@ -206,13 +184,11 @@ plt.title("tf-idf feature vector for each article, projected on 2 dimensions.",
 plt.legend()
 
 
-# In[23]:
 
 
 features.shape
 
 
-# In[24]:
 
 
 from sklearn.linear_model import LogisticRegression
@@ -229,7 +205,6 @@ models = [
 ]
 
 
-# In[25]:
 
 
 CV = 5  # Cross Validate with 5 different folds of 20% data ( 80-20 split with 5 folds )
@@ -239,7 +214,6 @@ cv_df = pd.DataFrame(index=range(CV * len(models)))
 entries = [] # Initially all entries are empty
 
 
-# In[26]:
 
 
 #For each Algorithm 
@@ -252,14 +226,12 @@ for model in models:
     entries.append((model_name, fold_idx, accuracy))
 
 
-# In[27]:
 
 
 # Store the entries into the results dataframe and name its columns    
 cv_df = pd.DataFrame(entries, columns=['model_name', 'fold_idx', 'accuracy'])
 
 
-# In[28]:
 
 
 import seaborn as sns
@@ -269,20 +241,17 @@ sns.stripplot(x='model_name', y='accuracy', data=cv_df,
               size=8, jitter=True, edgecolor="gray", linewidth=2)
 
 
-# In[29]:
 
 
 # Mean accuracy of each algorithm
 cv_df.groupby('model_name').accuracy.mean()
 
 
-# In[30]:
 
 
 cv_df
 
 
-# In[31]:
 
 
 from sklearn.model_selection import train_test_split
@@ -300,7 +269,6 @@ y_pred_proba = model.predict_proba(X_test)
 y_pred = model.predict(X_test)
 
 
-# In[32]:
 
 
 from sklearn.metrics import confusion_matrix
@@ -313,7 +281,6 @@ plt.ylabel('Actual')
 plt.xlabel('Predicted')
 
 
-# In[33]:
 
 
 from IPython.display import display
@@ -326,20 +293,17 @@ for predicted in category_id_df.category_id:
       print('')
 
 
-# In[34]:
 
 
 model.fit(features, labels)
 
 
-# In[35]:
 
 
 # model.coef_ contains the importance of each feature for each category
 model.coef_
 
 
-# In[36]:
 
 
 from sklearn.feature_selection import chi2
@@ -355,7 +319,6 @@ for Category, category_id in sorted(category_to_id.items()):
   print("  . Top bigrams:\n       . {}".format('\n       . '.join(bigrams)))
 
 
-# In[37]:
 
 
 texts = ["Hooli stock price soared after a dip in PiedPiper revenue growth.",
@@ -371,14 +334,12 @@ for text, predicted in zip(texts, predictions):
   print("")
 
 
-# In[38]:
 
 
 import os
 print(os.listdir("../input/"))
 
 
-# In[39]:
 
 
 TEST_PATH = os.path.join("../input/", "BBC News Test.csv")
@@ -387,7 +348,6 @@ TEST_PATH = os.path.join("../input/", "BBC News Test.csv")
 test_df = pd.read_csv(TEST_PATH)
 
 
-# In[40]:
 
 
 test_features = tfidf.transform(test_df.Text.tolist())
@@ -397,7 +357,6 @@ Y_pred = model.predict(test_features)
 #Y_pred
 
 
-# In[41]:
 
 
 # Since all predictions are in terms of "Category IDs (numbers)", need to convert back to Category name
@@ -406,13 +365,11 @@ for cat_id in Y_pred :
     Y_pred_name.append(id_to_category[cat_id])
 
 
-# In[42]:
 
 
 Y_pred_name
 
 
-# In[43]:
 
 
 #Create Submission Dataframe
@@ -422,13 +379,11 @@ submission = pd.DataFrame({
     })
 
 
-# In[44]:
 
 
 submission.head()
 
 
-# In[45]:
 
 
 # Convert submission dataframe to csv 

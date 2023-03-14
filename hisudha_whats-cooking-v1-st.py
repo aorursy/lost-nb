@@ -1,45 +1,38 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
 
 
 # for Python 2: use print only as a function
 from __future__ import print_function
 
 
-# In[3]:
 
 
 import pandas as pd 
 
 
-# In[4]:
 
 
 train = pd.read_json('../input/train.json')
 test = pd.read_json('../input/test.json')
 
 
-# In[5]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 train.shape
 
 
-# In[ ]:
 
 
 test.shape
 
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -48,7 +41,6 @@ import matplotlib.pyplot as plt
 train['cuisine'].value_counts().plot(kind='barh')
 
 
-# In[ ]:
 
 
 import re
@@ -64,7 +56,6 @@ print(no_of_ingredients)
 print(uniq_ingredients)
 
 
-# In[ ]:
 
 
 word_split = re.compile('[,. ]+')
@@ -80,7 +71,6 @@ print(no_of_ingredients_words)
 print(uniq_ingredients_words)
 
 
-# In[ ]:
 
 
 from collections import Counter
@@ -157,7 +147,6 @@ plt.show()
 fig.savefig('rank4.png')
 
 
-# In[ ]:
 
 
 list_ingredients = np.unique(common_ingredients.values.ravel())
@@ -173,7 +162,6 @@ for ingredient, ax_idx in zip(list_ingredients, range(25)):
 fig.savefig('ingredient_occur.plot.png')
 
 
-# In[ ]:
 
 
 from text_unidecode import unidecode
@@ -185,7 +173,6 @@ def xform_string(str_list):
     ])
 
 
-# In[ ]:
 
 
 # Import train_test_split
@@ -208,27 +195,23 @@ print (y_test.shape[0])
 X_train.shape
 
 
-# In[ ]:
 
 
 X_test.shape
 #X_test.head
 
 
-# In[ ]:
 
 
 y_train.shape
 y_train.head
 
 
-# In[ ]:
 
 
 y_test.shape
 
 
-# In[ ]:
 
 
 from sklearn.feature_extraction.text import CountVectorizer
@@ -246,7 +229,6 @@ vector.fit(np.concatenate([X_train.ingredients, X_test.ingredients]))
 print ("Total No. of features:", len(vector.get_feature_names()))
 
 
-# In[ ]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -265,7 +247,6 @@ clf_A = RandomForestClassifier(
 clf_B =  DecisionTreeClassifier(random_state = 42)
 
 
-# In[ ]:
 
 
 from sklearn.pipeline import Pipeline
@@ -294,7 +275,6 @@ benchmark_model_B = Pipeline([
 benchmark_model_B.fit(X_train.ingredients,y_train.cuisine)
 
 
-# In[ ]:
 
 
 #Metrics
@@ -322,7 +302,6 @@ print ("Test Accuracy for Decision Tree  :: ", accuracy_score(y_test, pred_resul
 print ("F-Score on Test for Decision Tree :: ",fbeta_score(y_test, pred_results_B,average=None, beta = 0.5))
 
 
-# In[ ]:
 
 
 #Metrics
@@ -341,7 +320,6 @@ score_B = log_loss(y_test, clf_probs_B)
 print("Log Loss for Decision Tree :: ",score_B)
 
 
-# In[ ]:
 
 
 #Kaggle submission files
@@ -374,7 +352,6 @@ op.to_csv(out_file, columns=["id", "cuisine"], index=False, quoting=3)
 print ("Submission for bench_mark Decision Tree written to", out_file)
 
 
-# In[ ]:
 
 
 # a function that adds new features and the dataframe
@@ -393,7 +370,6 @@ def add_features(df):
     return df
 
 
-# In[ ]:
 
 
 # create the same features in the training data and the new data
@@ -401,31 +377,26 @@ train = add_features(pd.read_json('../input/train.json'))
 new = add_features(pd.read_json('../input/test.json'))
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 train.shape
 
 
-# In[ ]:
 
 
 new.head()
 
 
-# In[ ]:
 
 
 new.shape
 
 
-# In[ ]:
 
 
 # assign X and y
@@ -433,14 +404,12 @@ X = train.ingredients_string
 y = train.cuisine
 
 
-# In[ ]:
 
 
 # X is just an ingredient series
 X.head()
 
 
-# In[ ]:
 
 
 # define the regex pattern for teh purpose of tokenization
@@ -448,7 +417,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 vector = CountVectorizer(token_pattern=r"'([a-z ]+)'")
 
 
-# In[ ]:
 
 
 # import and declare the Multinomial Naive Bayes along with the default parameters
@@ -456,22 +424,17 @@ from sklearn.naive_bayes import MultinomialNB
 mnb = MultinomialNB()
 
 
-# In[ ]:
 
 
 # Assign the Naive Bayes with a pipeline of vectorization
 from sklearn.pipeline import make_pipeline
-pipeline = make_pipeline(vector, mnb)
 
 
-# In[ ]:
 
 
 # explore the pipeline steps
-pipeline.steps
 
 
-# In[ ]:
 
 
 # cross validate the full pipeline
@@ -479,14 +442,11 @@ from sklearn.cross_validation import cross_val_score
 cross_val_score(pipeline, X, y, cv=7, scoring='accuracy').mean()
 
 
-# In[ ]:
 
 
 # pipeline steps are automatically assigned names by make_pipeline
-pipeline.named_steps.keys()
 
 
-# In[ ]:
 
 
 # create a grid of parameters to search (and specify the pipeline step along with the parameter)
@@ -496,7 +456,6 @@ parameters_grid['multinomialnb__alpha'] = [0.5, 1]
 parameters_grid
 
 
-# In[ ]:
 
 
 # pass the pipeline (instead of the model) to GridSearchCV
@@ -504,21 +463,18 @@ from sklearn.grid_search import GridSearchCV
 gridCV = GridSearchCV(pipeline, parameters_grid , cv=7, scoring='accuracy')
 
 
-# In[ ]:
 
 
 # time the grid search
 get_ipython().run_line_magic('time', 'gridCV.fit(X, y)')
 
 
-# In[ ]:
 
 
 # examine the score for each combination of parameters
 gridCV.grid_scores_
 
 
-# In[ ]:
 
 
 # print the single best score and parameters that produced that score
@@ -526,13 +482,11 @@ print(gridCV.best_score_)
 print(gridCV.best_params_)
 
 
-# In[ ]:
 
 
 from sklearn.grid_search import RandomizedSearchCV
 
 
-# In[ ]:
 
 
 # for the continuous parameters, distribution is always prefeered when compared to a list of options
@@ -544,41 +498,35 @@ parameters_grid['multinomialnb__alpha'] = sp.stats.uniform(scale=1)
 parameters_grid
 
 
-# In[ ]:
 
 
 # define a random seed
 np.random.seed(1)
 
 
-# In[ ]:
 
 
 # additional parameters are achieved thru number of searches (n_tier) and random_state
 rdm = RandomizedSearchCV(pipeline, parameters_grid, cv=5, scoring='accuracy', n_iter=5, random_state=1)
 
 
-# In[ ]:
 
 
 # time the randomized search
 get_ipython().run_line_magic('time', 'rdm.fit(X, y)')
 
 
-# In[ ]:
 
 
 rdm.grid_scores_
 
 
-# In[ ]:
 
 
 print(rdm.best_score_)
 print(rdm.best_params_)
 
 
-# In[ ]:
 
 
 # Assign X_new as the ingredients string
@@ -586,14 +534,12 @@ X_new = new.ingredients_string
 X_new
 
 
-# In[ ]:
 
 
 # what is the best model identified by RandomizedSearchCV
 rdm.best_estimator_
 
 
-# In[ ]:
 
 
 # RandomizedSearchCV/GridSearchCV now refits the best model and ready to make predictions for all the dataset
@@ -601,7 +547,6 @@ new_pred_class_rdm = rdm.predict(X_new)
 new_pred_class_rdm
 
 
-# In[ ]:
 
 
 # train_test_split
@@ -623,13 +568,11 @@ print (y_test_new.shape[0])
 X_train_new.shape
 
 
-# In[ ]:
 
 
 X_test_new.ingredients_string
 
 
-# In[ ]:
 
 
 #Metrics
@@ -649,14 +592,12 @@ score_mnb = log_loss(y_test, clf_probs_mnb)
 print("Log Loss for Naive Bayes :: ",score_mnb)
 
 
-# In[ ]:
 
 
 # create a submission file (score: 0.75341)
 pd.DataFrame({'id':new.id, 'cuisine':new_pred_class_rdm}).set_index('id').to_csv('../input/actual1_naive_bayes.csv')
 
 
-# In[ ]:
 
 
 # create a document term matrix using the entire training data
@@ -664,13 +605,11 @@ X_dtm = vector.fit_transform(X)
 X_dtm.shape
 
 
-# In[ ]:
 
 
 type(X_dtm)
 
 
-# In[ ]:
 
 
 # DF of the custom created features
@@ -678,7 +617,6 @@ X_custom = train.loc[:, ['no_ingredients', 'ingredient_len']]
 X_custom.shape
 
 
-# In[ ]:
 
 
 # a sparse matrix from the above DF
@@ -686,7 +624,6 @@ X_custom_sparse = sp.sparse.csr_matrix(X_custom)
 type(X_custom_sparse)
 
 
-# In[ ]:
 
 
 # combine the two sparse matrices
@@ -694,7 +631,6 @@ X_dtm_custom = sp.sparse.hstack([X_dtm, X_custom_sparse])
 X_dtm_custom.shape
 
 
-# In[ ]:
 
 
 # Create a function that takes a DataFrame & returns the custom created features
@@ -702,19 +638,16 @@ def get_custom(df):
     return df.loc[:, ['no_ingredients', 'ingredient_len']]
 
 
-# In[ ]:
 
 
 get_custom(train).head()
 
 
-# In[ ]:
 
 
 from sklearn.preprocessing import FunctionTransformer
 
 
-# In[ ]:
 
 
 # create a stateless transformer from the get_custom function
@@ -722,14 +655,12 @@ get_custom_ft = FunctionTransformer(get_custom, validate=False)
 type(get_custom_ft)
 
 
-# In[ ]:
 
 
 # execute the function using the transform method
 get_custom_ft.transform(train).head()
 
 
-# In[ ]:
 
 
 # create a function that takes DF and returns the ingredients string
@@ -737,7 +668,6 @@ def get_txt(df):
     return df.ingredients_string
 
 
-# In[ ]:
 
 
 # create and test another transformer
@@ -745,13 +675,11 @@ get_txt_ft = FunctionTransformer(get_txt, validate=False)
 get_txt_ft.transform(train).head()
 
 
-# In[ ]:
 
 
 from sklearn.pipeline import make_union
 
 
-# In[ ]:
 
 
 # create a document term matrix using the entire training data
@@ -759,7 +687,6 @@ X_dtm = vector.fit_transform(X)
 X_dtm.shape
 
 
-# In[ ]:
 
 
 # Replicate it as a FeatureUnion by  using transformer
@@ -768,7 +695,6 @@ X_dtm = f_union.fit_transform(X)
 X_dtm.shape
 
 
-# In[ ]:
 
 
 # properly combine the transformers into a FeatureUnion
@@ -777,41 +703,33 @@ X_dtm_custom = f_union.fit_transform(train)
 X_dtm_custom.shape
 
 
-# In[ ]:
 
 
 # is this proper cross validation?
 cross_val_score(mnb, X_dtm_custom, y, cv=5, scoring='accuracy').mean()
 
 
-# In[ ]:
 
 
 # define a pipeline of the FeatureUnion and Naive Bayes
-pipeline = make_pipeline(f_union, mnb)
 
 
-# In[ ]:
 
 
 # do proper cross validate the entire pipeline and pass it the DF
 cross_val_score(pipeline, train, y, cv=5, scoring='accuracy').mean()
 
 
-# In[ ]:
 
 
 # quick rewind to the pipeline I did earlier
 f_union = make_union(make_pipeline(get_txt_ft, vector), get_custom_ft)
-pipeline = make_pipeline(f_union, mnb)
 
 
-# In[ ]:
 
 
 # repicate the pipeline without using the make_union or make_pipeline
 from sklearn.pipeline import Pipeline, FeatureUnion
-pipeline = Pipeline([
     ('featureunion', FeatureUnion([
             ('pipeline', Pipeline([
                     ('functiontransformer', get_txt_ft),
@@ -823,14 +741,11 @@ pipeline = Pipeline([
 ])
 
 
-# In[ ]:
 
 
 # explore the pipeline steps
-pipeline.steps
 
 
-# In[ ]:
 
 
 # define a grid of parameters to search & create the pipeline steps along with the parameters
@@ -841,26 +756,22 @@ parameters_grid['multinomialnb__alpha'] = [0.5, 1]
 parameters_grid
 
 
-# In[ ]:
 
 
 gridCV = GridSearchCV(pipeline, parameters_grid, cv=5, scoring='accuracy')
 
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('time', 'gridCV.fit(train, y)')
 
 
-# In[ ]:
 
 
 print(gridCV.best_score_)
 print(gridCV.best_params_)
 
 
-# In[ ]:
 
 
 # define X and y
@@ -869,7 +780,6 @@ X = train[feature_columns]
 y = train.cuisine
 
 
-# In[ ]:
 
 
 # use KNN with K=800
@@ -877,21 +787,18 @@ from sklearn.neighbors import KNeighborsClassifier
 knn = KNeighborsClassifier(n_neighbors=800)
 
 
-# In[ ]:
 
 
 # train KNN on all of the training data
 knn.fit(X, y)
 
 
-# In[ ]:
 
 
 # create X_new as the custom created features
 X_new = new[feature_columns]
 
 
-# In[ ]:
 
 
 # find predicted probabilities for the new data
@@ -899,35 +806,30 @@ new_pred_proba_knn = knn.predict_proba(X_new)
 new_pred_proba_knn.shape
 
 
-# In[ ]:
 
 
 # display the sample of predicted probabilities
 new_pred_proba_knn[0, :]
 
 
-# In[ ]:
 
 
 # model classes
 zip(knn.classes_, new_pred_proba_knn[0, :])
 
 
-# In[ ]:
 
 
 # the best model earlier found by RandomizedSearchCV
 rdm.best_estimator_
 
 
-# In[ ]:
 
 
 # X_new as the ingredients string
 X_new = new.ingredients_string
 
 
-# In[ ]:
 
 
 # calculate predicted probabilities of class membership for the new data
@@ -935,14 +837,12 @@ new_pred_proba_rdm = rdm.predict_proba(X_new)
 new_pred_proba_rdm.shape
 
 
-# In[ ]:
 
 
 # sampel of predicted probabilities
 new_pred_proba_rdm[0, :]
 
 
-# In[ ]:
 
 
 # calculate the mean of the predicted probabilities for all rows
@@ -950,7 +850,6 @@ new_pred_proba = pd.DataFrame((new_pred_proba_knn + new_pred_proba_rdm) / 2, col
 new_pred_proba.head()
 
 
-# In[ ]:
 
 
 # find the field with the highest predicted probability
@@ -958,7 +857,6 @@ new_pred_proba_class = new_pred_proba.apply(np.argmax, axis=1)
 new_pred_proba_class.head()
 
 
-# In[ ]:
 
 
 # create a submission file

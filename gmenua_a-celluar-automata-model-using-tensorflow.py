@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[7]:
 
 
 import tensorflow as tf
@@ -31,7 +30,6 @@ valid_tasks = {task.stem: json.load(task.open())
                for task in valid_path.iterdir()}
 
 
-# In[9]:
 
 
 cmap = colors.ListedColormap(
@@ -82,7 +80,6 @@ for sample in task:
     plot_sample(sample)
 
 
-# In[10]:
 
 
 def Model():
@@ -96,7 +93,6 @@ def Model():
     ])
 
 
-# In[12]:
 
 
 def solve(task):
@@ -126,7 +122,6 @@ def solve(task):
 ca = get_ipython().run_line_magic('time', 'solve(task)')
 
 
-# In[ ]:
 
 
 def predict(ca,x,num=2):
@@ -149,7 +144,6 @@ for idx, task in tqdm(train_tasks.items()):
     evaluate(task)
 
 
-# In[ ]:
 
 
 for idx, task in tqdm(train_tasks.items()):

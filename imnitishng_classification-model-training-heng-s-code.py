@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -28,14 +27,12 @@ IMAGE_RGB_STD  = [0.229, 0.224, 0.225]
 DEFECT_COLOR = [(0,0,0),(0,0,255),(0,255,0),(255,0,0),(0,255,255)]
 
 
-# In[2]:
 
 
 SPLIT_DIR = '../input/hengs-split'
 DATA_DIR = '../input/severstal-steel-defect-detection'
 
 
-# In[3]:
 
 
 class Net(nn.Module):
@@ -74,7 +71,6 @@ class Net(nn.Module):
         return logit
 
 
-# In[4]:
 
 
 # Class which is used by the infor object in __get_item__
@@ -229,7 +225,6 @@ class NullScheduler():
         return string
 
 
-# In[5]:
 
 
 schduler = NullScheduler(lr=0.001)
@@ -237,7 +232,6 @@ batch_size = 4 #8
 iter_accum = 8
 
 
-# In[6]:
 
 
 class SteelDataset(Dataset):
@@ -318,7 +312,6 @@ class SteelDataset(Dataset):
             return self.augment(image, mask, infor)
 
 
-# In[7]:
 
 
 def do_valid(net, valid_loader, displays=None):
@@ -376,7 +369,6 @@ def do_valid(net, valid_loader, displays=None):
     return valid_loss
 
 
-# In[8]:
 
 
 def run_train():
@@ -565,7 +557,6 @@ def run_train():
     pass #-- end of all iterations --
 
 
-# In[9]:
 
 
 print('rate     iter   epoch |  loss    tn, [tp1,tp2,tp3,tp4]       |  loss    tn, [tp1,tp2,tp3,tp4]       | time           ')

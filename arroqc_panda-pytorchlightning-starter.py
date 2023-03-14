@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Let's install it as it not in kaggle by default.
 get_ipython().system('pip install pytorch_lightning')
 
 
-# In[2]:
 
 
 import zipfile
@@ -28,7 +26,6 @@ from sklearn.model_selection import StratifiedKFold
 from mish_activation import Mish
 
 
-# In[3]:
 
 
 class TileDataset(tdata.Dataset):
@@ -76,7 +73,6 @@ class TileDataset(tdata.Dataset):
         return len(self.img_list)
 
 
-# In[4]:
 
 
 transform_train = transforms.Compose([transforms.RandomHorizontalFlip(0.5),
@@ -86,14 +82,12 @@ train_df = pd.read_csv('/kaggle/input/prostate-cancer-grade-assessment/train.csv
 trainset = TileDataset('/kaggle/input/panda-16x128x128-tiles/train.zip', train_df, 12, transform=transform_train)
 
 
-# In[5]:
 
 
 image = trainset[0]['image']
 print(image.shape, image.mean(), image.std())
 
 
-# In[6]:
 
 
 class AdaptiveConcatPool2d(nn.Module):
@@ -114,7 +108,6 @@ class Flatten(nn.Module):
         return x.view(x.shape[0], -1)
 
 
-# In[7]:
 
 
 class BasicHead(nn.Module):
@@ -139,7 +132,6 @@ class BasicHead(nn.Module):
         return h
 
 
-# In[8]:
 
 
 class Model(nn.Module):
@@ -166,7 +158,6 @@ class Model(nn.Module):
         return h
 
 
-# In[9]:
 
 
 class LightModel(pl.LightningModule):
@@ -260,7 +251,6 @@ class LightModel(pl.LightningModule):
         return {'avg_val_loss': avg_loss, 'log': tensorboard_logs}
 
 
-# In[10]:
 
 
 import argparse
@@ -283,7 +273,6 @@ def dict_to_args(d):
     return args
 
 
-# In[11]:
 
 
 SEED = 33
@@ -299,7 +288,6 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = True
 
 
-# In[12]:
 
 
 # This is where you should specify for an experiment what the model should use.
@@ -314,7 +302,6 @@ hparams = {'backbone': 'resnext50_semi',
 hparams = dict_to_args(hparams) 
 
 
-# In[13]:
 
 
 train_df = pd.read_csv('/kaggle/input/prostate-cancer-grade-assessment/train.csv')
@@ -328,7 +315,6 @@ for img_id in train_df['image_id']:
 train_df = train_df[~train_df['image_id'].isin(not_in_image_zip)]
 
 
-# In[14]:
 
 
 kfold = StratifiedKFold(n_splits=5, random_state=SEED, shuffle=True)

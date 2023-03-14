@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #Importing Libraries
@@ -34,7 +33,6 @@ from bayes_opt import BayesianOptimization
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 #Reading Data
@@ -44,7 +42,6 @@ print(df.shape)
 display(df.head())
 
 
-# In[3]:
 
 
 #Reading Test data
@@ -55,14 +52,12 @@ print(test.shape)
 display(test.head())
 
 
-# In[4]:
 
 
 #Plot target
 sns.distplot(df.loss)
 
 
-# In[5]:
 
 
 #Categorical Interactions Top50
@@ -98,7 +93,6 @@ for each in cat_int:
         test[a+"_"+b]=test[a]+test[b]
 
 
-# In[6]:
 
 
 #Label Encoding All Categorical Columns
@@ -110,7 +104,6 @@ for each in c:
         test[each]=res[188318:]
 
 
-# In[7]:
 
 
 #X and Y
@@ -121,7 +114,6 @@ Y=df.loss
 X.head()
 
 
-# In[8]:
 
 
 #Transformation on Y
@@ -129,7 +121,6 @@ Y=np.log1p(Y)
 sns.distplot(Y)
 
 
-# In[9]:
 
 
 #Numerical Feature interactions selected
@@ -153,7 +144,6 @@ test['div_cont2_cont4']=test['cont2']/test['cont4']
 test['add_cont3_cont7']=test['cont3']+test['cont7']
 
 
-# In[10]:
 
 
 # #Numerical tranformations 
@@ -164,13 +154,11 @@ test['add_cont3_cont7']=test['cont3']+test['cont7']
 #     test[each]=np.log1p(test[each])[0]
 
 
-# In[11]:
 
 
 X.shape
 
 
-# In[12]:
 
 
 params={'bagging_fraction': 0.5021393514653055,
@@ -193,14 +181,12 @@ params={'bagging_fraction': 0.5021393514653055,
 # 'learning_rate':0.03}
 
 
-# In[13]:
 
 
 r=X.nunique()
 r.sort_values(ascending=False)
 
 
-# In[14]:
 
 
 #5 Fold Cross Validation
@@ -251,14 +237,12 @@ for train_index, test_index in kf.split(X):
     P+=np.expm1(reg.predict(test))
 
 
-# In[15]:
 
 
 print("Train Score: ",np.mean(trainALL),"   Std dev:",np.std(trainALL))
 print("Val Score:  ",np.mean(valALL),"   Std dev:",np.std(valALL))
 
 
-# In[16]:
 
 
 dfx=pd.DataFrame()
@@ -267,7 +251,6 @@ dfx['loss']=P/5
 dfx.to_csv("lgb_avgfolds.csv",index=False)
 
 
-# In[17]:
 
 
 

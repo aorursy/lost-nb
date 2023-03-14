@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 from fastai import *
@@ -34,7 +32,6 @@ from matplotlib.lines import Line2D
 import tqdm
 
 
-# In[3]:
 
 
 import pandas as pd
@@ -42,7 +39,6 @@ sample_submission = pd.read_csv("../input/understanding_cloud_organization/sampl
 train = pd.read_csv("../input/understanding_cloud_organization/train.csv")
 
 
-# In[4]:
 
 
 #Transform the csv file to Image name and label
@@ -50,32 +46,27 @@ train['Image_name'] = train['Image_Label'].apply(lambda x: x.split('_')[0])
 train['Label_name'] = train['Image_Label'].apply(lambda x: x.split('_')[1])
 
 
-# In[5]:
 
 
 train.drop('Image_Label',axis=1,inplace=True)
 
 
-# In[6]:
 
 
 train = train.pivot('Image_name','Label_name','EncodedPixels')
 
 
-# In[7]:
 
 
 train.head()
 
 
-# In[8]:
 
 
 data_path = pathlib.Path('/kaggle/input/understanding_cloud_organization/')
 path_img = data_path/'train_images'
 
 
-# In[9]:
 
 
 item_list = (SegmentationItemList.
@@ -83,13 +74,11 @@ item_list = (SegmentationItemList.
             .split_by_rand_pct(0.2))
 
 
-# In[10]:
 
 
 item_list
 
 
-# In[11]:
 
 
 class MultiLabelImageSegment(ImageSegment):
@@ -130,7 +119,6 @@ class MultiLabelImageSegment(ImageSegment):
         return MultiClassImageSegment(t)
 
 
-# In[12]:
 
 
 #Source: https://www.kaggle.com/keyurparalkar/multi-label-segmentation-using-fastai/
@@ -138,7 +126,6 @@ def bce_logits_floatify(input,target,reduction='mean'):
     return F.binary_cross_entropy_with_logits(input,target.float(),reduction=reduction)
 
 
-# In[13]:
 
 
 class MultiLabelSegmentationLabelList(SegmentationLabelList):
@@ -166,13 +153,11 @@ class MultiLabelSegmentationLabelList(SegmentationLabelList):
         
 
 
-# In[14]:
 
 
 class_names = ['Fish','Flower','Gravel','Sugar'] 
 
 
-# In[15]:
 
 
 def get_mask_rle(img):
@@ -180,7 +165,6 @@ def get_mask_rle(img):
     return train.loc[img, class_names].to_list()
 
 
-# In[16]:
 
 
 # Reduce the image size into multiples of 4.
@@ -194,26 +178,22 @@ img_size
 batch_size=8
 
 
-# In[17]:
 
 
 classes = [0,1,2,3]
 
 
-# In[18]:
 
 
 item_list = item_list.label_from_func(func=get_mask_rle,label_cls=MultiLabelSegmentationLabelList,classes=classes,
                                      src_img_size=train_img_dims)
 
 
-# In[19]:
 
 
 item_list = item_list.add_test_folder(data_path/'test_images',label="")
 
 
-# In[20]:
 
 
 batch_size = 8
@@ -222,20 +202,17 @@ tfms = ([],[])
 item_list  = item_list.transform(tfms,tfm_y=True,size=img_size)
 
 
-# In[21]:
 
 
 data = (item_list.databunch(bs=batch_size)
        .normalize(imagenet_stats))
 
 
-# In[22]:
 
 
 data.show_batch(rows=2,figsize=(15,10),class_names=class_names)
 
 
-# In[23]:
 
 
 # adapted from: https://www.kaggle.com/iafoss/unet34-dice-0-87
@@ -246,57 +223,48 @@ def dice_metric(pred, targs, threshold=0):
     return 2.0 * (pred*targs).sum() / ((pred+targs).sum() + 1.0)
 
 
-# In[24]:
 
 
 # learn = unet_learner(data, models.resnet18, metrics=[dice_metric], wd = 1e-2).to_fp16()
 
 
-# In[25]:
 
 
 learn.summary()
 
 
-# In[26]:
 
 
 #Set path for saving the model
 learn.model_dir = '/kaggle/working/'
 
 
-# In[27]:
 
 
 learn.lr_find()
 learn.recorder.plot()
 
 
-# In[28]:
 
 
 learn.fit_one_cycle(10,max_lr=1e-4)
 
 
-# In[29]:
 
 
 learn.save('trained_model_fit1cyc',return_path=True)
 
 
-# In[30]:
 
 
 get_ipython().system('pip install pydrive')
 
 
-# In[31]:
 
 
 from pydrive.drive import GoogleDrive
 
 
-# In[32]:
 
 
 from pydrive.auth import GoogleAuth
@@ -304,38 +272,32 @@ from pydrive.auth import GoogleAuth
 gauth = GoogleAuth()
 
 
-# In[33]:
 
 
 drive = GoogleDrive(gauth)
 
 
-# In[ ]:
 
 
 
 
 
-# In[34]:
 
 
 learn.show_results(imgsize=8, class_names=class_names)
 
 
-# In[35]:
 
 
 #getting prediction on test dataset
 a,b = learn.get_preds(ds_type=DatasetType.Test,with_loss=False)
 
 
-# In[36]:
 
 
 from IPython.core.debugger import set_trace
 
 
-# In[37]:
 
 
 def resize_masks(pred:Tensor, img_size=(4,350,525)) -> list:
@@ -345,20 +307,17 @@ def resize_masks(pred:Tensor, img_size=(4,350,525)) -> list:
         yield mask.resize(img_size)        
 
 
-# In[38]:
 
 
 resized_preds = resize_masks(a)
 
 
-# In[39]:
 
 
 test_fnames = [str(fname).split('/')[-1] for fname in learn.data.test_ds.items]
 test_fnames[:5]
 
 
-# In[40]:
 
 
 #Function for creating submission file:
@@ -378,25 +337,21 @@ def writeSubFile():
     print('Submission file created ...')
 
 
-# In[41]:
 
 
 writeSubFile()
 
 
-# In[42]:
 
 
 with open('/kaggle/working/submission.csv')
 
 
-# In[43]:
 
 
 a.shape
 
 
-# In[ ]:
 
 
 

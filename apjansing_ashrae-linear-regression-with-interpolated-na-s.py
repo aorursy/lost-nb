@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import csv
@@ -11,7 +10,6 @@ import scipy
 from sklearn.decomposition import PCA
 
 
-# In[2]:
 
 
 building_metadata = "../input/ashrae-energy-prediction/building_metadata.csv"
@@ -22,7 +20,6 @@ weather_test = "../input/ashrae-energy-prediction/weather_test.csv"
 weather_train = "../input/ashrae-energy-prediction/weather_train.csv"
 
 
-# In[3]:
 
 
 def get_data(data_file, weather_data_file, building_data = 'building_metadata.csv', path = './'):
@@ -38,13 +35,11 @@ def get_data(data_file, weather_data_file, building_data = 'building_metadata.cs
     return data
 
 
-# In[4]:
 
 
 train_data = get_data(train, weather_train)
 
 
-# In[5]:
 
 
 for col in train_data.columns:
@@ -52,7 +47,6 @@ for col in train_data.columns:
         print train_data[col]
 
 
-# In[6]:
 
 
 train_data = train_data.dropna()
@@ -62,7 +56,6 @@ target = train_data2.meter_reading
 train_data2 = train_data2.drop(columns=['meter_reading'], errors='ignore')
 
 
-# In[7]:
 
 
 import matplotlib.pyplot as plt  # To visualize
@@ -81,25 +74,21 @@ def getLinearRegressorPandasDF(train_dataX, train_dataY):
 lr = getLinearRegressorPandasDF(train_dataX=train_data2, train_dataY=target)
 
 
-# In[8]:
 
 
 test_data2 = test_data.drop(columns=['building_id', 'site_id', 'primary_use', 'timestamp', 'meter_reading'], errors='ignore')
 
 
-# In[9]:
 
 
 test_pred = lr.predict(test_data2)
 
 
-# In[ ]:
 
 
 
 
 
-# In[10]:
 
 
 for i in tqdm(range(max(train_data.building_id))):

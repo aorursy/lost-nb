@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 ENABLE_MULTIPROCESSING = True # This allows to solve 4 tasks at the same moment.
@@ -173,7 +172,6 @@ def plot_task(task):
     plt.show()
 
 
-# In[2]:
 
 
 name = '070dd51e'
@@ -182,7 +180,6 @@ task = load_data(f'{name}.json', phase='evaluation')
 plot_task(task)
 
 
-# In[3]:
 
 
 name = '0d87d2a6'
@@ -191,7 +188,6 @@ task = load_data(f'{name}.json', phase='evaluation')
 plot_task(task)
 
 
-# In[4]:
 
 
 name = '08ed6ac7'
@@ -200,7 +196,6 @@ task = load_data(f'{name}.json', phase='training')
 plot_task(task)
 
 
-# In[5]:
 
 
 
@@ -237,7 +232,6 @@ print(res.stderr.decode())
 from dsl import cpp_trace_param_automata
 
 
-# In[6]:
 
 
 def python_trace_param_automata(input, params, n_iter, n_hidden):
@@ -292,7 +286,6 @@ def trace_param_automata(input, params, n_iter, n_hidden):
     return [[output]]
 
 
-# In[7]:
 
 
 name = '2c737e39'
@@ -301,7 +294,6 @@ task = load_data(f'{name}.json', phase='evaluation')
 plot_task(task)
 
 
-# In[8]:
 
 
 def apply_interaction_rule(grids, rule):
@@ -375,7 +367,6 @@ def apply_interaction_rule(grids, rule):
     return grids
 
 
-# In[9]:
 
 
 def get_connectivity_info(color: np.array, ignore_black = False, von_neumann_only = False, edge_for_difcolors = False):
@@ -419,7 +410,6 @@ def get_connectivity_info(color: np.array, ignore_black = False, von_neumann_onl
     return communities
 
 
-# In[10]:
 
 
 def apply_rule(input, hidden_i, rule):
@@ -972,7 +962,6 @@ def apply_rule(input, hidden_i, rule):
     return output, hidden
 
 
-# In[11]:
 
 
 name = '292dd178'
@@ -981,7 +970,6 @@ task = load_data(f'{name}.json', phase='evaluation')
 plot_task(task)
 
 
-# In[12]:
 
 
 nbh = lambda x, i, j: {
@@ -1129,7 +1117,6 @@ def compute_parametrized_automata(input, hidden_i, rules):
     return output, hidden_o
 
 
-# In[13]:
 
 
 name = '00576224'
@@ -1138,7 +1125,6 @@ task = load_data(f'{name}.json', phase='evaluation')
 plot_task(task)
 
 
-# In[14]:
 
 
 def apply_split_rule(input, hidden, split_rule):
@@ -1199,7 +1185,6 @@ def apply_merge_rule(grids, merge_rule, split_rule):
     return output
 
 
-# In[15]:
 
 
 def get_random_split_rule(all_colors, best_candidates={}, temp=0, config={}, r_type=None):
@@ -1515,7 +1500,6 @@ def get_random_global_rule(all_colors, best_candidates={}, temp=0, config={}, r_
     return rule
 
 
-# In[16]:
 
 
 def get_task_metadata(task):
@@ -1586,7 +1570,6 @@ def get_task_metadata(task):
     return all_colors, config
 
 
-# In[17]:
 
 
 def compute_metrics(prediction_grid, answer_grid):
@@ -1612,7 +1595,6 @@ def compute_metrics(prediction_grid, answer_grid):
     return list(np.array(get_metrics(answer_grid, answer_grid)) * 0) + [0]
 
 
-# In[18]:
 
 
 def validate_automata(task_global, params, n_iter_max, n_hidden):
@@ -1642,7 +1624,6 @@ def product_better(a, b):
     return (np.array(a) >= np.array(b)).all() and (np.array(a) > np.array(b)).any()
 
 
-# In[19]:
 
 
 def generate_random_ca(all_colors, best_candidates, temp, config, length=1):
@@ -1669,7 +1650,6 @@ def generate_population(all_colors, config, size=64, length=1):
     return population
 
 
-# In[20]:
 
 
 from functools import partial
@@ -1974,7 +1954,6 @@ def build_mapping(task, config):
     return task, reverse_functions
 
 
-# In[21]:
 
 
 def update_pool(task, best_candidates, candidate, num_params):
@@ -2111,7 +2090,6 @@ def generate_sexual_program(best_candidates, temp, first, second, all_colors, co
     return child
 
 
-# In[22]:
 
 
 def post_solved_process(task, solved, all_colors, config, reverse_functions, config_mapping):
@@ -2248,7 +2226,6 @@ def post_solved_process(task, solved, all_colors, config, reverse_functions, con
     return test_preds
 
 
-# In[23]:
 
 
 def train_model(name, task, params, time_for_task, config_mapping, print_stats=False):
@@ -2342,7 +2319,6 @@ def train_model(name, task, params, time_for_task, config_mapping, print_stats=F
     return solved, test_preds
 
 
-# In[24]:
 
 
 if False:
@@ -2520,7 +2496,6 @@ submission.to_csv("submission.csv", index=False)
 print(solved_tasks)
 
 
-# In[25]:
 
 
 params = {}
@@ -2540,7 +2515,6 @@ config_mapping = {'map_color': False, 'reduce_grid': True, 'find_wall': True}
 is_public_test = ('00576224' in test_task_ids)
 
 
-# In[26]:
 
 
 if is_public_test:
@@ -2552,7 +2526,6 @@ if is_public_test:
     solved, test_preds = train_model(name, task, params, time_for_task=2000, config_mapping=config_mapping)
 
 
-# In[27]:
 
 
 if is_public_test and (solved is not None):
@@ -2565,7 +2538,6 @@ if is_public_test and (solved is not None):
     print(solved[3])
 
 
-# In[28]:
 
 
 if is_public_test:
@@ -2577,7 +2549,6 @@ if is_public_test:
     solved, test_preds = train_model(name, task, params, time_for_task=2000, config_mapping=config_mapping)
 
 
-# In[29]:
 
 
 if is_public_test and (solved is not None):
@@ -2590,7 +2561,6 @@ if is_public_test and (solved is not None):
     print(solved[3])
 
 
-# In[30]:
 
 
 if is_public_test:
@@ -2603,7 +2573,6 @@ if is_public_test:
     solved, test_preds = train_model(name, task, params, time_for_task=2000, config_mapping=config_mapping)
 
 
-# In[31]:
 
 
 if is_public_test and (solved is not None):

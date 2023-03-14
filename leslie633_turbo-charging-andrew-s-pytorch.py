@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install catalyst')
@@ -13,7 +12,6 @@ get_ipython().system('pip install -v --no-cache-dir --global-option="--cpp_ext" 
 from apex import amp
 
 
-# In[2]:
 
 
 import os
@@ -58,7 +56,6 @@ import segmentation_models_pytorch as smp
 device=torch.device('cuda')
 
 
-# In[3]:
 
 
 def get_img(x, folder: str='train_images_525/train_images_525'):
@@ -275,21 +272,18 @@ def dice(img1, img2):
     return 2. * intersection.sum() / (img1.sum() + img2.sum())
 
 
-# In[4]:
 
 
 path = '../input/understanding_cloud_organization'
 img_paths = '../input/understanding-clouds-resized'
 
 
-# In[5]:
 
 
 train = pd.read_csv(f'{path}/train.csv')
 sub = pd.read_csv(f'{path}/sample_submission.csv')
 
 
-# In[6]:
 
 
 train['label'] = train['Image_Label'].apply(lambda x: x.split('_')[1])
@@ -300,7 +294,6 @@ sub['label'] = sub['Image_Label'].apply(lambda x: x.split('_')[1])
 sub['im_id'] = sub['Image_Label'].apply(lambda x: x.split('_')[0])
 
 
-# In[7]:
 
 
 train_df = pd.read_csv(f'{path}/train.csv').fillna(-1)
@@ -310,7 +303,6 @@ train_df['Label'] = train_df['Image_Label'].apply(lambda x: x.split('_')[1])
 train_df['Label_EncodedPixels'] = train_df.apply(lambda row: (row['Label'], row['EncodedPixels']), axis = 1)
 
 
-# In[8]:
 
 
 print('Total number of images: %s' % len(train_df['ImageId'].unique()))
@@ -319,7 +311,6 @@ print('Total instance or examples of defects: %s' % len(train_df[train_df['Encod
 train_df['Label'].unique()
 
 
-# In[9]:
 
 
 import seaborn as sns
@@ -335,7 +326,6 @@ def compute_percentage(x):
 labels_per_image_count_df['percentage'] = labels_per_image_count_df.apply(compute_percentage, axis=1)
 
 
-# In[10]:
 
 
 ax = sns.barplot(labels_per_image_count_df.index, labels_per_image_count_df.percentage)
@@ -343,7 +333,6 @@ ax.set(xlabel = "Number of Labels", ylabel = "Percentage")
 plt.show()
 
 
-# In[11]:
 
 
 label_type_per_image = train_df[train_df['EncodedPixels']!=-1]['Label'].value_counts()
@@ -352,7 +341,6 @@ bx.set(xlabel = "Label Type", ylabel = "Occurrences")
 plt.show()
 
 
-# In[12]:
 
 
 def rle_decode(mask_rle, shape=(1400, 2100)):
@@ -366,7 +354,6 @@ def rle_decode(mask_rle, shape=(1400, 2100)):
     return img.reshape(shape, order='F')  # Needed to align to RLE direction
 
 
-# In[13]:
 
 
 train_image_path = '/kaggle/input/understanding_cloud_organization/train_images'
@@ -380,7 +367,6 @@ ax[1].imshow(mask_decoded, alpha=0.3, cmap='gray')
 ax[1].imshow(mask_decoded2, alpha=0.3, cmap='gray')
 
 
-# In[14]:
 
 
 id_mask_count = train.loc[train['EncodedPixels'].isnull() == False, 'Image_Label'].apply(lambda x: x.split('_')[0]).value_counts().reset_index().rename(columns={'index': 'img_id', 'Image_Label': 'count'})
@@ -388,7 +374,6 @@ train_ids, valid_ids = train_test_split(id_mask_count['img_id'].values, random_s
 test_ids = sub['Image_Label'].apply(lambda x: x.split('_')[0]).drop_duplicates().values
 
 
-# In[15]:
 
 
 class CloudDataset(Dataset):
@@ -423,7 +408,6 @@ class CloudDataset(Dataset):
         return len(self.img_ids)
 
 
-# In[16]:
 
 
 ENCODER = 'resnet18'
@@ -439,7 +423,6 @@ model = smp.Linknet(
 preprocessing_fn = smp.encoders.get_preprocessing_fn(ENCODER, ENCODER_WEIGHTS)
 
 
-# In[17]:
 
 
 num_workers = 4
@@ -456,7 +439,6 @@ loaders = {
 }
 
 
-# In[18]:
 
 
 # import apex
@@ -476,7 +458,6 @@ criterion = smp.utils.losses.BCEDiceLoss(eps=1.)
 runner = SupervisedRunner()
 
 
-# In[19]:
 
 
 runner.train(
@@ -492,7 +473,6 @@ runner.train(
 )
 
 
-# In[20]:
 
 
 utils.plot_metrics(
@@ -501,7 +481,6 @@ utils.plot_metrics(
 )
 
 
-# In[21]:
 
 
 encoded_pixels = []
@@ -530,7 +509,6 @@ for i, (batch, output) in enumerate(tqdm.tqdm(zip(valid_dataset, runner.callback
         probabilities[i * 4 + j, :, :] = probability
 
 
-# In[22]:
 
 
 import gc
@@ -538,7 +516,6 @@ torch.cuda.empty_cache()
 gc.collect()
 
 
-# In[23]:
 
 
 class_params = {}
@@ -569,7 +546,6 @@ for class_id in range(4):
     class_params[class_id] = (best_threshold, best_size)
 
 
-# In[24]:
 
 
 for i, (input, output) in enumerate(zip(valid_dataset, runner.callbacks[0].predictions["logits"])):

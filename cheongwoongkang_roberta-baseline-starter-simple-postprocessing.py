@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -9,21 +8,18 @@ import pandas as pd
 import json
 
 
-# In[2]:
 
 
 pd_train = pd.read_csv('/kaggle/input/tweet-sentiment-extraction/train.csv')
 pd_test = pd.read_csv('/kaggle/input/tweet-sentiment-extraction/test.csv')
 
 
-# In[3]:
 
 
 train = np.array(pd_train)
 test = np.array(pd_test)
 
 
-# In[4]:
 
 
 def find_all(input_str, search_str):
@@ -39,13 +35,11 @@ def find_all(input_str, search_str):
     return l1
 
 
-# In[5]:
 
 
 get_ipython().system('mkdir data')
 
 
-# In[6]:
 
 
 # Convert training data
@@ -81,7 +75,6 @@ with open('data/train.json', 'w') as outfile:
     json.dump(output, outfile)
 
 
-# In[7]:
 
 
 # Convert test data
@@ -114,25 +107,21 @@ with open('data/test.json', 'w') as outfile:
     json.dump(output, outfile)
 
 
-# In[8]:
 
 
 get_ipython().system('cd /kaggle/input/pytorchtransformers/transformers-2.5.1; pip install .')
 
 
-# In[9]:
 
 
 get_ipython().system('mkdir results_roberta_large')
 
 
-# In[10]:
 
 
 get_ipython().system('python /kaggle/input/pytorchtransformers/transformers-2.5.1/examples/run_squad.py --model_type roberta --model_name_or_path roberta-large --do_lower_case --do_train --do_eval --data_dir ./data --cache_dir /kaggle/input/cached-roberta-large-pretrained/cache --train_file train.json --predict_file test.json --learning_rate 5e-5 --num_train_epochs 2 --max_seq_length 192 --doc_stride 64 --output_dir results_roberta_large --per_gpu_eval_batch_size=16 --per_gpu_train_batch_size=16 --save_steps=100000')
 
 
-# In[11]:
 
 
 # Copy predictions to submission file.
@@ -146,13 +135,11 @@ for i in range(len(submission)):
         submission.loc[i, 'selected_text'] = predictions[id_]
 
 
-# In[12]:
 
 
 submission.head()
 
 
-# In[13]:
 
 
 # Save the submission file.

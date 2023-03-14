@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import matplotlib.pyplot as plt
@@ -50,7 +48,6 @@ from keras.regularizers import l2, l1
 from keras.optimizers import SGD
 
 
-# In[3]:
 
 
 import pandas as pd
@@ -79,7 +76,6 @@ print(train_labels.head())
 print('Training labels created.\nLength of train_labels: '+str(len(train_labels)))
 
 
-# In[4]:
 
 
 
@@ -135,7 +131,6 @@ def import_images(total_images, hem_rate):
 data = import_images(10000, .75)
 
 
-# In[5]:
 
 
 training_data_array = data['images']
@@ -151,7 +146,6 @@ np.save('test_data_array.npy', test_data_array)
 np.save('test_labels_array.npy', test_labels_array)
 
 
-# In[6]:
 
 
 training_data_array = np.load('training_data_array.npy',allow_pickle=True)
@@ -160,7 +154,6 @@ training_labels_array = np.load('training_labels_array.npy',allow_pickle=True)
 tdata = {'images':training_data_array,'labels':training_labels_array}
 
 
-# In[7]:
 
 
 #-------------------------------------
@@ -173,7 +166,6 @@ tdata = {'images':training_data_array,'labels':training_labels_array}
 #------------
 
 
-# In[8]:
 
 
 training_data_array1 = np.load('../input/sam-data/training_data_array.npy',allow_pickle=True)
@@ -186,7 +178,6 @@ test_labels_array = np.load('../input/sam-data/test_labels_array.npy',allow_pick
 print(training_data_array1.shape)
 
 
-# In[9]:
 
 
 training_data_array= np.append(training_data_array1,training_data_array2)
@@ -204,7 +195,6 @@ test_data = {'images':test_data_array,'labels':test_labels_array}
 #print(training_labels_array.shape)
 
 
-# In[10]:
 
 
 hemorrhages = {'epidural':0,'intraparenchymal':0,'intraventricular':0,'subarachnoid':0,'subdural':0                ,'any':0,'none':0}
@@ -224,7 +214,6 @@ ax.set_xticklabels(labels = list(hemorrhages.keys()),rotation=30)
 plt.show()
 
 
-# In[11]:
 
 
 labels = {'subdural':[],'epidural':[],'intraparenchymal':[],'intraventricular':[],'subarachnoid':[],'none':[]}
@@ -251,7 +240,6 @@ ax.title.set_text('Rate of Y = True when X = True')
 plt.show()
 
 
-# In[12]:
 
 
 epid_indexes = []
@@ -278,7 +266,6 @@ while not it.finished:
     it.iternext()
 
 
-# In[13]:
 
 
 X_temp = tdata['images']/255
@@ -299,7 +286,6 @@ print(y.shape)
 X[0,:]
 
 
-# In[14]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(
@@ -313,7 +299,6 @@ X_train_scaled = stdscaler.transform(X_train)
 X_test_scaled  = stdscaler.transform(X_test)
 
 
-# In[15]:
 
 
 label_count = len(mlb.classes_)
@@ -332,13 +317,11 @@ sgd = SGD(lr=0.5)
 model.compile(loss='binary_crossentropy', optimizer=sgd, metrics=['accuracy'])
 
 
-# In[16]:
 
 
 model.summary()
 
 
-# In[17]:
 
 
 print(X_train_scaled[0])
@@ -347,7 +330,6 @@ print(X_test_scaled[0])
 print(y_test[0])
 
 
-# In[18]:
 
 
 history = model.fit(X_train_scaled, y_train, batch_size = 256, 
@@ -366,7 +348,6 @@ print ("BC after final iteration: ", history.history['val_loss'][-1])
 plt.show()
 
 
-# In[19]:
 
 
 fig = plt.figure(figsize=(6,4))
@@ -383,7 +364,6 @@ print ("Accuracy after final iteration: ", history.history['val_accuracy'][-1])
 plt.show()
 
 
-# In[20]:
 
 
 test_X_temp = test_data['images']/255
@@ -409,14 +389,12 @@ test_X_scaled = test_stdscaler.transform(test_X)
 #test_X_test_scaled  = test_stdscaler.transform(X_test)
 
 
-# In[21]:
 
 
 test_y_pred = model.predict(X_train_scaled, batch_size=256, verbose=2)
 test_y_actual = np.argmax(test_y_pred, axis=1)
 
 
-# In[22]:
 
 
 
@@ -426,7 +404,6 @@ test_y_pred_rounded = np.around(test_y_pred)
 test_y_pred_rounded[4]
 
 
-# In[23]:
 
 
 from skmultilearn.problem_transform import ClassifierChain
@@ -438,7 +415,6 @@ classifier.fit(X_train_scaled, y_train)
 # predict
 
 
-# In[24]:
 
 
 predictions = classifier.predict(X_train_scaled)
@@ -447,7 +423,6 @@ print("Accuracy = ",accuracy_score(y_test,predictions))
 print("\n")
 
 
-# In[ ]:
 
 
 

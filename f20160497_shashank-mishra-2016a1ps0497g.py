@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -12,7 +11,6 @@ import xgboost
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 train_df=pd.read_csv("../input/train.csv")
@@ -21,7 +19,6 @@ train_df=train_df.drop(["Total Bags","type"],axis=1)
 train_df.head()
 
 
-# In[3]:
 
 
 y=train_df["AveragePrice"]
@@ -35,13 +32,11 @@ y2=y2.reset_index(drop=True)
 y2.head()
 
 
-# In[4]:
 
 
 x=train_df.drop(["AveragePrice"],axis=1)
 
 
-# In[5]:
 
 
 x1=x[(x['id']<=9125)]
@@ -49,7 +44,6 @@ x1=x1.reset_index(drop=True)
 x1.head()
 
 
-# In[6]:
 
 
 x2=x[(x['id']>9125)]
@@ -57,7 +51,6 @@ x2=x2.reset_index(drop=True)
 x2.head()
 
 
-# In[7]:
 
 
 test_df=pd.read_csv("../input/test.csv")
@@ -65,21 +58,18 @@ test_df=pd.read_csv("../input/test.csv")
 test_df.head()
 
 
-# In[8]:
 
 
 FOODID=pd.read_csv("../input/test.csv", usecols = ['id'])
 FOODID.head()
 
 
-# In[9]:
 
 
 test_df=test_df.drop(["Total Bags","type"],axis=1)
 test_df.head()
 
 
-# In[10]:
 
 
 from sklearn.datasets import load_boston
@@ -98,7 +88,6 @@ kf.get_n_splits(x)
 print(kf)
 
 
-# In[11]:
 
 
 predicted_y = []
@@ -115,7 +104,6 @@ mse =mean_squared_error(expected_y,predicted_y)
 print(mse)
 
 
-# In[12]:
 
 
 kf = KFold(n_splits=5,shuffle=False,random_state=12)
@@ -123,7 +111,6 @@ kf.get_n_splits(x1)
 print(kf)
 
 
-# In[13]:
 
 
 predicted_y = []
@@ -140,13 +127,11 @@ mse =mean_squared_error(expected_y,predicted_y)
 print(mse)    
 
 
-# In[14]:
 
 
 model1.get_booster().get_score(importance_type='weight')
 
 
-# In[15]:
 
 
 kf = KFold(n_splits=5,shuffle=False,random_state=12)
@@ -154,7 +139,6 @@ kf.get_n_splits(x2)
 print(kf)
 
 
-# In[16]:
 
 
 predicted_y = []
@@ -171,27 +155,23 @@ mse =mean_squared_error(expected_y,predicted_y)
 print(mse)
 
 
-# In[17]:
 
 
 model2.get_booster().get_score(importance_type='weight')
 
 
-# In[18]:
 
 
 print(expected_y)
 print(len(expected_y))
 
 
-# In[19]:
 
 
 print(predicted_y)
 print(len(predicted_y))
 
 
-# In[20]:
 
 
 predicted_price=[]
@@ -209,26 +189,22 @@ print(predicted_price)
 print(len(predicted_price))
 
 
-# In[21]:
 
 
 FOODID.head()
 
 
-# In[22]:
 
 
 final  = pd.concat([FOODID, pd.DataFrame(predicted_price)], axis=1)
 final.head(20)
 
 
-# In[23]:
 
 
 final.to_csv("result_last.csv", index=False)
 
 
-# In[24]:
 
 
 

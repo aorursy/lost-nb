@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -26,7 +25,6 @@ def print_log(string):
     os.system(f'echo \"{string}\"')
 
 
-# In[2]:
 
 
 def load_dataset():
@@ -77,7 +75,6 @@ def load_dataset():
     return df_train
 
 
-# In[3]:
 
 
 def group_game_session_by_assessment(df_train, df_train_labels):
@@ -124,7 +121,6 @@ def group_game_session_by_assessment(df_train, df_train_labels):
     return df_train
 
 
-# In[4]:
 
 
 def remove_outliers(df, col, extreme=None):
@@ -152,7 +148,6 @@ def remove_outliers(df, col, extreme=None):
     return df, outliers
 
 
-# In[5]:
 
 
 df_train = load_dataset()
@@ -170,7 +165,6 @@ gc.collect()
 df_train.sample(5)
 
 
-# In[6]:
 
 
 base_cols = ['gs_to_eval', 'event_id', 'game_session', 'timestamp', 'installation_id', 'title', 'type']
@@ -187,13 +181,11 @@ string_cols = [col for col in event_data_cols if is_string_dtype(df_train[col])]
 sns.set()
 
 
-# In[7]:
 
 
 event_data_cols
 
 
-# In[8]:
 
 
 df_train_ag = df_train[(df_train["type"]=="Activity") | (df_train["type"]=="Game")]
@@ -202,7 +194,6 @@ df_train_ag.loc[:,"title"] = df_train_ag["title"].astype("str").astype("category
 gs_accgroup_map = df_train_ag.groupby(["gs_to_eval"]).head(1).set_index("gs_to_eval")
 
 
-# In[9]:
 
 
 df_train_level = df_train_ag[df_train_ag.level!=-1]
@@ -221,7 +212,6 @@ g.fig.suptitle("Number of Max Levels per Accuracy Group", y=1.05)
 g.set_xticklabels(rotation=45)
 
 
-# In[10]:
 
 
 g = sns.FacetGrid(df_train_level, col="accuracy_group")
@@ -231,7 +221,6 @@ g.fig.set_figwidth(25)
 g.fig.set_figheight(5)
 
 
-# In[11]:
 
 
 feedback_duration = df_specs[df_specs.feedback_media_playback_duration].event_id.tolist()
@@ -247,7 +236,6 @@ df_media_playback = df_media_playback.groupby(["gs_to_eval", "title", "media_typ
 df_media_playback = df_media_playback.groupby(["gs_to_eval", "title", "media_type"], observed=True).mean().reset_index()
 
 
-# In[12]:
 
 
 df_media_playback_, outlier = remove_outliers(df_media_playback, "total_duration", extreme=3.0)
@@ -261,7 +249,6 @@ g.fig.set_figwidth(20)
 g.set_xticklabels(rotation=90)
 
 
-# In[13]:
 
 
 df_media_playback = df_media_playback.groupby(["gs_to_eval"], observed=True).sum()
@@ -279,7 +266,6 @@ sns.boxplot(y="is_interrupted", x="accuracy_group", data=df_media_playback, ax=a
 sns.pointplot(y="is_interrupted", x="accuracy_group", data=df_media_playback, ax=ax[1]).set_title("Mean of Interruption Ratio")
 
 
-# In[14]:
 
 
 g = sns.FacetGrid(df_media_playback, hue="accuracy_group", legend_out=False)
@@ -289,7 +275,6 @@ g.fig.set_figwidth(25)
 g.fig.set_figheight(5)
 
 
-# In[15]:
 
 
 df_misses = df_train_ag[df_train_ag.misses!=-1]
@@ -313,7 +298,6 @@ avg_miss_per_local_gs_round["miss_rate_gs"] = avg_miss_per_local_gs_round["misse
 avg_miss_per_local_gs_round = avg_miss_per_local_gs_round.groupby(["gs_to_eval"]).mean().drop(columns=["misses", "round"])
 
 
-# In[16]:
 
 
 df_misses = avg_miss_per_local_gs_round.join(miss_rate_per_max_round).reset_index()
@@ -324,7 +308,6 @@ g.fig.suptitle("Average Miss Rate per Game Session vs Average Miss Rate per Roun
 g.fig.set_figwidth(20)
 
 
-# In[17]:
 
 
 df_misses, outlier = remove_outliers(df_misses, "miss_rate_gs", extreme=3.0)
@@ -344,7 +327,6 @@ sns.kdeplot(data=df_misses.query("accuracy_group==3")["miss_rate_round"], ax=ax[
 sns.pointplot(x="accuracy_group", y="miss_rate_gs", data=df_misses, ax=ax[1]).set_title("Mean of Average Miss Rate per Round")
 
 
-# In[18]:
 
 
 df_misses = df_train_ag[df_train_ag.misses!=-1]
@@ -373,7 +355,6 @@ sns.boxenplot(x="misses_min", y="accuracy_group", ax=ax[1, 0], data=df_misses)
 sns.boxenplot(x="misses_max", y="accuracy_group", ax=ax[1, 1], data=df_misses)
 
 
-# In[19]:
 
 
 df_train_dwell = df_train_ag[df_train_ag.dwell_time!=-1]
@@ -386,7 +367,6 @@ sns.lineplot(x="round", y="dwell_time", ci="sd", hue="accuracy_group", data=df_t
 sns.scatterplot(x="round", y="dwell_time", hue="accuracy_group", data=df_train_dwell.query("type=='Game'"))
 
 
-# In[20]:
 
 
 df_train_dwell, _ = remove_outliers(df_train_dwell, "game_time", extreme=3.0)
@@ -395,7 +375,6 @@ sns.scatterplot(x="game_time", y="dwell_time", hue="accuracy_group", data=df_tra
 sns.countplot(y="accuracy_group", hue="type", data=df_train_dwell, ax=ax[1]).set_title("Number of Titles per Type")
 
 
-# In[21]:
 
 
 df_train_dwell = df_train_dwell.groupby(["gs_to_eval"], observed=True).agg(["min", "max", "sum", "mean"])
@@ -424,7 +403,6 @@ sns.boxplot(y="accuracy_group",x="dwell_time_max", data=df_train_dwell, ax=ax[2]
 sns.boxplot(y="accuracy_group",x="dwell_time_mean", data=df_train_dwell, ax=ax[3])
 
 
-# In[22]:
 
 
 df_correct = df_train_ag[df_train_ag.correct!=-1]
@@ -438,7 +416,6 @@ g.fig.suptitle("Average Correct Ratio per Round per Accuracy Group", y=1.05)
 g.fig.set_figwidth(25)
 
 
-# In[23]:
 
 
 max_rounds = df_correct.groupby(["gs_to_eval", "title", "game_session"]).tail(1)
@@ -466,7 +443,6 @@ sns.boxplot(x="correct_ratio_round", y="accuracy_group", data=df_correct, ax=ax[
 sns.pointplot(x="correct_ratio_round", y="accuracy_group", data=df_correct, ax=ax[1, 1]).set_title("Mean of Correct Ratio per Round")
 
 
-# In[24]:
 
 
 df_media = pd.read_parquet("../input/2019-data-science-bowl-phase-i-computation-only/df_media.parquet")
@@ -501,7 +477,6 @@ g.fig.set_figwidth(20)
 g.fig.set_figheight(5)
 
 
-# In[25]:
 
 
 event_code_map = df_train.groupby(["event_code"]).head(1).reset_index().drop(columns=["level_0"]).reset_index().set_index("event_code")["level_0"].to_dict()
@@ -515,7 +490,6 @@ g.fig.suptitle("Number of Event Code per Accuracy Group", y=1.05)
 g.fig.set_figwidth(20)
 
 
-# In[26]:
 
 
 df_eventcode_minmax = df_train_eventcode.groupby(["accuracy_group", "event_code"], observed=True).count().reset_index()
@@ -532,7 +506,6 @@ for ec in df_train.event_code.unique().tolist():
         event_code_trend.append(str(ec))
 
 
-# In[27]:
 
 
 df_train_eventcode_ = df_train_eventcode[df_train_eventcode.event_code.isin(event_code_trend)]
@@ -543,7 +516,6 @@ g.fig.suptitle("Number of Event Codes per Accuracy Group", y=1.05)
 g.fig.set_figwidth(20)
 
 
-# In[28]:
 
 
 g = sns.FacetGrid(df_train_eventcode, hue="accuracy_group", legend_out=False)
@@ -559,7 +531,6 @@ g.fig.set_figwidth(25)
 g.fig.set_figheight(5)
 
 
-# In[29]:
 
 
 eventid_map = df_specs.reset_index().set_index("event_id")["index"].to_dict()
@@ -579,7 +550,6 @@ g.fig.set_figwidth(25)
 g.fig.set_figheight(7)
 
 
-# In[30]:
 
 
 type_map = df_media.groupby(["type"]).head(1).reset_index().reset_index().set_index("type")["level_0"].to_dict()
@@ -600,7 +570,6 @@ g.fig.set_figwidth(25)
 g.fig.set_figheight(7)
 
 
-# In[31]:
 
 
 df_train["is_difficult"] = False
@@ -616,7 +585,6 @@ sns.pointplot(x="accuracy_group", y="is_difficult", data=df_difficult, ax=ax[0])
 sns.boxplot(x="accuracy_group", y="is_difficult", data=df_difficult, ax=ax[1])
 
 
-# In[32]:
 
 
 g = sns.FacetGrid(df_difficult, hue="accuracy_group")

@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # installing pyspark
 get_ipython().system('pip install pyspark')
 
 
-# In[2]:
 
 
 import numpy as np 
@@ -24,7 +22,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
         print(os.path.join(dirname, filename))
 
 
-# In[3]:
 
 
 from pyspark import SparkContext
@@ -35,7 +32,6 @@ from pyspark.sql.functions import *
 spark = SparkSession.Builder().getOrCreate()
 
 
-# In[4]:
 
 
 # Loading data
@@ -46,7 +42,6 @@ train = pd.read_csv('../input/santander-customer-satisfaction/train.csv')
 test = pd.read_csv('../input/santander-customer-satisfaction/test.csv')
 
 
-# In[5]:
 
 
 # Loading data to spark session
@@ -54,14 +49,12 @@ train_spark = spark.read.format("csv").option("header", "true").load('../input/s
 test_spark = spark.read.format("csv").option("header", "true").load('../input/santander-customer-satisfaction/test.csv')
 
 
-# In[6]:
 
 
 # displaying first 5 rows
 train_spark.toPandas().head(5)
 
 
-# In[7]:
 
 
 # Looking at the distribution of the target column 
@@ -77,20 +70,17 @@ plt.title("blue=0 (satisfied), orange=1 (unsatisfied)")
 # Alot more satisfied customers, about 96%
 
 
-# In[8]:
 
 
 # Getting stats on each column
 train_spark.describe().toPandas()
 
 
-# In[9]:
 
 
 train.var3.value_counts()
 
 
-# In[10]:
 
 
 # Checking distribution of rows with feature "var3" = -999999
@@ -101,21 +91,18 @@ plt.suptitle("Distribution for var3=-999999")
 plt.title("count of TARGET=0 (blue) and TARGET=1 (orange)")
 
 
-# In[11]:
 
 
 print("Checking for nan-values:")
 print(train.isnull().values.any())
 
 
-# In[12]:
 
 
 # Assuming ID is not correlated with customer satisfaction
 #train = train.drop(["ID"], axis=1)
 
 
-# In[13]:
 
 
 # Assuming ID is not correlated with customer satisfaction so i drop it
@@ -123,7 +110,6 @@ train_spark_drop_id = train_spark.drop('ID')
 #train_spark_drop_id.toPandas()
 
 
-# In[14]:
 
 
 # Creating one data frame for each class
@@ -146,7 +132,6 @@ print("Precentage of each class after under sampling")
 print(train_under_spark.toPandas()["TARGET"].value_counts()/train_under_spark.count())
 
 
-# In[15]:
 
 
 #count_class_0, count_class_1 = train.TARGET.value_counts()
@@ -163,7 +148,6 @@ print(train_under_spark.toPandas()["TARGET"].value_counts()/train_under_spark.co
 #train_under
 
 
-# In[16]:
 
 
 # Calculating the amount of unique values for each column
@@ -180,7 +164,6 @@ print('Number of cols dropped: ', len(c_train_ind_spark))
 print(c_train_ind_spark)
 
 
-# In[17]:
 
 
 # checking if some column is constant
@@ -196,7 +179,6 @@ print(c_train_ind_spark)
 #train_drop_1.drop(list(c_train_ind), axis=1)
 
 
-# In[18]:
 
 
 # Spark
@@ -219,7 +201,6 @@ corr_matrix_spark.index, corr_matrix_spark.columns = col_names, col_names
 corr_matrix_spark
 
 
-# In[19]:
 
 
 # Calculating correlation matrix for all features
@@ -227,7 +208,6 @@ corr_matrix_spark
 #corr_matrix
 
 
-# In[20]:
 
 
 cols_to_remove_spark = []
@@ -245,7 +225,6 @@ print("Columns removed:")
 print(len(cols_to_remove_spark))
 
 
-# In[21]:
 
 
 #cols_to_remove = []
@@ -260,7 +239,6 @@ print(len(cols_to_remove_spark))
 #print(len(cols_to_remove))
 
 
-# In[22]:
 
 
 train_no_target_cols_spark = train_drop_2_spark.columns[0:-1]
@@ -269,13 +247,11 @@ test_remove_spark = test_spark.select(*train_no_target_cols_spark)
 #test_remove_spark.toPandas()
 
 
-# In[ ]:
 
 
 
 
 
-# In[23]:
 
 
 #Removing same columns from test
@@ -286,7 +262,6 @@ test_remove_spark = test_spark.select(*train_no_target_cols_spark)
 #test_remove
 
 
-# In[24]:
 
 
 # Creating RDD from panda
@@ -302,7 +277,6 @@ test_remove_spark = test_spark.select(*train_no_target_cols_spark)
 #RDD_test = s_df_test.rdd.map(lambda x: x[:])
 
 
-# In[25]:
 
 
 from pyspark.mllib.regression import LabeledPoint
@@ -311,7 +285,6 @@ RDD_train_spark = train_drop_2_spark.rdd.map(lambda x: LabeledPoint(x["TARGET"],
 RDD_test_spark = test_remove_spark.rdd.map(lambda x: x[:])
 
 
-# In[26]:
 
 
 from pyspark.mllib.tree import RandomForest, RandomForestModel
@@ -324,7 +297,6 @@ model = RandomForest.trainClassifier(RDD_train_spark, numClasses=2, categoricalF
 #print(model.toDebugString())
 
 
-# In[27]:
 
 
 # Predicting test values
@@ -332,7 +304,6 @@ predictions = model.predict(RDD_test_spark).collect()
 print(predictions[0:100])
 
 
-# In[28]:
 
 
 # Creating a datafram to submit results on test set
@@ -342,20 +313,17 @@ submission_df["ID"] = test_ids
 submission_df
 
 
-# In[29]:
 
 
 # WRiting results to csv-files
 submission_df.to_csv('santandersubmission_corma_test.cvs', index=False)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

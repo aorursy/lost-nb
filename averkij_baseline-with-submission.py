@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -23,7 +22,6 @@ else:
     print('CUDA is available!  Training on GPU ...')
 
 
-# In[2]:
 
 
 import pickle
@@ -50,7 +48,6 @@ import warnings
 warnings.filterwarnings(action='ignore', category=DeprecationWarning)
 
 
-# In[3]:
 
 
 SEED = 42
@@ -62,7 +59,6 @@ torch.cuda.manual_seed(SEED)
 torch.backends.cudnn.deterministic = True
 
 
-# In[4]:
 
 
 DATA_MODES = ['train', 'val', 'test']
@@ -70,7 +66,6 @@ RESCALE_SIZE = 224
 DEVICE = torch.device("cuda")
 
 
-# In[5]:
 
 
 import albumentations as A
@@ -99,7 +94,6 @@ augmentations_pipeline = A.Compose(
 )
 
 
-# In[6]:
 
 
 class SimpsonsDataset(Dataset):
@@ -159,7 +153,6 @@ class SimpsonsDataset(Dataset):
     return np.array(image)
 
 
-# In[7]:
 
 
 TRAIN_DIR = Path('/kaggle/input/simpsons4/train')
@@ -169,7 +162,6 @@ train_val_files = sorted(list(TRAIN_DIR.rglob('*.jpg')))
 test_files = sorted(list(TEST_DIR.rglob('*.jpg')))
 
 
-# In[8]:
 
 
 from sklearn.model_selection import train_test_split
@@ -178,14 +170,12 @@ train_val_labels = [path.parent.name for path in train_val_files]
 train_files, val_files = train_test_split(train_val_files, test_size=0.3,                                           stratify=train_val_labels)
 
 
-# In[9]:
 
 
 val_dataset = SimpsonsDataset(val_files, mode='val')
 train_dataset = SimpsonsDataset(train_files, mode='train')
 
 
-# In[10]:
 
 
 def imshow(img, title=None, plt_ax=plt, default=False):
@@ -200,7 +190,6 @@ def imshow(img, title=None, plt_ax=plt, default=False):
   plt_ax.grid(False)
 
 
-# In[11]:
 
 
 fig, ax = plt.subplots(nrows=3, ncols=3, figsize=(10,10), sharex=True, sharey=True)
@@ -212,7 +201,6 @@ for fig_x in ax.flatten():
     imshow(im_val.data.cpu(),           title=img_label,plt_ax=fig_x)
 
 
-# In[12]:
 
 
 class ConvModel(nn.Module):
@@ -274,7 +262,6 @@ class ConvModel(nn.Module):
         return logits
 
 
-# In[13]:
 
 
 def fit_epoch(model, train_loader, criterion, optimizer):
@@ -350,7 +337,6 @@ def train(train_files, val_files, model, epochs, batch_size):
     return history
 
 
-# In[14]:
 
 
 def predict(model, test_loader):
@@ -367,7 +353,6 @@ def predict(model, test_loader):
     return probs
 
 
-# In[15]:
 
 
 n_classes = len(np.unique(train_val_labels))
@@ -375,19 +360,16 @@ model = ConvModel(n_classes).to(DEVICE)
 print(model)
 
 
-# In[16]:
 
 
 history = train(train_dataset, val_dataset, model=model, epochs=10, batch_size=32)
 
 
-# In[17]:
 
 
 loss, acc, val_loss, val_acc = zip(*history)
 
 
-# In[18]:
 
 
 plt.figure(figsize=(15, 9))
@@ -399,7 +381,6 @@ plt.ylabel("loss")
 plt.show()
 
 
-# In[19]:
 
 
 label_encoder = pickle.load(open("label_encoder.pkl", 'rb'))
@@ -412,14 +393,12 @@ preds = label_encoder.inverse_transform(np.argmax(probs, axis=1))
 test_filenames = [path.name for path in test_dataset.files]
 
 
-# In[20]:
 
 
 submit = pd.DataFrame({'Id': test_filenames, 'Expected': preds})
 submit.head()
 
 
-# In[21]:
 
 
 submit.to_csv('submission.csv', index=False)

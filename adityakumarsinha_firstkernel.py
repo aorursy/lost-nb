@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -15,7 +14,6 @@ import math
 import matplotlib.patches as patches
 
 
-# In[2]:
 
 
 import os
@@ -43,14 +41,12 @@ pd.set_option('display.max_columns', 50)
 pd.set_option('display.max_rows', 150)
 
 
-# In[3]:
 
 
 from tqdm.auto import tqdm
 tqdm.pandas()
 
 
-# In[4]:
 
 
 def standardise_features(train):
@@ -111,7 +107,6 @@ def back_direction(orientation):
         return 0
 
 
-# In[5]:
 
 
 def voronoi_finite_polygons_2d(vor, radius=None):
@@ -427,7 +422,6 @@ def getVornoiAreaRusher_after_1_second(play1):
             #rusher_cell_area.append(pgn.area)
 
 
-# In[6]:
 
 
 #Features from other kernel
@@ -765,7 +759,6 @@ def create_features(df, deploy=False):
 print()
 
 
-# In[7]:
 
 
 def getFeaturesAfterRemovingNearestDefense(play1,th1=0.5,th2=0.5):
@@ -1016,7 +1009,6 @@ def create_features(df, deploy=False):
     return basetable
 
 
-# In[8]:
 
 
 ## Create top3 defences near the rusher, distnace
@@ -1026,7 +1018,6 @@ def create_features(df, deploy=False):
 ## Calculate Voronoi area of the rusher removing blocked defenders
 
 
-# In[9]:
 
 
 if TRAIN_OFFLINE:
@@ -1035,13 +1026,11 @@ else:
     train = pd.read_csv('/kaggle/input/nfl-big-data-bowl-2020/train.csv', dtype={'WindSpeed': 'object'})
 
 
-# In[10]:
 
 
 train.loc[train['Season'] == 2017, 'S'] = (train['S'][train['Season'] == 2017] - 2.4355) / 1.2930 * 1.4551 + 2.7570
 
 
-# In[11]:
 
 
 #trainH =train.head(11000)
@@ -1050,31 +1039,26 @@ train.loc[train['Season'] == 2017, 'S'] = (train['S'][train['Season'] == 2017] -
 #train = pd.concat([trainH,trainT]).reset_index(drop=True)
 
 
-# In[12]:
 
 
 print(train.columns,train.shape)
 
 
-# In[13]:
 
 
 outcomes = train[['GameId','PlayId','Yards']].drop_duplicates()
 
 
-# In[14]:
 
 
 get_ipython().run_line_magic('time', 'train_basetable = create_features(train, False)')
 
 
-# In[15]:
 
 
 print(train_basetable.corr()['Yards'])
 
 
-# In[16]:
 
 
 wt= train[train.Rusher][['PlayId','PlayerWeight']].copy()
@@ -1083,13 +1067,11 @@ train_basetable = train_basetable.fillna(-99)
 train_basetable['AW'] = train_basetable.A / train_basetable.PlayerWeight
 
 
-# In[17]:
 
 
 train_basetable.fillna(-199,inplace=True)
 
 
-# In[18]:
 
 
 X = train_basetable.copy()
@@ -1102,7 +1084,6 @@ for idx, target in enumerate(list(yards)):
 X.drop(['GameId_x','GameId_y'], axis=1, inplace=True)
 
 
-# In[19]:
 
 
 crm = ['min_dist', 
@@ -1118,7 +1099,6 @@ crm = ['min_dist',
 #X.drop(crm, axis=1, inplace=True)
 
 
-# In[20]:
 
 
 tormcols=['back_oriented_down_field', 'back_moving_down_field', 'std_dist', 'def_std_dist',
@@ -1136,7 +1116,6 @@ tormcols=['back_oriented_down_field', 'back_moving_down_field', 'std_dist', 'def
 X=X.drop(tormcols,axis=1)
 
 
-# In[21]:
 
 
 for c in X.columns:
@@ -1144,14 +1123,12 @@ for c in X.columns:
     X[c] = X[c].replace(np.inf,199)
 
 
-# In[22]:
 
 
 scaler = StandardScaler()
 X1 = scaler.fit_transform(X.drop(['PlayId','Yards'],axis=1))
 
 
-# In[23]:
 
 
 #X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.15, random_state=12345)
@@ -1159,7 +1136,6 @@ X1 = scaler.fit_transform(X.drop(['PlayId','Yards'],axis=1))
 #print(y_train.shape, y_val.shape)
 
 
-# In[24]:
 
 
 from keras.layers import Dense,Input,Flatten,concatenate,Dropout,Lambda
@@ -1212,7 +1188,6 @@ class CRPSCallback(Callback):
     
 
 
-# In[25]:
 
 
 def get_model(x_tr,y_tr,x_val,y_val):
@@ -1262,14 +1237,12 @@ def get_model(x_tr,y_tr,x_val,y_val):
     return model,crps,y_pred1
 
 
-# In[26]:
 
 
 X_2017 = X[X.PlayId< 20180906000000].copy().reset_index(drop=True)
 X_2018 = X[X.PlayId> 20180906000000].copy().reset_index(drop=True)
 
 
-# In[27]:
 
 
 from sklearn.model_selection import train_test_split, KFold,StratifiedKFold
@@ -1317,7 +1290,6 @@ for k in range(3):
 print("mean crps is %f"%np.mean(crps_csv))        
 
 
-# In[28]:
 
 
 def predict(x_te):
@@ -1333,13 +1305,11 @@ def predict(x_te):
     return y_pred
 
 
-# In[29]:
 
 
 print("mean crps is %f"%np.mean(crps_csv))
 
 
-# In[30]:
 
 
 get_ipython().run_cell_magic('time', '', "if  TRAIN_OFFLINE==False:\n    from kaggle.competitions import nflrush\n    env = nflrush.make_env()\n    iter_test = env.iter_test()\n\n    for (test_df, sample_prediction_df) in iter_test:\n        print(test_df.shape)\n        basetable = create_features(test_df, deploy=True)\n        wt= test_df[test_df.Rusher][['PlayId','PlayerWeight']].copy()\n        basetable = basetable.merge(wt,left_on=['PlayId'],right_on=['PlayId'],how='left')\n        basetable = basetable.fillna(-99)\n        basetable['AW'] = basetable.A / basetable.PlayerWeight\n        \n        basetable.drop(['GameId_x','GameId_y','PlayId'], axis=1, inplace=True)#\n        basetable.drop(tormcols, axis=1, inplace=True)\n        #print(basetable.shape)\n        scaled_basetable = scaler.transform(basetable)\n\n        y_pred = predict(scaled_basetable)\n        y_pred = np.clip(np.cumsum(y_pred, axis=1), 0, 1).tolist()[0]\n\n        preds_df = pd.DataFrame(data=[y_pred], columns=sample_prediction_df.columns)\n        env.predict(preds_df)\n\n    env.write_submission_file()")

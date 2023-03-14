@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # set model and data directory
@@ -11,7 +10,6 @@ model_dir = '../input/wheat-mrcnn-weights/'
 data_dir = '../input/global-wheat-detection'
 
 
-# In[ ]:
 
 
 #copy files to working directory + update model file so it works w/ tf2
@@ -19,7 +17,6 @@ get_ipython().run_line_magic('cp', '-r ../input/mask-rcnn2/Mask_RCNN/Mask_RCNN .
 get_ipython().run_line_magic('cp', '../input/mask-rcnn2/model.py ./Mask_RCNN/mrcnn/model.py')
 
 
-# In[ ]:
 
 
 import pandas as pd
@@ -45,7 +42,6 @@ import keras
 print(keras.__version__)
 
 
-# In[ ]:
 
 
 #setup mrcnn for the current system
@@ -54,7 +50,6 @@ get_ipython().system('python setup.py install')
 get_ipython().run_line_magic('cd', '../')
 
 
-# In[ ]:
 
 
 #Functions for Wheat Images
@@ -111,7 +106,6 @@ class WheatDataset(Dataset):
   
 
 
-# In[ ]:
 
 
 # test/val set
@@ -121,7 +115,6 @@ test_set.prepare()
 print('Test: %d' % len(test_set.image_ids))
 
 
-# In[ ]:
 
 
 # define the prediction configuration
@@ -140,7 +133,6 @@ class PredictionConfig(Config):
 	DETECTION_NMS_THRESHOLD = 0.3
 
 
-# In[ ]:
 
 
 # create config
@@ -151,13 +143,11 @@ model = MaskRCNN(mode='inference', model_dir=model_dir, config=cfg)
 model.load_weights('../input/wheat-mrcnn-weights/mask_rcnn_wheat_cfg_0033.h5', by_name=True)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 #WBF using notebook from Alex Shonenkov
@@ -244,7 +234,6 @@ class TTACompose(BaseWheatTTA):
         return self.prepare_boxes(boxes)
 
 
-# In[ ]:
 
 
 images = []
@@ -258,7 +247,6 @@ for image_id in dataset.image_ids:
     
 
 
-# In[ ]:
 
 
 # use WBF
@@ -292,7 +280,6 @@ def make_tta_predictions(images, score_threshold=0.25):
     return predictions
 
 
-# In[ ]:
 
 
 # plot a number of photos with ground truth and predictions
@@ -337,7 +324,6 @@ def predict_im(dir):
   pyplot.show()
 
 
-# In[ ]:
 
 
 for image_id in test_set.image_ids:
@@ -345,7 +331,6 @@ for image_id in test_set.image_ids:
   predict_im(test_set.image_reference(image_id))
 
 
-# In[ ]:
 
 
 #compute the submission csv for the test images
@@ -375,7 +360,6 @@ def submission(dataset, model, cfg):
   return sub
 
 
-# In[ ]:
 
 
 import csv
@@ -385,7 +369,6 @@ print(sub)
 sub.to_csv('submission.csv', index=False)
 
 
-# In[ ]:
 
 
 final = True

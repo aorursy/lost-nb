@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 batch_size = 4096
@@ -11,7 +10,6 @@ VALID_SAMPLES = 75
 TEST_SAMPLES = 50
 
 
-# In[2]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -36,7 +34,6 @@ base_dir = os.path.join('..', 'input')
 test_path = os.path.join(base_dir, 'test_simplified.csv')
 
 
-# In[3]:
 
 
 from ast import literal_eval
@@ -77,13 +74,11 @@ def read_batch(samples=5,
     return full_df
 
 
-# In[4]:
 
 
 
 
 
-# In[4]:
 
 
 train_args = dict(samples=TRAIN_SAMPLES, 
@@ -103,13 +98,11 @@ word_encoder.fit(train_df['word'])
 print('words', len(word_encoder.classes_), '=>', ', '.join([x for x in word_encoder.classes_]))
 
 
-# In[5]:
 
 
 
 
 
-# In[5]:
 
 
 def get_Xy(in_df):
@@ -127,7 +120,6 @@ test_X, test_y = get_Xy(test_df)
 print(train_X.shape)
 
 
-# In[6]:
 
 
 ig, m_axs = plt.subplots(3,3, figsize = (16, 16))
@@ -151,7 +143,6 @@ for c_id, c_ax in zip(rand_idxs, m_axs.flatten()):
     c_ax.set_title(word_encoder.classes_[np.argmax(train_y[c_id])])
 
 
-# In[7]:
 
 
 from keras.models import Sequential
@@ -183,7 +174,6 @@ stroke_read_model.compile(optimizer = 'adam',
 stroke_read_model.summary()
 
 
-# In[8]:
 
 
 weight_path="{}_weights.best.hdf5".format('stroke_lstm_model')
@@ -200,7 +190,6 @@ early = EarlyStopping(monitor="val_loss",
 callbacks_list = [checkpoint, early, reduceLROnPlat]
 
 
-# In[9]:
 
 
 from IPython.display import clear_output
@@ -213,7 +202,6 @@ stroke_read_model.summary()
 #clear_output()
 
 
-# In[10]:
 
 
 stroke_read_model.load_weights(weight_path)
@@ -221,41 +209,35 @@ lstm_results = stroke_read_model.evaluate(test_X, test_y, batch_size = 4096)
 print('Accuracy: %2.1f%%, Top 3 Accuracy %2.1f%%' % (100*lstm_results[1], 100*lstm_results[2]))
 
 
-# In[11]:
 
 
 sub_df = pd.read_csv(test_path)
 sub_df['drawing'] = sub_df['drawing'].map(_stack_it)
 
 
-# In[12]:
 
 
 sub_vec = np.stack(sub_df['drawing'].values, 0)
 sub_pred = stroke_read_model.predict(sub_vec, verbose=True, batch_size=4096)
 
 
-# In[13]:
 
 
 top_3_pred = [word_encoder.classes_[np.argsort(-1*c_pred)[:3]] for c_pred in sub_pred]
 
 
-# In[14]:
 
 
 top_3_pred = [' '.join([col.replace(' ', '_') for col in row]) for row in top_3_pred]
 top_3_pred[:3]
 
 
-# In[15]:
 
 
 sub_df['word'] = top_3_pred
 sub_df[['key_id', 'word']].to_csv('submission.csv', index=False)
 
 
-# In[16]:
 
 
 

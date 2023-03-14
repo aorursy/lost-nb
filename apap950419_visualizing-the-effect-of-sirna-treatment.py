@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -71,7 +70,6 @@ NUM_WELL_ROWS = 24
 NUM_WELL_COLS = 16
 
 
-# In[2]:
 
 
 def load_image_tensor(experiment, plate, well, site, channels=CHANNELS):
@@ -90,7 +88,6 @@ def load_image_tensor(experiment, plate, well, site, channels=CHANNELS):
     return np.array(img_channels).transpose(1, 2, 0)
 
 
-# In[3]:
 
 
 # Copied from
@@ -126,7 +123,6 @@ def convert_tensor_to_rgb(t, channels=CHANNELS, vmax=255, rgb_map=RGB_MAP):
     return im
 
 
-# In[4]:
 
 
 def visualize(experiment, plate, well, site, channels=CHANNELS, ax=None):
@@ -141,7 +137,6 @@ def visualize(experiment, plate, well, site, channels=CHANNELS, ax=None):
     return img
 
 
-# In[5]:
 
 
 well_width = 24
@@ -155,7 +150,6 @@ for i in range(1, 7):
     visualize('HUVEC-01', 1, 'B02', 1, channels=channels, ax=ax);
 
 
-# In[6]:
 
 
 well2coord = dict()
@@ -171,7 +165,6 @@ def is_valid_well(well):
     return well2coord[well][2]
 
 
-# In[7]:
 
 
 def get_sirna(experiment, plate, well):
@@ -179,7 +172,6 @@ def get_sirna(experiment, plate, well):
     return train_meta[mask].sirna.values[0], train_meta[mask].well_type.values[0]
 
 
-# In[8]:
 
 
 def show_pseudoplate(experiment, plate, site=1, channels=CHANNELS):
@@ -201,13 +193,11 @@ def show_pseudoplate(experiment, plate, site=1, channels=CHANNELS):
             visualize(experiment, plate, well, site=site, channels=channels, ax=ax)
 
 
-# In[9]:
 
 
 show_pseudoplate('HUVEC-01', 1)
 
 
-# In[10]:
 
 
 def show_controls(experiment, plate, ax):
@@ -222,7 +212,6 @@ def show_controls(experiment, plate, ax):
     ax.set_aspect('equal')
 
 
-# In[11]:
 
 
 fig = plt.figure(figsize=(12, 30))
@@ -236,7 +225,6 @@ for experiment in range(1, num_experiments + 1):
         show_controls(experiment=exp, plate=plate, ax=ax)
 
 
-# In[12]:
 
 
 fig = plt.figure(figsize=(12, 60))
@@ -250,7 +238,6 @@ for experiment in range(1, num_experiments + 1):
         show_controls(experiment=exp, plate=plate, ax=ax)
 
 
-# In[13]:
 
 
 fig = plt.figure(figsize=(12, 30))
@@ -264,7 +251,6 @@ for experiment in range(1, num_experiments + 1):
         show_controls(experiment=exp, plate=plate, ax=ax)
 
 
-# In[14]:
 
 
 fig = plt.figure(figsize=(12, 13))
@@ -278,7 +264,6 @@ for experiment in range(1, num_experiments + 1):
         show_controls(experiment=exp, plate=plate, ax=ax)
 
 
-# In[15]:
 
 
 def get_well_with_sirna(experiment, plate, sirna):
@@ -286,7 +271,6 @@ def get_well_with_sirna(experiment, plate, sirna):
     return train_meta[mask].well.values[0]
 
 
-# In[16]:
 
 
 def visualize_cells_with_sirna(experiment, sirna, channels=CHANNELS):
@@ -311,109 +295,91 @@ def visualize_cells_with_sirna(experiment, sirna, channels=CHANNELS):
         ax2.set_title(f'{experiment} Plate{plate}, siRNA {positive_sirna}', fontdict={'fontsize': title_fs})
 
 
-# In[17]:
 
 
 visualize_cells_with_sirna('HUVEC-01', 1109, channels=[1])
 
 
-# In[18]:
 
 
 visualize_cells_with_sirna('HUVEC-01', 1109, channels=[2])
 
 
-# In[19]:
 
 
 visualize_cells_with_sirna('HUVEC-01', 1109, channels=[3])
 
 
-# In[20]:
 
 
 visualize_cells_with_sirna('HUVEC-01', 1109, channels=[4])
 
 
-# In[21]:
 
 
 visualize_cells_with_sirna('HUVEC-01', 1109, channels=[5])
 
 
-# In[22]:
 
 
 visualize_cells_with_sirna('HUVEC-01', 1109, channels=[6])
 
 
-# In[23]:
 
 
 visualize_cells_with_sirna('HUVEC-01', 1109, channels=[1, 2, 3, 4, 5, 6])
 
 
-# In[24]:
 
 
 visualize_cells_with_sirna('HUVEC-02', 1109)
 
 
-# In[25]:
 
 
 visualize_cells_with_sirna('HUVEC-03', 1109)
 
 
-# In[26]:
 
 
 visualize_cells_with_sirna('HEPG2-01', 1109)
 
 
-# In[27]:
 
 
 visualize_cells_with_sirna('HEPG2-02', 1109)
 
 
-# In[28]:
 
 
 visualize_cells_with_sirna('HEPG2-03', 1109)
 
 
-# In[29]:
 
 
 visualize_cells_with_sirna('RPE-01', 1109)
 
 
-# In[30]:
 
 
 visualize_cells_with_sirna('RPE-02', 1109)
 
 
-# In[31]:
 
 
 visualize_cells_with_sirna('RPE-03', 1109)
 
 
-# In[32]:
 
 
 visualize_cells_with_sirna('U2OS-01', 1109)
 
 
-# In[33]:
 
 
 visualize_cells_with_sirna('U2OS-02', 1109)
 
 
-# In[34]:
 
 
 visualize_cells_with_sirna('U2OS-03', 1109)

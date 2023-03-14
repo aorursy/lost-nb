@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -14,20 +13,17 @@ if os.path.exists(GCLOUD_KEY):
     get_ipython().system('gcloud auth activate-service-account --key-file {GCLOUD_KEY}')
 
 
-# In[2]:
 
 
 BUCKET_NAME = "YOUR-BUCKET-NAME"
 REGION = 'us-central1'
 
 
-# In[3]:
 
 
 # !gsutil mb -l $REGION gs://$BUCKET_NAME
 
 
-# In[4]:
 
 
 # Import dependencies
@@ -55,7 +51,6 @@ RUN_TRAINING = False
 INSPECT_PREDICTIONS = False
 
 
-# In[5]:
 
 
 # Import training and test labels
@@ -69,7 +64,6 @@ del train_labels['grapheme']
 train_labels.iloc[:, 1:4] = train_labels.iloc[:, 1:4] + 1
 
 
-# In[6]:
 
 
 # Create empty array of labels for test set
@@ -82,7 +76,6 @@ test_labels = pd.DataFrame(np.concatenate(
 test_labels.columns = ['image_id', 'grapheme_root', 'vowel_diacritic', 'consonant_diacritic']
 
 
-# In[7]:
 
 
 # Get training and test image files
@@ -90,7 +83,6 @@ train_image_files = tf.io.gfile.glob('/kaggle/input/bengaliai-cv19/train_image_d
 test_image_files = tf.io.gfile.glob('/kaggle/input/bengaliai-cv19/test_image_data*')
 
 
-# In[8]:
 
 
 # Import and reshape image data
@@ -112,7 +104,6 @@ def reshape_image(data, ids, labels):
     return data, ids, labels
 
 
-# In[9]:
 
 
 # Convert images arrays to encoded JPG
@@ -121,7 +112,6 @@ def convert_to_encoded_jpg(data, ids, labels):
     return data, ids, labels
 
 
-# In[10]:
 
 
 # Convert integer to TFRecord feature
@@ -158,7 +148,6 @@ def write_tfrecord(filename, image_data, image_ids, image_labels, class_column):
     writer.close()
 
 
-# In[11]:
 
 
 # Preprocess image data and convert to a set of TFRecord files
@@ -196,7 +185,6 @@ def convert_to_tfrecords(file, labels, filename_pattern, class_column, create_va
         print('Wrote TFRecord file {}'.format(filename))
 
 
-# In[12]:
 
 
 # Create local directories to store preprocessed image data
@@ -208,7 +196,6 @@ if PREPROCESS_DATA:
         os.mkdir('/kaggle/tfrecord/consonant_diacritic')
 
 
-# In[13]:
 
 
 # For each classification problem (grapheme root, vowel diacritic, and consonant diacritic) preprocess
@@ -245,7 +232,6 @@ if PREPROCESS_DATA:
     
 
 
-# In[14]:
 
 
 # Copy the preprocessed TFRecords data to Cloud Storage
@@ -261,7 +247,6 @@ if PREPROCESS_DATA:
     get_ipython().system('gsutil ls {GCS_BUCKET}/tfrecord')
 
 
-# In[15]:
 
 
 # AI Platform Training job params
@@ -273,7 +258,6 @@ MASTER_MACHINE_TYPE='standard_v100'  # Machine that includes one NVIDIA Tesla V1
 RESNET_CONTAINER = 'gcr.io/aihub-c2t-containers/kfp-components/oob_algorithm/resnet'                    '@sha256:ea935b6bbf83055afb4ccc30d42947673cb6aa43be20d4aa173509e684b2d3b8'
 
 
-# In[16]:
 
 
 # Training for grapheme root classification problem
@@ -296,7 +280,6 @@ if RUN_TRAINING:
     get_ipython().system('gcloud ai-platform jobs submit training {JOB_NAME}         --master-image-uri {RESNET_CONTAINER}         --region {REGION}         --scale-tier {SCALE_TIER}         --master-machine-type {MASTER_MACHINE_TYPE}         --         --data {DATA}         --output-location {GR_OUTPUT_LOCATION}         --number-of-classes {NUMBER_OF_CLASSES}         --use-cache False         --resnet-depth {RESNET_DEPTH}         --training-steps {TRAINING_STEPS}         --batch-size {BATCH_SIZE}         --learning-rate {LEARNING_RATE}         --momentum {MOMENTUM}')
 
 
-# In[17]:
 
 
 # Training for consonant diacritic classification problem
@@ -319,7 +302,6 @@ if RUN_TRAINING:
     get_ipython().system('gcloud ai-platform jobs submit training {JOB_NAME}         --master-image-uri {RESNET_CONTAINER}         --region {REGION}         --scale-tier {SCALE_TIER}         --master-machine-type {MASTER_MACHINE_TYPE}         --         --data {DATA}         --output-location {CD_OUTPUT_LOCATION}         --number-of-classes {NUMBER_OF_CLASSES}         --use-cache False         --resnet-depth {RESNET_DEPTH}         --training-steps {TRAINING_STEPS}         --batch-size {BATCH_SIZE}         --learning-rate {LEARNING_RATE}         --momentum {MOMENTUM}')
 
 
-# In[18]:
 
 
 # Training for vowel diacritic classification problem
@@ -342,7 +324,6 @@ if RUN_TRAINING:
     get_ipython().system('gcloud ai-platform jobs submit training {JOB_NAME}         --master-image-uri {RESNET_CONTAINER}         --region {REGION}         --scale-tier {SCALE_TIER}         --master-machine-type {MASTER_MACHINE_TYPE}         --         --data {DATA}         --output-location {VD_OUTPUT_LOCATION}         --number-of-classes {NUMBER_OF_CLASSES}         --use-cache False         --resnet-depth {RESNET_DEPTH}         --training-steps {TRAINING_STEPS}         --batch-size {BATCH_SIZE}         --learning-rate {LEARNING_RATE}         --momentum {MOMENTUM}')
 
 
-# In[19]:
 
 
 # Copy all exported models into a single folder that can be uploaded to the Kaggle kernel
@@ -357,7 +338,6 @@ if RUN_TRAINING:
     get_ipython().system('gsutil cp -r {os.path.dirname(vd_saved_model_dir[-1])} {GCS_BUCKET}/assets/vowel_diacritic')
 
 
-# In[20]:
 
 
 prediction_script = """
@@ -524,13 +504,11 @@ if RUN_TRAINING:
     get_ipython().system('gsutil cp /kaggle/generate_predictions.py {GCS_BUCKET}/assets/generate_predictions.py')
 
 
-# In[21]:
 
 
 print("gsutil -m cp -r {}/assets YOUR/LOCAL/PATH".format(GCS_BUCKET))
 
 
-# In[22]:
 
 
 # Replace 'assets' with the name of your Kaggle dataset folder
@@ -541,28 +519,24 @@ PREDICTION_SCRIPT = '/kaggle/input/assets/generate_predictions.py'
 PREDICTION_BATCH_SIZE = 1024
 
 
-# In[23]:
 
 
 # Generate predictions for grapheme root
 get_ipython().system('python3 {PREDICTION_SCRIPT}     --data-dir "{TEST_DATA}"     --model-dir {GRAPHEME_ROOT_MODEL}     --prediction-batch-size {PREDICTION_BATCH_SIZE}     --prediction-file-name grapheme_root_predictions.csv')
 
 
-# In[24]:
 
 
 # Generate predictions for consonant diacritic
 get_ipython().system('python3 {PREDICTION_SCRIPT}     --data-dir "{TEST_DATA}"     --model-dir {CONSONANT_DIACRITIC_MODEL}     --prediction-batch-size {PREDICTION_BATCH_SIZE}     --prediction-file-name consonant_diacritic_predictions.csv')
 
 
-# In[25]:
 
 
 # Generate predictions for vowel diacritic
 get_ipython().system('python3 {PREDICTION_SCRIPT}     --data-dir "{TEST_DATA}"     --model-dir {VOWEL_DIACRITIC_MODEL}     --prediction-batch-size {PREDICTION_BATCH_SIZE}     --prediction-file-name vowel_diacritic_predictions.csv')
 
 
-# In[26]:
 
 
 # Import the predictions for each classification problem
@@ -582,7 +556,6 @@ vowel_diacritic_pred = vd_pred.predicted_class.values
 del vd_pred
 
 
-# In[27]:
 
 
 # Remove the local files storing the predictions
@@ -591,7 +564,6 @@ get_ipython().system('rm consonant_diacritic_predictions.csv')
 get_ipython().system('rm vowel_diacritic_predictions.csv')
 
 
-# In[28]:
 
 
 # Create dataframe with predictions and ids
@@ -615,7 +587,6 @@ del submission['row_id_number']
 submission.to_csv('submission.csv', index=False)
 
 
-# In[29]:
 
 
 # Inspect submission file
@@ -629,7 +600,6 @@ if INSPECT_PREDICTIONS:
                 break
 
 
-# In[30]:
 
 
 if INSPECT_PREDICTIONS:
@@ -651,7 +621,6 @@ if INSPECT_PREDICTIONS:
     print(predictions.head())
 
 
-# In[31]:
 
 
 if INSPECT_PREDICTIONS and re.search('train', TEST_DATA):
@@ -663,7 +632,6 @@ if INSPECT_PREDICTIONS and re.search('train', TEST_DATA):
     train_labels_subset.head()
 
 
-# In[32]:
 
 
 if INSPECT_PREDICTIONS and re.search('train', TEST_DATA):

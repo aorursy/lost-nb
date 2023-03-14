@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -23,7 +22,6 @@ import gc #内存管理
 sns.set_style('white')
 
 
-# In[2]:
 
 
 debug = False
@@ -35,20 +33,17 @@ else:
     test_df = pd.read_csv('../input/test_V2.csv')
 
 
-# In[3]:
 
 
 print("train data's shape is:",train_df.shape)
 print("test data's shape is:",test_df.shape)
 
 
-# In[4]:
 
 
 train_df.head()
 
 
-# In[5]:
 
 
 # Memory saving function credit to https://www.kaggle.com/gemartin/load-data-reduce-memory-usage
@@ -89,100 +84,84 @@ def reduce_mem_usage(df):
     return df
 
 
-# In[6]:
 
 
 train_df = reduce_mem_usage(train_df)
 test_df = reduce_mem_usage(test_df)
 
 
-# In[7]:
 
 
 train_df.info()
 
 
-# In[8]:
 
 
 train_df.head(5)
 
 
-# In[9]:
 
 
 train_df.loc[:,train_df.isnull().any()].columns.tolist()
 
 
-# In[10]:
 
 
 train_df[train_df['winPlacePerc'].isnull()]
 
 
-# In[11]:
 
 
 train_df.drop(2744604,inplace = True)
 
 
-# In[12]:
 
 
 test_df.loc[:,train_df.isnull().any()].columns.tolist()
 
 
-# In[13]:
 
 
 qt_df = pd.DataFrame(train_df.quantile(0.99));
 qt_df
 
 
-# In[14]:
 
 
 train_df['killsWithoutMoving'] = (train_df['kills'] > 0) & (train_df['walkDistance'] == 0)                                                         & (train_df['swimDistance'] == 0)
 train_df[train_df['killsWithoutMoving'] == True].head()
 
 
-# In[15]:
 
 
 train_df.drop(train_df[train_df['killsWithoutMoving'] == True].index,inplace = True)
 
 
-# In[16]:
 
 
 train_df.drop('killsWithoutMoving',axis = 1,inplace = True)
 
 
-# In[17]:
 
 
 train_df['roadKills'].value_counts().sort_values(ascending = False)
 
 
-# In[18]:
 
 
 train_df[train_df['roadKills'] > 7].head()
 
 
-# In[19]:
 
 
 train_df.drop(train_df[train_df['roadKills'] > 7].index,inplace = True)
 
 
-# In[20]:
 
 
 sns.set_style('darkgrid')
 
 
-# In[21]:
 
 
 train_df['headshotRate'] = train_df['headshotKills'] / train_df['kills']
@@ -190,99 +169,83 @@ train_df['headshotRate'] = train_df['headshotRate'].fillna(0)
 train_df['headshotRate'].replace(np.inf, 0, inplace=True)
 
 
-# In[22]:
 
 
 train_df[(train_df['headshotRate'] == 1) & (train_df['kills'] > 7)].head()
 
 
-# In[23]:
 
 
 sns.countplot(train_df['kills'][(train_df['headshotRate'] == 1) & (train_df['kills'] > 7)])
 
 
-# In[24]:
 
 
 train_df.drop(train_df[(train_df['headshotRate'] == 1) & (train_df['kills'] > 7)].index,inplace = True)
 
 
-# In[25]:
 
 
 plt.figure(figsize=(12,4))
 _ = sns.distplot(train_df['longestKill'], bins=10)
 
 
-# In[26]:
 
 
 train_df[['Id','longestKill','winPlacePerc']][train_df['longestKill'] > 800].head()
 
 
-# In[27]:
 
 
 train_df.drop(train_df[train_df['longestKill'] > 800].index,inplace = True)
 
 
-# In[28]:
 
 
 sns.distplot(train_df['rideDistance'],bins = 10)
 
 
-# In[29]:
 
 
 train_df[train_df['rideDistance'] > 25000].head()
 
 
-# In[30]:
 
 
 train_df.drop(train_df[train_df['rideDistance'] > 25000].index,inplace = True)
 
 
-# In[31]:
 
 
 sns.distplot(train_df['swimDistance'],bins = 10)
 
 
-# In[32]:
 
 
 train_df.drop(train_df[train_df['swimDistance'] > 2000].index,inplace = True)
 
 
-# In[33]:
 
 
 fig = plt.figure(figsize = (8,4))
 sns.distplot(train_df['walkDistance'],bins = 10)
 
 
-# In[34]:
 
 
 train_df.drop(train_df[train_df['walkDistance'] > 15000].index,inplace = True)
 
 
-# In[35]:
 
 
 train_df.shape
 
 
-# In[36]:
 
 
 train_df.groupby('matchType')['maxPlace'].agg('mean')
 
 
-# In[37]:
 
 
 train_df['playersJoined'] = train_df.groupby('matchId')['matchId'].transform('count')
@@ -292,7 +255,6 @@ plt.title('playersJoined')
 plt.show()
 
 
-# In[38]:
 
 
 train_df['killsNorm'] = train_df['kills']*((100-train_df['playersJoined'])/100 + 1)
@@ -301,20 +263,17 @@ train_df['maxPlaceNorm'] = train_df['maxPlace']*((100-train_df['playersJoined'])
 train_df['matchDurationNorm'] = train_df['matchDuration']*((100-train_df['playersJoined'])/100 + 1)
 
 
-# In[39]:
 
 
 _ = sns.distplot(train_df['headshotRate'],bins = 10,kde = False)
 
 
-# In[40]:
 
 
 data = train_df.copy()
 data['headshotRate'] = pd.cut(data['headshotRate'], [0, 0.2, 0.4, 0.6, 0.8,1], labels=['0-.2','.2-.4', '.4-.6', '.6-.8','.8-1.0'])
 
 
-# In[41]:
 
 
 plt.figure(figsize=(10,6))
@@ -322,32 +281,27 @@ sns.boxplot(x="headshotRate", y="winPlacePerc", data= data)
 plt.show()
 
 
-# In[42]:
 
 
 del data
 
 
-# In[43]:
 
 
 train_df['totalDistance'] = train_df['walkDistance']+ train_df['rideDistance']                                         +train_df['swimDistance']
 
 
-# In[44]:
 
 
 sns.set_palette("RdBu")
 _ = sns.jointplot(x = 'totalDistance',y = 'winPlacePerc',data = train_df                  ,kind = 'scatter',s = 5)
 
 
-# In[45]:
 
 
 train_df['healsAndBoosts'] = train_df['heals'] + train_df['boosts']
 
 
-# In[46]:
 
 
 sns.set_palette("tab20c")
@@ -355,7 +309,6 @@ sns.pairplot(train_df[['healsAndBoosts','heals','boosts','winPlacePerc']],
             plot_kws =dict(s = 4))
 
 
-# In[47]:
 
 
 train_df['killPlaceInternal'] = train_df['killPlace'] / train_df['maxPlace']
@@ -363,14 +316,12 @@ train_df['killPlaceInternal'].fillna(0, inplace=True)
 train_df['killPlaceInternal'].replace(np.inf, 0, inplace=True)
 
 
-# In[48]:
 
 
 data = train_df.copy()
 data['killPlaceInternal'] = pd.cut(data['killPlaceInternal'], [0, 0.2, 0.4, 0.6, 0.8,1], labels=['0-.2','.2-.4', '.4-.6', '.6-.8','.8-1.0'])
 
 
-# In[49]:
 
 
 plt.figure(figsize=(10,6))
@@ -378,7 +329,6 @@ sns.boxplot(x="killPlaceInternal", y="winPlacePerc", data= data)
 plt.show()
 
 
-# In[50]:
 
 
 train_df['walkPerboost'] = train_df['walkDistance'] / train_df['boosts']
@@ -386,13 +336,11 @@ train_df['walkPerboost'].fillna(0,inplace = True)
 train_df['walkPerboost'].replace(np.inf, 0, inplace=True)
 
 
-# In[51]:
 
 
 sns.jointplot(x = 'walkPerboost',y = 'winPlacePerc',data = train_df                  ,kind = 'scatter',s = 5)
 
 
-# In[52]:
 
 
 train_df['walkPerHeal'] = train_df['walkDistance'] / train_df['heals']
@@ -400,13 +348,11 @@ train_df['walkPerHeal'].fillna(0,inplace = True)
 train_df['walkPerHeal'].replace(np.inf, 0, inplace=True)
 
 
-# In[53]:
 
 
 sns.jointplot(x = 'walkPerHeal',y = 'winPlacePerc',data = train_df                  ,kind = 'scatter',s = 5)
 
 
-# In[54]:
 
 
 import shap
@@ -415,7 +361,6 @@ from sklearn.model_selection import train_test_split
 shap.initjs()
 
 
-# In[55]:
 
 
 target = 'winPlacePerc'
@@ -423,7 +368,6 @@ cols_drop = ['Id', 'groupId', 'matchId', 'matchType', target]
 cols_fit = [col for col in train_df.columns if col not in cols_drop]
 
 
-# In[56]:
 
 
 from lightgbm import LGBMRegressor
@@ -438,7 +382,6 @@ params = {
 train_X, val_X, train_y,val_y = train_test_split(train_df[cols_fit],train_df[target],test_size = 0.1,random_state = 1)
 
 
-# In[57]:
 
 
 model = LGBMRegressor(**params)
@@ -450,39 +393,33 @@ model.fit(
 )
 
 
-# In[58]:
 
 
 explainer = shap.TreeExplainer(model)
 shap_values = explainer.shap_values(val_X)
 
 
-# In[59]:
 
 
 shap.summary_plot(shap_values, val_X, plot_type='bar')
 
 
-# In[60]:
 
 
 shap.summary_plot(shap_values, val_X, feature_names=cols_fit)
 
 
-# In[61]:
 
 
 train_df.drop(['kills','matchDuration','heals','headshotRate','damageDealtNorm',               'swimDistance','walkPerHeal','teamKills','roadKills','vehicleDestroys'],
               axis = 1,inplace = True)
 
 
-# In[62]:
 
 
 train_df.shape
 
 
-# In[63]:
 
 
 def feature_engineering(data,is_train = True):
@@ -569,47 +506,40 @@ def feature_engineering(data,is_train = True):
     return X,y,feature_names,test_idx
 
 
-# In[64]:
 
 
 #x_train是训练数据，y_train是标签，这里x_train和x_test都是没有matchId和groupId的
 x_train,y_train,train_columns,_ = feature_engineering(train_df,True)
 
 
-# In[65]:
 
 
 x_test,_,_,test_idx = feature_engineering(train_df,False)
 
 
-# In[66]:
 
 
 x_train = reduce_mem_usage(x_train)
 x_test = reduce_mem_usage(x_test)
 
 
-# In[67]:
 
 
 x_train = reduce_mem_usage(x_train)
 x_test = reduce_mem_usage(x_test)
 
 
-# In[68]:
 
 
 x_train.info()
 
 
-# In[69]:
 
 
 del train_df
 gc.collect()
 
 
-# In[70]:
 
 
 x_test['killsNorm'] = x_test['kills']*((100- x_test['playersJoined'])/100 + 1)
@@ -629,20 +559,17 @@ x_test['walkPerboost'].fillna(0,inplace = True)
 x_test['walkPerboost'].replace(np.inf, 0, inplace=True)
 
 
-# In[71]:
 
 
 x_test.drop(['kills','matchDuration','heals',               'swimDistance','teamKills','roadKills','vehicleDestroys'],
               axis = 1,inplace = True)
 
 
-# In[72]:
 
 
 gc.collect()
 
 
-# In[73]:
 
 
 import os
@@ -653,7 +580,6 @@ from sklearn.metrics import mean_absolute_error
 import lightgbm as lgb
 
 
-# In[74]:
 
 
 folds = KFold(n_splits = 3,random_state = 6)
@@ -707,7 +633,6 @@ end = time.time()
 print("Take time:",(end - start))
 
 
-# In[75]:
 
 
 cols = feature_importance_df[['feature','importance']].groupby("feature").                            mean().sort_values(by = 'importance',ascending = False)[:50].index
@@ -715,7 +640,6 @@ cols = feature_importance_df[['feature','importance']].groupby("feature").      
 best_features = feature_importance_df.loc[feature_importance_df.feature.isin(cols)]
 
 
-# In[76]:
 
 
 plt.figure(figsize = (14,10))
@@ -725,7 +649,6 @@ plt.tight_layout()
 plt.savefig('lgbm_importance.png')
 
 
-# In[77]:
 
 
 f, ax = plt.subplots(figsize=(14, 14))
@@ -735,7 +658,6 @@ plt.ylabel("predict_y")
 plt.show()
 
 
-# In[78]:
 
 
 df_test = pd.read_csv('../input/test_V2.csv')
@@ -767,7 +689,6 @@ submission = df_test[['Id', 'winPlacePerc']]
 submission.to_csv('submission.csv', index=False)
 
 
-# In[79]:
 
 
 

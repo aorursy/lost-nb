@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import pandas as pd
@@ -34,7 +33,6 @@ import gc
 gc.enable()
 
 
-# In[ ]:
 
 
 import os
@@ -45,20 +43,17 @@ test = pd.read_csv('../input/create-extracted-json-fields-dataset/extracted_fiel
 train.shape, test.shape
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 traincolumns_1 = train.columns
 traincolumns_1
 
 
-# In[ ]:
 
 
 train_store_1 = pd.read_csv('../input/exported-google-analytics-data/Train_external_data.csv', low_memory=False, skiprows=6, dtype={"Client Id":'str'})
@@ -70,14 +65,12 @@ dataset.info()
 del dataset
 
 
-# In[ ]:
 
 
 for df in [train_store_1, train_store_2, test_store_1, test_store_2]:
     df["visitId"] = df["Client Id"].apply(lambda x: x.split('.', 1)[1]).astype(np.int64)
 
 
-# In[ ]:
 
 
 train = train.merge(pd.concat([train_store_1, train_store_2], sort=False), how="left", on="visitId")
@@ -90,19 +83,16 @@ leakcolumns = [x for x in train.columns if x not in traincolumns_1]
 leakcolumns
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 train.info()
 
 
-# In[ ]:
 
 
 train['has_revenue'] = train['totals.transactionRevenue'].apply(lambda x: 1 if x > 0 else 0)
@@ -124,7 +114,6 @@ for df in [train, test]:
     ).astype(np.int64) // 1e9 // 60 // 60
 
 
-# In[ ]:
 
 
 def missing_values(data):
@@ -147,14 +136,12 @@ missing_values(train_leak)
 print("\n Total of Sales % of train_leak: ", round((train_leak[train_leak['totals.transactionRevenue'] !=         np.nan]['totals.transactionRevenue'].count() / len(train_leak['totals.transactionRevenue']) * 100),4))
 
 
-# In[ ]:
 
 
 test.info()
 missing_values(test) 
 
 
-# In[ ]:
 
 
 for df in [train_store_1, train_store_2, test_store_1, test_store_2]:
@@ -162,7 +149,6 @@ for df in [train_store_1, train_store_2, test_store_1, test_store_2]:
 gc.collect()
 
 
-# In[ ]:
 
 
 def plotdisturbtion(df_train):
@@ -196,7 +182,6 @@ print('leak data row')
 plotdisturbtion(train_leak)
 
 
-# In[ ]:
 
 
 from plotly.offline import init_notebook_mode, iplot
@@ -269,27 +254,23 @@ def barplot_percentage(count_feat, color1= 'green',
     
 
 
-# In[ ]:
 
 
 for x in ['geoNetwork.country','geoNetwork.region','geoNetwork.metro','channelGrouping','browser.os']:
     barplot_percentage(x)
 
 
-# In[ ]:
 
 
 for x in ['geoNetwork.networkDomain','trafficSource.medium','device.browser']:
     barplot_percentage(x)
 
 
-# In[ ]:
 
 
 train.columns
 
 
-# In[ ]:
 
 
 print(train['has_revenue'].unique())
@@ -299,14 +280,12 @@ train_leak['totals.transactionRevenue'] = train_leak['totals.transactionRevenue'
 train.shape
 
 
-# In[ ]:
 
 
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-# In[ ]:
 
 
 def plotrevenues(col_1,col_2):
@@ -348,7 +327,6 @@ plotrevenues('visitNumber','sess_date_dow')
 # plotrevenues('sess_date_hours','sess_date_dom')
 
 
-# In[ ]:
 
 
 train_session_filter = train[train['next_session_1']>-500000]
@@ -399,7 +377,6 @@ def plotrevenues_filter(col_1,col_2):
 plotrevenues_filter('next_session_1','next_session_2')
 
 
-# In[ ]:
 
 
 for df in [train_leak]:
@@ -415,13 +392,11 @@ for df in [train_leak]:
     df["Goal Conversion Rate"] = df["Goal Conversion Rate"].astype(str).apply(lambda x: x.replace('%', '')).astype(float)
 
 
-# In[ ]:
 
 
 leakcolumns
 
 
-# In[ ]:
 
 
 def plotrevenues_leak(col_1,col_2):
@@ -460,13 +435,11 @@ def plotrevenues_leak(col_1,col_2):
     plt
 
 
-# In[ ]:
 
 
 train_leak_filter = train_leak[train_leak['Sessions']<200] 
 
 
-# In[ ]:
 
 
 plotrevenues_leak('Sessions','Avg. Session Duration')
@@ -474,7 +447,6 @@ plotrevenues_leak('Bounce Rate','Revenue')
 plotrevenues_leak('Transactions','Goal Conversion Rate')
 
 
-# In[ ]:
 
 
 def topcolumn_proces(colname):
@@ -491,13 +463,11 @@ for x in ['geoNetwork.country','channelGrouping','browser.os','trafficSource.med
     topcolumn_proces(x)    
 
 
-# In[ ]:
 
 
 train_Revenue_filter = train[train['totals.transactionRevenue']<5000000000]
 
 
-# In[ ]:
 
 
 # train_n = train[train["Bounce Rate"] > 0]
@@ -515,7 +485,6 @@ def plotjointplot(df,colname,cate_name):
     plt
 
 
-# In[ ]:
 
 
 train_Ru_Pg_filter = train_Revenue_filter[train_Revenue_filter['totals.pageviews']<200]
@@ -529,14 +498,12 @@ plotjointplot(train_Ru_hits_filter,'totals.hits','browser.os')
 plotjointplot(train_Ru_vis_filter,'visitNumber','geoNetwork.country')
 
 
-# In[ ]:
 
 
 train_leak_filter = train_leak[train_leak['totals.transactionRevenue']<200000000]
 train_leak_filter = train_leak_filter[train_leak_filter['Sessions']<200] 
 
 
-# In[ ]:
 
 
 for x in ['browser.os']:
@@ -544,7 +511,6 @@ for x in ['browser.os']:
         plotjointplot(train_leak_filter,y,x)
 
 
-# In[ ]:
 
 
 def plotmapvisit(df_train):
@@ -587,13 +553,11 @@ def plotmapvisit(df_train):
 plotmapvisit(train)
 
 
-# In[ ]:
 
 
 plotmapvisit(train_leak)
 
 
-# In[ ]:
 
 
 def plotmaprevenues(df_train):
@@ -637,13 +601,11 @@ def plotmaprevenues(df_train):
 plotmaprevenues(train)
 
 
-# In[ ]:
 
 
 plotmaprevenues(train_leak)
 
 
-# In[ ]:
 
 
 

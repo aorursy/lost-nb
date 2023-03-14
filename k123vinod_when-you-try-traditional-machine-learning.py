@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,57 +22,48 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 train = pd.read_csv("/kaggle/input/data-without-drift/train_clean.csv")
 
 
-# In[3]:
 
 
 train.shape
 
 
-# In[4]:
 
 
 test = pd.read_csv("/kaggle/input/data-without-drift/test_clean.csv")
 test.shape
 
 
-# In[5]:
 
 
 test.head()
 
 
-# In[6]:
 
 
 sub = pd.read_csv('/kaggle/input/liverpool-ion-switching/sample_submission.csv')
 sub.head()
 
 
-# In[7]:
 
 
 sub.shape
 
 
-# In[8]:
 
 
 X = train.drop('open_channels', axis=1).copy()
 
 
-# In[9]:
 
 
 y = train['open_channels'].copy()
 
 
-# In[10]:
 
 
 from lightgbm import LGBMRegressor
@@ -81,13 +71,11 @@ from sklearn.model_selection import train_test_split
 train_X, val_X, train_y, val_y = train_test_split(X, y,train_size=0.95, test_size=0.05,random_state = 0)
 
 
-# In[11]:
 
 
 train_X.shape
 
 
-# In[12]:
 
 
 import lightgbm as lgb 
@@ -96,7 +84,6 @@ lg = lg.fit(train_X,train_y)
 predict_l = lg.predict(val_X)
 
 
-# In[13]:
 
 
 from sklearn.metrics import f1_score
@@ -104,7 +91,6 @@ print('F1 Score: %.2f'
      % f1_score(val_y,predict_l,average='macro'))
 
 
-# In[14]:
 
 
 # lg = lgb.LGBMClassifier()
@@ -112,31 +98,26 @@ print('F1 Score: %.2f'
 predict_l = lg.predict(test)
 
 
-# In[15]:
 
 
 df = pd.DataFrame({'time':test.time, 'open_channels':predict_l})
 
 
-# In[16]:
 
 
 df.head(50)
 
 
-# In[17]:
 
 
 df.to_csv("submission.csv",index=False,float_format='%.4f')
 
 
-# In[18]:
 
 
 sub = pd.read_csv('submission.csv')
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from __future__ import absolute_import
@@ -9,7 +8,6 @@ from __future__ import division
 from __future__ import print_function
 
 
-# In[2]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -29,14 +27,12 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[3]:
 
 
 import sys
 sys.path.insert(0, '../input/tf2bert')
 
 
-# In[4]:
 
 
 # coding=utf-8

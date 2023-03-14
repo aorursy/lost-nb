@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # ideas and implementation are taken from tensorflow tutorial on word2vec at https://www.tensorflow.org/tutorials/word2vec
 
 
-# In[ ]:
 
 
 import numpy as np # linear algebra
@@ -25,14 +23,12 @@ import math
 import tensorflow as tf
 
 
-# In[ ]:
 
 
 df = pd.read_csv("../input/train.tsv", sep = '\t')
 df.head()
 
 
-# In[ ]:
 
 
 # perform some cleaning of the text fields: remove non-characters, make lower cases, splitting item category into main and sub categories
@@ -55,7 +51,6 @@ df['general_cat'], df['subcat_1'], df['subcat_2'] = zip(*df['category_name'].app
 df.head()
 
 
-# In[ ]:
 
 
 # build a corpus from the text fields
@@ -67,7 +62,6 @@ for row in range(len(df)):
 print(*corpus[:150], sep = ' ')
 
 
-# In[ ]:
 
 
 # get the most frequent 50,000 words used in the corpus
@@ -92,7 +86,6 @@ def build_dataset(corpus, vocabulary_size):
 data, count, dictionary, reverse_dictionary = build_dataset(corpus, vocabulary_size)
 
 
-# In[ ]:
 
 
 # gauge the coverage of the corpus by the vocabulary
@@ -103,14 +96,12 @@ print("using the most frequent %5d words captures %2.2f percent of tokens in ite
       %(vocabulary_size,sum/len(corpus)*100))
 
 
-# In[ ]:
 
 
 print('Most common words (+UNK)', count[:10])
 print('Sample data', data[:10], [reverse_dictionary[i] for i in data[:10]])
 
 
-# In[ ]:
 
 
 # function to generate a training batch for the skip-gram model.
@@ -150,7 +141,6 @@ def generate_batch(batch_size, num_skips, skip_window):
   return batch, labels
 
 
-# In[ ]:
 
 
 batch, labels = generate_batch(batch_size=128, num_skips=2, skip_window=2)
@@ -160,7 +150,6 @@ for i in range(10):
 print(data_index, len(data))
 
 
-# In[ ]:
 
 
 # build and train a skip-gram model.
@@ -180,7 +169,6 @@ valid_window = 500  # Only pick dev samples in the head of the distribution.
 valid_examples = np.random.choice(valid_window, valid_size, replace=False)
 
 
-# In[ ]:
 
 
 graph = tf.Graph()
@@ -218,7 +206,6 @@ with graph.as_default():
         init = tf.global_variables_initializer()
 
 
-# In[ ]:
 
 
 num_steps = 10**6
@@ -255,7 +242,6 @@ with tf.Session(graph=graph) as session:
     final_embeddings = normalized_embeddings.eval()
 
 
-# In[ ]:
 
 
 # visualize the embeddings, looking at the most frequent 500 words
@@ -265,7 +251,6 @@ plot_only = 500
 low_dim_embs = tsne.fit_transform(final_embeddings[:plot_only, :])
 
 
-# In[ ]:
 
 
 import plotly.offline as py
@@ -277,7 +262,6 @@ x_plot = [low_dim_embs[i, :][0] for i, label in enumerate(labels)]
 y_plot = [low_dim_embs[i, :][1] for i, label in enumerate(labels)]
 
 
-# In[ ]:
 
 
 trace1 = go.Scatter(

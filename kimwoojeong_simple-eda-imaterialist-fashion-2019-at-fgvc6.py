@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -16,7 +15,6 @@ import json
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 json_data=open("../input/label_descriptions.json").read()
@@ -26,7 +24,6 @@ label_descriptions = json.loads(json_data)
 label_descriptions['info']
 
 
-# In[3]:
 
 
 # dataset categories
@@ -35,14 +32,12 @@ print("The number of categories : ",len(categories_label_df))
 display(categories_label_df)
 
 
-# In[4]:
 
 
 # supercategory class
 categories_label_df.groupby('supercategory')['name'].count()
 
 
-# In[5]:
 
 
 # dataset attributes
@@ -51,7 +46,6 @@ print("The number of attributes : ",len(attributes_label_df))
 display(attributes_label_df.head())
 
 
-# In[6]:
 
 
 train_df = pd.read_csv("../input/train.csv")
@@ -60,7 +54,6 @@ print("number of unique images :",len(set(train_df['ImageId'])))
 train_df.head(5)
 
 
-# In[7]:
 
 
 # split classid to category & attributes ..
@@ -91,7 +84,6 @@ def split_ClassId(data):
     return data_c
 
 
-# In[8]:
 
 
 # split classid to category & attributes
@@ -100,7 +92,6 @@ train_df['Attributes'] = train_df['ClassId'].apply(lambda x: list(map(int, x.spl
 train_df.head()
 
 
-# In[9]:
 
 
 groupby_category = train_df.groupby('Category')['ImageId'].count()
@@ -119,14 +110,12 @@ plt.ylabel("# of images", fontsize=20)
 plt.show()
 
 
-# In[10]:
 
 
 groupby_category = train_df[['ImageId','Category']].groupby('ImageId').count()
 print("Average number of categories per unique image: ",np.mean(groupby_category['Category'][::]))
 
 
-# In[11]:
 
 
 train_Having_attributes_df = train_df[train_df['Attributes'].apply(len) > 0]
@@ -135,7 +124,6 @@ print("the number of unique images having attributes:",len(set(train_Having_attr
 #print("---------------------------------------------")
 
 
-# In[12]:
 
 
 # The Number of images with Attributes by Category
@@ -144,7 +132,6 @@ groupby_category_Having_attributes.columns = ['# of imgs']
 display(groupby_category_Having_attributes)
 
 
-# In[13]:
 
 
 Having_attributes = list(groupby_category_Having_attributes.index)
@@ -153,7 +140,6 @@ print()
 print("categories not having attributes are: \n", list(categories_label_df.id[~categories_label_df.id.isin(Having_attributes)]))
 
 
-# In[14]:
 
 
 group_category_df = train_Having_attributes_df[["Category","Attributes"]].groupby(by = "Category").sum().reset_index()
@@ -163,7 +149,6 @@ group_category_df = pd.merge(group_category_df,categories_label_df,left_on = 'Ca
 group_category_df
 
 
-# In[15]:
 
 
 # the distribution of # of attributes per images, among images with attributes
@@ -171,7 +156,6 @@ train_Having_attributes_desc = train_Having_attributes_df.iloc[:,6].apply(len).d
 train_Having_attributes_desc
 
 
-# In[16]:
 
 
 # The number of ClassId(Category) per unique Image
@@ -182,7 +166,6 @@ sns.boxplot(group_unique_df['Num_of_ClassId'])
 print(group_unique_df.describe(percentiles = np.arange(0.5, 1.0, 0.05)))
 
 
-# In[17]:
 
 
 class_over20_data_df = group_unique_df[group_unique_df['Num_of_ClassId'] > 20]
@@ -190,14 +173,12 @@ print(class_over20_data_df.head())
 print(class_over20_data_df.shape)
 
 
-# In[18]:
 
 
 group_unique_df[group_unique_df['Num_of_ClassId']==74]
 train_df[train_df.ImageId=='361cc7654672860b1b7c85fe8e92b38a.jpg'].drop_duplicates('ClassId')
 
 
-# In[19]:
 
 
 def show_img(IMG_FILE):
@@ -208,13 +189,11 @@ def show_img(IMG_FILE):
     plt.show()
 
 
-# In[20]:
 
 
 show_img('00000663ed1ff0c4e0132b9b9ac53f6e.jpg')
 
 
-# In[21]:
 
 
 def make_mask(IMG_FILE):
@@ -242,7 +221,6 @@ def make_mask(IMG_FILE):
     return mask
 
 
-# In[22]:
 
 
 # Category : 0, 4, 6, 28, 29, 31, 32
@@ -250,7 +228,6 @@ mask = make_mask('00000663ed1ff0c4e0132b9b9ac53f6e.jpg')
 plt.imshow(mask,cmap='jet')
 
 
-# In[23]:
 
 
 def Masking_Image(IMG_FILE):
@@ -267,25 +244,21 @@ def Masking_Image(IMG_FILE):
     ax[2].imshow(mask,cmap = 'jet', interpolation = 'none', alpha = 0.6)
 
 
-# In[24]:
 
 
 Masking_Image('00000663ed1ff0c4e0132b9b9ac53f6e.jpg')
 
 
-# In[25]:
 
 
 Masking_Image(train_df.iloc[132,0])
 
 
-# In[26]:
 
 
 Masking_Image(train_df.iloc[2838,0])
 
 
-# In[27]:
 
 
 def make_binary_mask(IMG_FILE):
@@ -313,26 +286,22 @@ def make_binary_mask(IMG_FILE):
     return binary_mask_list
 
 
-# In[28]:
 
 
 binary_mask_list = make_binary_mask('00000663ed1ff0c4e0132b9b9ac53f6e.jpg')
 plt.imshow(binary_mask_list[7])
 
 
-# In[29]:
 
 
 
 
 
-# In[29]:
 
 
 
 
 
-# In[29]:
 
 
 

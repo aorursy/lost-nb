@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -20,7 +19,6 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 INPUT_FOLDER = '../input/sample_images/'
 
 
-# In[2]:
 
 
 patients = os.listdir(INPUT_FOLDER)
@@ -28,7 +26,6 @@ patients.sort()
 patients
 
 
-# In[3]:
 
 
 # Load the scans in given folder path
@@ -46,7 +43,6 @@ def load_scan(path):
     return slices
 
 
-# In[4]:
 
 
 def get_pixels_hu(slices):
@@ -74,7 +70,6 @@ def get_pixels_hu(slices):
     return np.array(image, dtype=np.int16)
 
 
-# In[5]:
 
 
 path = INPUT_FOLDER + patients[0]
@@ -82,21 +77,18 @@ slices = [dicom.read_file(path + '/' + s) for s in os.listdir(path)]
 slices
 
 
-# In[6]:
 
 
 key = lambda x: float(x.ImagePositionPatient[2])
 key
 
 
-# In[7]:
 
 
 slices.sort(key = lambda x: float(x.ImagePositionPatient[2]))
 slices[0].ImagePositionPatient[2]
 
 
-# In[8]:
 
 
 try:
@@ -108,20 +100,17 @@ for s in slices:
     s.SliceThickness = slice_thickness
 
 
-# In[9]:
 
 
 slice_thickness
 
 
-# In[10]:
 
 
 first_patient = load_scan(INPUT_FOLDER + patients[0])
 first_patient
 
 
-# In[11]:
 
 
 def get_pixels_hu(slices):
@@ -149,7 +138,6 @@ def get_pixels_hu(slices):
     return np.array(image, dtype=np.int16)
 
 
-# In[12]:
 
 
 first_patient_pixels = get_pixels_hu(first_patient)
@@ -163,7 +151,6 @@ plt.imshow(first_patient_pixels[80], cmap=plt.cm.gray)
 plt.show()
 
 
-# In[13]:
 
 
 def resample(image, scan, new_spacing=[1,1,1]):
@@ -181,7 +168,6 @@ def resample(image, scan, new_spacing=[1,1,1]):
     return image, new_spacing
 
 
-# In[14]:
 
 
 pix_resampled, spacing = resample(first_patient_pixels, first_patient, [1,1,1])
@@ -189,7 +175,6 @@ print("Shape before resampling\t", first_patient_pixels.shape)
 print("Shape after resampling\t", pix_resampled.shape)
 
 
-# In[15]:
 
 
 def plot_3d(image, threshold=-300):
@@ -216,13 +201,11 @@ def plot_3d(image, threshold=-300):
     plt.show()
 
 
-# In[16]:
 
 
 plot_3d(pix_resampled, 400)
 
 
-# In[17]:
 
 
 def largest_label_volume(im, bg=-1):
@@ -278,32 +261,27 @@ def segment_lung_mask(image, fill_lung_structures=True):
     return binary_image
 
 
-# In[18]:
 
 
 segmented_lungs = segment_lung_mask(pix_resampled, False)
 segmented_lungs_fill = segment_lung_mask(pix_resampled, True)
 
 
-# In[19]:
 
 
 plot_3d(segmented_lungs, 0)
 
 
-# In[20]:
 
 
 plot_3d(segmented_lungs_fill, 0)
 
 
-# In[21]:
 
 
 plot_3d(segmented_lungs_fill - segmented_lungs, 0)
 
 
-# In[22]:
 
 
 MIN_BOUND = -1000.0
@@ -316,7 +294,6 @@ def normalize(image):
     return image
 
 
-# In[23]:
 
 
 PIXEL_MEAN = 0.25

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Imports
@@ -20,7 +19,6 @@ sns.set_palette('YlGnBu')
 get_ipython().run_line_magic('config', "InlineBackend.figure_format='retina'")
 
 
-# In[2]:
 
 
 def reset_dfs():
@@ -30,7 +28,6 @@ def reset_dfs():
 reset_dfs()
 
 
-# In[3]:
 
 
 '''
@@ -41,7 +38,6 @@ Score:  0.07917
 ''';
 
 
-# In[4]:
 
 
 reset_dfs()
@@ -49,7 +45,6 @@ plt.figure(figsize=(8,5))
 sns.countplot(train_df['AdoptionSpeed']);
 
 
-# In[5]:
 
 
 g = sns.catplot("AdoptionSpeed", col="Type",
@@ -57,7 +52,6 @@ g = sns.catplot("AdoptionSpeed", col="Type",
                 kind="count", height=5, aspect=.8);
 
 
-# In[6]:
 
 
 def sample(df, target_val_sets):
@@ -73,14 +67,12 @@ def sample(df, target_val_sets):
 train_df = sample(train_df, [[0, 1]])
 
 
-# In[7]:
 
 
 # Note how counts of 0 and 1 now match:
 sns.countplot(train_df['AdoptionSpeed']);
 
 
-# In[8]:
 
 
 g = sns.catplot("AdoptionSpeed", col="Type",
@@ -88,7 +80,6 @@ g = sns.catplot("AdoptionSpeed", col="Type",
                 kind="count", height=5, aspect=.8);
 
 
-# In[9]:
 
 
 '''
@@ -99,7 +90,6 @@ Score:  0.09349
 ''';
 
 
-# In[10]:
 
 
 X = train_df.drop('AdoptionSpeed', axis=1)
@@ -113,7 +103,6 @@ X_ros, y_ros = ros.fit_sample(X, y)
 print(X_ros.shape[0] - X.shape[0], 'new randomly picked points')
 
 
-# In[11]:
 
 
 resampled_df = pd.DataFrame(list(X_ros), columns=train_df.drop('AdoptionSpeed', axis=1).columns)
@@ -121,13 +110,11 @@ resampled_df['AdoptionSpeed'] = list(y_ros)
 resampled_df.head(2)
 
 
-# In[12]:
 
 
 sns.countplot(resampled_df['AdoptionSpeed']);
 
 
-# In[13]:
 
 
 sns.catplot("AdoptionSpeed", col="Type",
@@ -135,7 +122,6 @@ sns.catplot("AdoptionSpeed", col="Type",
                 kind="count", height=5, aspect=.8);
 
 
-# In[14]:
 
 
 '''
@@ -147,7 +133,6 @@ Score:  0.12413
 ''';
 
 
-# In[15]:
 
 
 score = 0
@@ -159,7 +144,6 @@ for label in good_image['labelAnnotations']:
 print(score)
 
 
-# In[16]:
 
 
 score = 0
@@ -171,7 +155,6 @@ for label in good_image['labelAnnotations']:
 print(score)
 
 
-# In[17]:
 
 
 {
@@ -180,7 +163,6 @@ print(score)
 };
 
 
-# In[18]:
 
 
 def get_photo_score(x, match='exact', start=1, stop=2, multiple=False):
@@ -226,7 +208,6 @@ def get_photo_score(x, match='exact', start=1, stop=2, multiple=False):
 train_df['FirstPhotoScore'] = train_df['PetID'].apply(lambda x: get_photo_score(x, match='exact', start=1, stop=2, multiple=False))
 
 
-# In[19]:
 
 
 train_df['FirstPhotoScore > 0'] = train_df['FirstPhotoScore'] > 0
@@ -236,7 +217,6 @@ sns.catplot("AdoptionSpeed", col="Type",
                 kind="count", height=5, aspect=.8);
 
 
-# In[20]:
 
 
 def group_photo_score(x):
@@ -258,13 +238,11 @@ sns.catplot("AdoptionSpeed", col="FirstPhotoScoreRange",
                 kind="count", height=5, aspect=.8);
 
 
-# In[21]:
 
 
 train_df['AllPhotoScores'] = train_df['PetID'].apply(lambda x: get_photo_score(x, match='exact', start=1, stop=99, multiple=False))
 
 
-# In[22]:
 
 
 def mean_photo_score(x):
@@ -287,19 +265,16 @@ sns.catplot("AdoptionSpeed", col="AllPhotoScoreRange",
                 kind="count", height=5, aspect=.8);
 
 
-# In[23]:
 
 
 train_df['AllPhotoScoresList'] = train_df['PetID']    .apply(lambda x: get_photo_score(x, match='exact', start=1, stop=99, multiple=True))
 
 
-# In[24]:
 
 
 train_df['AllPhotoScoresList'].head()
 
 
-# In[25]:
 
 
 def count_good_photos(x):
@@ -324,7 +299,6 @@ sns.catplot("AdoptionSpeed", col="GoodPhotos",
                 kind="count", height=5, aspect=.8);
 
 
-# In[26]:
 
 
 def count_secondary_good_photos(x):
@@ -353,13 +327,11 @@ sns.catplot("AdoptionSpeed", col="GoodSecondaryPhotos",
                 kind="count", height=5, aspect=.8);
 
 
-# In[27]:
 
 
 train_df['FirstAndSecondaryPhotos'] =  train_df['FirstPhotoScoreRange'] + '__' + train_df['GoodSecondaryPhotos']
 
 
-# In[28]:
 
 
 sns.catplot("AdoptionSpeed", col="FirstAndSecondaryPhotos",col_wrap=4,
@@ -367,7 +339,6 @@ sns.catplot("AdoptionSpeed", col="FirstAndSecondaryPhotos",col_wrap=4,
                 kind="count", height=5, aspect=.8);
 
 
-# In[29]:
 
 
 sns.catplot("AdoptionSpeed", col="FirstAndSecondaryPhotos",col_wrap=4,
@@ -375,7 +346,6 @@ sns.catplot("AdoptionSpeed", col="FirstAndSecondaryPhotos",col_wrap=4,
                 kind="count", height=5, aspect=.8);
 
 
-# In[30]:
 
 
 sns.catplot("AdoptionSpeed", col="FirstAndSecondaryPhotos",col_wrap=4,
@@ -383,62 +353,52 @@ sns.catplot("AdoptionSpeed", col="FirstAndSecondaryPhotos",col_wrap=4,
                 kind="count", height=5, aspect=.8);
 
 
-# In[31]:
 
 
 scores = np.array([34,33,23234,12,45,456,454,6,6])
 
 
-# In[32]:
 
 
 with open('../input/train_metadata/0a9f9f178-7.json') as json_file:
     json_text = json.load(json_file)
 
 
-# In[33]:
 
 
 image_data = pd.DataFrame(json_text['labelAnnotations']).drop(['mid', 'topicality'], axis=1).rename({'description': 'Description', 'score': 'Score'}, axis=1)
 
 
-# In[34]:
 
 
 image_data['PetID'] = '0a9f9f178'
 
 
-# In[35]:
 
 
 image_data['ImageID'] = 1
 
 
-# In[36]:
 
 
 image_data
 
 
-# In[37]:
 
 
 file_name = '0a9f9f178-7.json'
 
 
-# In[38]:
 
 
 file_name.split('-')[0]
 
 
-# In[39]:
 
 
 int(file_name.split('-')[1].split('.')[0])
 
 
-# In[40]:
 
 
 def image_data_matches(df, images_df):
@@ -529,7 +489,6 @@ test_df = append_image_data(test_df)
 train_df.columns
 
 
-# In[41]:
 
 
 images_df = pd.read_csv('../train_image_data.csv')
@@ -538,21 +497,18 @@ len(set(images_df['PetID'].unique()) - set(train_df['PetID'].unique()))
 train_df_copy = train_df.copy()
 
 
-# In[42]:
 
 
 image_ratings = pd.DataFrame(columns=['PetID', 'ImageRating'])
 image_ratings
 
 
-# In[43]:
 
 
 reset_dfs()
 train_df.shape
 
 
-# In[44]:
 
 
 sns.catplot("AdoptionSpeed", col="FirstImageRating",col_wrap=4,
@@ -560,7 +516,6 @@ sns.catplot("AdoptionSpeed", col="FirstImageRating",col_wrap=4,
                 kind="count", height=5, aspect=.8);
 
 
-# In[45]:
 
 
 sns.catplot("AdoptionSpeed", col="SecondImageRating",col_wrap=4,
@@ -568,7 +523,6 @@ sns.catplot("AdoptionSpeed", col="SecondImageRating",col_wrap=4,
                 kind="count", height=5, aspect=.8);
 
 
-# In[46]:
 
 
 train_df['TotalImageRating'] = train_df['FirstImageRating'] + (train_df['SecondImageRating'] * .01)
@@ -577,7 +531,6 @@ sns.catplot("AdoptionSpeed", col="FirstImageRating",col_wrap=4,
                 kind="count", height=5, aspect=.8);
 
 
-# In[47]:
 
 
 sns.catplot("AdoptionSpeed", col="SecondImageRating",col_wrap=4,
@@ -585,7 +538,6 @@ sns.catplot("AdoptionSpeed", col="SecondImageRating",col_wrap=4,
                 kind="count", height=5, aspect=.8);
 
 
-# In[48]:
 
 
 train_df['TotalImageRating'] = train_df['FirstImageRating'] + (train_df['SecondImageRating'] * .1)
@@ -598,7 +550,6 @@ sns.catplot("AdoptionSpeed", col="TotalImageRating",col_wrap=4,
                 kind="count", height=5, aspect=.8);
 
 
-# In[49]:
 
 
 images_df = pd.read_csv('../train_image_data.csv')
@@ -610,7 +561,6 @@ images_df.head()
 # images.head(50)
 
 
-# In[50]:
 
 
 

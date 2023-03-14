@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import copy
@@ -24,7 +23,6 @@ from tqdm.notebook import trange
 from time import time
 
 
-# In[2]:
 
 
 root_dir = Path('/kaggle/input/osic-pulmonary-fibrosis-progression')
@@ -39,13 +37,11 @@ model_name ='descartes'
 tensorboard_dir = Path('/kaggle/working/runs')
 
 
-# In[3]:
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-# In[4]:
 
 
 class ClinicalDataset(Dataset):
@@ -136,7 +132,6 @@ class ClinicalDataset(Dataset):
         return train, val
 
 
-# In[5]:
 
 
 class QuantModel(nn.Module):
@@ -174,7 +169,6 @@ def metric_loss(pred_fvc,true_fvc):
     return metric
 
 
-# In[6]:
 
 
 models = []
@@ -271,7 +265,6 @@ for fold, (trainset, valset) in enumerate(folds):
 print('Finished Training of BiLSTM Model')
 
 
-# In[7]:
 
 
 data = ClinicalDataset(root_dir, mode='test')
@@ -301,20 +294,17 @@ df = df.drop(columns=list(quantiles))
 df.to_csv('submission.csv', index=False)
 
 
-# In[8]:
 
 
 print(len(df))
 df.head()
 
 
-# In[9]:
 
 
 df.to_csv('submission.csv', index = False)
 
 
-# In[10]:
 
 
 get_ipython().system("head 'submission.csv'")

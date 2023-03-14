@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -24,7 +23,6 @@ pd.set_option('display.max_columns', None)
 plt.style.use('ggplot')
 
 
-# In[2]:
 
 
 # Load data
@@ -44,7 +42,6 @@ del dt_calendar
 #dt_complementary = shuffle(dt_complementary, n_samples=10000000, random_state=0)
 
 
-# In[3]:
 
 
 # Count the number of zeros in data 
@@ -55,7 +52,6 @@ plt.ylabel('Frequency')
 plt.title("Distribution of number of zeros by observation")
 
 
-# In[4]:
 
 
 # Transform date variable to datetime
@@ -73,7 +69,6 @@ dt_sales['since_d_1'] = dt_sales.date_first_sale - pd.to_datetime('2011-01-29')
 dt_sales['since_d_1'] = dt_sales['since_d_1'].apply(lambda x: x.days)
 
 
-# In[5]:
 
 
 # Percentage of zeros since first day of sale
@@ -85,7 +80,6 @@ plt.ylabel('Frequency')
 plt.title("Distribution of % of zeros by item")
 
 
-# In[6]:
 
 
 def perc_bin(num:int):
@@ -104,7 +98,6 @@ def perc_bin(num:int):
 dt_sales['perc_zeros_bin'] = dt_sales['%_zeros_of_total'].apply(lambda x: perc_bin(x))
 
 
-# In[7]:
 
 
 # Items with less percentage of zeros
@@ -125,7 +118,6 @@ del dt_sales_bin1
 dt_sales_bin1_melt['day'] = dt_sales_bin1_melt['day_key'].apply(lambda x: x[2:]).astype(int)
 
 
-# In[8]:
 
 
 # Data to work with
@@ -135,7 +127,6 @@ del dt_complementary
 print(dt_work.shape)
 
 
-# In[9]:
 
 
 # If there are null values, print the unique values of the column 
@@ -144,7 +135,6 @@ for k,v in dict(dt_work.isnull().sum()).items():
         print(f"The unique values for the column {k} are:", dt_work[k].unique(), "\n")
 
 
-# In[10]:
 
 
 dt_work['event_name_1'] = dt_work['event_name_1'].fillna('Normal')
@@ -153,7 +143,6 @@ dt_work['event_type_1'] = dt_work['event_type_1'].fillna('Non-Special')
 dt_work['event_type_2'] = dt_work['event_type_2'].fillna('Non-Special')
 
 
-# In[11]:
 
 
 # Taken from https://datascience.stackexchange.com/questions/10459/calculation-and-visualization-of-correlation-matrix-with-pandas
@@ -176,7 +165,6 @@ def magnify():
 corr.style.background_gradient(cmap, axis=1)    .set_properties(**{'max-width': '100px', 'font-size': '10pt'})    .set_caption("Correlation between variables")    .set_precision(2)    .set_table_styles(magnify())
 
 
-# In[12]:
 
 
 print(dt_work.sales_day.describe(),
@@ -192,7 +180,6 @@ print(dt_work.sales_day.describe(),
       f"The 99th percentile is {dt_work.sales_day.quantile(.999)}", "\n")
 
 
-# In[13]:
 
 
 fig = plt.figure(figsize=(8,6))
@@ -206,7 +193,6 @@ ax.axvline(maxlmbd, color='r')
 plt.show()
 
 
-# In[14]:
 
 
 # QQ-plot of sales transformation 
@@ -217,7 +203,6 @@ ax.set_title("QQ-plot for normal distribution")
 plt.show()
 
 
-# In[15]:
 
 
 plt.figure(figsize=(12, 6))
@@ -235,7 +220,6 @@ plt.tight_layout(pad=1)
 plt.show()
 
 
-# In[16]:
 
 
 dt_work['sales_day_yj'] = sales_transformed
@@ -253,7 +237,6 @@ for k, v in dict(dt_reg.dtypes).items():
 dt_reg = pd.get_dummies(dt_reg)
 
 
-# In[17]:
 
 
 # Model with Yeo-Johnson transformation
@@ -268,7 +251,6 @@ model_yj = smf.ols(formula = formula_yj, data = dt_reg).fit()
 model_yj.summary()
 
 
-# In[18]:
 
 
 # Model with Yeo-Johnson transformation
@@ -283,7 +265,6 @@ model_orig = smf.ols(formula = formula, data = dt_reg).fit()
 model_orig.summary()
 
 
-# In[19]:
 
 
 # Residuals vs fitted values 
@@ -299,7 +280,6 @@ plt.xlabel('Fitted values')
 plt.ylabel('Residuals')
 
 
-# In[20]:
 
 
 # Cook's distance values
@@ -312,7 +292,6 @@ model_norm_residuals = model_yj.get_influence().resid_studentized_internal
 model_cooks = model_yj.get_influence().cooks_distance[0]
 
 
-# In[21]:
 
 
 plt.figure(figsize=(12, 6))
@@ -343,7 +322,6 @@ plt.tight_layout(1.0)
 plt.show()
 
 
-# In[22]:
 
 
 # Taken from https://stackoverflow.com/questions/42658379/variance-inflation-factor-in-python/54857466
@@ -380,7 +358,6 @@ cols = ['sell_price', 'year', 'snap_CA', 'snap_TX', 'snap_WI', 'sales_day_yj']
 variance_inflation_factors(dt_reg[cols])
 
 
-# In[23]:
 
 
 iterables = [('state_id_CA','snap_CA'), ('state_id_TX', 'snap_TX'), ('state_id_WI', 'snap_WI')]
@@ -403,7 +380,6 @@ plt.tight_layout(1)
 plt.show()
 
 
-# In[24]:
 
 
 for i in iterables:
@@ -419,7 +395,6 @@ for i in iterables:
           "-----------------------------------------------------------")
 
 
-# In[25]:
 
 
 dt_reg['log_sell_price'] = np.log(dt_reg.sell_price + 1)
@@ -440,7 +415,6 @@ plt.tight_layout(1)
 plt.show()
 
 
-# In[26]:
 
 
 for i in iterables:
@@ -456,7 +430,6 @@ for i in iterables:
           "-----------------------------------------------------------")
 
 
-# In[27]:
 
 
 for i in iterables:
@@ -472,7 +445,6 @@ for i in iterables:
           "-----------------------------------------------------------")
 
 
-# In[28]:
 
 
 iterables = [('CA','snap_CA'), ('TX', 'snap_TX'), ('WI', 'snap_WI')]

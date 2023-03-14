@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Libraries
@@ -38,7 +37,6 @@ warnings.filterwarnings('ignore')
 from catboost import CatBoostClassifier
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/train.csv')
@@ -46,13 +44,11 @@ test = pd.read_csv('../input/test.csv')
 train.shape
 
 
-# In[3]:
 
 
 train.head()
 
 
-# In[4]:
 
 
 # row_one = train.loc[0,'0':]
@@ -60,7 +56,6 @@ train.head()
 # row_one = np.absolute(row_one)
 
 
-# In[5]:
 
 
 # from PIL import Image
@@ -68,28 +63,24 @@ train.head()
 # img.show()
 
 
-# In[6]:
 
 
 train[train.columns[2:]].std().plot('hist');
 plt.title('Distribution of stds of all columns');
 
 
-# In[7]:
 
 
 train[train.columns[2:]].mean().plot('hist');
 plt.title('Distribution of means of all columns');
 
 
-# In[8]:
 
 
 # we have no missing values
 train.isnull().any().any()
 
 
-# In[9]:
 
 
 print('Distributions of first 28 columns')
@@ -100,13 +91,11 @@ for i, col in enumerate(list(train.columns)[2:30]):
     plt.title(col)
 
 
-# In[10]:
 
 
 train['target'].value_counts()
 
 
-# In[11]:
 
 
 corrs = train.corr().abs().unstack().sort_values(kind="quicksort").reset_index()
@@ -114,14 +103,12 @@ corrs = corrs[corrs['level_0'] != corrs['level_1']]
 corrs.tail(10)
 
 
-# In[12]:
 
 
 from sklearn.ensemble import RandomForestClassifier
 get_ipython().run_line_magic('pinfo', 'RandomForestClassifier')
 
 
-# In[13]:
 
 
 X_train = train.drop(['id', 'target'], axis=1)
@@ -136,7 +123,6 @@ X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
 
-# In[14]:
 
 
 def train_model(X, X_test, y, params, folds=folds, model_type='lgb', plot_feature_importance=False, averaging='usual', model=None):
@@ -189,7 +175,6 @@ def train_model(X, X_test, y, params, folds=folds, model_type='lgb', plot_featur
         return oof, prediction, scores
 
 
-# In[15]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -207,27 +192,23 @@ rfc = RandomForestClassifier(**grid_search.best_params_)
 oof_rfc, prediction_rfc, scores_rfc = train_model(X_train, X_test, y_train, params=None, model_type='sklearn', model=rfc)
 
 
-# In[16]:
 
 
 model = rfc
 
 
-# In[17]:
 
 
 perm = PermutationImportance(model, random_state=1).fit(X_train, y_train)
 eli5.show_weights(perm, top=50)
 
 
-# In[18]:
 
 
 top_features = [i[1:] for i in eli5.formatters.as_dataframe.explain_weights_df(model).feature][:30]
 top_features
 
 
-# In[19]:
 
 
 X_train = train[top_features]
@@ -237,14 +218,12 @@ X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
 
-# In[20]:
 
 
 oof_lr, prediction_lr, scores = train_model(X_train, X_test, y_train, params=None, model_type='sklearn', model=model)
 print(scores)
 
 
-# In[21]:
 
 
 submission = pd.read_csv('../input/sample_submission.csv')
@@ -253,7 +232,6 @@ submission.to_csv('submission_top30.csv', index=False)
 submission.head()
 
 
-# In[22]:
 
 
 

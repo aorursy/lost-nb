@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np # linear algebra
@@ -12,7 +11,6 @@ import sklearn
 from sklearn.model_selection import train_test_split
 
 
-# In[ ]:
 
 
 #Einlesen der ARFF Datei
@@ -36,7 +34,6 @@ train_data = read_data("../input/kiwhs-comp-1-complete/train.arff")
 test_data = pd.read_csv("../input/kiwhs-comp-1-complete/test.csv")
 
 
-# In[ ]:
 
 
 for i in range(len(train_data)):
@@ -47,7 +44,6 @@ for i in range(len(train_data)):
    plt.scatter(point[0],point[1], s = 10, c = c)
 
 
-# In[ ]:
 
 
 #Source: Competition --> Discussion
@@ -89,7 +85,6 @@ def plot_decision_boundary(model,X,y):
     plt.show()
 
 
-# In[ ]:
 
 
 train = pd.DataFrame(train_data)
@@ -102,7 +97,6 @@ x_train, x_test, y_train, y_test = train_test_split(points, category, test_size 
 test = test_data.iloc[:,1:].values
 
 
-# In[ ]:
 
 
 def plotTest(predictions):
@@ -114,7 +108,6 @@ def plotTest(predictions):
         plt.scatter(point[0],point[1], s = 10, c = c)
 
 
-# In[ ]:
 
 
 from sklearn.linear_model import LogisticRegression
@@ -130,7 +123,6 @@ print ('train accuracy: {}'.format(model_lr.score(x_train, y_train)))
 print ('test accuracy: {}'.format(model_lr.score(x_test, y_test)))
 
 
-# In[ ]:
 
 
 predictions_lr = model_lr.predict(test)
@@ -142,7 +134,6 @@ submissions_lr = pd.DataFrame({"Id (String)": list(range(0,len(predictions_lr)))
 submissions_lr.to_csv("submissions_lr.csv", index=False, header=True)
 
 
-# In[ ]:
 
 
 from sklearn import svm
@@ -159,7 +150,6 @@ print ('train accuracy: {}'.format(model_svm.score(x_train, y_train)))
 print ('test accuracy: {}'.format(model_svm.score(x_test, y_test)))
 
 
-# In[ ]:
 
 
 predictions_svm = model_svm.predict(test)
@@ -171,7 +161,6 @@ submissions_svm = pd.DataFrame({"Id (String)": list(range(0,len(predictions_svm)
 submissions_svm.to_csv("submissions_svm.csv", index=False, header=True)
 
 
-# In[ ]:
 
 
 from sklearn.neighbors import KNeighborsClassifier
@@ -187,7 +176,6 @@ print ('train accuracy: {}'.format(model_knn.score(x_train, y_train)))
 print ('test accuracy: {}'.format(model_knn.score(x_test, y_test)))
 
 
-# In[ ]:
 
 
 predictions_knn = model_knn.predict(test)
@@ -199,7 +187,6 @@ submissions_knn = pd.DataFrame({"Id (String)": list(range(0,len(predictions_knn)
 submissions_knn.to_csv("submissions_knn.csv", index=False, header=True)
 
 
-# In[ ]:
 
 
 from sklearn.neural_network import MLPClassifier
@@ -216,7 +203,6 @@ print ('train accuracy: {}'.format(model_mlp.score(x_train, y_train)))
 print ('test accuracy: {}'.format(model_mlp.score(x_test, y_test)))
 
 
-# In[ ]:
 
 
 from sklearn import tree

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import sys
@@ -43,7 +41,6 @@ import torch.nn as nn
 from torch.nn import functional as F
 
 
-# In[3]:
 
 
 # Codes from Heng's baseline
@@ -336,7 +333,6 @@ class ResNet34(nn.Module):
         return logit
 
 
-# In[4]:
 
 
 class Resnet34_classification(nn.Module):
@@ -368,14 +364,12 @@ class Resnet34_classification(nn.Module):
         return logit
 
 
-# In[5]:
 
 
 model_classification = Resnet34_classification()
 model_classification.load_state_dict(torch.load('../input/clsification10/00007500_model.pth', map_location=lambda storage, loc: storage), strict=True)
 
 
-# In[6]:
 
 
 # Dataset setup
@@ -404,14 +398,12 @@ class TestDataset(Dataset):
         return self.num_samples
 
 
-# In[7]:
 
 
 sample_submission_path = '../input/severstal-steel-defect-detection/sample_submission.csv'
 test_data_folder = "../input/severstal-steel-defect-detection/test_images"
 
 
-# In[8]:
 
 
 # hyperparameters
@@ -422,13 +414,11 @@ mean = (0.485, 0.456, 0.406)
 std = (0.229, 0.224, 0.225)
 
 
-# In[9]:
 
 
 df = pd.read_csv(sample_submission_path)
 
 
-# In[10]:
 
 
 # dataloader
@@ -441,7 +431,6 @@ testset = DataLoader(
 )
 
 
-# In[11]:
 
 
 # useful functions for setting up inference
@@ -498,20 +487,17 @@ def get_classification_preds(net,test_loader):
     return test_probability_label, test_id
 
 
-# In[12]:
 
 
 # threshold for classification
 threshold_label = [0.50,0.50,0.50,0.50,]
 
 
-# In[13]:
 
 
 augment = ['null'] #['null', 'flip_lr','flip_ud'] #['null, 'flip_lr','flip_ud','5crop']
 
 
-# In[14]:
 
 
 # Get prediction for classification model
@@ -533,25 +519,21 @@ for b in range(len(image_id)):
 df_classification = pd.DataFrame(zip(image_id_class_id, encoded_pixel), columns=['ImageId_ClassId', 'EncodedPixels'])
 
 
-# In[15]:
 
 
 df_classification.head()
 
 
-# In[16]:
 
 
 get_ipython().system(' ls ../input/severstalmodels')
 
 
-# In[17]:
 
 
 get_ipython().system(' python ../input/mlcomp/mlcomp/setup.py')
 
 
-# In[18]:
 
 
 import warnings
@@ -576,7 +558,6 @@ from mlcomp.contrib.transform.rle import rle2mask, mask2rle
 from mlcomp.contrib.transform.tta import TtaWrap
 
 
-# In[19]:
 
 
 unet_se_resnext50_32x4d =     load('/kaggle/input/severstalmodels/unet_se_resnext50_32x4d.pth').cuda()
@@ -584,7 +565,6 @@ unet_mobilenet2 = load('/kaggle/input/severstalmodels/unet_mobilenet2.pth').cuda
 unet_resnet34 = load('/kaggle/input/severstalmodels/unet_resnet34.pth').cuda()
 
 
-# In[20]:
 
 
 class Model:
@@ -603,7 +583,6 @@ class Model:
 model = Model([unet_se_resnext50_32x4d, unet_mobilenet2, unet_resnet34])
 
 
-# In[21]:
 
 
 def create_transforms(additional):
@@ -633,7 +612,6 @@ datasets = [TtaWrap(ImageDataset(img_folder=img_folder, transforms=t), tfms=t) f
 loaders = [DataLoader(d, num_workers=num_workers, batch_size=batch_size, shuffle=False) for d in datasets]
 
 
-# In[22]:
 
 
 thresholds = [0.5, 0.5, 0.5, 0.5]
@@ -676,7 +654,6 @@ for loaders_batch in tqdm_notebook(zip(*loaders), total=total):
         
 
 
-# In[23]:
 
 
 df = pd.DataFrame(res)
@@ -704,7 +681,6 @@ print('\t\tpos3 = %5d( 741)  %0.3f  %0.3f'%(pos3,pos3/num_image,pos3/pos))
 print('\t\tpos4 = %5d( 120)  %0.3f  %0.3f'%(pos4,pos4/num_image,pos4/pos))
 
 
-# In[24]:
 
 
 df_mask = pd.DataFrame(res)
@@ -715,13 +691,11 @@ print((df_mask.loc[df_label['EncodedPixels']=='','EncodedPixels'] != '').sum() )
 df_mask.loc[df_label['EncodedPixels']=='','EncodedPixels']=''
 
 
-# In[25]:
 
 
 df_mask.to_csv("submission.csv", index=False)
 
 
-# In[26]:
 
 
 df_mask['Class'] = df_mask['ImageId_ClassId'].str[-1].astype(np.int32)

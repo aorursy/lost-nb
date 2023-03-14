@@ -1,25 +1,21 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install -U torch==1.5 torchvision==0.6 -f https://download.pytorch.org/whl/cu101/torch_stable.html ')
 
 
-# In[2]:
 
 
 get_ipython().system("pip install -U 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'")
 
 
-# In[3]:
 
 
 get_ipython().system('python -m pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu101/index.html')
 
 
-# In[4]:
 
 
 import os
@@ -28,7 +24,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
         print(os.path.join(dirname, filename))
 
 
-# In[5]:
 
 
 import collections
@@ -60,7 +55,6 @@ from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
 
 
-# In[6]:
 
 
 cfg = get_cfg()
@@ -75,7 +69,6 @@ cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-InstanceSegmentation/mask
 predictor = DefaultPredictor(cfg)
 
 
-# In[7]:
 
 
 images_list = []
@@ -84,7 +77,6 @@ for dirname, _, filenames in os.walk('/kaggle/input/imaterialist-fashion-2020-fg
         images_list.append(os.path.join(dirname, filename))
 
 
-# In[8]:
 
 
 # Show different images at random
@@ -110,7 +102,6 @@ for i, image in enumerate(random.sample(images_list, 9)):
 plt.show()
 
 
-# In[9]:
 
 
 cfg = get_cfg()
@@ -125,7 +116,6 @@ cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("Misc/cascade_mask_rcnn_R_50_FP
 predictor = DefaultPredictor(cfg)
 
 
-# In[10]:
 
 
 # Show different images at random
@@ -151,7 +141,6 @@ for i, image in enumerate(random.sample(images_list, 12)):
 plt.show()
 
 
-# In[11]:
 
 
 data_dir = Path('/kaggle/input/imaterialist-fashion-2020-fgvc7/')
@@ -165,7 +154,6 @@ df_categories = pd.DataFrame(label_desc['categories'])
 df_attributes = pd.DataFrame(label_desc['attributes'])
 
 
-# In[12]:
 
 
 # Rle helper functions
@@ -224,7 +212,6 @@ def rle2bbox(rle, shape):
     return x0, y0, x1, y1
 
 
-# In[13]:
 
 
 # Get image file path and add it to our dataframe
@@ -233,40 +220,34 @@ df_copy = df[:4000].copy()
 df_copy['ImageId'] = dirname + df_copy['ImageId'] + '.jpg'
 
 
-# In[14]:
 
 
 # Get bboxes for each mask
 bboxes = [rle2bbox(c.EncodedPixels, (c.Height, c.Width)) for n, c in df_copy.iterrows()]
 
 
-# In[15]:
 
 
 assert len(bboxes) == df_copy.shape[0]
 
 
-# In[16]:
 
 
 bboxes_array = np.array(bboxes)
 
 
-# In[17]:
 
 
 # Add each coordinate as a column
 df_copy['x0'], df_copy['y0'], df_copy['x1'], df_copy['y1'] = bboxes_array[:,0], bboxes_array[:,1], bboxes_array[:,2], bboxes_array[:,3]
 
 
-# In[18]:
 
 
 #Replace NaNs from AttributeIds by -1
 df_copy = df_copy.fillna(999)
 
 
-# In[19]:
 
 
 # Extremely ugly function - need to refactor
@@ -300,20 +281,17 @@ def attr_str_to_list(df):
 attr_str_to_list(df_copy) 
 
 
-# In[20]:
 
 
 df_copy.sample(5)
 
 
-# In[21]:
 
 
 del bboxes
 gc.collect()
 
 
-# In[22]:
 
 
 # https://detectron2.readthedocs.io/tutorials/datasets.html
@@ -375,20 +353,17 @@ def get_fashion_dict(df):
     return dataset_dicts
 
 
-# In[23]:
 
 
 # To view a sample of fashion_dict
 fashion_dict = get_fashion_dict(df_copy[:50])
 
 
-# In[24]:
 
 
 fashion_dict[0]
 
 
-# In[25]:
 
 
 from typing import Iterator, List, Tuple, Union
@@ -472,7 +447,6 @@ class Attributes:
         yield from self.tensor
 
 
-# In[26]:
 
 
 import copy
@@ -618,7 +592,6 @@ class DatasetMapper:
         return dataset_dict
 
 
-# In[27]:
 
 
 from detectron2.engine import DefaultTrainer
@@ -635,7 +608,6 @@ class FashionTrainer(DefaultTrainer):
         return build_detection_test_loader(cfg, dataset_name, mapper=DatasetMapper(cfg))
 
 
-# In[28]:
 
 
 # Get a sample of the training data to run experiments
@@ -643,7 +615,6 @@ df_copy_train = df_copy[:3000].copy()
 df_copy_test = df_copy[-1000:].copy()
 
 
-# In[29]:
 
 
 from detectron2.data import DatasetCatalog, MetadataCatalog
@@ -655,7 +626,6 @@ for d in ['train']:
 fashion_metadata = MetadataCatalog.get("1sample_fashion_train")
 
 
-# In[30]:
 
 
 # Register the test and set metadata
@@ -665,7 +635,6 @@ for d in ['test']:
 fashion_metadata = MetadataCatalog.get("sample_fashion_test")
 
 
-# In[31]:
 
 
 # View some images + masks from the dataset
@@ -678,7 +647,6 @@ for d in random.sample(fashion_dict, 3):
     plt.imshow(vis.get_image()[:, :, ::-1])
 
 
-# In[32]:
 
 
 from detectron2.engine import DefaultTrainer
@@ -714,32 +682,27 @@ cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 128   # default: 512
 cfg.MODEL.ROI_HEADS.NUM_CLASSES = 46  # 46 classes in iMaterialist
 
 
-# In[33]:
 
 
 os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
 
 
-# In[34]:
 
 
 #trainer = DefaultTrainer(cfg) 
 trainer = FashionTrainer(cfg) 
 
 
-# In[35]:
 
 
 trainer.resume_or_load(resume=False)
 
 
-# In[36]:
 
 
 trainer.train()
 
 
-# In[37]:
 
 
 cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
@@ -748,7 +711,6 @@ cfg.DATASETS.TEST = ('sample_fashion_test',)
 predictor = DefaultPredictor(cfg)
 
 
-# In[38]:
 
 
 from detectron2.utils.visualizer import ColorMode
@@ -765,7 +727,6 @@ for d in random.sample(fashion_dict, 3):
     plt.imshow(vis.get_image()[:, :, ::-1])
 
 
-# In[39]:
 
 
 # Show different images at random

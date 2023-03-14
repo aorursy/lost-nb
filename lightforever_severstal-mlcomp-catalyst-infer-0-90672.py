@@ -1,19 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system(' ls ../input/severstalmodels')
 
 
-# In[2]:
 
 
 get_ipython().system(' python ../input/mlcomp/mlcomp/mlcomp/setup.py')
 
 
-# In[3]:
 
 
 import warnings
@@ -38,7 +35,6 @@ from mlcomp.contrib.transform.rle import rle2mask, mask2rle
 from mlcomp.contrib.transform.tta import TtaWrap
 
 
-# In[4]:
 
 
 unet_se_resnext50_32x4d =     load('/kaggle/input/severstalmodels/unet_se_resnext50_32x4d.pth').cuda()
@@ -46,7 +42,6 @@ unet_mobilenet2 = load('/kaggle/input/severstalmodels/unet_mobilenet2.pth').cuda
 unet_resnet34 = load('/kaggle/input/severstalmodels/unet_resnet34.pth').cuda()
 
 
-# In[5]:
 
 
 class Model:
@@ -65,7 +60,6 @@ class Model:
 model = Model([unet_se_resnext50_32x4d, unet_mobilenet2, unet_resnet34])
 
 
-# In[6]:
 
 
 def create_transforms(additional):
@@ -95,7 +89,6 @@ datasets = [TtaWrap(ImageDataset(img_folder=img_folder, transforms=t), tfms=t) f
 loaders = [DataLoader(d, num_workers=num_workers, batch_size=batch_size, shuffle=False) for d in datasets]
 
 
-# In[7]:
 
 
 thresholds = [0.5, 0.5, 0.5, 0.5]
@@ -140,7 +133,6 @@ df = pd.DataFrame(res)
 df.to_csv('submission.csv', index=False)	
 
 
-# In[8]:
 
 
 df = pd.DataFrame(res)
@@ -148,7 +140,6 @@ df = df.fillna('')
 df.to_csv('submission.csv', index=False)
 
 
-# In[9]:
 
 
 df['Image'] = df['ImageId_ClassId'].map(lambda x: x.split('_')[0])
@@ -157,7 +148,6 @@ df['empty'] = df['EncodedPixels'].map(lambda x: not x)
 df[df['empty'] == False]['Class'].value_counts()
 
 
-# In[10]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -181,7 +171,6 @@ for row in df.itertuples():
     plt.show()
 
 
-# In[ ]:
 
 
 

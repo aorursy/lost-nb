@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import glob
@@ -28,14 +26,12 @@ filelist = glob.glob('../input/diabetic-retinopathy-detection/*.jpeg')
 np.size(filelist)
 
 
-# In[3]:
 
 
 # don't run this cell, used for augmentation tests
 #os.mkdir('/kaggle/working/preview')
 
 
-# In[4]:
 
 
 # don't run this cell, used for augmentation tests
@@ -46,7 +42,6 @@ plt.show()
 '''
 
 
-# In[5]:
 
 
 # don't run this cell, used for augmentation tests
@@ -82,7 +77,6 @@ for batch in datagen.flow(x, batch_size=1,
 '''
 
 
-# In[6]:
 
 
 # don't run this cell, used for augmentation tests
@@ -97,14 +91,12 @@ for file in aug:
 '''
 
 
-# In[7]:
 
 
 trainLabels = pd.read_csv("../input/labels/trainLabels.csv")
 print(trainLabels.head())
 
 
-# In[8]:
 
 
 # don't run this cell, used for rescale check
@@ -124,7 +116,6 @@ plt.show()
 '''
 
 
-# In[9]:
 
 
 # all dataset
@@ -147,7 +138,6 @@ for file in filelist:
 '''
 
 
-# In[10]:
 
 
 # 0 and 2 excluded
@@ -176,7 +166,6 @@ for file in filelist:
 '''   
 
 
-# In[11]:
 
 
 # find count of each label
@@ -194,7 +183,6 @@ print(lab.count(3))
 print(lab.count(4))
 
 
-# In[12]:
 
 
 # balanced dataset
@@ -244,21 +232,18 @@ for file in filelist:
         four+=1
 
 
-# In[13]:
 
 
 print(len(img_data))
 set(img_label)
 
 
-# In[14]:
 
 
 whole_data = np.array(img_data)
 whole_data.shape
 
 
-# In[15]:
 
 
 import keras
@@ -266,14 +251,12 @@ num_classes = 5
 whole_labels = keras.utils.to_categorical(img_label, num_classes)
 
 
-# In[16]:
 
 
 from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(whole_data, whole_labels, test_size = 0.2, random_state = 0)
 
 
-# In[17]:
 
 
 import keras
@@ -461,14 +444,12 @@ model = Model(input_layer, x, name='inception_v1')
 print(model.summary())
 
 
-# In[18]:
 
 
 sgd = SGD(lr = 0.01, momentum=0.9, nesterov=False)
 model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
 
 
-# In[19]:
 
 
 x_train = x_train.astype('float32')
@@ -477,7 +458,6 @@ x_train /= 255
 x_test /= 255
 
 
-# In[20]:
 
 
 from keras.preprocessing.image import ImageDataGenerator
@@ -510,7 +490,6 @@ model_path = os.path.join(save_dir, model_name)
 model.save(model_path)
 
 
-# In[21]:
 
 
 '''
@@ -523,7 +502,6 @@ print('Test accuracy:', scores[1])
 '''
 
 
-# In[22]:
 
 
 '''
@@ -538,7 +516,6 @@ n_model.save(model_path)
 '''
 
 
-# In[23]:
 
 
 scores = model.evaluate(x_test, y_test, verbose=1)
@@ -546,13 +523,11 @@ print('Test loss:', scores[0])
 print('Test accuracy:', scores[1])
 
 
-# In[24]:
 
 
 pred = model.predict(x_test,verbose=1)
 
 
-# In[25]:
 
 
 '''
@@ -576,7 +551,6 @@ def onehot2int(li):
 '''
 
 
-# In[26]:
 
 
 '''

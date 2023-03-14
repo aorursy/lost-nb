@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np 
@@ -23,7 +22,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-# In[ ]:
 
 
 def load_data(data='train',n=2):
@@ -43,20 +41,17 @@ def load_data(data='train',n=2):
         
 
 
-# In[ ]:
 
 
 df_train = load_data(n=9)
 df_test = load_data('test',n=4)
 
 
-# In[ ]:
 
 
 df = pd.concat([df_train, df_test])
 
 
-# In[ ]:
 
 
 col_drop = ['Date_Year', 'Date_Month', 'Date_Week','Date_Hour','device_isMobile','device_deviceCategory',
@@ -74,7 +69,6 @@ col_drop = ['Date_Year', 'Date_Month', 'Date_Week','Date_Hour','device_isMobile'
 df.drop(col_drop, axis=1, inplace=True)
 
 
-# In[ ]:
 
 
 country_drop=df.groupby('geoNetwork_country')['totals_transactions'].sum()[df.groupby('geoNetwork_country')['totals_transactions'].sum().sort_values()<4].index.tolist()
@@ -84,7 +78,6 @@ df.loc[df[~df.device_browser.isin(['Edge', 'Internet Explorer', 'Firefox', 'Safa
 df.loc[df[~df.device_operatingSystem.isin(['Android', 'iOS', 'Linux', 'Chrome OS', 'Windows', 'Macintosh'])].index,'device_operatingSystem'] = 'NaN'
 
 
-# In[ ]:
 
 
 col_lb = ['channelGrouping','device_browser','device_operatingSystem', 'geoNetwork_country',
@@ -94,7 +87,6 @@ for col in col_lb:
     df[col]=lb.fit_transform(df[col])
 
 
-# In[ ]:
 
 
 to_median = ['channelGrouping','device_browser','device_operatingSystem','geoNetwork_country','trafficSource_adwordsClickInfo.isVideoAd','trafficSource_isTrueDirect','trafficSource_adwordsClickInfo.page']
@@ -104,7 +96,6 @@ to_std = ['totals_hits','totals_pageviews']
 to_time = 'visitStartTime'
 
 
-# In[ ]:
 
 
 target_period = pd.date_range(start='2016-08-01',end='2018-12-01', freq='2MS')
@@ -113,7 +104,6 @@ time_to = train_period[train_period.index>np.datetime64('2016-08-01')].astype('i
 time_end = target_period.to_series().shift(periods=-45, freq='d',axis= 0)[4:]
 
 
-# In[ ]:
 
 
 user_x = df.iloc[df_train.shape[0]:,:]
@@ -129,7 +119,6 @@ test_x = test_x.drop(['fullVisitorId'], axis=1,errors='ignore')
 test_x = test_x.astype('int')
 
 
-# In[ ]:
 
 
 i=4
@@ -149,7 +138,6 @@ val_x = merged.drop(['fullVisitorId','totals_transactionRevenue'], axis=1,errors
 val_x = val_x.astype('int')
 
 
-# In[ ]:
 
 
 import lightgbm as lgb
@@ -159,7 +147,6 @@ from catboost import CatBoostRegressor
 from sklearn.metrics import mean_squared_error
 
 
-# In[ ]:
 
 
 params={'learning_rate': 0.01,
@@ -207,7 +194,6 @@ cat_param = {
 }
 
 
-# In[ ]:
 
 
 oof_reg_preds = np.zeros(val_x.shape[0])
@@ -297,28 +283,24 @@ print("stack_merged  ", mean_squared_error(np.log1p(val_y), merge_preds) ** .5)
 print("Zeros  ", mean_squared_error(np.log1p(val_y), np.zeros(val_x.shape[0])) ** .5)
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(8, 12))
 sns.barplot(x='gain_reg', y='feature', data=imp_df.sort_values('gain_reg', ascending=False))
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(8, 12))
 sns.barplot(x='gain_xgb', y='feature', data=imp_df.sort_values('gain_xgb', ascending=False))
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(8, 12))
 sns.barplot(x='gain_cat', y='feature', data=imp_df.sort_values('gain_cat', ascending=False))
 
 
-# In[ ]:
 
 
 sub_df = pd.DataFrame(test_ID)

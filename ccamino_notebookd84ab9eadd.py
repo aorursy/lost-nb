@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[45]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -34,7 +33,6 @@ get_ipython().run_line_magic('pylab', 'inline')
 pylab.rcParams['figure.figsize'] = (10, 6)
 
 
-# In[46]:
 
 
 # Calibrate the number of rows to not crash the kernel 
@@ -61,13 +59,11 @@ unique_fecha_dato = df["fecha_dato"].unique()
 df.head()
 
 
-# In[47]:
 
 
 df.isnull().any()
 
 
-# In[48]:
 
 
 with sns.plotting_context("notebook",font_scale=2.0):
@@ -80,7 +76,6 @@ with sns.plotting_context("notebook",font_scale=2.0):
     plt.ylabel("Count")
 
 
-# In[49]:
 
 
 
@@ -90,7 +85,6 @@ df["age"].fillna(df["age"].mean(),inplace=True)
 df["age"] = df["age"].astype(int)
 
 
-# In[50]:
 
 
 with sns.plotting_context("notebook",font_scale=2.0):
@@ -104,46 +98,39 @@ with sns.plotting_context("notebook",font_scale=2.0):
     plt.xlim((15,100))
 
 
-# In[51]:
 
 
 df["ind_nuevo"].isnull().sum()
 
 
-# In[52]:
 
 
 months_active = df.loc[df["ind_nuevo"].isnull(),:].groupby("ncodpers", sort=False).size()
 months_active.max()
 
 
-# In[53]:
 
 
 df.loc[df["ind_nuevo"].isnull(),"ind_nuevo"] = 1
 
 
-# In[54]:
 
 
 df.antiguedad = pd.to_numeric(df.antiguedad,errors="coerce")
 np.sum(df["antiguedad"].isnull())
 
 
-# In[55]:
 
 
 df.loc[df["antiguedad"].isnull(),"ind_nuevo"].describe()
 
 
-# In[56]:
 
 
 df.loc[df.antiguedad.isnull(),"antiguedad"] = df.antiguedad.min()
 df.loc[df.antiguedad <0, "antiguedad"] = 0
 
 
-# In[57]:
 
 
 dates=df.loc[:,"fecha_alta"].sort_values().reset_index()
@@ -152,37 +139,31 @@ df.loc[df.fecha_alta.isnull(),"fecha_alta"] = dates.loc[median_date,"fecha_alta"
 df["fecha_alta"].describe()
 
 
-# In[58]:
 
 
 pd.Series([i for i in df.indrel]).value_counts()
 
 
-# In[59]:
 
 
 df.loc[df.indrel.isnull(),"indrel"] = 1
 
 
-# In[60]:
 
 
 df.drop(["tipodom"],axis=1,inplace=True)
 
 
-# In[61]:
 
 
 df["nomprov"].isnull().sum()
 
 
-# In[62]:
 
 
 df["cod_prov"].isnull().sum()
 
 
-# In[63]:
 
 
 unique_cod_prov = df["cod_prov"].unique()
@@ -190,20 +171,17 @@ unique_nomprov = df["nomprov"].unique()
 df.loc[df.cod_prov.isnull(),"cod_prov"] = 0
 
 
-# In[64]:
 
 
 np.sum(df["ind_actividad_cliente"].isnull())
 df.loc[df.ind_actividad_cliente.isnull(),"ind_actividad_cliente"] = df["ind_actividad_cliente"].median()
 
 
-# In[65]:
 
 
 df.renta.isnull().sum()
 
 
-# In[66]:
 
 
 incomes = df.loc[df.renta.notnull(),:].groupby("nomprov").agg({"renta":{"MedianIncome":median}})
@@ -213,7 +191,6 @@ incomes.nomprov = incomes.nomprov.astype("category", categories=[i for i in df.n
 incomes.head()
 
 
-# In[67]:
 
 
 with sns.axes_style({
@@ -238,7 +215,6 @@ plt.ylim(0,180000)
 plt.yticks(range(0,180000,40000))
 
 
-# In[68]:
 
 
 grouped        = df.groupby("nomprov").agg({"renta":lambda x: x.median(skipna=True)}).reset_index()
@@ -249,7 +225,6 @@ df             = df.reset_index()
 new_incomes    = new_incomes.reset_index()
 
 
-# In[69]:
 
 
 df.loc[df.renta.isnull(),"renta"] = new_incomes.loc[df.renta.isnull(),"renta"].reset_index()
@@ -257,32 +232,27 @@ df.loc[df.renta.isnull(),"renta"] = df.loc[df.renta.notnull(),"renta"].median()
 df.sort_values(by="fecha_dato",inplace=True)
 
 
-# In[70]:
 
 
 df.drop(["nomprov"],axis=1,inplace=True)
 
 
-# In[71]:
 
 
 df.ind_nomina_ult1.isnull().sum()
 
 
-# In[72]:
 
 
 df.ind_nom_pens_ult1.isnull().sum()
 
 
-# In[73]:
 
 
 df.loc[df.ind_nomina_ult1.isnull(), "ind_nomina_ult1"] = 0
 df.loc[df.ind_nom_pens_ult1.isnull(), "ind_nom_pens_ult1"] = 0
 
 
-# In[74]:
 
 
 string_data = df.select_dtypes(include=["object"])
@@ -292,7 +262,6 @@ for col in missing_columns:
 del string_data
 
 
-# In[75]:
 
 
 df.loc[df.indfall.isnull(),"indfall"] = "N"
@@ -323,13 +292,11 @@ for col in unknown_cols:
     df.loc[df[col].isnull(),col] = "UNKNOWN"
 
 
-# In[76]:
 
 
 df.isnull().any()
 
 
-# In[77]:
 
 
 feature_cols = df.iloc[:1,].filter(regex="ind_+.*ult.*").columns.values
@@ -338,7 +305,6 @@ for col in feature_cols:
     
 
 
-# In[78]:
 
 
 
@@ -368,20 +334,17 @@ df_train.fillna(0, inplace=True)
 df_test.fillna(0, inplace=True)
 
 
-# In[79]:
 
 
 print(len(df_train['renta']))
 print(len(df_train))
 
 
-# In[80]:
 
 
 
 
 
-# In[80]:
 
 
 
@@ -430,7 +393,6 @@ for c in df_train.filter(regex="ind_+.*ult.*").columns:
         #----------------------------------------------#
 
 
-# In[81]:
 
 
 
@@ -453,20 +415,17 @@ for row in df_train.values:
    
 
 
-# In[82]:
 
 
 null
 
 
-# In[88]:
 
 
 df_test[df_test['renta']=='         NA']=0
 df_test['renta'].describe()
 
 
-# In[91]:
 
 
 colsfinales = [ 'ind_ahor_fin_ult1', 'ind_aval_fin_ult1', 'ind_cco_fin_ult1',
@@ -492,7 +451,6 @@ for row in df_test.values:
 pd.DataFrame({'added_products': df_test['added_products'], 'ncodpers': df_test['ncodpers']}).to_csv(filename, index=False)
 
 
-# In[84]:
 
 
 

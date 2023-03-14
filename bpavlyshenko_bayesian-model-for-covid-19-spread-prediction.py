@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pystan
@@ -40,7 +39,6 @@ time_var_norm_coef=1/7
 region_field, cases_field,fatalities_field='region','cases','deaths'
 
 
-# In[2]:
 
 
 model_logistic = """
@@ -126,13 +124,11 @@ def get_regions_prediction(df,stan_model, region_list,n_days_predict=25,
         region_field=region_field,region_value=i)
 
 
-# In[3]:
 
 
 stan_model= pystan.StanModel(model_code=model_logistic)
 
 
-# In[4]:
 
 
 df=pd.read_csv(data_filename)[field_names]
@@ -140,13 +136,11 @@ df.columns=['date',region_field,cases_field,fatalities_field]
 df.head()
 
 
-# In[5]:
 
 
 df_res=get_prediction(df,stan_model,n_days_predict=25, target_field='cases', region_value='China')
 
 
-# In[6]:
 
 
 print ('\nNumber of cases for regions:')

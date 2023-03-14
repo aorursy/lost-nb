@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install joypy --progress-bar off')
 
 
-# In[2]:
 
 
 import os
@@ -32,13 +30,11 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[3]:
 
 
 os.listdir('/kaggle/input/trends-assessment-prediction/')
 
 
-# In[4]:
 
 
 BASE_PATH = '../input/trends-assessment-prediction'
@@ -47,7 +43,6 @@ train_data_dir = f'{BASE_PATH}/fMRI_train'
 test_data_dir = f'{BASE_PATH}/fMRI_test'
 
 
-# In[5]:
 
 
 loading_data = pd.read_csv(f'{BASE_PATH}/loading.csv')
@@ -56,31 +51,26 @@ sample_submission = pd.read_csv(f'{BASE_PATH}/sample_submission.csv')
 fnc_df = pd.read_csv("../input/trends-assessment-prediction/fnc.csv")
 
 
-# In[6]:
 
 
 loading_data.head()
 
 
-# In[7]:
 
 
 loading_data.shape
 
 
-# In[8]:
 
 
 train_data.head()
 
 
-# In[9]:
 
 
 train_data.shape
 
 
-# In[10]:
 
 
 total = train_data.isnull().sum()
@@ -89,13 +79,11 @@ missing_train_data= pd.concat([total, percent], axis=1, keys=['Total', 'Percent'
 missing_train_data.head()
 
 
-# In[ ]:
 
 
 
 
 
-# In[11]:
 
 
 def plot_bar(df, feature, title='', show_percent = False, size=2):
@@ -117,13 +105,11 @@ def plot_bar(df, feature, title='', show_percent = False, size=2):
     plt.show()
 
 
-# In[12]:
 
 
 plot_bar(train_data, 'age', 'age count and %age plot', show_percent=True, size=3)
 
 
-# In[13]:
 
 
 temp_data =  train_data.drop(['Id'], axis=1)
@@ -133,7 +119,6 @@ plt.yticks(rotation=0)
 plt.show()
 
 
-# In[14]:
 
 
 temp_data =  loading_data.drop(['Id'], axis=1)
@@ -145,7 +130,6 @@ plt.yticks(rotation=0)
 plt.show()
 
 
-# In[15]:
 
 
 temp_data =  loading_data.drop(['Id'], axis=1)
@@ -160,7 +144,6 @@ to_drop = [column for column in upper.columns if any(upper[column] > 0.5)]
 print('Very high correlated features: ', to_drop)
 
 
-# In[16]:
 
 
 import joypy
@@ -176,13 +159,11 @@ plt.title('Distribution of features IC_01 to IC_29', fontsize=22)
 plt.show()
 
 
-# In[17]:
 
 
 get_ipython().system('wget https://github.com/Chaogan-Yan/DPABI/raw/master/Templates/ch2better.nii')
 
 
-# In[18]:
 
 
 mask_filename = f'{BASE_PATH}/fMRI_mask.nii'
@@ -191,7 +172,6 @@ smri_filename = 'ch2better.nii'
 mask_niimg = nl.image.load_img(mask_filename)
 
 
-# In[19]:
 
 
 def load_subject(filename, mask_niimg):
@@ -208,13 +188,11 @@ num_components = subject_niimg.shape[-1]
 print("Detected {num_components} spatial maps".format(num_components=num_components))
 
 
-# In[20]:
 
 
 nlplt.plot_prob_atlas(subject_niimg, bg_img=smri_filename, view_type='filled_contours', draw_cross=False,title='All %d spatial maps' % num_components, threshold='auto')
 
 
-# In[21]:
 
 
 grid_size = int(np.ceil(np.sqrt(num_components)))
@@ -229,7 +207,6 @@ for i, cur_img in enumerate(nl.image.iter_img(subject_niimg)):
     
 
 
-# In[22]:
 
 
 from nilearn import datasets
@@ -252,7 +229,6 @@ motor_images = datasets.fetch_neurovault_motor_task()
 stat_img = motor_images.images[0]
 
 
-# In[23]:
 
 
 from nilearn import plotting
@@ -264,14 +240,12 @@ plotting.plot_stat_map(stat_img,
                        cut_coords=[36, -27, 66])
 
 
-# In[24]:
 
 
 plotting.plot_glass_brain(stat_img, title='plot_glass_brain',
                           threshold=3)
 
 
-# In[25]:
 
 
 from nilearn import datasets
@@ -281,7 +255,6 @@ func_filenames = rest_dataset.func
 confounds = rest_dataset.confounds
 
 
-# In[26]:
 
 
 # Import dictionary learning algorithm from decomposition module and call the
@@ -307,7 +280,6 @@ plotting.plot_prob_atlas(components_img, view_type='filled_contours',
                          title='Dictionary Learning maps')
 
 
-# In[27]:
 
 
 # Import Region Extractor algorithm from regions module
@@ -336,7 +308,6 @@ plotting.plot_prob_atlas(regions_extracted_img, view_type='filled_contours',
                          title=title)
 
 
-# In[28]:
 
 
 from nilearn.connectome import ConnectivityMeasure
@@ -372,7 +343,6 @@ plotting.plot_connectome(mean_correlations, coords_connectome,
                          edge_threshold='90%', title=title)
 
 
-# In[29]:
 
 
 from sklearn.svm import SVR
@@ -382,27 +352,23 @@ def metric(y_true, y_pred):
     return np.mean(np.sum(np.abs(y_true - y_pred), axis=0)/np.sum(y_true, axis=0))
 
 
-# In[30]:
 
 
 fnc_df.shape
 
 
-# In[31]:
 
 
 df = fnc_df.merge(loading_data, on="Id")
 df.head()
 
 
-# In[32]:
 
 
 train_score = pd.read_csv("../input/trends-assessment-prediction/train_scores.csv")
 train_score.head()
 
 
-# In[33]:
 
 
 train_score["is_train"] = True
@@ -410,7 +376,6 @@ df = df.merge(train_score, on="Id", how="left")
 df.head()
 
 
-# In[34]:
 
 
 test_df = df[df["is_train"] != True].copy()
@@ -419,7 +384,6 @@ df = df[df["is_train"] == True].copy()
 df.shape, test_df.shape
 
 
-# In[35]:
 
 
 fnc_features, loading_features = list(fnc_df.columns[1:]), list(loading_data.columns[1:])
@@ -431,13 +395,11 @@ df[fnc_features] *= FNC_SCALE
 test_df[fnc_features] *= FNC_SCALE
 
 
-# In[36]:
 
 
 get_ipython().run_cell_magic('time', '', 'NUM_FOLDS = 7\nkf = KFold(n_splits=NUM_FOLDS, shuffle=True, random_state=0)\n\n\nfeatures = loading_features + fnc_features\n\noveral_score = 0\nfor target, c, w in [("age", 100, 0.3), ("domain1_var1", 10, 0.175), ("domain1_var2", 10, 0.175), ("domain2_var1", 10, 0.175), ("domain2_var2", 10, 0.175)]:    \n    y_oof = np.zeros(df.shape[0])\n    y_test = np.zeros((test_df.shape[0], NUM_FOLDS))\n    \n    for f, (train_ind, val_ind) in enumerate(kf.split(df, df)):\n        train_df, val_df = df.iloc[train_ind], df.iloc[val_ind]\n        train_df = train_df[train_df[target].notnull()]\n\n        model = SVR(C=c, cache_size=3000.0)\n        model.fit(train_df[features], train_df[target])\n\n        y_oof[val_ind] = model.predict(val_df[features])\n        y_test[:, f] = model.predict(test_df[features])\n        \n    df["pred_{}".format(target)] = y_oof\n    test_df[target] = y_test.mean(axis=1)\n    score = metric(df[df[target].notnull()][target].values, df[df[target].notnull()]["pred_{}".format(target)].values)\n    overal_score += w*score\n    print(target, np.round(score, 4))\n    print()\n    \nprint("Overal score:", np.round(overal_score, 4))')
 
 
-# In[37]:
 
 
 sub_df = pd.melt(test_df[["Id", "age", "domain1_var1", "domain1_var2", "domain2_var1", "domain2_var2"]], id_vars=["Id"], value_name="Predicted")
@@ -448,13 +410,11 @@ assert sub_df.shape[0] == test_df.shape[0]*5
 sub_df.head(10)
 
 
-# In[38]:
 
 
 sub_df.to_csv("submission.csv", index=False)
 
 
-# In[ ]:
 
 
 

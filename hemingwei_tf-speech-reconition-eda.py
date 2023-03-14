@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -10,7 +9,6 @@ from pathlib import Path
 import pandas as pd
 
 
-# In[2]:
 
 
 # Math
@@ -22,7 +20,6 @@ import librosa
 from sklearn.decomposition import PCA
 
 
-# In[3]:
 
 
 # Visualization
@@ -37,7 +34,6 @@ import plotly.tools as tls
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[4]:
 
 
 train_audio_path = '/kaggle/input/tensorflow-speech-recognition-challenge/train/audio'
@@ -45,19 +41,16 @@ filename = 'yes/0a7c2a8d_nohash_0.wav'
 sample_rate, samples = wavfile.read(join(train_audio_path, filename))
 
 
-# In[5]:
 
 
 ll /kaggle/input/tensorflow-speech-recognition-challenge/train/audio/yes/0a7c2a8d_nohash_0.wav -h
 
 
-# In[6]:
 
 
 sample_rate, samples
 
 
-# In[7]:
 
 
 # define a function that calculates spectrogram
@@ -68,19 +61,16 @@ def log_specgram(audio, smaple_rate, window_size=20, step_size=10, eps=1e-10):
     return freqs, times, np.log(spec.T.astype(np.float32) + eps)
 
 
-# In[8]:
 
 
 freqs, times, spec = log_specgram(samples, sample_rate)
 
 
-# In[9]:
 
 
 freqs.shape, times.shape, spec.shape
 
 
-# In[10]:
 
 
 fig = plt.figure(figsize=(14, 8))
@@ -98,7 +88,6 @@ ax2.set_ylabel('Freqs in HZ')
 ax2.set_xlabel('Seconds')
 
 
-# In[11]:
 
 
 # input normalization for NN
@@ -107,19 +96,16 @@ std = np.std(spec, axis=0)
 spectrogram = (spec - mean) / std
 
 
-# In[12]:
 
 
 spectrogram.shape
 
 
-# In[13]:
 
 
 sample_rate
 
 
-# In[14]:
 
 
 # MFCC 梅尔频率倒谱系数
@@ -133,7 +119,6 @@ plt.colorbar(format='%+02.0f dB')
 plt.tight_layout()
 
 
-# In[15]:
 
 
 mfcc = librosa.feature.mfcc(S=log_S, n_mfcc=13)
@@ -141,7 +126,6 @@ delta2_mfcc = librosa.feature.delta(mfcc, order=2)
 mfcc.shape, delta2_mfcc.shape
 
 
-# In[16]:
 
 
 plt.figure(figsize=(12, 4))
@@ -153,7 +137,6 @@ plt.colorbar()
 plt.tight_layout()
 
 
-# In[17]:
 
 
 # Spectrogram in 3d
@@ -170,7 +153,6 @@ fig = go.Figure(data=data, layout=layout)
 py.iplot(fig)
 
 
-# In[18]:
 
 
 # Silence removal
@@ -178,7 +160,6 @@ print(samples.shape)
 ipd.Audio(samples, rate=sample_rate)
 
 
-# In[19]:
 
 
 sample_cut = samples[4000:13000]
@@ -186,7 +167,6 @@ print(sample_cut.shape)
 ipd.Audio(sample_cut, rate=sample_rate)
 
 
-# In[20]:
 
 
 # guessed slignment of each letter in 'yes'
@@ -214,7 +194,6 @@ for xc in xcoords:
     ax2.axvline(x=xc, c='r')
 
 
-# In[21]:
 
 
 # Resampling - dimension reduction
@@ -224,25 +203,21 @@ sample_rate, samples = wavfile.read(join(train_audio_path, filename))
 resampled = signal.resample(samples, int(new_sample_rate/sample_rate*samples.shape[0]))
 
 
-# In[22]:
 
 
 int(new_sample_rate/sample_rate*samples.shape[0])
 
 
-# In[23]:
 
 
 ipd.Audio(samples, rate=sample_rate)
 
 
-# In[24]:
 
 
 ipd.Audio(resampled, rate=new_sample_rate)
 
 
-# In[25]:
 
 
 # Fast fourier transform
@@ -255,7 +230,6 @@ def custom_fft(y, fs):
     return xf, vals
 
 
-# In[26]:
 
 
 xf, vals = custom_fft(samples, sample_rate)
@@ -267,7 +241,6 @@ plt.grid()
 plt.show()
 
 
-# In[27]:
 
 
 xf, vals = custom_fft(resampled, new_sample_rate)
@@ -279,7 +252,6 @@ plt.grid()
 plt.show()
 
 
-# In[28]:
 
 
 # number of records
@@ -288,7 +260,6 @@ dirs.sort()
 print('Number of labels: ' + str(len(dirs)))
 
 
-# In[29]:
 
 
 # calculate
@@ -298,14 +269,12 @@ for direct in dirs:
     number_of_recordings.append(len(waves))
 
 
-# In[30]:
 
 
 # number of total recordings in train sets
 sum(number_of_recordings)
 
 
-# In[31]:
 
 
 # plot
@@ -323,7 +292,6 @@ layout=go.Layout(
 py.iplot(go.Figure(data=[trace], layout=layout))
 
 
-# In[32]:
 
 
 # Speaker doesn't occur in both train and test data sets
@@ -339,21 +307,18 @@ for filename in filenames:
     plt.show()
 
 
-# In[33]:
 
 
 print('Speaker ' + filenames[0][4:11])
 ipd.Audio(join(train_audio_path, filenames[0]))
 
 
-# In[34]:
 
 
 print('Speaker ' + filenames[1][4:11])
 ipd.Audio(join(train_audio_path, filenames[1]))
 
 
-# In[35]:
 
 
 # Recordings with some weird silence
@@ -370,13 +335,11 @@ plt.xticks(times[::16])
 plt.show()
 
 
-# In[36]:
 
 
 ipd.Audio(join(train_audio_path, filename))
 
 
-# In[37]:
 
 
 # Calculating number of recordings shorter than 1 second
@@ -390,7 +353,6 @@ for d in dirs:
 print('Number of recordings shorter than 1 second: ' + str(num_of_shorter))
 
 
-# In[38]:
 
 
 # Mean spectrograms and FFT for each word
@@ -421,7 +383,6 @@ for d in dirs:
     plt.show()
 
 
-# In[39]:
 
 
 # Frequenciy components across the words
@@ -444,25 +405,21 @@ def violinplot_frequency(dirs, freq_ind):
     plt.show()      
 
 
-# In[40]:
 
 
 violinplot_frequency(dirs, 20)
 
 
-# In[41]:
 
 
 violinplot_frequency(dirs, 50)
 
 
-# In[42]:
 
 
 violinplot_frequency(dirs, 120)
 
 
-# In[43]:
 
 
 # Anomaly detection
@@ -495,13 +452,11 @@ def interactive_3d_plot(data, names):
 interactive_3d_plot(fft_all, names)
 
 
-# In[44]:
 
 
 len(fft_all)
 
 
-# In[45]:
 
 
 # Anomaly samples
@@ -509,21 +464,18 @@ print('Recording go/0487ba9b_nohash_0.wav')
 ipd.Audio(join(train_audio_path, 'go/0487ba9b_nohash_0.wav'))
 
 
-# In[46]:
 
 
 print('Recording yes/e4b02540_nohash_0.wav')
 ipd.Audio(join(train_audio_path, 'yes/e4b02540_nohash_0.wav'))
 
 
-# In[47]:
 
 
 print('Recording seven/b1114e4f_nohash_0.wav')
 ipd.Audio(join(train_audio_path, 'seven/b1114e4f_nohash_0.wav'))
 
 
-# In[ ]:
 
 
 

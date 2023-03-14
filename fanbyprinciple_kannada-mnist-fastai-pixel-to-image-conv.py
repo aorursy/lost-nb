@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 
@@ -26,27 +25,23 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 from fastai import *
 from fastai.vision import *
 
 
-# In[3]:
 
 
 DATAPATH = Path('/kaggle/input/Kannada-MNIST')
 
 
-# In[4]:
 
 
 for dirname, _, filename in os.walk(DATAPATH):
     print(filename)
 
 
-# In[5]:
 
 
 def get_data_labels(csv, label):
@@ -57,7 +52,6 @@ def get_data_labels(csv, label):
     return data, labels
 
 
-# In[6]:
 
 
 train_data, train_labels = get_data_labels(DATAPATH/'train.csv','label')
@@ -65,20 +59,17 @@ test_data, test_labels = get_data_labels(DATAPATH/'test.csv','id')
 other_data, other_labels = get_data_labels(DATAPATH/'Dig-MNIST.csv','label')
 
 
-# In[7]:
 
 
 print(f' Train:\tdata shape {train_data.shape}\tlabel shape {train_labels.shape}\n Test:\tdata shape {test_data.shape}\tlabel shape {test_labels.shape}\n Other:\tdata shape {other_data.shape}\tlabel shape {other_labels.shape}')
 
 
-# In[8]:
 
 
 plt.title(f'Training label: {train_labels[6]}')
 plt.imshow(train_data[6,0])
 
 
-# In[9]:
 
 
 np.random.seed(42)
@@ -93,7 +84,6 @@ valid_10_labels = train_labels[ran_10_pct_idx]
 valid_10_data = train_data[ran_10_pct_idx]
 
 
-# In[10]:
 
 
 class ArrayDataset(Dataset):
@@ -109,7 +99,6 @@ class ArrayDataset(Dataset):
         return self.x[i], self.y[i]
 
 
-# In[11]:
 
 
 train_ds = ArrayDataset(train_90_data,train_90_labels)
@@ -118,21 +107,18 @@ other_ds = ArrayDataset(other_data, other_labels)
 test_ds = ArrayDataset(test_data, test_labels)
 
 
-# In[12]:
 
 
 bs = 256
 databunch = DataBunch.create(train_ds, valid_ds, test_ds=test_ds, bs=bs)
 
 
-# In[13]:
 
 
 def conv2(ni,nf,stride=2,ks=5): 
     return conv_layer(ni,nf,stride=stride,ks=ks)
 
 
-# In[14]:
 
 
 best_architecture = nn.Sequential(
@@ -155,33 +141,28 @@ best_architecture = nn.Sequential(
 )
 
 
-# In[15]:
 
 
 learn = Learner(databunch, best_architecture, loss_func = nn.CrossEntropyLoss(), metrics=[accuracy] )
 
 
-# In[16]:
 
 
 learn.fit_one_cycle(42)
 
 
-# In[17]:
 
 
 preds, ids = learn.get_preds(DatasetType.Test)
 y = torch.argmax(preds, dim=1)
 
 
-# In[18]:
 
 
 submission = pd.DataFrame({'id': ids, 'label': y})
 submission.to_csv(path_or_buf="submission.csv", index=False)
 
 
-# In[19]:
 
 
 #learn.export()

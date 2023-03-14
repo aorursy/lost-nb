@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -20,7 +19,6 @@ import os
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 train_df = pd.read_csv("../input/train.csv")
@@ -28,14 +26,12 @@ test_df = pd.read_csv("../input/test.csv")
 merchants_df = pd.read_csv("../input/merchants.csv")
 
 
-# In[3]:
 
 
 new_merchant_transactions_df = pd.read_csv("../input/new_merchant_transactions.csv", )
 historical_transactions_df = pd.read_csv("../input/historical_transactions.csv")
 
 
-# In[4]:
 
 
 #ref https://www.kaggle.com/chauhuynh/my-first-kernel-3-699/ 
@@ -78,56 +74,47 @@ def reduce_mem_usage(df):
     return df
 
 
-# In[5]:
 
 
 historical_transactions_df = reduce_mem_usage(historical_transactions_df)
 new_merchant_transactions_df = reduce_mem_usage(new_merchant_transactions_df)
 
 
-# In[6]:
 
 
 gc.collect()
 
 
-# In[7]:
 
 
 merchants_df = reduce_mem_usage(merchants_df)
 
 
-# In[8]:
 
 
 train_df.head()
 
 
-# In[9]:
 
 
 test_df.head()
 
 
-# In[10]:
 
 
 historical_transactions_df.head()
 
 
-# In[11]:
 
 
 merchants_df.head()
 
 
-# In[12]:
 
 
 gc.collect()
 
 
-# In[13]:
 
 
 #check for null values
@@ -135,7 +122,6 @@ for df in[historical_transactions_df, new_merchant_transactions_df]:
     print(df.isna().sum())
 
 
-# In[14]:
 
 
 for df in [historical_transactions_df,new_merchant_transactions_df]:
@@ -144,43 +130,36 @@ for df in [historical_transactions_df,new_merchant_transactions_df]:
     df['merchant_id'].fillna('M_ID_00a6ca8a8a',inplace=True)
 
 
-# In[15]:
 
 
 merchants_df.isna().sum()
 
 
-# In[16]:
 
 
 merchants_df.apply(lambda x : len(x.unique()))
 
 
-# In[17]:
 
 
 merchants_df['avg_purchases_lag3'].value_counts().head()
 
 
-# In[18]:
 
 
 merchants_df['avg_purchases_lag6'].value_counts().head()
 
 
-# In[19]:
 
 
 merchants_df['avg_purchases_lag12'].value_counts().head()
 
 
-# In[20]:
 
 
 merchants_df['category_2'].value_counts().head()
 
 
-# In[21]:
 
 
 merchants_df['avg_sales_lag3'].fillna(merchants_df['avg_sales_lag3'].mean(),inplace=True)
@@ -189,25 +168,21 @@ merchants_df['avg_sales_lag12'].fillna(merchants_df['avg_sales_lag12'].mean(),in
 merchants_df['category_2'].fillna(1.0,inplace=True)
 
 
-# In[22]:
 
 
 merchants_df.isnull().sum()
 
 
-# In[23]:
 
 
 merchants_df.head()
 
 
-# In[24]:
 
 
 merchants_df['avg_sales_lag6'].describe()
 
 
-# In[25]:
 
 
 #del merchants_df['avg_sales_lag3']
@@ -215,19 +190,16 @@ merchants_df['avg_sales_lag6'].describe()
 #del merchants_df['avg_sales_lag12']
 
 
-# In[26]:
 
 
 merchants_df.columns = ['merch_' + str(col) for col in merchants_df.columns]
 
 
-# In[27]:
 
 
 merchants_df.columns
 
 
-# In[28]:
 
 
 merchants_df.columns = ['merchant_id', 'merch_merchant_group_id',
@@ -242,19 +214,16 @@ merchants_df.columns = ['merchant_id', 'merch_merchant_group_id',
        'merch_state_id', 'merch_category_2']
 
 
-# In[29]:
 
 
 merchants_df['merch_most_recent_sales_range'].value_counts()
 
 
-# In[30]:
 
 
 merchants_df.head()
 
 
-# In[31]:
 
 
 merchants_df['merch_category_1'] = merchants_df['merch_category_1'].map({'Y':1, 'N':0})
@@ -262,43 +231,36 @@ merchants_df['merch_most_recent_sales_range'] = merchants_df['merch_most_recent_
 merchants_df['merch_most_recent_purchases_range'] = merchants_df['merch_most_recent_purchases_range'].astype('category').cat.codes
 
 
-# In[32]:
 
 
 merchants_df = merchants_df.drop_duplicates(subset='merchant_id', keep="last")
 
 
-# In[33]:
 
 
 merchants_df.shape
 
 
-# In[34]:
 
 
 merchants_df.head()
 
 
-# In[35]:
 
 
 merchants_df['merch_category_4'].value_counts()
 
 
-# In[36]:
 
 
 merchants_df['merch_category_4'] = merchants_df['merch_category_4'].map({'Y':1, 'N':0})
 
 
-# In[37]:
 
 
 merchants_df.dtypes
 
 
-# In[38]:
 
 
 merchants_df['merch_avg_sales_lag3'] = merchants_df['merch_avg_sales_lag3'].astype('float16')
@@ -309,55 +271,46 @@ merchants_df['merch_avg_sales_lag12'] = merchants_df['merch_avg_sales_lag12'].as
 merchants_df['merch_avg_purchases_lag12'] = merchants_df['merch_avg_purchases_lag12'].astype('float16')
 
 
-# In[39]:
 
 
 gc.collect()
 
 
-# In[40]:
 
 
 historical_transactions_df = historical_transactions_df.merge(merchants_df,on='merchant_id', how='left')
 
 
-# In[41]:
 
 
 gc.collect()
 
 
-# In[42]:
 
 
 historical_transactions_df.shape
 
 
-# In[43]:
 
 
 historical_transactions_df.head()
 
 
-# In[44]:
 
 
 gc.collect()
 
 
-# In[45]:
 
 
 new_merchant_transactions_df = new_merchant_transactions_df.merge(merchants_df,on='merchant_id', how='left')
 
 
-# In[46]:
 
 
 gc.collect()
 
 
-# In[47]:
 
 
 for df in[historical_transactions_df, new_merchant_transactions_df]:
@@ -369,39 +322,33 @@ for df in[historical_transactions_df, new_merchant_transactions_df]:
     del df['merch_category_1']
 
 
-# In[48]:
 
 
 gc.collect()
 
 
-# In[49]:
 
 
 del merchants_df
 gc.collect()
 
 
-# In[50]:
 
 
 new_merchant_transactions_df.head()
 
 
-# In[51]:
 
 
 gc.collect()
 
 
-# In[52]:
 
 
 def get_new_columns(name,aggs):
     return [name + '_' + k + '_' + agg for k in aggs.keys() for agg in aggs[k]]
 
 
-# In[53]:
 
 
 for df in [historical_transactions_df,new_merchant_transactions_df]:
@@ -418,19 +365,16 @@ for df in [historical_transactions_df,new_merchant_transactions_df]:
     df['month_diff'] += df['month_lag']
 
 
-# In[54]:
 
 
 historical_transactions_df.dtypes
 
 
-# In[55]:
 
 
 gc.collect()
 
 
-# In[56]:
 
 
 for df in [historical_transactions_df,new_merchant_transactions_df]:
@@ -444,50 +388,42 @@ for df in [historical_transactions_df,new_merchant_transactions_df]:
     df['month_diff'] = df['month_diff'].astype('int8')
 
 
-# In[57]:
 
 
 gc.collect()
 
 
-# In[58]:
 
 
 historical_transactions_df.head()
 
 
-# In[59]:
 
 
 for df in[historical_transactions_df, new_merchant_transactions_df]:
     df['category_3'] = df['category_3'].astype('category').cat.codes
 
 
-# In[60]:
 
 
 gc.collect()
 
 
-# In[61]:
 
 
 historical_transactions_df.dtypes
 
 
-# In[62]:
 
 
 gc.collect()
 
 
-# In[63]:
 
 
 historical_transactions_df.head()
 
 
-# In[64]:
 
 
 aggs = {}
@@ -519,7 +455,6 @@ aggs['merch_active_months_lag12'] = ['sum', 'mean']
 aggs['merch_category_4'] = ['sum', 'mean']
 
 
-# In[65]:
 
 
 for col in ['category_1', 'category_2','category_3','installments', 'state_id', 'month', 'dayofweek', 'hour']:
@@ -529,19 +464,16 @@ for col in ['category_1', 'category_2','category_3','installments', 'state_id', 
 historical_transactions_df.head()
 
 
-# In[66]:
 
 
 gc.collect()
 
 
-# In[67]:
 
 
 new_columns = get_new_columns('hist',aggs)
 
 
-# In[68]:
 
 
 df_hist_trans_group = historical_transactions_df.groupby('card_id').agg(aggs)
@@ -552,20 +484,17 @@ df_hist_trans_group['hist_purchase_date_average'] = df_hist_trans_group['hist_pu
 df_hist_trans_group['hist_purchase_date_uptonow'] = (datetime.datetime.today() - df_hist_trans_group['hist_purchase_date_max']).dt.days
 
 
-# In[69]:
 
 
 del historical_transactions_df
 gc.collect()
 
 
-# In[70]:
 
 
 gc.collect()
 
 
-# In[71]:
 
 
 train_df = train_df.merge(df_hist_trans_group,on='card_id',how='left')
@@ -574,25 +503,21 @@ del df_hist_trans_group
 gc.collect()
 
 
-# In[72]:
 
 
 gc.collect()
 
 
-# In[73]:
 
 
 train_df.head()
 
 
-# In[74]:
 
 
 test_df.head()
 
 
-# In[75]:
 
 
 aggs = {}
@@ -624,26 +549,22 @@ del df_hist_trans_group
 gc.collect()
 
 
-# In[76]:
 
 
 train_df.head(5)
 
 
-# In[77]:
 
 
 del new_merchant_transactions_df
 gc.collect()
 
 
-# In[78]:
 
 
 gc.collect()
 
 
-# In[79]:
 
 
 train_df['outliers'] = 0
@@ -651,7 +572,6 @@ train_df.loc[train_df['target'] < -30, 'outliers'] = 1
 train_df['outliers'].value_counts()
 
 
-# In[80]:
 
 
 for df in [train_df,test_df]:
@@ -675,25 +595,21 @@ for f in ['feature_1','feature_2','feature_3']:
     test_df[f] = test_df[f].map(order_label)
 
 
-# In[81]:
 
 
 train_df.head()
 
 
-# In[82]:
 
 
 test_df.head()
 
 
-# In[83]:
 
 
 gc.collect()
 
 
-# In[84]:
 
 
 df_train_columns = [c for c in train_df.columns if c not in ['card_id', 'first_active_month','target','outliers']]
@@ -701,7 +617,6 @@ target = train_df['target']
 del train_df['target']
 
 
-# In[85]:
 
 
 param = {'num_leaves': 31,
@@ -746,7 +661,6 @@ for fold_, (trn_idx, val_idx) in enumerate(folds.split(train_df,train_df['outlie
 np.sqrt(mean_squared_error(oof, target))
 
 
-# In[86]:
 
 
 cols = (feature_importance_df[["Feature", "importance"]]
@@ -765,7 +679,6 @@ plt.title('LightGBM Features (avg over folds)')
 plt.tight_layout()
 
 
-# In[87]:
 
 
 sub_df = pd.DataFrame({"card_id":test_df["card_id"].values})
@@ -773,13 +686,11 @@ sub_df["target"] = predictions
 sub_df.to_csv("submission.csv", index=False)
 
 
-# In[88]:
 
 
 sub_df.head()
 
 
-# In[89]:
 
 
 

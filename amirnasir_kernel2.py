@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -27,7 +26,6 @@ import librosa.display
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 INPUT_FOLDER = "../input/"
@@ -36,14 +34,12 @@ test_files=glob.glob("../input/test/*.wav")
 print(os.listdir(INPUT_FOLDER))
 
 
-# In[3]:
 
 
 TEST = INPUT_FOLDER + "sample_submission.csv"
 test = pd.read_csv(TEST)
 
 
-# In[4]:
 
 
 train_curated = pd.read_csv("../input/train_curated.csv")
@@ -54,20 +50,17 @@ train = pd.concat([train_curated, train_noisy], axis=0)
 del train_noisy
 
 
-# In[5]:
 
 
 
 
 
-# In[5]:
 
 
 print("Number of train examples=", train.shape[0], "  Number of classes=", len(set(train.labels)))
 print("Number of test examples=", test.shape[0], "  Number of classes=", len(set(test.columns[1:])))
 
 
-# In[6]:
 
 
 #get only the lables that are in the testing file
@@ -78,20 +71,17 @@ print("Number of test examples=", test.shape[0], "  Number of classes=", len(set
 # category_group.columns = ['counts']
 
 
-# In[7]:
 
 
 print('Minimum samples per category = ', min(train.labels.value_counts()))
 print('Maximum samples per category = ', max(train.labels.value_counts()))
 
 
-# In[8]:
 
 
 
 
 
-# In[8]:
 
 
 train['n_label'] = train.labels.str.split(',').apply(lambda x: len(x))
@@ -99,14 +89,12 @@ print('curated\n',train.query('is_curated == True').n_label.value_counts())
 print('noisy\n',train.query('is_curated == False').n_label.value_counts())
 
 
-# In[9]:
 
 
 #chacking the multilables
 #[label.split(',') for i, label in enumerate(train['labels']) if len(label.split(',')) >=2] 
 
 
-# In[10]:
 
 
 #get target names from test 
@@ -114,7 +102,6 @@ target_names = test.columns[1:]
 target_names.shape
 
 
-# In[11]:
 
 
 num_targets = len(target_names)
@@ -123,7 +110,6 @@ src_dict = {target_names[i]:i for i in range(num_targets)}
 src_dict_inv = {i:target_names[i] for i in range(num_targets)}
 
 
-# In[12]:
 
 
 def one_hot(labels, src_dict):
@@ -137,7 +123,6 @@ def one_hot(labels, src_dict):
     return ar
 
 
-# In[13]:
 
 
 import IPython.display as ipd  # To play sound in the notebook
@@ -148,7 +133,6 @@ print(label)
 ipd.Audio(path)
 
 
-# In[14]:
 
 
 track_n=train[(train.is_curated==False)&(train.labels ==label)].sample(1).fname.values[0]
@@ -158,7 +142,6 @@ print(train[train.fname==track_n].fname.values[0])
 ipd.Audio(path_n)
 
 
-# In[15]:
 
 
 audio, sample_rate=lbr.load(path,sr=44100)
@@ -174,7 +157,6 @@ lbr.display.specshow(S, sr=44100, hop_length=hop_length, x_axis='time',cmap='mag
 plt.colorbar(format='%+2.0f dB')
 
 
-# In[16]:
 
 
 audio, sample_rate=lbr.load(path_n,sr=44100)
@@ -190,14 +172,12 @@ lbr.display.specshow(S, sr=44100, hop_length=hop_length, x_axis='time',cmap='mag
 plt.colorbar(format='%+2.0f dB')
 
 
-# In[17]:
 
 
 track = audio[0:int(1 * sample_rate)] #5 secs of audio
 plt.plot(track)
 
 
-# In[18]:
 
 
 from sklearn.model_selection import StratifiedKFold
@@ -216,7 +196,6 @@ from keras.utils import Sequence
 import shutil
 
 
-# In[19]:
 
 
 class Config(object):
@@ -243,7 +222,6 @@ class Config(object):
             self.dim = (self.audio_length)
 
 
-# In[20]:
 
 
 #lwrap implementation for keras
@@ -326,7 +304,6 @@ def tf_lwlrap(y_true, y_pred):
     return out
 
 
-# In[21]:
 
 
 def audio_norm(data):
@@ -339,13 +316,11 @@ def audio_norm(data):
     return data
 
 
-# In[22]:
 
 
 
 
 
-# In[22]:
 
 
 def build_model(config):
@@ -391,13 +366,11 @@ def build_model(config):
   
 
 
-# In[23]:
 
 
 sample_rate
 
 
-# In[24]:
 
 
 # trim silent part
@@ -406,7 +379,6 @@ def trim_silent(data):
     return data_tr
 
 
-# In[25]:
 
 
 def prepare_data(df, config, data_dir,downsample=False):
@@ -460,14 +432,12 @@ def prepare_data(df, config, data_dir,downsample=False):
     
 
 
-# In[26]:
 
 
 train.set_index("fname", inplace=True)
 test.set_index('fname',inplace=True)
 
 
-# In[27]:
 
 
 downsample=False
@@ -479,51 +449,43 @@ X_train=prepare_data(train[train.is_curated==True],config,'../input/train_curate
 X_test=prepare_data(test,config,'../input/test/',downsample)
 
 
-# In[28]:
 
 
 y = one_hot(train_curated['labels'], src_dict)
 
 
-# In[29]:
 
 
 y_noisy=one_hot(train[train.is_curated==False].labels, src_dict)
 
 
-# In[30]:
 
 
 
 
 
-# In[30]:
 
 
 X_test.shape
 
 
-# In[31]:
 
 
 X = audio_norm(X_train)
 X_test = audio_norm(X_test)
 
 
-# In[32]:
 
 
 y_noisy.shape
 
 
-# In[33]:
 
 
 from sklearn.model_selection import train_test_split
 X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.1, random_state=10)
 
 
-# In[34]:
 
 
 PREDICTION_FOLDER = "predictions_1d_conv"
@@ -557,7 +519,6 @@ history = model.fit(X_train,y_train,validation_data=(X_val,y_val),callbacks=call
 # test[['label']].to_csv(PREDICTION_FOLDER + "/predictions.csv") 
 
 
-# In[35]:
 
 
 for fname in train[train.is_curated==False].index
@@ -565,26 +526,22 @@ for fname in train[train.is_curated==False].index
     
 
 
-# In[36]:
 
 
 
 
 
-# In[36]:
 
 
 model.evaluate(X_val[20:21],y_val[20:21],batch_size=1)
 
 
-# In[37]:
 
 
 #prepare noisy data
 X_noisy=prepare_data(train[train.is_curated==False],config,'../input/train_noisy/',downsample)
 
 
-# In[38]:
 
 
 results=[]
@@ -593,20 +550,17 @@ for i in range(y_noisy.shape[0]):
     results.append(r[1])
 
 
-# In[39]:
 
 
 results=np.array(results)
 
 
-# In[40]:
 
 
 print(min(results))
 print(max(results))
 
 
-# In[41]:
 
 
 indexes=[]
@@ -616,14 +570,12 @@ for i,j in enumerate(results):
         
 
 
-# In[42]:
 
 
 d=np.vstack((X_train,X_noisy[indexes]))
 y2=np.vstack((y_train,y_noisy[indexes]))
 
 
-# In[43]:
 
 
 PREDICTION_FOLDER = "predictions_1d_conv"
@@ -641,13 +593,11 @@ model = build_model(config)
 history = model.fit(d,y2,validation_data=(X_val,y_val),callbacks=callbacks_list,batch_size=128, epochs=50,shuffle=True)
 
 
-# In[44]:
 
 
 submission= model.predict(X_test, verbose=1)
 
 
-# In[45]:
 
 
 # Output all random to see a baseline

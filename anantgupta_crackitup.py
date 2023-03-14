@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import matplotlib.image as mpimg 
@@ -32,7 +31,6 @@ train.head(10)
 print("Cell Execution Complete")
 
 
-# In[2]:
 
 
 ########################################################
@@ -55,7 +53,6 @@ for curImageIndex in imageList:
 print("Cell Execution Complete")
 
 
-# In[3]:
 
 
 #################################################
@@ -73,7 +70,6 @@ train.groupby(['isFailurePresent','defectType'])['imageId'].nunique()
 #                   4               801
 
 
-# In[4]:
 
 
 ######################################################################################
@@ -138,7 +134,6 @@ testY=np.array(testY)
 print("Cell Execution Complete")
 
 
-# In[5]:
 
 
 import torch
@@ -182,7 +177,6 @@ batchSize=256
 print("Cell Execution Completed")
 
 
-# In[6]:
 
 
 # Reshaping the data for pytorch purposes

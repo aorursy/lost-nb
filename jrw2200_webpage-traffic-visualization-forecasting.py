@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -35,37 +34,31 @@ from IPython.display import HTML
 import collections
 
 
-# In[2]:
 
 
 train = pd.read_csv('/kaggle/input/web-traffic-time-series-forecasting/train_1.csv')
 
 
-# In[3]:
 
 
 print(train.shape)
 
 
-# In[4]:
 
 
 train.head(10)
 
 
-# In[5]:
 
 
 train.columns
 
 
-# In[6]:
 
 
 train.iloc[34436].Page
 
 
-# In[7]:
 
 
 def missingData(df):
@@ -75,25 +68,21 @@ def missingData(df):
     return missing_data
 
 
-# In[8]:
 
 
 missingData(train).head(20)
 
 
-# In[9]:
 
 
 missingData(train).tail(10)
 
 
-# In[10]:
 
 
 sns.distplot(np.log1p(train.drop(columns='Page').sum(axis=1)), rug=True, kde=False)
 
 
-# In[11]:
 
 
 data = [
@@ -127,7 +116,6 @@ fig1 = dict(data=data, layout=layout)
 iplot(fig1)
 
 
-# In[12]:
 
 
 fig = go.Figure()
@@ -145,7 +133,6 @@ fig.update_layout(height=450, width=900, title = 'Distribution of total no. view
 fig.show()
 
 
-# In[13]:
 
 
 webpage = train.iloc[11214]
@@ -203,7 +190,6 @@ fig.update_layout(
 fig.show()
 
 
-# In[14]:
 
 
 webpage = train.iloc[34436]
@@ -260,7 +246,6 @@ fig.update_layout(
 fig.show()
 
 
-# In[15]:
 
 
 webpage = train.iloc[4436]
@@ -317,7 +302,6 @@ fig.update_layout(
 fig.show()
 
 
-# In[16]:
 
 
 npages = 5
@@ -332,7 +316,6 @@ for key in lang_sets:
     print('\n\n')
 
 
-# In[17]:
 
 
 def get_language(page):
@@ -386,7 +369,6 @@ fig.update_yaxes( tickfont=dict(size=16))
 fig.show()
 
 
-# In[18]:
 
 
 lang_sets = {}
@@ -410,20 +392,17 @@ offset['fr'] = 600
 offset['zh'] = 300
 
 
-# In[19]:
 
 
 lang_dict = {'zh': 'Chinese', 'fr': 'French', 'en': 'English', 'ru': 'Russian', 'de': 'German', 'ja': 'Japanese', 'es': 'Spanish', 'na': 'Other'}
 
 
-# In[20]:
 
 
 #cl.scales['7']
 #HTML(cl.to_html( cl.scales['8'] )) # All scales with 11 colors
 
 
-# In[21]:
 
 
 fig = go.Figure()
@@ -480,7 +459,6 @@ fig.update_layout(
 fig.show()
 
 
-# In[22]:
 
 
 npages = 5
@@ -495,26 +473,22 @@ for key in lang_sets:
     print('\n\n')
 
 
-# In[23]:
 
 
 from statsmodels.tsa.stattools import pacf
 from statsmodels.tsa.stattools import acf
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -29,7 +28,6 @@ import glob
 #from torchlibrosa.augmentation import SpecAugmentation
 
 
-# In[2]:
 
 
 PATH = ['../input/birdsong-resampled-train-audio-00/','../input/birdsong-resampled-train-audio-01/',
@@ -70,7 +68,6 @@ os.makedirs(OUT, exist_ok=True)
 seed_everything(SEED)
 
 
-# In[3]:
 
 
 files = []
@@ -79,7 +76,6 @@ for p in PATH:
 files = {os.path.basename(f):f for f in files}
 
 
-# In[4]:
 
 
 df = pd.read_csv(LABELS)
@@ -95,7 +91,6 @@ df = df.loc[df.filename_w.isin(files.keys())].reset_index()
 df.head()
 
 
-# In[5]:
 
 
 mean,std = -40.0,12.0 #quick estimation
@@ -161,7 +156,6 @@ class BirdDataset(Dataset):
         return (img2tensor(logmel) - mean)/std, label
 
 
-# In[6]:
 
 
 class AttnBlock(nn.Module):
@@ -201,7 +195,6 @@ class Model(nn.Module):
         return torch.logsumexp(x,-1).squeeze() - torch.Tensor([x.shape[-1]]).to(x.device).log()
 
 
-# In[7]:
 
 
 class OneHot(Callback):
@@ -283,7 +276,6 @@ class AccMax(Callback):
         return add_metrics(last_metrics, metric)   
 
 
-# In[8]:
 
 
 def mixup(x, y, alpha=0.4):
@@ -331,7 +323,6 @@ class Cutmix(LearnerCallback):
         return {'last_input': last_input, 'last_target': last_target}
 
 
-# In[9]:
 
 
 #5s
@@ -360,7 +351,6 @@ for fold in range(1):
     torch.save(learn.model.module.state_dict(),os.path.join(OUT,f'{fname}_{fold}.pth'))
 
 
-# In[ ]:
 
 
 

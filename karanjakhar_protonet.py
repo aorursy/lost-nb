@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import cv2
 
 
-# In[2]:
 
 
 import os
@@ -23,7 +21,6 @@ if DATA_PATH is None:
     raise Exception('Configure your data folder location in config.py before continuing!')
 
 
-# In[3]:
 
 
 #few_shot.metric 1
@@ -45,7 +42,6 @@ NAMED_METRICS = {
 }
 
 
-# In[4]:
 
 
 #few_shot.utils.py 2
@@ -184,7 +180,6 @@ def autograd_graph(tensor: torch.Tensor) -> Tuple[
     return nodes, edges
 
 
-# In[5]:
 
 
 #few_shot.eval 3
@@ -241,13 +236,11 @@ def evaluate(model: Module, dataloader: DataLoader, prepare_batch: Callable, met
     return logs
 
 
-# In[6]:
 
 
 get_ipython().system('pip install albumentations')
 
 
-# In[7]:
 
 
 #few_shot.callbacks 4
@@ -773,13 +766,11 @@ class LearningRateScheduler(Callback):
 ' of group {} to {:.4e}.'.format(epoch, i, new_lr))
 
 
-# In[8]:
 
 
 get_ipython().system('pip install easydict')
 
 
-# In[9]:
 
 
 #few_shot.core.py 5
@@ -974,7 +965,6 @@ def create_nshot_task_label(k: int, q: int) -> torch.Tensor:
     return y
 
 
-# In[10]:
 
 
 #few_shot.train.py
@@ -1108,7 +1098,6 @@ def fit(model: Module, optimiser: Optimizer, loss_fn: Callable, epochs: int, dat
     callbacks.on_train_end()
 
 
-# In[11]:
 
 
 #few_shot.proto.py
@@ -1201,7 +1190,6 @@ def compute_prototypes(support: torch.Tensor, k: int, n: int) -> torch.Tensor:
     return class_prototypes
 
 
-# In[12]:
 
 
 #few_shot.models
@@ -1447,13 +1435,11 @@ class AttentionLSTM(nn.Module):
         return h
 
 
-# In[13]:
 
 
 
 
 
-# In[13]:
 
 
 #few_shot.matching
@@ -1588,7 +1574,6 @@ def matching_net_predictions(attention: torch.Tensor, n: int, k: int, q: int) ->
     return y_pred
 
 
-# In[14]:
 
 
 #few_shot.maml
@@ -1725,7 +1710,6 @@ def meta_gradient_step(model: Module,
         raise ValueError('Order must be either 1 or 2.')
 
 
-# In[15]:
 
 
 #dlclihe.util
@@ -2288,7 +2272,6 @@ def plot_confusion_matrix(y_test, y_pred, classes,
     np.set_printoptions(**po)
 
 
-# In[16]:
 
 
 #dlcliche.math
@@ -2375,7 +2358,6 @@ class OnlineStats:
         return self.n
 
 
-# In[17]:
 
 
 #dlcliche.image
@@ -2570,7 +2552,6 @@ def union_of_bboxes(height, width, bboxes, erosion_rate=0.0, to_int=False):
     return x1, y1, x2, y2
 
 
-# In[18]:
 
 
 #few_shot.extmodel_proto_net_clf.py
@@ -2694,13 +2675,11 @@ class ExtModelProtoNetClf(object):
         return calculate_clf_metrics(y_gts, y_hat)
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 #few_shot.datasets.py
@@ -2906,19 +2885,16 @@ class DummyDataset(Dataset):
         return np.array([item] + [class_id]*self.n_features, dtype=np.float), float(class_id)
 
 
-# In[20]:
 
 
 
 
 
-# In[20]:
 
 
 
 
 
-# In[20]:
 
 
 #app_utils_clf
@@ -3056,7 +3032,6 @@ def train_proto_net(args, model, device, n_epochs,
 )
 
 
-# In[21]:
 
 
 #whale.whale_utils
@@ -3239,13 +3214,11 @@ def prepare_submission(submission_filename, test_dists, new_whale_thresh, data_t
     display(pd.read_csv(f'subs/{submission_filename}.csv.gz').head())
 
 
-# In[22]:
 
 
 
 
 
-# In[22]:
 
 
 #whale.train
@@ -3334,13 +3307,11 @@ train_proto_net(args,
 torch.save(feature_model.state_dict(), f'{args.param_str}_epoch{args.n_epochs}.pth')
 
 
-# In[23]:
 
 
 os.listdir('../input/')
 
 
-# In[24]:
 
 
 from easydict import EasyDict
@@ -3352,7 +3323,6 @@ weight = f'{args.param_str}_epoch{args.n_epochs}'
 calculate_results(weight=weight, SZ=224, get_model_fn=get_resnet18, device=device,train_csv='../input/humpback-whale-identification/train.csv', data_train='../input/humpback-whale-identification/train', data_test='../input/humpback-whale-identification/test')
 
 
-# In[25]:
 
 
 test_dists = np.load(f'test_dists_{weight}.npy')

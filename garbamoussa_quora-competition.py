@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,25 +21,21 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[2]:
 
 
 get_ipython().run_line_magic('ls', '')
 
 
-# In[3]:
 
 
 
@@ -61,7 +56,6 @@ import re
 import string
 
 
-# In[4]:
 
 
 train = pd.read_csv('/kaggle/input/quora-insincere-questions-classification/train.csv')
@@ -69,49 +63,41 @@ test = pd.read_csv('/kaggle/input/quora-insincere-questions-classification/test.
 sub_df_target = pd.read_csv('/kaggle/input/quora-insincere-questions-classification/sample_submission.csv')
 
 
-# In[5]:
 
 
 train.shape
 
 
-# In[6]:
 
 
 train.head()
 
 
-# In[7]:
 
 
 train1 = train.sample(frac=0.3,random_state=200)
 
 
-# In[8]:
 
 
 train1.shape
 
 
-# In[9]:
 
 
 test.shape
 
 
-# In[10]:
 
 
 test1 = test.sample(frac=0.3,random_state=200)
 
 
-# In[11]:
 
 
 test1.shape
 
 
-# In[12]:
 
 
 import pandas as pd 
@@ -125,27 +111,23 @@ cora_data = train1.copy()
 cora_test_data = test1.copy()
 
 
-# In[13]:
 
 
 cora_data.info()
 
 
-# In[14]:
 
 
 #Verification presence données manquantes
 cora_data[cora_data['question_text'].isnull()]
 
 
-# In[15]:
 
 
 #Verification presence données manquantes
 cora_data[cora_data['target'].isnull()]
 
 
-# In[16]:
 
 
 percent_target = cora_data.groupby('target').count()
@@ -154,7 +136,6 @@ percent_target.reset_index(level=0, inplace=True)
 percent_target
 
 
-# In[17]:
 
 
 import matplotlib.pyplot as plt
@@ -172,7 +153,6 @@ ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 plt.show()
 
 
-# In[18]:
 
 
 cora_data_neg_sample = cora_data[cora_data['target'] == 1] #Negatives comments
@@ -182,13 +162,11 @@ cora_resampling = pd.concat([pd.DataFrame(cora_data_positive_sample.sample(6000)
                                pd.DataFrame(cora_data_neg_sample.sample(3650))])
 
 
-# In[19]:
 
 
 100*(cora_resampling.groupby('target')['question_text'].count())/cora_resampling['target'].count()
 
 
-# In[20]:
 
 
 import matplotlib.pyplot as plt
@@ -206,7 +184,6 @@ ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 plt.show()
 
 
-# In[21]:
 
 
 from nltk.stem.wordnet import WordNetLemmatizer
@@ -271,21 +248,18 @@ def get_ngrams(text, n ):
     return [ ' '.join(grams) for grams in n_grams]
 
 
-# In[22]:
 
 
 #Cleaning the data 
 cora_resampling['clean_question'] = cora_resampling['question_text'].apply(clean_str)
 
 
-# In[23]:
 
 
 #Tokenizing and stopwords removing
 cora_resampling['tokeniZ_stopWords_question'] = cora_resampling['clean_question'].apply(tokeniZ_stopWords)
 
 
-# In[24]:
 
 
 #Words Stemming
@@ -293,7 +267,6 @@ cora_resampling['stemming_question'] = [[ps.stem(word) for word in words] for wo
 cora_resampling['stemming_question_for_tfidf'] = [' '.join(words) for words in cora_resampling['stemming_question']] 
 
 
-# In[25]:
 
 
 #Words lemmatization
@@ -301,14 +274,12 @@ cora_resampling['lemmatize_question'] = cora_resampling['tokeniZ_stopWords_quest
 cora_resampling['lemmatize_question_for_tfidf'] = [' '.join(x) for x in cora_resampling['lemmatize_question'] ]
 
 
-# In[26]:
 
 
 #Calcul longueur des commentaires
 cora_resampling['question_lenght'] = cora_resampling['question_text'].apply(len)
 
 
-# In[27]:
 
 
 #Calcul du nombre de ponctuation par question
@@ -317,14 +288,12 @@ cora_resampling['number_punctuation'] = cora_resampling['question_text'].apply(
     lambda doc: len([word for word in str(doc) if word in punctuation])) 
 
 
-# In[28]:
 
 
 #Number of unique words in the text
 cora_resampling['number_of_Unique_words'] = cora_resampling['clean_question'].apply([lambda x : len(set(str(x).split()))])
 
 
-# In[29]:
 
 
 #Number of stopwords in the text
@@ -333,7 +302,6 @@ cora_resampling['number_of_StopWords'] = cora_resampling['clean_question'].apply
     lambda x : len([w for w in x.lower().split() if w in list_stopWords ]))
 
 
-# In[30]:
 
 
 #Number of upper case words
@@ -341,7 +309,6 @@ cora_resampling['number_of_uppercase'] = cora_resampling['question_text'].apply(
     lambda x : len([w for w in x.split() if w.isupper()]))
 
 
-# In[31]:
 
 
 #Average length of words in the text (whithout stop words)
@@ -349,20 +316,17 @@ cora_resampling['average_of_wordsLength'] = cora_resampling['clean_question'].ap
     lambda x : np.mean([len(w) for w in x.split()]))
 
 
-# In[32]:
 
 
 #Number of words in the text
 cora_resampling['number_of_words'] = cora_resampling['clean_question'].apply([lambda x : len(str(x).split())])
 
 
-# In[33]:
 
 
 cora_resampling.info()
 
 
-# In[34]:
 
 
 cora_resampling[['question_lenght', 'number_punctuation', 'number_of_words',
@@ -370,7 +334,6 @@ cora_resampling[['question_lenght', 'number_punctuation', 'number_of_words',
        'average_of_wordsLength']].sample(5)
 
 
-# In[35]:
 
 
 import seaborn as sns
@@ -378,7 +341,6 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[36]:
 
 
 list_var=['question_lenght', 'number_punctuation', 'number_of_Unique_words', 
@@ -397,7 +359,6 @@ def var_hist_global(df,X='target',Y=list_var, Title='Features Engineering - Hist
 var_hist_global(df=cora_resampling,X='target',Y=list_var, Title='Histogramme Quora Questions', KDE=True)
 
 
-# In[37]:
 
 
 # Calculate number of obs per group & median to position labels
@@ -414,7 +375,6 @@ def violin_boxplott(df,X='target',Y=list_var, Title='Features Engineering - Box 
 violin_boxplott(df=cora_resampling)
 
 
-# In[38]:
 
 
 from wordcloud import WordCloud, STOPWORDS
@@ -450,7 +410,6 @@ def plot_wordcloud(text, mask=None, max_words=200, max_font_size=100, figure_siz
     plt.tight_layout()  
 
 
-# In[39]:
 
 
 #plot_wordcloud(cora_data_neg_sample["question_text"], title="Word Cloud of insincere Questions")
@@ -458,14 +417,12 @@ def plot_wordcloud(text, mask=None, max_words=200, max_font_size=100, figure_siz
 plot_wordcloud(cora_resampling['lemmatize_question_for_tfidf'][cora_resampling['target']== 1], title="Word Cloud of insincere Questions") 
 
 
-# In[40]:
 
 
 #plot_wordcloud(cora_data_positive_sample["question_text"], title="Word Cloud of sincere Questions")
 plot_wordcloud(cora_resampling['lemmatize_question_for_tfidf'][cora_resampling['target']== 0], title="Word Cloud of sincere Questions")
 
 
-# In[41]:
 
 
 # Code source : https://www.kaggle.com/sudalairajkumar/simple-exploration-notebook-qiqc
@@ -532,7 +489,6 @@ py.iplot(fig, filename='word-plots')
 #plt.show()
 
 
-# In[42]:
 
 
 freq_dict = defaultdict(int)
@@ -562,7 +518,6 @@ fig['layout'].update(height=1200, width=900, paper_bgcolor='rgb(233,233,233)', t
 py.iplot(fig, filename='word-plots')
 
 
-# In[43]:
 
 
 freq_dict = defaultdict(int)
@@ -592,13 +547,11 @@ fig['layout'].update(height=1200, width=1200, paper_bgcolor='rgb(233,233,233)', 
 py.iplot(fig, filename='word-plots')
 
 
-# In[44]:
 
 
 cora_resampling.columns
 
 
-# In[45]:
 
 
 from sklearn.model_selection import train_test_split
@@ -611,7 +564,6 @@ X_cora_train, X_cora_test, y_cora_train, y_cora_test = train_test_split(
 X_cora_train.shape, X_cora_test.shape, y_cora_train.shape, y_cora_test.shape
 
 
-# In[46]:
 
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -626,7 +578,6 @@ tfidf_vectorizer = TfidfVectorizer(  ngram_range=(1,1),
                                   )
 
 
-# In[47]:
 
 
 #Stemmed questions vectorzation
@@ -634,7 +585,6 @@ X_tfidf_vectorizer_train = tfidf_vectorizer.fit_transform(X_cora_train['stemming
 X_tfidf_vectorizer_test = tfidf_vectorizer.transform(X_cora_test['stemming_question_for_tfidf'])
 
 
-# In[48]:
 
 
 #Lemmentized questions vectorization
@@ -642,7 +592,6 @@ X_tfidf_Lem_vect_train = tfidf_vectorizer.fit_transform(X_cora_train['lemmatize_
 X_tfidf_Lem_vect_test = tfidf_vectorizer.transform(X_cora_test['lemmatize_question_for_tfidf'])
 
 
-# In[49]:
 
 
 #bigram questions vectorization
@@ -659,7 +608,6 @@ X_bigram_vectorizer_train = bigram_vectorizer.fit_transform(X_cora_train['stemmi
 X_bigram_vectorizer_test = bigram_vectorizer.transform(X_cora_test['stemming_question_for_tfidf'])
 
 
-# In[50]:
 
 
 #T3gram questions vectorization
@@ -676,7 +624,6 @@ X_t3gram_vectorizer_train = t3gram_vectorizer.fit_transform(X_cora_train['stemmi
 X_t3gram_vectorizer_test = t3gram_vectorizer.transform(X_cora_test['stemming_question_for_tfidf'])
 
 
-# In[51]:
 
 
 #Range single word to t3gram questions vectorization
@@ -693,13 +640,11 @@ X_Singt3gram_vectorizer_train = st3gram_vectorizer.fit_transform(X_cora_train['s
 X_Singt3gram_vectorizer_test  = st3gram_vectorizer.transform(X_cora_test['stemming_question_for_tfidf'])
 
 
-# In[52]:
 
 
 X_Singt3gram_vectorizer_train
 
 
-# In[53]:
 
 
 #Word2Vec with preprocessiong questions (without stopwords) 
@@ -724,7 +669,6 @@ for i in range(len(X_cora_test['stemming_question'])):
     d2v_test[i,:] = d2v.infer_vector(X_cora_test['stemming_question'].iloc[i])
 
 
-# In[54]:
 
 
 #Word2Vec with lemmatize words
@@ -748,14 +692,12 @@ for i in range(len(X_cora_test['lemmatize_question'])):
     d2v_test_bigram[i,:] = d2v.infer_vector(X_cora_test['lemmatize_question'].iloc[i])
 
 
-# In[55]:
 
 
 from sklearn.feature_selection import SelectKBest, chi2, f_classif, mutual_info_classif, SelectPercentile
 from sklearn.pipeline import Pipeline
 
 
-# In[56]:
 
 
 features = SelectKBest(mutual_info_classif,k=2).fit(X_cora_train[['question_lenght', 'number_punctuation', 'number_of_StopWords', 'number_of_Unique_words', 
@@ -768,7 +710,6 @@ for idx,i in enumerate(['question_lenght', 'number_punctuation', 'number_of_Stop
     #print('%s  %s'%(i,features.scores_[idx]))
 
 
-# In[57]:
 
 
 list_var=['question_lenght', 'number_punctuation', 'number_of_StopWords', 'number_of_Unique_words', 'number_of_uppercase','average_of_wordsLength']
@@ -776,7 +717,6 @@ independance_df = pd.DataFrame({'Variables': list_var, 'p_values': independance_
 independance_df
 
 
-# In[58]:
 
 
 plt.figure(figsize=(12, 10))
@@ -787,7 +727,6 @@ plt.savefig("Correlation Matrice")
 plt.show()
 
 
-# In[59]:
 
 
 from sklearn.metrics import accuracy_score,roc_auc_score, f1_score, balanced_accuracy_score
@@ -864,7 +803,6 @@ def plot_learning_curve(estimator1, X, y, estimator2, ylim=(0, 1.1), cv=2, n_job
     plt.savefig("Learning curves for %s" % type(estimator1).__name__)
 
 
-# In[60]:
 
 
 df_models = pd.DataFrame({'Models':[], 'Sample':[], 'Accuracy':[],'Accuracy with 70% best features':[]})
@@ -889,7 +827,6 @@ def modelize(list_clf,X,y,X_test,y_test):
         print('=============================================')
 
 
-# In[61]:
 
 
 from sklearn.linear_model import LogisticRegressionCV , PassiveAggressiveClassifier
@@ -900,7 +837,6 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.naive_bayes import GaussianNB, MultinomialNB, ComplementNB
 
 
-# In[62]:
 
 
 generalized_linear_model = [LogisticRegressionCV,PassiveAggressiveClassifier]
@@ -910,14 +846,12 @@ ensemble_methods = [RandomForestClassifier , ExtraTreesClassifier,AdaBoostClassi
 naive_bayes_model = [GaussianNB, MultinomialNB, ComplementNB]
 
 
-# In[63]:
 
 
 #Generalized Linear Model
 modelize(generalized_linear_model,X_tfidf_vectorizer_train,y_cora_train,X_tfidf_vectorizer_test,y_cora_test)
 
 
-# In[64]:
 
 
 def modelize_svc(list_clf,X,y,X_test,y_test):
@@ -944,35 +878,30 @@ def modelize_svc(list_clf,X,y,X_test,y_test):
 #modelize_svc([SVC],X_tfidf_vectorizer_train,y_cora_train,X_tfidf_vectorizer_test,y_cora_test)
 
 
-# In[65]:
 
 
 #Support Vector Machine
 modelize(support_vector_machines,X_tfidf_vectorizer_train,y_cora_train,X_tfidf_vectorizer_test,y_cora_test)
 
 
-# In[66]:
 
 
 #Decision Tree
 modelize(decisionTreeClassification,X_tfidf_vectorizer_train,y_cora_train,X_tfidf_vectorizer_test,y_cora_test)
 
 
-# In[67]:
 
 
 #Ensemble Methods
 modelize(ensemble_methods,X_tfidf_vectorizer_train,y_cora_train,X_tfidf_vectorizer_test,y_cora_test)       
 
 
-# In[68]:
 
 
 #Naives bayes
 modelize([ MultinomialNB, ComplementNB],X_tfidf_vectorizer_train,y_cora_train,X_tfidf_vectorizer_test,y_cora_test)
 
 
-# In[69]:
 
 
 #Neural Network - Consomme beaucoup trop d'energie
@@ -980,7 +909,6 @@ Neural_network= [MLPClassifier]
 modelize(Neural_network,X_tfidf_vectorizer_train,y_cora_train,X_tfidf_vectorizer_test,y_cora_test)
 
 
-# In[70]:
 
 
 models_df =pd.concat([pd.DataFrame(data),df_models],ignore_index=True)  
@@ -989,26 +917,22 @@ test_df = pd.DataFrame(np.array(models_df[['Accuracy', 'Accuracy with 70% best f
                        index=[models_df['Models'],models_df['Sample']], columns=['Accuracy', 'Accuracy with 70% best features'])
 
 
-# In[71]:
 
 
 test_df
 
 
-# In[72]:
 
 
 test_df1=pd.merge(models_df[models_df['Sample']=='Test'],models_df[models_df['Sample']=='Training'],how='inner',on='Models')
 
 
-# In[73]:
 
 
 final_model = pd.DataFrame( np.array(test_df1[['Sample_y','Accuracy_y', 'Accuracy with 70% best features_y','Sample_x','Accuracy_x', 'Accuracy with 70% best features_x']]),
             index=test_df1['Models'], columns=['','Accuracy', 'Accuracy with 70% best features','','Accuracy1', 'Accuracy with 70% best features'])
 
 
-# In[74]:
 
 
 #final_model= pd.read_csv('models_stemmisation.csv')
@@ -1016,13 +940,11 @@ final_model.sort_values(by=['Accuracy1'], ascending=False, axis=0, inplace=True)
 final_model.rename(index=str,columns={'Unnamed: 1':'','Unnamed: 4':'', 'Accuracy':'Accuracy1', 'Accuracy with 70% best features.1':'Accuracy with 70% best features'},inplace=True)
 
 
-# In[75]:
 
 
 final_model
 
 
-# In[76]:
 
 
 #Nous utiliserons dans cette étape les modèles preselectionnés dans l'étape précedente.
@@ -1033,50 +955,42 @@ Neural_network= [MLPClassifier]
 naive_bayes_model = [MultinomialNB, ComplementNB]
 
 
-# In[77]:
 
 
 df_models = pd.DataFrame({'Models':[], 'Sample':[], 'Accuracy':[],'Accuracy with 70% best features':[]})
 data=[]
 
 
-# In[78]:
 
 
 modelize(generalized_linear_model,X_tfidf_Lem_vect_train,y_cora_train,X_tfidf_Lem_vect_test,y_cora_test)
 
 
-# In[79]:
 
 
 modelize(support_vector_machines,X_tfidf_Lem_vect_train,y_cora_train,X_tfidf_Lem_vect_test,y_cora_test)
 
 
-# In[80]:
 
 
 modelize(ensemble_methods,X_tfidf_Lem_vect_train,y_cora_train,X_tfidf_Lem_vect_test,y_cora_test)
 
 
-# In[81]:
 
 
 modelize(naive_bayes_model,X_tfidf_Lem_vect_train,y_cora_train,X_tfidf_Lem_vect_test,y_cora_test)
 
 
-# In[82]:
 
 
 get_ipython().run_cell_magic('time', '', 'modelize(Neural_network,X_tfidf_Lem_vect_train,y_cora_train,X_tfidf_Lem_vect_test,y_cora_test)')
 
 
-# In[83]:
 
 
 get_ipython().run_cell_magic('time', '', 'modelize([DecisionTreeClassifier, SVC],X_tfidf_Lem_vect_train,y_cora_train,X_tfidf_Lem_vect_test,y_cora_test)')
 
 
-# In[84]:
 
 
 models_df =pd.concat([pd.DataFrame(data),df_models],ignore_index=True)  
@@ -1093,44 +1007,37 @@ final_model2.to_csv('models_stemmisation1_2.csv')
 final_model2
 
 
-# In[85]:
 
 
 df_models = pd.DataFrame({'Models':[], 'Sample':[], 'Accuracy':[],'Accuracy with 70% best features':[]})
 data=[]
 
 
-# In[86]:
 
 
 modelize(generalized_linear_model2,X_bigram_vectorizer_train,y_cora_train,X_bigram_vectorizer_test,y_cora_test)
 
 
-# In[87]:
 
 
 modelize(support_vector_machines2,X_bigram_vectorizer_train,y_cora_train,X_bigram_vectorizer_test,y_cora_test)
 
 
-# In[88]:
 
 
 modelize(ensemble_methods2,X_bigram_vectorizer_train,y_cora_train,X_bigram_vectorizer_test,y_cora_test)
 
 
-# In[89]:
 
 
 modelize(naive_bayes_model,X_bigram_vectorizer_train,y_cora_train,X_bigram_vectorizer_test,y_cora_test)
 
 
-# In[90]:
 
 
 modelize(Neural_network,X_bigram_vectorizer_train,y_cora_train,X_bigram_vectorizer_test,y_cora_test)
 
 
-# In[91]:
 
 
 models_df =pd.concat([pd.DataFrame(data),df_models],ignore_index=True)  
@@ -1147,44 +1054,37 @@ final_model2.to_csv('models_stemmisation1_2.csv')
 final_model2
 
 
-# In[92]:
 
 
 df_models = pd.DataFrame({'Models':[], 'Sample':[], 'Accuracy':[],'Accuracy with 70% best features':[]})
 data=[]
 
 
-# In[93]:
 
 
 modelize(generalized_linear_model2,X_Singt3gram_vectorizer_train,y_cora_train,X_Singt3gram_vectorizer_test,y_cora_test) 
 
 
-# In[94]:
 
 
 modelize(support_vector_machines2,X_Singt3gram_vectorizer_train,y_cora_train,X_Singt3gram_vectorizer_test,y_cora_test)
 
 
-# In[95]:
 
 
 modelize(ensemble_methods2,X_Singt3gram_vectorizer_train,y_cora_train,X_Singt3gram_vectorizer_test,y_cora_test)
 
 
-# In[96]:
 
 
 modelize(naive_bayes_model,X_Singt3gram_vectorizer_train,y_cora_train,X_Singt3gram_vectorizer_test,y_cora_test)
 
 
-# In[97]:
 
 
 modelize(Neural_network,X_Singt3gram_vectorizer_train,y_cora_train,X_Singt3gram_vectorizer_test,y_cora_test)
 
 
-# In[98]:
 
 
 models_df =pd.concat([pd.DataFrame(data),df_models],ignore_index=True)  
@@ -1201,44 +1101,37 @@ final_model2.to_csv('models_stemmisaton1_3.csv')
 final_model2
 
 
-# In[99]:
 
 
 df_models = pd.DataFrame({'Models':[], 'Sample':[], 'Accuracy':[],'Accuracy with 70% best features':[]})
 data=[]
 
 
-# In[100]:
 
 
 modelize(generalized_linear_model2,X_t3gram_vectorizer_train,y_cora_train,X_t3gram_vectorizer_test,y_cora_test)
 
 
-# In[101]:
 
 
 modelize(support_vector_machines2,X_t3gram_vectorizer_train,y_cora_train,X_t3gram_vectorizer_test,y_cora_test)
 
 
-# In[102]:
 
 
 modelize(ensemble_methods2,X_t3gram_vectorizer_train,y_cora_train,X_t3gram_vectorizer_test,y_cora_test)
 
 
-# In[103]:
 
 
 modelize(naive_bayes_model,X_t3gram_vectorizer_train,y_cora_train,X_t3gram_vectorizer_test,y_cora_test)
 
 
-# In[104]:
 
 
 modelize(Neural_network,X_t3gram_vectorizer_train,y_cora_train,X_t3gram_vectorizer_test,y_cora_test)
 
 
-# In[105]:
 
 
 models_df =pd.concat([pd.DataFrame(data),df_models],ignore_index=True)  
@@ -1255,14 +1148,12 @@ final_model2.to_csv('models_stemmisaton1_4.csv')
 final_model2
 
 
-# In[106]:
 
 
 df_models = pd.DataFrame({'Models':[], 'Sample':[], 'Accuracy':[],'Accuracy with 70% best features':[]})
 data=[]
 
 
-# In[107]:
 
 
 def modelize(list_clf,X,y,X_test,y_test):
@@ -1284,37 +1175,31 @@ def modelize(list_clf,X,y,X_test,y_test):
         print('=============================================')
 
 
-# In[108]:
 
 
 modelize(generalized_linear_model2,d2v_vecs,y_cora_train,d2v_test,y_cora_test) 
 
 
-# In[109]:
 
 
 get_ipython().run_cell_magic('time', '', 'modelize(support_vector_machines2,d2v_vecs,y_cora_train,d2v_test,y_cora_test)')
 
 
-# In[110]:
 
 
 modelize(ensemble_methods2,d2v_vecs,y_cora_train,d2v_test,y_cora_test)
 
 
-# In[111]:
 
 
 modelize(Neural_network,d2v_vecs,y_cora_train,d2v_test,y_cora_test)
 
 
-# In[112]:
 
 
 modelize([DecisionTreeClassifier,AdaBoostClassifier,GradientBoostingClassifier, SVC],d2v_vecs,y_cora_train,d2v_test,y_cora_test)
 
 
-# In[113]:
 
 
 models_df =pd.concat([pd.DataFrame(data),df_models],ignore_index=True)  
@@ -1331,14 +1216,12 @@ final_model2.to_csv('models_stemmisatonDo2vec.csv')
 final_model2
 
 
-# In[114]:
 
 
 df_models = pd.DataFrame({'Models':[], 'Sample':[], 'Accuracy':[],'Accuracy with 70% best features':[]})
 data=[]
 
 
-# In[115]:
 
 
 def modelize(list_clf,X,y,X_test,y_test):
@@ -1360,37 +1243,31 @@ def modelize(list_clf,X,y,X_test,y_test):
         print('=============================================')
 
 
-# In[116]:
 
 
 modelize(generalized_linear_model2,d2v_vecs,y_cora_train,d2v_test,y_cora_test) 
 
 
-# In[117]:
 
 
 modelize(support_vector_machines2,d2v_vecs,y_cora_train,d2v_test,y_cora_test)
 
 
-# In[118]:
 
 
 modelize(ensemble_methods2,d2v_vecs,y_cora_train,d2v_test,y_cora_test)
 
 
-# In[119]:
 
 
 modelize(Neural_network,d2v_vecs,y_cora_train,d2v_test,y_cora_test)
 
 
-# In[120]:
 
 
 modelize([DecisionTreeClassifier,AdaBoostClassifier,GradientBoostingClassifier, SVC],d2v_vecs,y_cora_train,d2v_test,y_cora_test)
 
 
-# In[121]:
 
 
 models_df =pd.concat([pd.DataFrame(data),df_models],ignore_index=True)  
@@ -1407,7 +1284,6 @@ final_model2.to_csv('models_stemmisatonDo2vec.csv')
 final_model2
 
 
-# In[122]:
 
 
 df_models = pd.DataFrame({'Models':[], 'Sample':[], 'Accuracy':[],'Accuracy with 70% best features':[]})
@@ -1431,31 +1307,26 @@ def modelize(list_clf,X,y,X_test,y_test):
         print('=============================================')
 
 
-# In[123]:
 
 
 modelize(generalized_linear_model2,d2v_vecs_bigram,y_cora_train,d2v_test_bigram,y_cora_test) 
 
 
-# In[124]:
 
 
 modelize(support_vector_machines2,d2v_vecs_bigram,y_cora_train,d2v_test_bigram,y_cora_test)
 
 
-# In[125]:
 
 
 modelize(ensemble_methods2,d2v_vecs_bigram,y_cora_train,d2v_test_bigram,y_cora_test)
 
 
-# In[126]:
 
 
 modelize(Neural_network,d2v_vecs_bigram,y_cora_train,d2v_test_bigram,y_cora_test)
 
 
-# In[127]:
 
 
 models_df =pd.concat([pd.DataFrame(data),df_models],ignore_index=True)  
@@ -1472,7 +1343,6 @@ final_model2.to_csv('models_lemmATISatIonDo2vec.csv')
 final_model2
 
 
-# In[128]:
 
 
 from sklearn.model_selection import cross_val_score, StratifiedShuffleSplit, KFold
@@ -1491,7 +1361,6 @@ kf = KFold(n_splits=2,random_state=random_state)
 n_iter= 50
 
 
-# In[129]:
 
 
 #Parameters Optimization with HyperOpt 
@@ -1518,40 +1387,34 @@ def extraTree_accuracy_cv(params, random_state=random_state, cv=kf, X=X_t3gram_v
                 'exception' : str(e)}
 
 
-# In[130]:
 
 
 get_ipython().run_cell_magic('time', '', '# possible values of parameters\nspace={\'n_estimators\': hp.quniform(\'n_estimators\', 100, 2000, 1),\n       \'max_depth\' : hp.quniform(\'max_depth\', 2, 80, 1),\n       \'max_features\': hp.choice(\'max_features\', ["sqrt","log2"]),\n       \'min_samples_split\': hp.quniform(\'min_samples_split\', 2, 10, 1)  \n      }\n\n# trials will contain logging information\ntrials = Trials()\n\nbest=fmin(fn=extraTree_accuracy_cv, # function to optimize\n          space=space, \n          algo=tpe.suggest, # optimization algorithm, hyperotp will select its parameters automatically\n          max_evals=n_iter, # maximum number of iterations\n          trials=trials, # logging\n          rstate=np.random.RandomState(random_state) # fixing random state for the reproducibility\n         )\n# computing the score on the test set\nmodel = ExtraTreesClassifier(random_state=random_state, \n                             n_estimators=int(best[\'n_estimators\']), \n                             max_depth=int(best[\'max_depth\']),\n                             min_samples_split= int(space_eval(space,best)[\'min_samples_split\']),\n                             max_features=str(space_eval(space,best)[\'max_features\']),\n                             n_jobs=-1)\nmodel.fit(X_t3gram_vectorizer_train,y_cora_train)\ntpe_test_score=accuracy_score(y_cora_test, model.predict(X_t3gram_vectorizer_test))')
 
 
-# In[131]:
 
 
 print(stochastic.sample(space))
 
 
-# In[132]:
 
 
 print("Best Accuracy score on train set {:.3f} params {}".format( -extraTree_accuracy_cv(space_eval(space,best))['loss'], space_eval(space,best)))
 print('Accuracy score on validation sample {:.3f}'.format(tpe_test_score))
 
 
-# In[133]:
 
 
 print("Best Accuracy score on train set {:.3f} params {}".format( -extraTree_accuracy_cv(space_eval(space,best))['loss'], space_eval(space,best)))
 print('Accuracy score on validation sample {:.3f}'.format(tpe_test_score))
 
 
-# In[134]:
 
 
 #extraTree_accuracy_cv(best), 
 space_eval(space,best)
 
 
-# In[135]:
 
 
 tpe_results=np.array([[x['result']['loss'],
@@ -1568,13 +1431,11 @@ tpe_results_df=pd.DataFrame(tpe_results,
 tpe_results_df.plot(subplots=True,figsize=(10, 10))
 
 
-# In[136]:
 
 
 get_ipython().run_cell_magic('time', '', "#Lets generate the learning curve of the optimized model\nselector = SelectPercentile(f_classif,percentile=70)\ndef modelize(list_clf,X,y,X_test,y_test):\n    for clf in list_clf:\n        Clf1 = clf(random_state=random_state, n_estimators=int(best['n_estimators']), max_depth=int(best['max_depth']), min_samples_split= int(space_eval(space,best)['min_samples_split']),\n                             max_features=str(space_eval(space,best)['max_features']), n_jobs=-1).fit(X,y)\n        Clf2 = Pipeline([('Feature Selection',selector),('Classification',clf(random_state=random_state, n_estimators=int(best['n_estimators']), max_depth=int(best['max_depth']), min_samples_split= int(space_eval(space,best)['min_samples_split']),\n                             max_features=str(space_eval(space,best)['max_features']), n_jobs=-1))]).fit(X,y)\n        cv = StratifiedShuffleSplit(n_splits=3 , test_size=.3, random_state=random_state)\n        print('Model : %s' %type(Clf1).__name__)\n        print('With all features                                              /    With 70% of the best features')\n        print('                 Accuracy Score             F1 Score                Accuracy Score             F1 Score')\n        print('training :       %f                   %f           /    %f                   %f' \n              %(accuracy_score(y,Clf1.predict(X)),f1_score(y,Clf1.predict(X),average='weighted'),accuracy_score(y,Clf2.predict(X)),f1_score(y,Clf2.predict(X),average='weighted')))\n        print('Test     :       %f                   %f           /    %f                   %f' \n              %(accuracy_score(y_test,Clf1.predict(X_test)),f1_score(y_test,Clf1.predict(X_test),average='weighted')\n                ,accuracy_score(y_test,Clf2.predict(X_test)),f1_score(y_test,Clf2.predict(X_test),average='weighted')))\n        plot_learning_curve(Clf1, X, y, Clf2, cv, n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5), scoring='accuracy')\n        print('=============================================')\n    \nmodelize([ExtraTreesClassifier],X_t3gram_vectorizer_train,y_cora_train,X_t3gram_vectorizer_test,y_cora_test)")
 
 
-# In[137]:
 
 
 #Parameters Optimization with HyperOpt 
@@ -1601,26 +1462,22 @@ def RF_cv(params, random_state=random_state, cv=kf, X=X_t3gram_vectorizer_train,
                 'exception' : str(e)}
 
 
-# In[138]:
 
 
 get_ipython().run_cell_magic('time', '', '# possible values of parameters\nspace={\'n_estimators\': hp.quniform(\'n_estimators\', 20, 500, 1),\n       \'max_depth\' : hp.quniform(\'max_depth\', 2, 100, 1),\n       \'max_features\': hp.choice(\'max_features\', ["sqrt","log2"]),\n       \'min_samples_split\': hp.quniform(\'min_samples_split\', 2, 10, 1)  \n      }\n\n# trials will contain logging information\ntrials = Trials()\n\nbest=fmin(fn=RF_cv, # function to optimize\n          space=space, \n          algo=anneal.suggest, # optimization algorithm, hyperotp will select its parameters automatically\n          max_evals=n_iter, # maximum number of iterations\n          trials=trials, # logging\n          rstate=np.random.RandomState(random_state) # fixing random state for the reproducibility\n         )\n# computing the score on the test set\nmodel = RandomForestClassifier(random_state=random_state, \n                             n_estimators=int(best[\'n_estimators\']),\n                             #n_estimators= 302,  \n                             max_depth=int(best[\'max_depth\']),\n                             min_samples_split= int(space_eval(space,best)[\'min_samples_split\']),\n                             max_features=str(space_eval(space,best)[\'max_features\']),\n                             n_jobs=-1)\nmodel.fit(X_t3gram_vectorizer_train,y_cora_train)\ntpe_test_score=accuracy_score(y_cora_test, model.predict(X_t3gram_vectorizer_test))')
 
 
-# In[139]:
 
 
 hp.quniform('n_estimators', 20, 500, 50)
 
 
-# In[140]:
 
 
 print("Best Accuracy score on train set {:.3f} params {}".format( -RF_cv(space_eval(space,best))['loss'], space_eval(space,best)))
 print('Accuracy score on validation sample {:.3f}'.format(tpe_test_score))
 
 
-# In[141]:
 
 
 tpe_results=np.array([[x['result']['loss'],
@@ -1638,13 +1495,11 @@ tpe_results_df=pd.DataFrame(tpe_results,
 tpe_results_df.plot(subplots=True,figsize=(10, 10))
 
 
-# In[142]:
 
 
 get_ipython().run_cell_magic('time', '', "#Lets generate the learning curve of the optimized model\nselector = SelectPercentile(f_classif,percentile=70)\ndef modelize(list_clf,X,y,X_test,y_test):\n    for clf in list_clf:\n        #Clf1 = clf(random_state=random_state, n_estimators=int(best['n_estimators']), max_depth=int(best['max_depth']), min_samples_split= int(space_eval(space,best)['min_samples_split']),\n        #                     max_features=str(space_eval(space,best)['max_features']), n_jobs=-1).fit(X,y)\n        #Clf2 = Pipeline([('Feature Selection',selector),('Classification',clf(random_state=random_state, n_estimators=int(best['n_estimators']), max_depth=int(best['max_depth']), min_samples_split= int(space_eval(space,best)['min_samples_split']),\n        #                     max_features=str(space_eval(space,best)['max_features']), n_jobs=-1))]).fit(X,y)\n        Clf1 = clf(random_state=random_state, n_estimators=302, max_depth=96, n_jobs=-1).fit(X,y)\n        Clf2 = Pipeline([('Feature Selection',selector),('Classification',clf(random_state=random_state, n_estimators=302, max_depth=96,n_jobs=-1) )]).fit(X,y)\n        cv = StratifiedShuffleSplit(n_splits=3 , test_size=.3, random_state=random_state)\n        print('Model : %s' %type(Clf1).__name__)\n        print('With all features                                              /    With 70% of the best features')\n        print('                 Accuracy Score             F1 Score                Accuracy Score             F1 Score')\n        print('training :       %f                   %f           /    %f                   %f' \n              %(accuracy_score(y,Clf1.predict(X)),f1_score(y,Clf1.predict(X),average='weighted'),accuracy_score(y,Clf2.predict(X)),f1_score(y,Clf2.predict(X),average='weighted')))\n        print('Test     :       %f                   %f           /    %f                   %f' \n              %(accuracy_score(y_test,Clf1.predict(X_test)),f1_score(y_test,Clf1.predict(X_test),average='weighted')\n                ,accuracy_score(y_test,Clf2.predict(X_test)),f1_score(y_test,Clf2.predict(X_test),average='weighted')))\n        plot_learning_curve(Clf1, X, y, Clf2, cv, n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5), scoring='accuracy')\n        print('=============================================')\n    \nmodelize([RandomForestClassifier],X_t3gram_vectorizer_train,y_cora_train,X_t3gram_vectorizer_test,y_cora_test)")
 
 
-# In[143]:
 
 
 from sklearn.model_selection import validation_curve
@@ -1689,62 +1544,52 @@ def plot_validation_curve(estimator, X, y, param_name, param_range,
     plt.legend(loc="best")
 
 
-# In[144]:
 
 
 get_ipython().run_cell_magic('time', '', "%matplotlib inline\ncv = StratifiedShuffleSplit(n_splits=10 #nombre de fois qu'on regenere le train test\n                            , train_size=.8, random_state=random_state)\n\nclf = ExtraTreesClassifier(n_jobs=-1)\nparam_name = 'max_depth'\nparam_range = np.linspace(1,1500,15,dtype=int)\nprint(param_range)\nplot_validation_curve(\n    clf, X_t3gram_vectorizer_train, y_cora_train, param_name, param_range, cv=cv.split(X_t3gram_vectorizer_train, y_cora_train), scoring='accuracy')")
 
 
-# In[145]:
 
 
 param_range
 
 
-# In[146]:
 
 
 get_ipython().run_cell_magic('time', '', "%matplotlib inline\ncv = StratifiedShuffleSplit(n_splits=1 #nombre de fois qu'on regenere le train test\n                            , train_size=.7, random_state=random_state)\n\nclf = ExtraTreesClassifier(n_jobs=-1)\nparam_name = 'n_estimators'\nparam_range = np.linspace(1,500,10,dtype=int)\nprint(param_range)\nplot_validation_curve(\n    clf, X_t3gram_vectorizer_train, y_cora_train, param_name, param_range, cv=cv.split(X_t3gram_vectorizer_train, y_cora_train), scoring='accuracy')")
 
 
-# In[147]:
 
 
 get_ipython().run_cell_magic('time', '', '\n#Parameters Optimization with HyperOpt \n#Tree-structure Parzen Estimator: TPE is a default algorithm for the Hyperopt. It uses Bayesian approach for optimization. \n#At every step it is trying to build probabilistic model of the function and choose the most promising parameters for the next step.\n#1. We need to create a function to minimize.\ndef ExtraTC_cv(params, random_state=random_state, cv=kf, X=X_t3gram_vectorizer_train, y=y_cora_train):\n    # the function gets a set of variable parameters in "param"\n    # the function gets a set of variable parameters in "param"\n    params = {#\'n_estimators\': int(params[\'n_estimators\']),  #The number of trees in the forest.\n              \'max_features\': str(params[\'max_features\']), #The number of features to consider when looking for the best split.\n              \'min_samples_split\': int(params[\'min_samples_split\']), #The minimum number of samples required to split an internal node\n              \'max_depth\': int(params[\'max_depth\'])} #The maximum depth of the tree\n    # we use this params to create a new LinearSVC Classifier\n    model = ExtraTreesClassifier(random_state=random_state, **params, n_jobs = -1, n_estimators=110)\n    # and then conduct the cross validation with the same folds as before\n    try:\n        return {\'loss\' : -cross_val_score(model, X, y, cv=cv, scoring="accuracy", n_jobs=-1).mean(),\n                \'time\' : time.time(),\n                \'status\' : STATUS_OK }\n    except (Exception, e):\n        return {\'status\' : STATUS_FAIL,\n                \'time\' : time.time(),\n                \'exception\' : str(e)}\n    \n# possible values of parameters\nspace={#\'n_estimators\': hp.quniform(\'n_estimators\', 80, 180, 1),\n       \'max_depth\' : hp.quniform(\'max_depth\', 215, 430, 1),\n       \'max_features\': hp.choice(\'max_features\', ["sqrt","log2"]),\n       \'min_samples_split\': hp.quniform(\'min_samples_split\', 2, 10, 1)  \n      }\n\n# trials will contain logging information\ntrials = Trials()\n\nbest=fmin(fn=ExtraTC_cv, # function to optimize\n          space=space, \n          algo=anneal.suggest, # optimization algorithm, hyperotp will select its parameters automatically\n          max_evals=n_iter, # maximum number of iterations\n          trials=trials, # logging\n          rstate=np.random.RandomState(random_state) # fixing random state for the reproducibility\n         )\n# computing the score on the test set\nmodel = ExtraTreesClassifier(random_state=random_state, \n                             #n_estimators=int(best[\'n_estimators\']),\n                             n_estimators= 110,  \n                             max_depth=int(best[\'max_depth\']),\n                             min_samples_split= int(space_eval(space,best)[\'min_samples_split\']),\n                             max_features=str(space_eval(space,best)[\'max_features\']),\n                             n_jobs=-1)\nmodel.fit(X_t3gram_vectorizer_train,y_cora_train)\ntpe_test_score=accuracy_score(y_cora_test, model.predict(X_t3gram_vectorizer_test))')
 
 
-# In[148]:
 
 
 print("Best Accuracy score on train set {:.3f} params {}".format( -ExtraTC_cv(space_eval(space,best))['loss'], space_eval(space,best)))
 print('Accuracy score on validation sample {:.3f}'.format(tpe_test_score))
 
 
-# In[149]:
 
 
 get_ipython().run_cell_magic('time', '', "#Lets generate the learning curve of the optimized model\nselector = SelectPercentile(f_classif,percentile=70)\ndef modelize(list_clf,X,y,X_test,y_test):\n    for clf in list_clf:\n        Clf1 = clf(random_state=random_state, n_estimators=110, max_depth=int(best['max_depth']), min_samples_split= int(space_eval(space,best)['min_samples_split']),\n                             max_features=str(space_eval(space,best)['max_features']), n_jobs=-1).fit(X,y)\n        Clf2 = Pipeline([('Feature Selection',selector),('Classification',clf(random_state=random_state, n_estimators=110, max_depth=int(best['max_depth']), min_samples_split= int(space_eval(space,best)['min_samples_split']),\n                             max_features=str(space_eval(space,best)['max_features']), n_jobs=-1))]).fit(X,y)\n        #Clf1 = clf(random_state=random_state, n_estimators=302, max_depth=96, n_jobs=-1).fit(X,y)\n        #Clf2 = Pipeline([('Feature Selection',selector),('Classification',clf(random_state=random_state, n_estimators=302, max_depth=96,n_jobs=-1) )]).fit(X,y)\n        cv = StratifiedShuffleSplit(n_splits=3 , test_size=.3, random_state=random_state)\n        print('Model : %s' %type(Clf1).__name__)\n        print('With all features                                              /    With 70% of the best features')\n        print('                 Accuracy Score             F1 Score                Accuracy Score             F1 Score')\n        print('training :       %f                   %f           /    %f                   %f' \n              %(accuracy_score(y,Clf1.predict(X)),f1_score(y,Clf1.predict(X),average='weighted'),accuracy_score(y,Clf2.predict(X)),f1_score(y,Clf2.predict(X),average='weighted')))\n        print('Test     :       %f                   %f           /    %f                   %f' \n              %(accuracy_score(y_test,Clf1.predict(X_test)),f1_score(y_test,Clf1.predict(X_test),average='weighted')\n                ,accuracy_score(y_test,Clf2.predict(X_test)),f1_score(y_test,Clf2.predict(X_test),average='weighted')))\n        plot_learning_curve(Clf1, X, y, Clf2, cv, n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5), scoring='accuracy')\n        print('=============================================')\n    \nmodelize([ExtraTreesClassifier],X_t3gram_vectorizer_train,y_cora_train,X_t3gram_vectorizer_test,y_cora_test)")
 
 
-# In[150]:
 
 
 get_ipython().run_cell_magic('time', '', "%matplotlib inline\ncv = StratifiedShuffleSplit(n_splits=1 #nombre de fois qu'on regenere le train test\n                            , train_size=.7, random_state=random_state)\n\nclf = ExtraTreesClassifier(n_jobs=-1)\nparam_name = 'max_depth'\nparam_range = np.linspace(1,1500,15,dtype=int)\nprint(param_range)\nplot_validation_curve(\n    clf, X_t3gram_vectorizer_train_, y_cora_train, param_name, param_range, cv=cv.split(X_t3gram_vectorizer_train_, y_cora_train), scoring='accuracy')")
 
 
-# In[151]:
 
 
 get_ipython().run_cell_magic('time', '', "%matplotlib inline\ncv = StratifiedShuffleSplit(n_splits=1 #nombre de fois qu'on regenere le train test\n                            , train_size=.7, random_state=random_state)\n\nclf = ExtraTreesClassifier(n_jobs=-1)\nparam_name = 'n_estimators'\nparam_range = np.linspace(1,700,7,dtype=int)\nprint(param_range)\nplot_validation_curve(\n    clf, X_t3gram_vectorizer_train, y_cora_train, param_name, param_range, cv=cv.split(X_t3gram_vectorizer_train, y_cora_train), scoring='accuracy')")
 
 
-# In[152]:
 
 
 get_ipython().run_cell_magic('time', '', '\ndef ExtraTC_cv(params, random_state=random_state, cv=kf, X=X_t3gram_vectorizer_train, y=y_cora_train):\n    # the function gets a set of variable parameters in "param"\n    # the function gets a set of variable parameters in "param"\n    params = {#\'n_estimators\': int(params[\'n_estimators\']),  #The number of trees in the forest.\n              \'max_features\': str(params[\'max_features\']), #The number of features to consider when looking for the best split.\n              \'min_samples_split\': int(params[\'min_samples_split\']), #The minimum number of samples required to split an internal node\n              \'max_depth\': int(params[\'max_depth\'])} #The maximum depth of the tree\n    # we use this params to create a new LinearSVC Classifier\n    model = ExtraTreesClassifier(random_state=random_state, **params, n_jobs = -1, n_estimators=110)\n    # and then conduct the cross validation with the same folds as before\n    return {\'loss\' : -cross_val_score(model, X, y, cv=cv, scoring="accuracy", n_jobs=-1).mean(),\n                \'time\' : time.time(),\n                \'status\' : STATUS_OK }\n\n    \n# possible values of parameters\nspace={#\'n_estimators\': hp.quniform(\'n_estimators\', 80, 180, 1),\n       \'max_depth\' : hp.quniform(\'max_depth\', 400, 500, 1),\n       \'max_features\': hp.choice(\'max_features\', ["sqrt","log2"]),\n       \'min_samples_split\': hp.quniform(\'min_samples_split\', 2, 10, 1)  \n      }\n\n# trials will contain logging information\ntrials = Trials()\n\nbest=fmin(fn=ExtraTC_cv, # function to optimize\n          space=space, \n          algo=anneal.suggest, # optimization algorithm, hyperotp will select its parameters automatically\n          max_evals=n_iter, # maximum number of iterations\n          trials=trials, # logging\n          rstate=np.random.RandomState(random_state) # fixing random state for the reproducibility\n         )\n# computing the score on the test set\nmodel = ExtraTreesClassifier(random_state=random_state, \n                             #n_estimators=int(best[\'n_estimators\']),\n                             n_estimators= 117,  \n                             max_depth=int(best[\'max_depth\']),\n                             min_samples_split= int(space_eval(space,best)[\'min_samples_split\']),\n                             max_features=str(space_eval(space,best)[\'max_features\']),\n                             n_jobs=-1)\nmodel.fit(X_t3gram_vectorizer_train_,y_cora_train)')
 
 
-# In[153]:
 
 
 print("Best Accuracy score on train set {:.3f} params {}".format( -ExtraTC_cv(space_eval(space,best))['loss'], space_eval(space,best)))
@@ -1754,33 +1599,28 @@ tpe_test_score=balanced_accuracy_score(y_cora_test, model.predict(X_t3gram_vecto
 print('balanced Accuracy score on validation sample {:.3f}'.format(tpe_test_score))
 
 
-# In[154]:
 
 
 get_ipython().run_cell_magic('time', '', "#Lets generate the learning curve of the optimized model\nselector = SelectPercentile(f_classif,percentile=70)\ndef modelize(list_clf,X,y,X_test,y_test):\n    for clf in list_clf:\n        Clf1 = clf(random_state=random_state, n_estimators=117, max_depth=int(best['max_depth']), min_samples_split= int(space_eval(space,best)['min_samples_split']),\n                             max_features=str(space_eval(space,best)['max_features']), n_jobs=-1).fit(X,y)\n        Clf2 = Pipeline([('Feature Selection',selector),('Classification',clf(random_state=random_state, n_estimators=110, max_depth=int(best['max_depth']), min_samples_split= int(space_eval(space,best)['min_samples_split']),\n                             max_features=str(space_eval(space,best)['max_features']), n_jobs=-1))]).fit(X,y)\n        #Clf1 = clf(random_state=random_state, n_estimators=302, max_depth=96, n_jobs=-1).fit(X,y)\n        #Clf2 = Pipeline([('Feature Selection',selector),('Classification',clf(random_state=random_state, n_estimators=302, max_depth=96,n_jobs=-1) )]).fit(X,y)\n        cv = StratifiedShuffleSplit(n_splits=3 , test_size=.3, random_state=random_state)\n        print('Model : %s' %type(Clf1).__name__)\n        print('With all features                                              /    With 70% of the best features')\n        print('                 Balanced Accuracy Score    F1 Score                Balanced Accuracy Score    F1 Score')\n        print('training :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y,Clf1.predict(X)),f1_score(y,Clf1.predict(X),average='weighted'),\n                balanced_accuracy_score(y,Clf2.predict(X)),f1_score(y,Clf2.predict(X),average='weighted')))\n        print('Test     :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y_test,Clf1.predict(X_test)),f1_score(y_test,Clf1.predict(X_test),average='weighted'),\n                balanced_accuracy_score(y_test,Clf2.predict(X_test)),f1_score(y_test,Clf2.predict(X_test),average='weighted')))\n        plot_learning_curve(Clf1, X, y, Clf2, cv, n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5), scoring='accuracy')\n        print('=============================================')\n    \nmodelize([ExtraTreesClassifier],X_t3gram_vectorizer_train_,y_cora_train,X_t3gram_vectorizer_test,y_cora_test)")
 
 
-# In[155]:
 
 
 get_ipython().run_cell_magic('time', '', "#OPTIMISATION DES HYPERPARAMETRES DU MODEL LINEARSVC AVEC GRIDSEARCH - We want to decrease the classifier's complexty (decrease parameter C of LinearSVC)\nfrom sklearn.model_selection import GridSearchCV\nparam_grid={'max_depth': np.linspace( 10, 200, 10,dtype=int), # Maximum number of levels in tree\n            'n_estimators': np.linspace(100,1000, 10 ,dtype=int), # Number of trees in random forest\n            'max_features' : ['auto', 'log2'], # Number of features to consider at every split\n            'min_samples_split' : [2, 5, 10], # Minimum number of samples required to split a node\n            #'min_samples_leaf': [1, 2, 4], # Minimum number of samples required at each leaf node\n           }\nmodel = RandomForestClassifier(random_state=random_state, n_jobs=-1)\nkf = KFold(n_splits=3,random_state=random_state)\n\ngs=GridSearchCV(model, param_grid, scoring='accuracy', n_jobs=-1, cv=kf, verbose=False)\ngs.fit(X_t3gram_vectorizer_train,y_cora_train)\ngs_test_score=accuracy_score(y_cora_test, gs.predict(X_t3gram_vectorizer_test))")
 
 
-# In[156]:
 
 
 print("Best Accuracy on training sample: {:.3f} with hyperparameters {}".format(gs.best_score_, gs.best_params_))
 print("Best Accuracy on validation sample: {:.3f} ".format(gs_test_score))
 
 
-# In[157]:
 
 
 print("Best Accuracy on training sample: {:.3f} with hyperparameters {}".format(gs.best_score_, gs.best_params_))
 print("Best Accuracy on validation sample: {:.3f} ".format(gs_test_score))
 
 
-# In[158]:
 
 
 gs_results_df=pd.DataFrame(np.transpose([gs.cv_results_['mean_test_score'],
@@ -1793,53 +1633,45 @@ gs_results_df=pd.DataFrame(np.transpose([gs.cv_results_['mean_test_score'],
 gs_results_df.plot(subplots=True,figsize=(10, 10))
 
 
-# In[159]:
 
 
 print((gs.cv_results_).keys())
 
 
-# In[160]:
 
 
 gs_results_df.sample(5)
 
 
-# In[161]:
 
 
 #gs_results_df.plot([gs_results_df['max_depth'],gs_results_df['score']])
 plt.plot(gs_results_df['max_depth'],gs_results_df['score'])
 
 
-# In[162]:
 
 
 get_ipython().run_cell_magic('time', '', "#OPTIMISATION DES HYPERPARAMETRES DU MODEL LINEARSVC AVEC GRIDSEARCH - We want to decrease the classifier's complexty (decrease parameter C of LinearSVC)\nfrom sklearn.model_selection import GridSearchCV\nparam_grid={'C': np.linspace(0.0000001, 1, 250)}\nmodel = LinearSVC()\nkf = KFold(n_splits=2,random_state=42)\nn_iter= 50\nrandom_state = 42\ngs=GridSearchCV(model, param_grid, scoring='accuracy', n_jobs=-1, cv=kf, verbose=False)\ngs.fit(X_Singt3gram_vectorizer_train,y_cora_train)\ngs_test_score=accuracy_score(y_cora_test, gs.predict(X_Singt3gram_vectorizer_test))")
 
 
-# In[163]:
 
 
 print("Best Accuracy on training sample: {:.3f} with hyperparameters {}".format(gs.best_score_, gs.best_params_))
 print("Best Accuracy on validation sample: {:.3f} ".format(gs_test_score))
 
 
-# In[164]:
 
 
 print("Best Accuracy for training{:.3f} params {}".format(gs.best_score_, gs.best_params_))
 print("Best Accuracy for validation: {:.3f}".format(gs_test_score))
 
 
-# In[165]:
 
 
 print("Best Accuracy on training sample: {:.3f} with hyperparameters {}".format(gs.best_score_, gs.best_params_))
 print("Best Accuracy on validation sample: {:.3f} ".format(gs_test_score))
 
 
-# In[166]:
 
 
 gs_results_df=pd.DataFrame(np.transpose([gs.cv_results_['mean_test_score'],
@@ -1848,27 +1680,23 @@ gs_results_df=pd.DataFrame(np.transpose([gs.cv_results_['mean_test_score'],
 gs_results_df.plot(subplots=True,figsize=(10, 10))
 
 
-# In[167]:
 
 
 get_ipython().run_cell_magic('time', '', "#Let's RECALL THE lINEARsvc with the penality = l1, which results in sparse solutions. Sparse solutions correspond to an implicit feature selection.\nfrom sklearn.model_selection import GridSearchCV\nparam_grid={'C': np.linspace(0.0000001, 1, 250),\n            'penalty' : ['l1'],\n            'dual': [False]}\nmodel = LinearSVC()\nkf = KFold(n_splits=2,random_state=42)\nn_iter= 50\nrandom_state = 42\ngs=GridSearchCV(model, param_grid, scoring='accuracy', n_jobs=-1, cv=kf, verbose=False)\ngs.fit(X_Singt3gram_vectorizer_train,y_cora_train)\ngs_test_score=accuracy_score(y_cora_test, gs.predict(X_Singt3gram_vectorizer_test))")
 
 
-# In[168]:
 
 
 print("Best Accuracy on training sample: {:.3f} with hyperparameters {}".format(gs.best_score_, gs.best_params_))
 print("Best Accuracy on validation sample: {:.3f} ".format(gs_test_score))
 
 
-# In[169]:
 
 
 print("Best Accuracy on training sample: {:.3f} with hyperparameters {}".format(gs.best_score_, gs.best_params_))
 print("Best Accuracy on validation sample: {:.3f} ".format(gs_test_score))
 
 
-# In[170]:
 
 
 gs_results_df=pd.DataFrame(np.transpose([gs.cv_results_['mean_test_score'],
@@ -1877,13 +1705,11 @@ gs_results_df=pd.DataFrame(np.transpose([gs.cv_results_['mean_test_score'],
 gs_results_df.plot(subplots=True,figsize=(10, 10))
 
 
-# In[171]:
 
 
 get_ipython().run_cell_magic('time', '', "#Lets generate the learning curve of the optimized model\nselector = SelectPercentile(f_classif,percentile=70)\ndef modelize_LinearSVC(list_clf,X,y,X_test,y_test):\n    for clf in list_clf:\n        Clf1 = clf(C=0.46231161155778894).fit(X,y)\n        Clf2 = Pipeline([('Feature Selection',selector),('Classification',clf(C=0.46231161155778894))]).fit(X,y)\n        cv = StratifiedShuffleSplit(n_splits=3 , test_size=.3, random_state=42)\n        print('Model : %s' %type(Clf1).__name__)\n        print('With all features                                              /    With 70% of the best features')\n        print('                 Accuracy Score             F1 Score                Accuracy Score             F1 Score')\n        print('training :       %f                   %f           /    %f                   %f' \n              %(accuracy_score(y,Clf1.predict(X)),f1_score(y,Clf1.predict(X),average='weighted'),accuracy_score(y,Clf2.predict(X)),f1_score(y,Clf2.predict(X),average='weighted')))\n        print('Test     :       %f                   %f           /    %f                   %f' \n              %(accuracy_score(y_test,Clf1.predict(X_test)),f1_score(y_test,Clf1.predict(X_test),average='weighted')\n                ,accuracy_score(y_test,Clf2.predict(X_test)),f1_score(y_test,Clf2.predict(X_test),average='weighted')))\n        plot_learning_curve(Clf1, X, y, Clf2, cv, n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5), scoring='accuracy')\n        print('=============================================')\n    \nmodelize_LinearSVC([LinearSVC],X_Singt3gram_vectorizer_train,y_cora_train,X_Singt3gram_vectorizer_test,y_cora_test)")
 
 
-# In[172]:
 
 
 #Nouvel Echantillonage  
@@ -1895,13 +1721,11 @@ cora_resampling = pd.concat([pd.DataFrame(cora_data_positive_sample.sample(20000
 100*(cora_resampling.groupby('target')['question_text'].count())/cora_resampling['target'].count()
 
 
-# In[173]:
 
 
 cora_resampling.info()
 
 
-# In[174]:
 
 
 #Cleaning the data 
@@ -1913,13 +1737,11 @@ cora_resampling['stemming_question'] = [[ps.stem(word) for word in words] for wo
 cora_resampling['stemming_question_for_tfidf'] = [' '.join(words) for words in cora_resampling['stemming_question']] 
 
 
-# In[175]:
 
 
 cora_resampling.columns
 
 
-# In[176]:
 
 
 X_cora_train, X_cora_test, y_cora_train, y_cora_test = train_test_split(
@@ -1929,7 +1751,6 @@ X_cora_train, X_cora_test, y_cora_train, y_cora_test = train_test_split(
 X_cora_train.shape, X_cora_test.shape, y_cora_train.shape, y_cora_test.shape
 
 
-# In[177]:
 
 
 #Vectorization with tf-idf
@@ -1937,44 +1758,37 @@ X_Singt3gram_vectorizer_train_ = st3gram_vectorizer.fit_transform(X_cora_train_)
 X_Singt3gram_vectorizer_test_  = st3gram_vectorizer.transform(X_cora_test_)
 
 
-# In[178]:
 
 
 get_ipython().run_cell_magic('time', '', "#OPTIMISATION DES HYPERPARAMETRES DU MODEL LINEARSVC AVEC GRIDSEARCH - We want to increase the regularization of the classifier (decrease parameter C of LinearSVC)\nfrom sklearn.model_selection import GridSearchCV\nparam_grid={'C': np.linspace(0.0000001, 1, 250)}\nmodel = LinearSVC()\nkf = KFold(n_splits=2,random_state=42)\nn_iter= 50\nrandom_state = 42\ngs=GridSearchCV(model, param_grid, scoring='accuracy', n_jobs=-1, cv=kf, verbose=False)\ngs.fit(X_Singt3gram_vectorizer_train_,y_cora_train_)\ngs_test_score=accuracy_score(y_cora_test_, gs.predict(X_Singt3gram_vectorizer_test_))")
 
 
-# In[179]:
 
 
 print("Best Accuracy on training sample: {:.3f} with hyperparameters {}".format(gs.best_score_, gs.best_params_))
 print("Best Accuracy on validation sample: {:.3f} ".format(gs_test_score))
 
 
-# In[180]:
 
 
 from sklearn.metrics import balanced_accuracy_score
 
 
-# In[181]:
 
 
 get_ipython().run_cell_magic('time', '', "#Let's try to increase the data regularization by using the Standardization method\n#Lets generate the learning curve of the optimized model\nselector = SelectPercentile(f_classif,percentile=60)\ndef modelize_LinearSVC(list_clf,X,y,X_test,y_test):\n    for clf in list_clf:\n        Clf1 = clf(C=0.4056225493975904).fit(X,y)\n        Clf2 = Pipeline([('Feature Selection',selector),('Classification',clf(C=0.4056225493975904))]).fit(X,y)\n        cv = StratifiedShuffleSplit(n_splits=3 , test_size=.3, random_state=51)\n        print('Model : %s' %type(Clf1).__name__)\n        print('With all features                                              /    With 70% of the best features')\n        print('                 Balanced Accuracy Score    F1 Score                Balanced Accuracy Score    F1 Score')\n        print('training :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y,Clf1.predict(X)),f1_score(y,Clf1.predict(X),average='weighted'),balanced_accuracy_score(y,Clf2.predict(X)),f1_score(y,Clf2.predict(X),average='weighted')))\n        print('Test     :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y_test,Clf1.predict(X_test)),f1_score(y_test,Clf1.predict(X_test),average='weighted')\n                ,balanced_accuracy_score(y_test,Clf2.predict(X_test)),f1_score(y_test,Clf2.predict(X_test),average='weighted')))\n        plot_learning_curve(Clf1, X, y, Clf2, cv, n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5), scoring='balanced_accuracy')\n        print('=============================================')\n    \nmodelize_LinearSVC([LinearSVC],X_Singt3gram_vectorizer_train,y_cora_train,X_Singt3gram_vectorizer_test,y_cora_test)")
 
 
-# In[182]:
 
 
 get_ipython().run_cell_magic('time', '', "#Let's try to increase the data regularization by using the Standardization method\n#Lets generate the learning curve of the optimized model\nselector = SelectPercentile(f_classif,percentile=60)\ndef modelize_LinearSVC(list_clf,X,y,X_test,y_test):\n    for clf in list_clf:\n        Clf1 = clf(C=0.4056225493975904).fit(X,y)\n        Clf2 = Pipeline([('Feature Selection',selector),('Classification',clf(C=0.4056225493975904))]).fit(X,y)\n        cv = StratifiedShuffleSplit(n_splits=3 , test_size=.3, random_state=51)\n        print('Model : %s' %type(Clf1).__name__)\n        print('With all features                                              /    With 70% of the best features')\n        print('                 Balanced Accuracy Score    F1 Score                Balanced Accuracy Score    F1 Score')\n        print('training :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y,Clf1.predict(X)),f1_score(y,Clf1.predict(X),average='weighted'),balanced_accuracy_score(y,Clf2.predict(X)),f1_score(y,Clf2.predict(X),average='weighted')))\n        print('Test     :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y_test,Clf1.predict(X_test)),f1_score(y_test,Clf1.predict(X_test),average='weighted')\n                ,balanced_accuracy_score(y_test,Clf2.predict(X_test)),f1_score(y_test,Clf2.predict(X_test),average='weighted')))\n        plot_learning_curve(Clf1, X, y, Clf2, cv, n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5), scoring='balanced_accuracy')\n        print('=============================================')\nnorm=StandardScaler(with_mean=False)\nmodelize_LinearSVC([LinearSVC],norm.fit_transform(X_Singt3gram_vectorizer_train),y_cora_train,norm.transform(X_Singt3gram_vectorizer_test),y_cora_test)")
 
 
-# In[183]:
 
 
 get_ipython().run_cell_magic('time', '', "#Let's try to increase the data regularization by using the normalization method\nmodelize_LinearSVC([LinearSVC],normalize(X_Singt3gram_vectorizer_train,norm='l2'),y_cora_train,normalize(X_Singt3gram_vectorizer_test,norm='l2'),y_cora_test)")
 
 
-# In[184]:
 
 
 #Parameters Optimization with HyperOpt 
@@ -2004,31 +1818,26 @@ def MLP_accuracy_cv(params, random_state=random_state, cv=kf, X=X_t3gram_vectori
                 'exception' : str(e)}
 
 
-# In[185]:
 
 
 get_ipython().run_cell_magic('time', '', '# possible values of parameters\nspace={\'hidden_layer_sizes\': hp.choice(\'hidden_layer_sizes\' , [(20,10,5,),(5,25,50,),(100,25,5,)]),\n       \'activation\' : hp.choice(\'activation\' , ["identity", "logistic", "tanh", "relu"]), \n       \'solver\' : hp.choice( \'solver\' , ["lbfgs", "sgd", "adam"]),\n       \'alpha\': hp.uniform(\'alpha\',0.0001,0.9),\n       \'learning_rate\': hp.choice(\'learning_rate\' , ["constant", "invscaling", "adaptive"])\n      }\n      \n\n# trials will contain logging information\ntrials = Trials()\n\nbest=fmin(fn=MLP_accuracy_cv, # function to optimize\n          space=space, \n          algo=tpe.suggest, # optimization algorithm, hyperotp will select its parameters automatically\n          max_evals=n_iter, # maximum number of iterations\n          trials=trials, # logging\n          rstate=np.random.RandomState(random_state)) # fixing random state for the reproducibility')
 
 
-# In[186]:
 
 
 get_ipython().run_cell_magic('time', '', "# computing the score on the test set\nmodel = MLPClassifier(random_state=random_state, activation = str(space_eval(space,best)['activation'] ),\n                                                 solver = str(space_eval(space,best)['solver']),\n                                                 alpha = int(best['alpha']),\n                                                 hidden_layer_sizes=tuple(space_eval(space,best)['hidden_layer_sizes']),\n                                                 learning_rate = str(space_eval(space,best)['learning_rate'] ))\nmodel.fit(X_t3gram_vectorizer_train,y_cora_train)\ntpe_test_score=accuracy_score(y_cora_test, model.predict(X_t3gram_vectorizer_test))")
 
 
-# In[187]:
 
 
 get_ipython().run_cell_magic('time', '', 'print("Best Accuracy score on train set {:.3f} params {}".format( -MLP_accuracy_cv(space_eval(space,best))[\'loss\'], space_eval(space,best)))\nprint(\'Accuracy score on validation sample {:.3f}\'.format(tpe_test_score))')
 
 
-# In[188]:
 
 
 get_ipython().run_cell_magic('time', '', "#Lets generate the learning curve of the optimized model\nselector = SelectPercentile(f_classif,percentile=70)\ndef modelize_MLP(list_clf,X,y,X_test,y_test):\n    for clf in list_clf:\n        Model = MLPClassifier(random_state=random_state, activation = str(space_eval(space,best)['activation'] ),\n                                                 solver = str(space_eval(space,best)['solver']),\n                                                 alpha = int(best['alpha']),\n                                                 hidden_layer_sizes=tuple(space_eval(space,best)['hidden_layer_sizes']),\n                                                 learning_rate = str(space_eval(space,best)['learning_rate'] ))\n        \n        Clf1 = Model.fit(X,y)\n        Clf2 = Pipeline([('Feature Selection',selector),('Classification',MLPClassifier(random_state=random_state, activation = str(space_eval(space,best)['activation'] ),\n                                                 solver = str(space_eval(space,best)['solver']),\n                                                 alpha = int(best['alpha']),\n                                                 hidden_layer_sizes=tuple(space_eval(space,best)['hidden_layer_sizes']),\n                                                 learning_rate = str(space_eval(space,best)['learning_rate'] )))]).fit(X,y)\n        cv = StratifiedShuffleSplit(n_splits=3 , test_size=.3, random_state=random_state)\n        print('Model : %s' %type(Clf1).__name__)\n        print('With all features                                              /    With 70% of the best features')\n        print('                 Accuracy Score             F1 Score                Accuracy Score             F1 Score')\n        print('training :       %f                   %f           /    %f                   %f' \n              %(accuracy_score(y,Clf1.predict(X)),f1_score(y,Clf1.predict(X),average='weighted'),accuracy_score(y,Clf2.predict(X)),f1_score(y,Clf2.predict(X),average='weighted')))\n        print('Test     :       %f                   %f           /    %f                   %f' \n              %(accuracy_score(y_test,Clf1.predict(X_test)),f1_score(y_test,Clf1.predict(X_test),average='weighted')\n                ,accuracy_score(y_test,Clf2.predict(X_test)),f1_score(y_test,Clf2.predict(X_test),average='weighted')))\n        plot_learning_curve(Clf1, X, y, Clf2, cv, n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5), scoring='accuracy')\n        print('=============================================')\n        \nmodelize_MLP([MLPClassifier],X_t3gram_vectorizer_train,y_cora_train,X_t3gram_vectorizer_test,y_cora_test)")
 
 
-# In[189]:
 
 
 cora_data_neg_sample = cora_data[cora_data['target'] == 1] #Negatives comments
@@ -2039,7 +1848,6 @@ cora_resampling = pd.concat([pd.DataFrame(cora_data_positive_sample.sample(4000)
 100*(cora_resampling.groupby('target')['question_text'].count())/cora_resampling['target'].count()
 
 
-# In[190]:
 
 
 #Cleaning the data 
@@ -2054,13 +1862,11 @@ X_Singt3gram_vectorizer_train = st3gram_vectorizer.fit_transform(X_cora_train['l
 X_Singt3gram_vectorizer_test  = st3gram_vectorizer.transform(X_cora_test['lemmatize_question_for_tfidf'])
 
 
-# In[191]:
 
 
 get_ipython().run_cell_magic('time', '', "#Lets generate the learning curve of the optimized model\nselector = SelectPercentile(f_classif,percentile=70)\ndef modelize_MLP(list_clf,X,y,X_test,y_test):\n    for clf in list_clf:\n        Model = MLPClassifier(random_state=random_state, activation = str(space_eval(space,best)['activation'] ),\n                                                 solver = str(space_eval(space,best)['solver']),\n                                                 alpha = int(best['alpha']),\n                                                 hidden_layer_sizes=tuple(space_eval(space,best)['hidden_layer_sizes']),\n                                                 learning_rate = str(space_eval(space,best)['learning_rate'] ))\n        \n        Clf1 = Model.fit(X,y)\n        Clf2 = Pipeline([('Feature Selection',selector),('Classification',MLPClassifier(random_state=random_state, activation = str(space_eval(space,best)['activation'] ),\n                                                 solver = str(space_eval(space,best)['solver']),\n                                                 alpha = int(best['alpha']),\n                                                 hidden_layer_sizes=tuple(space_eval(space,best)['hidden_layer_sizes']),\n                                                 learning_rate = str(space_eval(space,best)['learning_rate'] )))]).fit(X,y)\n        cv = StratifiedShuffleSplit(n_splits=3 , test_size=.3, random_state=random_state)\n        print('Model : %s' %type(Clf1).__name__)\n        print('With all features                                              /    With 70% of the best features')\n        print('                 Balanced Accuracy Score    F1 Score                Balanced Accuracy Score    F1 Score')\n        print('training :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y,Clf1.predict(X)),f1_score(y,Clf1.predict(X),average='weighted'),balanced_accuracy_score(y,Clf2.predict(X)),f1_score(y,Clf2.predict(X),average='weighted')))\n        print('Test     :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y_test,Clf1.predict(X_test)),f1_score(y_test,Clf1.predict(X_test),average='weighted')\n                ,balanced_accuracy_score(y_test,Clf2.predict(X_test)),f1_score(y_test,Clf2.predict(X_test),average='weighted')))\n        plot_learning_curve(Clf1, X, y, Clf2, cv, n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5), scoring='balanced_accuracy')\n        print('=============================================')\n        \nmodelize_MLP([MLPClassifier],X_t3gram_vectorizer_train,y_cora_train,X_t3gram_vectorizer_test,y_cora_test)")
 
 
-# In[192]:
 
 
 from sklearn.linear_model import LogisticRegression
@@ -2068,27 +1874,23 @@ from sklearn.model_selection import GridSearchCV, KFold
 random_state = 42
 
 
-# In[193]:
 
 
 get_ipython().run_cell_magic('time', '', "#Let's try to increase the model complexity.\n\nparam_grid={'C': np.linspace(1, 12, 100),\n            'solver': ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga', 'liblinear']}\nmodel = LogisticRegression( n_jobs=-1)\nkf = KFold(n_splits=3,random_state=random_state)\n\ngs=GridSearchCV(model, param_grid, scoring='accuracy',  n_jobs=-1, cv=kf, verbose=False)\ngs.fit(X_t3gram_vectorizer_train,y_cora_train)\ngs_test_score=accuracy_score(y_cora_test, gs.predict(X_t3gram_vectorizer_test))")
 
 
-# In[194]:
 
 
 print("Best Accuracy on training sample: {:.3f} with hyperparameters {}".format(gs.best_score_, gs.best_params_))
 print("Best Accuracy on validation sample: {:.3f} ".format(gs_test_score))
 
 
-# In[195]:
 
 
 print("Best Accuracy on training sample: {:.3f} with hyperparameters {}".format(gs.best_score_, gs.best_params_))
 print("Best Accuracy on validation sample: {:.3f} ".format(gs_test_score))
 
 
-# In[196]:
 
 
 gs_results_df=pd.DataFrame(np.transpose([gs.cv_results_['mean_test_score'],
@@ -2097,26 +1899,22 @@ gs_results_df=pd.DataFrame(np.transpose([gs.cv_results_['mean_test_score'],
 gs_results_df.plot(subplots=True,figsize=(10, 10))
 
 
-# In[197]:
 
 
 get_ipython().run_cell_magic('time', '', "#Lets generate the learning curve of the optimized model\nselector = SelectPercentile(f_classif,percentile=71)\ndef modelize_LogReg(list_clf,X,y,X_test,y_test):\n    for clf in list_clf:\n        Clf1 = clf(C=3.3855421686746987).fit(X,y)\n        Clf2 = Pipeline([('Feature Selection',selector),('Classification',clf(C=3.3855421686746987))]).fit(X,y)\n        cv = StratifiedShuffleSplit(n_splits=3 , test_size=.3, random_state=42)\n        print('Model : %s' %type(Clf1).__name__)\n        print('With all features                                              /    With 70% of the best features')\n        print('                 Accuracy Score             F1 Score                Accuracy Score             F1 Score')\n        print('training :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y,Clf1.predict(X)),f1_score(y,Clf1.predict(X),average='weighted'),\n                balanced_accuracy_score(y,Clf2.predict(X)),f1_score(y,Clf2.predict(X),average='weighted')))\n        print('Test     :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y_test,Clf1.predict(X_test)),f1_score(y_test,Clf1.predict(X_test),average='weighted'),\n                balanced_accuracy_score(y_test,Clf2.predict(X_test)),f1_score(y_test,Clf2.predict(X_test),average='weighted')))\n        plot_learning_curve(Clf1, X, y, Clf2, cv, n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5), scoring='accuracy')\n        print('=============================================')\n    \nmodelize_LogReg([LogisticRegression],X_t3gram_vectorizer_train,y_cora_train,X_t3gram_vectorizer_test,y_cora_test)")
 
 
-# In[198]:
 
 
 get_ipython().run_cell_magic('time', '', "#Let's try to increase the model complexity.\n\nparam_grid={'C': np.linspace(1, 100, 250), 'penalty': ['l1']}\nmodel = LogisticRegression()\nkf = KFold(n_splits=3,random_state=random_state)\n\ngs=GridSearchCV(model, param_grid, scoring='accuracy',  n_jobs=-1, cv=kf, verbose=False)\ngs.fit(X_t3gram_vectorizer_train,y_cora_train)\ngs_test_score=accuracy_score(y_cora_test, gs.predict(X_t3gram_vectorizer_test))")
 
 
-# In[199]:
 
 
 print("Best Accuracy on training sample: {:.3f} with hyperparameters {}".format(gs.best_score_, gs.best_params_))
 print("Best Accuracy on validation sample: {:.3f} ".format(gs_test_score))
 
 
-# In[200]:
 
 
 gs_results_df=pd.DataFrame(np.transpose([gs.cv_results_['mean_test_score'],
@@ -2125,19 +1923,16 @@ gs_results_df=pd.DataFrame(np.transpose([gs.cv_results_['mean_test_score'],
 gs_results_df.plot(subplots=True,figsize=(10, 10))
 
 
-# In[201]:
 
 
 get_ipython().run_cell_magic('time', '', "#Lets generate the learning curve of the optimized model\nselector = SelectPercentile(f_classif,percentile=70)\ndef modelize_LogReg(list_clf,X,y,X_test,y_test):\n    for clf in list_clf:\n        Clf1 = clf(C= 2.9879518072289155, penalty= 'l1').fit(X,y)\n        Clf2 = Pipeline([('Feature Selection',selector),('Classification',clf(C=2.9879518072289155, penalty='l1'))]).fit(X,y)\n        cv = StratifiedShuffleSplit(n_splits=3 , test_size=.3, random_state=42)\n        print('Model : %s' %type(Clf1).__name__)\n        print('With all features                                              /    With 70% of the best features')\n        print('                 Accuracy Score             F1 Score                Accuracy Score             F1 Score')\n        print('training :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y,Clf1.predict(X)),f1_score(y,Clf1.predict(X),average='weighted'),\n                balanced_accuracy_score(y,Clf2.predict(X)),f1_score(y,Clf2.predict(X),average='weighted')))\n        print('Test     :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y_test,Clf1.predict(X_test)),f1_score(y_test,Clf1.predict(X_test),average='weighted')\n                ,balanced_accuracy_score(y_test,Clf2.predict(X_test)),f1_score(y_test,Clf2.predict(X_test),average='weighted')))\n        plot_learning_curve(Clf1, X, y, Clf2, cv, n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5), scoring='accuracy')\n        print('=============================================')\nnorm=StandardScaler(with_mean=False)\nmodelize_LogReg([LogisticRegression],norm.fit_transform(X_t3gram_vectorizer_train),y_cora_train,norm.transform(X_t3gram_vectorizer_test),y_cora_test)")
 
 
-# In[202]:
 
 
 get_ipython().run_cell_magic('time', '', "#Lets generate the learning curve of the optimized model\nselector = SelectPercentile(f_classif,percentile=70)\ndef modelize_LogReg(list_clf,X,y,X_test,y_test):\n    for clf in list_clf:\n        Clf1 = clf(C= 3.3855421686746987, penalty= 'l2').fit(X,y)\n        Clf2 = Pipeline([('Feature Selection',selector),('Classification',clf(C=3.3855421686746987, penalty='l2'))]).fit(X,y)\n        cv = StratifiedShuffleSplit(n_splits=3 , test_size=.3, random_state=42)\n        print('Model : %s' %type(Clf1).__name__)\n        print('With all features                                              /    With 70% of the best features')\n        print('                 Accuracy Score             F1 Score                Accuracy Score             F1 Score')\n        print('training :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y,Clf1.predict(X)),f1_score(y,Clf1.predict(X),average='weighted'),\n                balanced_accuracy_score(y,Clf2.predict(X)),f1_score(y,Clf2.predict(X),average='weighted')))\n        print('Test     :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y_test,Clf1.predict(X_test)),f1_score(y_test,Clf1.predict(X_test),average='weighted')\n                ,balanced_accuracy_score(y_test,Clf2.predict(X_test)),f1_score(y_test,Clf2.predict(X_test),average='weighted')))\n        plot_learning_curve(Clf1, X, y, Clf2, cv, n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5), scoring='accuracy')\n        print('=============================================')\nnorm=StandardScaler(with_mean=False)\nmodelize_LogReg([LogisticRegression],norm.fit_transform(X_t3gram_vectorizer_train),y_cora_train,norm.transform(X_t3gram_vectorizer_test),y_cora_test)")
 
 
-# In[203]:
 
 
 #Nouvel Echantillonage  
@@ -2170,20 +1965,17 @@ X_t3gram_vectorizer_train = t3gram_vectorizer.fit_transform(X_cora_train)
 X_t3gram_vectorizer_test  = t3gram_vectorizer.transform(X_cora_test)
 
 
-# In[204]:
 
 
 get_ipython().run_cell_magic('time', '', "#OPTIMISATION DES HYPERPARAMETRES DU MODEL LINEARSVC AVEC GRIDSEARCH - We want to increase the regularization of the classifier (decrease parameter C of LinearSVC)\nfrom sklearn.model_selection import GridSearchCV\nparam_grid={'C': np.linspace(1, 10, 50), 'penalty': ['l2']}\nmodel = LogisticRegression(n_jobs=-1)\nkf = KFold(n_splits=3,random_state=random_state)\n\ngs=GridSearchCV(model, param_grid, scoring='accuracy', n_jobs=-1, cv=kf, verbose=False)\ngs.fit(X_t3gram_vectorizer_train,y_cora_train)\ngs_test_score=balanced_accuracy_score(y_cora_test, gs.predict(X_t3gram_vectorizer_test))")
 
 
-# In[205]:
 
 
 print("Best Accuracy on training sample: {:.3f} with hyperparameters {}".format(gs.best_score_, gs.best_params_))
 print("Best Accuracy on validation sample: {:.3f} ".format(gs_test_score))
 
 
-# In[206]:
 
 
 print("Best Accuracy on training sample: {:.3f} with hyperparameters {}".format(gs.best_score_, gs.best_params_))
@@ -2193,94 +1985,79 @@ print("Best Accuracy on validation sample: {:.3f} ".format(gs_test_scorer))
 print("Best balanced Accuracy on validation sample: {:.3f} ".format(gs_test_score))
 
 
-# In[207]:
 
 
 get_ipython().run_cell_magic('time', '', "from sklearn.metrics import balanced_accuracy_score\n\n#Let's try to increase the data regularization by using the Standardization method\n#Lets generate the learning curve of the optimized model\nselector = SelectPercentile(f_classif,percentile=30)\ndef modelize_LogReg(list_clf,X,y,X_test,y_test):\n    for clf in list_clf:\n        Clf1 = clf(C=3.272727272727273).fit(X,y)\n        Clf2 = Pipeline([('Feature Selection',selector),('Classification',clf(C=3.272727272727273))]).fit(X,y)\n        cv = StratifiedShuffleSplit(n_splits=3 , test_size=.3, random_state=51)\n        print('Model : %s' %type(Clf1).__name__)\n        print('With all features                                              /    With 70% of the best features')\n        print('                 Balanced Accuracy Score    F1 Score                Balanced Accuracy Score    F1 Score')\n        print('training :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y,Clf1.predict(X)),f1_score(y,Clf1.predict(X),average='weighted'),balanced_accuracy_score(y,Clf2.predict(X)),f1_score(y,Clf2.predict(X),average='weighted')))\n        print('Test     :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y_test,Clf1.predict(X_test)),f1_score(y_test,Clf1.predict(X_test),average='weighted')\n                ,balanced_accuracy_score(y_test,Clf2.predict(X_test)),f1_score(y_test,Clf2.predict(X_test),average='weighted')))\n        plot_learning_curve(Clf1, X, y, Clf2, cv, n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5), scoring='balanced_accuracy')\n        print('=============================================')\n    \nmodelize_LogReg([LogisticRegression],X_t3gram_vectorizer_train,y_cora_train,X_t3gram_vectorizer_test,y_cora_test)")
 
 
-# In[208]:
 
 
 get_ipython().run_cell_magic('time', '', 'norm=StandardScaler(with_mean=False)\nmodelize_LogReg([LogisticRegression],norm.fit_transform(X_t3gram_vectorizer_train),y_cora_train,norm.transform(X_t3gram_vectorizer_test),y_cora_test)')
 
 
-# In[209]:
 
 
 get_ipython().run_cell_magic('time', '', 'selector = SelectPercentile(f_classif,percentile=30)\nmodelize_LogReg([LogisticRegression],normalize(X_t3gram_vectorizer_train),y_cora_train,normalize(X_t3gram_vectorizer_test),y_cora_test)')
 
 
-# In[210]:
 
 
 get_ipython().run_cell_magic('time', '', "random_state=42\nkf = KFold(n_splits=3,random_state=random_state)\n\nsearchCV = LogisticRegressionCV(\n        Cs=list(np.linspace(0.0001, 100, 250))\n        ,penalty='l1'\n        ,scoring='accuracy'\n        ,cv=kf\n        ,random_state=random_state\n        ,max_iter=10000\n        ,fit_intercept=True\n        ,solver='saga'\n        ,tol=10\n    )\nsearchCV.fit(X_Singt3gram_vectorizer_train, y_cora_train)")
 
 
-# In[211]:
 
 
 print ('Max accuracy training sample:', searchCV.scores_[1].mean(axis=0).max())
 print('Max accuracy validation sample:', accuracy_score(searchCV.predict(X_Singt3gram_vectorizer_test),y_cora_test))
 
 
-# In[212]:
 
 
 get_ipython().run_cell_magic('time', '', "from sklearn.metrics import balanced_accuracy_score\n\n#Let's try to increase the data regularization by using the Standardization method\n#Lets generate the learning curve of the optimized model\nselector = SelectPercentile(f_classif,percentile=70)\ndef modelize_LogReg(list_clf,X,y,X_test,y_test):\n    for clf in list_clf:\n        Clf1 = clf.fit(X,y)\n        Clf2 = Pipeline([('Feature Selection',selector),('Classification',clf)]).fit(X,y)\n        cv = StratifiedShuffleSplit(n_splits=3 , test_size=.3, random_state=51)\n        print('Model : %s' %type(Clf1).__name__)\n        print('With all features                                              /    With 70% of the best features')\n        print('                 Balanced Accuracy Score    F1 Score                Balanced Accuracy Score    F1 Score')\n        print('training :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y,Clf1.predict(X)),f1_score(y,Clf1.predict(X),average='weighted'),balanced_accuracy_score(y,Clf2.predict(X)),f1_score(y,Clf2.predict(X),average='weighted')))\n        print('Test     :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y_test,Clf1.predict(X_test)),f1_score(y_test,Clf1.predict(X_test),average='weighted')\n                ,balanced_accuracy_score(y_test,Clf2.predict(X_test)),f1_score(y_test,Clf2.predict(X_test),average='weighted')))\n        plot_learning_curve(Clf1, X, y, Clf2, cv, n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5), scoring='balanced_accuracy')\n        print('=============================================')\n    \nmodelize_LogReg([LogisticRegressionCV(Cs=list(np.linspace(0.0001, 100, 250)),penalty='l2',scoring='accuracy',cv=kf\n     ,random_state=random_state,max_iter=10000,fit_intercept=True,solver='newton-cg',tol=10)],X_Singt3gram_vectorizer_train,y_cora_train,X_Singt3gram_vectorizer_test,y_cora_test)")
 
 
-# In[213]:
 
 
 get_ipython().run_cell_magic('time', '', "#Lets generate the learning curve of the optimized model\nselector = SelectPercentile(f_classif,percentile=70)\ndef modelize_LogReg(list_clf,X,y,X_test,y_test):\n    for clf in list_clf:\n        Clf1 = clf(C= 3.3855421686746987, penalty= 'l2').fit(X,y)\n        Clf2 = Pipeline([('Feature Selection',selector),('Classification',clf(C=3.3855421686746987, penalty='l2'))]).fit(X,y)\n        cv = StratifiedShuffleSplit(n_splits=3 , test_size=.3, random_state=42)\n        print('Model : %s' %type(Clf1).__name__)\n        print('With all features                                              /    With 70% of the best features')\n        print('                 Accuracy Score             F1 Score                Accuracy Score             F1 Score')\n        print('training :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y,Clf1.predict(X)),f1_score(y,Clf1.predict(X),average='weighted'),\n                balanced_accuracy_score(y,Clf2.predict(X)),f1_score(y,Clf2.predict(X),average='weighted')))\n        print('Test     :       %f                   %f           /    %f                   %f' \n              %(balanced_accuracy_score(y_test,Clf1.predict(X_test)),f1_score(y_test,Clf1.predict(X_test),average='weighted')\n                ,balanced_accuracy_score(y_test,Clf2.predict(X_test)),f1_score(y_test,Clf2.predict(X_test),average='weighted')))\n        plot_learning_curve(Clf1, X, y, Clf2, cv, n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5), scoring='accuracy')\n        print('=============================================')\nnorm=StandardScaler(with_mean=False)\nmodelize_LogReg([LogisticRegression],norm.fit_transform(X_t3gram_vectorizer_train),y_cora_train,norm.transform(X_t3gram_vectorizer_test),y_cora_test)")
 
 
-# In[214]:
 
 
 get_ipython().run_cell_magic('time', '', "random_state=42\nkf = KFold(n_splits=3,random_state=random_state)\n\nsearchCV = LogisticRegressionCV(\n        Cs=list(np.linspace(0.0001, 100, 250))\n        ,penalty='l1'\n        ,scoring='accuracy'\n        ,cv=kf\n        ,random_state=random_state\n        ,max_iter=10000\n        ,fit_intercept=True\n        ,solver='saga'\n        ,tol=10\n    )\nsearchCV.fit(X_Singt3gram_vectorizer_train, y_cora_train)")
 
 
-# In[215]:
 
 
 print ('Max accuracy training sample:', searchCV.scores_[1].mean(axis=0).max())
 print('Max accuracy validation sample:', accuracy_score(searchCV.predict(X_Singt3gram_vectorizer_test),y_cora_test))
 
 
-# In[216]:
 
 
 get_ipython().run_cell_magic('time', '', "random_state=42\nkf = KFold(n_splits=3,random_state=random_state)\n\nsearchCV = LogisticRegressionCV(\n        Cs=list(np.linspace(0.0001, 100, 250))\n        ,penalty='l2'\n        ,scoring='accuracy'\n        ,cv=kf\n        ,random_state=random_state\n        ,max_iter=10000\n        ,fit_intercept=True\n        #,solver='saga'\n        ,tol=10\n    )\nsearchCV.fit(norm.fit_transform(X_Singt3gram_vectorizer_train), y_cora_train)")
 
 
-# In[217]:
 
 
 print ('Max accuracy training sample:', searchCV.scores_[1].mean(axis=0).max())
 print ('Max accuracy validation sample:', accuracy_score(searchCV.predict(norm.transform(X_Singt3gram_vectorizer_test)),y_cora_test))
 
 
-# In[218]:
 
 
 searchCV.get_params
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[219]:
 
 
 from sklearn.model_selection import cross_val_score, StratifiedShuffleSplit, KFold
@@ -2299,13 +2076,11 @@ kf = KFold(n_splits=2,random_state=random_state)
 n_iter= 50
 
 
-# In[220]:
 
 
 get_ipython().run_cell_magic('time', '', "import time\nrandom_state = 42\n\nkf = KFold(n_splits=2,random_state=random_state)\nn_iter= 50\nModel_final_MLPClassifier = Pipeline([('Feature Selection',SelectPercentile(f_classif,percentile=70)),('Classification',MLPClassifier(random_state=random_state, activation = str(space_eval(space,best)['activation'] ),\n                                                 solver = str(space_eval(space,best)['solver']),\n                                                 alpha = int(best['alpha']),\n                                                 hidden_layer_sizes=tuple(space_eval(space,best)['hidden_layer_sizes']),\n                                                 learning_rate = str(space_eval(space,best)['learning_rate'] )))]).fit(X_t3gram_vectorizer_train_,y_cora_train_)\n\nModel_final_LogReg = Pipeline([('Feature Selection',SelectPercentile(f_classif,percentile=70)),('Classification',LogisticRegression(C=3.272727272727273))]).fit(X_t3gram_vectorizer_train_,y_cora_train_)\nModel_final_LinearSVC = Pipeline([('Feature Selection',SelectPercentile(f_classif,percentile=70)),('Classification',LinearSVC(C=0.4056225493975904))]).fit(X_Singt3gram_vectorizer_train_,y_cora_train_)\nModel_final_ExtraTreesClassifier = ExtraTreesClassifier(max_depth= 443.0, max_features= 'sqrt', min_samples_split= 5, n_estimators=117).fit(X_t3gram_vectorizer_train_,y_cora_train_)")
 
 
-# In[221]:
 
 
 #mATRICES DE CONFUSIONS
@@ -2316,7 +2091,6 @@ cm_LogReg = confusion_matrix(y_cora_test_, Model_final_LogReg.predict(X_t3gram_v
 cm_MLP = confusion_matrix(y_cora_test_, Model_final_MLPClassifier.predict(X_t3gram_vectorizer_test_))
 
 
-# In[222]:
 
 
 #MATRICES DE CONFUSIONS NORMALISEES
@@ -2326,7 +2100,6 @@ cm_LogisticRegression = cm_LogReg.astype('float') / cm_LogReg.sum(axis=1)[:, np.
 cm_MLPClassifier = cm_MLP.astype('float') / cm_MLP.sum(axis=1)[:, np.newaxis]
 
 
-# In[223]:
 
 
 from sklearn.utils.multiclass import unique_labels
@@ -2358,13 +2131,11 @@ for IDX, i in enumerate([cm_ExtraTreesClassifier, cm_LinearSVC, cm_LogisticRegre
                     color="white" if i[t, j] > thresh else "black")
 
 
-# In[224]:
 
 
 cm_MLPClassifier
 
 
-# In[225]:
 
 
 from sklearn import metrics
@@ -2382,7 +2153,6 @@ print('AUC - LinearSVCr: %.2f ' %(auc(fpr3, tpr3)))
 print('AUC - LogisticRegression: %.2f ' %(auc(fpr4, tpr4)))
 
 
-# In[226]:
 
 
 plt.figure(figsize=(12,10))
@@ -2405,7 +2175,6 @@ plt.legend(loc="lower right")
 plt.savefig('AUC')
 
 
-# In[227]:
 
 
 sub_df = pd.read_csv(zf_test.open('test.csv'))
@@ -2414,31 +2183,26 @@ sub_df_target  = pd.read_csv(zf_test.open('sample_submission.csv'))
 #sub_df_target = pd.read_csv('all/sample_submission.csv')
 
 
-# In[228]:
 
 
 sub_df_target.info()
 
 
-# In[229]:
 
 
 sub_df.info()
 
 
-# In[230]:
 
 
 sub_df.shape
 
 
-# In[231]:
 
 
 sub_df.head()
 
 
-# In[232]:
 
 
 #Cleaning the data 
@@ -2452,20 +2216,17 @@ sub_df['stemming_question'] = [[ps.stem(word) for word in words] for words in su
 sub_df['stemming_question_for_tfidf'] = [' '.join(words) for words in sub_df['stemming_question']] 
 
 
-# In[233]:
 
 
 #T3gram questions vectorization
 X_t3gram_vect_sub_test  = t3gram_vectorizer.transform(sub_df['stemming_question_for_tfidf'])
 
 
-# In[234]:
 
 
 #X_t3gram_vect_sub_test
 
 
-# In[235]:
 
 
 Model_final_MLPClassifier = Pipeline([('Feature Selection',SelectPercentile(f_classif,percentile=70)),('Classification',MLPClassifier(random_state=random_state, 
@@ -2476,43 +2237,36 @@ Model_final_MLPClassifier = Pipeline([('Feature Selection',SelectPercentile(f_cl
                                                  learning_rate = str(space_eval(space,best)['learning_rate'] )))]).fit(X_t3gram_vectorizer_train,y_cora_train)
 
 
-# In[236]:
 
 
 sub_df['target'] = Model_final_MLPClassifier.predict(X_t3gram_vect_sub_test)
 
 
-# In[237]:
 
 
 final_submission1 = pd.merge(sub_df,sub_df_target,how='inner',on='qid' )
 
 
-# In[238]:
 
 
 final_submission = (final_submission1[['qid','target']]).rename(columns={'target':'prediction'})
 
 
-# In[239]:
 
 
 final_submission.to_csv('final_submission.csv', index=False, sep=',')
 
 
-# In[240]:
 
 
 final_submission.head()
 
 
-# In[241]:
 
 
 get_ipython().run_line_magic('ls', '')
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import time
@@ -31,7 +30,6 @@ else:
     print('CUDA is available!  Training on GPU ...')
 
 
-# In[2]:
 
 
 dtypes = {
@@ -47,7 +45,6 @@ dtypes = {
         }
 
 
-# In[3]:
 
 
 df_train = pd.read_csv('/kaggle/input/data-science-bowl-2019/train.csv', dtype = dtypes )
@@ -55,7 +52,6 @@ df_test = pd.read_csv('/kaggle/input/data-science-bowl-2019/test.csv', dtype = d
 spec = pd.read_csv( '/kaggle/input/data-science-bowl-2019/specs.csv', usecols = ['event_id'] )
 
 
-# In[4]:
 
 
 def lower_str_columns(df):
@@ -65,14 +61,12 @@ def lower_str_columns(df):
     df[col] = df[col].str.lower().astype('category')
 
 
-# In[5]:
 
 
 lower_str_columns(df_train)
 lower_str_columns(df_test)
 
 
-# In[6]:
 
 
 def one_hot_encoding(df, spec = spec):
@@ -189,19 +183,16 @@ def one_hot_encoding(df, spec = spec):
     return sparse_matrix
 
 
-# In[7]:
 
 
 get_ipython().run_cell_magic('time', '', 'sparse_matrix = one_hot_encoding(df_train, spec = spec)')
 
 
-# In[8]:
 
 
 get_ipython().run_cell_magic('time', '', 'sparse_matrix_test = one_hot_encoding(df_test, spec = spec)')
 
 
-# In[9]:
 
 
 def del_missing_columns(sparse_matrix, sparse_matrix_test):
@@ -210,13 +201,11 @@ def del_missing_columns(sparse_matrix, sparse_matrix_test):
   sparse_matrix.drop(no_columns, axis='columns', inplace=True)
 
 
-# In[10]:
 
 
 del_missing_columns(sparse_matrix, sparse_matrix_test)
 
 
-# In[11]:
 
 
 def calculate_accuracy(df, sparse_matrix):
@@ -262,19 +251,16 @@ def calculate_accuracy(df, sparse_matrix):
     return df_final
 
 
-# In[12]:
 
 
 get_ipython().run_cell_magic('time', '', 'df_count_acc_train = calculate_accuracy(df_train, sparse_matrix)')
 
 
-# In[13]:
 
 
 get_ipython().run_cell_magic('time', '', 'df_count_acc_test = calculate_accuracy(df_test, sparse_matrix_test)')
 
 
-# In[14]:
 
 
 def dataset_history(df, is_train = True):
@@ -359,19 +345,16 @@ def dataset_history(df, is_train = True):
     return df
 
 
-# In[15]:
 
 
 get_ipython().run_cell_magic('time', '', 'df_final = dataset_history(df_count_acc_train, is_train = True)')
 
 
-# In[16]:
 
 
 get_ipython().run_cell_magic('time', '', 'df_final_test = dataset_history(df_count_acc_test, is_train = False)')
 
 
-# In[17]:
 
 
 def dataset(data, is_train = True):
@@ -405,7 +388,6 @@ def dataset(data, is_train = True):
   return data, labels
 
 
-# In[18]:
 
 
 def batch_generator(X, y, batch_size, shuffle = True):
@@ -424,7 +406,6 @@ def batch_generator(X, y, batch_size, shuffle = True):
       yield X[j : j + batch_size], y[j : j + batch_size]
 
 
-# In[19]:
 
 
 def initialize_model(model_name, num_classes, num_features):
@@ -509,7 +490,6 @@ def initialize_model(model_name, num_classes, num_features):
     return model
 
 
-# In[20]:
 
 
 def train_model(model, data, labels, criterion, optimizer, shuffle = True, num_epochs = 25, batch_size = 100):
@@ -589,7 +569,6 @@ def train_model(model, data, labels, criterion, optimizer, shuffle = True, num_e
     return model, history_val, history_train, time_elapsed, lr_find_lr 
 
 
-# In[21]:
 
 
 def visualization(train, val, is_loss = True):
@@ -615,14 +594,12 @@ def visualization(train, val, is_loss = True):
     plt.show()
 
 
-# In[22]:
 
 
 data, labels = dataset(df_final, is_train = True)
 data_test, labels_test = dataset(df_final_test, is_train = False)
 
 
-# In[23]:
 
 
 model_name = 'fc3'
@@ -631,14 +608,12 @@ num_features = 475
 batch_size = 512
 
 
-# In[24]:
 
 
 model = initialize_model(model_name, num_classes, num_features)
 print(model)
 
 
-# In[25]:
 
 
 base_lr = 0.00001
@@ -655,7 +630,6 @@ step_size = 2 * math.ceil( len(data['train']) / batch_size )
 scheduler = optim.lr_scheduler.CyclicLR(optimizer, base_lr = base_lr, max_lr = max_lr, step_size_up=step_size, mode='exp_range', gamma=0.9994, scale_mode='cycle', cycle_momentum=True, base_momentum=0.8, max_momentum=0.9, last_epoch=-1)
 
 
-# In[26]:
 
 
 val_loss = []
@@ -665,7 +639,6 @@ train_acc = []
 lr_cycle = []
 
 
-# In[27]:
 
 
 fc3, history_val, history_train, time_elapsed, lr_find_lr = train_model(model, data, labels, criterion, optimizer, shuffle = True, num_epochs = num_epochs, batch_size = batch_size)
@@ -677,26 +650,22 @@ train_acc += history_train['acc']
 lr_cycle += lr_find_lr
 
 
-# In[28]:
 
 
 plt.figure(figsize=(17,10))
 plt.plot(lr_cycle);
 
 
-# In[29]:
 
 
 visualization(train_acc, val_acc, is_loss = False)
 
 
-# In[30]:
 
 
 visualization(train_loss, val_loss, is_loss = True)
 
 
-# In[31]:
 
 
 model_name = 'fc3do'
@@ -705,14 +674,12 @@ num_features = 475
 batch_size = 512
 
 
-# In[32]:
 
 
 model = initialize_model(model_name, num_classes, num_features)
 print(model)
 
 
-# In[33]:
 
 
 base_lr = 0.0001
@@ -729,7 +696,6 @@ step_size = 4 * math.ceil( len(data['train']) / batch_size )
 scheduler = optim.lr_scheduler.CyclicLR(optimizer, base_lr = base_lr, max_lr = max_lr, step_size_up=step_size, mode='exp_range', gamma=0.9999, scale_mode='cycle', cycle_momentum=True, base_momentum=0.8, max_momentum=0.9, last_epoch=-1)
 
 
-# In[34]:
 
 
 val_loss = []
@@ -739,7 +705,6 @@ train_acc = []
 lr_cycle = []
 
 
-# In[35]:
 
 
 fc3do, history_val, history_train, time_elapsed, lr_find_lr = train_model(model, data, labels, criterion, optimizer, shuffle = True, num_epochs = num_epochs, batch_size = batch_size)
@@ -751,26 +716,22 @@ train_acc += history_train['acc']
 lr_cycle += lr_find_lr
 
 
-# In[36]:
 
 
 plt.figure(figsize=(17,10))
 plt.plot(lr_cycle);
 
 
-# In[37]:
 
 
 visualization(train_acc, val_acc, is_loss = False)
 
 
-# In[38]:
 
 
 visualization(train_loss, val_loss, is_loss = True)
 
 
-# In[39]:
 
 
 model_name = 'fc2'
@@ -779,14 +740,12 @@ num_features = 475
 batch_size = 512
 
 
-# In[40]:
 
 
 model = initialize_model(model_name, num_classes, num_features)
 print(model)
 
 
-# In[41]:
 
 
 base_lr = 0.00025
@@ -803,7 +762,6 @@ step_size = 3 * math.ceil( len(data['train']) / batch_size )
 scheduler = optim.lr_scheduler.CyclicLR(optimizer, base_lr = base_lr, max_lr = max_lr, step_size_up=step_size, mode='exp_range', gamma=0.9993, scale_mode='cycle', cycle_momentum=True, base_momentum=0.8, max_momentum=0.9, last_epoch=-1)
 
 
-# In[42]:
 
 
 val_loss = []
@@ -813,7 +771,6 @@ train_acc = []
 lr_cycle = []
 
 
-# In[43]:
 
 
 fc2, history_val, history_train, time_elapsed, lr_find_lr = train_model(model, data, labels, criterion, optimizer, shuffle = True, num_epochs = num_epochs, batch_size = batch_size)
@@ -825,26 +782,22 @@ train_acc += history_train['acc']
 lr_cycle += lr_find_lr
 
 
-# In[44]:
 
 
 plt.figure(figsize=(17,10))
 plt.plot(lr_cycle);
 
 
-# In[45]:
 
 
 visualization(train_acc, val_acc, is_loss = False)
 
 
-# In[46]:
 
 
 visualization(train_loss, val_loss, is_loss = True)
 
 
-# In[47]:
 
 
 model_name = 'fc3b'
@@ -853,14 +806,12 @@ num_features = 475
 batch_size = 512
 
 
-# In[48]:
 
 
 model = initialize_model(model_name, num_classes, num_features)
 print(model)
 
 
-# In[49]:
 
 
 base_lr = 0.0004
@@ -877,7 +828,6 @@ step_size = 2 * math.ceil( len(data['train']) / batch_size )
 scheduler = optim.lr_scheduler.CyclicLR(optimizer, base_lr = base_lr, max_lr = max_lr, step_size_up=step_size, mode='exp_range', gamma=0.999, scale_mode='cycle', cycle_momentum=True, base_momentum=0.8, max_momentum=0.9, last_epoch=-1)
 
 
-# In[50]:
 
 
 val_loss = []
@@ -887,7 +837,6 @@ train_acc = []
 lr_cycle = []
 
 
-# In[51]:
 
 
 fc3b, history_val, history_train, time_elapsed, lr_find_lr = train_model(model, data, labels, criterion, optimizer, shuffle = True, num_epochs = num_epochs, batch_size = batch_size)
@@ -899,26 +848,22 @@ train_acc += history_train['acc']
 lr_cycle += lr_find_lr
 
 
-# In[52]:
 
 
 plt.figure(figsize=(17,10))
 plt.plot(lr_cycle);
 
 
-# In[53]:
 
 
 visualization(train_acc, val_acc, is_loss = False)
 
 
-# In[54]:
 
 
 visualization(train_loss, val_loss, is_loss = True)
 
 
-# In[55]:
 
 
 def predict(model, data, labels, shuffle = False):
@@ -935,103 +880,86 @@ def predict(model, data, labels, shuffle = False):
     return probs
 
 
-# In[56]:
 
 
 fc3_pred = predict(fc3, data_test, labels_test, shuffle = False)
 
 
-# In[57]:
 
 
 fc3do_pred = predict(fc3do, data_test, labels_test, shuffle = False)
 
 
-# In[58]:
 
 
 fc2_pred = predict(fc2, data_test, labels_test, shuffle = False)
 
 
-# In[59]:
 
 
 fc3b_pred = predict(fc3b, data_test, labels_test, shuffle = False)
 
 
-# In[60]:
 
 
 fc3_class = np.argmax(fc3_pred, axis=1) 
 
 
-# In[61]:
 
 
 fc3do_class = np.argmax(fc3do_pred, axis=1) 
 
 
-# In[62]:
 
 
 fc2_class = np.argmax(fc2_pred, axis=1) 
 
 
-# In[63]:
 
 
 fc3b_class = np.argmax(fc3b_pred, axis=1) 
 
 
-# In[64]:
 
 
 matrix_class = np.hstack(( fc3_class[:, np.newaxis], fc3do_class[:, np.newaxis], fc2_class[:, np.newaxis], fc3b_class[:, np.newaxis] ))
 
 
-# In[65]:
 
 
 matrix_class
 
 
-# In[66]:
 
 
 fc3_prob = np.max(fc3_pred, axis=1)
 
 
-# In[67]:
 
 
 fc3do_prob = np.max(fc3do_pred, axis=1)
 
 
-# In[68]:
 
 
 fc2_prob = np.max(fc2_pred, axis=1)
 
 
-# In[69]:
 
 
 fc3b_prob = np.max(fc3b_pred, axis=1)
 
 
-# In[70]:
 
 
 matrix_prob = np.hstack((fc3_prob[:, np.newaxis], fc3do_prob[:, np.newaxis], fc2_prob[:, np.newaxis], fc3b_prob[:, np.newaxis] ))
 
 
-# In[71]:
 
 
 matrix_prob
 
 
-# In[72]:
 
 
 vector_pred = []
@@ -1058,38 +986,32 @@ for i in range(matrix_class.shape[0]):
         vector_pred.append( int(matrix_choise[:, 0][indx_max_prob]) )
 
 
-# In[73]:
 
 
 submission = pd.DataFrame({'installation_id': df_final_test['installation_id'].values, 'accuracy_group': vector_pred})
 submission.to_csv('submission.csv', index = False)
 
 
-# In[74]:
 
 
 submission['accuracy_group'].value_counts()
 
 
-# In[75]:
 
 
 submission
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

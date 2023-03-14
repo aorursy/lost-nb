@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -10,7 +9,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
         print(os.path.join(dirname, filename))
 
 
-# In[2]:
 
 
 with open(r'/kaggle/input/data.txt', 'r') as file:
@@ -19,7 +17,6 @@ dataset = [data.strip().split(' ') for data in dataset]
 dataset[:4]
 
 
-# In[3]:
 
 
 time_period = int(dataset[0][0])
@@ -27,7 +24,6 @@ m, n = int(dataset[1][0]), int(dataset[1][1])
 dataset = dataset[2:]
 
 
-# In[4]:
 
 
 dict_train_features ,dict_test_features = [], []
@@ -43,7 +39,6 @@ for t in range(time_period):
                 dict_train_features.append(instance_features)
 
 
-# In[5]:
 
 
 import pandas as pd
@@ -52,26 +47,22 @@ tap30 = pd.DataFrame(dict_train_features)
 test_set = pd.DataFrame(dict_test_features).drop(['requests'], axis=1)
 
 
-# In[6]:
 
 
 tap30.head()
 
 
-# In[7]:
 
 
 tap30.info()
 
 
-# In[8]:
 
 
 mean_requests = pd.DataFrame({'requests mean' : tap30.groupby(['m', 'n'])['requests'].mean()}).reset_index()
 mean_requests.head()
 
 
-# In[9]:
 
 
 import matplotlib.pyplot as plt
@@ -81,7 +72,6 @@ mean_requests.plot.scatter(x='n', y='m', c='requests mean',
 plt.show()
 
 
-# In[10]:
 
 
 mean_requests = pd.DataFrame({'requests mean' : tap30.groupby(['hour'])['requests'].mean()}).reset_index()
@@ -90,14 +80,12 @@ mean_requests.plot(figsize=(12, 8))
 plt.show()
 
 
-# In[11]:
 
 
 tap30['hour2'] = tap30['hour']**2
 test_set['hour2'] = test_set['hour']**2
 
 
-# In[12]:
 
 
 import seaborn as sns
@@ -110,7 +98,6 @@ sns.heatmap(corr,
 plt.show()
 
 
-# In[13]:
 
 
 from sklearn.model_selection import train_test_split
@@ -120,7 +107,6 @@ X_train, X_test, y_train, y_test = train_test_split(tap30.drop(['requests'], axi
                                                    tap30_labels, test_size=0.01, random_state=42)
 
 
-# In[14]:
 
 
 from sklearn.ensemble import RandomForestRegressor
@@ -128,7 +114,6 @@ from sklearn.ensemble import RandomForestRegressor
 rf_reg = RandomForestRegressor()
 
 
-# In[15]:
 
 
 from sklearn.model_selection import GridSearchCV
@@ -143,14 +128,12 @@ cv_rf.fit(X_train, y_train)
 cv_rf.best_params_
 
 
-# In[16]:
 
 
 final_model = cv_rf.best_estimator_
 final_model.fit(X_train, y_train)
 
 
-# In[17]:
 
 
 from sklearn.metrics import mean_squared_error
@@ -160,7 +143,6 @@ print("Train RMSE : ", np.sqrt(mean_squared_error(y_train, final_model.predict(X
 print("Test RMSE : ", np.sqrt(mean_squared_error(y_test, final_model.predict(X_test))))
 
 
-# In[18]:
 
 
 from sklearn.ensemble import GradientBoostingRegressor
@@ -178,14 +160,12 @@ gbrt_best = GradientBoostingRegressor(max_depth=10,n_estimators=bst_n_estimators
 gbrt_best.fit(X_train, y_train)
 
 
-# In[19]:
 
 
 print("Train RMSE : ", np.sqrt(mean_squared_error(y_train, gbrt_best.predict(X_train))))
 print("Test RMSE : ", np.sqrt(mean_squared_error(y_test, gbrt_best.predict(X_test))))
 
 
-# In[20]:
 
 
 from sklearn.ensemble import AdaBoostRegressor
@@ -197,14 +177,12 @@ ada_reg = AdaBoostRegressor(
 ada_reg.fit(X_train, y_train)
 
 
-# In[21]:
 
 
 print("Train RMSE : ", np.sqrt(mean_squared_error(y_train, ada_reg.predict(X_train))))
 print("Test RMSE : ", np.sqrt(mean_squared_error(y_test, ada_reg.predict(X_test))))
 
 
-# In[22]:
 
 
 def blend_model(data):
@@ -213,14 +191,12 @@ def blend_model(data):
           0.5 * final_model.predict(X_test))
 
 
-# In[23]:
 
 
 y_pred = blend_model(X_test)
 np.sqrt(mean_squared_error(y_test, y_pred))
 
 
-# In[24]:
 
 
 y_pred = (0.25 * ada_reg.predict(test_set) + 

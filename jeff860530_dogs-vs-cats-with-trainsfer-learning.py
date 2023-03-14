@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #Import some packages to use
@@ -19,7 +18,6 @@ import random
 import gc   #Gabage collector for cleaning deleted data from memory
 
 
-# In[2]:
 
 
 train_dir = '../input/dogs-vs-cats-redux-kernels-edition/train'
@@ -40,7 +38,6 @@ del train_cats
 gc.collect()   #collect garbage to save memory
 
 
-# In[3]:
 
 
 import matplotlib.image as mpimg
@@ -50,7 +47,6 @@ for ima in train_imgs[900:903]:
     plt.show()
 
 
-# In[4]:
 
 
 #Lets declare our image dimensions
@@ -82,14 +78,12 @@ def read_and_process_image(list_of_images):
     return X, y
 
 
-# In[5]:
 
 
 #get the train and label data
 X, y = read_and_process_image(train_imgs)
 
 
-# In[6]:
 
 
 #Lets view some of the pics
@@ -100,7 +94,6 @@ for i in range(columns):
     plt.imshow(X[i])
 
 
-# In[7]:
 
 
 import seaborn as sns
@@ -116,14 +109,12 @@ sns.countplot(y)
 plt.title('Labels for Cats and Dogs')
 
 
-# In[8]:
 
 
 print("Shape of train images is:", X.shape)
 print("Shape of labels is:", y.shape)
 
 
-# In[9]:
 
 
 #Lets split the data into train and test set
@@ -136,7 +127,6 @@ print("Shape of labels is:", y_train.shape)
 print("Shape of labels is:", y_val.shape)
 
 
-# In[10]:
 
 
 #clear memory
@@ -152,7 +142,6 @@ nval = len(X_val)
 batch_size = 32
 
 
-# In[11]:
 
 
 from keras.applications import InceptionResNetV2
@@ -160,13 +149,11 @@ from keras.applications import InceptionResNetV2
 conv_base = InceptionResNetV2(weights='imagenet', include_top=False, input_shape=(150,150,3))
 
 
-# In[12]:
 
 
 conv_base.summary() #print out to see its 
 
 
-# In[13]:
 
 
 from keras import layers
@@ -190,14 +177,12 @@ model1=models.Model(inputs=conv_base.input,outputs=preds)
 '''
 
 
-# In[14]:
 
 
 #Lets see our model
 model.summary()
 
 
-# In[15]:
 
 
 print('Number of trainable weights before freezing the conv base:', len(model1.trainable_weights))
@@ -205,10 +190,8 @@ conv_base.trainable = False
 print('Number of trainable weights after freezing the conv base:', len(model1.trainable_weights))
 
 
-# In[16]:
 
 
-# In[6]:#check which layer is trainable 
 for i,layer in enumerate(model.layers):
     if layer.trainable==True:
         print(i,layer.name,'Ture')
@@ -216,7 +199,6 @@ for i,layer in enumerate(model.layers):
         print(i,layer.name,'False')
 
 
-# In[17]:
 
 
 '''
@@ -227,13 +209,11 @@ for layer in model1.layers[775:]:
 '''
 
 
-# In[ ]:
 
 
 
 
 
-# In[18]:
 
 
 #We'll use the RMSprop optimizer with a learning rate of 0.0001
@@ -243,7 +223,6 @@ from keras import optimizers
 model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(lr=2e-5), metrics=['acc'])
 
 
-# In[19]:
 
 
 #Lets create the augmentation configuration
@@ -263,7 +242,6 @@ train_datagen = ImageDataGenerator(rescale=1./255,   #Scale the image between 0 
 val_datagen = ImageDataGenerator(rescale=1./255)  #We do not augment validation data. we only perform rescale
 
 
-# In[20]:
 
 
 #Create the image generators
@@ -271,7 +249,6 @@ train_generator = train_datagen.flow(X_train, y_train,batch_size=batch_size)
 val_generator = val_datagen.flow(X_val, y_val, batch_size=batch_size)
 
 
-# In[21]:
 
 
 
@@ -284,7 +261,6 @@ history = model.fit_generator(train_generator,
                               validation_steps=nval // batch_size)
 
 
-# In[22]:
 
 
 #Save the model
@@ -292,7 +268,6 @@ model.save_weights('modelTL_wieghts.h5')
 model.save('modelTL_keras.h5')
 
 
-# In[23]:
 
 
 
@@ -323,7 +298,6 @@ plt.legend()
 plt.show()
 
 
-# In[24]:
 
 
 
@@ -338,7 +312,6 @@ def smooth_plot(points, factor=0.7):
     return smooth_pts
 
 
-# In[25]:
 
 
 
@@ -350,7 +323,6 @@ plt.legend()
 plt.show()
 
 
-# In[26]:
 
 
 #Now lets predict on the first 10 Images of the test set
@@ -359,7 +331,6 @@ x = np.array(X_test)
 test_datagen = ImageDataGenerator(rescale=1./255)
 
 
-# In[27]:
 
 
 i = 0

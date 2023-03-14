@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np # linear algebra
@@ -29,7 +28,6 @@ SEED=100
 np.random.seed(SEED)
 
 
-# In[ ]:
 
 
 df_raw=pd.read_json('../input/train.json')
@@ -37,7 +35,6 @@ display(df_raw.head())
 display(df_raw.tail())
 
 
-# In[ ]:
 
 
 df_raw.interest_level=df_raw.interest_level.map({'low':1,'medium':2,'high':3})
@@ -47,7 +44,6 @@ df['random']=np.random.rand(len(df))#Add a uniform random distributed column to 
 df.head()
 
 
-# In[ ]:
 
 
 def filter_train_test_split(df,X_cols,y_cols,train_size=0.9):
@@ -68,7 +64,6 @@ def importance_comparison_plot(gini_imp,perm_imp,drop_imp):
     plt.tight_layout()
 
 
-# In[ ]:
 
 
 X_train,X_valid,y_train,y_valid=filter_train_test_split(df,['bathrooms', 'bedrooms', 'longitude', 'latitude','random'],['price'])
@@ -79,13 +74,11 @@ perm_imp=importances(m,X_valid,y_valid,n_samples=-1)
 drop_imp=dropcol_importances(m,X_train,y_train,X_valid,y_valid)
 
 
-# In[ ]:
 
 
 importance_comparison_plot(gini_imp,perm_imp,drop_imp)
 
 
-# In[ ]:
 
 
 X_train,X_valid,y_train,y_valid=filter_train_test_split(df,['bathrooms', 'bedrooms', 'longitude', 'latitude','random','price'],['interest_level'])
@@ -96,13 +89,11 @@ perm_imp=importances(m,X_valid,y_valid,n_samples=-1)
 drop_imp=dropcol_importances(m,X_train,y_train,X_valid,y_valid)
 
 
-# In[ ]:
 
 
 importance_comparison_plot(gini_imp,perm_imp,drop_imp)
 
 
-# In[ ]:
 
 
 df['neg_price']=-df.price
@@ -120,14 +111,12 @@ df['mean_price']=df.price.mean()
 df['median_price']=df.price.median()
 
 
-# In[ ]:
 
 
 plot_corr_heatmap(df,figsize=(10,10))
 plt.tight_layout()
 
 
-# In[ ]:
 
 
 X_train,X_valid,y_train,y_valid=filter_train_test_split(df,['bathrooms', 'bedrooms', 'longitude', 'latitude','random','price','neg_price'],['interest_level'])
@@ -138,13 +127,11 @@ perm_imp=importances(m,X_valid,y_valid,n_samples=-1)
 drop_imp=dropcol_importances(m,X_train,y_train,X_valid,y_valid)
 
 
-# In[ ]:
 
 
 importance_comparison_plot(gini_imp,perm_imp,drop_imp)
 
 
-# In[ ]:
 
 
 X_train,X_valid,y_train,y_valid=filter_train_test_split(df,['bathrooms', 'bedrooms', 'longitude', 'latitude','random','price','mean_bin'],['interest_level'])
@@ -155,13 +142,11 @@ perm_imp=importances(m,X_valid,y_valid,n_samples=-1)
 drop_imp=dropcol_importances(m,X_train,y_train,X_valid,y_valid)
 
 
-# In[ ]:
 
 
 importance_comparison_plot(gini_imp,perm_imp,drop_imp)
 
 
-# In[ ]:
 
 
 X_train,X_valid,y_train,y_valid=filter_train_test_split(df,['bathrooms', 'bedrooms', 'longitude', 'latitude','random','price','median_bin'],['interest_level'])
@@ -173,13 +158,11 @@ perm_imp=importances(m,X_valid,y_valid,n_samples=-1)
 drop_imp=dropcol_importances(m,X_train,y_train,X_valid,y_valid)
 
 
-# In[ ]:
 
 
 importance_comparison_plot(gini_imp,perm_imp,drop_imp)
 
 
-# In[ ]:
 
 
 X_train,X_valid,y_train,y_valid=filter_train_test_split(df,['bathrooms', 'bedrooms', 'longitude', 'latitude','random','price','percentiles_bin'],['interest_level'])
@@ -191,13 +174,11 @@ perm_imp=importances(m,X_valid,y_valid,n_samples=-1)
 drop_imp=dropcol_importances(m,X_train,y_train,X_valid,y_valid)
 
 
-# In[ ]:
 
 
 importance_comparison_plot(gini_imp,perm_imp,drop_imp)
 
 
-# In[ ]:
 
 
 X_train,X_valid,y_train,y_valid=filter_train_test_split(df,['bathrooms', 'bedrooms', 'longitude', 'latitude','random','price','addmean_price'],['interest_level'])
@@ -209,13 +190,11 @@ perm_imp=importances(m,X_valid,y_valid,n_samples=-1)
 drop_imp=dropcol_importances(m,X_train,y_train,X_valid,y_valid)
 
 
-# In[ ]:
 
 
 importance_comparison_plot(gini_imp,perm_imp,drop_imp)
 
 
-# In[ ]:
 
 
 X_train,X_valid,y_train,y_valid=filter_train_test_split(df,['bathrooms', 'bedrooms', 'longitude', 'latitude','random','price','normalised_price'],['interest_level'])
@@ -227,13 +206,11 @@ perm_imp=importances(m,X_valid,y_valid,n_samples=-1)
 drop_imp=dropcol_importances(m,X_train,y_train,X_valid,y_valid)
 
 
-# In[ ]:
 
 
 importance_comparison_plot(gini_imp,perm_imp,drop_imp)
 
 
-# In[ ]:
 
 
 X_train,X_valid,y_train,y_valid=filter_train_test_split(df,['bathrooms', 'bedrooms', 'longitude', 'latitude','random','price','mean_price'],['interest_level'])
@@ -245,13 +222,11 @@ perm_imp=importances(m,X_valid,y_valid,n_samples=-1)
 drop_imp=dropcol_importances(m,X_train,y_train,X_valid,y_valid)
 
 
-# In[ ]:
 
 
 importance_comparison_plot(gini_imp,perm_imp,drop_imp)
 
 
-# In[ ]:
 
 
 X_train,X_valid,y_train,y_valid=filter_train_test_split(df,['bathrooms', 'bedrooms', 'longitude', 'latitude','random','price','median_price'],['interest_level'])
@@ -263,13 +238,11 @@ perm_imp=importances(m,X_valid,y_valid,n_samples=-1)
 drop_imp=dropcol_importances(m,X_train,y_train,X_valid,y_valid)
 
 
-# In[ ]:
 
 
 importance_comparison_plot(gini_imp,perm_imp,drop_imp)
 
 
-# In[ ]:
 
 
 X_train,X_valid,y_train,y_valid=filter_train_test_split(df,['bathrooms', 'bedrooms', 'longitude', 'latitude','random','price','median_price','mean_price','percentiles_bin','mean_bin','median_bin'],['interest_level'])
@@ -281,7 +254,6 @@ perm_imp=importances(m,X_valid,y_valid,features=['bathrooms', 'bedrooms', 'longi
 drop_imp=dropcol_importances(m,X_train,y_train,X_valid,y_valid)
 
 
-# In[ ]:
 
 
 importance_comparison_plot(gini_imp,perm_imp,drop_imp)

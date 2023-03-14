@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -33,7 +31,6 @@ import seaborn as sns
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[3]:
 
 
 age_details = pd.read_csv('../input/covid19-in-india/AgeGroupDetails.csv')
@@ -51,7 +48,6 @@ recovered_df = pd.read_csv('https://raw.githubusercontent.com/CSSEGISandData/COV
 latest_data = pd.read_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/04-04-2020.csv')
 
 
-# In[4]:
 
 
 print('Age Details \n',age_details.head(2))
@@ -69,7 +65,6 @@ print('recoved cases \n',recovered_df.head(2))
 print('latest data \n',latest_data.head(2))
 
 
-# In[5]:
 
 
 print(age_details.isna().any().sum())
@@ -83,7 +78,6 @@ print(deaths_df.isna().any().sum())
 print(recovered_df.isna().any().sum())
 
 
-# In[6]:
 
 
 india_covid_19['Date'] = pd.to_datetime(india_covid_19['Date'])
@@ -91,14 +85,12 @@ state_wise_details.Date = pd.to_datetime(state_wise_details.Date)
 icmr_deatils.dtypes
 
 
-# In[7]:
 
 
 #world update
 confirmed_df.head()
 
 
-# In[8]:
 
 
 world_confirmed = confirmed_df[confirmed_df.columns[-1:]].sum()--53218964
@@ -125,13 +117,11 @@ plt.tight_layout()
 plt.show()
 
 
-# In[9]:
 
 
 import matplotlib.dates as mdates
 
 
-# In[10]:
 
 
 
@@ -179,13 +169,11 @@ plt.tight_layout(pad=3.0)
 plt.show()
 
 
-# In[ ]:
 
 
 
 
 
-# In[11]:
 
 
 sizes = list(age_details['TotalCases'])
@@ -206,20 +194,17 @@ plt.axis('equal')
 plt.tight_layout()
 
 
-# In[12]:
 
 
 print(sizes)
 print(labels)
 
 
-# In[ ]:
 
 
 
 
 
-# In[13]:
 
 
 size1 = []
@@ -228,7 +213,6 @@ size1.append(list(individual_details['gender'].value_counts())[0])
 size1.append(list(individual_details['gender'].value_counts())[1])
 
 
-# In[14]:
 
 
 lables = ['missing','male','female']
@@ -240,7 +224,6 @@ plt.axis('equal')
 plt.tight_layout()
 
 
-# In[15]:
 
 
 #now ignorning the missing data 
@@ -257,7 +240,6 @@ plt.tight_layout()
 #mens are more affected but remember we have 80% data missing.
 
 
-# In[16]:
 
 
 dates = list(confirmed_df.columns[4:])
@@ -266,7 +248,6 @@ india_dates = dates[8:]
 india_dates
 
 
-# In[17]:
 
 
 df1 = confirmed_df.groupby('Country/Region').sum().reset_index()
@@ -292,7 +273,6 @@ plt.legend()
 plt.tight_layout()
 
 
-# In[18]:
 
 
 countries = ['China','India','US', 'Italy', 'Spain', 'France']
@@ -320,7 +300,6 @@ for i in range(len(countries)):
 plt.legend();
 
 
-# In[19]:
 
 
 countries = ['China','India','US', 'Italy', 'Spain', 'France']
@@ -348,7 +327,6 @@ for i in range(len(countries)):
 plt.legend();
 
 
-# In[20]:
 
 
 countries = ['China','India','US', 'Italy', 'Spain', 'France']
@@ -376,7 +354,6 @@ for i in range(len(countries)):
 plt.legend();
 
 
-# In[21]:
 
 
 india_covid_19.head()
@@ -387,19 +364,16 @@ states['Recover rate per 100'] = np.round(100*states['Cured']/states['Confirmed'
 states.sort_values('Confirmed',ascending=False).fillna(0).style.background_gradient(cmap='Blues',subset=["Confirmed"]).background_gradient(cmap='Blues',subset=['Deaths']).background_gradient(cmap='Blues',subset=['Cured']).background_gradient(cmap='Blues',subset=['Active']).background_gradient(cmap='Blues',subset=['Death rate per 100']).background_gradient(cmap='Blues',subset=['Recover rate per 100']).background_gradient(cmap='Blues',subset=['Confirmed'])
 
 
-# In[22]:
 
 
 hospital_beds.drop([36])
 
 
-# In[23]:
 
 
 hospital_beds
 
 
-# In[24]:
 
 
 hospital_beds.drop([36],inplace=True)
@@ -415,7 +389,6 @@ top_10_public_facility = hospital_beds.nlargest(10,'TotalPublicHealthFacilities_
 top_10_public_beds = hospital_beds.nlargest(10,'NumPublicBeds_HMIS')
 
 
-# In[25]:
 
 
 plt.figure(figsize=(15,10))
@@ -437,13 +410,11 @@ plt.title('Public health care centre')
 plt.barh(top_10_public_facility['State/UT'],top_10_public_facility['NumPublicBeds_HMIS']);
 
 
-# In[26]:
 
 
 state_wise_details.head()
 
 
-# In[27]:
 
 
 state_test = pd.pivot_table(state_wise_details,values=['TotalSamples','Negative','Positive'],index='State', aggfunc='max')
@@ -456,7 +427,6 @@ sns.barplot(x="Positive", y= state_name, data=state_test,label="Positive Samples
 plt.legend()
 
 
-# In[28]:
 
 
 value = list(icmr_testing['state'].value_counts())
@@ -467,7 +437,6 @@ plt.title('ICMR Testing Centers in each State', fontsize = 20)
 sns.barplot(x= value, y= name,color = '#9370db');
 
 
-# In[ ]:
 
 
 

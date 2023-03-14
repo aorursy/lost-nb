@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -20,7 +19,6 @@ from tensorflow.keras.layers import Input, Conv2D, MaxPool2D, UpSampling2D, Conc
 import cv2
 
 
-# In[2]:
 
 
 # Load rles
@@ -38,7 +36,6 @@ test_stage1_fns = sorted(glob('../input/siim-train-test/siim/dicom-images-test/*
 train_file_path = train_stage1_fns+test_stage1_fns
 
 
-# In[3]:
 
 
 # Parameters
@@ -54,7 +51,6 @@ smooth = 1
 verbose = 2  
 
 
-# In[4]:
 
 
 # Define a data generator
@@ -121,7 +117,6 @@ class DataGenerator(tf.keras.utils.Sequence):
         return X, y
 
 
-# In[5]:
 
 
 # Create generators for training and validating
@@ -136,7 +131,6 @@ train_gen = DataGenerator(X_train,masks,**params)
 val_gen = DataGenerator(X_val,masks,**params)
 
 
-# In[6]:
 
 
 # Sample batch
@@ -148,7 +142,6 @@ ax[0].imshow(x[n,:,:,0],cmap='bone')
 ax[1].imshow(y[n,:,:,0],cmap='Reds')
 
 
-# In[7]:
 
 
 # Helper functions
@@ -207,7 +200,6 @@ def dice_coef_loss(y_true, y_pred):
     return 1.0 - dice_coef(y_true, y_pred)
 
 
-# In[8]:
 
 
 model = UNet(img_size)
@@ -216,7 +208,6 @@ model.compile(optimizer=adam, loss=dice_coef_loss, metrics=[dice_coef])
 model.summary()
 
 
-# In[9]:
 
 
 history = model.fit_generator(generator=train_gen, validation_data=val_gen, epochs=epoch, verbose=verbose)

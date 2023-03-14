@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import matplotlib.pyplot as plt
@@ -35,7 +33,6 @@ from keras import backend as K
 K.set_image_dim_ordering('th')
 
 
-# In[3]:
 
 
 import os
@@ -94,7 +91,6 @@ print("Type 2", additional_type_2_ids[:10])
 print("Type 3", additional_type_3_ids[:10])
 
 
-# In[4]:
 
 
 def plt_st(l1,l2):
@@ -148,7 +144,6 @@ plt.imshow(complete_images[0])
 plt.title("Training dataset of type %i" % (1))
 
 
-# In[5]:
 
 
 plt_st(20, 20)
@@ -156,7 +151,6 @@ plt.imshow(complete_images[2])
 plt.title("Training dataset of type %i" % (3))
 
 
-# In[6]:
 
 
 from PIL import Image
@@ -172,7 +166,6 @@ print(jpgfile.bits, jpgfile.size, jpgfile.format)
 plt.imshow(jpgfile)
 
 
-# In[7]:
 
 
 def plt_st(l1,l2):
@@ -205,7 +198,6 @@ plt.imshow(complete_images[0])
 plt.title("Training dataset of type %i" % (1))
 
 
-# In[8]:
 
 
 classifier = Sequential()
@@ -217,7 +209,6 @@ classifier.add(Dense(units=3, activation='sigmoid'))
 classifier.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 
-# In[9]:
 
 
 #fitting the train data

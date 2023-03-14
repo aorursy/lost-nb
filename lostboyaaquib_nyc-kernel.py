@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import numpy as np
@@ -32,25 +30,21 @@ import seaborn as sns
 plt.style.use('seaborn-whitegrid')
 
 
-# In[3]:
 
 
 df_train =  pd.read_csv('../input/train.csv', nrows = 2_000_000, parse_dates=["pickup_datetime"])
 
 
-# In[4]:
 
 
 df_train.head()
 
 
-# In[5]:
 
 
 df_train.describe()
 
 
-# In[6]:
 
 
 print("Old size : %d" % len(df_train))
@@ -58,7 +52,6 @@ df_train = df_train[df_train.fare_amount >= 0]
 print("New Size : %d" % len(df_train))
 
 
-# In[7]:
 
 
 df_train[df_train.fare_amount <100].fare_amount.hist(bins = 100, figsize=(14,3))
@@ -66,13 +59,11 @@ plt.xlabel("U$D")
 plt.title("Histogram")
 
 
-# In[8]:
 
 
 df_train.isnull().sum()     #Checking for missing data
 
 
-# In[9]:
 
 
 print('Old Size : %d' % len(df_train))
@@ -80,21 +71,18 @@ df_train = df_train.dropna(how = 'any', axis = 'rows')
 print('New Size : %d' % len(df_train))
 
 
-# In[10]:
 
 
 df_test = pd.read_csv("../input/test.csv")
 df_test.head()
 
 
-# In[11]:
 
 
 #min and max longitude distance
 min(df_test.pickup_longitude.min(),df_test.dropoff_longitude.min()), max(df_test.pickup_longitude.max(),df_test.dropoff_longitude.max())
 
 
-# In[12]:
 
 
 #min and max lattitude distance
@@ -102,7 +90,6 @@ min(df_test.pickup_longitude.min(),df_test.dropoff_longitude.min()), max(df_test
 min(df_test.pickup_latitude.min(),df_test.dropoff_latitude.min()), max(df_test.pickup_latitude.max(),df_test.dropoff_latitude.max())
 
 
-# In[13]:
 
 
 def select_within_boundingbox(df, BB):
@@ -118,7 +105,6 @@ BB_zoom = (-74.3, -73.7, 40.5, 40.9)
 nyc_map_zoom = plt.imread('https://aiblog.nl/download/nyc_-74.3_-73.7_40.5_40.9.png')
 
 
-# In[14]:
 
 
 print('Old Size : %d' % len(df_train))
@@ -126,7 +112,6 @@ df_train = df_train[select_within_boundingbox(df_train, BB)]
 print('New Size : %d' % len(df_train))
 
 
-# In[15]:
 
 
 # this function will be used more often to plot data on the NYC map
@@ -146,21 +131,18 @@ def plot_on_map(df, BB, nyc_map, s=10, alpha=0.2):
     axs[1].imshow(nyc_map, zorder=0, extent=BB)
 
 
-# In[16]:
 
 
 # plot training data on map
 plot_on_map(df_train, BB, nyc_map, s=1, alpha=0.3)
 
 
-# In[17]:
 
 
 # plot training data on zoom map
 plot_on_map(df_train, BB_zoom, nyc_map_zoom, s=1, alpha=0.3)
 
 
-# In[18]:
 
 
 #ANother Method of visualizing the above scenario
@@ -174,7 +156,6 @@ def plot_hires(df, BB, figsize=(12, 12), ax=None, c=('r', 'b')):
     ax.scatter(df[idx].dropoff_longitude, df[idx].dropoff_latitude, c=c[1], s=0.01, alpha=0.5)
 
 
-# In[19]:
 
 
 
@@ -183,7 +164,6 @@ plot_hires(df_train, (-74.1, -73.7, 40.6, 40.9))
 plot_hires(df_train, (-74, -73.95, 40.7, 40.8))
 
 
-# In[20]:
 
 
 # read nyc mask and turn into boolean map with
@@ -194,7 +174,6 @@ plt.imshow(nyc_map, zorder=0)
 plt.imshow(nyc_mask, zorder=1, alpha=0.7); # note: True is show in black, False in white.
 
 
-# In[21]:
 
 
 #Removing datapoints from water
@@ -222,7 +201,6 @@ def remove_datapoints_from_water(df):
     return df[idx]
 
 
-# In[22]:
 
 
 print('Old size: %d' % len(df_train))
@@ -230,14 +208,12 @@ df_train = remove_datapoints_from_water(df_train)
 print('New size: %d' % len(df_train))
 
 
-# In[23]:
 
 
 
 plot_on_map(df_train, BB, nyc_map)
 
 
-# In[24]:
 
 
 # For this plot and further analysis, we need a function to calculate the distance in miles between locations in lon,lat coordinates.
@@ -284,7 +260,6 @@ for i in range(n_lon):
         density_dropoff[j, i] = np.sum((inds_dropoff_lon==i+1) & (inds_dropoff_lat==(n_lat-j))) / dxdy
 
 
-# In[25]:
 
 
 
@@ -304,7 +279,6 @@ cbar = fig.colorbar(im, ax=axs[1])
 cbar.set_label('log(1 + #datapoints per sq mile)', rotation=270)
 
 
-# In[ ]:
 
 
 

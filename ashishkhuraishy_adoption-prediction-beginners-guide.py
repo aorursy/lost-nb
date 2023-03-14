@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np 
@@ -17,7 +16,6 @@ from sklearn.model_selection import train_test_split, cross_val_score, GridSearc
 from sklearn.metrics import accuracy_score, cohen_kappa_score
 
 
-# In[ ]:
 
 
 train_df = pd.read_csv('../input/train/train.csv')
@@ -44,37 +42,31 @@ print(len(train_meta))
 print(len(test_meta))
 
 
-# In[ ]:
 
 
 train_df.head()
 
 
-# In[ ]:
 
 
 breed_labels.head()
 
 
-# In[ ]:
 
 
 state_labels.head()
 
 
-# In[ ]:
 
 
 color_labels.head()
 
 
-# In[ ]:
 
 
 train_df['Type'].value_counts().plot.bar()
 
 
-# In[ ]:
 
 
 def sen_score(df, sen_source, test_train ):   
@@ -97,7 +89,6 @@ train_df['sen_score'] = sen_score(train_df, train_sen, train)
 test_df['sen_score'] = sen_score(test_df, test_sen, test)
 
 
-# In[ ]:
 
 
 def sen_mag(df, sen_source, test_train ):   
@@ -120,25 +111,21 @@ train_df['sen_mag'] = sen_mag(train_df, train_sen, train)
 test_df['sen_mag'] = sen_mag(test_df, test_sen, test)
 
 
-# In[ ]:
 
 
 train_df['sen_score'].plot.hist()
 
 
-# In[ ]:
 
 
 train_df['sen_mag'].plot.hist()
 
 
-# In[ ]:
 
 
 train_df['PhotoAmt'].value_counts().plot.bar()
 
 
-# In[ ]:
 
 
 def meta_red(df, meta_source, train_test = 'train_test'):    
@@ -160,7 +147,6 @@ train_df['meta_red'] = meta_red(train_df, train_meta, train)
 test_df['meta_red'] = meta_red(test_df, test_meta, test)
 
 
-# In[ ]:
 
 
 def meta_green(df, meta_source, train_test = 'train_test'):    
@@ -182,7 +168,6 @@ train_df['meta_green'] = meta_green(train_df, train_meta, train)
 test_df['meta_green'] = meta_green(test_df, test_meta, test)
 
 
-# In[ ]:
 
 
 def meta_blue(df, meta_source, train_test = 'train_test'):    
@@ -204,7 +189,6 @@ train_df['meta_blue'] = meta_blue(train_df, train_meta, train)
 test_df['meta_blue'] = meta_blue(test_df, test_meta, test)
 
 
-# In[ ]:
 
 
 def meta_score(df, meta_source, train_test = 'train_test'):    
@@ -226,7 +210,6 @@ train_df['meta_score'] = meta_score(train_df, train_meta, train)
 test_df['meta_score'] = meta_score(test_df, test_meta, test)
 
 
-# In[ ]:
 
 
 def meta_pixelfraction(df, meta_source, train_test = 'train_test'):    
@@ -248,7 +231,6 @@ train_df['meta_pixelfraction'] = meta_pixelfraction(train_df, train_meta, train)
 test_df['meta_pixelfraction'] = meta_pixelfraction(test_df, test_meta, test)
 
 
-# In[ ]:
 
 
 def meta_ver_x(df, meta_source, train_test = 'train_test'):    
@@ -270,7 +252,6 @@ train_df['meta_ver_x'] = meta_ver_x(train_df, train_meta, train)
 test_df['meta_ver_x'] = meta_ver_x(test_df, test_meta, test)
 
 
-# In[ ]:
 
 
 def meta_ver_y(df, meta_source, train_test = 'train_test'):    
@@ -292,7 +273,6 @@ train_df['meta_ver_y'] = meta_ver_y(train_df, train_meta, train)
 test_df['meta_ver_y'] = meta_ver_y(test_df, test_meta, test)
 
 
-# In[ ]:
 
 
 def meta_conf(df, meta_source, train_test = 'train_test'):    
@@ -314,33 +294,28 @@ train_df['meta_conf'] = meta_conf(train_df, train_meta, train)
 test_df['meta_conf'] = meta_conf(test_df, test_meta, test)
 
 
-# In[ ]:
 
 
 train_df.head()
 
 
-# In[ ]:
 
 
 train_df['Age_in_yrs'] = [i//12 for i in train_df['Age'] ]
 train_df['Age_in_yrs'].value_counts().plot.bar()
 
 
-# In[ ]:
 
 
 test_df['Age_in_yrs'] = [i//12 for i in test_df['Age']]
 test_df['Age_in_yrs'].value_counts().plot.bar()
 
 
-# In[ ]:
 
 
 train_df.head()
 
 
-# In[ ]:
 
 
 def Cross(df):
@@ -353,7 +328,6 @@ test_df  = Cross(test_df)
  
 
 
-# In[ ]:
 
 
 def cross(df):    
@@ -368,19 +342,16 @@ train_df['Cross_BreedScore'] = cross(train_df)
 test_df['Cross_BreedScore']  = cross(test_df)
 
 
-# In[ ]:
 
 
 train_df.head()
 
 
-# In[ ]:
 
 
 train_df.isnull().sum().plot.bar()
 
 
-# In[ ]:
 
 
 drop = ['Name', 'Age', 'Breed1','Breed2', 'RescuerID', 'PetID', 'Description']
@@ -391,25 +362,21 @@ X = train.drop(['AdoptionSpeed'], axis = 1)
 y = train.AdoptionSpeed
 
 
-# In[ ]:
 
 
 y.value_counts().plot.bar()
 
 
-# In[ ]:
 
 
 test.head()
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 def train_model(clf,X, y, val_x, val_y):
@@ -433,7 +400,6 @@ def train_model(clf,X, y, val_x, val_y):
     
 
 
-# In[ ]:
 
 
 #Train-Test Split
@@ -441,7 +407,6 @@ def train_model(clf,X, y, val_x, val_y):
 train_X , val_X, train_y, val_y = train_test_split(X, y, random_state = 2, test_size = 0.2)
 
 
-# In[ ]:
 
 
 clf1 = RandomForestClassifier()
@@ -449,25 +414,21 @@ clf2 = AdaBoostClassifier()
 clf3 = xgb.XGBClassifier()
 
 
-# In[ ]:
 
 
 train_model(clf1, train_X, train_y, val_X, val_y)
 
 
-# In[ ]:
 
 
 train_model(clf2, train_X, train_y, val_X, val_y)
 
 
-# In[ ]:
 
 
 train_model(clf3, train_X, train_y, val_X, val_y)
 
 
-# In[ ]:
 
 
 # You can try different combinations and check each scores until you are satisfied.
@@ -480,13 +441,11 @@ model = xgb.XGBClassifier(base_score=0.5, booster='gbtree', colsample_bylevel=1,
        silent=True, subsample=1)                                                  
 
 
-# In[ ]:
 
 
 model.fit(train_X, train_y)
 
 
-# In[ ]:
 
 
 pred = model.predict(val_X)
@@ -497,7 +456,6 @@ print("Cohen Kappa : %s" % score) # 0.2175871739419205
 print("Accuracy : %s" % acc) # 0.4171390463487829
 
 
-# In[ ]:
 
 
 n = random.randint(0, 100) # just for checking how my model works
@@ -505,33 +463,28 @@ print(list(val_y)[n])
 print(list(pred)[n])
 
 
-# In[ ]:
 
 
 cross_val_score(model, X, y, scoring = 'accuracy', cv= 10).mean() #0.39845585964987384
 
 
-# In[ ]:
 
 
 model.fit(X, y)
 
 
-# In[ ]:
 
 
 result = model.predict(test)
 result
 
 
-# In[ ]:
 
 
 submission = pd.DataFrame({'PetID' : test_df.PetID, 'AdoptionSpeed' : result })
 submission.to_csv('submission.csv', index=False)
 
 
-# In[ ]:
 
 
 submission['AdoptionSpeed'].value_counts().plot.bar()

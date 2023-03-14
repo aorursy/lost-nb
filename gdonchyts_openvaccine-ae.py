@@ -1,58 +1,49 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 # from google.colab import drive
 # drive.mount('/content/drive')
 
 
-# In[ ]:
 
 
 # !mkdir /kaggle
 # !ln -s /content/drive/My\ Drive/Kaggle /kaggle/input
 
 
-# In[ ]:
 
 
 # D_WORK='/kaggle/input/stanford-covid-vaccine/work/kg-openvaccine-ae-v2/'
 D_WORK='./'
 
 
-# In[ ]:
 
 
 # !mkdir {D_WORK}
 
 
-# In[ ]:
 
 
 # !ls {D_WORK}
 
 
-# In[ ]:
 
 
 get_ipython().system('pip install -q keras-adamw')
 
 
-# In[ ]:
 
 
 pretrain_dir = None#"/kaggle/input/covid-v9-no-consis/"
@@ -91,7 +82,6 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[ ]:
 
 
 import json
@@ -114,13 +104,11 @@ if run_test:
     test_pri = test_pri[:30]
 
 
-# In[ ]:
 
 
 get_ipython().system('unzip -qq /kaggle/input/stanford-covid-vaccine/bpps.zip -d {D_WORK}')
 
 
-# In[ ]:
 
 
 As = []
@@ -143,28 +131,24 @@ for id in tqdm(test_pri["id"]):
 As_pri = np.array(As_pri)
 
 
-# In[ ]:
 
 
 print(train.shape)
 train.head()
 
 
-# In[ ]:
 
 
 print(test.shape)
 test.head()
 
 
-# In[ ]:
 
 
 print(sub.shape)
 sub.head()
 
 
-# In[ ]:
 
 
 targets = list(sub.columns[1:])
@@ -184,7 +168,6 @@ y = np.stack(y_train, axis = 2)
 y.shape
 
 
-# In[ ]:
 
 
 def get_structure_adj(train):
@@ -226,7 +209,6 @@ Ss_pub = get_structure_adj(test_pub)
 Ss_pri = get_structure_adj(test_pri)
 
 
-# In[ ]:
 
 
 def get_distance_matrix(As):
@@ -253,7 +235,6 @@ Ds_pub = get_distance_matrix(As_pub)
 Ds_pri = get_distance_matrix(As_pri)
 
 
-# In[ ]:
 
 
 ## concat adjecent
@@ -264,7 +245,6 @@ del Ss, Ds, Ss_pub, Ds_pub, Ss_pri, Ds_pri
 As.shape, As_pub.shape, As_pri.shape
 
 
-# In[ ]:
 
 
 ## sequence
@@ -314,7 +294,6 @@ X_node_pub = get_input(test_pub)
 X_node_pri = get_input(test_pri)
 
 
-# In[ ]:
 
 
 import tensorflow as tf
@@ -323,7 +302,6 @@ import tensorflow_addons as tfa
 from tensorflow.keras import backend as K
 
 
-# In[ ]:
 
 
 # # Detect hardware, return appropriate distribution strategy
@@ -346,7 +324,6 @@ from tensorflow.keras import backend as K
 # print("REPLICAS: ", strategy.num_replicas_in_sync)
 
 
-# In[ ]:
 
 
 import os
@@ -354,7 +331,6 @@ os.environ["TF_KERAS"]="1"
 from keras_adamw import AdamW
 
 
-# In[ ]:
 
 
 def mcrmse(t, p, seq_len_target = seq_len_target):
@@ -519,7 +495,6 @@ def get_optimizer():
     return adam
 
 
-# In[ ]:
 
 
 import matplotlib.pyplot as plt
@@ -650,14 +625,12 @@ def create_plot(label):
     return plot
 
 
-# In[ ]:
 
 
 def cvs_callback(filename):
     return tf.keras.callbacks.CSVLogger(filename)
 
 
-# In[ ]:
 
 
 config = {}
@@ -689,13 +662,11 @@ if ae_epochs > 0:
   base.save_weights(D_WORK + "./base_ae.h5")
 
 
-# In[ ]:
 
 
 X_node.shape
 
 
-# In[ ]:
 
 
 n = X_node.shape[2]
@@ -709,7 +680,6 @@ for i in range(n):
     sns.distplot(X_node_pri[:, :, i],color="Red", ax=ax[i, 2])
 
 
-# In[ ]:
 
 
 from sklearn.model_selection import KFold
@@ -764,13 +734,11 @@ for i, (tr_idx, va_idx) in enumerate(kfold.split(X_node, As)):
 pd.to_pickle(preds, D_WORK + "oof.pkl")
 
 
-# In[ ]:
 
 
 print(scores)
 
 
-# In[ ]:
 
 
 p_pub = 0
@@ -789,7 +757,6 @@ for i, target in enumerate(targets):
     test_pri[target] = [list(p_pri[k, :, i]) for k in range(p_pri.shape[0])]
 
 
-# In[ ]:
 
 
 preds_ls = []
@@ -807,7 +774,6 @@ preds_df.to_csv(D_WORK + "submission.csv", index = False)
 preds_df.head()
 
 
-# In[ ]:
 
 
 print(scores)

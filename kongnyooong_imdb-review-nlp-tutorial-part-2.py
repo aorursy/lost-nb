@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import warnings
@@ -9,7 +8,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -30,13 +28,11 @@ print(df_test["review"].size)
 print(df_unlabeled["review"].size)
 
 
-# In[3]:
 
 
 df_train.head()
 
 
-# In[4]:
 
 
 df_test.head()
@@ -44,7 +40,6 @@ df_test.head()
 # 예측해야하는 sentiment 피쳐가 없다.
 
 
-# In[5]:
 
 
 import re
@@ -133,13 +128,11 @@ class KaggleWord2VecUtility(object):
 # 코드 출처: https://github.com/corazzon/KaggleStruggle/blob/master/word2vec-nlp-tutorial/KaggleWord2VecUtility.py
 
 
-# In[6]:
 
 
 KaggleWord2VecUtility.review_to_wordlist(df_train["review"][0])[:10]
 
 
-# In[7]:
 
 
 sentences = []
@@ -150,7 +143,6 @@ for review in df_train["review"]:
 # KaggleWord2VecUtility을 사용하여 train 데이터를 정제해준다.
 
 
-# In[8]:
 
 
 for review in df_unlabeled["review"]:
@@ -160,19 +152,16 @@ for review in df_unlabeled["review"]:
 # KaggleWord2VecUtility을 사용하여 unlabeled train 데이터를 정제해준다.    
 
 
-# In[9]:
 
 
 len(sentences)
 
 
-# In[10]:
 
 
 sentences[0][:10]
 
 
-# In[11]:
 
 
 import logging
@@ -181,7 +170,6 @@ logging.basicConfig(
     level = logging.INFO)
 
 
-# In[12]:
 
 
 # 파라미터 값을 지정해준다. 
@@ -205,7 +193,6 @@ model = word2vec.Word2Vec(sentences,
 model
 
 
-# In[13]:
 
 
 # 학습이 완료되면 필요없는 메모리를 unload 시킨다.
@@ -215,45 +202,38 @@ model_name = "300features_40minwindows_10text"
 model.save(model_name)
 
 
-# In[14]:
 
 
 # 유사도가 없는 단어 추출
 model.wv.doesnt_match("man woman child kitchen".split())
 
 
-# In[15]:
 
 
 model.wv.doesnt_match("france england germany berlin".split())
 
 
-# In[16]:
 
 
 # 가장 유사한 단어를 추출
 model.wv.most_similar("man")
 
 
-# In[17]:
 
 
 model.wv.most_similar("queen")
 
 
-# In[18]:
 
 
 model.wv.most_similar("film")
 
 
-# In[19]:
 
 
 model.wv.most_similar("happi")
 
 
-# In[20]:
 
 
 from sklearn.manifold import TSNE
@@ -279,20 +259,17 @@ tsne = TSNE(n_components = 2)
 X_tsne = tsne.fit_transform(X[:100,:])
 
 
-# In[21]:
 
 
 df = pd.DataFrame(X_tsne, index = vocab[:100], columns = ["x", "y"])
 df.shape
 
 
-# In[22]:
 
 
 df.head()
 
 
-# In[23]:
 
 
 fig = plt.figure()
@@ -307,7 +284,6 @@ for word, pos in df.iterrows():
 plt.show()
 
 
-# In[24]:
 
 
 import numpy as np
@@ -332,7 +308,6 @@ def makeFeatureVec(words, model, num_features):
     return featureVec
 
 
-# In[25]:
 
 
 def getAvgFeatureVecs(reviews, model, num_features):
@@ -358,7 +333,6 @@ def getAvgFeatureVecs(reviews, model, num_features):
     return reviewFeatureVecs
 
 
-# In[26]:
 
 
 # 멀티스레드로 4개의 워커를 사용해 처리한다.
@@ -369,19 +343,16 @@ def getCleanReviews(reviews):
     return clean_reviews
 
 
-# In[27]:
 
 
 get_ipython().run_line_magic('time', 'trainDataVecs = getAvgFeatureVecs(    getCleanReviews(df_train), model, num_features)')
 
 
-# In[28]:
 
 
 get_ipython().run_line_magic('time', 'testDataVecs = getAvgFeatureVecs(    getCleanReviews(df_test), model, num_features)')
 
 
-# In[29]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -390,32 +361,27 @@ rf = RandomForestClassifier(
     n_estimators = 100, n_jobs = -1, random_state = 42)
 
 
-# In[30]:
 
 
 get_ipython().run_line_magic('time', 'rf.fit(trainDataVecs, df_train["sentiment"])')
 
 
-# In[31]:
 
 
 from sklearn.model_selection import cross_val_score
 get_ipython().run_line_magic('time', 'score= np.mean(cross_val_score(    rf, trainDataVecs, df_train["sentiment"], cv = 10, scoring = "roc_auc"))')
 
 
-# In[32]:
 
 
 score
 
 
-# In[33]:
 
 
 result = rf.predict(testDataVecs)
 
 
-# In[34]:
 
 
 output = pd.DataFrame(data = {"id": df_test["id"], "sentiment": result})
@@ -423,7 +389,6 @@ output.to_csv("./Word2Vec_Tutorial_{:.5f}.csv".format(score),
              index = False, quoting = 3)
 
 
-# In[35]:
 
 
 output_sentiment = output["sentiment"].value_counts()
@@ -431,7 +396,6 @@ print(output_sentiment[0] - output_sentiment[1])
 output_sentiment
 
 
-# In[ ]:
 
 
 

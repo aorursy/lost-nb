@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 #we need to import some libraries
@@ -27,7 +26,6 @@ from time import time
 from tqdm import tqdm
 
 
-# In[ ]:
 
 
 # load image data
@@ -35,7 +33,6 @@ dataFile = pd.read_csv('../input/train.csv')
 dataFile.head()
 
 
-# In[ ]:
 
 
 class WhaleDataset(Dataset):
@@ -70,7 +67,6 @@ class WhaleDataset(Dataset):
             return image, label, self.image_files_list[idx]
 
 
-# In[ ]:
 
 
 def prepare_labels(y):
@@ -90,7 +86,6 @@ def prepare_labels(y):
 y, label_encoder = prepare_labels(dataFile['Id'])
 
 
-# In[ ]:
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -107,7 +102,6 @@ exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
         
 
 
-# In[ ]:
 
 
 input_size = 224 
@@ -127,7 +121,6 @@ N_train = len(y)
 print(N_train)
 
 
-# In[ ]:
 
 
 batch_size = 32
@@ -178,7 +171,6 @@ for epoch in range(num_epochs):
     print('\n| Training loss %.4f'            % (epoch_loss))
 
 
-# In[ ]:
 
 
 #Evaluate and predict test data

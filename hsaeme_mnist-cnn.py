@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
@@ -30,7 +29,6 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(device)
 
 
-# In[2]:
 
 
 # train / test 데이터 만들기
@@ -76,7 +74,6 @@ print('Submission')
 print(submission_set.shape)
 
 
-# In[3]:
 
 
 print('Look at image means')
@@ -86,7 +83,6 @@ print(test_images.mean(axis=1).mean())
 print(submission_set.mean(axis=1).mean())
 
 
-# In[4]:
 
 
 print('Train Distribution')
@@ -96,7 +92,6 @@ print('\nSubmission Distribution')
 print(test_labels.value_counts(normalize=True))
 
 
-# In[5]:
 
 
 IMGSIZE = 28
@@ -142,7 +137,6 @@ class KannadaDataSet(torch.utils.data.Dataset): # datasat을 변형시켜주는 
             return data
 
 
-# In[6]:
 
 
 batch_size =128
@@ -173,7 +167,6 @@ submission_loader = torch.utils.data.DataLoader(submission_data,
 classes = {'0','1','2','3','4','5','6','7','8','9'} # class의 라벨들
 
 
-# In[7]:
 
 
 class Net(nn.Module):
@@ -267,7 +260,6 @@ net = Net().to(device)
 net
 
 
-# In[8]:
 
 
 #밑바닥 딥러닝에 나온 공식
@@ -277,13 +269,11 @@ def outputSize(in_size, kernel_size, stride, padding):
 #outputSize(64,5,1,2)
 
 
-# In[ ]:
 
 
 
 
 
-# In[9]:
 
 
 # Learning Rate Finder https://sgugger.github.io/how-do-you-find-a-good-learning-rate.html
@@ -327,7 +317,6 @@ def find_lr(trn_loader, init_value = 1e-8, final_value=10., beta = 0.98):
     return log_lrs, losses
 
 
-# In[10]:
 
 
 net = Net().to(device)
@@ -344,7 +333,6 @@ logs ,losses = find_lr(trn_loader = train_loader)
 #plt.plot(logs[10:-5],losses[10:-5])
 
 
-# In[11]:
 
 
 net = Net().to(device)
@@ -426,13 +414,11 @@ for epoch in range(EPOCHS):
          
 
 
-# In[12]:
 
 
 vloss.type()
 
 
-# In[13]:
 
 
 pd_results = pd.DataFrame(nn_output,
@@ -444,7 +430,6 @@ print("Best Epoch: {}".format(pd_results.loc[pd_results.valid_acc.idxmax()]['epo
 # pd_result의 valid_acc 컬럼에서 max값을 가지는 인덱스를 loc[]안에 입력, pd_result에서 epoch 컬럼 선택
 
 
-# In[14]:
 
 
 fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12,4))
@@ -459,7 +444,6 @@ axes[1].plot(pd_results['epoch'],pd_results['train_loss'], label='train_loss')
 axes[1].legend()
 
 
-# In[15]:
 
 
 # torch.cat()
@@ -470,7 +454,6 @@ print(torch.cat([a,b,c],dim=0)) # 행결합
 print(torch.cat([a,b,c],dim=1)) # 열결합
 
 
-# In[16]:
 
 
 num_classes = len(classes)
@@ -492,13 +475,11 @@ for i in range(len(val_labels)):
     cmt[val_labels[i], predictions[i]] += 1
 
 
-# In[17]:
 
 
 cmt
 
 
-# In[18]:
 
 
 # test set에 신경망의 예측값을 얻을시간!
@@ -513,73 +494,61 @@ for images in submission_loader:
     predictions= torch.cat((predictions, preds.argmax(dim=1)),dim=0)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

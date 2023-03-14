@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -16,7 +15,6 @@ import json
 import os
 
 
-# In[2]:
 
 
 directory = '../input/rsna-intracranial-hemorrhage-detection/'
@@ -24,7 +22,6 @@ dir_train = '../input/rsna-intracranial-hemorrhage-detection/stage_1_train_image
 dir_test = '../input/rsna-intracranial-hemorrhage-detection/stage_1_test_images/'
 
 
-# In[3]:
 
 
 train_df =  pd.read_csv(directory+'stage_1_train.csv')
@@ -33,7 +30,6 @@ train_images = os.listdir(dir_train)
 test_images = os.listdir(dir_test)
 
 
-# In[4]:
 
 
 print("Train CSV :",train_df.shape)
@@ -42,32 +38,27 @@ print("Train Images:",len(train_images))
 print("Test Images:",len(test_images))
 
 
-# In[5]:
 
 
 display(train_df.head())
 
 
-# In[6]:
 
 
 display(train_df.tail())
 
 
-# In[7]:
 
 
 display(train_df.head())
 
 
-# In[8]:
 
 
 print("Train: \n",train_df.count())
 print("Test: \n",test_df.count())
 
 
-# In[9]:
 
 
 train_df['Image_ID'] = train_df['ID'].str.rsplit(pat='_',n=1,expand=True)[0]
@@ -75,7 +66,6 @@ train_df['Hemorrhage'] = train_df['ID'].str.rsplit(pat='_',n=1,expand=True)[1]
 train_df = train_df[['Image_ID','Hemorrhage','Label']]
 
 
-# In[10]:
 
 
 #Nombre d'images uniques
@@ -83,19 +73,16 @@ print("Number of images :",train_df['Image_ID'].nunique())
 print("Number of Hemorraghes :",train_df['Hemorrhage'].nunique())
 
 
-# In[11]:
 
 
 pd.DataFrame(train_df['Image_ID'].value_counts()).reset_index().head(10)
 
 
-# In[12]:
 
 
 display(test_df.head())
 
 
-# In[13]:
 
 
 test_df['Image_ID'] = test_df['ID'].str.rsplit(pat='_',n=1,expand=True)[0]
@@ -103,13 +90,11 @@ test_df['Image_ID'] = test_df['Image_ID']+".png"
 test_df = test_df['Image_ID'].drop_duplicates().reset_index()[['Image_ID']]
 
 
-# In[14]:
 
 
 display(test_df.head())
 
 
-# In[15]:
 
 
 def graph_hemorrhage():
@@ -128,7 +113,6 @@ def graph_hemorrhage():
     plt.show()
 
 
-# In[16]:
 
 
 Hemorrhage = pd.DataFrame(train_df[(train_df['Label']==1)&(train_df['Hemorrhage']!='any')]['Hemorrhage'].value_counts()).reset_index()
@@ -141,19 +125,16 @@ Hemorrhage.plot(kind='pie',y='Number_Pictures',labels=Hemorrhage['Hemorrhage'].u
 plt.show()
 
 
-# In[17]:
 
 
 graph_hemorrhage()
 
 
-# In[18]:
 
 
 display(train_df.head())
 
 
-# In[19]:
 
 
 # Remove image with damaged pixels
@@ -161,7 +142,6 @@ train_df = train_df[train_df['Image_ID']!='ID_6431af929']
 train_images.remove('ID_6431af929.dcm')
 
 
-# In[20]:
 
 
 def undersample(dataset): 
@@ -179,20 +159,17 @@ def undersample(dataset):
     
 
 
-# In[21]:
 
 
 train_df = undersample('train_df')
 train_images = undersample('train_images')
 
 
-# In[22]:
 
 
 graph_hemorrhage()
 
 
-# In[23]:
 
 
 pivot_df = train_df.drop_duplicates().pivot(index='Image_ID', columns='Hemorrhage', values='Label').reset_index()
@@ -200,7 +177,6 @@ pivot_df['Image_ID'] = pivot_df['Image_ID']+'.png'
 display(pivot_df.head())
 
 
-# In[24]:
 
 
 def get_first_of_dicom_field_as_int(x):
@@ -252,7 +228,6 @@ def normalize_resize_save(dataset,width,weight,directory):
         save(directory,i,image_normalized_resized)
 
 
-# In[25]:
 
 
 image=pydicom.read_file(dir_train+train_df['Image_ID'][0]+".dcm")
@@ -262,7 +237,6 @@ display(image)
 plt.imshow(image_windowed, cmap=plt.cm.bone)
 
 
-# In[26]:
 
 
 def view_images(data_frame,hemorraghe):
@@ -283,27 +257,23 @@ def view_images(data_frame,hemorraghe):
     plt.show()
 
 
-# In[27]:
 
 
 for i in train_df['Hemorrhage'].unique():
     view_images(train_df,i)
 
 
-# In[28]:
 
 
 normalize_resize_save(train_images,224,224,dir_train)
 normalize_resize_save(test_images,224,224,dir_test)
 
 
-# In[29]:
 
 
 print("Number of files resized and saved: {}".format(len(os.listdir("/kaggle/tmp/"))))
 
 
-# In[30]:
 
 
 from keras import layers
@@ -324,7 +294,6 @@ BATCH_SIZE = 32
 model_nn='densenet'
 
 
-# In[31]:
 
 
 def pick_nn(neu_net):
@@ -346,7 +315,6 @@ def pick_nn(neu_net):
     return(neural_network)
 
 
-# In[32]:
 
 
 def DataGenerator():
@@ -383,7 +351,6 @@ def create_generator(dataset,batch_size):
     return(generator)
 
 
-# In[33]:
 
 
 def build_model(nn):
@@ -403,14 +370,12 @@ def build_model(nn):
     return model
 
 
-# In[34]:
 
 
 model = build_model(model_nn)
 model.summary()
 
 
-# In[35]:
 
 
 checkpoint = ModelCheckpoint(
@@ -433,7 +398,6 @@ history = model.fit_generator(
 )
 
 
-# In[36]:
 
 
 history_df = pd.DataFrame(history.history)
@@ -455,7 +419,6 @@ plt.grid()
 plt.show()
 
 
-# In[37]:
 
 
 model.load_weights('model.h5')
@@ -466,20 +429,17 @@ y_test = model.predict_generator(create_data_test,
 )
 
 
-# In[38]:
 
 
 test_df = test_df.join(pd.DataFrame(y_test, columns = ['any', 'epidural', 'intraparenchymal', 
          'intraventricular', 'subarachnoid', 'subdural']))
 
 
-# In[39]:
 
 
 test_df = test_df.melt(id_vars=['Image_ID'])
 
 
-# In[40]:
 
 
 test_df['ID'] = test_df.Image_ID.apply(lambda x: x.replace('.png', '')) + '_' + test_df.variable
@@ -488,13 +448,11 @@ test_df['Label'] = test_df['value']
 test_df[['ID', 'Label']].to_csv('submission.csv', index=False)
 
 
-# In[41]:
 
 
 test_df[['ID', 'Label']].to_csv('submission.csv', index=False)
 
 
-# In[42]:
 
 
 from IPython.display import HTML

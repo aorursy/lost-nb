@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,14 +19,12 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 trainLabels = pd.read_csv("../input/trainLabels.csv")
 trainLabels.head()
 
 
-# In[3]:
 
 
 import os
@@ -37,7 +34,6 @@ listing.remove("trainLabels.csv")
 np.size(listing)
 
 
-# In[4]:
 
 
 from PIL import Image
@@ -59,14 +55,12 @@ for file in listing:
     
 
 
-# In[5]:
 
 
 immatrix = np.asarray(immatrix)
 imlabel = np.asarray(imlabel)
 
 
-# In[6]:
 
 
 from sklearn.utils import shuffle
@@ -76,7 +70,6 @@ train_data = [data,Label]
 type(train_data)
 
 
-# In[7]:
 
 
 import matplotlib.pyplot as plt
@@ -87,7 +80,6 @@ plt.imshow(img)
 plt.imshow(img,cmap='gray')
 
 
-# In[8]:
 
 
 #batch_size to train
@@ -98,7 +90,6 @@ nb_classes = 5
 nb_epoch = 5
 
 
-# In[9]:
 
 
 # number of convolutional filters to use
@@ -109,7 +100,6 @@ nb_pool = 2
 nb_conv = 3
 
 
-# In[10]:
 
 
 (X, y) = (train_data[0],train_data[1])
@@ -139,7 +129,6 @@ print(X_train.shape[0], 'train samples')
 print(X_test.shape[0], 'test samples')
 
 
-# In[11]:
 
 
 from keras.utils import np_utils
@@ -153,7 +142,6 @@ plt.imshow(X_train[i, 0], interpolation='nearest')
 print("label : ", Y_train[i,:])
 
 
-# In[12]:
 
 
 #KERAS
@@ -209,7 +197,6 @@ model.add(Activation('softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adadelta')
 
 
-# In[13]:
 
 
 from IPython.display import SVG
@@ -218,7 +205,6 @@ from keras.utils.vis_utils import model_to_dot
 SVG(model_to_dot(model).create(prog='dot', format='svg'))
 
 
-# In[14]:
 
 
 from pydot import pydot.Graph
@@ -227,7 +213,6 @@ from keras.utils import plot_model
 plot_model(model, to_file='model.png')
 
 
-# In[15]:
 
 
 from keras.preprocessing.image import ImageDataGenerator
@@ -241,7 +226,6 @@ train_generator=traindatagenerator.flow(X_train, Y_train, batch_size=batchsize)
 validation_generator=validationdatagenerator.flow(X_test, Y_test,batch_size=batchsize)
 
 
-# In[16]:
 
 
 #hist = model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data=(X_test, Y_test))
@@ -252,14 +236,12 @@ model.fit_generator(train_generator, steps_per_epoch=int(len(X_train)/batchsize)
 #              show_accuracy=True, verbose=1, validation_split=0.2)
 
 
-# In[17]:
 
 
 score = model.evaluate(X_test, Y_test, verbose=0)
 print(score)
 
 
-# In[18]:
 
 
 

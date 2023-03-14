@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install lapjv==1.3.1')
@@ -39,7 +38,6 @@ import time
 import threading
 
 
-# In[2]:
 
 
 TRAIN_DF = '../input/humpback-whale-identification/train.csv'
@@ -54,7 +52,6 @@ submit = [p for _, p, _ in read_csv(SUB_Df).to_records()]
 join = list(tagged.keys()) + submit
 
 
-# In[3]:
 
 
 def expand_path(p):
@@ -65,7 +62,6 @@ def expand_path(p):
     return p
 
 
-# In[4]:
 
 
 if isfile(P2SIZE):
@@ -79,7 +75,6 @@ else:
         p2size[p] = size
 
 
-# In[5]:
 
 
 def match(h1, h2):
@@ -144,7 +139,6 @@ for p, h in p2h.items():
     if p not in h2ps[h]: h2ps[h].append(p)
 
 
-# In[6]:
 
 
 def show_whale(imgs, per_row=2):
@@ -161,7 +155,6 @@ def read_raw_image(p):
     return img
 
 
-# In[7]:
 
 
 # For each images id, select the prefered image
@@ -183,7 +176,6 @@ for h, ps in h2ps.items():
 len(h2p), list(h2p.items())[:5]
 
 
-# In[8]:
 
 
 # Read the bounding box data from the bounding box kernel (see reference above)
@@ -199,7 +191,6 @@ anisotropy = 2.15  # The horizontal compression ratio
 crop_margin = 0.05  # The margin added around the bounding box to compensate for bounding box inaccuracy
 
 
-# In[9]:
 
 
 def build_transform(rotation, shear, height_zoom, width_zoom, height_shift, width_shift):
@@ -217,7 +208,6 @@ def build_transform(rotation, shear, height_zoom, width_zoom, height_shift, widt
     return np.dot(np.dot(rotation_matrix, shear_matrix), np.dot(zoom_matrix, shift_matrix))
 
 
-# In[10]:
 
 
 def read_cropped_image(p, augment):
@@ -307,7 +297,6 @@ def read_for_validation(p):
 p = list(tagged.keys())[312]
 
 
-# In[11]:
 
 
 def subblock(x, filter, **kwargs):
@@ -407,7 +396,6 @@ def build_model(lr, l2, activation='sigmoid'):
 model, branch_model, head_model = build_model(64e-5, 0)
 
 
-# In[12]:
 
 
 h2ws = {}
@@ -433,7 +421,6 @@ for w, hs in w2hs.items():
         w2hs[w] = sorted(hs)
 
 
-# In[13]:
 
 
 train = []  # A list of training image ids
@@ -459,7 +446,6 @@ for i, t in enumerate(train):
     t2i[t] = i
 
 
-# In[14]:
 
 
 class TrainingData(Sequence):
@@ -765,7 +751,6 @@ class TrainingData(Sequence):
         return (len(self.match) + len(self.unmatch) + self.batch_size - 1) // self.batch_size
 
 
-# In[15]:
 
 
 # A Keras generator to evaluate only the BRANCH MODEL
@@ -823,7 +808,6 @@ class ScoreGen(Sequence):
         return (len(self.ix) + self.batch_size - 1) // self.batch_size
 
 
-# In[16]:
 
 
 def set_lr(model, lr):
@@ -902,7 +886,6 @@ def make_steps(step, ampl):
     steps += step
 
 
-# In[17]:
 
 
 histories = []
@@ -919,7 +902,6 @@ make_steps(5, 0.25)
 model.save('siamese_v3_110')
 
 
-# In[18]:
 
 
 set_lr(model, 4e-5)
@@ -930,7 +912,6 @@ make_steps(5, 0.25)
 model.save('siamese_v3_120')
 
 
-# In[19]:
 
 
 def prepare_submission(threshold, filename):
@@ -972,7 +953,6 @@ def prepare_submission(threshold, filename):
     return vtop, vhigh, pos
 
 
-# In[20]:
 
 
 # Find elements from training sets not 'new_whale'
@@ -1003,7 +983,6 @@ prepare_submission(0.99, 'submission.csv')
 prepare_submission(0.97, 'submission_.csv')
 
 
-# In[21]:
 
 
 

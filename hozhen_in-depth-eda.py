@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_cell_magic('javascript', '', 'IPython.OutputArea.prototype._should_scroll = function(lines) {\n    return false;\n}')
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -50,7 +48,6 @@ from sklearn.pipeline import make_pipeline
 #<form action="javascript:code_toggle()"><input type="submit" value="Click here to toggle on/off the raw code."></form>''')#
 
 
-# In[3]:
 
 
 # Some miscellaneous functions
@@ -64,7 +61,6 @@ def GetHumanReadable(size,precision=2):
     return "%.*f%s"%(precision,size,suffixes[suffixIndex])
 
 
-# In[4]:
 
 
 #Import*
@@ -88,7 +84,6 @@ meter_name = ['electricity', 'chilledwater', 'steam', 'hotwater']
 primary_type = {'Education':0,'Entertainment/public assembly':1,'Food sales and service':2,'Healthcare':3,'Lodging/residential':4,'Manufacturing/industrial':5,'Office':6,'Other':7,'Parking':8,'Public services':9,'Religious worship':10,'Retail':11,'Services':12,'Technology/science':13,'Utility':14,'Warehouse/storage':15}
 
 
-# In[5]:
 
 
 for i in data_dict:
@@ -106,7 +101,6 @@ for i in data_dict:
 del temp
 
 
-# In[6]:
 
 
 f,ax = plt.subplots(3,2, figsize = (12,18))
@@ -126,7 +120,6 @@ ax[2,0].set_title('Building frequency by floor count')
 print('Done')
 
 
-# In[7]:
 
 
 f,a = plt.subplots(1,3, figsize=(14,4))
@@ -155,7 +148,6 @@ del temp1
 print('')
 
 
-# In[8]:
 
 
 Map_freq = pd.DataFrame(index = df_metadata.site_id.unique(),columns=df_metadata.primary_use.unique())
@@ -174,7 +166,6 @@ a1.set_title('Building frequency by use and site')
 del Map_freq
 
 
-# In[9]:
 
 
 a1 = plt.figure()
@@ -197,7 +188,6 @@ a3[1,1].set_title('Boxplot')
 print('')
 
 
-# In[10]:
 
 
 a1 = plt.figure()
@@ -206,7 +196,6 @@ a1.fig.suptitle('Joint plot site/year built')
 print('')
 
 
-# In[11]:
 
 
 a1 = plt.figure()
@@ -215,7 +204,6 @@ a1.fig.suptitle('Catplot floor count/site_id')
 print('')
 
 
-# In[12]:
 
 
 a1 = plt.figure()
@@ -224,7 +212,6 @@ a1.set_title('Boxplot usage/size')
 print('')
 
 
-# In[13]:
 
 
 a1 = plt.figure()
@@ -233,7 +220,6 @@ a1.set_title('Boxplot usage/year built')
 print('')
 
 
-# In[14]:
 
 
 Map_freq = pd.DataFrame(index = df_metadata.primary_use.unique(),columns=df_metadata.floor_count.sort_values(na_position='first').unique())
@@ -252,7 +238,6 @@ a1.set_title('Heat map floor/usage')
 #a1.set_xticklabels(a1.get_xticklabels(),rotation = 45)
 
 
-# In[15]:
 
 
 a1 = plt.figure()
@@ -260,7 +245,6 @@ a1 = (sns.jointplot( data = df_metadata, y = 'square_feet', x = 'year_built', ki
 a1.fig.suptitle('Jointplot size/year built')
 
 
-# In[16]:
 
 
 a1 = plt.figure()
@@ -268,7 +252,6 @@ a1 = sns.jointplot(y = 'square_feet', x = 'floor_count', data = df_metadata, col
 a1.fig.suptitle('Jointplot size/floor')
 
 
-# In[17]:
 
 
 a1 = plt.figure()
@@ -276,7 +259,6 @@ a1 = sns.jointplot(x = 'year_built', y = 'floor_count', data = df_metadata, colo
 a1.fig.suptitle('Joint plot floor/year built')
 
 
-# In[18]:
 
 
 #def function
@@ -321,7 +303,6 @@ def reduce_mem_usage(df):
     return df
 
 
-# In[19]:
 
 
 print('Reducing memory usage of \'df_train\' ')
@@ -336,7 +317,6 @@ print('Reducing memory usage of \'df_weather_test\' ')
 df_weather_test = reduce_mem_usage(df_weather_test)
 
 
-# In[20]:
 
 
 df_train = df_train.join(df_metadata.set_index('building_id'), on = 'building_id')
@@ -359,14 +339,12 @@ df_weather_test.timestamp = pd.to_datetime(df_weather_test.timestamp)
 print('df_test joined with df_metadata and df_weather_test. Resulting dataframe has a memory usage of :', GetHumanReadable(df_test.memory_usage().sum()))
 
 
-# In[21]:
 
 
 print('Train DataFrame:')
 df_train.head()
 
 
-# In[22]:
 
 
 f, ax1 = plt.subplots(2,1,figsize = (10,8))
@@ -379,7 +357,6 @@ ax1[1].set(xticks=[])
 print('')
 
 
-# In[23]:
 
 
 Meter_t = []
@@ -393,7 +370,6 @@ del Meter_t
 print('Done')
 
 
-# In[24]:
 
 
 f, ax = plt.subplots(1,2, figsize = (14,6))
@@ -407,7 +383,6 @@ ax[1].set_ylabel('meter type')
 print('Done')
 
 
-# In[25]:
 
 
 Total = df_metadata[['electricity', 'chilledwater', 'steam', 'hotwater']].sum().sum()
@@ -429,7 +404,6 @@ D2 = D2.append(D3)
 del D3
 
 
-# In[26]:
 
 
 f,ax = plt.subplots(2,1,figsize = (16,16))
@@ -446,7 +420,6 @@ print('Done')
 del D, D2
 
 
-# In[27]:
 
 
 f, ax = plt.subplots(1,1, figsize = (16,6))
@@ -461,7 +434,6 @@ ax.legend()
 print('Done')
 
 
-# In[28]:
 
 
 S = df_metadata.groupby('site_id').sum()[['electricity', 'chilledwater', 'steam', 'hotwater']]
@@ -490,7 +462,6 @@ ax[1].set_title('Meter type count by primary use')
 del S, SS
 
 
-# In[29]:
 
 
 TEMP = pd.melt(df_metadata, id_vars= 'building_id', value_vars=['electricity', 'chilledwater', 'steam', 'hotwater']).join(df_metadata[['building_id', 'square_feet']].set_index('building_id'), on = 'building_id')
@@ -505,7 +476,6 @@ sns.scatterplot(data = TEMP.loc[(TEMP['variable']=='hotwater') & (TEMP['value']=
 ax[1,1].set_title('Building with hotwater')
 
 
-# In[30]:
 
 
 def print_series(building_id, meter, ax1):
@@ -556,31 +526,26 @@ def prt_srs(building_id):
     print('Done')
 
 
-# In[31]:
 
 
 prt_srs(0)
 
 
-# In[32]:
 
 
 prt_srs(200)
 
 
-# In[33]:
 
 
 prt_srs(1232)
 
 
-# In[34]:
 
 
 prt_srs(df_metadata.loc[df_metadata.missing_train == df_metadata.missing_train.max()].building_id.values[0])
 
 
-# In[35]:
 
 
 f, ax = plt.subplots(1,2,figsize = (16,6))
@@ -592,7 +557,6 @@ ax[1].set_ylabel('log(meter_reading)')
 print('')
 
 
-# In[36]:
 
 
 f,ax = plt.subplots(1,1,figsize = (16,8))
@@ -605,7 +569,6 @@ ax.set_xlabel('log(meter_reading)')
 print('')
 
 
-# In[37]:
 
 
 #Adding time variable (df_train)
@@ -624,7 +587,6 @@ df_test['month'] = df_test.timestamp.dt.month.astype(np.int8)
 df_test['dayofyear'] = df_test.timestamp.dt.dayofyear.astype(np.int16)
 
 
-# In[38]:
 
 
 df_maxmonthly = pd.DataFrame(data=df_train.groupby(['building_id', 'meter', 'month']).max().meter_reading.dropna()).reset_index().join(df_metadata.set_index('building_id'), on ='building_id')
@@ -645,7 +607,6 @@ df_maxmonthly = pd.DataFrame(data=df_train.groupby(['building_id', 'meter', 'mon
 #df_sumdayofyear = pd.DataFrame(data=df_train.groupby(['building_id', 'meter', 'dayofyear']).sum().meter_reading.dropna()).reset_index().join(df_metadata.set_index('building_id'), on ='building_id')
 
 
-# In[39]:
 
 
 ax = plt.figure(figsize = (8,8))
@@ -653,7 +614,6 @@ ax = sns.lineplot(data = df_maxmonthly, y = 'meter_reading', x = 'month', hue = 
 ax.set_title('Monthly max per meter/building_id')
 
 
-# In[40]:
 
 
 print('Finding building_id')
@@ -662,7 +622,6 @@ print('Display series')
 prt_srs(df_maxmonthly.loc[df_maxmonthly.meter_reading == df_maxmonthly.meter_reading.max()].building_id.values[0])
 
 
-# In[41]:
 
 
 df_ex_train =df_train.loc[(df_train.building_id == 1099) & (df_train.meter == 'steam')]
@@ -674,7 +633,6 @@ df_test.drop(index_name, inplace = True)
 del index_name
 
 
-# In[42]:
 
 
 print('Computing aggregate')
@@ -697,7 +655,6 @@ df_sumdayofyear = pd.DataFrame(data=df_train.groupby(['building_id', 'meter', 'd
 print('Done')
 
 
-# In[43]:
 
 
 def print_aggregate( dataframe, groupby, time_type = 'month', graph_type = 'line', building_id = None, primary_use = None,site_id = None, aggregate = 'all',  meter = None, graph_name = '', ax = None):
@@ -851,7 +808,6 @@ def print_aggregate( dataframe, groupby, time_type = 'month', graph_type = 'line
             ax.set_title(graph_name)
 
 
-# In[44]:
 
 
 f, ax1 = plt.subplots(2,2, figsize=(20,20))
@@ -861,7 +817,6 @@ print_aggregate(df_summonthly, groupby='building_id',graph_name = 'Sum monthly',
 print_aggregate(df_medianmonthly, groupby='building_id',graph_name = 'Median monthly', ax = ax1[1,1])
 
 
-# In[45]:
 
 
 f, ax1 = plt.subplots(2,2, figsize=(20,20))
@@ -871,7 +826,6 @@ print_aggregate(df_sumweekday,time_type = 'weekday', groupby='building_id',graph
 print_aggregate(df_medianweekday,time_type = 'weekday', groupby='building_id',graph_name = 'Median weekday', ax = ax1[1,1])
 
 
-# In[46]:
 
 
 f, ax1 = plt.subplots(2,2, figsize=(20,20))
@@ -881,7 +835,6 @@ print_aggregate(df_sumhour,time_type = 'hour', groupby='building_id',graph_name 
 print_aggregate(df_medianhour,time_type = 'hour', groupby='building_id',graph_name = 'Median hourly', ax = ax1[1,1])
 
 
-# In[47]:
 
 
 f, ax1 = plt.subplots(2,2,figsize = (20,20))
@@ -891,7 +844,6 @@ print_aggregate(df_summonthly, groupby = 'year_built', ax = ax1[1,0], graph_name
 print_aggregate(df_summonthly, groupby = 'square_feet', ax = ax1[1,1], graph_name='Total consumption by square_feet')
 
 
-# In[48]:
 
 
 f, ax1 = plt.subplots(2,2,figsize = (20,20))
@@ -901,7 +853,6 @@ print_aggregate(df_summonthly, groupby = 'meter', aggregate='sum', ax = ax1[1,0]
 print_aggregate(df_sumdayofyear, time_type='dayofyear',groupby = 'meter', aggregate='sum', ax = ax1[1,1], graph_name = 'Total kwh by meter type')
 
 
-# In[49]:
 
 
 #get extreme building_id index
@@ -919,7 +870,6 @@ ett = df_train.loc[(df_train.building_id.apply(lambda x: x in extreme_index)) & 
 df_train.drop(ett)
 
 
-# In[50]:
 
 
 del df_maxmonthly,df_minmonthly,df_medianmonthly,df_summonthly,df_maxweekday,df_minweekday,df_medianweekday,df_sumweekday,df_maxhour,df_minhour,df_medianhour,df_sumhour
@@ -929,13 +879,11 @@ del df_maxmonthly,df_minmonthly,df_medianmonthly,df_summonthly,df_maxweekday,df_
 del df_sumdayofyear
 
 
-# In[51]:
 
 
 df_train.isnull().sum()
 
 
-# In[52]:
 
 
 print('Appending the testing weather data to the training weather data.')
@@ -952,7 +900,6 @@ for n in mis_col_n:
 print('Done.')
 
 
-# In[53]:
 
 
 ax = sns.FacetGrid(data = DF_WT_Comb, row = 'site_id', height = 4, aspect = 3)
@@ -964,14 +911,12 @@ for axe in range(16):
     ax.axes[axe][0].legend(loc='best')
 
 
-# In[54]:
 
 
 print('Ratio of values that are equal between site 7 and site 11:')
 print((DF_WT_Comb.loc[DF_WT_Comb.site_id ==7].fillna(99999999).reset_index() == DF_WT_Comb.loc[DF_WT_Comb.site_id ==11].fillna(99999999).reset_index()).sum()/len(DF_WT_Comb.loc[DF_WT_Comb.site_id ==11]))
 
 
-# In[55]:
 
 
 df_weather_train['air_temperature'].interpolate('cubic', inplace= True)
@@ -980,7 +925,6 @@ print(df_weather_test.air_temperature.isnull().sum())
 print(df_weather_train.air_temperature.isnull().sum())
 
 
-# In[56]:
 
 
 #cloud_diff = pd.Series()
@@ -1000,21 +944,18 @@ for axe in range(16):
     ax.axes[axe][0].legend(loc='best')
 
 
-# In[57]:
 
 
 ax = sns.FacetGrid(data = DF_WT_Comb, col = 'site_id',col_wrap=4)
 ax = ax.map(sns.distplot,'cloud_coverage', kde=False)
 
 
-# In[58]:
 
 
 df_weather_train.drop('cloud_coverage', inplace = True, axis = 1)
 df_weather_test.drop('cloud_coverage', inplace = True, axis = 1)
 
 
-# In[59]:
 
 
 ax = sns.FacetGrid(data = DF_WT_Comb, row = 'site_id', height = 4, aspect = 3)
@@ -1026,7 +967,6 @@ for axe in range(16):
     ax.axes[axe][0].legend(loc='best')
 
 
-# In[60]:
 
 
 df_weather_train['dew_temperature'].interpolate(method='cubic', inplace=True)
@@ -1035,7 +975,6 @@ print(df_weather_test.dew_temperature.isnull().sum())
 print(df_weather_train.dew_temperature.isnull().sum())
 
 
-# In[61]:
 
 
 ax = sns.FacetGrid(data = DF_WT_Comb, row = 'site_id', height = 5, aspect = 3)
@@ -1050,7 +989,6 @@ for axe in range(16):
     ax.axes[axe][0].legend(loc='best')
 
 
-# In[62]:
 
 
 ax = sns.FacetGrid(data = DF_WT_Comb, col = 'site_id', col_wrap = 4)
@@ -1059,14 +997,12 @@ ax = ax.map(sns.distplot,  'logprec', hist=False)
 ax.set(xlabel='log(precipitation)')
 
 
-# In[63]:
 
 
 df_weather_train.drop('precip_depth_1_hr', inplace=True, axis=1)
 df_weather_test.drop('precip_depth_1_hr', inplace=True, axis=1)
 
 
-# In[64]:
 
 
 ax = sns.FacetGrid(data = DF_WT_Comb, row = 'site_id', height = 4, aspect = 3)
@@ -1077,7 +1013,6 @@ for axe in range(16):
     ax.axes[axe][0].legend(loc='best')
 
 
-# In[65]:
 
 
 df_weather_train['sea_level_pressure'] = df_weather_train['sea_level_pressure'].fillna(DF_WT_Comb['sea_level_pressure'].median())
@@ -1086,7 +1021,6 @@ print(df_weather_test.sea_level_pressure.isnull().sum())
 print(df_weather_train.sea_level_pressure.isnull().sum())
 
 
-# In[66]:
 
 
 ax = sns.FacetGrid(data = DF_WT_Comb[DF_WT_Comb.year==2016], col = 'site_id', col_wrap=2, hue = 'month' ,subplot_kws=dict(projection='polar'),sharex=False, sharey=False, despine=False, height = 6, aspect = 1)
@@ -1098,7 +1032,6 @@ ax.set(xlabel='')
 print('')
 
 
-# In[67]:
 
 
 def rose_plot(angles, bins=16, density=None, offset=0, lab_unit="degrees",
@@ -1158,7 +1091,6 @@ for axe in range(16):
 print('')
 
 
-# In[68]:
 
 
 df_weather_train['wind_direction']=df_weather_train['wind_direction'].astype(float).interpolate(method='pad')
@@ -1167,7 +1099,6 @@ print(df_weather_train['wind_direction'].isnull().sum())
 print(df_weather_test['wind_direction'].isnull().sum())
 
 
-# In[69]:
 
 
 ax = sns.FacetGrid(data = DF_WT_Comb, row = 'site_id', height = 4, aspect = 3)
@@ -1178,7 +1109,6 @@ for axe in range(16):
     ax.axes[axe][0].legend(loc='best')
 
 
-# In[70]:
 
 
 df_weather_train['wind_speed'].interpolate(method='cubic', inplace= True)
@@ -1187,7 +1117,6 @@ print(df_weather_train['wind_speed'].isnull().sum())
 print(df_weather_test['wind_speed'].isnull().sum())
 
 
-# In[71]:
 
 
 #Merge weather and main df
@@ -1196,7 +1125,6 @@ df_test = df_test.merge(df_weather_test, on = ['site_id', 'timestamp'], how='lef
 gc.collect()
 
 
-# In[72]:
 
 
 #Now for year built and floor_count
@@ -1206,7 +1134,6 @@ df_test['year_built'] = df_test['year_built'].astype(float).interpolate(method='
 print(df_test['year_built'].isnull().sum())
 
 
-# In[73]:
 
 
 df_train['floor_count'] = df_train['floor_count'].fillna(0)
@@ -1215,7 +1142,6 @@ print(df_train['floor_count'].isnull().sum())
 print(df_test['floor_count'].isnull().sum())
 
 
-# In[74]:
 
 
 #Last conversion
@@ -1234,7 +1160,6 @@ df_train['square_feet'] = df_train['square_feet'].astype(np.float32)
 df_test['square_feet'] = df_test['square_feet'].astype(np.float32)
 
 
-# In[75]:
 
 
 #remove extremes from training set or maybe not

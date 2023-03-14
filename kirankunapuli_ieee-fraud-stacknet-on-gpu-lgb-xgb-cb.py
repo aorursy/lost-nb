@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import sys
@@ -9,7 +8,6 @@ package_dir = "../input/pystacknet/repository/h2oai-pystacknet-af571e0"
 sys.path.append(package_dir)
 
 
-# In[2]:
 
 
 get_ipython().system('rm -r /opt/conda/lib/python3.6/site-packages/lightgbm')
@@ -17,26 +15,22 @@ get_ipython().system('git clone --recursive https://github.com/Microsoft/LightGB
 get_ipython().system('apt-get install -y -qq libboost-all-dev')
 
 
-# In[3]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cd LightGBM\nrm -r build\nmkdir build\ncd build\ncmake -DUSE_GPU=1 -DOpenCL_LIBRARY=/usr/local/cuda/lib64/libOpenCL.so -DOpenCL_INCLUDE_DIR=/usr/local/cuda/include/ ..\nmake -j$(nproc)')
 
 
-# In[4]:
 
 
 get_ipython().system('cd LightGBM/python-package/;python3 setup.py install --precompile')
 
 
-# In[5]:
 
 
 get_ipython().system('mkdir -p /etc/OpenCL/vendors && echo "libnvidia-opencl.so.1" > /etc/OpenCL/vendors/nvidia.icd')
 get_ipython().system('rm -r LightGBM')
 
 
-# In[6]:
 
 
 import numpy as np # linear algebra
@@ -45,27 +39,23 @@ import os
 print(os.listdir("../input"))
 
 
-# In[7]:
 
 
 import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[8]:
 
 
 import gc
 gc.enable()
 
 
-# In[9]:
 
 
 from pathlib import Path
 
 
-# In[10]:
 
 
 from lightgbm import LGBMClassifier
@@ -74,19 +64,16 @@ from xgboost import XGBClassifier
 from pystacknet.pystacknet import StackNetClassifier
 
 
-# In[11]:
 
 
 input_path = Path('../input/ieee-fraud-detection')
 
 
-# In[12]:
 
 
 from sklearn.preprocessing import LabelEncoder
 
 
-# In[13]:
 
 
 train_transaction = pd.read_csv(input_path/'train_transaction.csv', index_col='TransactionID')
@@ -98,7 +85,6 @@ test_identity = pd.read_csv(input_path/'test_identity.csv', index_col='Transacti
 sample_submission = pd.read_csv(input_path/'sample_submission.csv', index_col='TransactionID')
 
 
-# In[14]:
 
 
 train = train_transaction.merge(train_identity, how='left', left_index=True, right_index=True)
@@ -108,7 +94,6 @@ print(train.shape)
 print(test.shape)
 
 
-# In[15]:
 
 
 y_train = train['isFraud'].copy()
@@ -117,7 +102,6 @@ del train_transaction, train_identity, test_transaction, test_identity
 gc.collect()
 
 
-# In[16]:
 
 
 # Drop target, fill in NaNs
@@ -127,14 +111,12 @@ del train, test
 gc.collect()
 
 
-# In[17]:
 
 
 X_train = X_train.fillna(-999)
 X_test = X_test.fillna(-999)
 
 
-# In[18]:
 
 
 # Label Encoding
@@ -146,7 +128,6 @@ for f in X_train.columns:
         X_test[f] = lbl.transform(list(X_test[f].values))
 
 
-# In[19]:
 
 
 # From kernel https://www.kaggle.com/gemartin/load-data-reduce-memory-usage
@@ -190,19 +171,16 @@ def reduce_mem_usage(df):
     return df
 
 
-# In[20]:
 
 
 get_ipython().run_cell_magic('time', '', 'X_train = reduce_mem_usage(X_train)\nX_test = reduce_mem_usage(X_test)')
 
 
-# In[21]:
 
 
 gc.collect()
 
 
-# In[22]:
 
 
 # LGBMClassifier with GPU
@@ -236,7 +214,6 @@ clf_lgb = LGBMClassifier(
 )
 
 
-# In[23]:
 
 
 # XGBClassifier with GPU
@@ -255,7 +232,6 @@ clf_xgb = XGBClassifier(
 )
 
 
-# In[24]:
 
 
 # CatBoostClassifier with GPU
@@ -280,13 +256,11 @@ param_cb = {
 clf_ctb = CatBoostClassifier(silent=True, **param_cb)
 
 
-# In[25]:
 
 
 gc.collect()
 
 
-# In[26]:
 
 
 models = [  ######## First level ########
@@ -296,7 +270,6 @@ models = [  ######## First level ########
 ]
 
 
-# In[27]:
 
 
 # StackNetClassifier with GPU
@@ -313,25 +286,21 @@ model = StackNetClassifier(
 )
 
 
-# In[28]:
 
 
 model.fit(X_train, y_train)
 
 
-# In[29]:
 
 
 gc.collect()
 
 
-# In[30]:
 
 
 features = [c for c in X_train.columns]
 
 
-# In[31]:
 
 
 sample_submission['isFraud'] = model.predict_proba(X_test[features].values)[:,1]

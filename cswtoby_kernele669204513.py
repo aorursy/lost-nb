@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 import numpy as np
@@ -45,7 +43,6 @@ print("Head of train:")
 df_train.head(20)
 
 
-# In[ ]:
 
 
 
@@ -53,21 +50,18 @@ print("Head of test:")
 df_test.head(20)
 
 
-# In[ ]:
 
 
 print(df_train.nunique())
 df_train.describe()
 
 
-# In[ ]:
 
 
 print(df_test.nunique())
 df_test.describe()
 
 
-# In[ ]:
 
 
 app = df_train.app.value_counts(normalize=True)
@@ -102,7 +96,6 @@ print(device[:3])
 print(os[:5])
 
 
-# In[ ]:
 
 
 channel = df_train.channel.value_counts(normalize=True)
@@ -127,7 +120,6 @@ plt.subplots_adjust(hspace=0.3)
 plt.show()
 
 
-# In[ ]:
 
 
 df_train['click_time'] = pd.to_datetime(df_train['click_time'])
@@ -151,7 +143,6 @@ df_test['click_time_m'] = df_test['click_time'].dt.to_period("min")
 print("click_time limit to min, size: ", len(df_test['click_time_m'].unique()))
 
 
-# In[ ]:
 
 
 dw = df_train.loc[df_train['is_attributed'] == 1]
@@ -190,7 +181,6 @@ print(os[:3])
 print(os_dw[:3])
 
 
-# In[1]:
 
 
 plt.figure(figsize=(12,20))
@@ -212,7 +202,6 @@ ax2 = sns.distplot(df_train['channel'][df_train['is_attributed']==1], color='b',
 plt.show()
 
 
-# In[2]:
 
 
 通过分析可以发现可用的5维数据中，click_time由于数据原因基本是没有贡献度的，剩下的几维数据中，app和device和channel会是相对比较有贡献度的
@@ -222,7 +211,6 @@ plt.show()
 基本上是一个很少特征的二分类问题，直观上使用xgboost处理。
 
 
-# In[ ]:
 
 
 

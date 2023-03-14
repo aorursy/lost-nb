@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import json
@@ -20,13 +19,11 @@ from gensim.models import Word2Vec, KeyedVectors
 get_ipython().run_line_magic('load_ext', 'Cython')
 
 
-# In[2]:
 
 
 get_ipython().run_cell_magic('cython', '', "import re\nfrom multiprocessing import Pool\n\nimport numpy as np\ncimport numpy as np\n\n\ncdef class StringReplacer:\n    cpdef public dict rule\n    cpdef list keys\n    cpdef list values\n    cpdef int n_rules\n\n    def __init__(self, dict rule):\n        self.rule = rule\n        self.keys = list(rule.keys())\n        self.values = list(rule.values())\n        self.n_rules = len(rule)\n\n    def __call__(self, str x):\n        cdef int i\n        for i in range(self.n_rules):\n            if self.keys[i] in x:\n                x = x.replace(self.keys[i], self.values[i])\n        return x\n\n    def __getstate__(self):\n        return (self.rule, self.keys, self.values, self.n_rules)\n\n    def __setstate__(self, state):\n        self.rule, self.keys, self.values, self.n_rules = state\n        \n        \ncdef class RegExpReplacer:\n    cdef dict rule\n    cdef list keys\n    cdef list values\n    cdef regexp\n    cdef int n_rules\n\n    def __init__(self, dict rule):\n        self.rule = rule\n        self.keys = list(rule.keys())\n        self.values = list(rule.values())\n        self.regexp = re.compile('(%s)' % '|'.join(self.keys))\n        self.n_rules = len(rule)\n\n    @property\n    def rule(self):\n        return self.rule\n\n    def __call__(self, str x):\n        def replace(match):\n            x = match.group(0)\n            if x in self.rule:\n                return self.rule[x]\n            else:\n                for i in range(self.n_rules):\n                    x = re.sub(self.keys[i], self.values[i], x)\n                return x\n        return self.regexp.sub(replace, x)\n    \n\ncdef class ApplyNdArray:\n    cdef func\n    cdef dtype\n    cdef dims\n    cdef int processes\n\n    def __init__(self, func, processes=1, dtype=object, dims=None):\n        self.func = func\n        self.processes = processes\n        self.dtype = dtype\n        self.dims = dims\n\n    def __call__(self, arr):\n        if self.processes == 1:\n            return self.apply(arr)\n        else:\n            return self.apply_parallel(arr)\n\n    cpdef apply(self, arr):\n        cdef int i\n        cdef int n = len(arr)\n        if self.dims is not None:\n            shape = (n, *self.dims)\n        else:\n            shape = n\n        cdef res = np.empty(shape, dtype=self.dtype)\n        for i in range(n):\n            res[i] = self.func(arr[i])\n        return res\n\n    cpdef apply_parallel(self, arr):\n        cdef list arrs = np.array_split(arr, self.processes)\n        with Pool(processes=self.processes) as pool:\n            outputs = pool.map(self.apply, arrs)\n        return np.concatenate(outputs, axis=0)")
 
 
-# In[3]:
 
 
 def load_qiqc(n_rows=None):
@@ -271,31 +268,26 @@ class Pipeline(object):
         return x
 
 
-# In[4]:
 
 
 get_ipython().run_cell_magic('time', '', "os.environ['DATADIR'] = '/kaggle/input'\nset_seed(0)\ntrain_df, submit_df = load_qiqc()\ndatasets = build_datasets(train_df, submit_df, holdout=False, seed=0)\ntrain_dataset, test_dataset, submit_dataset = datasets")
 
 
-# In[5]:
 
 
 get_ipython().run_cell_magic('time', '', 'tokenize = Pipeline(\n    str.lower,\n    PunctSpacer(),\n    NumberReplacer(with_underscore=True),\n    str.split\n)\napply_tokenize = ApplyNdArray(tokenize, processes=2, dtype=object)\ntrain_dataset.tokens, test_dataset.tokens, submit_dataset.tokens = \\\n    [apply_tokenize(d.df.question_text.values) for d in datasets]\ntokens = np.concatenate([d.tokens for d in datasets])')
 
 
-# In[6]:
 
 
 get_ipython().run_cell_magic('time', '', "vocab = WordVocab(mincount=1)\nvocab.add_documents(train_dataset.positives.tokens, 'train-pos')\nvocab.add_documents(train_dataset.negatives.tokens, 'train-neg')\nvocab.add_documents(test_dataset.positives.tokens, 'test-pos')\nvocab.add_documents(test_dataset.negatives.tokens, 'test-neg')\nvocab.add_documents(submit_dataset.df.tokens, 'submit')\nvocab.build()")
 
 
-# In[7]:
 
 
 get_ipython().run_cell_magic('time', '', "glove = load_pretrained_vector('glove', vocab.token2id)\nword_vectors = {'glove': glove}\nunk = (glove.vectors == 0).all(axis=1)\nknown = ~unk")
 
 
-# In[8]:
 
 
 params = dict(
@@ -306,19 +298,16 @@ params = dict(
 )
 
 
-# In[9]:
 
 
 get_ipython().run_cell_magic('time', '', "model = Word2Vec(**params)\nmodel.build_vocab_from_freq(vocab.word_freq)\nmodel.train(tokens, total_examples=len(tokens), epochs=model.epochs)\nword_vectors['scratch'] = model.wv")
 
 
-# In[10]:
 
 
 get_ipython().run_cell_magic('time', '', "model = Word2Vec(**params)\nmodel.build_vocab_from_freq(vocab.word_freq)\nidxmap = np.array(\n    [vocab.token2id[w] for w in model.wv.index2entity])\nmodel.wv.vectors[:] = glove.vectors[idxmap]\nmodel.trainables.syn1neg[:] = glove.vectors[idxmap]\nmodel.train(tokens, total_examples=len(tokens), epochs=model.epochs)\nword_vectors['finetune'] = model.wv")
 
 
-# In[11]:
 
 
 word = 'obama'
@@ -326,7 +315,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[12]:
 
 
 word = 'lgbt'
@@ -334,7 +322,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[13]:
 
 
 word = 'cosx'
@@ -342,7 +329,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[14]:
 
 
 word = 'brexit'
@@ -350,7 +336,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[15]:
 
 
 word = 'coinbase'
@@ -358,7 +343,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[16]:
 
 
 word = 'tensorflow'
@@ -366,7 +350,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[17]:
 
 
 word = 'cos2x'
@@ -374,7 +357,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[18]:
 
 
 word = 'kubernetes'
@@ -382,7 +364,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[19]:
 
 
 word = 'gdpr'
@@ -390,7 +371,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[20]:
 
 
 word = '0bama'
@@ -398,7 +378,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[21]:
 
 
 word = 'germnay'
@@ -406,7 +385,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[22]:
 
 
 word = 'gogole'
@@ -414,7 +392,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[23]:
 
 
 word = 'javadoc'
@@ -422,7 +399,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[24]:
 
 
 word = 'cython'
@@ -430,7 +406,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[25]:
 
 
 word = 'compresses'
@@ -438,7 +413,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[26]:
 
 
 word = 'xgboost'
@@ -446,7 +420,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[27]:
 
 
 word = '2sinxcosx'
@@ -454,7 +427,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[28]:
 
 
 word = 'germeny'
@@ -462,7 +434,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[29]:
 
 
 word = 'bigender'
@@ -470,7 +441,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[30]:
 
 
 word = 'youcanttellyourstoryfromthe'
@@ -478,7 +448,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[31]:
 
 
 word = '5gfwdhf4rz'
@@ -486,7 +455,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[32]:
 
 
 word = 'ॡ'
@@ -494,7 +462,6 @@ print(vocab.word_freq[word])
 pd.DataFrame({name: kv.most_similar(word) for name, kv in word_vectors.items()})
 
 
-# In[33]:
 
 
 pd.DataFrame(np.array(list(vocab.word_freq.items()))).to_csv('all.csv', index=False, sep='\t')
@@ -502,7 +469,6 @@ pd.DataFrame(np.array(list(vocab.word_freq.items()))[unk]).to_csv('unk.csv', ind
 pd.DataFrame(np.array(list(vocab.word_freq.items()))[known]).to_csv('known.csv', index=False, sep='\t')
 
 
-# In[34]:
 
 
 

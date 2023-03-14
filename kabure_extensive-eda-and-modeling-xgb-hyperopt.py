@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -40,14 +39,12 @@ import gc
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 df_id = pd.read_csv("../input/train_identity.csv")
 df_trans = pd.read_csv("../input/train_transaction.csv")
 
 
-# In[3]:
 
 
 def resumetable(df):
@@ -125,7 +122,6 @@ def CalcOutliers(df_num):
     return
 
 
-# In[4]:
 
 
 ## REducing memory
@@ -133,13 +129,11 @@ df_trans = reduce_mem_usage(df_trans)
 df_id = reduce_mem_usage(df_id)
 
 
-# In[5]:
 
 
 resumetable(df_trans)[:25]
 
 
-# In[6]:
 
 
 df_trans['TransactionAmt'] = df_trans['TransactionAmt'].astype(float)
@@ -176,7 +170,6 @@ for p in g1.patches:
 plt.show()
 
 
-# In[7]:
 
 
 df_trans['TransactionAmt'] = df_trans['TransactionAmt'].astype(float)
@@ -184,7 +177,6 @@ print("Transaction Amounts Quantiles:")
 print(df_trans['TransactionAmt'].quantile([.01, .025, .1, .25, .5, .75, .9, .975, .99]))
 
 
-# In[8]:
 
 
 plt.figure(figsize=(16,12))
@@ -239,7 +231,6 @@ plt.suptitle('Individual ECDF Distribution', fontsize=22)
 plt.show()
 
 
-# In[9]:
 
 
 print(pd.concat([df_trans[df_trans['isFraud'] == 1]['TransactionAmt']                 .quantile([.01, .1, .25, .5, .75, .9, .99])                 .reset_index(), 
@@ -249,13 +240,11 @@ print(pd.concat([df_trans[df_trans['isFraud'] == 1]['TransactionAmt']           
                 axis=1, keys=['Fraud', "No Fraud"]))
 
 
-# In[10]:
 
 
 CalcOutliers(df_trans['TransactionAmt'])
 
 
-# In[11]:
 
 
 tmp = pd.crosstab(df_trans['ProductCD'], df_trans['isFraud'], normalize='index') * 100
@@ -303,21 +292,18 @@ plt.subplots_adjust(hspace = 0.6, top = 0.85)
 plt.show()
 
 
-# In[12]:
 
 
 ## Knowning the Card Features
 resumetable(df_trans[['card1', 'card2', 'card3','card4', 'card5', 'card6']])
 
 
-# In[13]:
 
 
 print("Card Features Quantiles: ")
 print(df_trans[['card1', 'card2', 'card3', 'card5']].quantile([0.01, .025, .1, .25, .5, .75, .975, .99]))
 
 
-# In[14]:
 
 
 
@@ -325,7 +311,6 @@ df_trans.loc[df_trans.card3.isin(df_trans.card3.value_counts()[df_trans.card3.va
 df_trans.loc[df_trans.card5.isin(df_trans.card5.value_counts()[df_trans.card5.value_counts() < 300].index), 'card5'] = "Others"
 
 
-# In[15]:
 
 
 tmp = pd.crosstab(df_trans['card3'], df_trans['isFraud'], normalize='index') * 100
@@ -393,7 +378,6 @@ plt.subplots_adjust(hspace = 0.6, top = 0.85)
 plt.show()
 
 
-# In[16]:
 
 
 tmp = pd.crosstab(df_trans['card4'], df_trans['isFraud'], normalize='index') * 100
@@ -442,7 +426,6 @@ plt.subplots_adjust(hspace = 0.6, top = 0.85)
 plt.show()
 
 
-# In[17]:
 
 
 tmp = pd.crosstab(df_trans['card6'], df_trans['isFraud'], normalize='index') * 100
@@ -490,7 +473,6 @@ plt.subplots_adjust(hspace = 0.6, top = 0.85)
 plt.show()
 
 
-# In[18]:
 
 
 for col in ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9']:
@@ -544,28 +526,24 @@ def ploting_dist_ratio(df, col, lim=2000):
     plt.show()
 
 
-# In[19]:
 
 
 for col in ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9']:
     ploting_dist_ratio(df_trans, col, lim=2500)
 
 
-# In[20]:
 
 
 print("Card Features Quantiles: ")
 print(df_trans[['addr1', 'addr2']].quantile([0.01, .025, .1, .25, .5, .75, .90,.975, .99]))
 
 
-# In[21]:
 
 
 df_trans.loc[df_trans.addr1.isin(df_trans.addr1.value_counts()[df_trans.addr1.value_counts() <= 5000 ].index), 'addr1'] = "Others"
 df_trans.loc[df_trans.addr2.isin(df_trans.addr2.value_counts()[df_trans.addr2.value_counts() <= 50 ].index), 'addr2'] = "Others"
 
 
-# In[22]:
 
 
 def ploting_cnt_amt(df, col, lim=2000):
@@ -633,13 +611,11 @@ def ploting_cnt_amt(df, col, lim=2000):
 ploting_cnt_amt(df_trans, 'addr1')
 
 
-# In[23]:
 
 
 ploting_cnt_amt(df_trans, 'addr2')
 
 
-# In[24]:
 
 
 df_trans.loc[df_trans['P_emaildomain'].isin(['gmail.com', 'gmail']),'P_emaildomain'] = 'Google'
@@ -655,13 +631,11 @@ df_trans.loc[df_trans.P_emaildomain.isin(df_trans.P_emaildomain                 
 df_trans.P_emaildomain.fillna("NoInf", inplace=True)
 
 
-# In[25]:
 
 
 ploting_cnt_amt(df_trans, 'P_emaildomain')
 
 
-# In[26]:
 
 
 df_trans.loc[df_trans['R_emaildomain'].isin(['gmail.com', 'gmail']),'R_emaildomain'] = 'Google'
@@ -677,51 +651,43 @@ df_trans.loc[df_trans.R_emaildomain.isin(df_trans.R_emaildomain                 
 df_trans.R_emaildomain.fillna("NoInf", inplace=True)
 
 
-# In[27]:
 
 
 ploting_cnt_amt(df_trans, 'R_emaildomain')
 
 
-# In[28]:
 
 
 resumetable(df_trans[['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8',
                       'C9', 'C10', 'C11', 'C12', 'C13', 'C14']])
 
 
-# In[29]:
 
 
 df_trans[['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8',
                       'C9', 'C10', 'C11', 'C12', 'C13', 'C14']].describe()
 
 
-# In[30]:
 
 
 df_trans.loc[df_trans.C1.isin(df_trans.C1                              .value_counts()[df_trans.C1.value_counts() <= 400 ]                              .index), 'C1'] = "Others"
 
 
-# In[31]:
 
 
 ploting_cnt_amt(df_trans, 'C1')
 
 
-# In[32]:
 
 
 df_trans.loc[df_trans.C2.isin(df_trans.C2                              .value_counts()[df_trans.C2.value_counts() <= 350 ]                              .index), 'C2'] = "Others"
 
 
-# In[33]:
 
 
 ploting_cnt_amt(df_trans, 'C2')
 
 
-# In[34]:
 
 
 # https://www.kaggle.com/c/ieee-fraud-detection/discussion/100400#latest-579480
@@ -736,25 +702,21 @@ df_trans['_Hours'] = df_trans['Date'].dt.hour
 df_trans['_Days'] = df_trans['Date'].dt.day
 
 
-# In[35]:
 
 
 ploting_cnt_amt(df_trans, '_Days')
 
 
-# In[36]:
 
 
 ploting_cnt_amt(df_trans, '_Weekdays')
 
 
-# In[37]:
 
 
 ploting_cnt_amt(df_trans, '_Hours')
 
 
-# In[38]:
 
 
 # Calling the function to transform the date column in datetime pandas object
@@ -808,7 +770,6 @@ fig = dict(data= [trace, trace1,], layout=layout)
 iplot(fig) #it's an equivalent to plt.show()
 
 
-# In[39]:
 
 
 # Calling the function to transform the date column in datetime pandas object
@@ -864,7 +825,6 @@ fig = dict(data= [trace, trace1], layout=layout)
 iplot(fig) #it's an equivalent to plt.show()
 
 
-# In[40]:
 
 
 df_id[['id_12', 'id_13', 'id_14', 'id_15', 'id_16', 'id_17', 'id_18',
@@ -873,13 +833,11 @@ df_id[['id_12', 'id_13', 'id_14', 'id_15', 'id_16', 'id_17', 'id_18',
        'id_33', 'id_34', 'id_35', 'id_36', 'id_37', 'id_38']].describe(include='all')
 
 
-# In[41]:
 
 
 df_train = df_trans.merge(df_id, how='left', left_index=True, right_index=True)
 
 
-# In[42]:
 
 
 def cat_feat_ploting(df, col):
@@ -928,7 +886,6 @@ def cat_feat_ploting(df, col):
     plt.show()
 
 
-# In[43]:
 
 
 for col in ['id_12', 'id_15', 'id_16', 'id_23', 'id_27', 'id_28', 'id_29']:
@@ -936,7 +893,6 @@ for col in ['id_12', 'id_15', 'id_16', 'id_23', 'id_27', 'id_28', 'id_29']:
     cat_feat_ploting(df_train, col)
 
 
-# In[44]:
 
 
 df_train.loc[df_train['id_30'].str.contains('Windows', na=False), 'id_30'] = 'Windows'
@@ -946,13 +902,11 @@ df_train.loc[df_train['id_30'].str.contains('Android', na=False), 'id_30'] = 'An
 df_train['id_30'].fillna("NAN", inplace=True)
 
 
-# In[45]:
 
 
 ploting_cnt_amt(df_train, 'id_30')
 
 
-# In[46]:
 
 
 df_train.loc[df_train['id_31'].str.contains('chrome', na=False), 'id_31'] = 'Chrome'
@@ -966,13 +920,11 @@ df_train['id_31'].fillna("NAN", inplace=True)
 df_train.loc[df_train.id_31.isin(df_train.id_31.value_counts()[df_train.id_31.value_counts() < 200].index), 'id_31'] = "Others"
 
 
-# In[47]:
 
 
 ploting_cnt_amt(df_train, 'id_31')
 
 
-# In[48]:
 
 
 df_trans = pd.read_csv('../input/train_transaction.csv')
@@ -993,14 +945,12 @@ print(df_test.shape)
 del df_trans, df_id, df_test_trans, df_test_id
 
 
-# In[49]:
 
 
 df_train = reduce_mem_usage(df_train)
 df_test = reduce_mem_usage(df_test)
 
 
-# In[50]:
 
 
 
@@ -1038,7 +988,6 @@ for c in ['P_emaildomain', 'R_emaildomain']:
     df_test[c + '_suffix'] = df_test[c + '_suffix'].map(lambda x: x if str(x) not in us_emails else 'us')
 
 
-# In[51]:
 
 
 # Label Encoding
@@ -1050,7 +999,6 @@ for f in df_train.drop('isFraud', axis=1).columns:
         df_test[f] = lbl.transform(list(df_test[f].values))   
 
 
-# In[52]:
 
 
 df_train['Trans_min_mean'] = df_train['TransactionAmt'] - df_train['TransactionAmt'].mean()
@@ -1059,7 +1007,6 @@ df_test['Trans_min_mean'] = df_test['TransactionAmt'] - df_test['TransactionAmt'
 df_test['Trans_min_std'] = df_test['Trans_min_mean'] / df_test['TransactionAmt'].std()
 
 
-# In[53]:
 
 
 df_train['TransactionAmt_to_mean_card1'] = df_train['TransactionAmt'] / df_train.groupby(['card1'])['TransactionAmt'].transform('mean')
@@ -1073,14 +1020,12 @@ df_test['TransactionAmt_to_std_card1'] = df_test['TransactionAmt'] / df_test.gro
 df_test['TransactionAmt_to_std_card4'] = df_test['TransactionAmt'] / df_test.groupby(['card4'])['TransactionAmt'].transform('std')
 
 
-# In[54]:
 
 
 df_train['TransactionAmt'] = np.log(df_train['TransactionAmt'])
 df_test['TransactionAmt'] = np.log(df_test['TransactionAmt'])
 
 
-# In[55]:
 
 
 df_test['isFraud'] = 'test'
@@ -1089,7 +1034,6 @@ df = df.reset_index()
 df = df.drop('index', axis=1)
 
 
-# In[56]:
 
 
 def PCA_change(df, cols, n_components, prefix='PCA_', rand_seed=4):
@@ -1108,13 +1052,11 @@ def PCA_change(df, cols, n_components, prefix='PCA_', rand_seed=4):
     return df
 
 
-# In[57]:
 
 
 mas_v = df_train.columns[55:394]
 
 
-# In[58]:
 
 
 from sklearn.preprocessing import minmax_scale
@@ -1129,25 +1071,21 @@ for col in mas_v:
 df = PCA_change(df, mas_v, prefix='PCA_V_', n_components=30)
 
 
-# In[59]:
 
 
 df = reduce_mem_usage(df)
 
 
-# In[60]:
 
 
 df_train, df_test = df[df['isFraud'] != 'test'], df[df['isFraud'] == 'test'].drop('isFraud', axis=1)
 
 
-# In[61]:
 
 
 df_train.shape
 
 
-# In[62]:
 
 
 X_train = df_train.sort_values('TransactionDT').drop(['isFraud', 
@@ -1165,7 +1103,6 @@ del df_train
 df_test = df_test[["TransactionDT"]]
 
 
-# In[63]:
 
 
 from sklearn.model_selection import KFold,TimeSeriesSplit
@@ -1292,7 +1229,6 @@ space = {
 }
 
 
-# In[64]:
 
 
 # Set algoritm parameters
@@ -1305,7 +1241,6 @@ best = fmin(fn=objective,
 best_params = space_eval(space, best)
 
 
-# In[65]:
 
 
 print("BEST PARAMS: ", best_params)
@@ -1313,7 +1248,6 @@ print("BEST PARAMS: ", best_params)
 best_params['max_depth'] = int(best_params['max_depth'])
 
 
-# In[66]:
 
 
 clf = xgb.XGBClassifier(
@@ -1327,7 +1261,6 @@ clf.fit(X_train, y_train)
 y_preds = clf.predict_proba(X_test)[:,1] 
 
 
-# In[67]:
 
 
 feature_important = clf.get_booster().get_score(importance_type="weight")
@@ -1340,7 +1273,6 @@ data = pd.DataFrame(data=values, index=keys, columns=["score"]).sort_values(by =
 data.head(20)
 
 
-# In[68]:
 
 
 
@@ -1348,7 +1280,6 @@ sample_submission['isFraud'] = y_preds
 sample_submission.to_csv('XGB_hypopt_model.csv')
 
 
-# In[ ]:
 
 
 

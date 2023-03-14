@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -15,7 +14,6 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import GroupKFold
 
 
-# In[2]:
 
 
 def getPdArr(dir):
@@ -256,7 +254,6 @@ def preprocess(assess_titles, reduce_train, reduce_test):
     return reduce_train, reduce_test, features
 
 
-# In[3]:
 
 
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -347,7 +344,6 @@ class FeatureTransformer(BaseEstimator, TransformerMixin):
         return self.transform(data)
 
 
-# In[4]:
 
 
 def qwk(a1, a2):
@@ -441,7 +437,6 @@ def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix'
     plt.xlabel('Predicted label')
 
 
-# In[5]:
 
 
 ## validate
@@ -511,7 +506,6 @@ class LGBWrapper_regr(object):
     
 
 
-# In[6]:
 
 
 class RegressorModel(object):
@@ -773,13 +767,11 @@ class RegressorModel(object):
         plt.title('Training progress')
 
 
-# In[ ]:
 
 
 
 
 
-# In[7]:
 
 
 from functools import partial
@@ -834,7 +826,6 @@ class OptimizedRounder(object):
         return self.coef_['x']
 
 
-# In[8]:
 
 
 dir = '/kaggle/input/data-science-bowl-2019/'
@@ -852,14 +843,12 @@ reduce_train, reduce_test, features =     preprocess(assess_titles, reduce_train
 # Any results you write to the current directory are saved as output.
 
 
-# In[9]:
 
 
 reduce_train.to_csv("reduce_train.csv")
 reduce_test.to_csv("reduce_test.csv")
 
 
-# In[10]:
 
 
 # reduce_train = pd.read_csv("reduce_train.csv")
@@ -867,13 +856,11 @@ reduce_test.to_csv("reduce_test.csv")
 y = reduce_train['accuracy_group']
 
 
-# In[11]:
 
 
 reduce_train.head(5)
 
 
-# In[12]:
 
 
 params = {'n_estimators':2000,
@@ -897,13 +884,11 @@ ft = FeatureTransformer()
 transformers = {'ft': ft}
 
 
-# In[13]:
 
 
 reduce_train['accuracy_group'].value_counts(normalize=True)
 
 
-# In[14]:
 
 
 import copy
@@ -936,7 +921,6 @@ for i in range(loops):
     coefficients_arr.append(coefficients)
 
 
-# In[15]:
 
 
 coefficients_arr = np.array(coefficients_arr)
@@ -974,13 +958,11 @@ plot_classes = [0, 1, 2, 3]
 plot_confusion_matrix(conf_matrix, classes=plot_classes, normalize=True, title='Normalized confusion matrix')
 
 
-# In[ ]:
 
 
 
 
 
-# In[16]:
 
 
 # print(coefficients_arr)
@@ -1002,7 +984,6 @@ print("predict over!!!")
 submission['accuracy_group'].value_counts(normalize=True)
 
 
-# In[ ]:
 
 
 

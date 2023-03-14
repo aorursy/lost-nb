@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,37 +19,31 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 ls
 
 
-# In[ ]:
 
 
 cd ../input/daguan-cups-dataset/new_data/
 
 
-# In[ ]:
 
 
 get_ipython().system('nvidia-smi')
 
 
-# In[ ]:
 
 
 cd new_data/
 
 
-# In[ ]:
 
 
 ls
 
 
-# In[ ]:
 
 
 import os
@@ -78,7 +71,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-# In[ ]:
 
 
 
@@ -112,13 +104,11 @@ x_train, x_test, y_train, y_test = train_test_split(feature, label, test_size=0.
 print("data over")
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 linearRegr = LinearRegression().fit(x_train, y_train)
@@ -131,7 +121,6 @@ linearRegr = LinearRegression().fit(x_train, y_train)
 # model_rfc = RandomForestClassifier(n_estimators=300, max_depth=150,n_jobs=1).fit(x_train, y_train)
 
 
-# In[ ]:
 
 
 # Find the accuracy of each model
@@ -155,7 +144,6 @@ print(phrase % ("Logistic Regression", 100*accu_lr))
 # y_pred = model_centroid.predict(x_test)
 
 
-# In[ ]:
 
 
 

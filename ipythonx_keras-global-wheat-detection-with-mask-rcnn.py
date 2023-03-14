@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # copy to working directory
 get_ipython().system('cp -r ../input/maskrcnn-keras-source-code/MaskRCNN/* ./')
 
 
-# In[2]:
 
 
 import numpy as np 
@@ -25,7 +23,6 @@ import mrcnn.model as modellib
 from mrcnn.config import Config
 
 
-# In[3]:
 
 
 # for reproducibility
@@ -39,7 +36,6 @@ sns.set(style="darkgrid")
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[4]:
 
 
 ORIG_SIZE     = 1024
@@ -48,7 +44,6 @@ data_root     = '/kaggle/input'
 packages_root = '/kaggle/working'
 
 
-# In[5]:
 
 
 # load annotation files
@@ -56,14 +51,12 @@ df = pd.read_csv(os.path.join(data_root , 'global-wheat-detection/train.csv'))
 df.head()
 
 
-# In[6]:
 
 
 # information summary
 df.info()
 
 
-# In[7]:
 
 
 plt.figure(figsize=(9,5))
@@ -71,7 +64,6 @@ sns.countplot(df.source)
 plt.show()
 
 
-# In[8]:
 
 
 # image directory
@@ -79,7 +71,6 @@ img_root = '../input/global-wheat-detection/train/'
 len(os.listdir(img_root)) - len(df.image_id.unique())
 
 
-# In[9]:
 
 
 df['bbox'] = df['bbox'].apply(lambda x: x[1:-1].split(","))
@@ -93,7 +84,6 @@ df = df[['image_id','x', 'y', 'w', 'h']]
 df.head()
 
 
-# In[10]:
 
 
 class WheatDetectorConfig(Config):
@@ -150,7 +140,6 @@ config = WheatDetectorConfig()
 config.display()
 
 
-# In[11]:
 
 
 def get_jpg(img_dir, anns):
@@ -187,7 +176,6 @@ def get_dataset(img_dir, anns):
     return image_fps, image_annotations 
 
 
-# In[12]:
 
 
 class DetectorDataset(utils.Dataset):
@@ -245,7 +233,6 @@ class DetectorDataset(utils.Dataset):
         return info['path']
 
 
-# In[13]:
 
 
 image_ids = df['image_id'].unique()
@@ -258,13 +245,11 @@ train_df = df[df['image_id'].isin(train_ids)]
 train_df.shape, valid_df.shape
 
 
-# In[14]:
 
 
 len(train_df.image_id.unique()), len(valid_df.image_id.unique())
 
 
-# In[15]:
 
 
 # grab all image file path with concern annotation
@@ -282,7 +267,6 @@ for i, info in enumerate(dataset_train.class_info):
     print("{:3}. {:50}".format(i, info['name']))
 
 
-# In[16]:
 
 
 # grab all image file path with concern annotation
@@ -299,7 +283,6 @@ for i, info in enumerate(dataset_valid.class_info):
     print("{:3}. {:50}".format(i, info['name']))
 
 
-# In[17]:
 
 
 class_ids = [0]
@@ -328,7 +311,6 @@ print(class_ids)
 plt.show()
 
 
-# In[18]:
 
 
 # Load and display random samples
@@ -340,7 +322,6 @@ for image_id in image_ids:
                                 dataset_train.class_names, limit=1)
 
 
-# In[19]:
 
 
 # Load random image and mask.
@@ -371,13 +352,11 @@ visualize.display_instances(image, bbox, mask, class_ids,
                             dataset_train.class_names)
 
 
-# In[20]:
 
 
 get_ipython().system('pip install ../input/img-aug-v04/imgaug-0.4.0-py2.py3-none-any.whl')
 
 
-# In[21]:
 
 
 import warnings
@@ -420,7 +399,6 @@ augmentation = iaa.Sequential([
 )
 
 
-# In[22]:
 
 
 # from official repo
@@ -449,7 +427,6 @@ for i in range(limit):
                                 show_mask=False, show_bbox=False)
 
 
-# In[23]:
 
 
 def model_definition():
@@ -469,7 +446,6 @@ def model_definition():
 model = model_definition()
 
 
-# In[24]:
 
 
 from keras.callbacks import (ModelCheckpoint, ReduceLROnPlateau, CSVLogger)
@@ -492,13 +468,11 @@ def callback():
     return cb
 
 
-# In[25]:
 
 
 get_ipython().run_cell_magic('time', '', "CB = callback()\nTRAIN = False\n\nclass WheatInferenceConfig(WheatDetectorConfig):\n    GPU_COUNT = 1\n    IMAGES_PER_GPU = 1\n\nif TRAIN:\n    model.train(dataset_train, dataset_valid, \n                augmentation=augmentation, \n                learning_rate=config.LEARNING_RATE,\n                custom_callbacks = CB,\n                epochs=epoch, layers='all') \nelse:\n    inference_config = WheatInferenceConfig()\n    # Recreate the model in inference mode\n    model = modellib.MaskRCNN(mode='inference', \n                              config=inference_config,\n                              model_dir=packages_root)\n    \n    model.load_weights(data_root + '/096269-wheat-r101/wheat_096269_101_1024.h5', \n                       by_name = True)")
 
 
-# In[26]:
 
 
 history = pd.read_csv(data_root + '/wheatweight/wheat_history.csv') 
@@ -508,7 +482,6 @@ print(history.loc[history['val_loss'].idxmin()])
 history.head()
 
 
-# In[27]:
 
 
 plt.figure(figsize=(19,6))
@@ -531,7 +504,6 @@ plt.legend()
 plt.show()
 
 
-# In[28]:
 
 
 image_id = np.random.choice(dataset_valid.image_ids, 2)
@@ -553,13 +525,11 @@ for img_id in image_id:
     log("gt_mask", gt_mask)
 
 
-# In[29]:
 
 
 get_ipython().run_cell_magic('time', '', '\nthresh_score = [0.5 , 0.55, 0.6 , 0.65, 0.7 , 0.75]\n\ndef evaluate_threshold_range(test_set, image_ids, model, \n                             iou_thresholds, inference_config):\n    \'\'\'Calculate mAP based on iou_threshold range\n    inputs:\n        test_set        : test samples\n        image_ids       : image ids of the test samples\n        model           : trained model\n        inference_config: test configuration\n        iou_threshold   : by default [0.5:0.75:0.05]\n    return:\n        AP : mAP[@0.5:0.75] scores lists of the test samples\n    \'\'\'\n    # placeholder for all the ap of all classes for IoU socres 0.5 to 0.95 with step size 0.05\n    AP = []\n    np.seterr(divide=\'ignore\', invalid=\'ignore\') \n    \n    for image_id in image_ids:\n        # Load image and ground truth data\n        image, image_meta, gt_class_id, gt_bbox, gt_mask =\\\n            modellib.load_image_gt(test_set, inference_config,\n                                   image_id, use_mini_mask=False)\n\n        # Run object detection\n        results = model.detect([image], verbose=0)\n        r = results[0]\n        AP_range = utils.compute_ap_range(gt_bbox, gt_class_id, gt_mask, \n                                          r["rois"], r["class_ids"], r["scores"], r[\'masks\'],\n                                          iou_thresholds=iou_thresholds, verbose=0)\n        \n        if math.isnan(AP_range):\n            continue\n            \n        # append the scores of each samples\n        AP.append(AP_range)   \n        \n    return AP\n\nAP = evaluate_threshold_range(dataset_valid, dataset_valid.image_ids,\n                              model, thresh_score, inference_config)\n\nprint("AP[0.5:0.75]: ", np.mean(AP))')
 
 
-# In[30]:
 
 
 def get_jpg(img_dir):
@@ -571,7 +541,6 @@ test_img_root  = data_root + '/global-wheat-detection/test/'
 test_image_fps = get_jpg(test_img_root)
 
 
-# In[31]:
 
 
 # show a few test image detection example
@@ -610,7 +579,6 @@ for image_id in test_image_fps:
     plt.imshow(image, cmap=plt.cm.gist_gray)
 
 
-# In[32]:
 
 
 # Make predictions on test images, write out sample submission
@@ -667,14 +635,12 @@ def predict(image_fps, filepath='submission.csv', min_conf=0.50):
             file.write(out_str+"\n")
 
 
-# In[33]:
 
 
 submission = os.path.join(packages_root, 'submission.csv')
 predict(test_image_fps, filepath=submission)
 
 
-# In[34]:
 
 
 submit = pd.read_csv(submission)

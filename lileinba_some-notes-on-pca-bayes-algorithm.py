@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # apply bayesian model for calculating the probability of sample
@@ -28,7 +27,6 @@ def BayesClassify0(testData,dicSubsetMean,dicSubsetVar,dicSubsetPbi):
 	return sortPBiA[0][0]
 
 
-# In[2]:
 
 
 # PCA

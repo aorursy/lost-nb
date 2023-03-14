@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -24,7 +23,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 #    Get the train data set: train_df
@@ -33,7 +31,6 @@ train.info()
 train.describe()
 
 
-# In[3]:
 
 
 def conf_int_duration(df):
@@ -55,20 +52,17 @@ def conf_int_duration(df):
     return
 
 
-# In[4]:
 
 
 ### Change the data of trip_duration by fuction conf_int_duration(df):
 conf_int_duration(train) 
 
 
-# In[5]:
 
 
 print("\n train.info():\n{}".format(train.info()))
 
 
-# In[6]:
 
 
 #    Get the test data set: test_df
@@ -76,21 +70,18 @@ test = pd.read_csv("../input/test.csv", index_col='id')
 test.info()
 
 
-# In[7]:
 
 
 result = pd.concat([train, test])
 result.info()
 
 
-# In[8]:
 
 
 result.plot(x='dropoff_latitude', y='dropoff_longitude', 
             kind='scatter', marker='.', alpha=0.5, c='r')
 
 
-# In[9]:
 
 
 result.plot(x='dropoff_latitude', y='dropoff_longitude', 
@@ -98,7 +89,6 @@ result.plot(x='dropoff_latitude', y='dropoff_longitude',
             kind='scatter', marker='.', alpha=0.5, c='b')
 
 
-# In[10]:
 
 
 result.plot(x='dropoff_latitude', y='dropoff_longitude',
@@ -106,7 +96,6 @@ result.plot(x='dropoff_latitude', y='dropoff_longitude',
             kind='scatter', marker='.', alpha=0.3, c='g')
 
 
-# In[11]:
 
 
 result.plot(x='dropoff_latitude', y='dropoff_longitude',
@@ -114,7 +103,6 @@ result.plot(x='dropoff_latitude', y='dropoff_longitude',
             kind='scatter', marker='.', s=.2, alpha=0.5, c='y')
 
 
-# In[12]:
 
 
 def conf_int_coordinates(df):
@@ -178,19 +166,16 @@ def conf_int_coordinates(df):
     return
 
 
-# In[13]:
 
 
 conf_int_coordinates(result)
 
 
-# In[14]:
 
 
 print("\nresult.info():\n{}".format(result.info()))
 
 
-# In[15]:
 
 
 #	Distance of route
@@ -220,13 +205,11 @@ def haversine(df, miles=True):
         return
 
 
-# In[16]:
 
 
 haversine(result, miles=True) 
 
 
-# In[17]:
 
 
 def conf_int_distance(df):
@@ -243,13 +226,11 @@ def conf_int_distance(df):
     return
 
 
-# In[18]:
 
 
 conf_int_distance(result)
 
 
-# In[19]:
 
 
 def arrays_bearing(df):
@@ -270,13 +251,11 @@ def arrays_bearing(df):
     return
 
 
-# In[20]:
 
 
 arrays_bearing(result)
 
 
-# In[21]:
 
 
 ### Drop no useful columns
@@ -286,7 +265,6 @@ drop_columns = ['dropoff_datetime',
 result.drop(drop_columns, axis=1, inplace=True)
 
 
-# In[22]:
 
 
 def to_dummie_passengers(df):
@@ -308,26 +286,22 @@ def to_dummie_passengers(df):
     return (df_dummie)
 
 
-# In[23]:
 
 
 x = result.loc[:,:]
 result = to_dummie_passengers(x)
 
 
-# In[24]:
 
 
 print(result.info())
 
 
-# In[25]:
 
 
 result.drop('passenger_count', axis=1, inplace=True)
 
 
-# In[26]:
 
 
 def to_dummie_vendor(df):    
@@ -340,26 +314,22 @@ def to_dummie_vendor(df):
     return(df_dummie)
 
 
-# In[27]:
 
 
 x = result.loc[:,:]
 result = to_dummie_vendor(x)
 
 
-# In[28]:
 
 
 print(result.info())
 
 
-# In[29]:
 
 
 result.drop('vendor_id', axis=1, inplace=True)
 
 
-# In[30]:
 
 
 def to_dummie_flag(df):
@@ -371,26 +341,22 @@ def to_dummie_flag(df):
     return (df_dummie)
 
 
-# In[31]:
 
 
 x = result.loc[:,:]
 result = to_dummie_flag(x)
 
 
-# In[32]:
 
 
 print(result.info())
 
 
-# In[33]:
 
 
 result.drop('store_and_fwd_flag', axis=1, inplace=True)
 
 
-# In[34]:
 
 
 ### Get some clusters of the pickup points
@@ -402,14 +368,12 @@ kmeans.fit(pickup_clusters)
 print('\n Coordinates of cluster centers : {}.       \n Labels of each point : {}.       \n The value of the inertia criterion associated with the chosen partition: {}.       \n The inertia is defined as the sum of square distances of samples       to their nearest neighbor.'.format(kmeans.cluster_centers_,       kmeans.labels_, kmeans.inertia_))
 
 
-# In[35]:
 
 
 sample_len = len(pickup_clusters)
 sample_slice = np.random.permutation(sample_len)[:int(sample_len*0.25)]
 
 
-# In[36]:
 
 
 plt.figure(figsize=(8,8))
@@ -420,14 +384,12 @@ plt.scatter(pickup_clusters[sample_slice,0],
             s=.1, alpha=.8, lw=0, cmap='Vega20_r')
 
 
-# In[37]:
 
 
 result['pickup_labels'] = kmeans.labels_
 print(result.pickup_labels[:10])
 
 
-# In[38]:
 
 
 drop_columns = ['pickup_latitude', 'pickup_longitude']
@@ -435,56 +397,47 @@ result.drop(drop_columns, axis=1, inplace=True)
 print(result.info())
 
 
-# In[39]:
 
 
 result['pickup_labels'] = result.pickup_labels.astype(str)
 dummies = pd.get_dummies(result['pickup_labels'], prefix="pickup")
 
 
-# In[40]:
 
 
 dummies.head(3)
 
 
-# In[41]:
 
 
 result = pd.merge(result, dummies, how='inner', left_index=True, right_index=True)
 
 
-# In[42]:
 
 
 print(result.info())
 
 
-# In[43]:
 
 
 result.drop('pickup_labels', axis=1, inplace=True)
 
 
-# In[44]:
 
 
 result['pickup_datetime'] = pd.to_datetime(result.pickup_datetime)
 
 
-# In[45]:
 
 
 result['month'] = result['pickup_datetime'][:].dt.month
 
 
-# In[46]:
 
 
 result['days_in_month'] = result['pickup_datetime'][:].dt.days_in_month
 
 
-# In[47]:
 
 
 result['weekday'] = result['pickup_datetime'].dt.weekday_name
@@ -493,44 +446,37 @@ wdh = result.groupby('weekday')['trip_duration']
 (wdh.mean()).plot.hist(bins=25) 
 
 
-# In[48]:
 
 
 df_dummie = pd.get_dummies(result['weekday'][:], prefix="weekday")
 
 
-# In[49]:
 
 
 df_dummie.head(3)
 
 
-# In[50]:
 
 
 result = pd.merge(result[:], df_dummie[:], how='inner', 
                          left_index=True, right_index=True)
 
 
-# In[51]:
 
 
 result.info()
 
 
-# In[52]:
 
 
 result.drop('weekday', axis=1, inplace=True)
 
 
-# In[53]:
 
 
 result['hour'] = result['pickup_datetime'][:].dt.hour
 
 
-# In[54]:
 
 
 result['hour'] = result.hour.astype(str)
@@ -539,62 +485,52 @@ result = pd.merge(result[:], df_dummie[:], how='inner',
                   left_index=True, right_index=True)
 
 
-# In[55]:
 
 
 result.info()
 
 
-# In[56]:
 
 
 wdh = result.groupby('hour')['trip_duration']
 (wdh.mean()).plot.hist(bins=25)
 
 
-# In[57]:
 
 
 result.drop('hour', axis=1, inplace=True)
 
 
-# In[58]:
 
 
 result['minute'] = result['pickup_datetime'][:].dt.minute
 
 
-# In[59]:
 
 
 print(result.info())
 
 
-# In[60]:
 
 
 result.drop('pickup_datetime', axis=1, inplace=True)
 
 
-# In[61]:
 
 
 print(result.info())
 
 
-# In[62]:
 
 
 result.to_csv('result.csv')
 
 
-# In[63]:
 
 
 result.trip_duration.isnull().value_counts()
 
 
-# In[64]:
 
 
 # I cut off the test set with new signs.
@@ -602,93 +538,78 @@ test = result[result.trip_duration.isnull()]
 test.describe()
 
 
-# In[65]:
 
 
 train = result[result.trip_duration.notnull()]
 train.describe()
 
 
-# In[66]:
 
 
 print("train.shape", train.shape, "test shape", test.shape)
 
 
-# In[67]:
 
 
 del(result)
 del(x)
 
 
-# In[68]:
 
 
 train["trip_duration"] = (train.trip_duration[:] +1).apply(np.log)
 
 
-# In[69]:
 
 
 y = train['trip_duration'][:].values
 
 
-# In[70]:
 
 
 train.drop(['trip_duration', 'id'], axis=1, inplace=True)
 
 
-# In[71]:
 
 
 train.head()
 
 
-# In[72]:
 
 
 X = train.values
 
 
-# In[73]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
 
 
-# In[74]:
 
 
 print("Shape X_train: {}. Shape y_train: {}. \nShape X_test : {}. Shape y_test : {}".      format(X_train.shape, y_train.shape, X_test.shape, y_test.shape))
 
 
-# In[75]:
 
 
 scaler = MinMaxScaler().fit(X_train)
 
 
-# In[76]:
 
 
 X_train_scaled = scaler.transform(X_train)
 
 
-# In[77]:
 
 
 print("X_train[:3]:\n{},\nX_train_scaled[:3]\n{}".          format(X_train[:3], X_train_scaled[:3]))
 
 
-# In[78]:
 
 
 lr = LinearRegression()
 
 
-# In[79]:
 
 
 lr.fit(X_train_scaled, y_train)
@@ -697,14 +618,12 @@ print("lr.intercept_: {}".format(lr.intercept_))
 print("\nAccuracy by train-scaled set: {:.5f}".         format(lr.score(X_train_scaled, y_train)))
 
 
-# In[80]:
 
 
 X_test_scaled = scaler.transform(X_test)
 print("\nAccuracy by test set: {:.5f}".         format(lr.score(X_test_scaled, y_test)))
 
 
-# In[81]:
 
 
 ridge = Ridge()
@@ -714,7 +633,6 @@ print("\nAccuracy by train-scaled set: {:.5f}".      format(ridge.score(X_train_
 print("\nAccuracy by test set: {:.5f}".      format(ridge.score(X_test_scaled, y_test)))
 
 
-# In[82]:
 
 
 ridge100 = Ridge(alpha=100).fit(X_train_scaled, y_train)
@@ -723,7 +641,6 @@ print("\nAccuracy by train-scaled set: {:.5f}".      format(ridge100.score(X_tra
 print("\nAccuracy by test set: {:.5f}".      format(ridge100.score(X_test_scaled, y_test)))
 
 
-# In[83]:
 
 
 ridge001 = Ridge(alpha=0.01).fit(X_train_scaled, y_train)
@@ -732,7 +649,6 @@ print("\nAccuracy by train-scaled set: {:.5f}".      format(ridge001.score(X_tra
 print("\nAccuracy by test set: {:.5f}".      format(ridge001.score(X_test_scaled, y_test)))
 
 
-# In[84]:
 
 
 plt.plot(ridge.coef_, 's', label="Ridge alpha=1")
@@ -749,26 +665,22 @@ plt.ylim(-25, 25)
 plt.legend()
 
 
-# In[85]:
 
 
 X_train = X
 y_train = y
 
 
-# In[86]:
 
 
 scaler = MinMaxScaler().fit(X_train)
 
 
-# In[87]:
 
 
 X_train_scaled = scaler.transform(X_train)
 
 
-# In[88]:
 
 
 lr.fit(X_train_scaled, y_train)
@@ -777,80 +689,67 @@ print("lr.intercept_: {}".format(lr.intercept_))
 print("\nAccuracy by train-scaled set: {:.5f}".         format(lr.score(X_train_scaled, y_train)))
 
 
-# In[89]:
 
 
 X_test = test.drop(['trip_duration', 'id'], axis=1).values
 
 
-# In[90]:
 
 
 print(X_test.shape)
 
 
-# In[91]:
 
 
 X_test_scaled = scaler.transform(X_test)
 
 
-# In[92]:
 
 
 y_pred = lr.predict(X_test_scaled)
 
 
-# In[93]:
 
 
 y_pred = np.exp(y_pred[:]) - 1
 
 
-# In[94]:
 
 
 print(y_pred)
 
 
-# In[95]:
 
 
 submission = pd.read_csv('../input/sample_submission.csv', index_col=0, header=0)
 
 
-# In[96]:
 
 
 submission.head()
 
 
-# In[97]:
 
 
 submission.shape
 
 
-# In[98]:
 
 
 y_pred.shape
 
 
-# In[99]:
 
 
 submission.trip_duration = y_pred
 submission.head(20)
 
 
-# In[100]:
 
 
 submission.describe()
 
 
-# In[101]:
 
 
 submission.to_csv('submission.csv')

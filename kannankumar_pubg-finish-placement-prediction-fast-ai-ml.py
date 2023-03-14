@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -14,14 +13,12 @@ from IPython.display import display
 from pandas_summary import DataFrameSummary
 
 
-# In[2]:
 
 
 PATH = '/kaggle/input/pubg-finish-placement-prediction/'
 get_ipython().system('ls -l {PATH}')
 
 
-# In[3]:
 
 
 def display_all(df):
@@ -29,59 +26,50 @@ def display_all(df):
         display(df)    
 
 
-# In[4]:
 
 
 df_raw = pd.read_csv(f'{PATH}/train_V2.csv')
 display_all(df_raw.head().T)
 
 
-# In[5]:
 
 
 display_all(df_raw.describe(include='all').T)
 
 
-# In[6]:
 
 
 df_raw.dtypes
 
 
-# In[7]:
 
 
 # total memory usage of Dataframe
 df_raw.memory_usage(deep=True).sum() * 1e-6
 
 
-# In[8]:
 
 
 # column wise memory usage of Dataframe
 df_raw.memory_usage(deep=True) * 1e-6
 
 
-# In[9]:
 
 
 df_raw.drop(['Id'], axis=1, inplace=True)
 
 
-# In[10]:
 
 
 # total memory usage of Dataframe after dropping Id column
 df_raw.memory_usage(deep=True).sum() * 1e-6
 
 
-# In[11]:
 
 
 from pandas.api.types import is_string_dtype,                                 is_categorical_dtype,                                 is_numeric_dtype
 
 
-# In[12]:
 
 
 def show_string_cols(df):
@@ -108,20 +96,17 @@ def train_cats(df, ignore_cols=None):
             df[name] = col.astype('category').cat.as_ordered()                
 
 
-# In[13]:
 
 
 show_string_cols(df_raw)
 
 
-# In[14]:
 
 
 train_cats(df_raw, ignore_cols=['Id'])
 show_categorical_cols(df_raw, show_categories=True,  ignore_cols=['Id'])
 
 
-# In[15]:
 
 
 def numericalize(df, ignore_cols=None):
@@ -131,13 +116,11 @@ def numericalize(df, ignore_cols=None):
             df[name] = pd.Categorical(col).codes+1            
 
 
-# In[16]:
 
 
 numericalize(df_raw, ignore_cols=['Id'])
 
 
-# In[17]:
 
 
 def show_missing(df):
@@ -151,14 +134,12 @@ def fix_missing(df):
                 df[name] = col.fillna(filler)
 
 
-# In[18]:
 
 
 # Missing values in numeric columns
 show_missing(df_raw)
 
 
-# In[19]:
 
 
 fix_missing(df_raw)
@@ -166,7 +147,6 @@ fix_missing(df_raw)
 show_missing(df_raw)
 
 
-# In[20]:
 
 
 def split_xy(df, y_fld):
@@ -180,7 +160,6 @@ def dummify(df):
     return df_new
 
 
-# In[21]:
 
 
 df, y = split_xy(df_raw, 'winPlacePerc')
@@ -188,13 +167,11 @@ df, y = split_xy(df_raw, 'winPlacePerc')
 display_all(df.head().T)
 
 
-# In[22]:
 
 
 len(df_raw)
 
 
-# In[23]:
 
 
 n_valid = 50000
@@ -202,7 +179,6 @@ print(f'Train Rows: {len(df_raw) - n_valid}')
 print(f'Valid Rows: {n_valid}')
 
 
-# In[24]:
 
 
 def split_vals(arr, split_index):
@@ -210,7 +186,6 @@ def split_vals(arr, split_index):
     return arr[:split_index].copy(), arr[split_index:].copy()
 
 
-# In[25]:
 
 
 n_train = len(df) - n_valid
@@ -222,7 +197,6 @@ y_train, y_valid = split_vals(y, n_train)
 print(f'X train: {X_train.shape}, y train: {y_train.shape} \nX valid: {X_valid.shape}, y valid: {y_valid.shape}')
 
 
-# In[26]:
 
 
 import math
@@ -237,13 +211,11 @@ def print_score(m):
     print(res)
 
 
-# In[27]:
 
 
 X_train_copy = X_train.copy()
 
 
-# In[28]:
 
 
 m = RandomForestRegressor(max_samples=500000, n_jobs=-1)
@@ -251,20 +223,17 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[29]:
 
 
 df_test = pd.read_csv(f'{PATH}/test_V2.csv')
 display_all(df_test.head().T)
 
 
-# In[30]:
 
 
 display_all(df_test.describe(include='all').T)
 
 
-# In[31]:
 
 
 train_cats(df_test, ignore_cols=['Id'])
@@ -273,13 +242,11 @@ fix_missing(df_test)
 display_all(df_test.head().T)
 
 
-# In[32]:
 
 
 len(df_test)
 
 
-# In[33]:
 
 
 # Create Baseline model predictions
@@ -287,7 +254,6 @@ get_ipython().run_line_magic('time', "sub = m.predict(df_test.drop(['Id'], axis=
 sub
 
 
-# In[34]:
 
 
 # Refer Sample Submission File
@@ -295,7 +261,6 @@ sample_sub_df = pd.read_csv(f'{PATH}/sample_submission_V2.csv')
 sample_sub_df.head(10)
 
 
-# In[35]:
 
 
 # Create submission structure
@@ -304,7 +269,6 @@ sub_df = pd.DataFrame({'Id' : df_test['Id'],
 sub_df.head()
 
 
-# In[36]:
 
 
 # Write submission file

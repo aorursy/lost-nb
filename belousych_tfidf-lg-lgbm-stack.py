@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -21,7 +20,6 @@ from sklearn.cross_validation import train_test_split
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 import gensim
@@ -31,14 +29,12 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
 
 
-# In[ ]:
 
 
 import logging
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 
-# In[ ]:
 
 
 # Dataset Preparation
@@ -73,46 +69,39 @@ test_sentences = getSentences(test)
 sentences = train_sentences + test_sentences
 
 
-# In[ ]:
 
 
 tfidf = TfidfVectorizer(max_df=0.9, min_df=2)
 
 
-# In[ ]:
 
 
 X = tfidf.fit_transform(train_text)
 
 
-# In[ ]:
 
 
 X_train_source = tfidf.transform((' '.join(i) for i in train_sentences))
 X_test_source = tfidf.transform((' '.join(i) for i in test_sentences))
 
 
-# In[ ]:
 
 
 from sklearn.model_selection import StratifiedKFold
 
 
-# In[ ]:
 
 
 Y = np.array(Y)
 Y.shape
 
 
-# In[ ]:
 
 
 probaFeature = np.zeros((X.shape[0], 40))
 probaTest = []
 
 
-# In[ ]:
 
 
 lg = LogisticRegression(
@@ -124,13 +113,11 @@ lg = LogisticRegression(
 )
 
 
-# In[ ]:
 
 
 X = csr_matrix(X).toarray()
 
 
-# In[ ]:
 
 
 from lightgbm import LGBMClassifier
@@ -152,7 +139,6 @@ model = LGBMClassifier(**lgbm_params)
 # model = LogisticRegression(**params)
 
 
-# In[ ]:
 
 
 skf = StratifiedKFold(n_splits=5, random_state=2, shuffle=False)
@@ -196,13 +182,11 @@ for train_index, test_index in skf.split(X, Y):
     probaFeature[test_index] = probaStack
 
 
-# In[ ]:
 
 
 probaFeature
 
 
-# In[ ]:
 
 
 probaTest = np.array(probaTest)
@@ -210,7 +194,6 @@ probaFeatureTest = np.mean(probaTest, axis=0)
 probaFeatureTest.shape
 
 
-# In[ ]:
 
 
 from sklearn.neighbors import KNeighborsClassifier
@@ -222,13 +205,11 @@ clfKNN = KNeighborsClassifier(
 )
 
 
-# In[ ]:
 
 
 outTest = []
 
 
-# In[ ]:
 
 
 for train_index, test_index in skf.split(probaFeature, Y):
@@ -245,7 +226,6 @@ for train_index, test_index in skf.split(probaFeature, Y):
     outTest.append(predict)
 
 
-# In[ ]:
 
 
 outTest = np.array(outTest)
@@ -253,26 +233,22 @@ outTestMean = np.mean(outTest, axis=0)
 indexClass = outTestMean.argmax(axis=1)
 
 
-# In[ ]:
 
 
 indexClass
 
 
-# In[ ]:
 
 
 results = []
 
 
-# In[ ]:
 
 
 for i in indexClass:
     results.append(clfKNN.classes_[i])
 
 
-# In[ ]:
 
 
 with open('tfidf_lg_lgbm_stack4.csv', 'w') as f:
@@ -281,25 +257,21 @@ with open('tfidf_lg_lgbm_stack4.csv', 'w') as f:
         f.write('%s,%s\n' % (_id, y))
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

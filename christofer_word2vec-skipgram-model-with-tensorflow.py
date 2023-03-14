@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -29,7 +28,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 def read_train_data():
@@ -41,7 +39,6 @@ def read_train_data():
 df_train = read_train_data()
 
 
-# In[3]:
 
 
 def extract_words(df_train):
@@ -63,7 +60,6 @@ words = extract_words(df_train)
 print('Number of words: %d' % len(words))
 
 
-# In[4]:
 
 
 def build_dataset(words):
@@ -93,7 +89,6 @@ print('Sample data', data[:10])
 del words  # Hint to reduce memory.
 
 
-# In[5]:
 
 
 data_index = 0
@@ -132,7 +127,6 @@ for num_skips, skip_window in [(2, 1), (4, 2)]:
     print('    labels:', [reverse_dictionary[li] for li in labels.reshape(8)])
 
 
-# In[6]:
 
 
 batch_size = 128
@@ -194,7 +188,6 @@ with graph.as_default(), tf.device('/cpu:0'):
     print(valid_embeddings)
 
 
-# In[7]:
 
 
 num_steps = 100001
@@ -235,7 +228,6 @@ with tf.Session(graph=graph) as session:
   final_embeddings = normalized_embeddings.eval()
 
 
-# In[8]:
 
 
 num_points = 400
@@ -244,7 +236,6 @@ tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
 two_d_embeddings = tsne.fit_transform(final_embeddings[1:num_points+1, :])
 
 
-# In[9]:
 
 
 def plot(embeddings, labels):
@@ -261,7 +252,6 @@ words = [reverse_dictionary[i] for i in range(1, num_points+1)]
 plot(two_d_embeddings, words)
 
 
-# In[10]:
 
 
 def build_dataset(words):
@@ -291,7 +281,6 @@ print('Sample data', data[:10])
 del words  # Hint to reduce memory.
 
 
-# In[11]:
 
 
 data_index = 0
@@ -330,7 +319,6 @@ for num_skips, skip_window in [(2, 1), (4, 2)]:
     print('    labels:', [reverse_dictionary[li] for li in labels.reshape(8)])
 
 
-# In[12]:
 
 
 batch_size = 128
@@ -392,7 +380,6 @@ with graph.as_default(), tf.device('/cpu:0'):
     print(valid_embeddings)
 
 
-# In[13]:
 
 
 num_steps = 100001
@@ -433,7 +420,6 @@ with tf.Session(graph=graph) as session:
   final_embeddings = normalized_embeddings.eval()
 
 
-# In[14]:
 
 
 num_points = 400
@@ -442,7 +428,6 @@ tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
 two_d_embeddings = tsne.fit_transform(final_embeddings[1:num_points+1, :])
 
 
-# In[15]:
 
 
 def plot(embeddings, labels):

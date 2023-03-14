@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 # This file contains all the main external libs we'll use
@@ -41,37 +39,31 @@ arch = resnet34 #image architecture developed by Facebook AI team #https://githu
 bs = 28 #batch size
 
 
-# In[ ]:
 
 
 get_ipython().system('cp -r ../input/dogsandcats/dogscats_small/dogscats_small ./data')
 
 
-# In[ ]:
 
 
 get_ipython().system('ls {PATH}')
 
 
-# In[ ]:
 
 
 torch.cuda.is_available()
 
 
-# In[ ]:
 
 
 torch.backends.cudnn.enabled
 
 
-# In[ ]:
 
 
 get_ipython().system('ls {PATH}')
 
 
-# In[ ]:
 
 
 #Setup image transformation
@@ -84,7 +76,6 @@ data = ImageClassifierData.from_paths(PATH, tfms=tfms, bs=bs, num_workers=4)
 learn = ConvLearner.pretrained(arch, data, precompute=True, ps=0.5)
 
 
-# In[ ]:
 
 
 #training with 0.001 as learning rate and 1 cycle
@@ -94,14 +85,12 @@ learn.fit(1e-2, 1)
 learn.precompute=False
 
 
-# In[ ]:
 
 
 #cycle_len?
 learn.fit(1e-2, 2, cycle_len=1)
 
 
-# In[ ]:
 
 
 #unfreeze pretrained layers so that can be trained. Explanation?
@@ -111,14 +100,12 @@ learn.unfreeze()
 lr=np.array([1e-4,1e-3,1e-2])
 
 
-# In[ ]:
 
 
 #More learning(training), this time allow pretrained layers to be trained
 learn.fit(lr, 3, cycle_len=1)
 
 
-# In[ ]:
 
 
 #Explain TTA time test augmentation
@@ -133,14 +120,12 @@ probs = np.mean(np.exp(log_preds),0)
 accuracy_np(probs,y)
 
 
-# In[ ]:
 
 
 preds = np.argmax(probs, axis=1)
 probs = probs[:,1]
 
 
-# In[ ]:
 
 
 def rand_by_mask(mask): return np.random.choice(np.where(mask)[0], 4, replace=False)
@@ -178,32 +163,27 @@ def most_by_correct(y, is_correct):
     return most_by_mask((preds == data.val_y)==is_correct & (data.val_y == y), mult)
 
 
-# In[ ]:
 
 
 plot_val_with_title(rand_by_correct(True),"Correctly classified")
 
 
-# In[ ]:
 
 
 ls data/test
 
 
-# In[ ]:
 
 
 get_ipython().system('wget https://images.freeimages.com/images/large-previews/466/cat-1401781.jpg')
 
 
-# In[ ]:
 
 
 test_file = f'{PATH}test/20.jpg'
 Image.open(test_file)
 
 
-# In[ ]:
 
 
 trn_tfms, val_tfms = tfms_from_model(arch, sz) #get transformations

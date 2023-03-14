@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from __future__ import absolute_import, division
@@ -60,7 +59,6 @@ def df_parallelize_run(df, func):
     return df
 
 
-# In[2]:
 
 
 import re
@@ -99,7 +97,6 @@ tweet = re.sub(r'(:\s?\(|:-\(|\)\s?:|\)-:)', ' EMO_NEG ', tweet)
 print(f'\n Tweet after replacing Emojis for Sad with EMP_NEG ----\n  {tweet}')
 
 
-# In[3]:
 
 
 ##See the Output Carefully, there are Spaces inbetween un-necessary...
@@ -112,7 +109,6 @@ tweet = re.sub(r'[^\w\s]','',tweet)
 print(f'\n Tweet after replacing Punctuation + with PUNC ----\n  {tweet}')
 
 
-# In[4]:
 
 
 # bags of positive/negative smiles (You can extend the above example to take care of these few too...))) A good Excercise...
@@ -130,27 +126,23 @@ negative_emojis = set([
 del positive_emojis, negative_emojis
 
 
-# In[5]:
 
 
 ## Valid Dates..
 pattern = r'(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])' 
 
 
-# In[6]:
 
 
 ## Pattern to match any IP Addresses 
 pattern = r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b'
 
 
-# In[7]:
 
 
 get_ipython().run_cell_magic('time', '', "train = pd.read_csv('../input/jigsaw-unintended-bias-in-toxicity-classification/train.csv',usecols=['comment_text', 'target'])\ntest = pd.read_csv('../input/jigsaw-unintended-bias-in-toxicity-classification/test.csv')\nsub = pd.read_csv('../input/jigsaw-unintended-bias-in-toxicity-classification/sample_submission.csv')\ntrain.shape, test.shape")
 
 
-# In[8]:
 
 
 # From Quora kaggle Comp's (latest one)
@@ -310,13 +302,11 @@ def correct_contraction(x, dic):
     return x
 
 
-# In[9]:
 
 
 get_ipython().run_cell_magic('time', '', '\nfrom tqdm import tqdm\ntqdm.pandas()\n\ndef text_clean_wrapper(df):\n    \n    df["comment_text"] = df["comment_text"].astype(\'str\').transform(preprocess)\n    df[\'comment_text\'] = df[\'comment_text\'].transform(lambda x: correct_spelling(x, mispell_dict))\n    df[\'comment_text\'] = df[\'comment_text\'].transform(lambda x: correct_contraction(x, contraction_mapping))\n    \n    return df\n\n#fast!\ntrain = df_parallelize_run(train, text_clean_wrapper)\ntest  = df_parallelize_run(test, text_clean_wrapper)\n\nimport gc\ngc.enable()\ndel mispell_dict, all_punct, special_punc_mappings, regular_punct, extra_punct\ngc.collect()')
 
 
-# In[10]:
 
 
 from keras.preprocessing.text import Tokenizer
@@ -432,13 +422,11 @@ class Attention(Layer):
         return input_shape[0],  self.features_dim
 
 
-# In[11]:
 
 
 train.head(1)
 
 
-# In[12]:
 
 
 import time
@@ -477,7 +465,6 @@ test_word_sequences = word_sequences[num_train_data:]
 print("--- %s seconds ---" % (time.time() - start_time))
 
 
-# In[13]:
 
 
 max_len = 128
@@ -487,14 +474,12 @@ del train_word_sequences, test_word_sequences
 gc.collect()
 
 
-# In[14]:
 
 
 embed_size = 300
 #max_features = 377645 #NB this will change if you change any pre-processing (working to auto-mating this, kinda NEW to NLP:))
 
 
-# In[15]:
 
 
 #quora comp
@@ -560,13 +545,11 @@ print("--- %s seconds ---" % (time.time() - start_time))
 #..........
 
 
-# In[16]:
 
 
 y = np.where(train['target'] >= 0.5, True, False) * 1 #As per comp's DESC
 
 
-# In[17]:
 
 
 del nb_words, lemma_dict, word_dict, word_index, train, test
@@ -574,7 +557,6 @@ gc.collect()
 embedding_matrix.shape
 
 
-# In[18]:
 
 
 K.clear_session()
@@ -613,7 +595,6 @@ def build_model(lr=0.0, lr_d=0.0, spatial_dr=0.0,  dense_units=128, dr=0.1):
     return model
 
 
-# In[19]:
 
 
 model = build_model(lr = 1e-3, lr_d = 0.001, spatial_dr = 0.23, dr=0.2)
@@ -621,27 +602,23 @@ del X_train, embedding_matrix
 gc.collect()
 
 
-# In[20]:
 
 
 pred = model.predict(X_test, batch_size = 512, verbose = 1)
 
 
-# In[21]:
 
 
 plt.hist(pred);
 plt.title('Distribution of predictions');
 
 
-# In[22]:
 
 
 sub['prediction'] = pred
 sub.to_csv('submission.csv', index=False)
 
 
-# In[23]:
 
 
 pred = model.predict(X_test, batch_size = 512, verbose = 1)

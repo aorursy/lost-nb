@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -11,7 +10,6 @@ from matplotlib import pyplot as plt
 from scipy.stats import pearsonr
 
 
-# In[2]:
 
 
 import os
@@ -20,7 +18,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
         print(os.path.join(dirname, filename))
 
 
-# In[3]:
 
 
 train = pd.read_csv('/kaggle/input/covid19-global-forecasting-week-1/train.csv')
@@ -36,7 +33,6 @@ covid19 = covid19.loc[:, ['Country/Region', 'Date', 'ConfirmedCases']]
 covid19.head()
 
 
-# In[4]:
 
 
 covid19 = covid19[covid19.ConfirmedCases > 50]
@@ -47,27 +43,23 @@ covid19_mindays = covid19_numdays[covid19_numdays.Date >= 14]
 covid19 = covid19[covid19['Country/Region'].isin(covid19_mindays.country)]
 
 
-# In[5]:
 
 
 print(len(list(set(covid19['Country/Region'].values))))
 print(set(covid19['Country/Region'].values))
 
 
-# In[6]:
 
 
 covid19[covid19['Country/Region'] == 'China'].head()
 
 
-# In[7]:
 
 
 covid19_collapse_province = covid19    .groupby(['Country/Region', 'Date'])    .sum()    .reset_index()
 covid19_collapse_province[covid19_collapse_province['Country/Region'] == 'China'].head()
 
 
-# In[8]:
 
 
 covid19 = covid19_collapse_province    .groupby('Country/Region')    .head(14)    .groupby('Country/Region')    .tail(1)
@@ -75,7 +67,6 @@ covid19 = covid19_collapse_province    .groupby('Country/Region')    .head(14)  
 covid19
 
 
-# In[9]:
 
 
 country_isos = pd.read_csv('/kaggle/input/countries-iso-codes/wikipedia-iso-country-codes.csv')
@@ -85,7 +76,6 @@ country_isos = country_isos.loc[:, ['Country/Region', 'country_abbr']]
 country_isos.head()
 
 
-# In[10]:
 
 
 covid19 = covid19.merge(country_isos, left_on='Country/Region', right_on='Country/Region')
@@ -93,13 +83,11 @@ covid19 = covid19.dropna()
 covid19.head()
 
 
-# In[11]:
 
 
 big5 = pd.read_csv('/kaggle/input/big-five-personality-test/IPIP-FFM-data-8Nov2018/data-final.csv', sep='\t')
 
 
-# In[12]:
 
 
 positively_keyed = ['EXT1', 'EXT3', 'EXT5', 'EXT7', 'EXT9',
@@ -115,13 +103,11 @@ negatively_keyed = ['EXT2', 'EXT4', 'EXT6', 'EXT8', 'EXT10',
                     'OPN2', 'OPN4', 'OPN6']
 
 
-# In[13]:
 
 
 big5.loc[:, negatively_keyed] = 6 - big5.loc[:, negatively_keyed]
 
 
-# In[14]:
 
 
 big5_country_count = big5.country    .value_counts()    .rename_axis('country')    .reset_index(name='counts')
@@ -130,7 +116,6 @@ print(len(big5_country_count[big5_country_count.counts > 1000]))
 print(big5_country_count[big5_country_count.counts > 1000].country.values)
 
 
-# In[15]:
 
 
 big5 = big5[big5.country.isin(big5_country_count[big5_country_count.counts > 1000].country.values)]
@@ -139,7 +124,6 @@ big5 = big5[big5.country.isin(big5_country_count[big5_country_count.counts > 100
 big5 = big5.loc[:,['country'] + positively_keyed + negatively_keyed]
 
 
-# In[16]:
 
 
 EXT = ['EXT' + str(i) for i in range(1,11)]
@@ -149,7 +133,6 @@ CSN = ['CSN' + str(i) for i in range(1,11)]
 OPN = ['OPN' + str(i) for i in range(1,11)]
 
 
-# In[17]:
 
 
 big5['EXT'] = big5.loc[:, EXT].mean(axis=1)
@@ -160,20 +143,17 @@ big5['OPN'] = big5.loc[:, OPN].mean(axis=1)
 big5 = big5.loc[:, ['country', 'EXT', 'EST', 'AGR', 'CSN', 'OPN']]
 
 
-# In[18]:
 
 
 big5 = big5.dropna()
 big5 = big5[big5.country != 'NONE']
 
 
-# In[19]:
 
 
 big5_cavgs = big5.groupby('country')                    .mean()                    .rename_axis('country')                    .reset_index()
 
 
-# In[20]:
 
 
 big5_cavgs.loc[:, ['country', 'EXT']]    .sort_values(by=['EXT'])    .tail()    .plot(x = 'country', 
@@ -184,14 +164,12 @@ big5_cavgs.loc[:, ['country', 'EXT']]    .sort_values(by=['EXT'])    .tail()    
 plt.show()
 
 
-# In[21]:
 
 
 covid19_big5 = covid19.merge(big5_cavgs, left_on='country_abbr', right_on='country')
 covid19_big5.head()
 
 
-# In[22]:
 
 
 factors = ['EXT', 'EST', 'AGR', 'CSN', 'OPN']
@@ -213,7 +191,6 @@ for i, factor in enumerate(['EXT', 'EST', 'AGR', 'CSN', 'OPN']):
     plt.show()
 
 
-# In[23]:
 
 
 factors = ['EXT', 'EST', 'AGR', 'CSN', 'OPN']
@@ -236,7 +213,6 @@ for i, factor in enumerate(['EXT', 'EST', 'AGR', 'CSN', 'OPN']):
     plt.show()
 
 
-# In[24]:
 
 
 covid19_big5    .loc[:, ['country', 'OPN', 'ConfirmedCases']]    .sort_values('OPN', ascending=False)    .merge(country_isos, 

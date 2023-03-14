@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -11,7 +10,6 @@ import re
 import numpy as np
 
 
-# In[2]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -30,7 +28,6 @@ ntest = test_df.shape[0]
 train_test = pd.concat((train_df,test_df)).reset_index(drop=True)
 
 
-# In[3]:
 
 
 reg = re.compile('cat.*')
@@ -49,7 +46,6 @@ for col in train_test.columns:
             print(feature)
 
 
-# In[4]:
 
 
 

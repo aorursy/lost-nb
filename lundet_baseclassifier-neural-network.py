@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -46,7 +45,6 @@ THRESHOLD = 0.35
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import time
@@ -70,7 +68,6 @@ def load_trained_model(model, weights_path):
     return model
 
 
-# In[3]:
 
 
 class DataReader(object):
@@ -167,7 +164,6 @@ class DataReader(object):
         return self.df_all['question_text']
 
 
-# In[4]:
 
 
 class PreProcessor(object):
@@ -286,7 +282,6 @@ class PreProcessor(object):
         return self.text
 
 
-# In[5]:
 
 
 class NeuralNetworkClassifier:
@@ -1052,7 +1047,6 @@ class QRNN(Layer):
         return dict(list(base_config.items()) + list(config.items()))
 
 
-# In[6]:
 
 
 def load_word_embedding(filepath):
@@ -1122,7 +1116,6 @@ def create_embedding_weights(word_index, word_embedding, max_features):
     return embedding_weights
 
 
-# In[7]:
 
 
 import gc
@@ -1136,7 +1129,6 @@ EMBED_PICKLEPATH = 'glove.pkl'
 MODEL_FILEPATH = 'submission.csv'
 
 
-# In[8]:
 
 
 def get_network(embed_filepath):
@@ -1212,7 +1204,6 @@ def transform(df_text):
     return X
 
 
-# In[9]:
 
 
 class fakemodule(object):
@@ -1222,7 +1213,6 @@ class fakemodule(object):
 dr = DataReader('%s/train.csv' % datapath, fakemodule, os.path.join(datapath, 'test.csv'))
 
 
-# In[10]:
 
 
 t0 = time.time()
@@ -1252,7 +1242,6 @@ with timer("Create Embedding Weights Matrix"):
 print('Entire program is done and it took {:.2f}s'.format(time.time() - t0))
 
 
-# In[11]:
 
 
 def train_and_eval(X_train, y_train, X_val, y_val):
@@ -1287,7 +1276,6 @@ with timer('Training and Tuning'):
 print('Entire program is done and it took {:.2f}s'.format(time.time() - t0))
 
 
-# In[12]:
 
 
 def create_submission(X_train, y_train, X_test, df_test):

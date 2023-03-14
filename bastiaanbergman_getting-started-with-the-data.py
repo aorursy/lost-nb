@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import sys
@@ -21,19 +20,16 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 from spectral import imshow
 
 
-# In[2]:
 
 
 get_ipython().system('ls -lha ../input')
 
 
-# In[3]:
 
 
 get_ipython().system('ls -lha ../input/test-tif-v2 | wc -l')
 
 
-# In[4]:
 
 
 PLANET_KAGGLE_ROOT = os.path.abspath("../input/")
@@ -44,14 +40,12 @@ assert os.path.exists(PLANET_KAGGLE_JPEG_DIR)
 assert os.path.exists(PLANET_KAGGLE_LABEL_CSV)
 
 
-# In[5]:
 
 
 labels_df = pd.read_csv(PLANET_KAGGLE_LABEL_CSV)
 labels_df.head()
 
 
-# In[6]:
 
 
 # Build list with unique labels
@@ -63,7 +57,6 @@ for tag_str in labels_df.tags.values:
             label_list.append(label)
 
 
-# In[7]:
 
 
 # Add onehot features for every label
@@ -73,14 +66,12 @@ for label in label_list:
 labels_df.head()
 
 
-# In[8]:
 
 
 # Histogram of label instances
 labels_df[label_list].sum().sort_values().plot.bar()
 
 
-# In[9]:
 
 
 def make_cooccurence_matrix(labels):
@@ -93,28 +84,24 @@ def make_cooccurence_matrix(labels):
 make_cooccurence_matrix(label_list)
 
 
-# In[10]:
 
 
 weather_labels = ['clear', 'partly_cloudy', 'haze', 'cloudy']
 make_cooccurence_matrix(weather_labels)
 
 
-# In[11]:
 
 
 land_labels = ['primary', 'agriculture', 'water', 'cultivation', 'habitation']
 make_cooccurence_matrix(land_labels)
 
 
-# In[12]:
 
 
 rare_labels = [l for l in label_list if labels_df[label_list].sum()[l] < 2000]
 make_cooccurence_matrix(rare_labels)
 
 
-# In[13]:
 
 
 def sample_images(tags, n=None):
@@ -133,13 +120,11 @@ def sample_images(tags, n=None):
         return labels_df[condition]
 
 
-# In[14]:
 
 
 sample_images(['clear','primary'], n=10)
 
 
-# In[15]:
 
 
 def load_image(filename):
@@ -172,14 +157,12 @@ def display_sample_im(tags, n=None):
     
 
 
-# In[16]:
 
 
 im, s = display_sample_im(['primary', 'clear'], n=4);
 s
 
 
-# In[17]:
 
 
 im_m = np.vstack([im[i*16:(i+1)*16,j*16:(j+1)*16,0].ravel() for i in range(16) for j in range(16)])
@@ -201,7 +184,6 @@ plt.figure()
 plt.imshow(first_eigen_image)
 
 
-# In[18]:
 
 
 def calibrate_image(rgb_image):
@@ -227,7 +209,6 @@ def calibrate_image(rgb_image):
    return calibrated_img.astype('uint8')
 
 
-# In[19]:
 
 
 

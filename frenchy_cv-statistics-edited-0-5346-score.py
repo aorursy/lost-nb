@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -20,7 +19,6 @@ train_df=pd.read_json('../input/train.json')
 test_df=pd.read_json('../input/test.json')
 
 
-# In[2]:
 
 
 #basic features
@@ -45,7 +43,6 @@ test_df["num_description_words"] = test_df["description"].apply(lambda x: len(x.
 features_to_use=["bathrooms", "bedrooms", "latitude", "longitude", "price","price_t","num_photos", "num_features", "num_description_words","listing_id"]
 
 
-# In[3]:
 
 
 def runXGB(train_X, train_y, test_X, test_y=None, feature_names=None, seed_val=0, num_rounds=1000):
@@ -77,7 +74,6 @@ def runXGB(train_X, train_y, test_X, test_y=None, feature_names=None, seed_val=0
     return pred_test_y, model
 
 
-# In[4]:
 
 
 index=list(range(train_df.shape[0]))
@@ -145,7 +141,6 @@ features_to_use.append('manager_level_medium')
 features_to_use.append('manager_level_high')
 
 
-# In[5]:
 
 
 categorical = ["display_address", "manager_id", "building_id", "street_address"]
@@ -159,7 +154,6 @@ for f in categorical:
             features_to_use.append(f)
 
 
-# In[6]:
 
 
 train_df['features'] = train_df["features"].apply(lambda x: " ".join(["_".join(i.split(" ")) for i in x]))
@@ -170,7 +164,6 @@ tr_sparse = tfidf.fit_transform(train_df["features"])
 te_sparse = tfidf.transform(test_df["features"])
 
 
-# In[7]:
 
 
 
@@ -182,7 +175,6 @@ train_y = np.array(train_df['interest_level'].apply(lambda x: target_num_map[x])
 print(train_X.shape, test_X.shape)
 
 
-# In[8]:
 
 
 cv_scores = []
@@ -196,7 +188,6 @@ for dev_index, val_index in kf.split(range(train_X.shape[0])):
       break
 
 
-# In[9]:
 
 
 preds, model = runXGB(train_X, train_y, test_X, num_rounds=400)
@@ -206,25 +197,21 @@ out_df["listing_id"] = test_df.listing_id.values
 out_df.to_csv("xgb_starter2.csv", index=False)
 
 
-# In[10]:
 
 
 
 
 
-# In[10]:
 
 
 
 
 
-# In[10]:
 
 
 
 
 
-# In[10]:
 
 
 

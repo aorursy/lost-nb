@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -26,7 +25,6 @@ test = pd.read_csv(path_test)
 train.head()
 
 
-# In[2]:
 
 
 X = train.drop('Grant.Status', axis = 1)
@@ -36,14 +34,12 @@ y = train['Grant.Status']
 print(y.shape)
 
 
-# In[3]:
 
 
 #check NaN values and column types (object - categorical, float - numerical)
 X.info(verbose=True,null_counts=True)
 
 
-# In[4]:
 
 
 #check class distribution
@@ -51,7 +47,6 @@ print("Class 1 examples {:.2f}\nClass 0 examples {:.2f}".format(sum(y)/y.shape[0
                                                                 1-sum(y)/y.shape[0]))
 
 
-# In[5]:
 
 
 #separate X on X_real( numerical ), X_cat (categorical)
@@ -64,7 +59,6 @@ X_cat = X.select_dtypes(exclude = ['float64','int64'])
 print(X_cat.shape)
 
 
-# In[6]:
 
 
 #count fully NaN columns
@@ -72,7 +66,6 @@ print(X_real.isna().all().sum())
 print(X_cat.isna().all().sum())
 
 
-# In[7]:
 
 
 #drop fully NaN col
@@ -80,7 +73,6 @@ X_real = X_real.dropna(how ='all', axis = 1)
 print(X_real.shape)
 
 
-# In[8]:
 
 
 #view percent of NaN
@@ -96,7 +88,6 @@ df_na_real = df_na_real.sort_values(by=['Percent'], ascending = False)
 df_na_real.head(10)
 
 
-# In[9]:
 
 
 print(" NaN value in train data less then 90% for:    {} real features".format(df_na_real[df_na_real.Percent <= 90].shape[0]))
@@ -106,13 +97,11 @@ print(" NaN value in train data less then 20% for:    {} real features".format(d
 print(" NaN value in train data less then 10% for:    {} real features".format(df_na_real[df_na_real.Percent <= 10].shape[0]))
 
 
-# In[10]:
 
 
 real_features = df_na_real[df_na_real.Percent <= 20].index
 
 
-# In[11]:
 
 
 na_cat = X_cat.isna().sum()
@@ -124,7 +113,6 @@ df_na_cat = pd.concat([na_cat,na_cat_percent], axis = 1, keys = ['NaN_cnt','Perc
 df_na_cat.head(10)
 
 
-# In[12]:
 
 
 print(" NaN value in train data less then 90% for:    {} cat features".format(df_na_cat[df_na_cat.Percent <= 90].shape[0]))
@@ -134,13 +122,11 @@ print(" NaN value in train data less then 20% for:    {} cat features".format(df
 print(" NaN value in train data less then 10% for:    {} cat features".format(df_na_cat[df_na_cat.Percent <= 10].shape[0]))
 
 
-# In[13]:
 
 
 cat_features = df_na_cat[df_na_cat.Percent <= 80].index
 
 
-# In[14]:
 
 
 print(train.shape)
@@ -152,7 +138,6 @@ train_test  = pd.concat( [train.drop('Grant.Status', axis = 1),
 print(train_test.shape)
 
 
-# In[15]:
 
 
 #categorical features encode / transform NaN cat values to str type 'nan' before encoding
@@ -161,7 +146,6 @@ train_test_cat = pd.get_dummies(train_test[cat_features].astype('str'))
 print(train_test_cat.shape)
 
 
-# In[16]:
 
 
 #add encoded cat features to real features / fill NaN real with mean
@@ -171,7 +155,6 @@ train_test_processed = pd.concat([train_test[real_features].fillna(train_test[re
 print(train_test_processed.shape)
 
 
-# In[17]:
 
 
 TRAIN = train_test_processed.iloc[:8708,:]
@@ -180,7 +163,6 @@ print("train shape before processing {} and after {}".format(train.shape, TRAIN.
 print("test shape before processing {} and after {}".format(test.shape, TEST.shape))
 
 
-# In[18]:
 
 
 SSS = StratifiedShuffleSplit(n_splits=1,test_size=0.30, random_state=0)
@@ -200,7 +182,6 @@ print(sub_X_test.shape)
 print(sub_y_test.shape)
 
 
-# In[19]:
 
 
 clf = LogisticRegression(random_state=0, solver = 'liblinear', penalty = 'l2', n_jobs=-1)
@@ -214,7 +195,6 @@ grid_cv.fit(sub_X_train, sub_y_train)
 print ("roc_auc with L2:", roc_auc_score(sub_y_test, grid_cv.predict_proba(sub_X_test).T[1]))
 
 
-# In[20]:
 
 
 plt.hist(grid_cv.best_estimator_.coef_[0], bins = 20)
@@ -223,7 +203,6 @@ plt.ylabel('freq')
 plt.grid()
 
 
-# In[21]:
 
 
 clf = LogisticRegression(random_state=0, solver = 'liblinear', penalty = 'l1', n_jobs = -1)
@@ -237,7 +216,6 @@ grid_cv.fit(sub_X_train, sub_y_train)
 print ("roc_auc with L1:", roc_auc_score(sub_y_test, grid_cv.predict_proba(sub_X_test).T[1]))
 
 
-# In[22]:
 
 
 plt.hist(grid_cv.best_estimator_.coef_[0], bins = 20)
@@ -246,13 +224,11 @@ plt.ylabel('freq')
 plt.grid()
 
 
-# In[23]:
 
 
 sns.pairplot(sub_X_train[['Faculty.No..1', 'SEO.Code.4', 'Sponsor.Code_1A']])
 
 
-# In[24]:
 
 
 print(sub_X_train.shape)
@@ -260,7 +236,6 @@ print(sub_X_test.shape)
 print(TEST.shape)
 
 
-# In[25]:
 
 
 #separate on real and cat features, because just real should be scaled
@@ -275,7 +250,6 @@ TEST_real = TEST[real_features].values
 TEST_cat = TEST[train_test_cat.columns].values
 
 
-# In[26]:
 
 
 #scaling
@@ -289,7 +263,6 @@ X_real_test_scaled = scaler.fit_transform(X_test_test)
 TEST_real_scaled = scaler.fit_transform(TEST_real)
 
 
-# In[27]:
 
 
 #mergin scaled and cat features
@@ -303,7 +276,6 @@ TEST_scaled = np.hstack((TEST_real_scaled,TEST_cat))
 print(TEST_scaled.shape)
 
 
-# In[28]:
 
 
 clf = LogisticRegression(random_state=0, solver = 'liblinear', penalty = 'l2',n_jobs = -1)
@@ -317,7 +289,6 @@ grid_cv.fit(sub_X_train_scaled, sub_y_train)
 print ("roc_auc with L2:", roc_auc_score(sub_y_test, grid_cv.predict_proba(sub_X_test_scaled).T[1]))
 
 
-# In[29]:
 
 
 clf = LogisticRegression(random_state=0, solver = 'liblinear', penalty = 'l1')
@@ -331,13 +302,11 @@ grid_cv.fit(sub_X_train_scaled, sub_y_train)
 print ("roc_auc with L1:", roc_auc_score(sub_y_test, grid_cv.predict_proba(sub_X_test_scaled).T[1]))
 
 
-# In[30]:
 
 
 get_ipython().run_cell_magic('time', '', "train_sizes, train_scores, test_scores = learning_curve(grid_cv.best_estimator_, sub_X_train, sub_y_train, \n                                                                       train_sizes=np.arange(0.1,1., 0.2), \n                                                                       cv=3, scoring='accuracy', n_jobs=-1)")
 
 
-# In[31]:
 
 
 plt.grid(True)
@@ -351,7 +320,6 @@ plt.title('Lerning curve LR')
 plt.show()
 
 
-# In[32]:
 
 
 clf = RandomForestClassifier(random_state = 0, n_jobs=-1)
@@ -366,7 +334,6 @@ grid_cv.fit(sub_X_train, sub_y_train)
 print('roc_auc with RF: {}'.format(roc_auc_score(sub_y_test, grid_cv.predict_proba(sub_X_test).T[1])))
 
 
-# In[33]:
 
 
 fig = plt.figure(figsize=(10,5))
@@ -385,7 +352,6 @@ plt.title('accuracy vs n_estimator for diff max_depth')
 plt.grid()
 
 
-# In[34]:
 
 
 train_sizes, train_scores, test_scores = learning_curve(grid_cv.best_estimator_, sub_X_train, sub_y_train, 
@@ -393,7 +359,6 @@ train_sizes, train_scores, test_scores = learning_curve(grid_cv.best_estimator_,
                                                                        cv=3, scoring='accuracy', n_jobs=-1)
 
 
-# In[35]:
 
 
 plt.grid(True)
@@ -407,7 +372,6 @@ plt.title('Lerning curve RF')
 plt.show()
 
 
-# In[36]:
 
 
 clf = XGBClassifier(random_state = 0)
@@ -422,13 +386,11 @@ grid_cv.fit(sub_X_train, sub_y_train)
 print('roc_auc with RF: {}'.format(roc_auc_score(sub_y_test, grid_cv.predict_proba(sub_X_test).T[1])))
 
 
-# In[37]:
 
 
 get_ipython().run_cell_magic('time', '', "train_sizes, train_scores, test_scores = learning_curve(grid_cv.best_estimator_, sub_X_train, sub_y_train, \n                                                                       train_sizes=np.arange(0.1,1., 0.2), \n                                                                       cv=5, scoring='accuracy', n_jobs=-1)")
 
 
-# In[38]:
 
 
 plt.grid(True)

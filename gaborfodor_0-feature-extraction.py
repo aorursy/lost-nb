@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -17,7 +16,6 @@ import seaborn as sns
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 
-# In[2]:
 
 
 plt.rcParams['figure.figsize'] = [16, 10]
@@ -26,7 +24,6 @@ pd.set_option('display.max_columns', 99)
 start = dt.datetime.now()
 
 
-# In[3]:
 
 
 validation_splits = pd.DataFrame([
@@ -80,7 +77,6 @@ monthly_temperature = {
     'Philadelphia12': 40}
 
 
-# In[4]:
 
 
 train = pd.read_csv(
@@ -93,7 +89,6 @@ test['IsTrain'] = 0
 full = pd.concat([train, test], sort=True)
 
 
-# In[5]:
 
 
 # Validation Groups
@@ -104,7 +99,6 @@ full.loc[full.Latitude > full.l2, 'ValidationGroup'] = 2
 full.drop(['l1', 'l2'], axis=1, inplace=True)
 
 
-# In[6]:
 
 
 cols = [c for c in test.columns if c not in ['Path']]
@@ -112,7 +106,6 @@ train.loc[train.DistanceToFirstStop_p80 > 0, cols + ['DistanceToFirstStop_p80']]
 test[cols].head()
 
 
-# In[7]:
 
 
 full['Latitude3'] = full.Latitude.round(3)
@@ -127,7 +120,6 @@ full.ExitHeading = full.ExitHeading.replace(direction_encoding)
 full['DiffHeading'] = full['EntryHeading'] - full['ExitHeading']
 
 
-# In[8]:
 
 
 full['city_month'] = full["City"] + full["Month"].astype(str)
@@ -136,7 +128,6 @@ full["Temperature"] = full['city_month'].replace(monthly_temperature)
 full.drop('city_month', axis=1, inplace=True)
 
 
-# In[9]:
 
 
 def road_encode(x):
@@ -152,7 +143,6 @@ full['EntryType'] = full['EntryStreetName'].apply(road_encode)
 full['ExitType'] = full['ExitStreetName'].apply(road_encode)
 
 
-# In[10]:
 
 
 full.EntryStreetName = full.City + ' ' + full.EntryStreetName
@@ -162,7 +152,6 @@ full['Intersection'] = full.City + ' ' + full.IntersectionId.astype(str)
 full['SameStreet'] = 1 * (full.EntryStreetName == full.ExitStreetName)
 
 
-# In[11]:
 
 
 # Geolocation
@@ -182,7 +171,6 @@ full['CenterDistL2'] = (3 * np.sqrt(
     (full.LatitudeDist ** 2 + full.LongitudeDist ** 2))).round(3)
 
 
-# In[12]:
 
 
 def add_frequency(df, column):
@@ -213,7 +201,6 @@ full = add_unique_intersections(full, 'ExitStreetName')
 full = add_unique_intersections(full, 'EntryStreetName')
 
 
-# In[13]:
 
 
 columns_to_encode = [
@@ -228,13 +215,11 @@ for c in columns_to_encode:
     full[c] = encoder.fit_transform(full[c])
 
 
-# In[14]:
 
 
 full.to_csv('features_v3.csv.gz', compression='gzip', index=False)
 
 
-# In[15]:
 
 
 train = full[full.IsTrain == 1].copy()
@@ -255,7 +240,6 @@ column_stats.to_csv('col_stats.csv')
 column_stats
 
 
-# In[16]:
 
 
 end = dt.datetime.now()

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[3]:
 
 
 import pandas as pd
@@ -55,7 +53,6 @@ from nltk.corpus import stopwords
 stop_words = stopwords.words('english')
 
 
-# In[4]:
 
 
 try:
@@ -77,7 +74,6 @@ else:
 print("REPLICAS: ", strategy.num_replicas_in_sync)
 
 
-# In[5]:
 
 
 train = pd.read_csv('/kaggle/input/jigsaw-multilingual-toxic-comment-classification/jigsaw-toxic-comment-train.csv')
@@ -85,33 +81,28 @@ validation = pd.read_csv('/kaggle/input/jigsaw-multilingual-toxic-comment-classi
 test = pd.read_csv('/kaggle/input/jigsaw-multilingual-toxic-comment-classification/test.csv')
 
 
-# In[6]:
 
 
 train.head()
 
 
-# In[7]:
 
 
 train.drop(['severe_toxic','obscene','threat','insult','identity_hate','id'],axis=1,inplace=True)
 
 
-# In[8]:
 
 
 #after droping 
 train.head()
 
 
-# In[9]:
 
 
 #checking the maximum number for doing the padding 
 train['comment_text'].apply(lambda x:len(str(x).split())).max()
 
 
-# In[10]:
 
 
 # Now, let's see the average number of words per sample
@@ -123,7 +114,6 @@ plt.title('Sample length distribution')
 plt.show()
 
 
-# In[11]:
 
 
 #splitting the data into training set and validation set 
@@ -133,7 +123,6 @@ xtrain, xvalid, ytrain, yvalid = train_test_split(train.comment_text.values, tra
                                                   test_size=0.2, shuffle=True)
 
 
-# In[12]:
 
 
 texts = xtrain
@@ -141,7 +130,6 @@ words = [word for text in texts for word in text.split()]
 v = sorted(list(set(words)))
 
 
-# In[13]:
 
 
 from collections import Counter
@@ -153,7 +141,6 @@ idx2str = {val:key for key,val in v_s}
 str2idx
 
 
-# In[51]:
 
 
 token = text.Tokenizer(num_words=None)
@@ -170,19 +157,16 @@ xvalid_pad = sequence.pad_sequences(xvalid_seq, maxlen=max_len,padding = 'post')
 word_index = token.word_index
 
 
-# In[52]:
 
 
 len(word_index)
 
 
-# In[53]:
 
 
 get_ipython().run_cell_magic('time', '', "with strategy.scope():\n    # A simpleRNN without any pretrained embeddings and one dense layer\n    model = Sequential()\n    model.add(Embedding(len(word_index)+1,\n                     300,\n                     input_length=max_len))\n    model.add(SimpleRNN(100))\n    model.add(Dense(1, activation='sigmoid'))\n    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])\n    \nmodel.summary()\n    ")
 
 
-# In[54]:
 
 
 history = model.fit(xtrain_pad, ytrain,  
@@ -191,7 +175,6 @@ history = model.fit(xtrain_pad, ytrain,
                     validation_data=(xvalid_pad, yvalid))
 
 
-# In[55]:
 
 
 
@@ -214,7 +197,6 @@ plt.legend()
 plt.show()
 
 
-# In[56]:
 
 
 #using pretraind Embedding
@@ -228,13 +210,11 @@ for line in tqdm(f):
 f.close()
 
 
-# In[57]:
 
 
 print('Found %s word vectors.' % len(embeddings_index))
 
 
-# In[58]:
 
 
 # create an embedding matrix for the words we have in the dataset
@@ -245,13 +225,11 @@ for word, i in tqdm(word_index.items()):
         embedding_matrix[i] = embedding_vector
 
 
-# In[60]:
 
 
 get_ipython().run_cell_magic('time', '', "with strategy.scope():\n    \n    # A simple LSTM with glove embeddings and one dense layer\n    model = Sequential()\n    model.add(Embedding(len(word_index)+1,\n                     300,\n                     weights=[embedding_matrix],\n                     input_length=max_len,\n                     trainable=False))\n\n    model.add(LSTM(100, dropout=0.3, recurrent_dropout=0.3))\n    model.add(Dense(1, activation='sigmoid'))\n    model.compile(loss='binary_crossentropy', optimizer='adam',metrics=['accuracy'])\n    \nmodel.summary()")
 
 
-# In[61]:
 
 
 history = model.fit(xtrain_pad, ytrain,  
@@ -260,13 +238,11 @@ history = model.fit(xtrain_pad, ytrain,
                     validation_data=(xvalid_pad, yvalid))
 
 
-# In[63]:
 
 
 get_ipython().run_cell_magic('time', '', "with strategy.scope():\n    # GRU with glove embeddings and two dense layers\n    model = Sequential()\n    model.add(Embedding(len(word_index) + 1,\n                     300,\n                     weights=[embedding_matrix],\n                     input_length=max_len,\n                     trainable=False))\n     model.add(SpatialDropout1D(0.3))\n     model.add(GRU(300))\n     model.add(Dense(1, activation='sigmoid'))\n\n     model.compile(loss='binary_crossentropy', optimizer='adam',metrics=['accuracy'])   \n    \nmodel.summary()")
 
 
-# In[67]:
 
 
 history = model.fit(xtrain_pad, ytrain,  
@@ -275,7 +251,6 @@ history = model.fit(xtrain_pad, ytrain,
                     validation_data=(xvalid_pad, yvalid))
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -14,7 +13,6 @@ import seaborn as sns
 from PIL import Image
 
 
-# In[2]:
 
 
 PATH = "../input/landmark-recognition-2020"
@@ -22,7 +20,6 @@ train = pd.read_csv(PATH + "/train.csv")
 sample_submission = pd.read_csv(PATH + "/sample_submission.csv")
 
 
-# In[3]:
 
 
 
@@ -48,21 +45,18 @@ for f_name,ax in zip(imgs[:10],axs):
 plt.show()
 
 
-# In[4]:
 
 
 print(f'Total numbers of images in training set is {train.shape[0]}')
 print(f'Total numbers of images in test set is {sample_submission.shape[0]}')
 
 
-# In[5]:
 
 
 landmarks = train.groupby('landmark_id',as_index=False)['id'].count()    .sort_values('id',ascending=False).reset_index(drop=True)
 landmarks.rename(columns={'id':'count'},inplace=True)
 
 
-# In[6]:
 
 
 def add_text(ax,fontsize=12):
@@ -87,7 +81,6 @@ print(f"Number of Landmarks with less than 20 images are {len(landmarks[landmark
 plt.show()
 
 
-# In[7]:
 
 
 dataset = train.landmark_id.value_counts()
@@ -98,7 +91,6 @@ print(f'Total number of classes is: {len(dataset)}')
 print(f'maximum image for a landmark class is:{max_img}, minimum image for landmark class is:{min_img}')
 
 
-# In[8]:
 
 
 # Plot
@@ -109,7 +101,6 @@ plt.ylabel('No. of images')
 plt.show()
 
 
-# In[9]:
 
 
 num_img =50

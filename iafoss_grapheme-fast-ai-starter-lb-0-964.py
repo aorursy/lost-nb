@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('reload_ext', 'autoreload')
@@ -22,7 +21,6 @@ warnings.filterwarnings("ignore")
 fastai.__version__
 
 
-# In[2]:
 
 
 sz = 128
@@ -46,7 +44,6 @@ def seed_everything(seed):
 seed_everything(SEED)
 
 
-# In[3]:
 
 
 df = pd.read_csv(LABELS)
@@ -55,7 +52,6 @@ print(nunique)
 df.head()
 
 
-# In[4]:
 
 
 stats = ([0.0692], [0.2051])
@@ -69,7 +65,6 @@ data = (ImageList.from_df(df, path='.', folder=TRAIN, suffix='.png',
 data.show_batch()
 
 
-# In[5]:
 
 
 class Head(nn.Module):
@@ -130,7 +125,6 @@ class Dnet_1ch(nn.Module):
         return x1,x2,x3
 
 
-# In[6]:
 
 
 class Loss_combine(nn.Module):
@@ -144,7 +138,6 @@ class Loss_combine(nn.Module):
         return 0.7*F.cross_entropy(x1,y[:,0],reduction=reduction) + 0.1*F.cross_entropy(x2,y[:,1],reduction=reduction) +           0.2*F.cross_entropy(x3,y[:,2],reduction=reduction)
 
 
-# In[7]:
 
 
 class Metric_idx(Callback):
@@ -225,7 +218,6 @@ class Metric_tot(Callback):
                 0.25*self.vowel._recall() + 0.25*self.consonant._recall())
 
 
-# In[8]:
 
 
 #fix the issue in fast.ai of saving gradients along with weights
@@ -268,7 +260,6 @@ class SaveModelCallback(TrackerCallback):
             self.model.load_state_dict(torch.load(f'{self.name}.pth'))
 
 
-# In[9]:
 
 
 class MixUpLoss(Module):
@@ -334,7 +325,6 @@ class MixUpCallback(LearnerCallback):
         if self.stack_y: self.learn.loss_func = self.learn.loss_func.get_old()
 
 
-# In[10]:
 
 
 model = Dnet_1ch()
@@ -346,19 +336,16 @@ learn.split([model.head1])
 learn.unfreeze()
 
 
-# In[11]:
 
 
 model
 
 
-# In[12]:
 
 
 learn.summary()
 
 
-# In[13]:
 
 
 learn.fit_one_cycle(32, max_lr=slice(0.2e-2,1e-2), wd=[1e-3,0.1e-1], pct_start=0.0, 
@@ -367,7 +354,6 @@ learn.fit_one_cycle(32, max_lr=slice(0.2e-2,1e-2), wd=[1e-3,0.1e-1], pct_start=0
 #metrics: Metric_grapheme, Metric_vowel, Metric_consonant, Metric_tot (competition metric)
 
 
-# In[ ]:
 
 
 

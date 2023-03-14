@@ -1,21 +1,18 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import tensorflow as tf
 model = tf.keras.Sequential()
 
 
-# In[2]:
 
 
 import tensorflow
 tensorflow.__version__
 
 
-# In[3]:
 
 
 # compile the model
@@ -23,28 +20,24 @@ opt = tf.keras.optimizers.SGD(learning_rate=0.01, momentum=0.9)
 model.compile(optimizer=opt, loss='binary_crossentropy')
 
 
-# In[4]:
 
 
 # compile the model
 model.compile(optimizer='sgd', loss='mse')
 
 
-# In[5]:
 
 
 # compile the model
 model.compile(optimizer='sgd', loss='binary_crossentropy', metrics=['accuracy'])
 
 
-# In[6]:
 
 
 # fit the model
 # model.fit(X, y, epochs=100, batch_size=32)
 
 
-# In[7]:
 
 
 ...
@@ -52,7 +45,6 @@ model.compile(optimizer='sgd', loss='binary_crossentropy', metrics=['accuracy'])
 # model.fit(X, y, epochs=100, batch_size=32, verbose=0)
 
 
-# In[8]:
 
 
 ...
@@ -60,7 +52,6 @@ model.compile(optimizer='sgd', loss='binary_crossentropy', metrics=['accuracy'])
 # loss = model.evaluate(X, y, verbose=0)
 
 
-# In[9]:
 
 
 ...
@@ -68,7 +59,6 @@ model.compile(optimizer='sgd', loss='binary_crossentropy', metrics=['accuracy'])
 # yhat = model.predict(X)
 
 
-# In[10]:
 
 
 # example of a model defined with the sequential api
@@ -80,7 +70,6 @@ model.add(Dense(10, input_shape=(8,)))
 model.add(Dense(1))
 
 
-# In[11]:
 
 
 # example of a model defined with the sequential api
@@ -96,7 +85,6 @@ model.add(Dense(5))
 model.add(Dense(1))
 
 
-# In[12]:
 
 
 ...
@@ -104,21 +92,18 @@ model.add(Dense(1))
 # x_in = Input(shape=(8,))
 
 
-# In[13]:
 
 
 ...
 # x = Dense(10)(x_in)
 
 
-# In[14]:
 
 
 ...
 # x_out = Dense(1)(x)
 
 
-# In[15]:
 
 
 # example of a model defined with the functional api
@@ -133,7 +118,6 @@ x_out = Dense(1)(x)
 model = Model(inputs=x_in, outputs=x_out)
 
 
-# In[16]:
 
 
 # mlp for binary classification
@@ -188,7 +172,6 @@ yhat = model.predict([row])
 print(f'Predicted: {yhat}')
 
 
-# In[17]:
 
 
 # mlp for multiclass classification
@@ -241,7 +224,6 @@ yhat = model.predict([row])
 print(f'Predicted: {yhat} (class={argmax(yhat)})')
 
 
-# In[18]:
 
 
 # mlp for regression
@@ -286,7 +268,6 @@ yhat = model.predict([row])
 print(f'Predicted: {yhat}')
 
 
-# In[19]:
 
 
 # example of loading and plotting the mnist dataset
@@ -312,7 +293,6 @@ for i in range(25):
 pyplot.show()
 
 
-# In[20]:
 
 
 # example of a cnn for image classification
@@ -369,7 +349,6 @@ yhat = model.predict([[image]])
 print(f'Predicted: class={argmax(yhat)}')
 
 
-# In[21]:
 
 
 # lstm for time series forecasting
@@ -439,7 +418,6 @@ yhat = model.predict(row)
 print(f'Predicted: {yhat}')
 
 
-# In[22]:
 
 
 # example of summarizing a model
@@ -456,7 +434,6 @@ model.add(Dense(1, activation='sigmoid'))
 model.summary()
 
 
-# In[23]:
 
 
 # example of plotting a model
@@ -474,7 +451,6 @@ model.add(Dense(1, activation='sigmoid'))
 plot_model(model, 'model.png', show_shapes=True)
 
 
-# In[24]:
 
 
 # example of plotting learning curves
@@ -512,13 +488,10 @@ pyplot.legend()
 pyplot.show()
 
 
-# In[25]:
 
 
-pip install h5py
 
 
-# In[26]:
 
 
 # example of saving a fit model
@@ -549,7 +522,6 @@ model.fit(X, y, epochs=100, batch_size=32, verbose=0, validation_split=0.3)
 model.save('model.h5')
 
 
-# In[27]:
 
 
 # example of loading a saved model
@@ -568,7 +540,6 @@ yhat = model.predict([row])
 print(f'Predicted: {yhat}')
 
 
-# In[28]:
 
 
 # example of using dropout
@@ -597,7 +568,6 @@ model.compile(optimizer='adam', loss='binary_crossentropy')
 model.fit(X, y, epochs=100, batch_size=32, verbose=0)
 
 
-# In[29]:
 
 
 # example of using batch normalization
@@ -626,7 +596,6 @@ model.compile(optimizer='adam', loss='binary_crossentropy')
 model.fit(X, y, epochs=100, batch_size=32, verbose=0)
 
 
-# In[30]:
 
 
 # example of using early stopping
@@ -656,7 +625,6 @@ es = EarlyStopping(monitor='val_loss', patience=5)
 history = model.fit(X, y, epochs=200, batch_size=32, validation_split=0.3, callbacks=[es])
 
 
-# In[31]:
 
 
 import matplotlib.pyplot as plt

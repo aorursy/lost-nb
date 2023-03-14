@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -25,39 +24,33 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 train =  pd.read_csv('../input/train.csv', nrows=1000000)
 train.dtypes
 
 
-# In[3]:
 
 
 train['pickup_datetime']= pd.to_datetime(train['pickup_datetime']) # convert to datetime
 train.head()
 
 
-# In[4]:
 
 
 train.isnull().sum()
 
 
-# In[5]:
 
 
 train.dropna(inplace=True)
 
 
-# In[6]:
 
 
 train.describe()
 
 
-# In[7]:
 
 
 train.drop(train[train.fare_amount <= 0].index, inplace=True) # Drop -ve fare values
@@ -66,7 +59,6 @@ train.drop(train[(train.pickup_latitude > 90) | (train.dropoff_latitude > 90) | 
 train.drop(train[train.passenger_count > 6].index, inplace=True) # Drop unrealistic passenger_count
 
 
-# In[8]:
 
 
 minimum_fare = train[(train.pickup_longitude == train.dropoff_longitude) & 
@@ -77,13 +69,11 @@ train.drop(train[(train.pickup_longitude == train.dropoff_longitude) &
                  (train.fare_amount > minimum_fare)].index, inplace=True) # Drop expensive fares with 0 distances
 
 
-# In[9]:
 
 
 train.describe()
 
 
-# In[10]:
 
 
 train.drop(train[ (train.pickup_longitude > -71.9) | (train.dropoff_longitude > -71.9) | (train.pickup_longitude < -75.9) | (train.dropoff_longitude < -75.9) ].index, inplace=True) # Drop unrealistic longtiudes
@@ -91,7 +81,6 @@ train.drop(train[ (train.pickup_latitude > 42.7) | (train.dropoff_latitude > 42.
 train.describe()
 
 
-# In[11]:
 
 
 # ALERT - 1M rows were computed in 5 mins on a powerful PC
@@ -104,7 +93,6 @@ def geodesic_distance (row):
 get_ipython().run_line_magic('time', "train['geo_distance'] = train.apply(lambda row: geodesic_distance(row), axis=1)")
 
 
-# In[12]:
 
 
 degree_latitude = 111
@@ -112,7 +100,6 @@ degree_longtiude = cos(radians(train.pickup_latitude.mean())) * degree_latitude
 print(degree_longtiude)
 
 
-# In[13]:
 
 
 train['abs_diff_longitude'] = (train.dropoff_longitude - train.pickup_longitude).abs()
@@ -124,7 +111,6 @@ train['abs_diff_latitude_km'] = train.abs_diff_latitude * degree_latitude
 train['manhattan_distance'] = train.abs_diff_longitude_km + train.abs_diff_latitude_km
 
 
-# In[14]:
 
 
 ### Angle difference between north, and manhattan roadways
@@ -142,7 +128,6 @@ def add_extra_manh_features(df):
 add_extra_manh_features(train)
 
 
-# In[15]:
 
 
 # Sanity Check, we will compare the 2 euclidean distances we calculated (one very accurate 'geo_distance' and one rounded by calculating the length of 1 degree of longtiude and latitude)
@@ -150,7 +135,6 @@ add_extra_manh_features(train)
 train[['geo_distance', 'euclidean', 'manhattan_distance', 'manhattan_distance_corrected']].head()
 
 
-# In[16]:
 
 
 # Ideally, we should break down the island into smaller pieces due to its orientation but this is only a rough estimation.
@@ -167,14 +151,12 @@ def manh_checker(x):
 train['manh_island'] = train.apply(manh_checker, axis=1) 
 
 
-# In[17]:
 
 
 # Percentages:
 print('Inside Manhattan = {:.2f}, Outside Manhattan = {:.2f}, Mixed = {:.2f}'.format(len(train[train.manh_island == 1])/len(train), len(train[train.manh_island == 0])/len(train), len(train[train.manh_island == 2])/len(train)))
 
 
-# In[18]:
 
 
 def final_distance_calculator(x):
@@ -187,7 +169,6 @@ def final_distance_calculator(x):
 train['final_distance'] = train.apply(final_distance_calculator, axis=1)
 
 
-# In[19]:
 
 
 # Let's try to figure out the relation between the fare and the travelled distance
@@ -198,20 +179,17 @@ plt.ylabel('Fare in $')
 plt.show()
 
 
-# In[20]:
 
 
 train[(train.fare_amount > 300) & (train.final_distance < 20)][['fare_amount', 'final_distance', 'pickup_longitude', 'pickup_latitude', 'dropoff_longitude', 'dropoff_latitude']]
 
 
-# In[21]:
 
 
 # What is this cheap cluster @ 120 to 150km?
 train[(train.fare_amount < 100) & (train.final_distance > 100)][['fare_amount', 'final_distance']].head()
 
 
-# In[22]:
 
 
 train['fare_rate'] = train.fare_amount/train.final_distance
@@ -221,14 +199,12 @@ print(np.percentile(train.fare_rate, 99.5)) # Rate which 99.5% of trips fall beh
 print(np.percentile(train.fare_rate, 0.3)) # Rate which 99.7% of trips fall after
 
 
-# In[23]:
 
 
 train.drop(train[(train.fare_rate > np.percentile(train.fare_rate, 99.7)) |                   (train.fare_rate < np.percentile(train.fare_rate, 0.3))].index, 
            inplace=True) # Drop extremely expensive/cheap trips
 
 
-# In[24]:
 
 
 plt.figure(figsize=(18, 10))
@@ -247,7 +223,6 @@ plt.xlabel('Passengers')
 plt.show()
 
 
-# In[25]:
 
 
 train['morning_afternoon'] = train.pickup_datetime.dt.hour.apply(lambda x: 0 if 8 <= x <= 19 else 1)
@@ -255,7 +230,6 @@ train['last_4_months'] = train.pickup_datetime.dt.month.apply(lambda x: 0 if x >
 train['exp_year'] = train.pickup_datetime.dt.year.apply(lambda x: 0 if x >= 2013 else 1)
 
 
-# In[26]:
 
 
 # Let's see the data one more time after all the cleaning
@@ -266,7 +240,6 @@ plt.ylabel('Fare in $')
 plt.show()
 
 
-# In[27]:
 
 
 features = ['final_distance', 'morning_afternoon', 'last_4_months', 'exp_year']
@@ -288,7 +261,6 @@ plt.title("Actual Fare vs Predicted Fare")
 plt.show()
 
 
-# In[28]:
 
 
 test =  pd.read_csv('../input/test.csv')
@@ -296,7 +268,6 @@ test['pickup_datetime']= pd.to_datetime(test['pickup_datetime']) # convert to da
 test.isnull().sum()
 
 
-# In[29]:
 
 
 test['abs_diff_longitude'] = (test.dropoff_longitude - test.pickup_longitude).abs()
@@ -312,7 +283,6 @@ test['last_4_months'] = test.pickup_datetime.dt.month.apply(lambda x: 0 if x >= 
 test['exp_year'] = test.pickup_datetime.dt.year.apply(lambda x: 0 if x >= 2013 else 1)
 
 
-# In[30]:
 
 
 lm = LinearRegression()
@@ -320,7 +290,6 @@ model = lm.fit(train[features], train['fare_amount'])
 prediction = lm.predict(test[features])
 
 
-# In[31]:
 
 
 submission = pd.DataFrame({"key": test.key, "fare_amount": prediction})

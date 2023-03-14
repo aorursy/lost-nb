@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 #We upload all the packages we need
@@ -36,7 +35,6 @@ from io import BytesIO
 tf.__version__
 
 
-# In[ ]:
 
 
 #We unzip the train and test zip file
@@ -50,13 +48,11 @@ archive_train.namelist()[0:5]
 len(archive_train.namelist()[:])-1 #we must remove the 1st value
 
 
-# In[ ]:
 
 
 10222
 
 
-# In[ ]:
 
 
 # This function help to create  a pickle file gathering all the image from a zip folder
@@ -92,25 +88,21 @@ def DataBase_creator(archivezip, nwigth, nheight, save_name):
     print("Time usage: " + str(timedelta(seconds=int(round(time_dif)))))
 
 
-# In[ ]:
 
 
 image_resize = 60
 
 
-# In[ ]:
 
 
 DataBase_creator(archivezip = archive_train, nwigth = image_resize, nheight = image_resize , save_name = "train")
 
 
-# In[ ]:
 
 
 DataBase_creator(archivezip = archive_test, nwigth = image_resize, nheight = image_resize , save_name = "test")
 
 
-# In[ ]:
 
 
 #load TRAIN
@@ -118,13 +110,11 @@ train = pickle.load( open( "train.p", "rb" ) )
 train.shape
 
 
-# In[ ]:
 
 
 (10222, 60, 60, 3)
 
 
-# In[ ]:
 
 
 #load TEST
@@ -132,20 +122,17 @@ test = pickle.load( open( "test.p", "rb" ) )
 test.shape
 
 
-# In[ ]:
 
 
 (10357, 60, 60, 3)
 
 
-# In[ ]:
 
 
 df_train= pd.read_csv('../input/labels.csv')
 df_train.sample(5)
 
 
-# In[ ]:
 
 
 image_resize = 60
@@ -178,7 +165,6 @@ time_dif = end_time - start_time
 print(time_dif)
 
 
-# In[ ]:
 
 
 #let's check one image from the train data base
@@ -187,7 +173,6 @@ plt.imshow(lum_img)
 plt.show()
 
 
-# In[ ]:
 
 
 #######Upload the zip (input data base)########
@@ -197,14 +182,12 @@ labels_raw = pd.read_csv("Data/labels.csv.zip", compression='zip', header=0, sep
 labels_raw.sample(5)
 
 
-# In[ ]:
 
 
 labels_raw = pd.read_csv('../input/labels.csv')
 df_train.sample(5)
 
 
-# In[ ]:
 
 
 Nber_of_breeds = 8
@@ -234,7 +217,6 @@ print('- Number of images remaining after selecting the {0} main breeds : {1}'.f
 print('- The shape of train_filtered dataset is : {0}'.format(train_filtered.shape))
 
 
-# In[ ]:
 
 
 #print(labels_filtered[90])
@@ -243,7 +225,6 @@ plt.imshow(lum_img)
 plt.show()
 
 
-# In[ ]:
 
 
 #We select the labels from the N main breeds
@@ -252,7 +233,6 @@ labels = labels.reshape(labels.shape[0],1) #labels.shape[0] looks faster than us
 labels.shape
 
 
-# In[ ]:
 
 
 #Function to breate one-hot labels
@@ -278,27 +258,23 @@ def matrix_Bin(labels):
     return labels_name, labels_bin
 
 
-# In[ ]:
 
 
 labels_name, labels_bin = matrix_Bin(labels = labels)
 labels_bin[0:9]
 
 
-# In[ ]:
 
 
 for breed in range(len(labels_name)):
     print('Breed {0} : {1}'.format(breed,labels_name[breed]))
 
 
-# In[ ]:
 
 
 labels[0:9]
 
 
-# In[ ]:
 
 
 #You can proceed backward with np.argmax to find the breed of an image
@@ -306,7 +282,6 @@ labels_cls = np.argmax(labels_bin, axis=1)
 labels_name[labels_cls[2]]
 
 
-# In[ ]:
 
 
 i=11
@@ -316,7 +291,6 @@ plt.imshow(lum_img)
 plt.show()
 
 
-# In[ ]:
 
 
 num_validation = 0.30
@@ -324,7 +298,6 @@ X_train, X_validation, y_train, y_validation = train_test_split(train_filtered, 
 X_train.shape
 
 
-# In[ ]:
 
 
 #from the one-hot database we can find the breed.
@@ -332,7 +305,6 @@ df_validation_toPred_cls = np.argmax(y_validation, axis=1)
 df_validation_toPred_cls[0:9]
 
 
-# In[ ]:
 
 
 i=2
@@ -343,7 +315,6 @@ plt.imshow(lum_img)
 plt.show()
 
 
-# In[ ]:
 
 
 # Our images are 100 pixels in each dimension.
@@ -362,7 +333,6 @@ img_shape = (img_size, img_size, num_channels)
 num_classes = Nber_of_breeds
 
 
-# In[ ]:
 
 
 def new_weights(shape):
@@ -374,7 +344,6 @@ def new_biases(length):
 #outputs the constant value 0.05
 
 
-# In[ ]:
 
 
 def new_conv_layer(input,              # The previous layer.
@@ -440,7 +409,6 @@ def new_conv_layer(input,              # The previous layer.
     return layer, weights
 
 
-# In[ ]:
 
 
 def flatten_layer(layer):
@@ -468,7 +436,6 @@ def flatten_layer(layer):
     return layer_flat, num_features
 
 
-# In[ ]:
 
 
 def new_fc_layer(input,          # The previous layer.
@@ -495,7 +462,6 @@ def new_fc_layer(input,          # The previous layer.
     return layer
 
 
-# In[ ]:
 
 
 x = tf.placeholder(tf.float32, shape=[None, img_size, img_size, num_channels], name='x')
@@ -506,7 +472,6 @@ keep_prob_fc=tf.placeholder(tf.float32)
 keep_prob_conv=tf.placeholder(tf.float32)
 
 
-# In[ ]:
 
 
 # Convolutional Layer 1.
@@ -525,7 +490,6 @@ num_filters3 = 128      # There are 128 of these filters.
 fc_size = 500 
 
 
-# In[ ]:
 
 
 layer_conv1, weights_conv1 =     new_conv_layer(input=x_image,
@@ -550,13 +514,11 @@ layer_conv3, weights_conv3 =     new_conv_layer(input=layer_conv2,
                    use_dropout=True)
 
 
-# In[ ]:
 
 
 layer_flat, num_features = flatten_layer(layer_conv3)
 
 
-# In[ ]:
 
 
 #Train
@@ -577,7 +539,6 @@ layer_fc2 = new_fc_layer(input=layer_fc1,
 layer_fc2
 
 
-# In[ ]:
 
 
 #Prediction :
@@ -585,7 +546,6 @@ y_pred = tf.nn.softmax(layer_fc2)
 y_pred_cls = tf.argmax(y_pred, axis=1)
 
 
-# In[ ]:
 
 
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=layer_fc2,
@@ -597,7 +557,6 @@ correct_prediction = tf.equal(y_pred_cls, y_true_cls)
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 
-# In[ ]:
 
 
 session = tf.Session()
@@ -606,7 +565,6 @@ def init_variables():
     session.run(tf.global_variables_initializer())
 
 
-# In[ ]:
 
 
 batch_size = 50
@@ -625,7 +583,6 @@ def next_batch(num, data, labels):
     return np.asarray(data_shuffle), np.asarray(labels_shuffle)
 
 
-# In[ ]:
 
 
 def optimize(num_iterations, X):
@@ -687,20 +644,17 @@ def optimize(num_iterations, X):
     _ = plt.ylim()
 
 
-# In[ ]:
 
 
 init_variables()
 total_iterations = 0
 
 
-# In[ ]:
 
 
 optimize(num_iterations=3500, X=250)
 
 
-# In[ ]:
 
 
 def plot_images(images, cls_true, cls_pred=None):
@@ -732,7 +686,6 @@ def plot_images(images, cls_true, cls_pred=None):
     plt.show()
 
 
-# In[ ]:
 
 
 def plot_confusion_matrix(data_pred_cls,data_predicted_cls):
@@ -764,7 +717,6 @@ def plot_confusion_matrix(data_pred_cls,data_predicted_cls):
     plt.show()
 
 
-# In[ ]:
 
 
 feed_dict_validation = {x: X_validation,
@@ -778,7 +730,6 @@ plot_images(images=X_validation[50:62],
             cls_pred=df_validation_Predicted_cls [50:62])
 
 
-# In[ ]:
 
 
 i = 63
@@ -790,13 +741,11 @@ plt.imshow(lum)
 plt.show()
 
 
-# In[ ]:
 
 
 plot_confusion_matrix(df_validation_toPred_cls,df_validation_Predicted_cls)
 
 
-# In[ ]:
 
 
 "Print the weights"
@@ -832,7 +781,6 @@ def plot_conv_layer(layer, image):
     plt.show()
 
 
-# In[ ]:
 
 
 def plot_conv_weights(weights, input_channel):
@@ -869,7 +817,6 @@ def plot_conv_weights(weights, input_channel):
     plt.show()
 
 
-# In[ ]:
 
 
 image1 = train[0,:,:,:]
@@ -877,49 +824,41 @@ plt.imshow(image1)
 plt.show()
 
 
-# In[ ]:
 
 
 plot_conv_weights(weights=weights_conv1, input_channel = 0)
 
 
-# In[ ]:
 
 
 plot_conv_weights(weights=weights_conv1, input_channel = 1)
 
 
-# In[ ]:
 
 
 plot_conv_weights(weights=weights_conv1, input_channel = 2)
 
 
-# In[ ]:
 
 
 plot_conv_layer(layer=layer_conv1, image=image1)
 
 
-# In[ ]:
 
 
 plot_conv_weights(weights=weights_conv2, input_channel = 0)
 
 
-# In[ ]:
 
 
 plot_conv_layer(layer=layer_conv2, image=image1)
 
 
-# In[ ]:
 
 
 plot_conv_weights(weights=weights_conv3, input_channel = 1)
 
 
-# In[ ]:
 
 
 plot_conv_layer(layer=layer_conv3, image=image1)

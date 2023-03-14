@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -20,7 +19,6 @@ import plotly.graph_objs as go
 init_notebook_mode(connected=True)
 
 
-# In[2]:
 
 
 def hist_sub_plots(start, stop, overlayed = False):
@@ -336,7 +334,6 @@ def reduce_mem_usage(df, verbose=True):
 ################################################################################
 
 
-# In[3]:
 
 
 pd.options.display.max_rows = 350
@@ -345,19 +342,16 @@ pd.set_option('display.max_columns', None)
 print("Display all columns")
 
 
-# In[4]:
 
 
 train_df = pd.read_csv('../input/train.csv', index_col = 0)
 
 
-# In[5]:
 
 
 train_df.head(50)
 
 
-# In[6]:
 
 
 try:
@@ -367,13 +361,11 @@ except:
     write_csv(num_features, "desc_stats/numerical.csv")
 
 
-# In[7]:
 
 
 num_features
 
 
-# In[8]:
 
 
 temp =  (train_df["target"].                    value_counts(normalize = True) * 100).                    to_frame().                    reset_index().                    sort_values("index", ascending = True)
@@ -438,7 +430,6 @@ fig = go.Figure(data=data, layout=layout)
 iplot(fig, filename='target')
 
 
-# In[9]:
 
 
 i = 0
@@ -448,7 +439,6 @@ while i < (len(train_df.columns[1 : ])):
     i += n_plots
 
 
-# In[10]:
 
 
 i = 0
@@ -458,7 +448,6 @@ while i < (len(train_df.columns[1 : ])):
     i += n_plots
 
 
-# In[11]:
 
 
 

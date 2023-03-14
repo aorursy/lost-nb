@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import matplotlib.pyplot as plt
@@ -53,7 +52,6 @@ def get_image_data(image_id, image_type):
     return img
 
 
-# In[2]:
 
 
 reshaped_color = []
@@ -71,7 +69,6 @@ for type in enumerate(types):
         plt.show()
 
 
-# In[3]:
 
 
 names = [0, 10, 1013, 102, 104]

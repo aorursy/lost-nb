@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -9,7 +8,6 @@ os.chdir("F:/f/MY____/AAIC/AssignmentS/DonorsChoose_Data")
 os.getcwd()
 
 
-# In[2]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -53,7 +51,6 @@ offline.init_notebook_mode()
 from collections import Counter
 
 
-# In[3]:
 
 
 from tqdm import tqdm
@@ -61,20 +58,17 @@ for i in tqdm(range(int(10e6))):
     pass
 
 
-# In[4]:
 
 
 ls "../input"
 
 
-# In[5]:
 
 
 project_data = pd.read_csv('train_data.csv', nrows = 30000)
 resource_data = pd.read_csv('resources.csv')
 
 
-# In[6]:
 
 
 print("Number of data points in train data", project_data.shape)
@@ -82,7 +76,6 @@ print('-'*50)
 print("The attributes of data :", project_data.columns.values)
 
 
-# In[7]:
 
 
 print("Number of data points in train data", resource_data.shape)
@@ -90,7 +83,6 @@ print(resource_data.columns.values)
 resource_data.head(2)
 
 
-# In[8]:
 
 
 catogories = list(project_data['project_subject_categories'].values)
@@ -123,7 +115,6 @@ cat_dict = dict(my_counter)
 sorted_cat_dict = dict(sorted(cat_dict.items(), key=lambda kv: kv[1]))
 
 
-# In[9]:
 
 
 sub_catogories = list(project_data['project_subject_subcategories'].values)
@@ -157,20 +148,17 @@ sub_cat_dict = dict(my_counter)
 sorted_sub_cat_dict = dict(sorted(sub_cat_dict.items(), key=lambda kv: kv[1]))
 
 
-# In[10]:
 
 
 # merge two column text dataframe: 
 project_data["essay"] = project_data["project_essay_1"].map(str) +                        project_data["project_essay_2"].map(str) +                         project_data["project_essay_3"].map(str) +                         project_data["project_essay_4"].map(str)
 
 
-# In[11]:
 
 
 project_data.head(2)
 
 
-# In[12]:
 
 
 # printing some random reviews
@@ -184,7 +172,6 @@ print(project_data['essay'].values[20000])
 print("="*50)
 
 
-# In[13]:
 
 
 import re
@@ -205,7 +192,6 @@ def decontracted(phrase):
     return phrase
 
 
-# In[14]:
 
 
 new_title = []
@@ -215,7 +201,6 @@ for i in tqdm(project_data['project_title']):
     
 
 
-# In[15]:
 
 
 #Introducing New Features
@@ -228,13 +213,11 @@ for i in tqdm(new_title):
 project_data['title_word_count'] = title_word_count
 
 
-# In[16]:
 
 
 project_data.head(2)
 
 
-# In[17]:
 
 
 new_essay = []
@@ -243,7 +226,6 @@ for i in tqdm(project_data['essay']):
     new_essay.append(j)  
 
 
-# In[18]:
 
 
 essay_word_count = []
@@ -254,13 +236,11 @@ for i in tqdm(new_essay):
 project_data['essay_word_count'] = essay_word_count
 
 
-# In[19]:
 
 
 project_data.head(2)
 
 
-# In[20]:
 
 
 import nltk
@@ -281,7 +261,6 @@ for k in ss:
 # neg: 0.0, neu: 0.753, pos: 0.247, compound: 0.93
 
 
-# In[21]:
 
 
 SID = SentimentIntensityAnalyzer()
@@ -303,7 +282,6 @@ for i in tqdm(project_data['essay']):
     compound.append(m)
 
 
-# In[22]:
 
 
 project_data['negitive'] = negitive
@@ -312,13 +290,11 @@ project_data['neutral'] = neutral
 project_data['compound'] = compound
 
 
-# In[23]:
 
 
 project_data.head(2)
 
 
-# In[24]:
 
 
 # https://stackoverflow.com/a/47091490/4084039
@@ -341,7 +317,6 @@ def decontracted(phrase):
     return phrase
 
 
-# In[25]:
 
 
 sent = decontracted(project_data['essay'].values[20000])
@@ -349,7 +324,6 @@ print(sent)
 print("="*50)
 
 
-# In[26]:
 
 
 # \r \n \t remove from string python: http://texthandler.com/info/remove-line-breaks-python/
@@ -359,7 +333,6 @@ sent = sent.replace('\\n', ' ')
 print(sent)
 
 
-# In[27]:
 
 
 #remove spacial character: https://stackoverflow.com/a/5843547/4084039
@@ -367,7 +340,6 @@ sent = re.sub('[^A-Za-z0-9]+', ' ', sent)
 print(sent)
 
 
-# In[28]:
 
 
 # https://gist.github.com/sebleier/554280
@@ -375,7 +347,6 @@ print(sent)
 stopwords= ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', "you're", "you've",            "you'll", "you'd", 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself',             'she', "she's", 'her', 'hers', 'herself', 'it', "it's", 'its', 'itself', 'they', 'them', 'their',            'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', "that'll", 'these', 'those',             'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does',             'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of',             'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after',            'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further',            'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more',            'most', 'other', 'some', 'such', 'only', 'own', 'same', 'so', 'than', 'too', 'very',             's', 't', 'can', 'will', 'just', 'don', "don't", 'should', "should've", 'now', 'd', 'll', 'm', 'o', 're',             've', 'y', 'ain', 'aren', "aren't", 'couldn', "couldn't", 'didn', "didn't", 'doesn', "doesn't", 'hadn',            "hadn't", 'hasn', "hasn't", 'haven', "haven't", 'isn', "isn't", 'ma', 'mightn', "mightn't", 'mustn',            "mustn't", 'needn', "needn't", 'shan', "shan't", 'shouldn', "shouldn't", 'wasn', "wasn't", 'weren', "weren't",             'won', "won't", 'wouldn', "wouldn't"]
 
 
-# In[29]:
 
 
 #train_preprocessed_essays 
@@ -394,13 +365,11 @@ for sentance in tqdm(project_data['essay'].values):
     preprocessed_essays.append(sent.lower().strip())
 
 
-# In[30]:
 
 
 preprocessed_essays[10]
 
 
-# In[31]:
 
 
 # train_preprocessed_title
@@ -418,26 +387,22 @@ for sentance in tqdm(project_data['project_title'].values):
     preprocessed_titles.append(sent.lower().strip())
 
 
-# In[32]:
 
 
 preprocessed_titles[10]
 
 
-# In[33]:
 
 
 project_data.columns
 
 
-# In[34]:
 
 
 project_data.drop(['essay'], axis=1, inplace=True)
 project_data.drop(['project_title'], axis=1, inplace=True)
 
 
-# In[35]:
 
 
 project_data['clean_essay'] = preprocessed_essays
@@ -445,13 +410,11 @@ project_data['clean_project_title'] = preprocessed_titles
 project_data.head(1)
 
 
-# In[36]:
 
 
 project_data = project_data.fillna(project_data['teacher_prefix'].value_counts().index[0])
 
 
-# In[37]:
 
 
 #Train Test Split 
@@ -464,14 +427,12 @@ x_train, x_test, y_train, y_test = train_test_split(project_data, project_data["
 #                                                random_state = 42)
 
 
-# In[38]:
 
 
 print(x_test.columns)
 print(x_train.columns)
 
 
-# In[39]:
 
 
 def Responsetable(table, col) :
@@ -500,7 +461,6 @@ def Responsetable(table, col) :
     return encoded_Pos_val, encoded_Neg_val
 
 
-# In[40]:
 
 
 def Responsecode(table) : 
@@ -525,14 +485,12 @@ def Responsecode(table) :
     return df
 
 
-# In[41]:
 
 
 newTrain = Responsecode(x_train)
 newTest = Responsecode(x_test)
 
 
-# In[42]:
 
 
 def mergeEncoding(table, p, n) :
@@ -543,7 +501,6 @@ def mergeEncoding(table, p, n) :
     return frame
 
 
-# In[43]:
 
 
 #Clean Categories
@@ -551,14 +508,12 @@ X_train_clean_cat_ohe = mergeEncoding(newTrain, 'clean_cat_pos', 'clean_cat_neg'
 X_test_clean_cat_ohe = mergeEncoding(newTest, 'clean_cat_pos', 'clean_cat_neg')
 
 
-# In[44]:
 
 
 print(X_train_clean_cat_ohe.shape)
 X_test_clean_cat_ohe.shape
 
 
-# In[45]:
 
 
 #Clean SUB Categories
@@ -568,7 +523,6 @@ print(X_train_clean_subcat_ohe.shape)
 print(X_test_clean_subcat_ohe.shape)
 
 
-# In[46]:
 
 
 #Project Grade Category
@@ -578,7 +532,6 @@ print(X_train_grade_ohe.shape)
 print(X_test_grade_ohe.shape)
 
 
-# In[47]:
 
 
 #School State
@@ -588,7 +541,6 @@ print(X_train_state_ohe.shape)
 print(X_test_state_ohe.shape)
 
 
-# In[48]:
 
 
 #Teacher Prefix
@@ -598,7 +550,6 @@ print(X_train_teacher_ohe.shape)
 print(X_test_teacher_ohe.shape)
 
 
-# In[49]:
 
 
 from sklearn.feature_extraction.text import CountVectorizer
@@ -610,7 +561,6 @@ train_text_bow = vectorizer.fit_transform(x_train['clean_essay'])
 print("Shape of matrix after one hot encodig ",train_text_bow.shape, y_train.shape)
 
 
-# In[50]:
 
 
 #Vectorizing Test Data
@@ -620,7 +570,6 @@ test_text_bow = vectorizer.transform(x_test['clean_essay'])
 print("Shape of matrix after one hot encodig ",test_text_bow.shape, y_test.shape)
 
 
-# In[51]:
 
 
 # We are considering only the words which appeared in at least 10 documents(rows or projects).
@@ -631,7 +580,6 @@ train_title_bow = vectorizer.fit_transform(x_train['clean_project_title'])
 print("Shape of matrix after one hot encodig ",train_title_bow.shape)
 
 
-# In[52]:
 
 
 #Vectorizing Test Data
@@ -639,7 +587,6 @@ test_title_bow = vectorizer.transform(x_test['clean_project_title'])
 print("Shape of matrix after one hot encodig ",test_title_bow.shape)
 
 
-# In[53]:
 
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -650,14 +597,12 @@ train_text_tfidf = vectorizer.fit_transform(x_train['clean_essay'])
 print("Shape of matrix after one hot encodig ",train_text_tfidf.shape)
 
 
-# In[54]:
 
 
 test_text_tfidf = vectorizer.transform(x_test['clean_essay'])
 print("Shape of matrix after one hot encodig ",test_text_tfidf.shape)
 
 
-# In[55]:
 
 
 vectorizer = TfidfVectorizer(min_df=10)
@@ -667,14 +612,12 @@ train_title_tfidf = vectorizer.fit_transform(x_train['clean_project_title'])
 print("Shape of matrix after one hot encodig ",train_title_tfidf.shape)
 
 
-# In[56]:
 
 
 test_title_tfidf = vectorizer.transform(x_test['clean_project_title'])
 print("Shape of matrix after one hot encodig ",test_title_tfidf.shape)
 
 
-# In[57]:
 
 
 '''
@@ -733,7 +676,6 @@ with open('glove_vectors', 'wb') as f:
 '''
 
 
-# In[58]:
 
 
 # stronging variables into pickle files python: http://www.jessicayung.com/how-to-use-pickle-to-save-and-load-variables-in-python/
@@ -743,7 +685,6 @@ with open('glove_vectors', 'rb') as f:
     glove_words =  set(model.keys())
 
 
-# In[59]:
 
 
 # average Word2Vec
@@ -764,7 +705,6 @@ print(len(train_avg_w2v_vectors))
 print(len(train_avg_w2v_vectors[0]))
 
 
-# In[60]:
 
 
 # average Word2Vec
@@ -785,7 +725,6 @@ print(len(test_avg_w2v_vectors))
 print(len(test_avg_w2v_vectors[0]))
 
 
-# In[61]:
 
 
 # average Word2Vec
@@ -806,7 +745,6 @@ print(len(train_title_avg_w2v_vectors))
 print(len(train_title_avg_w2v_vectors[0]))
 
 
-# In[62]:
 
 
 # average Word2Vec
@@ -827,7 +765,6 @@ print(len(test_title_avg_w2v_vectors))
 print(len(test_title_avg_w2v_vectors[0]))
 
 
-# In[63]:
 
 
 # S = ["abc def pqr", "def def def abc", "pqr pqr def"]
@@ -838,7 +775,6 @@ dictionary = dict(zip(tfidf_model.get_feature_names(), list(tfidf_model.idf_)))
 tfidf_words = set(tfidf_model.get_feature_names())
 
 
-# In[64]:
 
 
 # average Word2Vec
@@ -862,7 +798,6 @@ print(len(train_essay_tfidf_w2v_vectors))
 print(len(train_essay_tfidf_w2v_vectors[0]))
 
 
-# In[65]:
 
 
 # Similarly you can vectorize for title also
@@ -887,7 +822,6 @@ print(len(test_essay_tfidf_w2v_vectors))
 print(len(test_essay_tfidf_w2v_vectors[0]))
 
 
-# In[66]:
 
 
 # average Word2Vec
@@ -911,7 +845,6 @@ print(len(train_title_tfidf_w2v_vectors))
 print(len(train_title_tfidf_w2v_vectors[0]))
 
 
-# In[67]:
 
 
 # average Word2Vec
@@ -935,7 +868,6 @@ print(len(test_title_tfidf_w2v_vectors))
 print(len(test_title_tfidf_w2v_vectors[0]))
 
 
-# In[68]:
 
 
 price_data = resource_data.groupby('id').agg({'price':'sum', 'quantity':'sum'}).reset_index()
@@ -945,14 +877,12 @@ print(price_data.head())
 print(x_train.columns)
 
 
-# In[69]:
 
 
 x_train = pd.merge(x_train, price_data, on = "id", how = "left")
 x_test = pd.merge(x_test, price_data, on = "id", how = "left")
 
 
-# In[70]:
 
 
 # check this one: https://www.youtube.com/watch?v=0HOqOcln3Z4&t=530s
@@ -977,14 +907,12 @@ print(f"TEST -> Mean : {price_scalar.mean_[0]}, Standard deviation : {np.sqrt(pr
 test_price_standar = price_scalar.transform(x_test['price'].values.reshape(-1, 1))
 
 
-# In[71]:
 
 
 print(train_price_standar.shape, y_train.shape)
 print(test_price_standar.shape, y_test.shape)
 
 
-# In[72]:
 
 
 warnings.filterwarnings("ignore")
@@ -999,14 +927,12 @@ print(f"TEST -> Mean : {price_scalar.mean_[0]}, Standard deviation : {np.sqrt(pr
 test_prev_proj_standar = price_scalar.transform(x_test['teacher_number_of_previously_posted_projects'].values.reshape(-1, 1))
 
 
-# In[73]:
 
 
 print(train_prev_proj_standar.shape, y_train.shape)
 print(test_prev_proj_standar.shape, y_test.shape)
 
 
-# In[74]:
 
 
 price_scalar.fit(x_train['quantity'].values.reshape(-1,1)) # finding the mean and standard deviation of this data
@@ -1020,14 +946,12 @@ print(f"TEST -> Mean : {price_scalar.mean_[0]}, Standard deviation : {np.sqrt(pr
 test_quantity_standar = price_scalar.transform(x_test['quantity'].values.reshape(-1, 1))
 
 
-# In[75]:
 
 
 print(train_quantity_standar.shape, y_train.shape)
 print(test_quantity_standar.shape, y_test.shape)
 
 
-# In[76]:
 
 
 title_scalar = StandardScaler()
@@ -1043,7 +967,6 @@ print(train_title_word_count_standar.shape, y_train.shape)
 print(test_title_word_count_standar.shape, y_test.shape)
 
 
-# In[77]:
 
 
 essay_scalar = StandardScaler()
@@ -1058,7 +981,6 @@ print(train_essay_word_count_standar.shape, y_train.shape)
 print(test_essay_word_count_standar.shape, y_test.shape)
 
 
-# In[78]:
 
 
 
@@ -1072,7 +994,6 @@ print(train_positive_standar.shape, y_train.shape)
 print(test_positive_standar.shape, y_test.shape)
 
 
-# In[79]:
 
 
 
@@ -1086,7 +1007,6 @@ print(train_negitive_standar.shape, y_train.shape)
 print(test_negitive_standar.shape, y_test.shape)
 
 
-# In[80]:
 
 
 
@@ -1100,7 +1020,6 @@ print(train_neutral_standar.shape, y_train.shape)
 print(test_neutral_standar.shape, y_test.shape)
 
 
-# In[81]:
 
 
 print(X_train_clean_cat_ohe.shape)
@@ -1112,7 +1031,6 @@ print(train_text_bow.shape)
 print(test_text_bow.shape)
 
 
-# In[82]:
 
 
 from scipy.sparse import hstack
@@ -1130,13 +1048,11 @@ print(type(X_train1))
 #test_text_tfidf, test_title_tfidf, test_avg_w2v_vectors, test_title_avg_w2v_vectors,test_essay_tfidf_w2v_vectors, test_title_tfidf_w2v_vectors
 
 
-# In[83]:
 
 
 print(X_train1.shape, y_train.shape)
 
 
-# In[84]:
 
 
 from sklearn.model_selection import GridSearchCV
@@ -1144,7 +1060,6 @@ from sklearn.ensemble import RandomForestClassifier
 import seaborn as sea
 
 
-# In[85]:
 
 
 RF = RandomForestClassifier()
@@ -1155,7 +1070,6 @@ classifier = GridSearchCV(RF, parameters, cv=3, scoring='roc_auc')
 classifier.fit(X_train1, y_train)
 
 
-# In[86]:
 
 
 max_scores = pd.DataFrame(classifier.cv_results_).groupby(['param_min_samples_split', 'param_max_depth']).max().unstack()[['mean_test_score', 'mean_train_score']]
@@ -1171,7 +1085,6 @@ ax[1].set_title('CV Set')
 plt.show()
 
 
-# In[87]:
 
 
 #################################PLOTly Plot##############################
@@ -1192,7 +1105,6 @@ plt.show()
 #offline.iplot(fig, filename='3d-scatter-colorscale')
 
 
-# In[88]:
 
 
 def batch_predict(clf, data):
@@ -1211,7 +1123,6 @@ def batch_predict(clf, data):
     return y_data_pred
 
 
-# In[89]:
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html#sklearn.metrics.roc_curve
@@ -1240,7 +1151,6 @@ plt.grid()
 plt.show()
 
 
-# In[90]:
 
 
 def predict(proba, threshould, fpr, tpr):
@@ -1258,7 +1168,6 @@ def predict(proba, threshould, fpr, tpr):
     return predictions
 
 
-# In[91]:
 
 
 #https://www.quantinsti.com/blog/creating-heatmap-using-python-seaborn
@@ -1282,7 +1191,6 @@ ax[1].set_title('Test Set')
 plt.show()
 
 
-# In[92]:
 
 
 from scipy.sparse import hstack
@@ -1300,7 +1208,6 @@ print(type(X_train2))
 #test_text_tfidf, test_title_tfidf, test_avg_w2v_vectors, test_title_avg_w2v_vectors,test_essay_tfidf_w2v_vectors, test_title_tfidf_w2v_vectors
 
 
-# In[93]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -1313,7 +1220,6 @@ classifier = GridSearchCV(RF, parameters, cv=3, scoring='roc_auc')
 classifier.fit(X_train2, y_train)
 
 
-# In[94]:
 
 
 import seaborn as sea
@@ -1329,7 +1235,6 @@ ax[1].set_title('CV Set')
 plt.show()
 
 
-# In[95]:
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html#sklearn.metrics.roc_curve
@@ -1358,7 +1263,6 @@ plt.grid()
 plt.show()
 
 
-# In[96]:
 
 
 #https://www.quantinsti.com/blog/creating-heatmap-using-python-seaborn
@@ -1382,7 +1286,6 @@ ax[1].set_title('Test Set')
 plt.show()
 
 
-# In[97]:
 
 
 X_train3 = hstack((X_train_clean_cat_ohe, X_train_clean_subcat_ohe, X_train_grade_ohe, X_train_state_ohe, X_train_teacher_ohe,
@@ -1398,13 +1301,11 @@ print(type(X_train3))
 #test_text_tfidf, test_title_tfidf, test_avg_w2v_vectors, test_title_avg_w2v_vectors,test_essay_tfidf_w2v_vectors, test_title_tfidf_w2v_vectors
 
 
-# In[98]:
 
 
 print(X_train3.shape, y_train.shape)
 
 
-# In[99]:
 
 
 RF = RandomForestClassifier()
@@ -1415,7 +1316,6 @@ classifier = GridSearchCV(RF, parameters, cv=3, scoring='roc_auc')
 classifier.fit(X_train3, y_train)
 
 
-# In[100]:
 
 
 max_scores = pd.DataFrame(classifier.cv_results_).groupby(['param_min_samples_split', 'param_max_depth']).max().unstack()[['mean_test_score', 'mean_train_score']]
@@ -1431,7 +1331,6 @@ ax[1].set_title('CV Set')
 plt.show()
 
 
-# In[101]:
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html#sklearn.metrics.roc_curve
@@ -1460,7 +1359,6 @@ plt.grid()
 plt.show()
 
 
-# In[102]:
 
 
 #https://www.quantinsti.com/blog/creating-heatmap-using-python-seaborn
@@ -1485,7 +1383,6 @@ ax[1].set_title('Test Set')
 plt.show()
 
 
-# In[103]:
 
 
 from scipy.sparse import hstack
@@ -1503,13 +1400,11 @@ print(type(X_train2))
 #test_text_tfidf, test_title_tfidf, test_avg_w2v_vectors, test_title_avg_w2v_vectors,test_essay_tfidf_w2v_vectors, test_title_tfidf_w2v_vectors
 
 
-# In[104]:
 
 
 print(X_train4.shape, y_train.shape)
 
 
-# In[105]:
 
 
 RF = RandomForestClassifier()
@@ -1520,7 +1415,6 @@ classifier = GridSearchCV(RF, parameters, cv=3, scoring='roc_auc')
 classifier.fit(X_train4, y_train)
 
 
-# In[106]:
 
 
 max_scores = pd.DataFrame(classifier.cv_results_).groupby(['param_min_samples_split', 'param_max_depth']).max().unstack()[['mean_test_score', 'mean_train_score']]
@@ -1536,7 +1430,6 @@ ax[1].set_title('CV Set')
 plt.show()
 
 
-# In[107]:
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html#sklearn.metrics.roc_curve
@@ -1565,7 +1458,6 @@ plt.grid()
 plt.show()
 
 
-# In[108]:
 
 
 #https://www.quantinsti.com/blog/creating-heatmap-using-python-seaborn
@@ -1590,20 +1482,17 @@ ax[1].set_title('Test Set')
 plt.show()
 
 
-# In[109]:
 
 
 print(X_train1.shape, y_train.shape)
 
 
-# In[110]:
 
 
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import GradientBoostingClassifier
 
 
-# In[111]:
 
 
 GBDT = GradientBoostingClassifier()
@@ -1614,7 +1503,6 @@ classifier = GridSearchCV(GBDT, parameters, cv=3, scoring = 'roc_auc')
 classifier.fit(X_train1, y_train)
 
 
-# In[112]:
 
 
 max_scores = pd.DataFrame(classifier.cv_results_).groupby(['param_n_estimators', 'param_max_depth']).max().unstack()[['mean_test_score', 'mean_train_score']]
@@ -1630,7 +1518,6 @@ ax[1].set_title('CV Set')
 plt.show()
 
 
-# In[113]:
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html#sklearn.metrics.roc_curve
@@ -1659,7 +1546,6 @@ plt.grid()
 plt.show()
 
 
-# In[114]:
 
 
 #https://www.quantinsti.com/blog/creating-heatmap-using-python-seaborn
@@ -1684,7 +1570,6 @@ ax[1].set_title('Test Set')
 plt.show()
 
 
-# In[115]:
 
 
 from sklearn.ensemble import GradientBoostingClassifier
@@ -1692,7 +1577,6 @@ from sklearn.model_selection import GridSearchCV
 print(X_train2.shape, y_train.shape)
 
 
-# In[116]:
 
 
 GBDT = GradientBoostingClassifier()
@@ -1703,7 +1587,6 @@ classifier = GridSearchCV(GBDT, parameters, cv=3, scoring = 'roc_auc')
 classifier.fit(X_train2, y_train)                                         
 
 
-# In[117]:
 
 
 import seaborn as sea
@@ -1720,7 +1603,6 @@ ax[1].set_title('CV Set')
 plt.show()
 
 
-# In[118]:
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html#sklearn.metrics.roc_curve
@@ -1750,7 +1632,6 @@ plt.show()
                                         
 
 
-# In[119]:
 
 
 #https://www.quantinsti.com/blog/creating-heatmap-using-python-seaborn
@@ -1775,13 +1656,11 @@ ax[1].set_title('Test Set')
 plt.show()
 
 
-# In[120]:
 
 
 print(X_train3.shape, y_train.shape)
 
 
-# In[121]:
 
 
 GBDT = GradientBoostingClassifier()
@@ -1792,7 +1671,6 @@ classifier = GridSearchCV(GBDT, parameters, cv=3, scoring = 'roc_auc')
 classifier.fit(X_train3, y_train)                                         
 
 
-# In[122]:
 
 
 import seaborn as sea
@@ -1809,7 +1687,6 @@ ax[1].set_title('CV Set')
 plt.show()
 
 
-# In[123]:
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html#sklearn.metrics.roc_curve
@@ -1839,7 +1716,6 @@ plt.show()
                                         
 
 
-# In[124]:
 
 
 #https://www.quantinsti.com/blog/creating-heatmap-using-python-seaborn
@@ -1864,7 +1740,6 @@ ax[1].set_title('Test Set')
 plt.show()
 
 
-# In[125]:
 
 
 from sklearn.ensemble import GradientBoostingClassifier
@@ -1872,7 +1747,6 @@ from sklearn.model_selection import GridSearchCV
 print(X_train4.shape, y_train.shape)
 
 
-# In[126]:
 
 
 GBDT = GradientBoostingClassifier()
@@ -1883,7 +1757,6 @@ classifier = GridSearchCV(GBDT, parameters, cv=3, scoring = 'roc_auc')
 classifier.fit(X_train4, y_train)                                         
 
 
-# In[127]:
 
 
 max_scores = pd.DataFrame(classifier.cv_results_).groupby(['param_n_estimators', 'param_max_depth']).max().unstack()[['mean_test_score', 'mean_train_score']]
@@ -1899,7 +1772,6 @@ ax[1].set_title('CV Set')
 plt.show()
 
 
-# In[128]:
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html#sklearn.metrics.roc_curve
@@ -1929,7 +1801,6 @@ plt.show()
                                         
 
 
-# In[129]:
 
 
 #https://www.quantinsti.com/blog/creating-heatmap-using-python-seaborn
@@ -1954,7 +1825,6 @@ ax[1].set_title('Test Set')
 plt.show()
 
 
-# In[130]:
 
 
 # Please compare all your models using Prettytable library

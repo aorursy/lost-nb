@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -17,7 +16,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 plt.style.use('fivethirtyeight') 
 
 
-# In[2]:
 
 
 train = pd.read_csv('/kaggle/input/covid19-global-forecasting-week-1/train.csv').rename(columns = {"Province/State": "State", "Country/Region":"country",
@@ -27,7 +25,6 @@ test = pd.read_csv('/kaggle/input/covid19-global-forecasting-week-1/test.csv')
 sub = pd.read_csv('/kaggle/input/covid19-global-forecasting-week-1/submission.csv')
 
 
-# In[3]:
 
 
 countries = pd.read_csv('/kaggle/input/undata-country-profiles/country_profile_variables.csv')
@@ -70,7 +67,6 @@ countries['population'] = countries.pop_in_thou * 1000
 #countries = countries.merge(train[['country', 'Lat', "Long"]].drop_duplicates(), how = 'left', on = 'country')
 
 
-# In[4]:
 
 
 #There is a lot of 'state' data by aggregating it you reduce the number of observations from 17k to 6.5k (on 3/23)
@@ -84,7 +80,6 @@ data.loc[(data['days_since_100'] < 0) | (data['days_since_100'] > 10000), 'days_
 data = data.drop('date_past_100', axis = 1)
 
 
-# In[5]:
 
 
 data_c = data.merge(countries[['country', 'population']], on = 'country', how = 'left')
@@ -92,7 +87,6 @@ data_c['cases_p_1000'] = data_c.cases / (data_c.population / 1000)
 data_c['deaths_p_1000'] = data_c.deaths / (data_c.population / 1000)
 
 
-# In[6]:
 
 
 max_cases = data_c.groupby('country')[['cases_p_1000', 'deaths_p_1000', 'cases', 'deaths']].max().sort_values('cases_p_1000')
@@ -100,7 +94,6 @@ top_10 = max_cases[~pd.isna(max_cases.cases_p_1000)].sort_values('cases', ascend
 top_10_countries = top_10.country.tolist()
 
 
-# In[7]:
 
 
 train_clean= pd.DataFrame([])
@@ -117,14 +110,12 @@ for country in data_c.country.unique():
 train_clean = train_clean.replace([np.inf, -np.inf], 0)
 
 
-# In[8]:
 
 
 plot_dat = train_clean[train_clean.country.isin(top_10_countries)]
 last_obs=plot_dat.groupby('country', as_index = False).max()
 
 
-# In[9]:
 
 
 plot_dat = train_clean[train_clean.country.isin(top_10_countries)]
@@ -142,13 +133,11 @@ ax[1].set(xlabel='Days Since 100th Case', ylabel = "Cases (log-scale)", title = 
 #plt.xticks(rotation=30)
 
 
-# In[ ]:
 
 
 
 
 
-# In[10]:
 
 
 f,ax = plt.subplots(figsize=(15,7))
@@ -161,13 +150,11 @@ ax.set(xlabel='Days Since 100th Case', ylabel = "Days to Double", title = "Days 
 for item, color in zip(plot_dat.groupby(country).max().Date)
 
 
-# In[ ]:
 
 
 
 
 
-# In[11]:
 
 
 data = train.drop(["Lat","Long", "Id"], axis =1).groupby(["country", "Date"]).sum().reset_index()
@@ -176,44 +163,37 @@ data['cases_p_pop'] = data.cases / data.population
 data['deaths_p_pop'] = data.deaths / data.population
 
 
-# In[12]:
 
 
 data
 
 
-# In[13]:
 
 
 data.groupby('country', 'Date').
 
 
-# In[14]:
 
 
 data.head()
 
 
-# In[15]:
 
 
 countries.country.unique()
 
 
-# In[16]:
 
 
 train.country.unique()
 
 
-# In[17]:
 
 
 mer= train.merge(countries[['country','pop_in_thou']], on = 'country', how = 'left')
 mer[pd.isna(mer.pop_in_thou)].country.unique()
 
 
-# In[18]:
 
 
 data_country_totals = train.groupby(['country', 'Date'])[['cases', 'deaths']].sum().reset_index()
@@ -223,19 +203,16 @@ ag_f = {'cases':'sum', 'deaths': 'sum', 'Population':'mean', 'pop_density':'mean
 data_country_totals.groupby("country")[['cases','deaths']].agg(ag_f)
 
 
-# In[ ]:
 
 
 
 
 
-# In[19]:
 
 
 #train_pop[pd.isna(train_pop.Population)]
 
 
-# In[20]:
 
 
 data_country_totals

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from io import BytesIO
@@ -12,7 +11,6 @@ img = Image.open(BytesIO(response.content))
 img.resize((300,300), Image.ANTIALIAS)
 
 
-# In[2]:
 
 
 # Ignore all your warnings
@@ -46,14 +44,12 @@ from sklearn.preprocessing import StandardScaler
 from textblob import TextBlob
 
 
-# In[3]:
 
 
 response = requests.get("https://storage.googleapis.com/kaggle-media/competitions/google-research/human_computable_dimensions_1.png")
 Image.open(BytesIO(response.content))
 
 
-# In[4]:
 
 
 # This image is created by me for better understanding of problem
@@ -61,7 +57,6 @@ response = requests.get("https://i.postimg.cc/NFNFYPPG/regression.png")
 Image.open(BytesIO(response.content))
 
 
-# In[5]:
 
 
 import os 
@@ -70,7 +65,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
         print(os.path.join(dirname, filename))
 
 
-# In[6]:
 
 
 train_df = pd.read_csv("../input/google-quest-challenge/train.csv")
@@ -78,7 +72,6 @@ test_df = pd.read_csv("../input/google-quest-challenge/test.csv")
 sample_submission = pd.read_csv("../input/google-quest-challenge/sample_submission.csv")
 
 
-# In[7]:
 
 
 # train_df data
@@ -86,7 +79,6 @@ print(f"shape of train_df: {train_df.shape} \n{'='*50}")
 train_df.head(2)
 
 
-# In[8]:
 
 
 # test_df data
@@ -94,7 +86,6 @@ print(f"shape of test_df: {test_df.shape} \n{'='*50}")
 test_df.head(2)
 
 
-# In[9]:
 
 
 target_vars = sample_submission.columns[1:]
@@ -102,14 +93,12 @@ for idx,target in enumerate(target_vars):
     print(idx+1,":",target)
 
 
-# In[10]:
 
 
 # sample of Target variable
 train_df[target_vars].head()
 
 
-# In[11]:
 
 
 x_columns = [columns for columns in train_df.columns if columns not in sample_submission.columns[1:]]
@@ -117,28 +106,24 @@ for idx,x_var in enumerate(x_columns):
     print(idx+1,":",x_var)
 
 
-# In[12]:
 
 
 # sample of dependent variables
 train_df[x_columns].head()
 
 
-# In[13]:
 
 
 # train_df data
 print(f"shape of train_df: {train_df.shape} \n{'='*50}")
 
 
-# In[14]:
 
 
 # This includes both independent variables and target variables
 train_df.info()
 
 
-# In[15]:
 
 
 # sample
@@ -164,32 +149,27 @@ sample_answer_target_labels = sample[['answer_helpful',
        'answer_well_written']]
 
 
-# In[16]:
 
 
 for i in sample_question.index:
     print(i,":",sample_question[i],"\n")
 
 
-# In[17]:
 
 
 print(sample_answer[0])
 
 
-# In[18]:
 
 
 print(sample_question_target_labels)
 
 
-# In[19]:
 
 
 print(sample_answer_target_labels)
 
 
-# In[20]:
 
 
 target_vars = sample_submission.columns[1:]
@@ -197,7 +177,6 @@ for idx,target in enumerate(target_vars):
     print(idx+1,":",target)
 
 
-# In[21]:
 
 
 plt.figure(figsize=(28,20))
@@ -207,7 +186,6 @@ for idx,target in enumerate(target_vars):
 plt.show()
 
 
-# In[22]:
 
 
 corr = train_df[target_vars].corr()
@@ -221,7 +199,6 @@ sns.heatmap(corr,
 plt.show()
 
 
-# In[23]:
 
 
 ## Distribution plots for highly positive Correlated labels
@@ -262,7 +239,6 @@ for idx, feat in enumerate(high_neg_corr_feat):
     plt.show()
 
 
-# In[24]:
 
 
 # Utility function to plot lineplot and distplot using seaborn
@@ -376,21 +352,18 @@ def box_plot(train_data, test_data, feature_name=None):
     plt.show()
 
 
-# In[25]:
 
 
 #Counts of repeated question_title in train
 pd.DataFrame(train_df['question_title'].value_counts())
 
 
-# In[26]:
 
 
 #Counts of repeated question_title in test
 pd.DataFrame(test_df['question_title'].value_counts())
 
 
-# In[27]:
 
 
 # Number of repeated question_title in train
@@ -403,7 +376,6 @@ n_repeated_question_title_test = test_df['question_title'].value_counts().values
 plot_bar(n_repeated_question_title_train, n_repeated_question_title_test,feature='question_title',x_label="Number of times repeated same question ",y_label="Counts of repeated")
 
 
-# In[28]:
 
 
 # Length of question_title in train
@@ -419,21 +391,18 @@ plot_sns(len_question_title_train,"question_title",color='darkblue',title='lengt
 plot_sns(len_question_title_test,"question_title",color='lightblue',title='length',subtitle='test_df')
 
 
-# In[29]:
 
 
 # Box plot of Length of question_title in train and test
 box_plot(len_question_title_train, len_question_title_test, "question_title")
 
 
-# In[30]:
 
 
 # Checking weather len_question_title follows normal distribution using Q-Q plot
 q_q_plot(len_question_title_train, len_question_title_test, "len_question_title")
 
 
-# In[31]:
 
 
 # number of words in question_title in train
@@ -443,7 +412,6 @@ n_words_in_question_title_train = sorted(train_df['question_title'].apply(lambda
 n_words_in_question_title_test = sorted(test_df['question_title'].apply(lambda x: len(x.split(" "))),reverse=True)
 
 
-# In[32]:
 
 
 # plot for train_df
@@ -453,21 +421,18 @@ plot_sns(n_words_in_question_title_train,"question_title",color='darkred',title=
 plot_sns(n_words_in_question_title_train,"question_title",color='orangered',title='number',subtitle='test_df')
 
 
-# In[33]:
 
 
 # Box plot of Length of question_title in train and test
 box_plot(n_words_in_question_title_train, n_words_in_question_title_test, "question_title")
 
 
-# In[34]:
 
 
 # Checking weather  n_words_in_question_title follows normal distribution using Q-Q plot
 q_q_plot(n_words_in_question_title_train, n_words_in_question_title_test, "n_words_in_question_title")
 
 
-# In[35]:
 
 
 # refer: https://www.datacamp.com/community/tutorials/wordcloud-python
@@ -501,7 +466,6 @@ plt.axis("off")
 plt.show()
 
 
-# In[36]:
 
 
 # Frequency of most popular 50 words in train_df
@@ -511,7 +475,6 @@ word_frequency_plot(train_df['question_title'], title='train')
 word_frequency_plot(test_df['question_title'], title='test')
 
 
-# In[37]:
 
 
 plt.figure(figsize=(9,5))
@@ -520,21 +483,18 @@ plt.title("Common question_title in training and test data", fontsize=15)
 plt.show()
 
 
-# In[38]:
 
 
 #Counts of repeated questions in train
 train_df['question_body'].value_counts().values
 
 
-# In[39]:
 
 
 #Counts of repeated questions in test
 test_df['question_body'].value_counts().values
 
 
-# In[40]:
 
 
 # Number of repeated question_body in train
@@ -547,7 +507,6 @@ n_repeated_question_body_test = test_df['question_body'].value_counts().values
 plot_bar(n_repeated_question_body_train, n_repeated_question_body_test,feature='question_title',x_label="Number of times repeated same question ",y_label="Counts of repeated")
 
 
-# In[41]:
 
 
 # Length of question_title in train
@@ -563,14 +522,12 @@ plot_sns(len_question_body_train,"question_body",color='darkblue',title='length'
 plot_sns(len_question_body_test,"question_body",color='lightblue',title='length',subtitle='test_df')
 
 
-# In[42]:
 
 
 # Box plot of length of question_body
 box_plot(len_question_body_train, len_question_body_test, "len_question_body" )
 
 
-# In[43]:
 
 
 box_cox_len_question_body_train = boxcox(len_question_body_train)[0]
@@ -583,7 +540,6 @@ test_df['box_cox_len_question_body'] = box_cox_len_question_body_test
 q_q_plot(box_cox_len_question_body_train, box_cox_len_question_body_test, "box-cox transformed length of question_body ")
 
 
-# In[44]:
 
 
 # number of words in question_title in train
@@ -599,14 +555,12 @@ plot_sns(n_words_in_question_body_train,"question_body",color='darkred',title='n
 plot_sns(n_words_in_question_body_test,"question_body",color='orangered',title='number',subtitle='test_df')
 
 
-# In[45]:
 
 
 # Box plot of length of question_body
 box_plot(n_words_in_question_body_train, n_words_in_question_body_test, "n_words_in_question_body" )
 
 
-# In[46]:
 
 
 box_cox_n_words_in_question_body_train = boxcox(n_words_in_question_body_train)[0]
@@ -620,7 +574,6 @@ test_df['box_cox_n_words_in_question_body'] = box_cox_n_words_in_question_body_t
 q_q_plot(box_cox_n_words_in_question_body_train, box_cox_n_words_in_question_body_test, "box-cox transformed number of words in question_body ")
 
 
-# In[47]:
 
 
 # refer: https://www.datacamp.com/community/tutorials/wordcloud-python
@@ -654,7 +607,6 @@ plt.axis("off")
 plt.show()
 
 
-# In[48]:
 
 
 # Frequency of most popular worlds in question_body of train
@@ -664,7 +616,6 @@ word_frequency_plot(train_df['question_body'], title='train')
 word_frequency_plot(test_df['question_body'], title='test')
 
 
-# In[49]:
 
 
 # for train_df
@@ -677,7 +628,6 @@ n_count_question_user_name_test=test_df['question_user_name'].value_counts().val
 plot_bar(n_count_question_user_name_train, n_count_question_user_name_test,feature='question_user_name',x_label="Number of questions  ",y_label="Counts of ")
 
 
-# In[50]:
 
 
 # for train_df
@@ -690,7 +640,6 @@ n_user_unique_question_test = test_df.drop_duplicates(subset=['question_title'])
 plot_bar(n_user_unique_question_train.values, n_user_unique_question_test.values,feature='question_user_name',x_label="Number of questions  ",y_label="Counts of ")
 
 
-# In[51]:
 
 
 # Top 10 user who has asked most number of unique question
@@ -707,26 +656,22 @@ ax2.grid()
 plt.show()
 
 
-# In[52]:
 
 
 n_user_unique_question_train.describe()
 
 
-# In[53]:
 
 
 n_user_unique_question_test.describe()
 
 
-# In[54]:
 
 
 print(f"Unique number of question_user_name in Train : {len(train_df['question_user_name'].unique())}")
 print(f"Unique number of question_user_name in Test : {len(test_df['question_user_name'].unique())}")
 
 
-# In[55]:
 
 
 # Venn plot of  Common unique question_user_name in train and test
@@ -739,7 +684,6 @@ plt.title("Common question_user_name in training and test data", fontsize=15)
 plt.show()
 
 
-# In[56]:
 
 
 # Finding the unique question users asked unique questions based on question_title
@@ -762,7 +706,6 @@ unique_question_user_with_unique_questions_title_agg_train.rename({'sum': 'sum_t
 train_df = pd.merge(left=train_df ,right=unique_question_user_with_unique_questions_title_agg_train ,how='inner',on="question_user_name")
 
 
-# In[57]:
 
 
 # Finding the unique question users asked unique questions based on question_title
@@ -785,7 +728,6 @@ unique_question_user_with_unique_questions_title_agg_test.rename({'sum': 'sum_ti
 test_df = pd.merge(left=test_df ,right=unique_question_user_with_unique_questions_title_agg_test ,how='inner',on="question_user_name")
 
 
-# In[58]:
 
 
 # Ploting user behaviour
@@ -822,7 +764,6 @@ for idx,column in enumerate(user_behaviour_column_on_queston_titile):
     plt.show()
 
 
-# In[59]:
 
 
 # Q-Q Plot of Box Cox transformed user_behaviour_column_on_queston_titile features
@@ -843,7 +784,6 @@ for idx,column_name in enumerate(user_behaviour_column_on_queston_titile):
     
 
 
-# In[60]:
 
 
 # Finding the unique question users asked unique questions based on question_title
@@ -866,7 +806,6 @@ unique_question_user_with_unique_questions_body_agg_train.rename({'sum': 'sum_bo
 train_df = pd.merge(left=train_df ,right=unique_question_user_with_unique_questions_body_agg_train ,how='inner',on="question_user_name")
 
 
-# In[61]:
 
 
 # Finding the unique question users asked unique questions based on question_title
@@ -889,13 +828,11 @@ unique_question_user_with_unique_questions_body_agg_test.rename({'sum': 'sum_bod
 test_df = pd.merge(left=test_df ,right=unique_question_user_with_unique_questions_body_agg_test ,how='inner',on="question_user_name")
 
 
-# In[62]:
 
 
 unique_question_user_with_unique_questions_body_agg_test
 
 
-# In[63]:
 
 
 # Ploting user behaviour
@@ -932,7 +869,6 @@ for idx,column in enumerate(user_behaviour_column_on_queston_body):
     plt.show()
 
 
-# In[64]:
 
 
 # Q-Q Plot of Box Cox transformed user_behaviour_column_on_queston_body features
@@ -961,7 +897,6 @@ for idx,column_name in enumerate(user_behaviour_column_on_queston_body):
     
 
 
-# In[65]:
 
 
 n_repeated_answer_train = sum(train_df['answer'].value_counts().values>1)
@@ -971,7 +906,6 @@ print(f"Number of repeated answer in train: {n_repeated_answer_train}")
 print(f"Number of repeated answer in test: {n_repeated_answer_test}")
 
 
-# In[66]:
 
 
 # Length of answer in train
@@ -987,14 +921,12 @@ plot_sns(len_answer_train,"answer",color='darkblue',title='length',subtitle='tra
 plot_sns(len_answer_test,"answer",color='lightblue',title='length',subtitle='test_df')
 
 
-# In[67]:
 
 
 # Box plot of length of question_body
 box_plot(len_answer_train, len_answer_test, "length of answer " )
 
 
-# In[68]:
 
 
 box_cox_len_answer_train = boxcox(len_answer_train)[0]
@@ -1007,7 +939,6 @@ test_df['box_cox_len_answer'] = box_cox_len_answer_test
 q_q_plot(box_cox_len_question_body_train, box_cox_len_question_body_test, "box-cox transformed length of answer  ")
 
 
-# In[69]:
 
 
 # number of words in answer in train
@@ -1023,14 +954,12 @@ plot_sns(n_words_in_answer_train,"answer",color='darkred',title='number',subtitl
 plot_sns(n_words_in_answer_test,"answer",color='orangered',title='number',subtitle='test_df')
 
 
-# In[70]:
 
 
 # Box plot of length of question_body
 box_plot(n_words_in_answer_train, n_words_in_answer_test, "number of words in answer" )
 
 
-# In[71]:
 
 
 box_cox_n_words_in_answer_train = boxcox(n_words_in_answer_train)[0]
@@ -1043,7 +972,6 @@ test_df['box_cox_n_words_in_answer'] = box_cox_n_words_in_answer_test
 q_q_plot(box_cox_n_words_in_answer_train, box_cox_n_words_in_answer_test, "box-cox transformed of n_words_in_answer ")
 
 
-# In[72]:
 
 
 # refer: https://www.datacamp.com/community/tutorials/wordcloud-python
@@ -1077,7 +1005,6 @@ plt.axis("off")
 plt.show()
 
 
-# In[73]:
 
 
 # Frequency of most popular worlds in answer of train
@@ -1087,7 +1014,6 @@ word_frequency_plot(train_df['answer'], title='train')
 word_frequency_plot(test_df['answer'], title='test')
 
 
-# In[74]:
 
 
 # Number of unique answer_user in train and test
@@ -1095,7 +1021,6 @@ print(f'Number of unique answer_user in train: {len(train_df["answer_user_name"]
 print(f'Number of unique answer_user in test: {len(test_df["answer_user_name"].unique())}')
 
 
-# In[75]:
 
 
 plt.figure(figsize=(9,5))
@@ -1104,7 +1029,6 @@ plt.title("Common  answer_user in both train and test", fontsize=15)
 plt.show()
 
 
-# In[76]:
 
 
 # for train_df
@@ -1117,7 +1041,6 @@ n_count_answer_user_name_test=test_df['answer_user_name'].value_counts().values
 plot_bar(n_count_answer_user_name_train, n_count_answer_user_name_test,feature='answer_user_name',x_label="Number of answer  ",y_label="Counts of ")
 
 
-# In[77]:
 
 
 # for train_df
@@ -1130,7 +1053,6 @@ n_user_unique_answer_test = test_df.drop_duplicates(subset=['question_title'])['
 plot_bar(n_user_unique_answer_train.values, n_user_unique_answer_test.values,feature='answer_user_name',x_label="Number of questions  ",y_label="Counts of ")
 
 
-# In[78]:
 
 
 # Users who has answered the same question more than once but differently
@@ -1139,13 +1061,11 @@ user_answered_same_ques_twice = user_answered_same_ques_twice.reset_index(level=
 user_answered_same_ques_twice.head(20)
 
 
-# In[79]:
 
 
 print(f' Number of unique users who has answerd the same question more than once: {sum(user_answered_same_ques_twice["count"]>1)} out of {len(train_df["answer_user_name"].unique())} ({round(sum(user_answered_same_ques_twice["count"]>1) / len(train_df["answer_user_name"].unique()),4)})%')
 
 
-# In[80]:
 
 
 # Top 10 user who has asked most number of unique question
@@ -1162,19 +1082,16 @@ ax2.grid()
 plt.show()
 
 
-# In[81]:
 
 
 n_user_unique_answer_train.describe()
 
 
-# In[82]:
 
 
 n_user_unique_answer_test.describe()
 
 
-# In[83]:
 
 
 # Find the number of words in each answer 
@@ -1193,7 +1110,6 @@ answer_user_agg_behaviour_train.rename({'sum': 'sum_answer_len', 'min': 'min_ans
 train_df = pd.merge(left=train_df ,right=answer_user_agg_behaviour_train ,how='inner',on="answer_user_name")
 
 
-# In[84]:
 
 
 # Find the number of words in each answer 
@@ -1212,7 +1128,6 @@ answer_user_agg_behaviour_test.rename({'sum': 'sum_answer_len', 'min': 'min_answ
 test_df = pd.merge(left=test_df ,right=answer_user_agg_behaviour_test ,how='inner',on="answer_user_name")
 
 
-# In[85]:
 
 
 # Ploting user behaviour
@@ -1249,7 +1164,6 @@ for idx,column in enumerate(user_behaviour_column_on_answer):
     plt.show()
 
 
-# In[86]:
 
 
 # Q-Q Plot of Box Cox transformed user_behaviour_column_on_answer features
@@ -1278,7 +1192,6 @@ for idx,column_name in enumerate(user_behaviour_column_on_answer[:2]):
     
 
 
-# In[87]:
 
 
 # Venn diagram for train_df
@@ -1294,14 +1207,12 @@ plt.title("Common users who has asked the question and answered by himself in te
 plt.show()
 
 
-# In[88]:
 
 
 # unique categories
 print(train_df['category'].unique())
 
 
-# In[89]:
 
 
 # For train_df
@@ -1313,7 +1224,6 @@ category_dist_df_train["distribution"] = train_df['category'].value_counts().val
 category_dist_df_train
 
 
-# In[90]:
 
 
 # For test_df
@@ -1325,7 +1235,6 @@ category_dist_df_test["distribution"] = test_df['category'].value_counts().value
 category_dist_df_test
 
 
-# In[91]:
 
 
 f, (ax1, ax2  ) = plt.subplots(1, 2, figsize=(24,7))
@@ -1341,7 +1250,6 @@ ax2.set(title='Categories distribution: test\n')
 plt.show()
 
 
-# In[92]:
 
 
 
@@ -1353,7 +1261,6 @@ plt.title("Common number of Host in train and test", fontsize=15)
 plt.show()
 
 
-# In[93]:
 
 
 # For train_df
@@ -1367,7 +1274,6 @@ host_dist_df_test["values_count"] = test_df['host'].value_counts().values
 host_dist_df_test["distribution"] = test_df['host'].value_counts().values/sum(train_df['category'].value_counts().values)
 
 
-# In[94]:
 
 
 print(f"Unique number of host in train: {len(train_df['host'].unique())}\n")
@@ -1381,7 +1287,6 @@ plt.grid()
 plt.show()
 
 
-# In[95]:
 
 
 print(f"Unique number of host in train: {len(test_df['host'].unique())}\n")
@@ -1395,7 +1300,6 @@ plt.grid()
 plt.show()
 
 
-# In[96]:
 
 
 n_self_question_answer_users_df_train = pd.DataFrame(columns=['n_of_self_question_answer_users'])
@@ -1418,7 +1322,6 @@ plt.grid()
 plt.show()
 
 
-# In[97]:
 
 
 n_self_question_answer_users_df_test = pd.DataFrame(columns=['n_of_self_question_answer_users'])
@@ -1441,7 +1344,6 @@ plt.grid()
 plt.show()
 
 
-# In[98]:
 
 
 # refer: https://www.kaggle.com/kabure/qa-eda-and-nlp-modelling-insights-and-data-vis
@@ -1483,7 +1385,6 @@ plt.subplots_adjust(hspace = 0.3, top = 0.90)
 plt.show()
 
 
-# In[99]:
 
 
 # refer: https://www.kaggle.com/kabure/qa-eda-and-nlp-modelling-insights-and-data-vis
@@ -1509,7 +1410,6 @@ plt.subplots_adjust(top = 0.9, hspace=.1)
 plt.show()
 
 
-# In[100]:
 
 
 # refer: https://www.kaggle.com/kabure/qa-eda-and-nlp-modelling-insights-and-data-vis
@@ -1533,7 +1433,6 @@ plt.subplots_adjust(top = 0.9, hspace=.1)
 plt.show()
 
 
-# In[101]:
 
 
 # Tokenize each item in the review column
@@ -1551,7 +1450,6 @@ for i in range(len(word_tokens)):
 train_df['question_n_words'] = len_tokens
 
 
-# In[102]:
 
 
 grid = gridspec.GridSpec(5, 3)
@@ -1588,7 +1486,6 @@ plt.subplots_adjust(top = 0.90, hspace=.4, wspace=.15)
 plt.show()
 
 
-# In[103]:
 
 
 # Scaling targets or labels with mean=0, and variance=1 (getting targets ready for PCA)
@@ -1603,7 +1500,6 @@ pca_component = pca.fit_transform(scalar_targets)
 print(f"variance explained by top 2 eigen vector values: {round(sum(pca.explained_variance_ratio_[:2]),2)} %")
 
 
-# In[104]:
 
 
 pca__target_component_1 = pca_component[:,0]
@@ -1618,7 +1514,6 @@ plt.ylabel("pca__target_component_2")
 plt.show()
 
 
-# In[105]:
 
 
 from wordcloud import WordCloud, STOPWORDS
@@ -1657,7 +1552,6 @@ for idx, cat in enumerate(train_df['category'].value_counts().index):
     ax2.axis('off')
 
 
-# In[106]:
 
 
 pol = lambda x: TextBlob(x).sentiment.polarity
@@ -1669,7 +1563,6 @@ train_df['q_title_subjectivity'] = train_df['question_title'].apply(sub)
 train_df[['question_title', 'category', 'q_title_polarity', 'q_title_subjectivity']].head()
 
 
-# In[107]:
 
 
 #Polarity and subjectivity plot
@@ -1682,7 +1575,6 @@ g.set_ylabel("Subjective ",fontsize=18)
 plt.show()
 
 
-# In[108]:
 
 
 pol = lambda x: TextBlob(x).sentiment.polarity
@@ -1694,7 +1586,6 @@ train_df['q_body_subjectivity'] = train_df['question_body'].apply(sub)
 train_df[['question_body', 'category', 'q_body_polarity', 'q_body_subjectivity']].head()
 
 
-# In[109]:
 
 
 #Polarity and subjectivity plot
@@ -1707,7 +1598,6 @@ g.set_ylabel("Subjective ",fontsize=18)
 plt.show()
 
 
-# In[110]:
 
 
 pol = lambda x: TextBlob(x).sentiment.polarity
@@ -1719,7 +1609,6 @@ train_df['answer_subjectivity'] = train_df['answer'].apply(sub)
 train_df[['answer', 'category', 'answer_polarity', 'answer_subjectivity']].head()
 
 
-# In[111]:
 
 
 #Polarity and subjectivity plot
@@ -1732,7 +1621,6 @@ g.set_ylabel("Subjective ",fontsize=18)
 plt.show()
 
 
-# In[112]:
 
 
 # Saving all the transformed features and behaviour features into pickle file
@@ -1740,7 +1628,6 @@ plt.show()
 test_df.to_pickle("test_df.pkl")"""
 
 
-# In[113]:
 
 
 all_feat = [col for col in train_df.columns if col not in target_vars]

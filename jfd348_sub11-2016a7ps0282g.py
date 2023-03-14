@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import math;
@@ -113,13 +112,11 @@ data = transformData(data);
 testData = transformData(testData);
 
 
-# In[2]:
 
 
 
 
 
-# In[2]:
 
 
 def createGroups(data, col1, col2, col3):
@@ -150,7 +147,6 @@ def createGroups(data, col1, col2, col3):
     return groups;
 
 
-# In[3]:
 
 
 def rowPassesFilter(data, i, dataFilter):
@@ -160,7 +156,6 @@ def rowPassesFilter(data, i, dataFilter):
     return True;
 
 
-# In[4]:
 
 
 def linearRegression(data, xCols, yCol, dataFilter = None, regParam = 0):
@@ -216,7 +211,6 @@ def linearRegression(data, xCols, yCol, dataFilter = None, regParam = 0):
     return (w, predictedVals, b);
 
 
-# In[5]:
 
 
 def trainDataset(data, groups, xCols, yCol, regParam):
@@ -243,7 +237,6 @@ def trainDataset(data, groups, xCols, yCol, regParam):
         i += 1;
 
 
-# In[6]:
 
 
 def predictTestData(testData, groups, xCols):
@@ -281,7 +274,6 @@ def predictTestData(testData, groups, xCols):
     return yValues;
 
 
-# In[7]:
 
 
 def writeToOutputFile(ids, yValues, outFileName):
@@ -295,7 +287,6 @@ def writeToOutputFile(ids, yValues, outFileName):
             i += 1;
 
 
-# In[8]:
 
 
 featureNames = [

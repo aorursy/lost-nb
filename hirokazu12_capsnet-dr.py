@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # submission score = 0.000って何？
 
 
-# In[2]:
 
 
 get_ipython().system('pip install keras==2.2.4')
@@ -23,7 +21,6 @@ from keras import initializers, layers, models
 from keras.utils import to_categorical
 
 
-# In[3]:
 
 
 class Length(layers.Layer):
@@ -34,7 +31,6 @@ class Length(layers.Layer):
         return input_shape[:-1]
 
 
-# In[4]:
 
 
 class Mask(layers.Layer):
@@ -58,7 +54,6 @@ class Mask(layers.Layer):
             return tuple([None, input_shape[-1]])
 
 
-# In[5]:
 
 
 def squash(vectors, axis=-1):
@@ -67,7 +62,6 @@ def squash(vectors, axis=-1):
     return scale * vectors
 
 
-# In[6]:
 
 
 class CapsuleLayer(layers.Layer):
@@ -121,7 +115,6 @@ class CapsuleLayer(layers.Layer):
         return tuple([None, self.num_capsule, self.dim_vector])
 
 
-# In[7]:
 
 
 def PrimaryCap(inputs, dim_vector, n_channels, kernel_size, strides, padding):
@@ -130,7 +123,6 @@ def PrimaryCap(inputs, dim_vector, n_channels, kernel_size, strides, padding):
     return layers.Lambda(squash)(outputs)
 
 
-# In[8]:
 
 
 from keras import backend as K
@@ -151,7 +143,6 @@ def CapsNet(input_shape, n_class, num_routing):
     return models.Model([x, y], [out_caps, x_recon])
 
 
-# In[9]:
 
 
 def margin_loss(y_true, y_pred):
@@ -160,13 +151,11 @@ def margin_loss(y_true, y_pred):
     return K.mean(K.sum(L, 1))
 
 
-# In[10]:
 
 
 width, breadth = 32, 32
 
 
-# In[11]:
 
 
 model = CapsNet(input_shape=[width, breadth, 3],
@@ -179,14 +168,12 @@ except Exception as e:
     print('No fancy plot {}'.format(e))
 
 
-# In[12]:
 
 
 # make data, train 16000, test 400 images
 # 1_left なら patientID = 1の人の左目の写真ということらしい
 
 
-# In[13]:
 
 
 trainCSV = pd.read_csv('../input/diabetic-retinopathy-detection/trainLabels.csv')
@@ -199,13 +186,11 @@ trainCSV.dropna(inplace = True)
 trainCSV = trainCSV[trainCSV['exists']]
 
 
-# In[14]:
 
 
 trainCSV.head()
 
 
-# In[15]:
 
 
 from PIL import Image
@@ -213,13 +198,11 @@ import time
 import sys
 
 
-# In[16]:
 
 
 trainCSV.shape
 
 
-# In[17]:
 
 
 def transformImagetoArray(imagePathsList, width=480, breadth=480):
@@ -234,14 +217,12 @@ def transformImagetoArray(imagePathsList, width=480, breadth=480):
     return imagesArray
 
 
-# In[18]:
 
 
 x = transformImagetoArray(list(trainCSV['imagePath']), width=width, breadth=breadth)
 y = np.asarray(list(trainCSV['label']))
 
 
-# In[19]:
 
 
 from sklearn.model_selection import train_test_split
@@ -251,7 +232,6 @@ from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
 
 
-# In[20]:
 
 
 #x_train = x_train.reshape(1600, 480, 480, 3).astype('float32') / 255.
@@ -260,7 +240,6 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
 #y_test = to_categorical(y_test.astype('float32'))
 
 
-# In[21]:
 
 
 import gc
@@ -268,7 +247,6 @@ del x
 gc.collect()
 
 
-# In[22]:
 
 
 print('x train: %s' % str(x_train.shape))
@@ -277,7 +255,6 @@ print('y train: %s' % str(y_train.shape))
 print('y test: %s' % str(y_test.shape))
 
 
-# In[23]:
 
 
 def train(model, data, epoch_size_frac=1.0, epochs=100, batch_size=64):
@@ -318,14 +295,12 @@ def train(model, data, epoch_size_frac=1.0, epochs=100, batch_size=64):
     return model
 
 
-# In[24]:
 
 
 train(model=model, data=((x_train, y_train), (x_test[:60], y_test[:60])), 
       epoch_size_frac = 1)
 
 
-# In[25]:
 
 
 def combine_images(generated_images):
@@ -360,38 +335,32 @@ def test(model, data):
     plt.show()
 
 
-# In[26]:
 
 
 test(model=model, data=(x_test[:100], y_test[:100]))
 
 
-# In[27]:
 
 
 del x_train, x_test, y_train, y_test
 gc.collect()
 
 
-# In[28]:
 
 
 # DISK 容量的にkernel上でsubmissionを作るのは無理そう
 
 
-# In[29]:
 
 
 # なんかデータセットまとめてくれてる人いた
 
 
-# In[30]:
 
 
 len(os.listdir('../input/resized-2015-2019-blindness-detection-images/resized test 15'))
 
 
-# In[31]:
 
 
 def predictandSaveSubmission():
@@ -414,7 +383,6 @@ def predictandSaveSubmission():
     df_submission.to_csv("submission.csv",index=False)
 
 
-# In[32]:
 
 
 predictandSaveSubmission()

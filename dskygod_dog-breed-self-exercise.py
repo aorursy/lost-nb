@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -30,19 +29,16 @@ from torchvision import transforms, datasets, models
 from torch.optim import lr_scheduler
 
 
-# In[ ]:
 
 
 ls ../input
 
 
-# In[ ]:
 
 
 ls ../working
 
 
-# In[ ]:
 
 
 INPUT_SIZE = 224
@@ -54,7 +50,6 @@ print(len(listdir(join(data_dir, 'train'))), len(labels))
 print(len(listdir(join(data_dir, 'test'))), len(sample_submission))
 
 
-# In[ ]:
 
 
 selected_breed_list = list(labels.groupby('breed').count().sort_values(by='id', ascending=False).head(NUM_CLASSES).index)
@@ -68,7 +63,6 @@ valid = labels_pivot[~labels_pivot['id'].isin(train['id'])]
 print(train.shape, valid.shape)
 
 
-# In[ ]:
 
 
 class DogsDataset(Dataset):
@@ -91,7 +85,6 @@ class DogsDataset(Dataset):
         return [image, labels]
 
 
-# In[ ]:
 
 
 normalize = transforms.Normalize(
@@ -109,7 +102,6 @@ train_dl = DataLoader(train_ds, batch_size=16, shuffle=True, num_workers=1)
 valid_dl = DataLoader(valid_ds, batch_size=16, shuffle=False, num_workers=1)
 
 
-# In[ ]:
 
 
 #create cnn class
@@ -226,7 +218,6 @@ class DBCNN(torch.nn.Module) :
         return x
 
 
-# In[ ]:
 
 
 dbcnn = DBCNN()
@@ -238,7 +229,6 @@ dbcnn = DBCNN()
 #print(dbcnn)
 
 
-# In[ ]:
 
 
 def train_model(dataloders, model, criterion, optimizer, scheduler, num_epochs=25):
@@ -303,7 +293,6 @@ def train_model(dataloders, model, criterion, optimizer, scheduler, num_epochs=2
     return model
 
 
-# In[ ]:
 
 
 md = dbcnn
@@ -328,7 +317,6 @@ exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=200, gamma=0.1)
 dloaders = {'train':train_dl, 'valid':valid_dl}
 
 
-# In[ ]:
 
 
 start_time = time.time()
@@ -338,13 +326,11 @@ print('Training time: {:10f} minutes'.format((time.time()-start_time)/60))
 torch.save(model, 'dbcnn.pkl')
 
 
-# In[ ]:
 
 
 ls ../working
 
 
-# In[ ]:
 
 
 def imshow(axis, inp):
@@ -358,7 +344,6 @@ def imshow(axis, inp):
     axis.imshow(inp)
 
 
-# In[ ]:
 
 
 def getBreedName(index):
@@ -367,7 +352,6 @@ def getBreedName(index):
     return "unknown"
 
 
-# In[ ]:
 
 
 def visualize_model(dataloders, model, num_images=16):
@@ -392,13 +376,11 @@ def visualize_model(dataloders, model, num_images=16):
                 return
 
 
-# In[ ]:
 
 
 visualize_model(dloaders, dbcnn)
 
 
-# In[ ]:
 
 
 

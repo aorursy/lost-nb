@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 from __future__ import print_function
 
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -15,7 +13,6 @@ get_ipython().run_line_magic('reload_ext', 'autoreload')
 get_ipython().run_line_magic('autoreload', '2')
 
 
-# In[ ]:
 
 
 import torch
@@ -30,25 +27,21 @@ from os.path import join, exists, expanduser
 from keras.layers import Flatten, Dense, Dropout, Reshape, Permute, Activation,     Input, merge, Lambda
 
 
-# In[ ]:
 
 
 use_cuda = torch.cuda.is_available()
 
 
-# In[ ]:
 
 
 get_ipython().system('ls ../input/dogsdata/data/data')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('writefile', 'AlexNet.py', "import torch.nn as nn\nimport torch.nn.functional as F\nimport numpy as np\n\ndef conv_init(m):\n    classname = m.__class__.__name__\n    if classname.find('Conv') != -1:\n        #nn.init.xavier_uniform(m.weight, gain=np.sqrt(2))\n        nn.init.normal_(m.weight, mean=0, std=1)\n        nn.init.constant(m.bias, 0)\n\nclass AlexNet(nn.Module):\n\n    def __init__(self, num_classes, inputs=3):\n        super(AlexNet, self).__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(inputs, 64, kernel_size=11, stride=4, padding=5),\n            nn.ReLU(inplace=True),\n            nn.MaxPool2d(kernel_size=2, stride=2),\n            nn.Conv2d(64, 192, kernel_size=5, padding=2),\n            nn.ReLU(inplace=True),\n            nn.MaxPool2d(kernel_size=2, stride=2),\n            nn.Conv2d(192, 384, kernel_size=3, padding=1),\n            nn.ReLU(inplace=True),\n            nn.Conv2d(384, 256, kernel_size=3, padding=1),\n            nn.ReLU(inplace=True),\n            nn.Conv2d(256, 256, kernel_size=3, padding=1),\n            nn.ReLU(inplace=True),\n            nn.MaxPool2d(kernel_size=2, stride=2),\n        )\n        self.classifier = nn.Linear(256, num_classes)\n\n    def forward(self, x):\n        x = self.features(x)\n        x = x.view(x.size(0), -1)\n        x = self.classifier(x)\n        return x")
 
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('load', 'AlexNet.py')
@@ -91,13 +84,11 @@ class AlexNet(nn.Module):
         return x
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('writefile', 'train_test.py', 'import torch\nimport torch.optim as optim\nfrom torch.autograd import Variable\nimport config as cf\nimport time\nimport numpy as np\n\nuse_cuda = torch.cuda.is_available()\n\nbest_acc = 0\n\ndef train(epoch, net, trainloader, criterion):\n    net.train()\n    train_loss = 0\n    correct = 0\n    total = 0\n    optimizer = optim.Adam(net.parameters(), lr=cf.lr, weight_decay=5e-4)\n    train_loss_stacked = np.array([0])\n\n    print(\'\\n=> Training Epoch #%d, LR=%.4f\' %(epoch, cf.lr))\n    for batch_idx, (inputs_value, targets) in enumerate(trainloader):\n        if use_cuda:\n            inputs_value, targets = inputs_value.cuda(), targets.cuda() # GPU settings\n        optimizer.zero_grad()\n        inputs_value, targets = Variable(inputs_value), Variable(targets)\n        outputs = net(inputs_value)               # Forward Propagation\n        loss = criterion(outputs, targets)  # Loss\n        loss.backward()  # Backward Propagation\n        optimizer.step() # Optimizer update\n\n        train_loss += loss.data[0]\n        _, predicted = torch.max(outputs.data, 1)\n        total += targets.size(0)\n        correct += predicted.eq(targets.data).cpu().sum()\n        train_loss_stacked = np.append(train_loss_stacked, loss.data[0].cpu().numpy())\n    print (\'| Epoch [%3d/%3d] \\t\\tLoss: %.4f Acc@1: %.3f%%\'\n                %(epoch, cf.num_epochs, loss.data[0], 100.*correct/total))\n\n    return train_loss_stacked\n\n\ndef test(epoch, net, testloader, criterion):\n    global best_acc\n    net.eval()\n    test_loss = 0\n    correct = 0\n    total = 0\n    test_loss_stacked = np.array([0])\n    for batch_idx, (inputs_value, targets) in enumerate(testloader):\n        if use_cuda:\n            inputs_value, targets = inputs_value.cuda(), targets.cuda()\n        with torch.no_grad():\n            inputs_value, targets = Variable(inputs_value), Variable(targets)\n        outputs = net(inputs_value)\n        loss = criterion(outputs, targets)\n\n        test_loss += loss.data[0]\n        _, predicted = torch.max(outputs.data, 1)\n        total += targets.size(0)\n        correct += predicted.eq(targets.data).cpu().sum()\n        test_loss_stacked = np.append(test_loss_stacked, loss.data[0].cpu().numpy())\n\n\n    # Save checkpoint when best model\n    acc = 100. * correct / total\n    print("\\n| Validation Epoch #%d\\t\\t\\tLoss: %.4f Acc@1: %.2f%%" % (epoch, loss.data[0], acc))\n\n\n\n    if acc > best_acc:\n        best_acc = acc\n    print(\'* Test results : Acc@1 = %.2f%%\' % (best_acc))\n\n    return test_loss_stacked\n\ndef start_train_test(net,trainloader, testloader, criterion):\n    elapsed_time = 0\n\n    for epoch in range(cf.start_epoch, cf.start_epoch + cf.num_epochs):\n        start_time = time.time()\n\n        train_loss = train(epoch, net, trainloader, criterion)\n        test_loss = test(epoch, net, testloader, criterion)\n\n        epoch_time = time.time() - start_time\n        elapsed_time += epoch_time\n        print(\'| Elapsed time : %d:%02d:%02d\' % (get_hms(elapsed_time)))\n\n    return train_loss.tolist(), test_loss.tolist()\n\ndef get_hms(seconds):\n    m, s = divmod(seconds, 60)\n    h, m = divmod(m, 60)\n\n    return h, m, s')
 
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('load', 'train_test.py')
@@ -198,32 +189,27 @@ def get_hms(seconds):
     return h, m, s
 
 
-# In[ ]:
 
 
 from train_test import start_train_test
 from AlexNet import AlexNet
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('writefile', 'config.py', "start_epoch = 1\nnum_epochs = 10\nbatch_size = 256\noptim_type = 'Adam'\nresize=32\nlr=0.001\n\nmean = {\n    'cifar10': (0.4914, 0.4822, 0.4465),\n    'cifar100': (0.5071, 0.4867, 0.4408),\n    'mnist': (0.1307,),\n    'stl10': (0.485, 0.456, 0.406),\n}\n\nstd = {\n    'cifar10': (0.2023, 0.1994, 0.2010),\n    'cifar100': (0.2675, 0.2565, 0.2761),\n    'mnist': (0.3081,),\n    'stl10': (0.229, 0.224, 0.225),\n}")
 
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('load', 'config.py')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('writefile', 'transform.py', 'import torchvision.transforms as transforms\n\nimport config as cf\n\ndef transform_training():\n\n    transform_train = transforms.Compose([\n        transforms.Resize((cf.resize, cf.resize)),\n        transforms.RandomCrop(32, padding=4),\n        # transforms.RandomHorizontalFlip(),\n        # CIFAR10Policy(),\n        transforms.ToTensor(),\n    ])  # meanstd transformation\n\n    return transform_train\n\ndef transform_testing():\n\n    transform_test = transforms.Compose([\n        transforms.Resize((cf.resize, cf.resize)),\n        transforms.RandomCrop(32, padding=4),\n        # transforms.RandomHorizontalFlip(),\n        # CIFAR10Policy(),\n        transforms.ToTensor(),\n    ])\n\n    return transform_test')
 
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('load', 'transform.py')
@@ -256,7 +242,6 @@ def transform_testing():
     return transform_test
 
 
-# In[ ]:
 
 
 import torch
@@ -281,7 +266,6 @@ def dataset(dataset_name):
     return trainloader, testloader, outputs, inputs
 
 
-# In[ ]:
 
 
 data_dir = '../input/dog-breed-identification'
@@ -292,7 +276,6 @@ labels = pd.read_csv(join(data_dir, 'labels.csv'))
 sample_submission = pd.read_csv(join(data_dir, 'sample_submission.csv'))
 
 
-# In[ ]:
 
 
 selected_breed_list = list(labels.groupby('breed').count().sort_values(by='id', ascending=False).head(NUM_CLASSES).index)
@@ -316,14 +299,12 @@ ytr = y_train[train_idx]
 yv = y_train[valid_idx]
 
 
-# In[ ]:
 
 
 trainloader, testloader, outputs, inputs = dataset('dog-breed')
 print ('Output classes: {}\nInput channels: {}'.format(outputs, inputs))
 
 
-# In[ ]:
 
 
 def imshow(inp, title=None):
@@ -347,14 +328,12 @@ out = torchvision.utils.make_grid(inputdata)
 imshow(out)
 
 
-# In[ ]:
 
 
 net = AlexNet(num_classes = outputs, inputs=inputs)
 file_name = 'alexnet-'
 
 
-# In[ ]:
 
 
 if use_cuda:
@@ -363,19 +342,16 @@ if use_cuda:
     cudnn.benchmark = True
 
 
-# In[ ]:
 
 
 criterion = nn.CrossEntropyLoss()
 
 
-# In[ ]:
 
 
 train_loss, test_loss = start_train_test(net, trainloader, testloader, criterion)
 
 
-# In[ ]:
 
 
 plt.plot(train_loss)
@@ -383,7 +359,6 @@ plt.ylabel('Train Loss')
 plt.show()
 
 
-# In[ ]:
 
 
 plt.plot(test_loss)
@@ -391,7 +366,6 @@ plt.ylabel('Test Loss')
 plt.show()
 
 
-# In[ ]:
 
 
 

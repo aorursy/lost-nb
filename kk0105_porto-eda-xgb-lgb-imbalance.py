@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -19,20 +18,17 @@ init_notebook_mode(connected=True)    #THIS LINE IS MOST IMPORTANT AS THIS WILL 
 #NOTEBOOK WHILE KERNEL IS RUNNING
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/porto-seguro-safe-driver-prediction/train.csv')
 test = pd.read_csv('../input/porto-seguro-safe-driver-prediction/test.csv')
 
 
-# In[3]:
 
 
 train.head()
 
 
-# In[4]:
 
 
 # Function to calculate missing values by column# Funct 
@@ -64,14 +60,12 @@ def missing_values_table(df):
         return mis_val_table_ren_columns
 
 
-# In[5]:
 
 
 train_copy = train
 train_copy = train_copy.replace(-1, np.NaN)
 
 
-# In[6]:
 
 
 # Missing values statistics
@@ -79,7 +73,6 @@ missing_values = missing_values_table(train_copy)  # train_copy 是一个 datafr
 missing_values.head(20)
 
 
-# In[7]:
 
 
 # train_counts = train.target.value_counts()
@@ -91,7 +84,6 @@ missing_values.head(20)
 # fig.show()
 
 
-# In[8]:
 
 
 train_counts = train.target.value_counts()
@@ -103,7 +95,6 @@ fig.update_layout(yaxis_title='counts',xaxis_title='target',template='seaborn',t
 fig.show()
 
 
-# In[9]:
 
 
 bin_col = [col for col in train.columns if '_bin' in col]
@@ -114,7 +105,6 @@ for col in bin_col:
     one_list.append((train[col]==1).sum())
 
 
-# In[10]:
 
 
 trace1 = go.Bar(
@@ -138,7 +128,6 @@ fig = go.Figure(data=data, layout=layout)
 fig.show()
 
 
-# In[11]:
 
 
 from sklearn.model_selection import train_test_split
@@ -153,7 +142,6 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import recall_score
 
 
-# In[12]:
 
 
 train_target = train['target']
@@ -164,7 +152,6 @@ train_feature = train.drop(columns = ['target','id'])
 x_train,x_test,y_train,y_test = train_test_split(train_feature,train_target,test_size= 0.2,random_state=10)
 
 
-# In[13]:
 
 
 # model = XGBClassifier(n_estimators=1000)
@@ -181,7 +168,6 @@ print('Accuracy: {:.3f}'.format(acc* 100.0))
 print('recall: {:.3f}'.format(recall* 100.0))
 
 
-# In[14]:
 
 
 def plot_confusion_matrix(cm, classes,
@@ -218,7 +204,6 @@ def plot_confusion_matrix(cm, classes,
         plt.xlabel('Predicted label')
 
 
-# In[15]:
 
 
 classes = ['target_0','target_1'] # 顺序别搞错
@@ -234,14 +219,12 @@ plt.show()
 # plt.show()
 
 
-# In[16]:
 
 
 from imblearn.over_sampling import SMOTE
 from sklearn.preprocessing import StandardScaler
 
 
-# In[17]:
 
 
 # 定义绘图函数
@@ -274,7 +257,6 @@ X = pca.fit_transform(X)
 plot_2d_space(X, y_train, 'Imbalanced dataset (2 PCA components)')
 
 
-# In[18]:
 
 
 oversampler=SMOTE(random_state=0)
@@ -286,7 +268,6 @@ print("label1: ",len(os_labels[os_labels==1]))
 print("label0: ",len(os_labels[os_labels==0]))
 
 
-# In[19]:
 
 
 oversampler=SMOTE(random_state=0)
@@ -298,7 +279,6 @@ print("label1: ",len(os_labels_test[os_labels_test==1]))
 print("label0: ",len(os_labels_test[os_labels_test==0]))
 
 
-# In[20]:
 
 
 ss = StandardScaler()
@@ -310,7 +290,6 @@ X = pca.fit_transform(X)
 plot_2d_space(X, os_labels, 'Imbalanced dataset (2 PCA components)')
 
 
-# In[21]:
 
 
 new_os_features = os_features.copy()
@@ -325,32 +304,27 @@ print('Most Positive Correlations:\n')
 correlations.head()
 
 
-# In[22]:
 
 
 print('Most Negative Correlations:\n')
 correlations.tail()
 
 
-# In[23]:
 
 
 correlations.loc[correlations.index.isin(['ps_ind_10_bin','ps_ind_11_bin','ps_ind_12_bin','ps_ind_13_bin'])]
 
 
-# In[24]:
 
 
 np.abs(corrs).sort_values(ascending=False).tail(15)
 
 
-# In[25]:
 
 
 corrs = os_features.corr()
 
 
-# In[26]:
 
 
 # 设置阈值
@@ -364,13 +338,11 @@ for col in corrs:
     above_threshold_vars[col] = list(corrs.index[corrs[col] > threshold])
 
 
-# In[27]:
 
 
 # above_threshold_vars
 
 
-# In[28]:
 
 
 # 跟踪要删除的列和已检查的列
@@ -396,7 +368,6 @@ print('Name of columns to remove: ', cols_to_remove)
 print('Number of columns to remove: ', len(cols_to_remove))
 
 
-# In[29]:
 
 
 train_corrs_removed = os_features.drop(columns = cols_to_remove)
@@ -406,14 +377,12 @@ print('Training Corrs Removed Shape: ', train_corrs_removed.shape)
 print('Testing Corrs Removed Shape: ', test_corrs_removed.shape)
 
 
-# In[30]:
 
 
 train_corrs_removed.to_csv('train_corrs_removed.csv', index = False)
 test_corrs_removed.to_csv('test_corrs_removed.csv', index = False)
 
 
-# In[31]:
 
 
 # `1、定义基尼系数：`
@@ -433,7 +402,6 @@ def gini_xgb(pred, y):
     return 'gini', gini(y, pred) / gini(y, y)
 
 
-# In[32]:
 
 
 from sklearn.model_selection import StratifiedKFold
@@ -441,7 +409,6 @@ import xgboost as xgb
 import lightgbm as lgb
 
 
-# In[33]:
 
 
 params = {'eta': 0.02, 'max_depth': 4, 'subsample': 0.9, 'colsample_bytree': 0.9, 
@@ -465,14 +432,12 @@ for i, (train_index, test_index) in enumerate(skf.split(train_feature, train_tar
 #                         ntree_limit=xgb_model.best_ntree_limit+50)
 
 
-# In[34]:
 
 
 features = train_feature.columns
 test_ids = test['id']
 
 
-# In[35]:
 
 
 xgb_test_predictions1 = xgb_model.predict(xgb.DMatrix(test[features]),ntree_limit=xgb_model.best_ntree_limit+50)
@@ -481,7 +446,6 @@ submission = pd.DataFrame({'id': test_ids, 'target': xgb_test_predictions1})
 submission.to_csv('before_oversampling_xgb.csv', index = False, float_format='%.5f')
 
 
-# In[36]:
 
 
 def model_feature_importances(model):
@@ -526,13 +490,11 @@ def model_feature_importances(model):
     fig.show()
 
 
-# In[37]:
 
 
 model_feature_importances(xgb_model)
 
 
-# In[38]:
 
 
 xgb_importance = np.array(list(xgb_model.get_fscore().values()))
@@ -566,33 +528,28 @@ fig1['layout'].update(layout)
 py.iplot(fig1, filename='plots')
 
 
-# In[39]:
 
 
 new_features = pd.DataFrame(xgb_model.get_fscore(),index=['features_importance']).T                        .sort_values(by='features_importance',ascending=False)                        .iloc[0:38]
 new_features 
 
 
-# In[40]:
 
 
 train_feature.shape
 
 
-# In[41]:
 
 
 new_train_feature = train_feature[new_features.index]
 new_train_feature.head()
 
 
-# In[42]:
 
 
 new_train_feature.shape
 
 
-# In[43]:
 
 
 params = {'eta': 0.02, 'max_depth': 4, 'subsample': 0.9, 'colsample_bytree': 0.9, 
@@ -613,7 +570,6 @@ for i, (train_index, test_index) in enumerate(skf.split(new_train_feature, train
                           feval=gini_xgb, maximize=True, verbose_eval=100)
 
 
-# In[44]:
 
 
 xgb_test_predictions2 = xgb_model2.predict(xgb.DMatrix(test[new_features.index]),ntree_limit=xgb_model2.best_ntree_limit+50)
@@ -622,7 +578,6 @@ submission = pd.DataFrame({'id': test_ids, 'target': xgb_test_predictions2})
 submission.to_csv('before_oversampling_after_feature_choose_xgb.csv', index = False, float_format='%.5f')
 
 
-# In[45]:
 
 
 def gini_lgb(preds, dtrain):
@@ -631,7 +586,6 @@ def gini_lgb(preds, dtrain):
     return 'gini', score, True
 
 
-# In[46]:
 
 
 # https://www.kaggle.com/rshally/porto-xgb-lgb-kfold-lb-0-282
@@ -684,13 +638,11 @@ def gini_lgb(preds, dtrain):
 # submission.head(2)
 
 
-# In[47]:
 
 
 # submission.to_csv('before_oversampling_after_feature_choose_xgb.csv', index = False, float_format='%.5f')
 
 
-# In[48]:
 
 
 # params = {'eta': 0.02, 'max_depth': 4, 'subsample': 0.9, 'colsample_bytree': 0.9, 
@@ -711,27 +663,23 @@ def gini_lgb(preds, dtrain):
 #                           feval=gini_xgb, maximize=True, verbose_eval=100)
 
 
-# In[49]:
 
 
 # xgb_test_predictions = xgb_model2.predict(xgb.DMatrix(test[features]), 
 #                         ntree_limit=xgb_model2.best_ntree_limit+50)
 
 
-# In[50]:
 
 
 # submission = pd.DataFrame({'id': test_ids, 'target': xgb_test_predictions})
 # submission.to_csv('after_oversampling_xgb.csv', index = False, float_format='%.5f')
 
 
-# In[51]:
 
 
 # from sklearn.ensemble import RandomForestClassifier
 
 
-# In[52]:
 
 
 # os_features.drop(['id'],axis=1,inplace=True)
@@ -744,7 +692,6 @@ def gini_lgb(preds, dtrain):
 # print("----- Training Done -----")
 
 
-# In[53]:
 
 
 # RandomForestClassifier feature importances Scatter plot 
@@ -793,7 +740,6 @@ def gini_lgb(preds, dtrain):
 # rdf_feature_importances(model=rdf_clf)
 
 
-# In[54]:
 
 
 # x, y = (list(x) for x in zip(*sorted(zip(rdf_clf.feature_importances_, features), 
@@ -825,7 +771,6 @@ def gini_lgb(preds, dtrain):
 # py.iplot(fig1, filename='plots')
 
 
-# In[55]:
 
 
 # y_pred = rdf_clf.predict(os_features_test)
@@ -837,7 +782,6 @@ def gini_lgb(preds, dtrain):
 # print('recall: {:.3f}'.format(recall* 100.0))
 
 
-# In[56]:
 
 
 # model = XGBClassifier()
@@ -853,13 +797,11 @@ def gini_lgb(preds, dtrain):
 # print('recall: {:.3f}'.format(recall* 100.0))
 
 
-# In[ ]:
 
 
 
 
 
-# In[57]:
 
 
 # test_predictions = rdf_clf.predict(new_test)
@@ -868,13 +810,11 @@ def gini_lgb(preds, dtrain):
 # submission.to_csv('RandomForestClassifier_predict_1.csv', index = False)
 
 
-# In[58]:
 
 
 # submission.head()
 
 
-# In[ ]:
 
 
 

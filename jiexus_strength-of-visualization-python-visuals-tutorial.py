@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd  #pandas for using dataframe and reading csv 
@@ -36,7 +35,6 @@ output_notebook()
 plotly.offline.init_notebook_mode() # run at the start of every ipython notebook
 
 
-# In[2]:
 
 
 s = time.time()
@@ -52,7 +50,6 @@ print("Time taken by above cell is {}.".format((end-s)))
 train_df.head()
 
 
-# In[3]:
 
 
 # checking if Ids are unique, 
@@ -67,7 +64,6 @@ end = time.time()
 print("Time taken by above cell is {}.".format(end-start))
 
 
-# In[4]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -83,7 +79,6 @@ print("Time taken by above cell is {}.".format((end-start)))
 plt.show()
 
 
-# In[5]:
 
 
 start = time.time()
@@ -101,7 +96,6 @@ print("Time taken by above cell is {}.".format((end-start)))
 plt.show()
 
 
-# In[6]:
 
 
 start = time.time()
@@ -125,7 +119,6 @@ print(df.shape[0], train_data.shape[0])
 plt.show()
 
 
-# In[7]:
 
 
 start = time.time()
@@ -158,7 +151,6 @@ train_data = temp
 print("Time Taken by above cell is {}.".format(end - start))
 
 
-# In[8]:
 
 
 start = time.time()
@@ -200,7 +192,6 @@ ax.imshow(rgb, cmap = 'hot')
 ax.set_axis_off() 
 
 
-# In[9]:
 
 
 start = time.time()
@@ -235,7 +226,6 @@ end = time.time()
 print("Time taken by above cell is {}.".format((end-start)))
 
 
-# In[10]:
 
 
 start = time.time()
@@ -254,7 +244,6 @@ end = time.time()
 print("Time taken by above cell is {}.".format(end-start))
 
 
-# In[11]:
 
 
 start = time.time()
@@ -309,7 +298,6 @@ end = time.time()
 print("Time taken by above cell is {}.".format(end -start))
 
 
-# In[12]:
 
 
 start = time.time()
@@ -324,7 +312,6 @@ end = time.time()
 print("Time taken by above cell is {}.".format(end -start))
 
 
-# In[13]:
 
 
 start = time.time()
@@ -351,7 +338,6 @@ end = time.time()
 print("Time taken by above cell is {}".format(end-start))
 
 
-# In[14]:
 
 
 start = time.time()
@@ -360,7 +346,6 @@ end = time.time()
 print(end-start)
 
 
-# In[15]:
 
 
 filename = 'animation.gif'
@@ -369,7 +354,6 @@ encoded = base64.b64encode(video)
 HTML(data='''<img src="data:image/gif;base64,{0}" type="gif" />'''.format(encoded.decode('ascii')))
 
 
-# In[16]:
 
 
 start = time.time()
@@ -384,7 +368,6 @@ end = time.time()
 print(end - start)
 
 
-# In[17]:
 
 
 import seaborn as sns
@@ -399,7 +382,6 @@ sns.despine(left=True)
 print(df.shape[0])
 
 
-# In[18]:
 
 
 start = time.time()
@@ -413,7 +395,6 @@ end = time.time()
 print("Time taken by above cell is {}.".format(end-start))
 
 
-# In[19]:
 
 
 summary_hour_duration = pd.DataFrame(train_data.groupby(['day_of_week','hour'])['trip_duration'].mean())
@@ -425,7 +406,6 @@ sns.tsplot(data=summary_hour_duration, time="hour", unit = "unit", condition="da
 sns.despine(bottom = False)
 
 
-# In[20]:
 
 
 start = time.time()
@@ -466,7 +446,6 @@ end = time.time()
 print("time taken by thie script by now is {}.".format(end-start))
 
 
-# In[21]:
 
 
 start = time.time()
@@ -483,7 +462,6 @@ end = time.time()
 print("Time taken in clustering is {}.".format(end - start))
 
 
-# In[22]:
 
 
 start = time.time()
@@ -504,7 +482,6 @@ print("Time Taken by above cell is {}.".format(end-start))
 train_cl.head()
 
 
-# In[23]:
 
 
 start = time.time()
@@ -523,7 +500,6 @@ end = time.time()
 print("Time Taken by above cell is {}.".format(end-start))
 
 
-# In[24]:
 
 
 import folium
@@ -548,7 +524,6 @@ def show_fmaps(train_data, path=1):
     return map_1
 
 
-# In[25]:
 
 
 def clusters_map(clus_data, full_data, tile = 'OpenStreetMap', sig = 0, zoom = 12, circle = 0, radius_ = 30):
@@ -575,28 +550,24 @@ def clusters_map(clus_data, full_data, tile = 'OpenStreetMap', sig = 0, zoom = 1
     return map_1
 
 
-# In[26]:
 
 
 osm = show_fmaps(train_data, path=1)
 osm
 
 
-# In[27]:
 
 
 clus_map = clusters_map(centroid_pickups, train_cl, sig =0, zoom =3.2, circle =1, tile = 'Stamen Terrain')
 clus_map
 
 
-# In[28]:
 
 
 clus_map_sig = clusters_map(centroid_pickups, train_cl, sig =1, circle =1)
 clus_map_sig
 
 
-# In[29]:
 
 
 from pandas.tools.plotting import parallel_coordinates
@@ -604,7 +575,6 @@ parallel_coordinates(train_data.sample(1200)[['vendor_id','day_of_week', 'passen
 plt.show()
 
 
-# In[30]:
 
 
 test_df = pd.read_csv('../input/nyc-taxi-trip-duration/test.csv')
@@ -614,7 +584,6 @@ test_df = pd.merge(test_df, test_fr_new, on = 'id', how = 'left')
 test_df.head()
 
 
-# In[31]:
 
 
 start = time.time()
@@ -629,7 +598,6 @@ end = time.time()
 print("Time taken by above cell is {}.".format(end-start))
 
 
-# In[32]:
 
 
 strat = time.time()
@@ -640,7 +608,6 @@ end = time.time()
 print("Time taken by above cell is {}.".format(end-strat))
 
 
-# In[33]:
 
 
 start = time.time()
@@ -653,7 +620,6 @@ end = time.time()
 print("Time Taken by above cell is {}.".format(end-start))
 
 
-# In[34]:
 
 
 start = time.time()
@@ -673,13 +639,11 @@ end = time.time()
 print("Time Taken by above cell is {}.".format(end-start))
 
 
-# In[35]:
 
 
 test_cl.head()
 
 
-# In[36]:
 
 
 import xgboost as xgb
@@ -689,7 +653,6 @@ from sklearn.cluster import MiniBatchKMeans
 import warnings
 
 
-# In[37]:
 
 
 # Lets Add PCA features in the model, reference Beluga's PCA
@@ -714,14 +677,12 @@ end = time.time()
 print("Time Taken by above cell is {}.".format(end - start))
 
 
-# In[38]:
 
 
 train['store_and_fwd_flag_int'] = np.where(train['store_and_fwd_flag']=='N', 0, 1)
 test['store_and_fwd_flag_int'] = np.where(test['store_and_fwd_flag']=='N', 0, 1)
 
 
-# In[39]:
 
 
 feature_names = list(train.columns)
@@ -734,13 +695,11 @@ print("")
 print("Total number of features are {}.".format(len(feature_names)))
 
 
-# In[40]:
 
 
 y = np.log(train['trip_duration'].values + 1)
 
 
-# In[41]:
 
 
 start = time.time()
@@ -762,14 +721,12 @@ print("Time taken by above cell is {}.".format(end - start))
 print('Modeling RMSLE %.5f' % model.best_score)
 
 
-# In[42]:
 
 
 weather = pd.read_csv('../input/weather-data-in-new-york-city-2016/weather_data_nyc_centralpark_2016.csv')
 weather.head()
 
 
-# In[43]:
 
 
 from ggplot import *
@@ -779,7 +736,6 @@ p = ggplot(aes(x='date'),data=weather) + geom_line(aes(y='minimum temperature', 
 p + geom_point(aes(y='minimum temperature', colour = "blue")) #+ stat_smooth(colour='yellow', span=0.2)
 
 
-# In[44]:
 
 
 import matplotlib.pyplot as plt
@@ -793,7 +749,6 @@ weather['snow depth'] = np.where(weather['snow depth']=='T', '0.00',weather['sno
 weather['snow depth'] = list(map(float, weather['snow depth']))
 
 
-# In[45]:
 
 
 import plotly.plotly as py
@@ -828,7 +783,6 @@ data = [trace0, trace1, trace2]
 plotly.offline.iplot(data, filename='scatter-mode')
 
 
-# In[46]:
 
 
 def freq_turn(step_dir):
@@ -854,7 +808,6 @@ def freq_turn(step_dir):
     return a,b,c
 
 
-# In[47]:
 
 
 start = time.time()
@@ -867,7 +820,6 @@ print("Time Taken by above cell is {}.".format(end - start))
 #train_fr.head()
 
 
-# In[48]:
 
 
 train_fr_new = train_fr[['id','straight','left','right']]
@@ -877,7 +829,6 @@ print(len(train.columns))
 #train.columns
 
 
-# In[49]:
 
 
 train['pickup_datetime'] = pd.to_datetime(train['pickup_datetime'])
@@ -889,7 +840,6 @@ train = pd.merge(train, weather[['date','minimum temperature', 'precipitation', 
 train.shape[0]
 
 
-# In[50]:
 
 
 train.loc[:,'hvsine_pick_cent_d'] = haversine_(train['pickup_latitude'].values, train['pickup_longitude'].values, train['centroid_drop_lat'].values, train['centroid_drop_long'].values)
@@ -901,7 +851,6 @@ test.loc[:,'hvsine_drop_cent_p'] = haversine_(test['dropoff_latitude'].values, t
 print("shape of train_features is {}.".format(len(train.columns)))
 
 
-# In[51]:
 
 
 start = time.time()
@@ -953,13 +902,11 @@ layout=go.Layout(annotations=[dict(x=6, y=0.38, showarrow=False,
 fig = go.Figure(data=data, layout=layout)
 
 
-# In[52]:
 
 
 plotly.offline.iplot(fig)  # last 150+ lines of code just to make a beautiful histogram ;) haha
 
 
-# In[53]:
 
 
 Holoviews = False
@@ -983,7 +930,6 @@ if Holoviews:
     grid({'Scatter': {'plot': plot_opts, 'style': style}})
 
 
-# In[54]:
 
 
 sns.set(style="white")
@@ -1009,7 +955,6 @@ sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0,
             square=True, linewidths=.5, cbar_kws={"shrink": .5})
 
 
-# In[55]:
 
 
 start = time.time()
@@ -1022,7 +967,6 @@ print("Time Taken by above cell is {}.".format(end - start))
 #test_fr.head()
 
 
-# In[56]:
 
 
 test_fr_new = test_fr[['id','straight','left','right']]
@@ -1031,7 +975,6 @@ print(len(test.columns))
 #test.columns
 
 
-# In[57]:
 
 
 test['pickup_datetime'] = pd.to_datetime(test['pickup_datetime'])
@@ -1039,7 +982,6 @@ test['date'] = test['pickup_datetime'].dt.date
 test['date'] = pd.to_datetime(test['date'])
 
 
-# In[58]:
 
 
 test= pd.merge(test, weather[['date','minimum temperature', 'precipitation', 'snow fall', 'snow depth']], on= 'date', how = 'left')
@@ -1053,13 +995,11 @@ print("")
 print("Total number of features are {}.".format(len(feature_names)))
 
 
-# In[59]:
 
 
 y = np.log(train['trip_duration'].values + 1)
 
 
-# In[60]:
 
 
 Xtr, Xv, ytr, yv = train_test_split(train[feature_names].values, y, test_size=0.2, random_state=1987)
@@ -1079,7 +1019,6 @@ end = time.time()
 print("Time taken in training is {}.".format(end - start))
 
 
-# In[61]:
 
 
 print('Modeling RMSLE %.5f' % model_1.best_score)
@@ -1092,7 +1031,6 @@ end = time.time()
 print("Time taken in prediction is {}.".format(end - start))
 
 
-# In[62]:
 
 
 # Lets check how the distribution of test and vaidation set looks like ...
@@ -1107,7 +1045,6 @@ end = time.time()
 print("Time taken by above cell is {}.".format((end-start)))
 
 
-# In[63]:
 
 
 start = time.time()
@@ -1119,7 +1056,6 @@ end = time.time()
 print("Time taken in training is {}.".format(end - start))
 
 
-# In[64]:
 
 
 class maps:
@@ -1298,7 +1234,6 @@ class maps:
 
 
 
-# In[65]:
 
 
 def show_gmaps(train_data, path):
@@ -1327,7 +1262,6 @@ end = time.time()
 print("time taken by thie script by now is {}.".format(end-start))
 
 
-# In[66]:
 
 
 # Lets visulalize a sample of 200 trips from all data
@@ -1345,13 +1279,11 @@ print("time taken by thie script by now is {}.".format(end-start))
 
 
 
-# In[67]:
 
 
 df_cluster4 = train_cl
 
 
-# In[68]:
 
 
 start = time.time()
@@ -1365,7 +1297,6 @@ end = time.time()
 print("time taken by thie script by now is {}.".format(end-start))
 
 
-# In[69]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -1384,7 +1315,6 @@ end = time.time()
 print("time taken by thie script by now is {}.".format(end-start))
 
 
-# In[70]:
 
 
 def show_cluster_gmaps(train_df, cluster_df, points_per_cluster, cluster_list, path, name):
@@ -1414,7 +1344,6 @@ end = time.time()
 print("time taken by thie script by now is {}.".format(end-start))
 
 
-# In[71]:
 
 
 cluster_list = range(0,20)
@@ -1429,7 +1358,6 @@ end = time.time()
 print("time taken by thie script by now is {}.".format(end-start))
 
 
-# In[72]:
 
 
 summary_clusters_time = pd.DataFrame(df_cluster4.groupby('label_pick')['trip_duration'].count())
@@ -1447,7 +1375,6 @@ end = time.time()
 print("time taken by thie script by now is {}.".format(end-start))
 
 
-# In[73]:
 
 
 index_rand = np.random.randint(len(cluster_list),size =4)
@@ -1459,7 +1386,6 @@ end = time.time()
 print("time taken by thie script by now is {}.".format(end-start))
 
 
-# In[74]:
 
 
 # cluster visualization - 
@@ -1515,7 +1441,6 @@ end = time.time()
 print("time taken by thie script by now is {}.".format(end-start))
 
 
-# In[75]:
 
 
 cluster_list = cluster_list4#[0, 13, 26, 39] #INITIAL 9,23, 21,23, 33- 23,
@@ -1532,7 +1457,6 @@ end = time.time()
 print("time taken by thie script by now is {}.".format(end-start))
 
 
-# In[76]:
 
 
 # creating a df containing all such combinations
@@ -1558,7 +1482,6 @@ end = time.time()
 print("time taken by thie script by now is {}.".format(end-start))
 
 
-# In[77]:
 
 
 #df_clus_pick_dest['data_from_google']=''
@@ -1617,13 +1540,11 @@ end = time.time()
 print("time taken by thie script by now is {}.".format(end-start))
 
 
-# In[78]:
 
 
 print("Thanks for reading my kernel, I hope you enjoyed it!!")
 
 
-# In[79]:
 
 
 

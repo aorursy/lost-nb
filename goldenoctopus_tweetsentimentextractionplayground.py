@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 TRAIN_PATH = "data/train.json"
@@ -40,14 +38,12 @@ MAX_SEQ_LENGTH = 192
 DOC_STRIDE = 64
 
 
-# In[ ]:
 
 
 data_train, data_test = pd.read_csv(f'{INPUT_DIR}train.csv'), pd.read_csv(f'{INPUT_DIR}test.csv')
 data_train.head(5)
 
 
-# In[ ]:
 
 
 import json
@@ -93,7 +89,6 @@ def convert2squad(data, output_path):
     json.dump(output, output_file)
 
 
-# In[ ]:
 
 
 get_ipython().system('mkdir -p data')
@@ -101,25 +96,21 @@ convert2squad(data_train, TRAIN_PATH)
 convert2squad(data_test, TEST_PATH)
 
 
-# In[ ]:
 
 
 get_ipython().system('mkdir -p $RESULT_DIR')
 
 
-# In[ ]:
 
 
 get_ipython().system('git clone https://github.com/huggingface/transformers; cd transformers; pip install .')
 
 
-# In[ ]:
 
 
 get_ipython().system('python transformers/examples/run_squad.py --model_type $MODEL_TYPE --model_name_or_path $MODEL_NAME_OR_PATH --do_lower_case --do_train --do_eval --data_dir . --cache_dir ./cache --train_file $TRAIN_PATH --predict_file $TEST_PATH --learning_rate $LEARNING_RATE --num_train_epochs $EPOCHS --max_seq_length $MAX_SEQ_LENGTH --doc_stride $DOC_STRIDE --output_dir $RESULT_DIR --per_gpu_eval_batch_size=$BATCH_SIZE --per_gpu_train_batch_size=$BATCH_SIZE --save_steps=100000')
 
 
-# In[ ]:
 
 
 predictions = json.load(open(f'{RESULT_DIR}/predictions_.json', 'r'))
@@ -136,7 +127,6 @@ for i in range(len(submission)):
 submission.head(5)
 
 
-# In[ ]:
 
 
 submission.to_csv('submission.csv', index=False)

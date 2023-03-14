@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Importing necessary libraries
@@ -24,7 +23,6 @@ from sklearn.linear_model import Lasso
 from sklearn.neural_network import MLPRegressor
 
 
-# In[2]:
 
 
 # Function to load_data into np matrixs
@@ -48,7 +46,6 @@ def load_data_into_np(train_df, test_df):
     return X, y, X_train, y_train, X_test, y_test, X_predict, train_df, test_df
 
 
-# In[3]:
 
 
 # Function to load_data after new csv files have been saved
@@ -78,7 +75,6 @@ def load_data(train_file_name, test_file_name):
     return X, y, X_train, y_train, X_test, y_test, X_predict, train_df, test_df
 
 
-# In[4]:
 
 
 # Function to load_data with train / cv / test split after new csv files have been saved
@@ -109,7 +105,6 @@ def load_data_with_cv(train_file_name, test_file_name):
     return X, y, X_train, y_train, X_test, y_test, X_cv_temp, y_cv_temp, X_predict, train_df, test_df
 
 
-# In[5]:
 
 
 # Function to Test Model on random test train splits
@@ -127,7 +122,6 @@ def test_model(model, count, X_temp, y_temp):
         print(f"Root Mean Square error of model Trial {i + 1}: ", mean_squared_error(y_predictions, y_test_temp, squared = False))
 
 
-# In[6]:
 
 
 # Function to get submission file
@@ -150,7 +144,6 @@ def get_prediction_file(model, filename, num):
     df_submission.to_csv(submission_file_path, index = False)
 
 
-# In[7]:
 
 
 # Function to evaluate a trained model
@@ -160,7 +153,6 @@ def evaluate(model, test_features, test_labels):
     print('Root Mean Square Error: {:0.4f}'.format(mean_squared_error(predictions, test_labels, squared = False)))
 
 
-# In[8]:
 
 
 # Function to compare the differences between prediction files
@@ -178,7 +170,6 @@ def compare_preditions(file1, file2):
     print(f"Root Mean Square error : ", mean_squared_error(y1, y2, squared = False))
 
 
-# In[9]:
 
 
 # Function to plot Train, Crossvalidation vs number of epochs of iterations rmse
@@ -193,7 +184,6 @@ def plot_log(history, start):
     plt.show()
 
 
-# In[10]:
 
 
 # Function to plot Train, Crossvalidation vs number of epochs of iterations rmse for XGBoost
@@ -208,7 +198,6 @@ def plot_log_xgb(history, start):
     plt.show()
 
 
-# In[11]:
 
 
 # Importing Data
@@ -218,19 +207,16 @@ train_df.drop(['F1', 'F2'], inplace = True, axis = 1)
 test_df.drop(['F1', 'F2'], inplace = True, axis = 1) 
 
 
-# In[12]:
 
 
 train_df.head()
 
 
-# In[13]:
 
 
 test_df.head()
 
 
-# In[14]:
 
 
 for column in train_df.columns:
@@ -239,20 +225,17 @@ for column in train_df.columns:
     plt.show()
 
 
-# In[15]:
 
 
 plt.hist(train_df['O/P'], bins = 100)
 plt.show()
 
 
-# In[16]:
 
 
 X, y, X_train, y_train, X_test, y_test, X_predict, train_df, test_df = load_data_into_np(train_df, test_df)
 
 
-# In[17]:
 
 
 dummy_model = DummyRegressor(strategy = "mean")
@@ -262,7 +245,6 @@ test_model(dummy_model, 1, X, y)
 # get_prediction_file(dummy_model, 'Dummy_model.csv', 1)
 
 
-# In[18]:
 
 
 rf = RandomForestRegressor(n_estimators = 50, random_state = 43)
@@ -274,7 +256,6 @@ test_model(rf, 1, X, y)
 # get_prediction_file(rf, 'baseline.csv', 1)
 
 
-# In[19]:
 
 
 lr_model_1 = LinearRegression()
@@ -284,7 +265,6 @@ test_model(lr_model_1, 1, X, y)
 # get_prediction_file(dummy_model, 'Dummy_model.csv', 1)
 
 
-# In[20]:
 
 
 clf = Lasso(alpha=10, max_iter=100000)
@@ -294,7 +274,6 @@ test_model(clf, 1, X, y)
 # get_prediction_file(clf, 'lasso_1.0.csv', 1)
 
 
-# In[21]:
 
 
 from sklearn.neural_network import MLPRegressor
@@ -306,7 +285,6 @@ test_model(regr_1, 1, X, y)
 # get_prediction_file(regr_1, 'nn_1.3.csv', 1)
 
 
-# In[22]:
 
 
 # Create the parameter grid
@@ -337,7 +315,6 @@ evaluate(best_grid, X_test, y_test)
 # get_prediction_file(best_grid, 'rfr_final.csv', 1)
 
 
-# In[23]:
 
 
 param = {
@@ -367,7 +344,6 @@ plt.hist(np.power(clf.predict(X_test), 1), bins = 50)
 plt.show()
 
 
-# In[24]:
 
 
 clf = XGBRegressor(colsample_bytree=0.4,
@@ -393,7 +369,6 @@ plt.hist(np.power(clf.predict(X_test), 1), bins = 50)
 plt.show()
 
 
-# In[25]:
 
 
 # Loading data in to DMatrix
@@ -427,7 +402,6 @@ print("Best RSME: {:.2f} with {} rounds".format(
                  xgb_model.best_iteration+1))
 
 
-# In[26]:
 
 
 # Testing cv 
@@ -443,13 +417,11 @@ cv_results = xgb.cv(
 cv_results
 
 
-# In[27]:
 
 
 cv_results['test-rmse-mean'].min()
 
 
-# In[28]:
 
 
 gridsearch_params = [
@@ -488,7 +460,6 @@ for max_depth, min_child_weight in gridsearch_params:
 print("Best params: {}, {}, RMSE: {}".format(best_params[0], best_params[1], min_rmse))
 
 
-# In[29]:
 
 
 # Setting best parameters
@@ -496,7 +467,6 @@ params['max_depth'] = best_params[0]
 params['min_child_weight'] = best_params[1]
 
 
-# In[30]:
 
 
 gridsearch_params = [
@@ -533,7 +503,6 @@ for subsample, colsample in reversed(gridsearch_params):
 print("Best params: {}, {}, RMSE: {}".format(best_params[0], best_params[1], min_rmse))
 
 
-# In[31]:
 
 
 # Setting best parameters
@@ -541,7 +510,6 @@ params['subsample'] = best_params[0]
 params['colsample_bytree'] = best_params[1]
 
 
-# In[32]:
 
 
 min_rmse = float("Inf")
@@ -570,13 +538,11 @@ for eta in [.3, .2, .1, .05, 0.02, 0.01]:
 print("Best params: {}, RMSE: {}".format(best_params, min_rmse))
 
 
-# In[33]:
 
 
 params['eta'] = best_params
 
 
-# In[34]:
 
 
 gridsearch_params = [
@@ -585,7 +551,6 @@ gridsearch_params = [
 ]
 
 
-# In[35]:
 
 
 min_rmse = float("Inf")
@@ -616,13 +581,11 @@ for reg_lambda in gridsearch_params:
 print("Best params: {}, RMSE: {}".format(best_params, min_rmse))
 
 
-# In[36]:
 
 
 params['reg_lambda'] = best_params
 
 
-# In[37]:
 
 
 best_model = xgb.train(
@@ -636,7 +599,6 @@ best_model = xgb.train(
 # get_prediction_file(xgb_model, 'XGB_final_1.csv', 1)
 
 
-# In[38]:
 
 
 test_df['O/P'] = -1
@@ -645,14 +607,12 @@ test_df['O/P'] = -1
 df = pd.concat((train_df, test_df), axis = 0)
 
 
-# In[39]:
 
 
 df = df.astype('float64') 
 df.info()
 
 
-# In[40]:
 
 
 # calculate the correlation matrix
@@ -664,7 +624,6 @@ sns.heatmap(corr,
         yticklabels=corr.columns)
 
 
-# In[41]:
 
 
 correlated_features = set()
@@ -684,7 +643,6 @@ for i in range(len(correlation_matrix .columns)):
 df.drop(labels=correlated_features, axis=1, inplace=True)
 
 
-# In[42]:
 
 
 print(correlated_features)
@@ -698,14 +656,12 @@ sns.heatmap(corr,
         yticklabels=corr.columns)
 
 
-# In[43]:
 
 
 print(removed_columns)
 df.info()
 
 
-# In[44]:
 
 
 train_df = df.loc[0:(14000-1), :]
@@ -713,26 +669,22 @@ test_df = df.loc[14000:, :]
 test_df.drop('O/P', inplace = True, axis = 1)
 
 
-# In[45]:
 
 
 train_df.info()
 
 
-# In[46]:
 
 
 test_df.info()
 
 
-# In[47]:
 
 
 # save_files('Train_data_def_2.csv', 'Test_data_def_2.csv')
 X, y, X_train, y_train, X_test, y_test, X_predict, train_df, test_df = load_data_into_np(train_df, test_df)
 
 
-# In[48]:
 
 
 # Create the parameter grid
@@ -763,7 +715,6 @@ evaluate(best_grid, X_test, y_test)
 # get_prediction_file(best_grid, 'rfr_final_2.csv', 1)
 
 
-# In[49]:
 
 
 param = {
@@ -793,7 +744,6 @@ plt.hist(np.power(clf.predict(X_test), 1), bins = 50)
 plt.show()
 
 
-# In[50]:
 
 
 clf = XGBRegressor(colsample_bytree=0.4,
@@ -819,7 +769,6 @@ plt.hist(np.power(clf.predict(X_test), 1), bins = 50)
 plt.show()
 
 
-# In[51]:
 
 
 # Loading data in to DMatrix
@@ -852,7 +801,6 @@ print("Best RSME: {:.2f} with {} rounds".format(
                  xgb_model.best_iteration+1))
 
 
-# In[52]:
 
 
 # Testing cv 
@@ -868,13 +816,11 @@ cv_results = xgb.cv(
 cv_results
 
 
-# In[53]:
 
 
 cv_results['test-rmse-mean'].min()
 
 
-# In[54]:
 
 
 gridsearch_params = [
@@ -913,7 +859,6 @@ for max_depth, min_child_weight in gridsearch_params:
 print("Best params: {}, {}, RMSE: {}".format(best_params[0], best_params[1], min_rmse))
 
 
-# In[55]:
 
 
 # Setting best parameters
@@ -921,7 +866,6 @@ params['max_depth'] = best_params[0]
 params['min_child_weight'] = best_params[1]
 
 
-# In[56]:
 
 
 gridsearch_params = [
@@ -958,7 +902,6 @@ for subsample, colsample in reversed(gridsearch_params):
 print("Best params: {}, {}, RMSE: {}".format(best_params[0], best_params[1], min_rmse))
 
 
-# In[57]:
 
 
 # Setting best parameters
@@ -966,7 +909,6 @@ params['subsample'] = best_params[0]
 params['colsample_bytree'] = best_params[1]
 
 
-# In[58]:
 
 
 min_rmse = float("Inf")
@@ -995,13 +937,11 @@ for eta in [.3, .2, .1, .05, 0.02, 0.01]:
 print("Best params: {}, RMSE: {}".format(best_params, min_rmse))
 
 
-# In[59]:
 
 
 params['eta'] = best_params
 
 
-# In[60]:
 
 
 gridsearch_params = [
@@ -1010,7 +950,6 @@ gridsearch_params = [
 ]
 
 
-# In[61]:
 
 
 min_rmse = float("Inf")
@@ -1041,13 +980,11 @@ for reg_lambda in gridsearch_params:
 print("Best params: {}, RMSE: {}".format(best_params, min_rmse))
 
 
-# In[62]:
 
 
 params['reg_lambda'] = best_params
 
 
-# In[63]:
 
 
 best_model = xgb.train(
@@ -1061,7 +998,6 @@ best_model = xgb.train(
 # get_prediction_file(best_model, 'XGB_final_2.csv', 1)
 
 
-# In[64]:
 
 
 test_df['O/P'] = -1
@@ -1070,13 +1006,11 @@ test_df['O/P'] = -1
 df = pd.concat((train_df, test_df), axis = 0)
 
 
-# In[65]:
 
 
 df.describe()
 
 
-# In[66]:
 
 
 dummy_columns = ['F3', 'F4', 'F5', 'F7', 'F8', 'F9', 'F11', 'F12']
@@ -1119,26 +1053,22 @@ for column in df.columns:
         removed_columns.append(column)
 
 
-# In[67]:
 
 
 print(removed_columns)
 df.info()
 
 
-# In[68]:
 
 
 df.describe()
 
 
-# In[69]:
 
 
 df.head()
 
 
-# In[70]:
 
 
 # Getting Dummy Variables
@@ -1148,7 +1078,6 @@ print(real_dummies)
 df = pd.get_dummies(df, columns = real_dummies)
 
 
-# In[71]:
 
 
 train_df = df.loc[0:(14000-1), :]
@@ -1156,14 +1085,12 @@ test_df = df.loc[14000:, :]
 test_df.drop('O/P', inplace = True, axis = 1)
 
 
-# In[72]:
 
 
 # save_files('Train_data_norm_unskew.csv', 'Test_data_norm_unskew.csv')
 X, y, X_train, y_train, X_test, y_test, X_predict, train_df, test_df = load_data_into_np(train_df, test_df)
 
 
-# In[73]:
 
 
 regr_1 = MLPRegressor(random_state = 1, max_iter = 10000)
@@ -1173,7 +1100,6 @@ test_model(regr_1, 1, X, y)
 # get_prediction_file(regr_1, 'nn_1.3.csv', 1)
 
 
-# In[74]:
 
 
 from tensorflow.keras.models import Sequential
@@ -1192,13 +1118,11 @@ model.compile(optimizer = 'adam' , loss = 'mse', metrics = ['mse'])
 history = model.fit(X_train, y_train, epochs = 50, batch_size = 10,  validation_data=(X_test, y_test))
 
 
-# In[75]:
 
 
 plot_log(history, 5)
 
 
-# In[76]:
 
 
 model = Sequential()
@@ -1213,13 +1137,11 @@ model.compile(optimizer = 'adam' , loss = 'mse', metrics = ['mse'])
 history = model.fit(X_train, y_train, epochs = 20, batch_size = 10,  validation_data=(X_test, y_test))
 
 
-# In[77]:
 
 
 plot_log(history, 1)
 
 
-# In[78]:
 
 
 model = Sequential()
@@ -1234,13 +1156,11 @@ model.compile(optimizer = 'adam' , loss = 'mse', metrics = ['mse'])
 history = model.fit(X_train, y_train, epochs = 20, batch_size = 10,  validation_data=(X_test, y_test))
 
 
-# In[79]:
 
 
 plot_log(history, 0)
 
 
-# In[80]:
 
 
 model = Sequential()
@@ -1255,7 +1175,6 @@ model.compile(optimizer = 'adam' , loss = 'mse', metrics = ['mse'])
 history = model.fit(X_train, y_train, epochs = 50, batch_size = 10,  validation_data=(X_test, y_test))
 
 
-# In[81]:
 
 
 plot_log(history, 3)

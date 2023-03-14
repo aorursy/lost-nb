@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import time
@@ -22,7 +21,6 @@ from sklearn.base import BaseEstimator,TransformerMixin,RegressorMixin,clone
 from sklearn.metrics import mean_squared_log_error
 
 
-# In[2]:
 
 
 train=pd.read_csv("../input/train.csv")
@@ -30,13 +28,11 @@ test=pd.read_csv("../input/test.csv")
 print("Shape of train set = {}, shape of test set = {}".format(train.shape,test.shape))
 
 
-# In[3]:
 
 
 train.info()
 
 
-# In[4]:
 
 
 test.index=test.index+3000
@@ -46,7 +42,6 @@ y_train=train["revenue"]
 print("Shape of df = {}, shape of y_train = {}".format(df.shape,y_train.shape))
 
 
-# In[5]:
 
 
 def visualize_distribution(y):
@@ -63,27 +58,23 @@ def visualize_probplot(y):
     plt.show()
 
 
-# In[6]:
 
 
 visualize_distribution(y_train)
 visualize_probplot(y_train)
 
 
-# In[7]:
 
 
 y_train=boxcox1p(y_train,0.2)
 
 
-# In[8]:
 
 
 visualize_distribution(y_train)
 visualize_probplot(y_train)
 
 
-# In[9]:
 
 
 features_to_fix=["belongs_to_collection", "genres", "production_companies", "production_countries",                 "Keywords"]
@@ -92,14 +83,12 @@ for feature in features_to_fix:
     df.loc[df[feature].notnull(),feature]=    df.loc[df[feature].notnull(),feature].apply(lambda x : ast.literal_eval(x))    .apply(lambda x : [y["name"] for y in x])
 
 
-# In[10]:
 
 
 df.loc[df["cast"].notnull(),"cast"]=df.loc[df["cast"].notnull(),"cast"].apply(lambda x : ast.literal_eval(x))
 df.loc[df["crew"].notnull(),"crew"]=df.loc[df["crew"].notnull(),"crew"].apply(lambda x : ast.literal_eval(x))
 
 
-# In[11]:
 
 
 df["cast_len"] = df.loc[df["cast"].notnull(),"cast"].apply(lambda x : len(x))
@@ -119,7 +108,6 @@ df['overview_word_count'] = df['overview'].str.split().str.len()
 df['tagline_word_count'] = df['tagline'].str.split().str.len()
 
 
-# In[12]:
 
 
 df.loc[df["homepage"].notnull(),"homepage"]=1
@@ -138,7 +126,6 @@ df["isReleased"]=1
 df.loc[df["status"]!="Released","isReleased"]=0
 
 
-# In[13]:
 
 
 release_date=pd.to_datetime(df["release_date"])
@@ -149,13 +136,11 @@ df["release_wd"]=release_date.dt.dayofweek
 df["release_quarter"]=release_date.dt.quarter
 
 
-# In[14]:
 
 
 df.loc[df["cast"].notnull(),"cast"]=df.loc[df["cast"].notnull(),"cast"].apply(lambda x : [y["name"] for y in x if y["order"]<6]) 
 
 
-# In[15]:
 
 
 df["Director"]=[[] for i in range(df.shape[0])]
@@ -169,13 +154,11 @@ df["Producer"]=df.loc[df["crew"].notnull(),"crew"].apply(lambda x : [y["name"] f
 df["Executive Producer"]=df.loc[df["crew"].notnull(),"crew"].apply(lambda x : [y["name"] for y in x if y["job"]=="Executive Producer"])
 
 
-# In[16]:
 
 
 df=df.drop(["imdb_id","original_title","overview","poster_path","tagline","status","title",           "spoken_languages","release_date","crew"],axis=1)
 
 
-# In[17]:
 
 
 mis_val=((df.isnull().sum()/df.shape[0])*100).sort_values(ascending=False)
@@ -183,7 +166,6 @@ mis_val=mis_val.drop(mis_val[mis_val==0].index)
 print(mis_val)
 
 
-# In[18]:
 
 
 to_empty_list=["belongs_to_collection","Keywords","production_companies","production_countries",              "Director","Producer","Executive Producer","cast","genres"]
@@ -192,7 +174,6 @@ for feature in to_empty_list:
     df[feature] = df[feature].apply(lambda d: d if isinstance(d, list) else [])
 
 
-# In[19]:
 
 
 to_zero=["runtime","release_month","release_year","release_wd","release_quarter","release_day"]+["Keywords_len","production_companies_len","production_countries_len","crew_len","cast_len","genres_len",
@@ -202,7 +183,6 @@ for feat in to_zero:
     df[feat]=df[feat].fillna(0)
 
 
-# In[20]:
 
 
 df['_budget_popularity_ratio'] = df['budget']/df['popularity']
@@ -210,7 +190,6 @@ df['_releaseYear_popularity_ratio'] = df['release_year']/df['popularity']
 df['_releaseYear_popularity_ratio2'] = df['popularity']/df['release_year']
 
 
-# In[21]:
 
 
 mis_val=((df.isnull().sum()/df.shape[0])*100).sort_values(ascending=False)
@@ -218,7 +197,6 @@ mis_val=mis_val.drop(mis_val[mis_val==0].index)
 print(mis_val)
 
 
-# In[22]:
 
 
 numeric=[feat for feat in df.columns if df[feat].dtype!="object"]
@@ -228,7 +206,6 @@ skew=skewness[skewness>2.5]
 print(skew)
 
 
-# In[23]:
 
 
 high_skew=skew[skew>10].index
@@ -241,14 +218,12 @@ for feat in medium_skew:
     df[feat]=df[feat]=boxcox1p(df[feat],0.15)
 
 
-# In[24]:
 
 
 skew=df[skew.index].skew()
 print(skew)
 
 
-# In[25]:
 
 
 plt.figure(figsize=(15,40))
@@ -262,7 +237,6 @@ for i,feat in enumerate(skew.index):
 plt.show()
 
 
-# In[26]:
 
 
 lbl=LabelEncoder()
@@ -270,13 +244,11 @@ lbl.fit(df["release_year"].values)
 df["release_year"]=lbl.transform(df["release_year"].values)
 
 
-# In[27]:
 
 
 to_dummy = ["belongs_to_collection","genres","original_language","production_companies","production_countries",           "Keywords","cast","Director","Producer","Executive Producer"]
 
 
-# In[28]:
 
 
 limits=[4,0,0,35,10,40,10,5,10,12] 
@@ -292,13 +264,11 @@ for i,feat in enumerate(to_dummy):
     df=pd.concat([df, x], axis=1, sort=False)
 
 
-# In[29]:
 
 
 print("The final total number of features is {}".format(df.shape[1]))
 
 
-# In[30]:
 
 
 ntrain=train.shape[0]
@@ -308,7 +278,6 @@ test=df.iloc[ntrain:,:]
 print("The shape of train DataFrame is {} and the shape of the test DataFrame is {}".format(train.shape,test.shape))
 
 
-# In[31]:
 
 
 model_xgb=xgb.XGBRegressor(max_depth=5,
@@ -322,7 +291,6 @@ model_xgb=xgb.XGBRegressor(max_depth=5,
                            colsample_bylevel=0.50)
 
 
-# In[32]:
 
 
 model_lgb=lgb.LGBMRegressor(n_estimators=10000, 
@@ -339,7 +307,6 @@ model_lgb=lgb.LGBMRegressor(n_estimators=10000,
                              use_best_model=True)
 
 
-# In[33]:
 
 
 model_cat = cat.CatBoostRegressor(iterations=10000,learning_rate=0.01,depth=5,eval_metric='RMSE',                              colsample_bylevel=0.7,
@@ -348,7 +315,6 @@ model_cat = cat.CatBoostRegressor(iterations=10000,learning_rate=0.01,depth=5,ev
                               early_stopping_rounds=200)
 
 
-# In[34]:
 
 
 n_folds=5
@@ -358,32 +324,27 @@ def cross_val(model):
     return cr_val
 
 
-# In[35]:
 
 
 #print "\n mean XGB score = {:.3f} with std = {:.3f}".format(cross_val(model_xgb).mean(),cross_val(model_xgb).std())
 
 
-# In[36]:
 
 
 #print "\n mean LGB score = {:.3f} with std = {:.3f}".format(cross_val(model_lgb).mean(),cross_val(model_lgb).std())
 
 
-# In[37]:
 
 
 #print "\n mean LGB score = {:.3f} with std = {:.3f}".format(cross_val(model_cat).mean(),cross_val(model_cat).std())
 
 
-# In[38]:
 
 
 def msle(y,y_pred):
     return np.sqrt(mean_squared_log_error(y,y_pred))
 
 
-# In[39]:
 
 
 ti=time.time()
@@ -394,7 +355,6 @@ lgb_pred_train=model_lgb.predict(train.values)
 print("Mean square logarithmic error of lgb model on whole train = {:.4f}".format(msle(y_train,lgb_pred_train)))
 
 
-# In[40]:
 
 
 ti=time.time()
@@ -405,7 +365,6 @@ xgb_pred_train=model_xgb.predict(train.values)
 print("Mean square logarithmic error of xgb model on whole train = {:.4f}".format(msle(y_train,xgb_pred_train)))
 
 
-# In[41]:
 
 
 ti=time.time()
@@ -417,7 +376,6 @@ cat_pred_train[cat_pred_train<0]=0
 print("Mean square logarithmic error of cat model on whole train = {:.4f}".format(msle(y_train,cat_pred_train)))
 
 
-# In[42]:
 
 
 c = np.array([0.333334,0.333333,0.333333])
@@ -428,7 +386,6 @@ train_pred=xgb_pred_train*c[0]+lgb_pred_train*c[1]+cat_pred_train*c[2]
 print("Mean square logarithmic error of chosen model on whole train = {:.4f}".format(msle(y_train,train_pred)))
 
 
-# In[43]:
 
 
 plt.figure(figsize=(30,10))
@@ -439,7 +396,6 @@ plt.title("Real and predicted revenue of first 500 entries of train set",fontsiz
 plt.show()
 
 
-# In[44]:
 
 
 plt.figure(figsize=(30,10))
@@ -450,7 +406,6 @@ plt.title("Real and predicted revenue of last 500 entries of train set",fontsize
 plt.show()
 
 
-# In[45]:
 
 
 lgb_pred=model_lgb.predict(test)
@@ -458,7 +413,6 @@ xgb_pred=model_xgb.predict(test.values)
 cat_pred=model_cat.predict(test)
 
 
-# In[46]:
 
 
 pred=inv_boxcox1p((xgb_pred*c[0]+lgb_pred*c[1]+cat_pred*c[2]),0.2)
@@ -467,7 +421,6 @@ sub=pd.DataFrame({"id":np.arange(test.shape[0])+3001,"revenue":pred})
 sub.to_csv("my_submission.csv",index=False)
 
 
-# In[47]:
 
 
 

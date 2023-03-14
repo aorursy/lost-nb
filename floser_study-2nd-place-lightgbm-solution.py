@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import lightgbm as lgbm
@@ -13,7 +12,6 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 
 
-# In[2]:
 
 
 def Gini(y_true, y_pred):
@@ -48,7 +46,6 @@ def evalerror(preds, dtrain):
     return 'gini', Gini(labels, preds), True
 
 
-# In[3]:
 
 
 path = "../input/"
@@ -60,7 +57,6 @@ test_id = test['id']
 train.head(10).T #f
 
 
-# In[4]:
 
 
 NFOLDS = 5
@@ -121,7 +117,6 @@ X_test = ssp.hstack(test_list).tocsr()
 train.head(3).T #f
 
 
-# In[5]:
 
 
 #f mod: Py2 to Py3, some print(), xrange() -> range()

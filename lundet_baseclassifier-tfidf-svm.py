@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -35,7 +34,6 @@ TEST_SIZE = 0.8
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import time
@@ -59,7 +57,6 @@ def load_trained_model(model, weights_path):
     return model
 
 
-# In[3]:
 
 
 class DataReader(object):
@@ -156,7 +153,6 @@ class DataReader(object):
         return self.df_all['question_text']
 
 
-# In[4]:
 
 
 class PreProcessor(object):
@@ -275,7 +271,6 @@ class PreProcessor(object):
         return self.text
 
 
-# In[5]:
 
 
 class BaseClassifier(BaseEstimator, ClassifierMixin):
@@ -353,7 +348,6 @@ def clean_text(text):
     return PreProcessor(text).clean_and_get_text()
 
 
-# In[6]:
 
 
 def train_and_eval(X_train, y_train, X_val, y_val):
@@ -393,7 +387,6 @@ with timer('Training and Tuning'):
 print('Entire program is done and it took {:.2f}s'.format(time.time() - t0))
 
 
-# In[7]:
 
 
 def create_submission(X_train, y_train, X_test, df_test):

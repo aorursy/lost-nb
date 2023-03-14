@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import torch
@@ -72,7 +70,6 @@ from operator import itemgetter
 from multiprocessing import Pool
 
 
-# In[3]:
 
 
 #data = pd.read_csv('../input/quora-insincere-questions-classification/train.csv')
@@ -85,14 +82,12 @@ display(train.head())
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-# In[4]:
 
 
 train.rename(columns={'no_misspels' : 'no_misspells'}, inplace=True)
 test.rename(columns={'no_misspels' : 'no_misspells'}, inplace=True)
 
 
-# In[5]:
 
 
 MAX_THRESHOLD = 0.21
@@ -103,7 +98,6 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.1, random_state=42)
 
 
-# In[6]:
 
 
 word2vec_path = '../input/quora-insincere-questions-classification/embeddings/GoogleNews-vectors-negative300/GoogleNews-vectors-negative300.bin'
@@ -111,7 +105,6 @@ word2vec = models.KeyedVectors.load_word2vec_format(word2vec_path, binary=True)
 words = word2vec.index2word
 
 
-# In[7]:
 
 
 plt.hist(train['len'], bins=100);
@@ -119,7 +112,6 @@ lens = np.array(train['len'])
 np.quantile(lens, 0.99)
 
 
-# In[8]:
 
 
 #https://discuss.pytorch.org/t/vanishing-gradients/46824/5
@@ -153,7 +145,6 @@ def plot_grad_flow(named_parameters, title):
     plt.show()
 
 
-# In[9]:
 
 
 def make_batch(data):
@@ -164,7 +155,6 @@ def make_batch(data):
     return batch
 
 
-# In[10]:
 
 
 # Discriminator receives 1x28x28 image and returns a float number
@@ -246,7 +236,6 @@ class CNN(nn.Module):
         return res
 
 
-# In[11]:
 
 
 cnn = CNN().to(device)
@@ -255,7 +244,6 @@ opt = torch.optim.Adam(cnn.parameters(), lr=0.1)
 criterion = nn.BCEWithLogitsLoss()
 
 
-# In[12]:
 
 
 def train_n_test(epochs, data_train, target_train, data_test, target_test, batch_size=128):
@@ -300,7 +288,6 @@ def train_n_test(epochs, data_train, target_train, data_test, target_test, batch
         print("Epoch num: {}, average_precision: {}, f1: {}".format(epoch, average_precision, f1), flush=True)
 
 
-# In[13]:
 
 
 batch_size_test = 64
@@ -325,7 +312,6 @@ for threshold in thresholds:
 print(max_f1, max_threshold)
 
 
-# In[14]:
 
 
 X_real_test = test['basic'].str.split().to_numpy()
@@ -333,7 +319,6 @@ test_size, batch_size = len(X_real_test), 256
 batch_size_num = test_size // batch_size
 
 
-# In[15]:
 
 
 predictions = np.array([])
@@ -354,13 +339,11 @@ predictions = np.hstack((predictions, predict.view(predict.shape[0]).cpu().detac
 res = expit(predictions) >= threshold
 
 
-# In[16]:
 
 
 test.head()
 
 
-# In[17]:
 
 
 submission = pd.DataFrame({'qid' : test['qid'], 'prediction' : res})
@@ -368,7 +351,6 @@ print(len(submission.index))
 submission.to_csv('submission.csv')
 
 
-# In[18]:
 
 
 '''

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -28,7 +27,6 @@ import os
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 train_csv_path = "../input/train.csv"
@@ -40,31 +38,26 @@ test_names = os.listdir(test_path)
 SIZE = (512, 512)
 
 
-# In[3]:
 
 
 # trdf = pd.read_csv(train_csv_path)
 
 
-# In[4]:
 
 
 # trdf.ClassId.value_counts()[trdf.ClassId.value_counts() > 20]
 
 
-# In[5]:
 
 
 trdf.head()
 
 
-# In[6]:
 
 
 pixels_example = trdf.EncodedPixels.values[0]
 
 
-# In[7]:
 
 
 fig, ax = plt.subplots(1, 2)
@@ -73,38 +66,32 @@ ax[0].hist(trdf.Height);
 ax[1].hist(trdf.Width);
 
 
-# In[8]:
 
 
 img = plt.imread(train_path + train_names[0])
 plt.imshow(img);
 
 
-# In[9]:
 
 
 
 
 
-# In[9]:
 
 
 
 
 
-# In[9]:
 
 
 
 
 
-# In[9]:
 
 
 
 
 
-# In[9]:
 
 
 def img_generator(img_dir):
@@ -123,7 +110,6 @@ def resize_imgs(imgs_dir, target_size, out_dir):
         plt.imsave(os.path.join(out_dir, name), resized)
 
 
-# In[10]:
 
 
 # resize test
@@ -131,31 +117,26 @@ def resize_imgs(imgs_dir, target_size, out_dir):
 resize_imgs(train_path_path, SIZE, "train_512")
 
 
-# In[11]:
 
 
 len(test_names)
 
 
-# In[12]:
 
 
 os.makedirs("test_resize")
 
 
-# In[13]:
 
 
 os.listdir(".")
 
 
-# In[14]:
 
 
 rm "test_resize/" -r
 
 
-# In[15]:
 
 
 im_p = test_path +"/" + test_names[233]
@@ -164,20 +145,17 @@ plt.imsave("test.jpg", img)
 # plt.imshow(img)
 
 
-# In[16]:
 
 
 df = pd.DataFrame([1, 1, 1])
 df.to_csv("test.model")
 
 
-# In[17]:
 
 
 ls
 
 
-# In[18]:
 
 
 

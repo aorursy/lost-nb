@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #import dependencies
@@ -18,7 +17,6 @@ from tensorflow.keras.applications.inception_v3 import InceptionV3
 from tensorflow.keras.optimizers import RMSprop
 
 
-# In[2]:
 
 
 df=pd.read_csv('../input/plant-pathology-2020-fgvc7/train.csv') #training set list
@@ -30,7 +28,6 @@ df['image_id'] = df['image_id'].astype(str)+".jpg"
 df_test['image_id'] = df_test['image_id'].astype(str)+".jpg"
 
 
-# In[3]:
 
 
 #ImageGenerator
@@ -84,7 +81,6 @@ test_generator=test_datagen.flow_from_dataframe(
     target_size=(300,300))
 
 
-# In[4]:
 
 
 #download model
@@ -101,7 +97,6 @@ pre_trained_model.load_weights(local_weights_file)
 #pre_trained_model.summary()
 
 
-# In[5]:
 
 
 for layer in pre_trained_model.layers:
@@ -130,7 +125,6 @@ model.compile(optimizer = RMSprop(lr=0.0001),
 #model.summary()
 
 
-# In[6]:
 
 
 STEP_SIZE_TRAIN=train_generator.n//train_generator.batch_size
@@ -144,7 +138,6 @@ history=model.fit_generator(generator=train_generator,
                     epochs=5)
 
 
-# In[7]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -162,7 +155,6 @@ val_loss = history.history['val_loss']
 epochs = range(len(acc))
 
 
-# In[8]:
 
 
 f, ax = plt.subplots(figsize=(12,4)) # set the size that you'd like (width, height)
@@ -178,7 +170,6 @@ plt.legend()
 plt.show()
 
 
-# In[9]:
 
 
 f, ax = plt.subplots(figsize=(12,4)) # set the size that you'd like (width, height)
@@ -194,14 +185,12 @@ plt.legend()
 plt.show()
 
 
-# In[10]:
 
 
 SUB_PATH = "../input/plant-pathology-2020-fgvc7/sample_submission.csv"
 sub = pd.read_csv(SUB_PATH)
 
 
-# In[11]:
 
 
 test_generator.reset()

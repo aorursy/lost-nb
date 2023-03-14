@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from random import randint
@@ -11,20 +10,17 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-# In[2]:
 
 
 data_directory = os.path.join(os.getcwd(), '../input')
 print(os.listdir(data_directory))
 
 
-# In[3]:
 
 
 get_ipython().system("cat '../input/readme.txt'")
 
 
-# In[4]:
 
 
 data_dictionnary = {}
@@ -50,7 +46,6 @@ for file_train in list_file_train:
     }
 
 
-# In[5]:
 
 
 def add_rul(g):
@@ -64,7 +59,6 @@ for data_set in data_dictionnary:
     del data_dictionnary[data_set]['df_train']['level_1']
 
 
-# In[6]:
 
 
 CHOSEN_DATASET = 'FD001'
@@ -74,27 +68,23 @@ df = data_dictionnary[CHOSEN_DATASET]['df_train'].copy()
 df_eval = data_dictionnary[CHOSEN_DATASET]['df_test'].copy()
 
 
-# In[7]:
 
 
 dataset_description = df.describe()
 dataset_description
 
 
-# In[8]:
 
 
 axes = dataset_description.T.plot.bar(subplots=True, figsize=(15,10))
 
 
-# In[9]:
 
 
 ###############< ??? >###############
 # What can you conclude from the graph above?
 
 
-# In[10]:
 
 
 df_plot = df.copy()[features]
@@ -103,21 +93,18 @@ fig, ax = plt.subplots(figsize=(15,15))
 axes = sns.heatmap(df_corr, linewidths=.2, )
 
 
-# In[11]:
 
 
 ###############< ??? >###############
 # Can you plot a correlation matrix with another correlation coeficient?
 
 
-# In[12]:
 
 
 ###############< ??? >###############
 # What can append when you have correlated features?
 
 
-# In[13]:
 
 
 nan_column = df.columns[df.isna().any()].tolist()
@@ -126,14 +113,12 @@ print('Columns with all nan: \n' + str(nan_column) + '\n')
 print('Columns with all const values: \n' + str(const_columns) + '\n')
 
 
-# In[14]:
 
 
 ###############< ??? >###############
 # Can you find all the couples that are strongly correlated ?
 
 
-# In[15]:
 
 
 df_plot = df.copy()
@@ -144,21 +129,18 @@ graph = graph.set(xlim=(df_plot['RUL'].max(),df_plot['RUL'].min()))
 # graph = graph.add_legend()
 
 
-# In[16]:
 
 
 ###############< ??? >###############
 # What can you see from the graphs above?
 
 
-# In[17]:
 
 
 ###############< ??? >###############
 # Is is better to train on a smaller part?
 
 
-# In[18]:
 
 
 number_of_engine_no = len(df['engine_no'].drop_duplicates())
@@ -167,13 +149,11 @@ engine_no_val = range(50, 70)
 engine_no_train = [x for x in range(number_of_engine_no) if x not in engine_no_val]
 
 
-# In[19]:
 
 
 selected_features = [x for x in features if x not in nan_column + const_columns]
 
 
-# In[20]:
 
 
 data_train = df[df['engine_no'].isin(engine_no_train)]
@@ -188,7 +168,6 @@ X_eval = df_eval[selected_features]
 X_all, y_all = df[selected_features], df['RUL']
 
 
-# In[21]:
 
 
 from sklearn.ensemble import RandomForestRegressor
@@ -196,35 +175,30 @@ rf_reg = RandomForestRegressor()
 rf_reg.fit(X_train, y_train)
 
 
-# In[22]:
 
 
 print("Score on train data : " + str(rf_reg.score(X_train, y_train)))
 print("Score on test data : " + str(rf_reg.score(X_val, y_val)))
 
 
-# In[23]:
 
 
 ###############< ??? >###############
 # Did you overfit?
 
 
-# In[24]:
 
 
 ###############< ??? >###############
 # Can you have the RMSE?
 
 
-# In[25]:
 
 
 ###############< ??? >###############
 # Try to improve you model.
 
 
-# In[26]:
 
 
 df_pred = data_train.copy()
@@ -232,7 +206,6 @@ df_pred['pred'] = rf_reg.predict(X_train)
 df_pred['error'] = df_pred['pred'] - df_pred['RUL']
 
 
-# In[27]:
 
 
 df_plot = df_pred.copy()
@@ -242,7 +215,6 @@ g = g.map(plt.plot, alpha=0.5)
 g = g.set(xlim=(df_plot['RUL'].max(),df_plot['RUL'].min()))
 
 
-# In[28]:
 
 
 df_eval['pred'] = rf_reg.predict(X_eval)

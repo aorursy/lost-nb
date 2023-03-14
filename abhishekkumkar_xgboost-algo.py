@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 from sklearn.model_selection import train_test_split
@@ -31,7 +29,6 @@ from sklearn.preprocessing import LabelBinarizer,LabelEncoder,StandardScaler,Min
 from sklearn.metrics import mean_squared_log_error
 
 
-# In[3]:
 
 
 train_df = pd.read_csv("../input/covid19-global-forecasting-week-4/train.csv")
@@ -39,37 +36,31 @@ test_df = pd.read_csv("../input/covid19-global-forecasting-week-4/test.csv")
 submission_df = pd.read_csv("../input/covid19-global-forecasting-week-4/submission.csv")
 
 
-# In[4]:
 
 
 train_df.head()
 
 
-# In[5]:
 
 
 test_df.head()
 
 
-# In[6]:
 
 
 train_df.isna().sum()
 
 
-# In[7]:
 
 
 test_df.isna().sum()
 
 
-# In[8]:
 
 
 train_df['Province_State'].unique()
 
 
-# In[9]:
 
 
 train_df['Province_State'].fillna('',inplace=True)
@@ -140,19 +131,16 @@ X = scaler.fit_transform(train_df.values)
 x_test = scaler.transform(test_df.values)
 
 
-# In[10]:
 
 
 train_df.head()
 
 
-# In[11]:
 
 
 # X_train, X_valid, y_train, y_valid = train_test_split( X, cases, test_size=0.3, random_state=42)
 
 
-# In[12]:
 
 
 # for i in range(20):
@@ -164,7 +152,6 @@ train_df.head()
 #     print("error",'\t',mean_squared_log_error(y_valid, cases_pred))
 
 
-# In[13]:
 
 
 # from keras.callbacks import ModelCheckpoint
@@ -184,7 +171,6 @@ train_df.head()
 # from xgboost import XGBRegressor
 
 
-# In[14]:
 
 
 # model = Sequential()
@@ -208,7 +194,6 @@ train_df.head()
 # model.summary()
 
 
-# In[15]:
 
 
 
@@ -217,13 +202,11 @@ train_df.head()
 # callbacks_list = [checkpoint]
 
 
-# In[16]:
 
 
 # history = model.fit(X, cases, epochs=50, batch_size=32, validation_split = 0.2, callbacks=callbacks_list)
 
 
-# In[17]:
 
 
 # loss_train = history.history['loss']
@@ -238,7 +221,6 @@ train_df.head()
 # plt.show()
 
 
-# In[18]:
 
 
 # loss_train = history.history['acc']
@@ -253,14 +235,12 @@ train_df.head()
 # plt.show()
 
 
-# In[19]:
 
 
 # wights_file = 'Weights-039--3.66521.hdf5'
 # model.load_weights(wights_file) # load it
 
 
-# In[20]:
 
 
 X_cas = []
@@ -274,7 +254,6 @@ X_cas = np.array(X_cas)
 # X_train, X_valid, y_train, y_valid = train_test_split( X_cas, fatalities, test_size=0.3, random_state=42)
 
 
-# In[21]:
 
 
 rf = XGBRegressor(n_estimators = 10000 , random_state = 0 , max_depth = 15)
@@ -284,26 +263,22 @@ fatalities_pred[fatalities_pred < 0] = 0
 # mean_squared_log_error(y_valid, fatalities_pred)
 
 
-# In[22]:
 
 
 submission_df['ConfirmedCases'] = cases_pred
 submission_df['Fatalities'] = fatalities_pred
 
 
-# In[23]:
 
 
 submission_df.head()
 
 
-# In[24]:
 
 
 submission_df.to_csv("submission.csv" , index = False)
 
 
-# In[ ]:
 
 
 

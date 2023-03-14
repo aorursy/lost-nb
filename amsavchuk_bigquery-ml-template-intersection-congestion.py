@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Replace 'kaggle-competitions-project' with YOUR OWN project id here --  
@@ -23,37 +22,31 @@ table = client.get_table("kaggle-competition-datasets.geotab_intersection_conges
 client.list_rows(table, max_results=5).to_dataframe()
 
 
-# In[2]:
 
 
 get_ipython().run_line_magic('load_ext', 'google.cloud.bigquery')
 
 
-# In[3]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT DISTINCT city FROM `kaggle-competition-datasets.geotab_intersection_congestion.train`')
 
 
-# In[4]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT DISTINCT city FROM `kaggle-competition-datasets.geotab_intersection_congestion.test`')
 
 
-# In[5]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'WITH train_intersections AS (SELECT COUNT(DISTINCT IntersectionId) AS trainIntersectionCount, City\nFROM `kaggle-competition-datasets.geotab_intersection_congestion.train`\nGROUP BY City),\ntest_intersections AS (SELECT COUNT(DISTINCT IntersectionId) AS testIntersectionCount, City\nFROM `kaggle-competition-datasets.geotab_intersection_congestion.test`\nGROUP BY City),\nhelper AS (SELECT IntersectionId, City FROM `kaggle-competition-datasets.geotab_intersection_congestion.train` \n      INTERSECT DISTINCT\n      SELECT IntersectionId, City FROM `kaggle-competition-datasets.geotab_intersection_congestion.test`),\nintersections AS (SELECT COUNT(DISTINCT IntersectionId) AS commonIntersectionCount, City FROM helper \n                  GROUP BY City)\nSELECT train_intersections.City, train_intersections.trainIntersectionCount, test_intersections.testIntersectionCount, \n    intersections.commonIntersectionCount\nFROM train_intersections\nINNER JOIN test_intersections \nON train_intersections.City = test_intersections.City\nINNER JOIN intersections\nON train_intersections.City = intersections.City')
 
 
-# In[6]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT AVG(TotalTimeStopped_p20) AS avg_time_20, MIN(TotalTimeStopped_p20) AS min_time_20,\n    MAX(TotalTimeStopped_p20) AS max_time_20, \n    IFNULL(STDDEV_POP(TotalTimeStopped_p20), 0) AS std_pop_time_20, \n    IFNULL(STDDEV_SAMP(TotalTimeStopped_p20), 0) AS std_samp_time_20, \n    IFNULL(VAR_POP(TotalTimeStopped_p20), 0) AS var_pop_time_20,\n    IFNULL(VAR_SAMP(TotalTimeStopped_p20), 0) AS var_samp_time_20, \n    IFNULL(STDDEV_POP(DISTINCT TotalTimeStopped_p20), 0) AS std_pop_d_time_20, \n    IFNULL(STDDEV_SAMP(DISTINCT TotalTimeStopped_p20), 0) AS std_samp_d_time_20, \n    IFNULL(VAR_POP(DISTINCT TotalTimeStopped_p20), 0) AS var_pop_d_time_20, \n    IFNULL(VAR_SAMP(DISTINCT TotalTimeStopped_p20), 0) AS var_samp_d_time_20,\n    City, IntersectionId\nFROM\n    `kaggle-competition-datasets.geotab_intersection_congestion.train`\nGROUP BY City, IntersectionId\nLIMIT 10')
 
 
-# In[7]:
 
 
 labels = ['TotalTimeStopped_p20', 'TotalTimeStopped_p50', 'TotalTimeStopped_p80', 
@@ -142,97 +135,81 @@ for label in labels:
     query_job.result()
 
 
-# In[8]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT CORR(TotalTimeStopped_p20, TotalTimeStopped_p20),\n    CORR(TotalTimeStopped_p20, avg_stats) AS avg_stats, \n    CORR(TotalTimeStopped_p20, min_stats) AS min_stats,\n    CORR(TotalTimeStopped_p20, max_stats) AS max_stats, \n    CORR(TotalTimeStopped_p20, std_pop_stats) AS std_pop_stats, \n    CORR(TotalTimeStopped_p20, std_samp_stats) AS std_samp_stats, \n    CORR(TotalTimeStopped_p20, var_pop_stats) AS var_pop_stats, \n    CORR(TotalTimeStopped_p20, var_samp_stats) AS var_samp_stats, \n    CORR(TotalTimeStopped_p20, std_pop_d_stats) AS std_pop_d_stats, \n    CORR(TotalTimeStopped_p20, std_samp_d_stats) AS std_samp_d_stats, \n    CORR(TotalTimeStopped_p20, var_pop_d_stats) AS var_pop_d_stats, \n    CORR(TotalTimeStopped_p20, var_samp_d_stats) AS var_samp_d_stats,\n    CORR(TotalTimeStopped_p20, CAST(Weekend AS INT64)) AS Weekend,\n    CORR(TotalTimeStopped_p20, Hour) AS Hour,\n    CORR(TotalTimeStopped_p20, Month) AS Month,\n    CORR(TotalTimeStopped_p20, IntersectionId) AS IntersectionId,\n    CORR(TotalTimeStopped_p20, RowId) AS RowId\nFROM\n    `bigquery-geotab.model_dataset.stats_dataset_TotalTimeStopped_p20`')
 
 
-# In[9]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT CORR(TotalTimeStopped_p50, TotalTimeStopped_p50),\n    CORR(TotalTimeStopped_p50, avg_stats) AS avg_stats, \n    CORR(TotalTimeStopped_p50, min_stats) AS min_stats,\n    CORR(TotalTimeStopped_p50, max_stats) AS max_stats, \n    CORR(TotalTimeStopped_p50, std_pop_stats) AS std_pop_stats, \n    CORR(TotalTimeStopped_p50, std_samp_stats) AS std_samp_stats, \n    CORR(TotalTimeStopped_p50, var_pop_stats) AS var_pop_stats, \n    CORR(TotalTimeStopped_p50, var_samp_stats) AS var_samp_stats, \n    CORR(TotalTimeStopped_p50, std_pop_d_stats) AS std_pop_d_stats, \n    CORR(TotalTimeStopped_p50, std_samp_d_stats) AS std_samp_d_stats, \n    CORR(TotalTimeStopped_p50, var_pop_d_stats) AS var_pop_d_stats, \n    CORR(TotalTimeStopped_p50, var_samp_d_stats) AS var_samp_d_stats,\n    CORR(TotalTimeStopped_p50, CAST(Weekend AS INT64)) AS Weekend,\n    CORR(TotalTimeStopped_p50, Hour) AS Hour,\n    CORR(TotalTimeStopped_p50, Month) AS Month,\n    CORR(TotalTimeStopped_p50, IntersectionId) AS IntersectionId,\n    CORR(TotalTimeStopped_p50, RowId) AS RowId\nFROM\n    `bigquery-geotab.model_dataset.stats_dataset_TotalTimeStopped_p50`')
 
 
-# In[10]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT CORR(TotalTimeStopped_p80, TotalTimeStopped_p80),\n    CORR(TotalTimeStopped_p80, avg_stats) AS avg_stats, \n    CORR(TotalTimeStopped_p80, min_stats) AS min_stats,\n    CORR(TotalTimeStopped_p80, max_stats) AS max_stats, \n    CORR(TotalTimeStopped_p80, std_pop_stats) AS std_pop_stats, \n    CORR(TotalTimeStopped_p80, std_samp_stats) AS std_samp_stats, \n    CORR(TotalTimeStopped_p80, var_pop_stats) AS var_pop_stats, \n    CORR(TotalTimeStopped_p80, var_samp_stats) AS var_samp_stats, \n    CORR(TotalTimeStopped_p80, std_pop_d_stats) AS std_pop_d_stats, \n    CORR(TotalTimeStopped_p80, std_samp_d_stats) AS std_samp_d_stats, \n    CORR(TotalTimeStopped_p80, var_pop_d_stats) AS var_pop_d_stats, \n    CORR(TotalTimeStopped_p80, var_samp_d_stats) AS var_samp_d_stats,\n    CORR(TotalTimeStopped_p80, CAST(Weekend AS INT64)) AS Weekend,\n    CORR(TotalTimeStopped_p80, Hour) AS Hour,\n    CORR(TotalTimeStopped_p80, Month) AS Month,\n    CORR(TotalTimeStopped_p80, IntersectionId) AS IntersectionId,\n    CORR(TotalTimeStopped_p80, RowId) AS RowId\nFROM\n    `bigquery-geotab.model_dataset.stats_dataset_TotalTimeStopped_p80`')
 
 
-# In[11]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT CORR(DistanceToFirstStop_p20, DistanceToFirstStop_p20),\n    CORR(DistanceToFirstStop_p20, avg_stats) AS avg_stats, \n    CORR(DistanceToFirstStop_p20, min_stats) AS min_stats,\n    CORR(DistanceToFirstStop_p20, max_stats) AS max_stats, \n    CORR(DistanceToFirstStop_p20, std_pop_stats) AS std_pop_stats, \n    CORR(DistanceToFirstStop_p20, std_samp_stats) AS std_samp_stats, \n    CORR(DistanceToFirstStop_p20, var_pop_stats) AS var_pop_stats, \n    CORR(DistanceToFirstStop_p20, var_samp_stats) AS var_samp_stats, \n    CORR(DistanceToFirstStop_p20, std_pop_d_stats) AS std_pop_d_stats, \n    CORR(DistanceToFirstStop_p20, std_samp_d_stats) AS std_samp_d_stats, \n    CORR(DistanceToFirstStop_p20, var_pop_d_stats) AS var_pop_d_stats, \n    CORR(DistanceToFirstStop_p20, var_samp_d_stats) AS var_samp_d_stats,\n    CORR(DistanceToFirstStop_p20, CAST(Weekend AS INT64)) AS Weekend,\n    CORR(DistanceToFirstStop_p20, Hour) AS Hour,\n    CORR(DistanceToFirstStop_p20, Month) AS Month,\n    CORR(DistanceToFirstStop_p20, IntersectionId) AS IntersectionId,\n    CORR(DistanceToFirstStop_p20, RowId) AS RowId\nFROM\n    `bigquery-geotab.model_dataset.stats_dataset_DistanceToFirstStop_p20`')
 
 
-# In[12]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT CORR(DistanceToFirstStop_p50, DistanceToFirstStop_p50),\n    CORR(DistanceToFirstStop_p50, avg_stats) AS avg_stats, \n    CORR(DistanceToFirstStop_p50, min_stats) AS min_stats,\n    CORR(DistanceToFirstStop_p50, max_stats) AS max_stats, \n    CORR(DistanceToFirstStop_p50, std_pop_stats) AS std_pop_stats, \n    CORR(DistanceToFirstStop_p50, std_samp_stats) AS std_samp_stats, \n    CORR(DistanceToFirstStop_p50, var_pop_stats) AS var_pop_stats, \n    CORR(DistanceToFirstStop_p50, var_samp_stats) AS var_samp_stats, \n    CORR(DistanceToFirstStop_p50, std_pop_d_stats) AS std_pop_d_stats, \n    CORR(DistanceToFirstStop_p50, std_samp_d_stats) AS std_samp_d_stats, \n    CORR(DistanceToFirstStop_p50, var_pop_d_stats) AS var_pop_d_stats, \n    CORR(DistanceToFirstStop_p50, var_samp_d_stats) AS var_samp_d_stats,\n    CORR(DistanceToFirstStop_p50, CAST(Weekend AS INT64)) AS Weekend,\n    CORR(DistanceToFirstStop_p50, Hour) AS Hour,\n    CORR(DistanceToFirstStop_p50, Month) AS Month,\n    CORR(DistanceToFirstStop_p50, IntersectionId) AS IntersectionId,\n    CORR(DistanceToFirstStop_p50, RowId) AS RowId\nFROM\n    `bigquery-geotab.model_dataset.stats_dataset_DistanceToFirstStop_p50`')
 
 
-# In[13]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT CORR(DistanceToFirstStop_p80, DistanceToFirstStop_p80),\n    CORR(DistanceToFirstStop_p80, avg_stats) AS avg_stats, \n    CORR(DistanceToFirstStop_p80, min_stats) AS min_stats,\n    CORR(DistanceToFirstStop_p80, max_stats) AS max_stats, \n    CORR(DistanceToFirstStop_p80, std_pop_stats) AS std_pop_stats, \n    CORR(DistanceToFirstStop_p80, std_samp_stats) AS std_samp_stats, \n    CORR(DistanceToFirstStop_p80, var_pop_stats) AS var_pop_stats, \n    CORR(DistanceToFirstStop_p80, var_samp_stats) AS var_samp_stats, \n    CORR(DistanceToFirstStop_p80, std_pop_d_stats) AS std_pop_d_stats, \n    CORR(DistanceToFirstStop_p80, std_samp_d_stats) AS std_samp_d_stats, \n    CORR(DistanceToFirstStop_p80, var_pop_d_stats) AS var_pop_d_stats, \n    CORR(DistanceToFirstStop_p80, var_samp_d_stats) AS var_samp_d_stats,\n    CORR(DistanceToFirstStop_p80, CAST(Weekend AS INT64)) AS Weekend,\n    CORR(DistanceToFirstStop_p80, Hour) AS Hour,\n    CORR(DistanceToFirstStop_p80, Month) AS Month,\n    CORR(DistanceToFirstStop_p80, IntersectionId) AS IntersectionId,\n    CORR(DistanceToFirstStop_p80, RowId) AS RowId\nFROM\n    `bigquery-geotab.model_dataset.stats_dataset_DistanceToFirstStop_p80`')
 
 
-# In[14]:
 
 
 get_ipython().run_cell_magic('bigquery', '', "CREATE OR REPLACE MODEL `model_dataset.sample_model`\nOPTIONS(model_type='linear_reg') AS\nSELECT\n    TotalTimeStopped_p20 AS label,\n    avg_stats, \n#     min_stats,\n    max_stats, \n    std_pop_stats, std_samp_stats, \n    var_pop_stats, var_samp_stats, \n    std_pop_d_stats, \n    std_samp_d_stats, \n    var_pop_d_stats, \n    var_samp_d_stats,\n    EntryHeading,\n    ExitHeading,\n#     Weekend,\n#     Hour,\n#     Month,\n    Path, \n    City\n#     IntersectionId\nFROM\n  `bigquery-geotab.model_dataset.stats_dataset_TotalTimeStopped_p20`\nWHERE\n    RowId < 2600000")
 
 
-# In[15]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT\n  *\nFROM\n  ML.TRAINING_INFO(MODEL `model_dataset.sample_model`)\nORDER BY iteration ')
 
 
-# In[16]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT\n  *\nFROM ML.EVALUATE(MODEL `model_dataset.sample_model`, (\nSELECT\n    TotalTimeStopped_p20 AS label,\n    avg_stats, \n#     min_time_20,\n    max_stats, \n    std_pop_stats, std_samp_stats, \n    var_pop_stats, var_samp_stats, \n    std_pop_d_stats, \n    std_samp_d_stats, \n    var_pop_d_stats, \n    var_samp_d_stats,\n    EntryHeading,\n    ExitHeading,\n#     Weekend,\n#     Hour,\n#     Month,\n    Path, \n    City\n#     IntersectionId,\n#     RowId\nFROM\n  `bigquery-geotab.model_dataset.stats_dataset_TotalTimeStopped_p20`\nWHERE\n    RowId > 2600000))')
 
 
-# In[17]:
 
 
 get_ipython().run_cell_magic('bigquery', '', "CREATE OR REPLACE MODEL `model_dataset.TotalTimeStopped_p20`\nOPTIONS(model_type='linear_reg') AS\nSELECT\n    TotalTimeStopped_p20 AS label,\n    avg_stats, \n#     min_time_20,\n    max_stats, \n    std_pop_stats, std_samp_stats, \n    var_pop_stats, var_samp_stats, \n    std_pop_d_stats, \n    std_samp_d_stats, \n    var_pop_d_stats, \n    var_samp_d_stats,\n    EntryHeading,\n    ExitHeading,\n#     Weekend,\n#     Hour,\n#     Month,\n    Path, \n    City\n#     IntersectionId\n#     RowId\nFROM\n  `bigquery-geotab.model_dataset.stats_dataset_TotalTimeStopped_p20`")
 
 
-# In[18]:
 
 
 get_ipython().run_cell_magic('bigquery', '', "CREATE OR REPLACE MODEL `model_dataset.TotalTimeStopped_p50`\nOPTIONS(model_type='linear_reg') AS\nSELECT\n    TotalTimeStopped_p50 AS label,\n    avg_stats, \n#     min_time_20,\n    max_stats, \n    std_pop_stats, std_samp_stats, \n    var_pop_stats, var_samp_stats, \n    std_pop_d_stats, \n    std_samp_d_stats, \n    var_pop_d_stats, \n    var_samp_d_stats,\n    EntryHeading,\n    ExitHeading,\n#     Weekend,\n#     Hour,\n#     Month,\n    Path, \n    City\n#     IntersectionId\n#     RowId\nFROM\n  `bigquery-geotab.model_dataset.stats_dataset_TotalTimeStopped_p50`")
 
 
-# In[19]:
 
 
 get_ipython().run_cell_magic('bigquery', '', "CREATE OR REPLACE MODEL `model_dataset.TotalTimeStopped_p80`\nOPTIONS(model_type='linear_reg') AS\nSELECT\n    TotalTimeStopped_p80 AS label,\n    avg_stats, \n#     min_time_20,\n    max_stats, \n    std_pop_stats, std_samp_stats, \n    var_pop_stats, var_samp_stats, \n    std_pop_d_stats, \n    std_samp_d_stats, \n    var_pop_d_stats, \n    var_samp_d_stats,\n    EntryHeading,\n    ExitHeading,\n    Weekend,\n#     Hour,\n#     Month,\n    Path, \n    City,\n    RowId\n#     IntersectionId\n#     RowId\nFROM\n  `bigquery-geotab.model_dataset.stats_dataset_TotalTimeStopped_p80`")
 
 
-# In[20]:
 
 
 get_ipython().run_cell_magic('bigquery', '', "CREATE OR REPLACE MODEL `model_dataset.DistanceToFirstStop_p20`\nOPTIONS(model_type='linear_reg') AS\nSELECT\n    DistanceToFirstStop_p20 AS label,\n    avg_stats, \n#     min_time_20,\n    max_stats, \n    std_pop_stats, std_samp_stats, \n    var_pop_stats, var_samp_stats, \n    std_pop_d_stats, \n    std_samp_d_stats, \n    var_pop_d_stats, \n    var_samp_d_stats,\n    EntryHeading,\n    ExitHeading,\n#     Weekend,\n#     Hour,\n#     Month,\n    Path, \n    City\n#     RowId\n#     IntersectionId\nFROM\n  `bigquery-geotab.model_dataset.stats_dataset_DistanceToFirstStop_p20`")
 
 
-# In[21]:
 
 
 get_ipython().run_cell_magic('bigquery', '', "CREATE OR REPLACE MODEL `model_dataset.DistanceToFirstStop_p50`\nOPTIONS(model_type='linear_reg') AS\nSELECT\n    DistanceToFirstStop_p50 AS label,\n    avg_stats, \n#     min_time_20,\n    max_stats, \n    std_pop_stats, std_samp_stats, \n    var_pop_stats, var_samp_stats, \n    std_pop_d_stats, \n    std_samp_d_stats, \n    var_pop_d_stats, \n    var_samp_d_stats,\n    EntryHeading,\n    ExitHeading,\n#     Weekend,\n#     Hour,\n#     Month,\n    Path, \n    City\n#     RowId\n#     IntersectionId\nFROM\n  `bigquery-geotab.model_dataset.stats_dataset_DistanceToFirstStop_p50`")
 
 
-# In[22]:
 
 
 get_ipython().run_cell_magic('bigquery', '', "CREATE OR REPLACE MODEL `model_dataset.DistanceToFirstStop_p80`\nOPTIONS(model_type='linear_reg') AS\nSELECT\n    DistanceToFirstStop_p80 AS label,\n    avg_stats, \n    min_stats,\n    max_stats, \n    std_pop_stats, std_samp_stats, \n    var_pop_stats, var_samp_stats, \n    std_pop_d_stats, \n    std_samp_d_stats, \n    var_pop_d_stats, \n    var_samp_d_stats,\n    EntryHeading,\n    ExitHeading,\n#     Weekend,\n#     Hour,\n#     Month,\n    Path, \n    City\n#     RowId\n#     IntersectionId\nFROM\n  `bigquery-geotab.model_dataset.stats_dataset_DistanceToFirstStop_p80`")
 
 
-# In[23]:
 
 
 labels = ['TotalTimeStopped_p20', 'TotalTimeStopped_p50', 'TotalTimeStopped_p80', 
@@ -375,43 +352,36 @@ for label in labels:
     query_job.result()
 
 
-# In[24]:
 
 
 get_ipython().run_cell_magic('bigquery', 'TotalTimeStopped_p20_df', 'SELECT\n  RowId, predicted_label\nFROM\n  ML.PREDICT(MODEL `model_dataset.TotalTimeStopped_p20`,\n    (\n    SELECT\n        avg_stats, \n    #     min_time_20,\n        max_stats, \n        std_pop_stats, std_samp_stats, \n        var_pop_stats, var_samp_stats, \n        std_pop_d_stats, \n        std_samp_d_stats, \n        var_pop_d_stats, \n        var_samp_d_stats,\n        EntryHeading,\n        ExitHeading,\n    #     Weekend,\n    #     Hour,\n    #     Month,\n        Path, \n        City\n    #     IntersectionId\n    #     RowId\n    FROM\n      `bigquery-geotab-test-dataset.model_dataset.test_stats_dataset_TotalTimeStopped_p20`))\n    ORDER BY RowId ASC')
 
 
-# In[25]:
 
 
 get_ipython().run_cell_magic('bigquery', 'TotalTimeStopped_p50_df', 'SELECT\n  RowId, predicted_label\nFROM\n  ML.PREDICT(MODEL `model_dataset.TotalTimeStopped_p50`,\n    (\n    SELECT\n        avg_stats, \n    #     min_time_20,\n        max_stats, \n        std_pop_stats, std_samp_stats, \n        var_pop_stats, var_samp_stats, \n        std_pop_d_stats, \n        std_samp_d_stats, \n        var_pop_d_stats, \n        var_samp_d_stats,\n        EntryHeading,\n        ExitHeading,\n    #     Weekend,\n    #     Hour,\n    #     Month,\n        Path, \n        City\n    #     IntersectionId\n    #     RowId\n    FROM\n      `bigquery-geotab.model_dataset.test_stats_dataset_TotalTimeStopped_p50`))\n    ORDER BY RowId ASC')
 
 
-# In[26]:
 
 
 get_ipython().run_cell_magic('bigquery', 'TotalTimeStopped_p80_df', 'SELECT\n  RowId, predicted_label\nFROM\n  ML.PREDICT(MODEL `model_dataset.TotalTimeStopped_p80`,\n    (\n        SELECT\n            avg_stats, \n        #     min_time_20,\n            max_stats, \n            std_pop_stats, std_samp_stats, \n            var_pop_stats, var_samp_stats, \n            std_pop_d_stats, \n            std_samp_d_stats, \n            var_pop_d_stats, \n            var_samp_d_stats,\n            EntryHeading,\n            ExitHeading,\n            Weekend,\n        #     Hour,\n        #     Month,\n            Path, \n            City,\n            RowId\n        #     IntersectionId\n        #     RowId\n        FROM\n          `bigquery-geotab.model_dataset.test_stats_dataset_TotalTimeStopped_p80`))\n    ORDER BY RowId ASC')
 
 
-# In[27]:
 
 
 get_ipython().run_cell_magic('bigquery', 'DistanceToFirstStop_p20_df', 'SELECT\n  RowId, predicted_label\nFROM\n  ML.PREDICT(MODEL `model_dataset.DistanceToFirstStop_p20`,\n    (\n        SELECT\n            avg_stats, \n        #     min_time_20,\n            max_stats, \n            std_pop_stats, std_samp_stats, \n            var_pop_stats, var_samp_stats, \n            std_pop_d_stats, \n            std_samp_d_stats, \n            var_pop_d_stats, \n            var_samp_d_stats,\n            EntryHeading,\n            ExitHeading,\n        #     Weekend,\n        #     Hour,\n        #     Month,\n            Path, \n            City\n        #     RowId\n        #     IntersectionId\n        FROM\n          `bigquery-geotab.model_dataset.test_stats_dataset_DistanceToFirstStop_p20`))\n    ORDER BY RowId ASC')
 
 
-# In[28]:
 
 
 get_ipython().run_cell_magic('bigquery', 'DistanceToFirstStop_p50_df', 'SELECT\n  RowId, predicted_label\nFROM\n  ML.PREDICT(MODEL `model_dataset.DistanceToFirstStop_p50`,\n    (\n        SELECT\n            avg_stats, \n        #     min_time_20,\n            max_stats, \n            std_pop_stats, std_samp_stats, \n            var_pop_stats, var_samp_stats, \n            std_pop_d_stats, \n            std_samp_d_stats, \n            var_pop_d_stats, \n            var_samp_d_stats,\n            EntryHeading,\n            ExitHeading,\n        #     Weekend,\n        #     Hour,\n        #     Month,\n            Path, \n            City\n        #     RowId\n        #     IntersectionId\n        FROM\n          `bigquery-geotab.model_dataset.test_stats_dataset_DistanceToFirstStop_p50`))\n    ORDER BY RowId ASC')
 
 
-# In[29]:
 
 
 get_ipython().run_cell_magic('bigquery', 'DistanceToFirstStop_p80_df', 'SELECT\n  RowId, predicted_label\nFROM\n  ML.PREDICT(MODEL `model_dataset.DistanceToFirstStop_p80`,\n    (\n        SELECT\n            DistanceToFirstStop_p80 AS label,\n            avg_stats, \n            min_stats,\n            max_stats, \n            std_pop_stats, std_samp_stats, \n            var_pop_stats, var_samp_stats, \n            std_pop_d_stats, \n            std_samp_d_stats, \n            var_pop_d_stats, \n            var_samp_d_stats,\n            EntryHeading,\n            ExitHeading,\n        #     Weekend,\n        #     Hour,\n        #     Month,\n            Path, \n            City\n        #     RowId\n        #     IntersectionId\n        FROM\n          `bigquery-geotab.model_dataset.test_stats_dataset_DistanceToFirstStop_p80`))\n    ORDER BY RowId ASC')
 
 
-# In[30]:
 
 
 TotalTimeStopped_p20_df['RowId'] = TotalTimeStopped_p20_df['RowId'].apply(str) + '_0'
@@ -426,7 +396,6 @@ df.rename(columns={'RowId': 'TargetId', 'predicted_label': 'Target'}, inplace=Tr
 df
 
 
-# In[31]:
 
 
 df.to_csv(r'submission.csv')

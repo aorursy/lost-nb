@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 
@@ -1014,7 +1013,6 @@ def modelfit(alg, dtrain, predictors,useTrainCV=False, cv_folds=5, early_stoppin
 # alg.feature_importances_
 
 
-# In[ ]:
 
 
 
@@ -1049,13 +1047,11 @@ def modelfit(alg, dtrain, predictors,useTrainCV=False, cv_folds=5, early_stoppin
 # app_train['CODE_GENDER'].value_counts()
 
 
-# In[ ]:
 
 
 # app_train.isnull().sum()
 
 
-# In[ ]:
 
 
 features = app_train_domain

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -29,7 +28,6 @@ for c in train.select_dtypes(include=['int64']).columns[2:]:
 print(train.shape, test.shape)
 
 
-# In[2]:
 
 
 def gini(y, pred):
@@ -49,14 +47,12 @@ def gini_lgb(preds, dtrain):
     return 'gini', score, True
 
 
-# In[3]:
 
 
 params = {'eta': 0.02, 'max_depth': 4, 'subsample': 0.9, 'colsample_bytree': 0.9, 
           'objective': 'binary:logistic', 'eval_metric': 'auc', 'silent': True}
 
 
-# In[4]:
 
 
 X = train.drop(['id', 'target'], axis=1)
@@ -71,13 +67,11 @@ kfold = 5  # need to change to 5
 skf = StratifiedKFold(n_splits=kfold, random_state=0)
 
 
-# In[5]:
 
 
 X[test_index]
 
 
-# In[6]:
 
 
 # import time
@@ -102,7 +96,6 @@ X[test_index]
 # print("time in seconds: ", time.time() - tic)
 
 
-# In[7]:
 
 
 learning_rate = 0.1
@@ -145,7 +138,6 @@ for i, (train_index, test_index) in enumerate(skf.split(X, y)):
 # sub.head(2)
 
 
-# In[8]:
 
 
 # params = {'metric': 'auc', 'learning_rate' : 0.01, 'max_depth':10, 'max_bin':10,  'objective': 'binary',
@@ -165,25 +157,21 @@ for i, (train_index, test_index) in enumerate(skf.split(X, y)):
 # sub.head(2)
 
 
-# In[9]:
 
 
 
 
 
-# In[9]:
 
 
 
 
 
-# In[9]:
 
 
 
 
 
-# In[9]:
 
 
 

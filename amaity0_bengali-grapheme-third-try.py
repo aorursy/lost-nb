@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ PATH = '/kaggle/input/bengaliai-cv19/'
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 get_ipython().run_line_magic('reload_ext', 'autoreload')
@@ -30,7 +28,6 @@ get_ipython().run_line_magic('autoreload', '2')
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[3]:
 
 
 import fastai
@@ -45,7 +42,6 @@ warnings.filterwarnings("ignore")
 fastai.__version__
 
 
-# In[4]:
 
 
 import cv2
@@ -69,7 +65,6 @@ def seed_everything(seed):
 seed_everything(SEED)
 
 
-# In[5]:
 
 
 HEIGHT = 137
@@ -83,7 +78,6 @@ TRAIN = [PATH+'train_image_data_0.parquet',
          PATH+'train_image_data_3.parquet']
 
 
-# In[6]:
 
 
 df_label = pd.read_csv(PATH+LABELS)
@@ -93,7 +87,6 @@ df_label['components'] = 'r_'+df_label['grapheme_root'].astype(str)+','         
 df_label.head()
 
 
-# In[7]:
 
 
 stats128, stats137, fold, nfolds = ([0.08547], [0.22490]), ([0.06922], [0.20514]), 0, 4
@@ -105,7 +98,6 @@ src = (ImageList.from_df(df_label, path='.', folder=FOLDER, suffix='.png', cols=
         .label_from_df(cols=['components'],label_delim=','))
 
 
-# In[8]:
 
 
 data = (src.transform(get_transforms(do_flip=False,max_warp=0.1), size=SIZE, padding_mode='zeros')
@@ -115,7 +107,6 @@ data = (src.transform(get_transforms(do_flip=False,max_warp=0.1), size=SIZE, pad
 data.show_batch()
 
 
-# In[9]:
 
 
 # Model 
@@ -126,45 +117,38 @@ f_score = partial(fbeta)
 learn = cnn_learner(data, arch, metrics=[acc_02, f_score])
 
 
-# In[10]:
 
 
 learn.lr_find() 
 learn.recorder.plot() 
 
 
-# In[11]:
 
 
 lr = 0.03
 
 
-# In[12]:
 
 
 learn.fit_one_cycle(6, slice(lr))
 
 
-# In[13]:
 
 
 learn.unfreeze()
 
 
-# In[14]:
 
 
 learn.lr_find()
 learn.recorder.plot()
 
 
-# In[15]:
 
 
 learn.fit_one_cycle(5, slice(1e-5,lr/5))
 
 
-# In[16]:
 
 
 learn.export(Path('/kaggle/working')/'try3-rn34-im128.pkl')

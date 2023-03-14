@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os 
@@ -20,7 +19,6 @@ import glob
 from sklearn.model_selection import KFold
 
 
-# In[2]:
 
 
 DATA_DIR = '/kaggle/input'
@@ -29,7 +27,6 @@ DATA_DIR = '/kaggle/input'
 ROOT_DIR = '/kaggle/working'
 
 
-# In[3]:
 
 
 get_ipython().system('git clone https://www.github.com/matterport/Mask_RCNN.git')
@@ -37,7 +34,6 @@ os.chdir('Mask_RCNN')
 #!python setup.py -q install
 
 
-# In[4]:
 
 
 # Import Mask RCNN
@@ -49,14 +45,12 @@ from mrcnn import visualize
 from mrcnn.model import log
 
 
-# In[5]:
 
 
 train_dicom_dir = os.path.join(DATA_DIR, 'stage_2_train_images')
 test_dicom_dir = os.path.join(DATA_DIR, 'stage_2_test_images')
 
 
-# In[6]:
 
 
 get_ipython().system('wget --quiet https://github.com/matterport/Mask_RCNN/releases/download/v2.0/mask_rcnn_coco.h5')
@@ -65,7 +59,6 @@ get_ipython().system('ls -lh mask_rcnn_coco.h5')
 COCO_WEIGHTS_PATH = "mask_rcnn_coco.h5"
 
 
-# In[7]:
 
 
 def get_dicom_fps(dicom_dir):
@@ -81,7 +74,6 @@ def parse_dataset(dicom_dir, anns):
     return image_fps, image_annotations 
 
 
-# In[8]:
 
 
 # The following parameters have been selected to reduce running time for demonstration purposes 
@@ -119,7 +111,6 @@ config = DetectorConfig()
 config.display()
 
 
-# In[9]:
 
 
 class DetectorDataset(utils.Dataset):
@@ -175,7 +166,6 @@ class DetectorDataset(utils.Dataset):
         return mask.astype(np.bool), class_ids.astype(np.int32)
 
 
-# In[10]:
 
 
 # training dataset
@@ -183,34 +173,29 @@ anns = pd.read_csv(os.path.join(DATA_DIR, 'stage_2_train_labels.csv'))
 anns.head()
 
 
-# In[11]:
 
 
 image_fps, image_annotations = parse_dataset(train_dicom_dir, anns=anns)
 
 
-# In[12]:
 
 
 ds = pydicom.read_file(image_fps[0]) # read dicom image from filepath 
 image = ds.pixel_array # get image array
 
 
-# In[13]:
 
 
 # show dicom fields 
 ds
 
 
-# In[14]:
 
 
 # Original DICOM image size: 1024 x 1024
 ORIG_SIZE = 1024
 
 
-# In[15]:
 
 
 image_fps_list = list(image_fps)
@@ -224,7 +209,6 @@ print(len(image_fps_train), len(image_fps_val))
 # print(image_fps_val[:6])
 
 
-# In[16]:
 
 
 # prepare the training dataset
@@ -232,7 +216,6 @@ dataset_train = DetectorDataset(image_fps_train, image_annotations, ORIG_SIZE, O
 dataset_train.prepare()
 
 
-# In[17]:
 
 
 # Show annotation(s) for a DICOM image 
@@ -240,7 +223,6 @@ test_fp = random.choice(image_fps_train)
 image_annotations[test_fp]
 
 
-# In[18]:
 
 
 # prepare the validation dataset
@@ -248,7 +230,6 @@ dataset_val = DetectorDataset(image_fps_val, image_annotations, ORIG_SIZE, ORIG_
 dataset_val.prepare()
 
 
-# In[19]:
 
 
 # Load and display random sample and their bounding boxes
@@ -278,7 +259,6 @@ print(image_fp)
 print(class_ids)
 
 
-# In[20]:
 
 
 # Image augmentation (light but constant)
@@ -308,7 +288,6 @@ plt.figure(figsize=(30, 12))
 _ = plt.imshow(imggrid[:, :, 0], cmap='gray')
 
 
-# In[21]:
 
 
 model = modellib.MaskRCNN(mode='training', config=config, model_dir=ROOT_DIR)
@@ -320,7 +299,6 @@ model.load_weights(COCO_WEIGHTS_PATH, by_name=True, exclude=[
     "mrcnn_bbox", "mrcnn_mask"])
 
 
-# In[22]:
 
 
 LEARNING_RATE = 0.006
@@ -330,32 +308,27 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[23]:
 
 
 get_ipython().run_cell_magic('time', '', "## train heads with higher lr to speedup the learning\nmodel.train(dataset_train, dataset_val,\n            learning_rate=LEARNING_RATE*2,\n            epochs=2,\n            layers='heads',\n            augmentation=None)  ## no need to augment yet\n\nhistory = model.keras_model.history.history")
 
 
-# In[24]:
 
 
 get_ipython().run_cell_magic('time', '', "model.train(dataset_train, dataset_val,\n            learning_rate=LEARNING_RATE,\n            epochs=6,\n            layers='all',\n            augmentation=augmentation)\n\nnew_history = model.keras_model.history.history\nfor k in new_history: history[k] = history[k] + new_history[k]")
 
 
-# In[25]:
 
 
 get_ipython().run_cell_magic('time', '', "model.train(dataset_train, dataset_val,\n            learning_rate=LEARNING_RATE/5,\n            epochs=16,\n            layers='all',\n            augmentation=augmentation)\n\nnew_history = model.keras_model.history.history\nfor k in new_history: history[k] = history[k] + new_history[k]")
 
 
-# In[26]:
 
 
 epochs = range(1,len(next(iter(history.values())))+1)
 pd.DataFrame(history, index=epochs)
 
 
-# In[27]:
 
 
 plt.figure(figsize=(17,5))
@@ -376,14 +349,12 @@ plt.legend()
 plt.show()
 
 
-# In[28]:
 
 
 best_epoch = np.argmin(history["val_loss"])
 print("Best Epoch:", best_epoch + 1, history["val_loss"][best_epoch])
 
 
-# In[29]:
 
 
 # select trained model 
@@ -416,7 +387,6 @@ model_path = sorted(fps)[-1]
 print('Found model {}'.format(model_path))
 
 
-# In[30]:
 
 
 class InferenceConfig(DetectorConfig):
@@ -436,7 +406,6 @@ print("Loading weights from ", model_path)
 model.load_weights(model_path, by_name=True)
 
 
-# In[31]:
 
 
 # set color for class
@@ -448,7 +417,6 @@ def get_colors_for_class_ids(class_ids):
     return colors
 
 
-# In[32]:
 
 
 # Show few example of ground truth vs. predictions on the validation dataset 
@@ -476,14 +444,12 @@ for i in range(6):
                                 colors=get_colors_for_class_ids(r['class_ids']), ax=fig.axes[-1])
 
 
-# In[33]:
 
 
 # Get filenames of test dataset DICOM images
 test_image_fps = get_dicom_fps(test_dicom_dir)
 
 
-# In[34]:
 
 
 # Make predictions on test images, write out sample submission
@@ -538,7 +504,6 @@ def predict(image_fps, filepath='submission.csv', min_conf=0.95):
             file.write(out_str+"\n")
 
 
-# In[35]:
 
 
 submission_fp = os.path.join(ROOT_DIR, 'submission.csv')
@@ -546,14 +511,12 @@ predict(test_image_fps, filepath=submission_fp)
 print(submission_fp)
 
 
-# In[36]:
 
 
 output = pd.read_csv(submission_fp)
 output.head(60)
 
 
-# In[37]:
 
 
 # show a few test image detection example
@@ -601,7 +564,6 @@ visualize()
 visualize()
 
 
-# In[38]:
 
 
 # remove files to allow committing (hit files limit otherwise)

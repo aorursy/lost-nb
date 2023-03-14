@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -16,7 +15,6 @@ print("Tensorflow version " + tf.__version__)
 AUTO = tf.data.experimental.AUTOTUNE 
 
 
-# In[2]:
 
 
 with open('../input/iwildcam-2020-fgvc7/iwildcam2020_megadetector_results.json', encoding='utf-8') as json_file:
@@ -27,7 +25,6 @@ detect_df     = pd.DataFrame(megadetector_results["images"])
 # TRAIN_PATTERN = ids.tolist()
 
 
-# In[3]:
 
 
 with open('/kaggle/input/iwildcam-2020-fgvc7/iwildcam2020_train_annotations.json') as json_file:
@@ -35,14 +32,12 @@ with open('/kaggle/input/iwildcam-2020-fgvc7/iwildcam2020_train_annotations.json
 df_anot= pd.DataFrame(train_annotations_json["annotations"])
 
 
-# In[4]:
 
 
 TRAIN_PATTERN = '/kaggle/input/iwildcam-2020-fgvc7/train/*.jpg'
 TARGET_SIZE = [1980,1080]
 
 
-# In[5]:
 
 
 def get_cord(detect_list):
@@ -57,7 +52,6 @@ def get_cord(detect_list):
     return batch_detections
 
 
-# In[6]:
 
 
 def recompress_image(image):
@@ -88,7 +82,6 @@ def resize_and_crop_image(image, label):
     return image, label
 
 
-# In[7]:
 
 
 filenames = tf.data.Dataset.list_files(TRAIN_PATTERN) # This
@@ -98,7 +91,6 @@ dataset = dataset.map(resize_and_crop_image, num_parallel_calls=AUTO)
 dataset = dataset.prefetch(AUTO)
 
 
-# In[8]:
 
 
 def get_draw_boxes(img, lbl):
@@ -119,13 +111,11 @@ def get_draw_boxes(img, lbl):
     return images_batch
 
 
-# In[9]:
 
 
 get_ipython().system('mkdir tfrecords')
 
 
-# In[10]:
 
 
 CLASSES = [i for i in range(572)]
@@ -193,7 +183,6 @@ for counter, (image, label) in enumerate(dataset):
             print("Wrote file {} containing {} records".format(filename, tfrecord_size))
 
 
-# In[11]:
 
 
 def read_tfrecord(example):
@@ -225,7 +214,6 @@ dataset = dataset.map(read_tfrecord, num_parallel_calls=AUTO)
 dataset = dataset.shuffle(300)
 
 
-# In[12]:
 
 
 def display_9_images_from_dataset(dataset):
@@ -244,7 +232,6 @@ def display_9_images_from_dataset(dataset):
     plt.show()
 
 
-# In[13]:
 
 
 display_dataset = dataset.map(lambda image, class_num, label, iage_id: (image, iage_id))

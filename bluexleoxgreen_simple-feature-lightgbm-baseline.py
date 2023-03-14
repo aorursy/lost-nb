@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np
@@ -27,19 +26,16 @@ from sklearn.model_selection import KFold
 from sklearn import metrics
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', "# 1min in Kernel\nmeta_train = pd.read_csv('../input/metadata_train.csv')\nsubset_train = pq.read_pandas('../input/train.parquet', columns=[str(i) for i in range(8712)]).to_pandas()")
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', '# 20s in Kernel\ntrain_length = 8712 #max 8712\npositive_length = len(meta_train[meta_train[\'target\']==1])\ntrain_df = pd.DataFrame()\nrow_index = 0\nfor i in range(train_length):\n    # downsampling\n    if meta_train.loc[i,\'target\'] == 1 or random.random() < positive_length / train_length:\n        subset_train_row = subset_train[str(i)]\n        train_df.loc[row_index, \'signal_min\'] = subset_train_row.min()\n        train_df.loc[row_index, \'signal_max\'] = subset_train_row.max()\n        train_df.loc[row_index, \'signal_mean\'] = subset_train_row.mean()\n        # *** Add your feature here ***\n        train_df.loc[row_index, \'signal_id\'] = i\n        row_index += 1\nprint("positive length: " + str(positive_length))\n# positive length 525\nprint("train length: " + str(len(train_df)))\n# train length 1038  example\n# This will be about 1050')
 
 
-# In[ ]:
 
 
 train_df = pd.merge(train_df, meta_train, on='signal_id')
@@ -47,7 +43,6 @@ train_df.to_csv("train.csv", index=False)
 train_df.head()
 
 
-# In[ ]:
 
 
 # From https://www.kaggle.com/delayedkarma/lightgbm-cv-matthews-correlation-coeff
@@ -77,7 +72,6 @@ param = {'num_leaves': 80,
 max_iter=5
 
 
-# In[ ]:
 
 
 folds = KFold(n_splits=5, shuffle=True, random_state=15)
@@ -112,7 +106,6 @@ else:
      print("CV score: {:<8.5f}".format(sum(score) / max_iter))
 
 
-# In[ ]:
 
 
 cols = (feature_importance_df[["feature", "importance"]]
@@ -129,25 +122,21 @@ plt.title('LightGBM Features (avg over folds)')
 plt.tight_layout()
 
 
-# In[ ]:
 
 
 gc.collect()
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', "# 25ms in Kernel\nmeta_test = pd.read_csv('../input/metadata_test.csv')")
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', '# About 10min in Kernel\ntest_df = pd.DataFrame()\nrow_index = 0\nfor i in range(10):\n    subset_test = pq.read_pandas(\'../input/test.parquet\', columns=[str(i*2000 + j + 8712) for j in range(2000)]).to_pandas()\n    for j in range(2000):\n        subset_test_row = subset_test[str(i*2000 + j + 8712)]\n        test_df.loc[row_index, \'signal_min\'] = subset_test_row.min()\n        test_df.loc[row_index, \'signal_max\'] = subset_test_row.max()\n        test_df.loc[row_index, \'signal_mean\'] = subset_test_row.mean()\n        # *** Add your feature here ***\n        test_df.loc[row_index, \'signal_id\'] = i*2000 + j + 8712\n        row_index += 1\nsubset_test = pq.read_pandas(\'../input/test.parquet\', columns=[str(i + 28712) for i in range(337)]).to_pandas()\nfor i in tqdm(range(337)):\n    subset_test_row = subset_test[str(i + 28712)]\n    test_df.loc[row_index, \'signal_min\'] = subset_test_row.min()\n    test_df.loc[row_index, \'signal_max\'] = subset_test_row.max()\n    test_df.loc[row_index, \'signal_mean\'] = subset_test_row.mean()\n    # *** Add your feature here ***\n    test_df.loc[row_index, \'signal_id\'] = i + 28712\n    row_index += 1\ntest_df = pd.merge(test_df, meta_test, on=\'signal_id\')\ntest_df.to_csv("test.csv", index=False)\ntest_df.head()')
 
 
-# In[ ]:
 
 
 # If you have preprocessed data, input here and delete process method.
@@ -166,7 +155,6 @@ sub_df.to_csv("submission.csv", index=False)
 sub_df
 
 
-# In[ ]:
 
 
 positive = len(sub_df[sub_df["target"] == 1])

@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 
 
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -24,13 +22,11 @@ import os
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 get_ipython().system('pip install cnn-finetune')
 
 
-# In[3]:
 
 
 from typing import Callable, List, Tuple
@@ -50,7 +46,6 @@ utils.set_global_seed(SEED)
 utils.prepare_cudnn(deterministic=True)
 
 
-# In[4]:
 
 
 import torch.nn as nn
@@ -93,7 +88,6 @@ class BegaliaiModel(nn.Module):
         return logit_grapheme_root, logit_vowel_diacritic, logit_consonant_diacritic
 
 
-# In[5]:
 
 
 import numpy as np
@@ -143,13 +137,11 @@ class BengaliaiDataset(Dataset):
         }
 
 
-# In[ ]:
 
 
 
 
 
-# In[6]:
 
 
 from albumentations import Compose, Resize, Rotate, HorizontalFlip, Normalize
@@ -170,7 +162,6 @@ def valid_aug(image_size):
     ], p=1)
 
 
-# In[7]:
 
 
 from typing import Any, List, Optional, Union  # isort:skip
@@ -237,13 +228,11 @@ class HMacroAveragedRecall(Callback):
         state.metrics.add_batch_value(name=self.prefix, value=final_score)
 
 
-# In[8]:
 
 
 from sklearn.model_selection import train_test_split
 
 
-# In[9]:
 
 
 import collections
@@ -291,7 +280,6 @@ loaders["train"] = train_loader
 loaders["valid"] = valid_loader
 
 
-# In[10]:
 
 
 from torch import nn
@@ -303,13 +291,11 @@ criterion = {
 }
 
 
-# In[ ]:
 
 
 
 
 
-# In[11]:
 
 
 model = BegaliaiModel(
@@ -319,13 +305,11 @@ model = BegaliaiModel(
 )
 
 
-# In[12]:
 
 
 model.freeze()
 
 
-# In[13]:
 
 
 from torch import optim
@@ -339,7 +323,6 @@ optimizer = optim.AdamW(
 scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10], gamma=0.3) # Hack
 
 
-# In[14]:
 
 
 from catalyst.dl.runner import SupervisedRunner
@@ -363,7 +346,6 @@ runner = SupervisedRunner(
 )
 
 
-# In[15]:
 
 
 from catalyst.dl.callbacks import DiceCallback, IouCallback,   CriterionCallback, CriterionAggregatorCallback
@@ -434,7 +416,6 @@ runner.train(
 )
 
 
-# In[16]:
 
 
 model.unfreeze()
@@ -521,7 +502,6 @@ runner.train(
 )
 
 
-# In[ ]:
 
 
 

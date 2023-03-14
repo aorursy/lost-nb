@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from pathlib import Path
@@ -9,25 +8,21 @@ import pandas as pd, numpy as np
 np.set_printoptions(suppress=True)
 
 
-# In[2]:
 
 
 get_ipython().system(' ls ../input')
 
 
-# In[3]:
 
 
 DATA_ROOT = Path("../input/m5-forecasting-accuracy")
 
 
-# In[ ]:
 
 
 
 
 
-# In[4]:
 
 
 class M5Config:
@@ -83,13 +78,11 @@ class M5Config:
         self.weight_days = [f"d_{i}" for i in range(self.end-27, self.end+1)]
 
 
-# In[ ]:
 
 
 
 
 
-# In[5]:
 
 
 class M5Data:
@@ -140,31 +133,26 @@ class M5Data:
         return df
 
 
-# In[6]:
 
 
 get_ipython().run_cell_magic('time', '', '\ndata = M5Data()')
 
 
-# In[7]:
 
 
 data.sales.head()
 
 
-# In[8]:
 
 
 get_ipython().run_cell_magic('time', '', '\ndata._to_42840(("item_id", "store_id")).head()')
 
 
-# In[ ]:
 
 
 
 
 
-# In[9]:
 
 
 class WeightAndScaleComputer:
@@ -253,13 +241,11 @@ class WeightAndScaleComputer:
         return df
 
 
-# In[ ]:
 
 
 
 
 
-# In[10]:
 
 
 class WeightedRootMeanSquaredScaledError:
@@ -348,79 +334,66 @@ to accelerate on-the-fly WRMSSE computation.
             return sales[days].values
 
 
-# In[11]:
 
 
 get_ipython().run_cell_magic('time', '', '\nwsc = WeightAndScaleComputer()\nwrmsse_scales = wsc.get_scales(kind="mse")\nweights = wsc.get_weights()\nwrmsse_scales.shape, weights.shape')
 
 
-# In[12]:
 
 
 wrmsse_scales[(weights.level1_name=="state_id")&(weights.level2_name=="cat_id")]
 
 
-# In[13]:
 
 
 WRMSSE =  WeightedRootMeanSquaredScaledError(scales = wrmsse_scales, weights=weights )
 
 
-# In[14]:
 
 
 get_ipython().system(' ls ../input/accuracy-best-public-lbs')
 
 
-# In[15]:
 
 
 kkiller_048874 = pd.read_csv("../input/accuracy-best-public-lbs/Kkiller_FirstPublicNotebookUnder050_048874.csv")
 
 
-# In[16]:
 
 
 get_ipython().run_cell_magic('time', '', '\nWRMSSE.score(kkiller_048874)')
 
 
-# In[ ]:
 
 
 
 
 
-# In[17]:
 
 
 ragnar_064127 = pd.read_csv("../input/accuracy-best-public-lbs/Ragnar_VeryFirstModel_064127.csv")
 
 
-# In[18]:
 
 
 get_ipython().run_cell_magic('time', '', '\nWRMSSE.score(ragnar_064127)')
 
 
-# In[19]:
 
 
 konstantin_064127 = pd.read_csv("../input/accuracy-best-public-lbs/Konstantin_ThreeShadesofDark_047506.csv")
 
 
-# In[20]:
 
 
 get_ipython().run_cell_magic('time', '', '\nWRMSSE.score(konstantin_064127)')
 
 
-# In[ ]:
 
 
 
 
 
-# In[21]:
 
 
 # public LB rank
@@ -433,31 +406,26 @@ def get_lb_rank(score):
     return (df_lb.Score <= score).sum() + 1
 
 
-# In[ ]:
 
 
 
 
 
-# In[22]:
 
 
 get_ipython().run_cell_magic('time', '', '\nprint("Kkiller\'s LB:", get_lb_rank(WRMSSE.score(kkiller_048874)))')
 
 
-# In[23]:
 
 
 get_ipython().run_cell_magic('time', '', '\nprint("Ragnar\'s LB:", get_lb_rank(WRMSSE.score(ragnar_064127)))')
 
 
-# In[24]:
 
 
 get_ipython().run_cell_magic('time', '', '\nprint("Konstantin\'s LB:", get_lb_rank(WRMSSE.score(konstantin_064127)))')
 
 
-# In[ ]:
 
 
 

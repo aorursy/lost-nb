@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #-*- encoding: utf8 -*-
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -32,19 +30,16 @@ import ast
 # Any results you write to the current directory are saved as output.
 
 
-# In[3]:
 
 
 get_ipython().system('mkdir ../working/main_data')
 
 
-# In[4]:
 
 
 ./
 
 
-# In[5]:
 
 
 SEED = 42
@@ -53,19 +48,16 @@ train_simple_eiffel = pd.read_csv(os.path.join(INPUT_DIR, 'train_simplified/The 
 train_simple_eiffel.head()
 
 
-# In[6]:
 
 
 train_simple_eiffel['recognized'].value_counts()
 
 
-# In[7]:
 
 
 train_simple_eiffel['drawing'] = train_simple_eiffel['drawing'].apply(ast.literal_eval)
 
 
-# In[8]:
 
 
 n = 10
@@ -79,7 +71,6 @@ fig.savefig('eiffe_true.png', dpi=200)
 plt.show();
 
 
-# In[9]:
 
 
 n = 10
@@ -93,38 +84,32 @@ fig.savefig('eiffe_false.png', dpi=200)
 plt.show();
 
 
-# In[10]:
 
 
 CHUNK_DIR = '../working/main_data/'
 
 
-# In[11]:
 
 
 np.random.seed(seed = SEED)
 
 
-# In[12]:
 
 
 len(os.listdir(os.path.join(INPUT_DIR, 'train_simplified/')))
 
 
-# In[13]:
 
 
 print(len(os.listdir(os.path.join(INPUT_DIR, 'train_simplified/'))))
 
 
-# In[14]:
 
 
 def file2cat(filename):
     return filename.split('.')[0]
 
 
-# In[15]:
 
 
 class Simplified():
@@ -143,7 +128,6 @@ class Simplified():
         return df
 
 
-# In[16]:
 
 
 s = Simplified(INPUT_DIR)
@@ -152,7 +136,6 @@ categories = s.list_all_categories()
 print(len(categories))
 
 
-# In[17]:
 
 
 for y, cat in tqdm(enumerate(categories)):
@@ -170,7 +153,6 @@ for y, cat in tqdm(enumerate(categories)):
             chunk.to_csv(filename, mode = 'a', header = False, index = False)
 
 
-# In[18]:
 
 
 import gc
@@ -180,19 +162,16 @@ from itertools import repeat
 from itertools import product
 
 
-# In[19]:
 
 
 get_ipython().system('grep -c processor /proc/cpuinfo')
 
 
-# In[20]:
 
 
 NJOBS = get_ipython().getoutput('grep -c processor /proc/cpuinfo')
 
 
-# In[21]:
 
 
 def chunk2gzip(chunk_number):
@@ -213,7 +192,6 @@ def chunk2gzip(chunk_number):
     
 
 
-# In[22]:
 
 
 with Pool(processes=int(NJOBS[0])) as p:

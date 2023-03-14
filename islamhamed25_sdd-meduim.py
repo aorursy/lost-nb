@@ -10,7 +10,6 @@ import gc
 !pip install segmentation-models
 !pip install git+https://github.com/qubvel/segmentation_models 
 
-pip install --upgrade pip
 
 trainImgPath = "/kaggle/input/severstal-steel-defect-detection/train_images/"
 trainCsv = "/kaggle/input/severstal-steel-defect-detection/train.csv"
@@ -454,7 +453,6 @@ train_data_1 = preprocess(train_data_1)
 model = Unet(network ,input_shape = (WIDTH, HEIGHT, 3), classes=1, activation='sigmoid') 
 model.summary()
 
-pip install tensorflow==2.1.0
 
 
 !pip install tf-nightly

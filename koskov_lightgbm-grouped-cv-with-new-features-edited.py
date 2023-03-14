@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -17,14 +16,12 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/insta_train.csv')
 test = pd.read_csv('../input/insta_test.csv')
 
 
-# In[3]:
 
 
 v = TfidfVectorizer(
@@ -39,13 +36,11 @@ a = v.transform(train['caption'].fillna('').values)
 b = v.transform(test['caption'].fillna('').values)
 
 
-# In[4]:
 
 
 a.shape, b.shape
 
 
-# In[5]:
 
 
 model = PCA(n_components=200, random_state=0)
@@ -54,7 +49,6 @@ transformed = model.transform(a.toarray())
 transformed_test = model.transform(b.toarray())
 
 
-# In[6]:
 
 
 model = PCA(n_components=20, random_state=0)
@@ -63,13 +57,11 @@ transformed = model.fit_transform(a.toarray())
 transformed_test = model.transform(b.toarray())
 
 
-# In[7]:
 
 
 transformed.shape, transformed_test.shape
 
 
-# In[8]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -83,20 +75,17 @@ plt.xlabel('PCA feature')
 plt.show()
 
 
-# In[9]:
 
 
 train = pd.concat([train, pd.DataFrame(transformed)], axis=1)
 test = pd.concat([test, pd.DataFrame(transformed_test)], axis=1)
 
 
-# In[10]:
 
 
 train.head()
 
 
-# In[11]:
 
 
 kmeans = KMeans(
@@ -107,20 +96,17 @@ kmeans = KMeans(
 kmeans_train = kmeans.fit(a)
 
 
-# In[12]:
 
 
 train['cluster'] = kmeans_train.labels_
 test['cluster'] = kmeans.predict(b)
 
 
-# In[13]:
 
 
 y = train['likes']
 
 
-# In[14]:
 
 
 def ing(df):
@@ -157,14 +143,12 @@ def ing(df):
     return df
 
 
-# In[15]:
 
 
 train = ing(train).select_dtypes(exclude=['object']).drop(['likes'], axis=1).fillna(0)
 test = ing(test).select_dtypes(exclude=['object']).fillna(0)
 
 
-# In[16]:
 
 
 estimator = lgb.LGBMRegressor(
@@ -216,13 +200,11 @@ gbm.fit(train,
 print("CV MAPE:", gbm.cv_results_['mean_test_smape'][0])
 
 
-# In[17]:
 
 
 #gbm.cv_results_
 
 
-# In[18]:
 
 
 #feature_imp = pd.DataFrame(sorted(zip(estimator.feature_importances_, train.columns.astype('str'))), columns=['Value','Feature'])
@@ -233,7 +215,6 @@ print("CV MAPE:", gbm.cv_results_['mean_test_smape'][0])
 #plt.show()
 
 
-# In[19]:
 
 
 class exp_smape(object):
@@ -272,7 +253,6 @@ class exp_smape(object):
         return error_sum, weight_sum
 
 
-# In[20]:
 
 
 from catboost import CatBoostRegressor, FeaturesData, Pool
@@ -299,13 +279,11 @@ model.fit(train_pool)
 preds = model.predict(test_pool)
 
 
-# In[21]:
 
 
 (10**preds)-1
 
 
-# In[22]:
 
 
 estimator.fit(train, np.log10(y+1))
@@ -315,7 +293,6 @@ prediction['likes'] = ((10**(estimator.predict(test)))-1)*0.6 + ((10**preds)-1)*
 prediction.to_csv('exp_submission.csv', index=False)
 
 
-# In[23]:
 
 
 #from catboost import cv
@@ -330,7 +307,6 @@ prediction.to_csv('exp_submission.csv', index=False)
 #scores = cv(train_pool, params = params, fold_count=5, shuffle = False, early_stopping_rounds = 200, verbose_eval = 10)
 
 
-# In[24]:
 
 
 #scores

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,19 +19,16 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 get_ipython().run_line_magic('pinfo', 'read')
 
 
-# In[3]:
 
 
 help(read)
 
 
-# In[4]:
 
 
 

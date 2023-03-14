@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from glob import glob
@@ -17,7 +16,6 @@ import cv2
 DATA_DIR = '../input/'
 
 
-# In[2]:
 
 
 train_masks_csv = pd.read_csv(DATA_DIR + 'train_masks.csv')
@@ -35,7 +33,6 @@ print("The total number of images in the test set is : %s." %  (test_number_imag
 print("\nGiven that we have 16 different poses for a car we can deduce that we have %s different cars in the training set and %s different cars in the test set.." %  (train_number_cars, test_number_cars))
 
 
-# In[3]:
 
 
 fig = plt.figure(figsize=(30, 30))
@@ -56,7 +53,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[4]:
 
 
 fig = plt.figure(figsize=(30, 30))
@@ -78,7 +74,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[5]:
 
 
 bgr_original_img = cv2.imread(DATA_DIR + 'train/6cc98271f4dd_15.jpg')
@@ -102,7 +97,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[6]:
 
 
 metadata_csv = pd.read_csv('data/metadata.csv')

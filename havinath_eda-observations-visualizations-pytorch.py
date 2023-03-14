@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from IPython.display import HTML
 HTML('<center><iframe width="560" height="315" src="https://www.youtube.com/embed/cnzOZ1KveMY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></center>')
 
 
-# In[2]:
 
 
 import os
@@ -39,7 +37,6 @@ p = sns.color_palette()
 import plotly.express as px
 
 
-# In[3]:
 
 
 train = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/train.csv')
@@ -48,13 +45,11 @@ print(train.shape)
 train.head()
 
 
-# In[4]:
 
 
 test = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/test.csv')
 
 
-# In[5]:
 
 
 patient_sizes = [len(os.listdir('../input/osic-pulmonary-fibrosis-progression/train/' + d)) for d in os.listdir('../input/osic-pulmonary-fibrosis-progression/train/')]
@@ -64,7 +59,6 @@ plt.xlabel('DICOM files')
 plt.title('Histogram of DICOM count per patient');
 
 
-# In[6]:
 
 
 patient_sizes_arr = np.array(patient_sizes) 
@@ -72,45 +66,38 @@ for x in [200,300,400,500,600,800,1000]:
     print("We have ",sum(patient_sizes_arr > x),"patients with more than",x,"DICOM files")
 
 
-# In[7]:
 
 
 print("Total entries",len(train['Patient']))
 print("Total patients",len(np.unique(train['Patient'])))
 
 
-# In[8]:
 
 
 train.info()
 
 
-# In[9]:
 
 
 train.isnull().sum()
 
 
-# In[10]:
 
 
 train[train['Patient'] == 'ID00007637202177411956430']
 
 
-# In[11]:
 
 
 train_patient_data = train[['Patient','Age','Sex','SmokingStatus']].drop_duplicates().reset_index(drop=True)
 train_patient_data.head()
 
 
-# In[12]:
 
 
 print("Different smoking status:",np.unique(train_patient_data.SmokingStatus))
 
 
-# In[13]:
 
 
 plt.hist(train_patient_data.SmokingStatus)
@@ -119,7 +106,6 @@ plt.xlabel('SmokingStatus')
 plt.title('Histogram of SmokingStatus of patients');
 
 
-# In[14]:
 
 
 labels = 'Ex-smoker', 'Never smoked', 'Currently smokes'
@@ -131,7 +117,6 @@ ax1.axis('equal')
 plt.title('Distribution of patients by SmokingStatus')
 
 
-# In[15]:
 
 
 plt.figure(figsize=(30,15))
@@ -141,7 +126,6 @@ plt.xlabel('Age')
 plt.title('Histogram of Age of patients');
 
 
-# In[16]:
 
 
 plt.figure(figsize=(16, 6))
@@ -150,7 +134,6 @@ sns.kdeplot(train_patient_data.loc[train_patient_data['Sex'] == 'Female', 'Age']
 plt.xlabel('Age (years)'); plt.ylabel('Density'); plt.title('Distribution of Ages over gender');
 
 
-# In[17]:
 
 
 plt.figure(figsize=(16, 6))
@@ -164,7 +147,6 @@ plt.ylabel('Density');
 plt.title('Distribution of Ages over SmokingStatus');
 
 
-# In[18]:
 
 
 plt.figure(figsize=(16, 6))
@@ -175,7 +157,6 @@ ax.set_title(label = 'Distribution of Smokers over Age', fontsize = 20)
 plt.show()
 
 
-# In[19]:
 
 
 plt.hist(train_patient_data.Sex)
@@ -184,7 +165,6 @@ plt.xlabel('Sex')
 plt.title('Histogram of Sex of patients');
 
 
-# In[20]:
 
 
 labels = 'Male', 'Female'
@@ -196,7 +176,6 @@ ax1.axis('equal')
 plt.title('Distribution of patients by Gender')
 
 
-# In[21]:
 
 
 cond1_colname = 'Sex'
@@ -221,7 +200,6 @@ warnings.filterwarnings('ignore')
 plt.show()
 
 
-# In[22]:
 
 
 #labels = cond2_vales
@@ -235,7 +213,6 @@ for x in cond1_vales:
     plt.show()
 
 
-# In[23]:
 
 
 train_patient_data.boxplot(column='Age', by='Sex')
@@ -247,13 +224,11 @@ plt.suptitle("")
 plt.show()
 
 
-# In[24]:
 
 
 train['Patient'].value_counts().max()
 
 
-# In[25]:
 
 
 plt.figure(figsize=(30,15))
@@ -263,7 +238,6 @@ plt.xlabel('Week')
 plt.title('Distribution of Weeks');
 
 
-# In[26]:
 
 
 week_arr = np.array(train.Weeks)
@@ -272,7 +246,6 @@ for x in [60,70,80,90,100,110,120]:
     print("We have",sum(week_arr > x),"records after",x,"weeks")
 
 
-# In[27]:
 
 
 plt.scatter(x=list(train['FVC'].value_counts().keys()),y=list(train['FVC'].value_counts().values))
@@ -281,7 +254,6 @@ plt.xlabel('FVC')
 plt.title('Distribution of FVC')
 
 
-# In[28]:
 
 
 plt.figure(figsize=(30,15))
@@ -291,79 +263,67 @@ plt.xlabel('FVC')
 plt.title('Distribution of FVC')
 
 
-# In[29]:
 
 
 print("so FVC values range from",min(train['FVC']),"to",max(train['FVC']),"and do not seem to be repeating often")
 
 
-# In[30]:
 
 
 fig = px.scatter(train, x="FVC", y="Percent", color='Age')
 fig.show()
 
 
-# In[31]:
 
 
 np.unique(train[train['FVC'] > 5100].Patient)
 
 
-# In[32]:
 
 
 sum(train[train['Patient'] == 'ID00219637202258203123958'].FVC < 5100)
 
 
-# In[33]:
 
 
 fig = px.scatter(train, x="Weeks", y="Age", color='Sex')
 fig.show()
 
 
-# In[34]:
 
 
 fig = px.scatter(train, x="FVC", y="Age", color='Sex')
 fig.show()
 
 
-# In[35]:
 
 
 high_FVC_female_patients = np.unique(train[(train['FVC'] > 2800) & (train['Sex']=='Female')].Patient)
 high_FVC_female_patients
 
 
-# In[36]:
 
 
 sum(train['Patient'].isin(high_FVC_female_patients) & (train['FVC'] < 2800))
 
 
-# In[37]:
 
 
 tmp_patients = np.unique(train[train['Patient'].isin(high_FVC_female_patients) & (train['FVC'] < 2800)].Patient)
 tmp_patients
 
 
-# In[38]:
 
 
 set(high_FVC_female_patients) - set(tmp_patients)
 
 
-# In[39]:
 
 
 fig = px.scatter(train, x="FVC", y="Weeks", color='SmokingStatus')
 fig.show()
 
 
-# In[40]:
 
 
 plt.figure(figsize=(30,15))
@@ -373,7 +333,6 @@ plt.xlabel('Percent')
 plt.title('Distribution of Percent')
 
 
-# In[41]:
 
 
 fig = px.violin(train, y='Percent', x='SmokingStatus', box=True, color='Sex', points="all",
@@ -381,7 +340,6 @@ fig = px.violin(train, y='Percent', x='SmokingStatus', box=True, color='Sex', po
 fig.show()
 
 
-# In[42]:
 
 
 plt.figure(figsize=(16, 6))
@@ -392,14 +350,12 @@ ax.set_title(label = 'Distribution of Smoking Status Over Percentage', fontsize 
 plt.show()
 
 
-# In[43]:
 
 
 fig = px.scatter(train, x="Age", y="Percent", color='SmokingStatus')
 fig.show()
 
 
-# In[44]:
 
 
 files = folders = 0
@@ -412,7 +368,6 @@ for _, dirnames, filenames in os.walk(path):
 print(files,"files/images\n",folders,'folders/patients')
 
 
-# In[45]:
 
 
 files = glob.glob('../input/osic-pulmonary-fibrosis-progression/train/*/*.dcm')
@@ -427,7 +382,6 @@ for i in range(20):
     plots[i // 5, i % 5].imshow(dicom_to_image(files[i]), cmap=plt.cm.bone)
 
 
-# In[46]:
 
 
 f, plots = plt.subplots(4, 5, sharex='col', sharey='row', figsize=(10, 8))
@@ -436,7 +390,6 @@ for i in range(20):
     plots[i // 5, i % 5].imshow(dicom_to_image(np.random.choice(files)), cmap=plt.cm.bone)
 
 
-# In[47]:
 
 
 files_darkimages = glob.glob('../input/osic-pulmonary-fibrosis-progression/train/ID00105637202208831864134/*.dcm')
@@ -447,7 +400,6 @@ for i in range(20):
     plots[i // 5, i % 5].imshow(dicom_to_image(files_darkimages[i]), cmap=plt.cm.bone)
 
 
-# In[48]:
 
 
 from skimage import exposure
@@ -464,7 +416,6 @@ def dicom_to_image3(filename):
     return img
 
 
-# In[49]:
 
 
 f, plots = plt.subplots(4, 5, sharex='col', sharey='row', figsize=(10, 8))
@@ -474,7 +425,6 @@ for i in range(20):
 plt.title("Dark images fixed using equalize_hist")
 
 
-# In[50]:
 
 
 f, plots = plt.subplots(4, 5, sharex='col', sharey='row', figsize=(10, 8))
@@ -484,7 +434,6 @@ for i in range(20):
 plt.title("Dark images fixed using equalize_adapthist")
 
 
-# In[51]:
 
 
 f, plots = plt.subplots(4, 5, sharex='col', sharey='row', figsize=(10, 8))
@@ -494,7 +443,6 @@ for i in range(20):
 plt.title("Dark images fixed using equalize_hist")
 
 
-# In[52]:
 
 
 f, plots = plt.subplots(4, 5, sharex='col', sharey='row', figsize=(10, 8))
@@ -504,7 +452,6 @@ for i in range(20):
 plt.title("Dark images fixed using equalize_adapthist")
 
 
-# In[53]:
 
 
 import copy
@@ -525,7 +472,6 @@ from tqdm.notebook import trange
 from time import time
 
 
-# In[54]:
 
 
 root_dir = Path('/kaggle/input/osic-pulmonary-fibrosis-progression')
@@ -540,7 +486,6 @@ model_name ='descartes'
 tensorboard_dir = Path('/kaggle/working/runs')
 
 
-# In[55]:
 
 
 class ClinicalDataset(Dataset):
@@ -631,7 +576,6 @@ class ClinicalDataset(Dataset):
         return train, val
 
 
-# In[56]:
 
 
 class QuantModel(nn.Module):
@@ -670,13 +614,11 @@ def metric_loss(pred_fvc,true_fvc):
     return metric
 
 
-# In[57]:
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-# In[58]:
 
 
 
@@ -774,7 +716,6 @@ for fold, (trainset, valset) in enumerate(folds):
 print('Finished Training of BiLSTM Model')
 
 
-# In[59]:
 
 
 plt.figure(figsize=(15,4))
@@ -800,7 +741,6 @@ plt.grid()
 plt.show()
 
 
-# In[60]:
 
 
 data = ClinicalDataset(root_dir, mode='test')
@@ -828,7 +768,6 @@ df = df.drop(columns=list(quantiles))
 df.to_csv('submission.csv', index=False)
 
 
-# In[61]:
 
 
 df.head()

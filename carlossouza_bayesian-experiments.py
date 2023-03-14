@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -11,7 +10,6 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
 
 
-# In[2]:
 
 
 exclude_test_patient_data_from_trainset = True
@@ -30,7 +28,6 @@ train['PatientID'] = le_id.fit_transform(train['Patient'])
 train.head()
 
 
-# In[3]:
 
 
 def chart(patient_id, ax):
@@ -47,13 +44,11 @@ chart('ID00009637202177434476278', axes[1])
 chart('ID00010637202177584971671', axes[2])
 
 
-# In[4]:
 
 
 import pymc3 as pm
 
 
-# In[5]:
 
 
 n_patients = train['Patient'].nunique()
@@ -62,7 +57,6 @@ Weeks = train['Weeks'].values
 PatientID = train['PatientID'].values
 
 
-# In[6]:
 
 
 with pm.Model() as model_a:
@@ -89,7 +83,6 @@ with pm.Model() as model_a:
                          sigma=sigma, observed=FVC_obs_shared)
 
 
-# In[7]:
 
 
 # Inference button (TM)!
@@ -97,14 +90,12 @@ with model_a:
     trace_a = pm.sample(2000, tune=2000, target_accept=.9, init="adapt_diag")
 
 
-# In[8]:
 
 
 with model_a:
     pm.traceplot(trace_a);
 
 
-# In[9]:
 
 
 pred_template = []
@@ -116,7 +107,6 @@ for i in range(train['Patient'].nunique()):
 pred_template = pd.concat(pred_template, ignore_index=True)
 
 
-# In[10]:
 
 
 with model_a:
@@ -128,7 +118,6 @@ with model_a:
     post_pred = pm.sample_posterior_predictive(trace_a)
 
 
-# In[11]:
 
 
 df = pd.DataFrame(columns=['Patient', 'Weeks', 'FVC_pred', 'sigma'])
@@ -143,7 +132,6 @@ df = df.rename(columns={'FVC': 'FVC_true'})
 df.head()
 
 
-# In[12]:
 
 
 def chart(patient_id, ax):
@@ -167,7 +155,6 @@ chart('ID00421637202311550012437', axes[1, 1])
 chart('ID00422637202311677017371', axes[1, 2])
 
 
-# In[13]:
 
 
 # Add the test data points back to calculate the metrics
@@ -192,7 +179,6 @@ lll = - np.sqrt(2) * delta / sigma_c - np.log(np.sqrt(2) * sigma_c)
 print(f'Laplace Log Likelihood: {lll.mean():.4f}')
 
 
-# In[14]:
 
 
 train['Male'] = train['Sex'].apply(lambda x: 1 if x == 'Male' else 0)
@@ -214,7 +200,6 @@ train = pd.merge(train, aux[['Patient', 'Percent_base']], how='left',
 train.head()
 
 
-# In[15]:
 
 
 n_patients = train['Patient'].nunique()
@@ -224,7 +209,6 @@ X = train[['Weeks', 'Male', 'ExSmoker', 'CurrentlySmokes',
 PatientID = train['PatientID'].values
 
 
-# In[16]:
 
 
 with pm.Model() as model_b:
@@ -251,7 +235,6 @@ with pm.Model() as model_b:
                          sigma=sigma, observed=FVC_obs_shared)
 
 
-# In[17]:
 
 
 # Inference button (TM)!
@@ -259,14 +242,12 @@ with model_b:
     trace_b = pm.sample(2000, tune=2000, target_accept=.9, init="adapt_diag")
 
 
-# In[18]:
 
 
 with model_b:
     pm.traceplot(trace_b);
 
 
-# In[19]:
 
 
 aux = train.groupby('Patient').first().reset_index()
@@ -283,7 +264,6 @@ for i in range(train['Patient'].nunique()):
 pred_template = pd.concat(pred_template, ignore_index=True)
 
 
-# In[20]:
 
 
 with model_b:
@@ -297,7 +277,6 @@ with model_b:
     post_pred = pm.sample_posterior_predictive(trace_b)
 
 
-# In[21]:
 
 
 df = pd.DataFrame(columns=['Patient', 'Weeks', 'FVC_pred', 'sigma'])
@@ -312,7 +291,6 @@ df = df.rename(columns={'FVC': 'FVC_true'})
 df.head()
 
 
-# In[22]:
 
 
 def chart(patient_id, ax):
@@ -336,7 +314,6 @@ chart('ID00421637202311550012437', axes[1, 1])
 chart('ID00422637202311677017371', axes[1, 2])
 
 
-# In[23]:
 
 
 # Add the test data points back to calculate the metrics
@@ -361,7 +338,6 @@ lll = - np.sqrt(2) * delta / sigma_c - np.log(np.sqrt(2) * sigma_c)
 print(f'Laplace Log Likelihood: {lll.mean():.4f}')
 
 
-# In[24]:
 
 
 train = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/train.csv')
@@ -371,7 +347,6 @@ le_id = LabelEncoder()
 train['PatientID'] = le_id.fit_transform(train['Patient'])
 
 
-# In[25]:
 
 
 n_patients = train['Patient'].nunique()
@@ -406,7 +381,6 @@ with pm.Model() as model_a:
     trace_a = pm.sample(2000, tune=2000, target_accept=.9, init="adapt_diag")
 
 
-# In[26]:
 
 
 pred_template = []
@@ -427,7 +401,6 @@ with model_a:
     post_pred = pm.sample_posterior_predictive(trace_a)
 
 
-# In[27]:
 
 
 df = pd.DataFrame(columns=['Patient', 'Weeks', 'Patient_Week', 'FVC', 'Confidence'])
@@ -442,7 +415,6 @@ print(final.shape)
 final.head()
 
 
-# In[ ]:
 
 
 

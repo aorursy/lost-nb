@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,21 +21,18 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import os, shutil
 original_dataset_dir = '/kaggle/input/plant-seedlings-classification'
 
 
-# In[3]:
 
 
 base_dir = '/kaggle/input/base'
 os.mkdir(base_dir)
 
 
-# In[4]:
 
 
 train_dir = os.path.join(base_dir, 'train')
@@ -47,7 +43,6 @@ test_dir = os.path.join(base_dir, 'test')
 os.mkdir(test_dir)
 
 
-# In[5]:
 
 
 train_Black_grass_dir = os.path.join(train_dir, 'Black-grass')
@@ -64,7 +59,6 @@ train_Small_flowered_Cranesbill_dir = os.path.join(train_dir, 'Small-flowered Cr
 train_Sugar_beet_dir = os.path.join(train_dir, 'Sugar beet')
 
 
-# In[6]:
 
 
 os.mkdir(train_Black_grass_dir)
@@ -81,7 +75,6 @@ os.mkdir(train_Small_flowered_Cranesbill_dir)
 os.mkdir(train_Sugar_beet_dir)
 
 
-# In[7]:
 
 
 validation_Black_grass_dir = os.path.join(validation_dir, 'Black-grass')
@@ -98,7 +91,6 @@ validation_Small_flowered_Cranesbill_dir = os.path.join(validation_dir, 'Small-f
 validation_Sugar_beet_dir = os.path.join(validation_dir, 'Sugar beet')
 
 
-# In[8]:
 
 
 os.mkdir(validation_Black_grass_dir)
@@ -115,7 +107,6 @@ os.mkdir(validation_Small_flowered_Cranesbill_dir)
 os.mkdir(validation_Sugar_beet_dir)
 
 
-# In[9]:
 
 
 import shutil 
@@ -133,7 +124,6 @@ for file_dir in os.listdir('/kaggle/input/plant-seedlings-classification/train')
                 shutil.copy(src_dir,dst_dir)
 
 
-# In[10]:
 
 
 for img in os.listdir('/kaggle/input/plant-seedlings-classification/test'):
@@ -144,13 +134,11 @@ for img in os.listdir('/kaggle/input/plant-seedlings-classification/test'):
         
 
 
-# In[11]:
 
 
 os.listdir('/kaggle/input/base/test')
 
 
-# In[12]:
 
 
 for file_dir in os.listdir('/kaggle/input/plant-seedlings-classification/train'):
@@ -169,13 +157,11 @@ for file_dir in os.listdir('/kaggle/input/plant-seedlings-classification/train')
 #                 
 
 
-# In[13]:
 
 
 print('total training cat images:', len(os.listdir(train_Black_grass_dir)))
 
 
-# In[14]:
 
 
 i = 0
@@ -185,13 +171,11 @@ for dirs in os.listdir(validation_dir):
 print (i)
 
 
-# In[15]:
 
 
 len(os.listdir('/kaggle/input/plant-seedlings-classification/train/Black-grass'))
 
 
-# In[16]:
 
 
 from PIL import Image
@@ -202,13 +186,11 @@ print (width)
 print (height)
 
 
-# In[17]:
 
 
 num_class = 12
 
 
-# In[18]:
 
 
 from keras import layers
@@ -235,13 +217,11 @@ model.add(layers.Dense(12, activation='softmax'))
 # model.add(layers.Dense(12, activation='softmax'))
 
 
-# In[19]:
 
 
 model.summary()
 
 
-# In[20]:
 
 
 from keras import optimizers
@@ -250,7 +230,6 @@ model.compile(loss='categorical_crossentropy',
                 metrics=['acc'])
 
 
-# In[21]:
 
 
 from keras.preprocessing.image import ImageDataGenerator
@@ -268,7 +247,6 @@ validation_generator = test_datagen.flow_from_directory(
                 class_mode='categorical')
 
 
-# In[22]:
 
 
 for data_batch, labels_batch in train_generator:
@@ -277,7 +255,6 @@ for data_batch, labels_batch in train_generator:
     break
 
 
-# In[23]:
 
 
 history = model.fit_generator(
@@ -288,7 +265,6 @@ history = model.fit_generator(
             validation_steps=50)
 
 
-# In[24]:
 
 
 import matplotlib.pyplot as plt
@@ -309,13 +285,11 @@ plt.legend()
 plt.show()
 
 
-# In[25]:
 
 
 model.save('/kaggle/input/simple.h5')
 
 
-# In[26]:
 
 
 from keras.preprocessing.image import ImageDataGenerator
@@ -329,7 +303,6 @@ horizontal_flip=True,
 fill_mode='nearest')
 
 
-# In[27]:
 
 
 from keras import layers
@@ -357,7 +330,6 @@ optimizer=optimizers.RMSprop(lr=1e-4),
 metrics=['acc'])
 
 
-# In[28]:
 
 
 train_datagen = ImageDataGenerator(
@@ -388,13 +360,11 @@ validation_data=validation_generator,
 validation_steps=50)
 
 
-# In[29]:
 
 
 model.save('/kaggle/input/simple_augmentation.h5')
 
 
-# In[30]:
 
 
 from keras.applications import VGG16
@@ -403,13 +373,11 @@ include_top=False,
 input_shape=(84, 84, 3))
 
 
-# In[31]:
 
 
 conv_base.summary()
 
 
-# In[32]:
 
 
 from keras import models
@@ -421,19 +389,16 @@ model.add(layers.Dense(256, activation='relu'))
 model.add(layers.Dense(12, activation='softmax'))
 
 
-# In[33]:
 
 
 model.summary()
 
 
-# In[34]:
 
 
 conv_base.trainable = False
 
 
-# In[35]:
 
 
 from keras.preprocessing.image import ImageDataGenerator
@@ -471,7 +436,6 @@ validation_data=validation_generator,
 validation_steps=50)
 
 
-# In[36]:
 
 
 conv_base.trainable = True
@@ -485,7 +449,6 @@ for layer in conv_base.layers:
         layer.trainable = False
 
 
-# In[37]:
 
 
 model.compile(loss='categorical_crossentropy',
@@ -499,13 +462,11 @@ validation_data=validation_generator,
 validation_steps=50)
 
 
-# In[38]:
 
 
 model.save("/kaggle/input/fine_tuned.h5")
 
 
-# In[39]:
 
 
 test_generator = test_datagen.flow_from_directory(
@@ -517,31 +478,26 @@ test_loss, test_acc = model.evaluate_generator(test_generator, steps=50)
 print('test acc:', test_acc)
 
 
-# In[40]:
 
 
 os.listdir('/kaggle/input')
 
 
-# In[41]:
 
 
 submission = pd.read_csv('/kaggle/input/plant-seedlings-classification/sample_submission.csv')
 
 
-# In[42]:
 
 
 submission.head()
 
 
-# In[ ]:
 
 
 
 
 
-# In[43]:
 
 
 from keras.models import load_model
@@ -549,7 +505,6 @@ from keras.preprocessing import image
 import numpy as np
 
 
-# In[44]:
 
 
 img_width, img_height = 84, 84
@@ -559,25 +514,21 @@ model.compile(loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[45]:
 
 
 
@@ -590,7 +541,6 @@ def load_image(img_path, show=False):
     return img_tensor
 
 
-# In[46]:
 
 
 model = load_model('/kaggle/input/fine_tuned.h5')
@@ -599,7 +549,6 @@ new_image = load_image(img_path)
 pred = model.predict(new_image)
 
 
-# In[47]:
 
 
 
@@ -607,19 +556,16 @@ labels = np.argmax(pred, axis=-1)
 print(labels)
 
 
-# In[48]:
 
 
 pred
 
 
-# In[49]:
 
 
 train_generator.class_indices
 
 
-# In[ ]:
 
 
 

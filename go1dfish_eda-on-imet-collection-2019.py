@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -21,31 +20,26 @@ from IPython.display import clear_output
 from tqdm import tqdm_notebook as tqdm
 
 
-# In[2]:
 
 
 labels_df = pd.read_csv("../input/labels.csv")
 
 
-# In[3]:
 
 
 labels_df.head()
 
 
-# In[4]:
 
 
 labels_df.tail()
 
 
-# In[5]:
 
 
 print(f"labels.csv have {labels_df.shape[0]} attributes_name.")
 
 
-# In[6]:
 
 
 kind_dict = {}
@@ -59,20 +53,17 @@ for key, val in kind_dict.items():
     print("The number of {} is {}({:.2%})".format(key, val, val/len(labels_df)))
 
 
-# In[7]:
 
 
 label_dict = labels_df.attribute_name.to_dict()
 
 
-# In[8]:
 
 
 train_df = pd.read_csv("../input/train.csv")
 train_df.head()
 
 
-# In[9]:
 
 
 test_path = Path("../input/test/")
@@ -84,7 +75,6 @@ ax.set_title("The amount of data")
 clear_output()
 
 
-# In[10]:
 
 
 id_len_dict = {}
@@ -103,7 +93,6 @@ for i in range(train_df.shape[0]):
             id_num_dict[num] = 1
 
 
-# In[11]:
 
 
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8))
@@ -115,7 +104,6 @@ ax2.set_xticks(np.linspace(0, max(id_num_dict.keys()), 10, dtype='int'))
 clear_output()
 
 
-# In[12]:
 
 
 id_len_list = sorted(id_len_dict.items(), key=lambda x: -x[1])
@@ -125,7 +113,6 @@ for i in id_len_list:
     print("{0:9d}{1:20d}".format(i[0], i[1]))
 
 
-# In[13]:
 
 
 id_num_list = sorted(id_num_dict.items(), key=lambda x: -x[1])
@@ -135,7 +122,6 @@ for i in range(10):
     print("{0:3d}.{1:15d}{2:30s}".format(i+1, id_num_list[i][1], (label_dict[id_num_list[i][0]]).rjust(30)))
 
 
-# In[14]:
 
 
 id_num_list = sorted(id_num_dict.items(), key=lambda x: x[1])
@@ -145,7 +131,6 @@ for i in range(16):
     print("{0:3d}.{1:15d}{2:50s}".format(i+1, id_num_list[i][1], (label_dict[id_num_list[i][0]]).rjust(50)))
 
 
-# In[15]:
 
 
 train_path = Path("../input/train/")
@@ -161,7 +146,6 @@ for i, index in enumerate(np.random.randint(0, len(train_df), 3)):
         ax[i].text(x_pos, y_pos, label_dict[attribute_id], fontsize=20)
 
 
-# In[16]:
 
 
 test_path = Path("../input/test/")
@@ -172,7 +156,6 @@ for i, path in enumerate(np.random.choice(test_img_paths, 3)):
     ax[i].imshow(img)
 
 
-# In[17]:
 
 
 def check_area_size(folder_path):
@@ -203,14 +186,12 @@ def check_area_size(folder_path):
     return area_list, max_width, min_width, max_height, min_height
 
 
-# In[18]:
 
 
 train_area_list, train_max_width, train_min_width, train_max_height, train_min_height    = check_area_size(train_path)
 clear_output()
 
 
-# In[19]:
 
 
 print("test max area size is {}".format(max(train_area_list)))
@@ -218,7 +199,6 @@ print("test min area size is {}".format(min(train_area_list)))
 print("Max area is {:.2f} times min area".format(max(train_area_list)/ min(train_area_list)))
 
 
-# In[20]:
 
 
 print(f"max train image width is {train_max_width[0]}")
@@ -227,7 +207,6 @@ plt.imshow(img)
 plt.show()
 
 
-# In[21]:
 
 
 print(f"min train image width is {train_min_width[0]}")
@@ -236,7 +215,6 @@ plt.imshow(img)
 plt.show()
 
 
-# In[22]:
 
 
 print(f"max train image height is {train_max_height[0]}")
@@ -245,7 +223,6 @@ plt.imshow(img)
 plt.show()
 
 
-# In[23]:
 
 
 print(f"min train image height is {train_min_height[0]}")
@@ -254,14 +231,12 @@ plt.imshow(img)
 plt.show()
 
 
-# In[24]:
 
 
 test_area_list, test_max_width, test_min_width, test_max_height, test_min_height    = check_area_size(test_path)
 clear_output()
 
 
-# In[25]:
 
 
 print("test max area size is {}".format(max(test_area_list)))
@@ -269,7 +244,6 @@ print("test min area size is {}".format(min(test_area_list)))
 print("Max area is {:.2f} times min area".format(max(test_area_list)/ min(test_area_list)))
 
 
-# In[26]:
 
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6), sharex=True)
@@ -280,7 +254,6 @@ ax2.set_title("Distribution of the test image area")
 plt.show()
 
 
-# In[27]:
 
 
 print(f"max test image width is {test_max_width[0]}")
@@ -289,7 +262,6 @@ plt.imshow(img)
 plt.show()
 
 
-# In[28]:
 
 
 print(f"min train image width is {test_min_width[0]}")
@@ -298,7 +270,6 @@ plt.imshow(img)
 plt.show()
 
 
-# In[29]:
 
 
 print(f"max train image height is {test_max_height[0]}")
@@ -307,7 +278,6 @@ plt.imshow(img)
 plt.show()
 
 
-# In[30]:
 
 
 print(f"min train image height is {test_min_height[0]}")
@@ -316,7 +286,6 @@ plt.imshow(img)
 plt.show()
 
 
-# In[31]:
 
 
 

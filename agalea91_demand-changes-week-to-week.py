@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -11,7 +10,6 @@ import seaborn as sns
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 types = {'Semana':np.uint8, 'Cliente_ID':np.uint32,
@@ -21,7 +19,6 @@ df = pd.read_csv('../input/train.csv', usecols=types.keys(),
                  dtype=types)
 
 
-# In[3]:
 
 
 # Histogram of target variable
@@ -30,7 +27,6 @@ plt.xlabel('Demand per week')
 plt.ylabel('Number of clients');
 
 
-# In[4]:
 
 
 # Log scale histogram of target variable
@@ -39,13 +35,11 @@ plt.xlabel('Demand per week')
 plt.ylabel('Number of clients');
 
 
-# In[5]:
 
 
 demand_sorted = df.Demanda_uni_equil.sort_values(ascending=True)
 
 
-# In[6]:
 
 
 print('plotting {0:.2f} % of data'.      format(100*(demand_sorted < 30).sum()/len(demand_sorted)))
@@ -54,7 +48,6 @@ plt.xlabel('Demand per week')
 plt.ylabel('Number of clients');
 
 
-# In[7]:
 
 
 def demandVar(c_id, df, percent=False):
@@ -106,28 +99,24 @@ def demandVar(c_id, df, percent=False):
     return df_return
 
 
-# In[8]:
 
 
 c_ids = [df.Cliente_ID.values[int(i)] for i in np.linspace(0, len(df)-1, 5)]
 c_ids
 
 
-# In[9]:
 
 
 var = demandVar(c_id=c_ids[0], df=df)
 var
 
 
-# In[10]:
 
 
 var = demandVar(c_id=c_ids[1], df=df, percent=True)
 var
 
 
-# In[11]:
 
 
 def get_vars(c_ids, percent=False):
@@ -142,13 +131,11 @@ def get_vars(c_ids, percent=False):
     return return_list
 
 
-# In[12]:
 
 
 var_list = get_vars(c_ids)
 
 
-# In[13]:
 
 
 colors = ['blue', 'red', 'green', 'turquoise', 'brown']
@@ -169,13 +156,11 @@ for i in range(5):
 ax[1].set_ylim(0,1)
 
 
-# In[14]:
 
 
 var_list = get_vars(c_ids, percent=True)
 
 
-# In[15]:
 
 
 colors = ['blue', 'red', 'green', 'turquoise', 'brown']
@@ -195,13 +180,11 @@ for i in range(5):
                normed=True, alpha=0.5, bins=20)
 
 
-# In[16]:
 
 
 get_ipython().run_cell_magic('time', '', 'c_ids = [df.Cliente_ID.values[int(i)] for i in np.linspace(0, len(df)-1, 100)]\nvar_list, p_var_list = get_vars(c_ids), get_vars(c_ids, percent=True)')
 
 
-# In[17]:
 
 
 fig, ax = plt.subplots(1, 2)
@@ -219,7 +202,6 @@ ax[1].hist([x for row in var_list for x in row], color='red',
 ax[1].set_xlim(-10,10);
 
 
-# In[18]:
 
 
 fig, ax = plt.subplots()
@@ -233,7 +215,6 @@ ax.set_xlabel('Change in demand')
 ax.set_ylabel('Normed frequency');
 
 
-# In[19]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -39,27 +37,23 @@ pd.set_option('max_columns', 100) # So we can see more columns
 train = pd.read_csv('/kaggle/input/nfl-big-data-bowl-2020/train.csv', low_memory=False)
 
 
-# In[3]:
 
 
 train
 
 
-# In[4]:
 
 
 train.groupby('PlayId').first()['Yards'].plot(kind='hist',figsize=(15,5),bins=100)
 plt.show()
 
 
-# In[5]:
 
 
 train.groupby('PlayId').first()['Yards'].plot(kind='hist',figsize=(15,5),bins=100)
 plt.show()
 
 
-# In[6]:
 
 
 train.groupby('PlayId').first()['Yards']     .plot(kind = 'hist',
@@ -69,14 +63,12 @@ train.groupby('PlayId').first()['Yards']     .plot(kind = 'hist',
 plt.show()
 
 
-# In[7]:
 
 
 for i, d in train.groupby('Down'):
     print(i, d)
 
 
-# In[8]:
 
 
 fig, axes = plt.subplots(4, 1, figsize=(15, 8), sharex=True)
@@ -90,7 +82,6 @@ for i, d in train.groupby('Down'):
     n+=1
 
 
-# In[9]:
 
 
 fig, ax = plt.subplots(figsize=(20, 5))
@@ -103,7 +94,6 @@ plt.title('Yards vs Distance-to-Gain')
 plt.show()
 
 
-# In[10]:
 
 
 train.groupby('GameId')['PlayId']     .nunique()     .plot(kind='hist', figsize=(15, 5),
@@ -112,7 +102,6 @@ train.groupby('GameId')['PlayId']     .nunique()     .plot(kind='hist', figsize=
 plt.show()
 
 
-# In[11]:
 
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 5))
@@ -125,7 +114,6 @@ ax2.set_title('Yards Gained by Down')
 plt.show()
 
 
-# In[12]:
 
 
 train['Distance'].plot(kind='hist',
@@ -136,7 +124,6 @@ train['Distance'].plot(kind='hist',
 plt.show()
 
 
-# In[13]:
 
 
 fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(16, 4))
@@ -157,7 +144,6 @@ train['Dis'].plot(kind='hist',
 plt.show()
 
 
-# In[14]:
 
 
 fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(16, 4))
@@ -179,7 +165,6 @@ train.query("NflIdRusher == NflId")['Dis']     .plot(kind='hist',
 plt.show()
 
 
-# In[15]:
 
 
 import warnings
@@ -191,31 +176,26 @@ plt.suptitle('Speed, Acceleration, Distance traveled, and Yards Gained for Rushe
 plt.show()
 
 
-# In[16]:
 
 
 train['SnapHandoffSeconds'] = (pd.to_datetime(train['TimeHandoff']) -                                pd.to_datetime(train['TimeSnap'])).dt.total_seconds()
 
 
-# In[17]:
 
 
 train['SnapHandoffSeconds']
 
 
-# In[18]:
 
 
 train['TimeSnap']
 
 
-# In[19]:
 
 
 train.groupby('SnapHandoffSeconds').first()['Yards'].plot(kind='hist', bins=10)
 
 
-# In[20]:
 
 
 train.groupby('SnapHandoffSeconds')['Yards'].mean().plot(kind='bar',
@@ -225,7 +205,6 @@ train.groupby('SnapHandoffSeconds')['Yards'].mean().plot(kind='bar',
 plt.show()
 
 
-# In[ ]:
 
 
 

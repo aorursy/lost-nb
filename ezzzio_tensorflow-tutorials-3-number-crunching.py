@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,19 +22,16 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cd ../input/pubg-finish-placement-prediction\nls')
 
 
-# In[3]:
 
 
 get_ipython().run_cell_magic('bash', '', 'pip3 install apache-beam')
 
 
-# In[4]:
 
 
 import apache_beam as beam
@@ -112,20 +108,17 @@ with beam.Pipeline() as pipeline:
 
 
 
-# In[5]:
 
 
 import tensorflow as tf
 
 
-# In[ ]:
 
 
 for item in x_train:
     print({item : "{} : {}".format(x_train[item].unique(),len(x_train[item].unique()))})
 
 
-# In[22]:
 
 
 def gennerate_feature_columns():
@@ -149,7 +142,6 @@ def gennerate_feature_columns():
     ]  
 
 
-# In[ ]:
 
 
 # def model_fn(features, labels, mode):
@@ -178,7 +170,6 @@ def gennerate_feature_columns():
 #           loss, tf.compat.v1.train.get_or_create_global_step()))
 
 
-# In[41]:
 
 
 train_batch_size = 100
@@ -197,7 +188,6 @@ eval_dataset = tf.data.experimental.make_csv_dataset(
     num_epochs=3)
 
 
-# In[ ]:
 
 
 # loss_object = tf.keras.losses.MeanAbsoluteError()
@@ -253,13 +243,11 @@ eval_dataset = tf.data.experimental.make_csv_dataset(
 #                                                                 epoch_accuracy.result()))
 
 
-# In[21]:
 
 
 next(iter(train_dataset))[1]
 
 
-# In[50]:
 
 
 model = tf.keras.Sequential([

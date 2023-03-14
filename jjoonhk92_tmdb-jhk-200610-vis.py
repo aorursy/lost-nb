@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Input data files are available in the read-only "../input/" directory
@@ -13,7 +12,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
         print(os.path.join(dirname, filename))
 
 
-# In[2]:
 
 
 import numpy as np
@@ -52,7 +50,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[3]:
 
 
 #データを読み取る
@@ -60,13 +57,11 @@ train = pd.read_csv('../input/tmdb-box-office-prediction/train.csv')
 test = pd.read_csv('../input/tmdb-box-office-prediction/test.csv')
 
 
-# In[4]:
 
 
 #train = pd.concat([train, test])
 
 
-# In[5]:
 
 
 #columnsを確認し、除外する変数をdrop
@@ -74,38 +69,32 @@ train.drop(columns=['status','imdb_id','poster_path','original_title'], inplace 
 print(train.columns)
 
 
-# In[6]:
 
 
 train['log_revenue'] = np.log10(train['revenue'])
 
 
-# In[7]:
 
 
 train['overview'].isna().sum()
 
 
-# In[8]:
 
 
 train['overview'].fillna('none', inplace = True)
 train['overview'].shape
 
 
-# In[9]:
 
 
 train['overview'].head()
 
 
-# In[10]:
 
 
 stop_words = stopwords.words('english')
 
 
-# In[11]:
 
 
 def lower_text(text):
@@ -122,13 +111,11 @@ def remove_stopwords(words, stopwords):#不要な単語を削除
     return words
 
 
-# In[12]:
 
 
 print(string.punctuation)
 
 
-# In[13]:
 
 
 train['overview'] = train['overview'].apply(lambda x: lower_text(x))
@@ -136,31 +123,26 @@ train['overview'] = train['overview'].apply(lambda x: remove_punct(x))
 #train['overview'] = train['overview'].apply(lambda x: remove_stopwords(x,stop_words))
 
 
-# In[14]:
 
 
 train.info()
 
 
-# In[15]:
 
 
 train['overview']
 
 
-# In[16]:
 
 
 train['overview'] = train['overview'].apply(lambda x: ''.join(map(str,x)))
 
 
-# In[17]:
 
 
 train['overview']
 
 
-# In[18]:
 
 
 plt.figure(figsize = (12, 12))
@@ -172,7 +154,6 @@ plt.axis("off")
 plt.show()
 
 
-# In[19]:
 
 
 vec_tfidf = TfidfVectorizer()
@@ -183,7 +164,6 @@ print('Vocabulary size: {}'.format(len(vec_tfidf.vocabulary_)))
 print('Vocabulary content: {}'.format(vec_tfidf.vocabulary_))
 
 
-# In[20]:
 
 
 vectorizer = TfidfVectorizer(
@@ -198,13 +178,11 @@ linreg = LinearRegression()
 linreg.fit(overview_text, train['log_revenue'])
 
 
-# In[21]:
 
 
 eli5.show_weights(linreg, vec = vectorizer, top=20, feature_filter=lambda x: x != '<BIAS>')
 
 
-# In[22]:
 
 
 train['tagline'].fillna('none', inplace = True)
@@ -212,13 +190,11 @@ train['tagline'] = train['tagline'].apply(lambda x: lower_text(x))
 train['tagline'] = train['tagline'].apply(lambda x: remove_punct(x))
 
 
-# In[23]:
 
 
 train['tagline'] = train['tagline'].apply(lambda x: ''.join(map(str,x)))
 
 
-# In[24]:
 
 
 plt.figure(figsize = (12,12))
@@ -230,7 +206,6 @@ plt.axis("off")
 plt.show()
 
 
-# In[25]:
 
 
 X = vec_tfidf.fit_transform(train['tagline'])
@@ -247,13 +222,11 @@ linreg = LinearRegression()
 linreg.fit(overview_text, train['log_revenue'])
 
 
-# In[26]:
 
 
 eli5.show_weights(linreg, vec = vectorizer, top=20, feature_filter=lambda x: x != '<BIAS>')
 
 
-# In[27]:
 
 
 def select_lgbm(x):
@@ -276,7 +249,6 @@ print('best_parameter: ', grid.best_params_)
 print('rmse:', )
 
 
-# In[28]:
 
 
 def gridcv_lgb(cv, data, train, test):
@@ -347,7 +319,6 @@ def make_pred(model, data, train_days, pred_days, test):
     return pred, rmse
 
 
-# In[ ]:
 
 
 

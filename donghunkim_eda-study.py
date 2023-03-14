@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,44 +21,37 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-# In[3]:
 
 
 train = pd.read_csv('../input/liverpool-ion-switching/train.csv')
 
 
-# In[4]:
 
 
 train.head()
 
 
-# In[5]:
 
 
 train.info()
 
 
-# In[6]:
 
 
 train.describe()
 
 
-# In[7]:
 
 
 train.open_channels.value_counts()
 
 
-# In[8]:
 
 
 plt.figure(figsize=(20,5)); res = 1000 #간격을 1000 만큼씩 띄어서 표시
@@ -80,13 +72,11 @@ plt.plot(x,y2,'r',alpha=0.3) #Ion 채널 수 표시
 plt.show()
 
 
-# In[9]:
 
 
 train.corr()
 
 
-# In[10]:
 
 
 #각 배치를 10개 데이터 리스트로 구분
@@ -98,7 +88,6 @@ for i in range(10):
     batch.append(train[start:start+gap])
 
 
-# In[11]:
 
 
 group1 = [batch[1],batch[2]]
@@ -108,7 +97,6 @@ group4 = [batch[6],batch[9]]
 group5 = [batch[5],batch[10]]
 
 
-# In[12]:
 
 
 #plot작성용 helper 
@@ -123,61 +111,51 @@ def plot_batch(batch_no=0, start=0, end=500000):
     plt.show()
 
 
-# In[13]:
 
 
 plot_batch(6) #6번 배치를 출력
 
 
-# In[14]:
 
 
 plot_batch(6,0,100) # 6번 배치에서 0~100
 
 
-# In[15]:
 
 
 plot_batch(6,40,60) #6번 배치에서 40~60
 
 
-# In[16]:
 
 
 plot_batch(10,0,500000)
 
 
-# In[17]:
 
 
 batch[10].describe()
 
 
-# In[18]:
 
 
 batch[10].open_channels.value_counts()
 
 
-# In[19]:
 
 
 plot_batch(1,100,20000) #1번 배치에서 100~200 
 
 
-# In[20]:
 
 
 plot_batch(1,15200,15400)
 
 
-# In[21]:
 
 
 train.describe()
 
 
-# In[22]:
 
 
 # 데이터 값 실수. 소수점 자리 설정
@@ -194,19 +172,16 @@ for i in range(11):
     print(df_desc)
 
 
-# In[23]:
 
 
 import scipy.stats as stats
 
 
-# In[24]:
 
 
 x = np.linspace(-15, 15, 200) #x축 값, 200개 값을 -15에서 15사이에 균일간격으로 생성  
 
 
-# In[25]:
 
 
 legend = []
@@ -228,7 +203,6 @@ plt.legend(legend)                   # 범례 표시
 plt.show()                           # 플롯 보이기
 
 
-# In[26]:
 
 
 
@@ -237,7 +211,6 @@ sns.boxplot(x="open_channels", y="signal", data=train) #실용적, 2초 정도 �
 plt.show() 
 
 
-# In[27]:
 
 
 plt.figure(figsize=(20,5))
@@ -245,7 +218,6 @@ sns.violinplot(x="open_channels",y="signal",data=train)
 plt.show() #violinplot은 나오는데 boxplot보다 시간이 더 오래걸림, 11초 이상
 
 
-# In[28]:
 
 
 #120초 정도 걸려서 보기 힘들고, 점이 너무 많아서 구분이 되지 않음 
@@ -254,7 +226,6 @@ plt.show() #violinplot은 나오는데 boxplot보다 시간이 더 오래걸림,
 #plt.show()
 
 
-# In[29]:
 
 
 #rolling 사용법 
@@ -266,31 +237,26 @@ batch[2].signal.rolling(500).mean().plot()
 plt.show()
 
 
-# In[30]:
 
 
 plot_batch(3,0,500000)
 
 
-# In[31]:
 
 
 plot_batch(7,0,500000)
 
 
-# In[32]:
 
 
 plot_batch(3,650,850)
 
 
-# In[33]:
 
 
 plot_batch(7,650,850)
 
 
-# In[34]:
 
 
 #plot작성용 helper, rolling추가 
@@ -314,43 +280,36 @@ def plot_rolling(batch_no=0, start=0, end=500000, window=10, rtype='mean'):
     plt.show()
 
 
-# In[35]:
 
 
 plot_rolling(7,650,750, window=10)
 
 
-# In[36]:
 
 
 plot_rolling(7,650,750, window=3)
 
 
-# In[37]:
 
 
 plot_rolling(7,650,750, window=2, rtype='min')
 
 
-# In[38]:
 
 
 batch[1].head(3)
 
 
-# In[39]:
 
 
 sns.lineplot(x='time',y='signal',data=batch[1][100:200])
 
 
-# In[40]:
 
 
 get_ipython().run_line_magic('pinfo', 'np.round')
 
 
-# In[41]:
 
 
 def transit_matrix(data):
@@ -365,19 +324,16 @@ def transit_matrix(data):
     return np.array(matrix)  # 행: 직전 오픈채널 값, 열: 현재 오픈채널 값 , 데이터: 해당 행,열 기준의 대상 수량
 
 
-# In[42]:
 
 
 T = transit_matrix(train.open_channels)
 
 
-# In[43]:
 
 
 np.round(T,3)
 
 
-# In[44]:
 
 
 plt.figure(figsize=(11,11))
@@ -385,26 +341,22 @@ sns.heatmap( T,annot=True, fmt='.3f', cmap='Reds', vmin=0, vmax=0.5, linewidths=
 plt.show()
 
 
-# In[45]:
 
 
 eig_values, eig_vectors = np.linalg.eig(np.transpose(T))
 print("Eigenvalues :", eig_values)
 
 
-# In[46]:
 
 
 np.round(eig_vectors,3) # console출력이 길게 나오게하는 옵션이 있는지?? 중간에 짤리니 보기 불편함 
 
 
-# In[47]:
 
 
 T1 = transit_matrix(batch[1].open_channels)
 
 
-# In[48]:
 
 
 plt.figure(figsize=(11,11))
@@ -412,7 +364,6 @@ sns.heatmap( T1,annot=True, fmt='.3f', cmap='Reds', vmin=0, vmax=0.5, linewidths
 plt.show()
 
 
-# In[49]:
 
 
 eig_values, eig_vectors = np.linalg.eig(np.transpose(T1))
@@ -420,20 +371,17 @@ print("Eigen values :", eig_values)
 print("Eigen vectors :\n", np.round(eig_vectors,3))
 
 
-# In[50]:
 
 
 dist01 = eig_vectors[:,0] / np.sum(eig_vectors[:,0])
 print("Probability distribution for sequence 3 :", dist01)
 
 
-# In[51]:
 
 
 np.histogram(batch[1].open_channels, bins=[0,1,2,3], density=True)[0]
 
 
-# In[52]:
 
 
 def create_axes_grid(numplots_x, numplots_y, plotsize_x=6, plotsize_y=3):
@@ -454,7 +402,6 @@ def set_axes(axes, use_grid=True, x_val = [0,100,10,5], y_val = [-50,50,10,5]):
     
 
 
-# In[53]:
 
 
 data = batch[5].signal
@@ -466,7 +413,6 @@ axes.set_aspect('equal')
 axes.scatter(np.roll(data,-1), data, s=.01);
 
 
-# In[54]:
 
 
 data = batch[5].signal
@@ -480,31 +426,26 @@ for i in range(11):
     axes.scatter(np.roll(data,-1)[data_true==i], data[data_true==i], s=.01);
 
 
-# In[55]:
 
 
 from statsmodels.tsa.seasonal import seasonal_decompose
 
 
-# In[56]:
 
 
 train.head()
 
 
-# In[57]:
 
 
 decompose_01 = seasonal_decompose(batch[1].signal, model='additive', period=1)
 
 
-# In[58]:
 
 
 decompose_01.plot()
 
 
-# In[59]:
 
 
 def plot_decompose(result):
@@ -519,13 +460,11 @@ def plot_decompose(result):
     ax4.set_ylabel('Resid')
 
 
-# In[60]:
 
 
 plot_decompose(decompose_01)
 
 
-# In[61]:
 
 
 decompose = []
@@ -534,50 +473,42 @@ for i in range(10):
     decompose.append(seasonal_decompose(batch[i+1].signal, model='additive', period=1))
 
 
-# In[62]:
 
 
 plot_decompose(decompose[1])
 
 
-# In[63]:
 
 
 plot_decompose(decompose[2])
 
 
-# In[64]:
 
 
 plot_decompose(decompose[3])
 
 
-# In[65]:
 
 
 plot_decompose(decompose[4])
 
 
-# In[66]:
 
 
 plot_decompose(decompose[5])
 
 
-# In[67]:
 
 
 plot_decompose(decompose[6])
 
 
-# In[68]:
 
 
 train_clean = pd.read_csv('../input/ion-channel-without-drift/train_clean.csv')
 test_clean = pd.read_csv('../input/ion-channel-without-drift/train_clean.csv')
 
 
-# In[69]:
 
 
 plt.figure(figsize=(20,5)); res = 1000 #간격을 1000 만큼씩 띄어서 표시
@@ -598,7 +529,6 @@ plt.plot(x,y2,'r',alpha=0.3) #Ion 채널 수 표시
 plt.show()
 
 
-# In[70]:
 
 
 plt.figure(figsize=(20,5)); res = 1000 #간격을 1000 만큼씩 띄어서 표시
@@ -619,7 +549,6 @@ plt.plot(x,y2,'r',alpha=0.3) #Ion 채널 수 표시
 plt.show()
 
 
-# In[71]:
 
 
 train_clean['group'] = -1
@@ -642,13 +571,11 @@ plt.xlabel('time'); plt.ylabel('signal')
 plt.show()
 
 
-# In[72]:
 
 
 from scipy.stats import mode
 
 
-# In[73]:
 
 
 step = 0.2
@@ -682,7 +609,6 @@ plt.ylabel('Open Channels',size=16)
 plt.show()
 
 
-# In[ ]:
 
 
 

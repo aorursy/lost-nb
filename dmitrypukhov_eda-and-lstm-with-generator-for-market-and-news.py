@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 #####################################
@@ -70,7 +69,6 @@ pd.set_option('display.width', 200)
 print(os.listdir("../input"))
 
 
-# In[ ]:
 
 
 # This competition settings
@@ -78,7 +76,6 @@ from kaggle.competitions import twosigmanews
 env = twosigmanews.make_env()
 
 
-# In[ ]:
 
 
 # Read the data
@@ -93,33 +90,28 @@ market.time = pd.to_datetime(market.time.astype('datetime64').dt.date, utc=True)
 # news.time = news.time.dt.date
 
 
-# In[ ]:
 
 
 toy=False
 
 
-# In[ ]:
 
 
 market.tail()
 
 
-# In[ ]:
 
 
 # Look at column types
 market.info()
 
 
-# In[ ]:
 
 
 # Look at min-max, quantiles
 market.describe()
 
 
-# In[ ]:
 
 
 # How many total records and assets are in the data
@@ -128,7 +120,6 @@ nrows=market.close.count()
 print("Total count: %d records of %d assets" % (nrows, nassets))
 
 
-# In[ ]:
 
 
 # Plot label column
@@ -143,14 +134,12 @@ market.returnsOpenNextMktres10.describe(percentiles=[0.01, 0.99])
 #market.returnsOpenNextMktres10.describe()
 
 
-# In[ ]:
 
 
 sns.distplot(market.returnsOpenNextMktres10.clip(-1,1))
 plt.show()
 
 
-# In[ ]:
 
 
 def plot_random_asset(market):
@@ -186,20 +175,17 @@ def plot_random_asset(market):
 plot_random_asset(market)
 
 
-# In[ ]:
 
 
 news.tail()
 
 
-# In[ ]:
 
 
 # See column types
 news.info()
 
 
-# In[ ]:
 
 
 nnews = news.size
@@ -207,7 +193,6 @@ nassets = len(news.assetName.cat.categories)
 print("Total %d news about %d assets" % (nnews, nassets))
 
 
-# In[ ]:
 
 
 # Barplot on negative, neutral and positive columns.
@@ -216,7 +201,6 @@ plt.title("News positivity chart")
 plt.show()
 
 
-# In[ ]:
 
 
 def train_test_val_split(market):
@@ -247,7 +231,6 @@ plt.show()
 train_idx.tail()
 
 
-# In[ ]:
 
 
 class MarketPrepro:
@@ -383,7 +366,6 @@ print('market_prepro is fit')
 #prepro.get_X(train_idx.sample(10), market, news).head()
 
 
-# In[ ]:
 
 
 class NewsPrepro:
@@ -516,7 +498,6 @@ news_prepro.fit(train_idx, news)
 print('news_prepro is fit')
 
 
-# In[ ]:
 
 
 class JoinedPreprocessor:
@@ -613,7 +594,6 @@ print('Preprocessor created')
 # print('Preprocessor is fit')
 
 
-# In[ ]:
 
 
 class JoinedGenerator:
@@ -676,7 +656,6 @@ print('Generators created')
 # print(y[:1])
 
 
-# In[ ]:
 
 
 class ModelFactory:
@@ -766,13 +745,11 @@ model = ModelFactory.lstm_128(len(market_prepro.feature_cols) + len(news_prepro.
 model.summary()
 
 
-# In[ ]:
 
 
 training = ModelFactory.train(model, toy, join_generator, val_generator)
 
 
-# In[ ]:
 
 
 class Predictor:
@@ -823,13 +800,11 @@ predictor = Predictor( prepro, market_prepro, news_prepro, model, ModelFactory.l
 # plt.show()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 # # Plotting
@@ -858,7 +833,6 @@ plt.suptitle('Training history', fontsize=16)
 plt.show()
 
 
-# In[ ]:
 
 
 def predict_on_test():
@@ -887,7 +861,6 @@ def predict_on_test():
 predict_on_test()
 
 
-# In[ ]:
 
 
 def predict_random_asset():
@@ -909,7 +882,6 @@ def predict_random_asset():
 predict_random_asset()
 
 
-# In[ ]:
 
 
 def get_score():
@@ -944,7 +916,6 @@ def get_score():
 print(f"Sigma score: {get_score()}")    
 
 
-# In[ ]:
 
 
 def calc_acc():
@@ -970,7 +941,6 @@ def calc_acc():
 calc_acc()
 
 
-# In[ ]:
 
 
 def make_predictions(market_obs_df, news_obs_df, predictions_template_df):
@@ -989,7 +959,6 @@ def make_predictions(market_obs_df, news_obs_df, predictions_template_df):
     predictions_template_df.confidenceValue = pred_df.confidence
 
 
-# In[ ]:
 
 
 ##########################
@@ -1031,7 +1000,6 @@ for (market_obs_df, news_obs_df, predictions_template_df) in days:
 print(f"Prediction for {len(predicted_days)} days completed")
 
 
-# In[ ]:
 
 
 # Plot execution time 
@@ -1049,7 +1017,6 @@ plt.ylabel("Confidence")
 plt.show()
 
 
-# In[ ]:
 
 
 # We've got a submission file!

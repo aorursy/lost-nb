@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -12,7 +11,6 @@ import zipfile
 import numpy as np
 
 
-# In[2]:
 
 
 TRAIN = '../input/prostate-cancer-grade-assessment/train_images/'
@@ -23,7 +21,6 @@ sz = 128
 N = 16
 
 
-# In[3]:
 
 
 def tile(img, mask):
@@ -49,7 +46,6 @@ def tile(img, mask):
     return result
 
 
-# In[4]:
 
 
 x_tot,x2_tot = [],[]
@@ -70,7 +66,6 @@ with zipfile.ZipFile(OUT_TRAIN, 'w') as img_out, zipfile.ZipFile(OUT_MASKS, 'w')
             mask_out.writestr(f'{name}_{idx}.png', mask)
 
 
-# In[5]:
 
 
 #image stats
@@ -79,7 +74,6 @@ img_std =  np.sqrt(np.array(x2_tot).mean(0) - img_avr**2)
 print('mean:',img_avr, ', std:', np.sqrt(img_std))
 
 
-# In[ ]:
 
 
 

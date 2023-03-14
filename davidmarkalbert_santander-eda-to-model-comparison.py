@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_cell_magic('javascript', '', "$.getScript('https://kmahelona.github.io/ipython_notebook_goodies/ipython_notebook_toc.js')")
 
 
-# In[2]:
 
 
 import sys, os
@@ -48,7 +46,6 @@ from keras.constraints import max_norm
 from keras.wrappers.scikit_learn import KerasClassifier
 
 
-# In[3]:
 
 
 id_col = 'ID_code'
@@ -57,13 +54,11 @@ df_play = pd.read_csv('../input/train.csv', index_col=id_col, low_memory=False)
 df_comp = pd.read_csv('../input/test.csv', index_col=id_col, low_memory=False)
 
 
-# In[4]:
 
 
 train_df, test_df = train_test_split(df_play, test_size=.1, train_size=.1, stratify=df_play.target, shuffle=True, random_state=0)
 
 
-# In[5]:
 
 
 # prepare training and validation dataset
@@ -73,7 +68,6 @@ X_val = test_df.drop(target_col, axis=1)
 y_val = test_df[target_col]
 
 
-# In[6]:
 
 
 # limit the columns that are returned from summarize
@@ -112,19 +106,16 @@ def compare_dataframes(train_df, test_df, target_col):
     return summary
 
 
-# In[7]:
 
 
 summary = compare_dataframes(df_play, df_comp, target_col)
 
 
-# In[8]:
 
 
 display_all(summary.sort_index(axis=1, ascending=False).sort_values('std_diff', ascending=False))
 
 
-# In[9]:
 
 
 inspect_col = 'std_train'
@@ -132,7 +123,6 @@ summary[inspect_col].iplot(kind='hist', bins=100, title=f'Frequency Histogram fo
                           yTitle=f'Number of times value appeared', xTitle=f'Value for {inspect_col}')
 
 
-# In[10]:
 
 
 hist_data = [list(summary[inspect_col].values - summary[inspect_col].values.mean())]
@@ -148,41 +138,35 @@ fig.layout.update(title=f'Distribution Plot for {inspect_col}');
 iplot(fig)
 
 
-# In[11]:
 
 
 corr = np.round(spearmanr(train_df).correlation, 4)
 df_corr = pd.DataFrame(data=corr, index=train_df.columns, columns=train_df.columns)
 
 
-# In[12]:
 
 
 keep = np.triu(np.ones(df_corr.shape)).astype('bool').reshape(df_corr.size)
 c = df_corr.stack()[keep]
 
 
-# In[13]:
 
 
 c = c.loc[c.index.get_level_values(1)!=c.index.get_level_values(0),]
 c = c.loc[c.index.get_level_values(0)!='target',]
 
 
-# In[14]:
 
 
 N_corr = 20
 c.sort_values()[-N_corr:]
 
 
-# In[15]:
 
 
 c.sort_values()[:N_corr]
 
 
-# In[16]:
 
 
 def dist_plots(var_name='var_1', sample_size=5000):
@@ -193,7 +177,6 @@ def dist_plots(var_name='var_1', sample_size=5000):
     return fig
 
 
-# In[17]:
 
 
 offset = 50
@@ -205,14 +188,12 @@ for ix, plot in enumerate(plots, 1):
         trace.showlegend = False
 
 
-# In[18]:
 
 
 iplot(cf.subplots(plots, shape=(5, 5), 
                   subplot_titles=[f'var_{i+offset}' for i in range(25)]))
 
 
-# In[19]:
 
 
 from sklearn.preprocessing import StandardScaler
@@ -221,7 +202,6 @@ X_sc = sc.fit_transform(X)
 X_val_sc = sc.transform(X_val)
 
 
-# In[20]:
 
 
 roc_data = {}
@@ -229,7 +209,6 @@ roc_auc_scores = {}
 prediction_df = y_val.to_frame('ground_truth')
 
 
-# In[21]:
 
 
 def make_roc_fig(roc_data=None):
@@ -275,7 +254,6 @@ def score_model(clf_name ,y_pred):
     return roc
 
 
-# In[22]:
 
 
 rf_param = {
@@ -284,14 +262,12 @@ rf_param = {
  'n_estimators': 100}
 
 
-# In[23]:
 
 
 rfm = RandomForestClassifier(**rf_param, n_jobs=-1, random_state=0)
 rfm.fit(X, y)
 
 
-# In[24]:
 
 
 clf_name = 'rf'
@@ -303,14 +279,12 @@ roc = score_model(clf_name, y_pred.tolist())
 iplot(make_roc_fig({clf_name: roc}))
 
 
-# In[25]:
 
 
 rfm = RandomForestClassifier(**rf_param, n_jobs=-1, random_state=0)
 rfm.fit(X_sc, y)
 
 
-# In[26]:
 
 
 clf_name = 'rf_sc'
@@ -322,7 +296,6 @@ roc = score_model(clf_name, y_pred)
 iplot(make_roc_fig({clf_name: roc}))
 
 
-# In[27]:
 
 
 def dnn_auc(y_true, y_pred):
@@ -331,7 +304,6 @@ def dnn_auc(y_true, y_pred):
     return auc
 
 
-# In[28]:
 
 
 def create_dnn():
@@ -345,13 +317,11 @@ def create_dnn():
 model = create_dnn()
 
 
-# In[29]:
 
 
 model.fit(X, y, batch_size = 10000, epochs = 200, validation_data = (X_val, y_val), )
 
 
-# In[30]:
 
 
 clf_name = 'dnn'
@@ -363,14 +333,12 @@ roc = score_model(clf_name, y_pred)
 iplot(make_roc_fig({clf_name: roc}))
 
 
-# In[31]:
 
 
 model = create_dnn()
 model.fit(X_sc, y, batch_size = 10000, epochs = 200, validation_data = (X_val_sc, y_val), )
 
 
-# In[32]:
 
 
 clf_name = 'dnn_sc'
@@ -382,7 +350,6 @@ roc = score_model(clf_name, y_pred)
 iplot(make_roc_fig({clf_name: roc}))
 
 
-# In[33]:
 
 
 iplot(make_roc_fig(roc_data))

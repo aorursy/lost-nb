@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -21,21 +20,18 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 train_df = pd.read_csv("../input/train.csv")
 test_df = pd.read_csv("../input/test.csv")
 
 
-# In[3]:
 
 
 display(train_df.head())
 display(train_df.describe())
 
 
-# In[4]:
 
 
 train_null_s = train_df.isnull().sum()
@@ -44,39 +40,33 @@ print(train_null_s[train_null_s>0])
 print(test_null_s[test_null_s>0])
 
 
-# In[5]:
 
 
 sns.countplot(train_df["target"])
 
 
-# In[6]:
 
 
 train_df.columns.values[2:202]
 
 
-# In[7]:
 
 
 features = [c for c in train_df.columns if c not in ['ID_code', 'target']]
 target = train_df['target']
 
 
-# In[8]:
 
 
 X_train = train_df.drop(['ID_code', 'target'],axis=1)
 y_train = train_df["target"]
 
 
-# In[9]:
 
 
 y_pred = rfc.predict(test_df[])
 
 
-# In[10]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -85,27 +75,23 @@ rfc = RandomForestClassifier(random_state=0)
 rfc.fit(X_train,y_train)
 
 
-# In[11]:
 
 
 X_test = test_df.drop('ID_code',axis=1)
 y_test_pred = rfc.predict(X_test)
 
 
-# In[12]:
 
 
 print(y_test_pred)
 
 
-# In[13]:
 
 
 df_sub = pd.read_csv("./submission.csv")
 sns.countplot(df_sub["target"])
 
 
-# In[14]:
 
 
 my_submission = pd.DataFrame({'ID_code': test_df["ID_code"].values, 'target': y_test_pred})
@@ -113,7 +99,6 @@ my_submission = pd.DataFrame({'ID_code': test_df["ID_code"].values, 'target': y_
 my_submission.to_csv('submission.csv', index=False)
 
 
-# In[15]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from google.cloud import bigquery
@@ -25,7 +24,6 @@ from bokeh.models.widgets import Tabs, Panel
 output_notebook()
 
 
-# In[2]:
 
 
 PROJECT_ID = 'bigquery-geotab-competition'
@@ -42,44 +40,37 @@ table = client.get_table("kaggle-competition-datasets.geotab_intersection_conges
 client.list_rows(table, max_results=5).to_dataframe()
 
 
-# In[3]:
 
 
 table.schema
 
 
-# In[4]:
 
 
 get_ipython().run_line_magic('load_ext', 'google.cloud.bigquery')
 
 
-# In[5]:
 
 
 get_ipython().run_cell_magic('bigquery', 'int_counts', 'SELECT\n    City,\n    count(IntersectionId) as Intersections\nFROM (\n    SELECT DISTINCT\n        City,\n        IntersectionId\n    FROM `kaggle-competition-datasets.geotab_intersection_congestion.train`\n    )\nGROUP BY City\nORDER BY Intersections')
 
 
-# In[6]:
 
 
 sns.barplot(x='City', y='Intersections', data=int_counts)
 plt.show()
 
 
-# In[7]:
 
 
 get_ipython().run_cell_magic('bigquery', 'intersections_map', 'SELECT\n    City,\n    IntersectionId,\n    Latitude,\n    Longitude,\n    avg(TotalTimeStopped_p80) as AverageTimeSpent\nFROM `kaggle-competition-datasets.geotab_intersection_congestion.train`\nGROUP BY City, IntersectionId, Latitude, Longitude\nORDER BY City ASC')
 
 
-# In[8]:
 
 
 get_ipython().run_cell_magic('bigquery', 'intersection_details', 'SELECT\n    City,\n    IntersectionId,\n    EntryStreetName,\n    ExitStreetName,\n    EntryHeading,\n    ExitHeading,\n    Path\nFROM `kaggle-competition-datasets.geotab_intersection_congestion.train`\nORDER BY CITY ASC')
 
 
-# In[9]:
 
 
 #Converting the co-ordinates to something that bokeh likes
@@ -95,7 +86,6 @@ def merc(Coords):
     return (x, y)
 
 
-# In[10]:
 
 
 intersections_map['Location'] = tuple(zip(intersections_map['Latitude'], intersections_map['Longitude']))
@@ -104,20 +94,17 @@ intersections_map['coords_y'] = intersections_map['Location'].apply(lambda x: me
 intersections_map.head()
 
 
-# In[11]:
 
 
 merged_df = pd.merge(intersections_map,intersection_details, how='inner', on=['City', 'IntersectionId'])
 merged_df.head()
 
 
-# In[12]:
 
 
 merged_df.drop_duplicates(subset=['City','IntersectionId'], keep='first', inplace=True)
 
 
-# In[13]:
 
 
 def build_city_int_map(city, colour):
@@ -155,7 +142,6 @@ def build_city_int_map(city, colour):
     return(p)
 
 
-# In[14]:
 
 
 #Retrieve the plots for all the cities
@@ -179,7 +165,6 @@ tabs = Tabs(tabs=[at_panel, bo_panel, ch_panel, ph_panel])
 show(tabs)
 
 
-# In[15]:
 
 
 #Top most conjusted intersections for each city
@@ -191,27 +176,23 @@ Latitudes = tuple(lat_long_df['Latitude'])
 Longitudes = tuple(lat_long_df['Longitude'])
 
 
-# In[16]:
 
 
 get_ipython().run_cell_magic('bigquery', 'top_ints', 'SELECT * FROM `kaggle-competition-datasets.geotab_intersection_congestion.train`\n    WHERE Latitude IN (33.77384, 42.27153, 41.91044, 39.9773) \n    AND Longitude IN (-84.34896, -71.17265, -87.67753, -75.22695)')
 
 
-# In[17]:
 
 
 #Get Monthly Distribution of measures for the most conjusted intersections
 top_monthly = top_ints.groupby(['City','Month','Path','EntryStreetName','ExitStreetName','EntryHeading','ExitHeading'])                .mean()                .loc[:,'TotalTimeStopped_p20':'DistanceToFirstStop_p80']                .sort_values(['City','Month'])                .reset_index()
 
 
-# In[18]:
 
 
 #Get the Hourly Distribution of measures for the most conjusted intersections
 top_hourly = top_ints.groupby(['City','Hour','Weekend','Path','EntryStreetName','ExitStreetName','EntryHeading','ExitHeading'])                .mean()                .loc[:,'TotalTimeStopped_p20':'DistanceToFirstStop_p80']                .sort_values(['City','Hour','Weekend'])                .reset_index()
 
 
-# In[19]:
 
 
 def create_feature_dist(source_df, feature, percentile, monthly):
@@ -298,7 +279,6 @@ def create_feature_dist(source_df, feature, percentile, monthly):
     return fig
 
 
-# In[20]:
 
 
 def create_feature_grid(feature, percs, monthly=True):
@@ -312,187 +292,156 @@ def create_feature_grid(feature, percs, monthly=True):
     return Tabs(tabs=tbs)
 
 
-# In[21]:
 
 
 show(create_feature_grid('TotalTimeStopped',(20,40,50,60,80)))
 
 
-# In[22]:
 
 
 show(create_feature_grid('TimeFromFirstStop',(20,40,50,60,80)))
 
 
-# In[23]:
 
 
 show(create_feature_grid('DistanceToFirstStop',(20,40,50,60,80)))
 
 
-# In[24]:
 
 
 show(create_feature_grid('TotalTimeStopped',(20,40,50,60,80),monthly=False))
 
 
-# In[25]:
 
 
 show(create_feature_grid('TimeFromFirstStop',(20,40,50,60,80),monthly=False))
 
 
-# In[26]:
 
 
 show(create_feature_grid('DistanceToFirstStop',(20,40,50,60,80),monthly=False))
 
 
-# In[27]:
 
 
 get_ipython().run_cell_magic('bigquery', '', "CREATE OR REPLACE MODEL `bqml_example.model_tts20`\nOPTIONS(MODEL_TYPE='LINEAR_REG',\n    LS_INIT_LEARN_RATE=.3,\n    L1_REG=1,\n    MAX_ITERATIONS=10) AS\nSELECT\n    TotalTimeStopped_p20 AS label,\n    EntryStreetName,\n    ExitStreetName,\n    EntryHeading,\n    ExitHeading,\n    Hour, \n    Weekend,\n    Month,\n    City\nFROM `kaggle-competition-datasets.geotab_intersection_congestion.train`\nWHERE RowId < 2600000")
 
 
-# In[28]:
 
 
 get_ipython().run_cell_magic('bigquery', '', "CREATE OR REPLACE MODEL `bqml_example.model_tts50`\nOPTIONS(MODEL_TYPE='LINEAR_REG',\n    LS_INIT_LEARN_RATE=.3,\n    L1_REG=1,\n    MAX_ITERATIONS=10) AS\nSELECT\n    TotalTimeStopped_p50 AS label,\n    EntryStreetName,\n    ExitStreetName,\n    EntryHeading,\n    ExitHeading,\n    Hour,\n    Weekend,\n    Month,\n    City\nFROM `kaggle-competition-datasets.geotab_intersection_congestion.train`\nWHERE RowId < 2600000")
 
 
-# In[29]:
 
 
 get_ipython().run_cell_magic('bigquery', '', "CREATE OR REPLACE MODEL `bqml_example.model_tts80`\nOPTIONS(MODEL_TYPE='LINEAR_REG',\n    LS_INIT_LEARN_RATE=.3,\n    L1_REG=1,\n    MAX_ITERATIONS=10) AS\nSELECT\n    TotalTimeStopped_p80 AS label,\n    EntryStreetName,\n    ExitStreetName,\n    EntryHeading,\n    ExitHeading,\n    Hour,\n    Weekend,\n    Month,\n    City\nFROM `kaggle-competition-datasets.geotab_intersection_congestion.train`\nWHERE RowId < 2600000")
 
 
-# In[30]:
 
 
 get_ipython().run_cell_magic('bigquery', '', "CREATE OR REPLACE MODEL `bqml_example.model_dtfs20`\nOPTIONS(MODEL_TYPE='LINEAR_REG',\n    LS_INIT_LEARN_RATE=.3,\n    L1_REG=1,\n    MAX_ITERATIONS=10) AS\nSELECT\n    DistanceToFirstStop_p20 AS label,\n    EntryStreetName,\n    ExitStreetName,\n    EntryHeading,\n    ExitHeading,\n    Hour,\n    Weekend,\n    Month,\n    City\nFROM `kaggle-competition-datasets.geotab_intersection_congestion.train`\nWHERE RowId < 2600000")
 
 
-# In[31]:
 
 
 get_ipython().run_cell_magic('bigquery', '', "CREATE OR REPLACE MODEL `bqml_example.model_dtfs50`\nOPTIONS(MODEL_TYPE='LINEAR_REG',\n    LS_INIT_LEARN_RATE=.3,\n    L1_REG=1,\n    MAX_ITERATIONS=10) AS\nSELECT\n    DistanceToFirstStop_p50 AS label,\n    EntryStreetName,\n    ExitStreetName,\n    EntryHeading,\n    ExitHeading,\n    Hour,\n    Weekend,\n    Month,\n    City\nFROM `kaggle-competition-datasets.geotab_intersection_congestion.train`\nWHERE RowId < 2600000")
 
 
-# In[32]:
 
 
 get_ipython().run_cell_magic('bigquery', '', "CREATE OR REPLACE MODEL `bqml_example.model_dtfs80`\nOPTIONS(MODEL_TYPE='LINEAR_REG',\n    LS_INIT_LEARN_RATE=.3,\n    L1_REG=1,\n    MAX_ITERATIONS=10) AS\nSELECT\n    DistanceToFirstStop_p80 AS label,\n    EntryStreetName,\n    ExitStreetName,\n    EntryHeading,\n    ExitHeading,\n    Hour,\n    Weekend,\n    Month,\n    City\nFROM `kaggle-competition-datasets.geotab_intersection_congestion.train`\nWHERE RowId < 2600000")
 
 
-# In[33]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT * FROM ML.TRAINING_INFO(MODEL `bigquery-geotab-competition.bqml_example.model_tts20`)')
 
 
-# In[34]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT * FROM ML.TRAINING_INFO(MODEL `bigquery-geotab-competition.bqml_example.model_tts50`)')
 
 
-# In[35]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT * FROM ML.TRAINING_INFO(MODEL `bigquery-geotab-competition.bqml_example.model_tts80`)')
 
 
-# In[36]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT * FROM ML.TRAINING_INFO(MODEL `bigquery-geotab-competition.bqml_example.model_dtfs20`)')
 
 
-# In[37]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT * FROM ML.TRAINING_INFO(MODEL `bigquery-geotab-competition.bqml_example.model_dtfs50`)')
 
 
-# In[38]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT * FROM ML.TRAINING_INFO(MODEL `bigquery-geotab-competition.bqml_example.model_dtfs80`)')
 
 
-# In[39]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT * FROM ML.EVALUATE(MODEL `bqml_example.model_tts20`, (\n  SELECT\n    TotalTimeStopped_p20 AS label,\n    EntryStreetName,\n    ExitStreetName,\n    EntryHeading,\n    ExitHeading,\n    Hour, \n    Weekend,\n    Month,\n    City\n  FROM\n    `kaggle-competition-datasets.geotab_intersection_congestion.train`\n  WHERE RowId > 2600000))')
 
 
-# In[40]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT * FROM ML.EVALUATE(MODEL `bqml_example.model_tts50`, (\n  SELECT\n    TotalTimeStopped_p50 AS label,\n    EntryStreetName,\n    ExitStreetName,\n    EntryHeading,\n    ExitHeading,\n    Hour, \n    Weekend,\n    Month,\n    City\n  FROM\n    `kaggle-competition-datasets.geotab_intersection_congestion.train`\n  WHERE RowId > 2600000))')
 
 
-# In[41]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT * FROM ML.EVALUATE(MODEL `bqml_example.model_tts80`, (\n  SELECT\n    TotalTimeStopped_p80 AS label,\n    EntryStreetName,\n    ExitStreetName,\n    EntryHeading,\n    ExitHeading,\n    Hour, \n    Weekend,\n    Month,\n    City\n  FROM\n    `kaggle-competition-datasets.geotab_intersection_congestion.train`\n  WHERE RowId > 2600000))')
 
 
-# In[42]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT * FROM ML.EVALUATE(MODEL `bqml_example.model_dtfs20`, (\n  SELECT\n    DistanceToFirstStop_p20 AS label,\n    EntryStreetName,\n    ExitStreetName,\n    EntryHeading,\n    ExitHeading,\n    Hour, \n    Weekend,\n    Month,\n    City\n  FROM\n    `kaggle-competition-datasets.geotab_intersection_congestion.train`\n  WHERE RowId > 2600000))')
 
 
-# In[43]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT * FROM ML.EVALUATE(MODEL `bqml_example.model_dtfs50`, (\n  SELECT\n    DistanceToFirstStop_p50 AS label,\n    EntryStreetName,\n    ExitStreetName,\n    EntryHeading,\n    ExitHeading,\n    Hour, \n    Weekend,\n    Month,\n    City\n  FROM\n    `kaggle-competition-datasets.geotab_intersection_congestion.train`\n  WHERE RowId > 2600000))')
 
 
-# In[44]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT * FROM ML.EVALUATE(MODEL `bqml_example.model_dtfs80`, (\n  SELECT\n    DistanceToFirstStop_p80 AS label,\n    EntryStreetName,\n    ExitStreetName,\n    EntryHeading,\n    ExitHeading,\n    Hour, \n    Weekend,\n    Month,\n    City\n  FROM\n    `kaggle-competition-datasets.geotab_intersection_congestion.train`\n  WHERE RowId > 2600000))')
 
 
-# In[45]:
 
 
 get_ipython().run_cell_magic('bigquery', 'df1', 'SELECT\n  RowId,\n  predicted_label as TotalTimeStopped_p20\nFROM\n  ML.PREDICT(MODEL `bqml_example.model_tts20`,\n    (\n    SELECT\n        RowId,\n        EntryStreetName,\n        ExitStreetName,\n        EntryHeading,\n        ExitHeading,\n        Hour, \n        Weekend,\n        Month,\n        City\n    FROM\n      `kaggle-competition-datasets.geotab_intersection_congestion.test`))\n    ORDER BY RowId ASC')
 
 
-# In[46]:
 
 
 get_ipython().run_cell_magic('bigquery', 'df2', 'SELECT\n  RowId,\n  predicted_label as TotalTimeStopped_p50\nFROM\n  ML.PREDICT(MODEL `bqml_example.model_tts50`,\n    (\n    SELECT\n        RowId,\n        EntryStreetName,\n        ExitStreetName,\n        EntryHeading,\n        ExitHeading,\n        Hour, \n        Weekend,\n        Month,\n        City\n    FROM\n      `kaggle-competition-datasets.geotab_intersection_congestion.test`))\n    ORDER BY RowId ASC')
 
 
-# In[47]:
 
 
 get_ipython().run_cell_magic('bigquery', 'df3', 'SELECT\n  RowId,\n  predicted_label as TotalTimeStopped_p80\nFROM\n  ML.PREDICT(MODEL `bqml_example.model_tts80`,\n    (\n    SELECT\n        RowId,\n        EntryStreetName,\n        ExitStreetName,\n        EntryHeading,\n        ExitHeading,\n        Hour, \n        Weekend,\n        Month,\n        City\n    FROM\n      `kaggle-competition-datasets.geotab_intersection_congestion.test`))\n    ORDER BY RowId ASC')
 
 
-# In[48]:
 
 
 get_ipython().run_cell_magic('bigquery', 'df4', 'SELECT\n  RowId,\n  predicted_label as DistanceToFirstStop_p20\nFROM\n  ML.PREDICT(MODEL `bqml_example.model_dtfs20`,\n    (\n    SELECT\n        RowId,\n        EntryStreetName,\n        ExitStreetName,\n        EntryHeading,\n        ExitHeading,\n        Hour, \n        Weekend,\n        Month,\n        City\n    FROM\n      `kaggle-competition-datasets.geotab_intersection_congestion.test`))\n    ORDER BY RowId ASC')
 
 
-# In[49]:
 
 
 get_ipython().run_cell_magic('bigquery', 'df5', 'SELECT\n  RowId,\n  predicted_label as DistanceToFirstStop_p50\nFROM\n  ML.PREDICT(MODEL `bqml_example.model_dtfs50`,\n    (\n    SELECT\n        RowId,\n        EntryStreetName,\n        ExitStreetName,\n        EntryHeading,\n        ExitHeading,\n        Hour, \n        Weekend,\n        Month,\n        City\n    FROM\n      `kaggle-competition-datasets.geotab_intersection_congestion.test`))\n    ORDER BY RowId ASC')
 
 
-# In[50]:
 
 
 get_ipython().run_cell_magic('bigquery', 'df6', 'SELECT\n  RowId,\n  predicted_label as DistanceToFirstStop_p80\nFROM\n  ML.PREDICT(MODEL `bqml_example.model_dtfs80`,\n    (\n    SELECT\n        RowId,\n        EntryStreetName,\n        ExitStreetName,\n        EntryHeading,\n        ExitHeading,\n        Hour, \n        Weekend,\n        Month,\n        City\n    FROM\n      `kaggle-competition-datasets.geotab_intersection_congestion.test`))\n    ORDER BY RowId ASC')
 
 
-# In[51]:
 
 
 #Change RowId in accordance with submission file
@@ -515,7 +464,6 @@ df6.rename(columns={'RowId': 'TargetId', 'DistanceToFirstStop_p80': 'Target'}, i
 df = pd.concat([df1, df2, df3, df4, df5, df6], axis=0)
 
 
-# In[52]:
 
 
 df.to_csv(r'submission.csv', index=False)

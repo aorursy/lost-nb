@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -21,20 +20,17 @@ from torch.utils.data import DataLoader, Dataset
 from tqdm.notebook import tqdm
 
 
-# In[2]:
 
 
 os.listdir("../input")
 
 
-# In[3]:
 
 
 main_data_dir = "../input/covid19-global-forecasting-week-3"
 metadata_dir = "../input/covid19-countrywise-metadata"
 
 
-# In[4]:
 
 
 data_train = pd.read_csv(os.path.join(main_data_dir, "train.csv"))
@@ -43,7 +39,6 @@ sample_sub = pd.read_csv(os.path.join(main_data_dir, "submission.csv"))
 metadata = pd.read_csv(os.path.join(metadata_dir, "covid19_countrywise_metadata.csv"))
 
 
-# In[5]:
 
 
 def generate_loc(x):
@@ -53,21 +48,18 @@ def generate_loc(x):
         return "_".join([x["Country_Region"], x["Province_State"]])
 
 
-# In[6]:
 
 
 def generate_loc_date(x):
     return "_".join([x["location"], x["Date"]])
 
 
-# In[7]:
 
 
 data_train["location"] = data_train.apply(generate_loc, axis=1)
 data_test["location"] = data_test.apply(generate_loc, axis=1)
 
 
-# In[8]:
 
 
 data_train["log_cfm"] = data_train["ConfirmedCases"].map(np.log1p)
@@ -76,45 +68,38 @@ data_train["cfm_growth"] = data_train["log_cfm"].diff()
 data_train["ftl_growth"] = data_train["log_ftl"].diff()
 
 
-# In[9]:
 
 
 data_train.fillna(0, inplace=True)
 
 
-# In[10]:
 
 
 data_train["loc_date"] = data_train.apply(generate_loc_date, axis=1)
 data_test["loc_date"] = data_test.apply(generate_loc_date, axis=1)
 
 
-# In[11]:
 
 
 data_train_by_loc = data_train.groupby("location")
 
 
-# In[12]:
 
 
 data_train["Date"] = pd.to_datetime(data_train["Date"])
 data_test["Date"] = pd.to_datetime(data_test["Date"])
 
 
-# In[13]:
 
 
 data_train["rel_date"] = data_train.apply(lambda x: (x["Date"] - data_train["Date"].min()), axis=1).dt.days
 
 
-# In[14]:
 
 
 data_test["rel_date"] = data_test.apply(lambda x: (x["Date"] - data_train["Date"].min()), axis=1).dt.days
 
 
-# In[15]:
 
 
 lockdown_cols = ["quarantine", "close_school", "close_public_place", "limit_gathering", "stay_home"]
@@ -124,13 +109,11 @@ for col in lockdown_cols:
     metadata[col] = pd.to_datetime(metadata[col], format="%Y-%m-%d")
 
 
-# In[16]:
 
 
 set(data_train.location.unique()) - set(metadata.location.unique())
 
 
-# In[17]:
 
 
 for i in range(len(data_train)):
@@ -140,26 +123,22 @@ for i in range(len(data_train)):
     lockdown_df.loc[i, :] = (metadata.loc[idx, lockdown_cols] <= cur_date).astype(int)
 
 
-# In[18]:
 
 
 lockdown_df
 
 
-# In[19]:
 
 
 data_train = pd.concat([data_train, lockdown_df], axis=1)
 
 
-# In[20]:
 
 
 data_test_known = data_test.loc[data_test.rel_date <= data_train.rel_date.max(), :]
 data_test_unknown = data_test.loc[data_test.rel_date > data_train.rel_date.max(), :]
 
 
-# In[21]:
 
 
 data_train.set_index("loc_date", inplace=True, drop=True)
@@ -168,7 +147,6 @@ data_test_known = data_test_known.merge(pred_test_known, on="loc_date")
 data_train.reset_index(inplace=True, drop=False)
 
 
-# In[22]:
 
 
 train_input_beg = data_train.rel_date.min()
@@ -179,7 +157,6 @@ test_input_beg = data_test.rel_date.max() - output_len - input_len
 test_output_beg = data_test_unknown.rel_date.min()
 
 
-# In[23]:
 
 
 print("Number of days in the input: {}d.".format(input_len))
@@ -188,13 +165,11 @@ print("Training input ends on day {}.".format(train_input_end))
 print("Testing input begins on day {}.".format(test_input_beg))
 
 
-# In[24]:
 
 
 input_test = data_train.loc[data_train.rel_date >= test_input_beg, :]
 
 
-# In[25]:
 
 
 rand_seed = 42
@@ -207,13 +182,11 @@ data_train.reset_index(drop=False, inplace=True)
 data_val.reset_index(drop=False, inplace=True)
 
 
-# In[26]:
 
 
 metadata.drop(lockdown_cols, axis=1, inplace=True)
 
 
-# In[27]:
 
 
 def min_max_normalize(data):
@@ -221,26 +194,22 @@ def min_max_normalize(data):
     return scaler.fit_transform(data)
 
 
-# In[28]:
 
 
 num_cols = metadata.columns[3:]
 metadata[num_cols] = min_max_normalize(metadata[num_cols])
 
 
-# In[29]:
 
 
 metadata.drop(["region", "country"], axis=1, inplace=True)
 
 
-# In[30]:
 
 
 metadata.set_index("location", inplace=True)
 
 
-# In[31]:
 
 
 class CovidDataset(Dataset):
@@ -288,7 +257,6 @@ class CovidDataset(Dataset):
         return DataLoader(dataset, batch_size, shuffle=not dataset.is_predict)
 
 
-# In[32]:
 
 
 batch_size = 64
@@ -301,7 +269,6 @@ dl_val = CovidDataset.get_dataloader(dataset_val, batch_size)
 dl_test = CovidDataset.get_dataloader(dataset_test, batch_size)
 
 
-# In[33]:
 
 
 class CovidTransformer(nn.Module):
@@ -335,7 +302,6 @@ class CovidTransformer(nn.Module):
         return output
 
 
-# In[34]:
 
 
 class RMSLE(nn.Module):
@@ -344,7 +310,6 @@ class RMSLE(nn.Module):
         return torch.sqrt(F.mse_loss(output, target))
 
 
-# In[35]:
 
 
 class Engine(object):
@@ -458,7 +423,6 @@ class Engine(object):
         return cfm_output, ftl_output
 
 
-# In[36]:
 
 
 model = CovidTransformer(2, 2 * output_len, dropout=0.2)
@@ -469,32 +433,27 @@ optimizer = AdamW(model.parameters())
 lr_scheduler = ExponentialLR(optimizer, 0.95)
 
 
-# In[37]:
 
 
 engine = Engine()
 engine.compile(model, criterion, optimizer, lr_scheduler)
 
 
-# In[38]:
 
 
 engine.fit(100, dl_train, dl_val)
 
 
-# In[39]:
 
 
 engine.plot_loss()
 
 
-# In[40]:
 
 
 cfm_pred, ftl_pred = engine.predict(dl_test)
 
 
-# In[41]:
 
 
 def make_predictions(loc_list, date_pred, cfm_pred, ftl_pred):
@@ -518,49 +477,41 @@ def make_predictions(loc_list, date_pred, cfm_pred, ftl_pred):
     return pred_unknown[["loc_date", "ConfirmedCases", "Fatalities"]]
 
 
-# In[42]:
 
 
 pred_unknown = make_predictions(dataset_test.loc_list, data_test_unknown.Date, cfm_pred, ftl_pred)
 
 
-# In[43]:
 
 
 pred_unknown
 
 
-# In[44]:
 
 
 data_test_unknown = data_test_unknown.merge(pred_unknown, on="loc_date")
 
 
-# In[45]:
 
 
 data_test_known
 
 
-# In[46]:
 
 
 data_test_unknown
 
 
-# In[47]:
 
 
 submission = pd.concat([data_test_known, data_test_unknown], axis=0)[["ForecastId", "ConfirmedCases", "Fatalities"]]
 
 
-# In[48]:
 
 
 submission.to_csv("submission.csv", index=False)
 
 
-# In[ ]:
 
 
 

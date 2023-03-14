@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from __future__ import division
@@ -48,7 +47,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[2]:
 
 
 # Total length of train is 1482535
@@ -68,7 +66,6 @@ keep = ['item_condition_id', 'shipping', 'nb_words_item_description',
         'mean_price_category_name', 'mean_price_brand_name']
 
 
-# In[3]:
 
 
 def clean_str(text):
@@ -102,7 +99,6 @@ def clean_str_df(df):
     return df.apply( lambda s : clean_str(s))
 
 
-# In[4]:
 
 
 def create_bigrams(text):
@@ -134,7 +130,6 @@ def remove_low_freq(text, dc):
     return ' '.join([w for w in text.split() if w in dc])
 
 
-# In[5]:
 
 
 def create_count_features(df_data):
@@ -152,7 +147,6 @@ def tokenize(text):
     return [w for w in text.split()]
 
 
-# In[6]:
 
 
 def prepare_data(df_data, train=True):
@@ -224,7 +218,6 @@ def prepare_data(df_data, train=True):
     return df_data
 
 
-# In[7]:
 
 
 def parallelize_dataframe(df, func):
@@ -236,7 +229,6 @@ def parallelize_dataframe(df, func):
     return df
 
 
-# In[8]:
 
 
 labels_dict = dict()
@@ -253,7 +245,6 @@ brand_names = df_train.groupby('brand_name').size()
 df_train = prepare_data(df_train, train=True)
 
 
-# In[9]:
 
 
 word_count_dict_one = defaultdict(np.uint32)
@@ -267,7 +258,6 @@ for feat in ['name','item_description']:
 word_count_dict_one = dict(word_count_dict_one)
 
 
-# In[10]:
 
 
 word_count_dict_bi = defaultdict(np.uint32)
@@ -283,7 +273,6 @@ for key in rare_words:
 df_train['name_bi'] = df_train['name_bi'].apply(lambda x : remove_low_freq(x, word_count_dict_bi))
 
 
-# In[11]:
 
 
 word_count_dict_bi = dict(word_count_dict_bi)
@@ -296,7 +285,6 @@ for dc in [vocabulary_one, vocabulary_bi]:
         cpt+=1
 
 
-# In[12]:
 
 
 mean_dc=dict()
@@ -307,7 +295,6 @@ for feat in ['category1', 'category2', 'category3', 'category_name', 'brand_name
     df_train['mean_price_'+feat].fillna(mean_dc[feat].mean(), inplace=True)
 
 
-# In[13]:
 
 
 # Unigram Name
@@ -323,27 +310,23 @@ vect_name_bi = CountVectorizer(vocabulary= vocabulary_bi, dtype=np.uint8, tokeni
 train_name_bi = vect_name_bi.fit_transform(df_train['name_bi'])
 
 
-# In[14]:
 
 
 dtrain_y = df_train.price.values
 dtrain = hstack((df_train[keep].values, train_name_one, train_item_one, train_name_bi)).tocsr()
 
 
-# In[15]:
 
 
 model_ridge_name = Ridge(alpha=20, copy_X=True, fit_intercept=True, solver='auto',
                          max_iter=100, normalize=False, random_state=0, tol=0.0025)
 
 
-# In[16]:
 
 
 model_ridge_name.fit(dtrain, dtrain_y)
 
 
-# In[17]:
 
 
 # Clean up to save memory
@@ -353,7 +336,6 @@ df_train.drop('name_bi', axis=1, inplace=True)
 gc.collect()
 
 
-# In[18]:
 
 
 vect_sparse = CountVectorizer(lowercase=False, min_df=5, ngram_range=(1,2), max_features=200000,
@@ -373,7 +355,6 @@ def get_keras_sparse(df):
 train_keras = get_keras_sparse(df_train)
 
 
-# In[19]:
 
 
 def sparseNN():                                             
@@ -403,7 +384,6 @@ def sparseNN():
 sparse_nn = sparseNN()
 
 
-# In[20]:
 
 
 BATCH_SIZE = 2000
@@ -416,7 +396,6 @@ for ep in range(epochs):
     sparse_nn.fit(train_keras, (df_train.price.values-mean_price), batch_size=BATCH_SIZE, epochs=1, verbose=2)
 
 
-# In[21]:
 
 
 # Clean up to save memory
@@ -425,7 +404,6 @@ del train_keras
 gc.collect
 
 
-# In[22]:
 
 
 MAX_NAME_SEQ = 20
@@ -464,7 +442,6 @@ def get_keras_fasttext(df):
 train_keras = get_keras_fasttext(df_train)
 
 
-# In[23]:
 
 
 def fasttext_model():
@@ -508,7 +485,6 @@ def fasttext_model():
 fasttext_model = fasttext_model()
 
 
-# In[24]:
 
 
 BATCH_SIZE = 128
@@ -520,7 +496,6 @@ for ep in range(epochs):
                        batch_size=BATCH_SIZE, epochs=1, verbose=2)
 
 
-# In[25]:
 
 
 # Clean up to save memory
@@ -529,7 +504,6 @@ del train_keras
 gc.collect
 
 
-# In[26]:
 
 
 models_predictions = defaultdict(list)

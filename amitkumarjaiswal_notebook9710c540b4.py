@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import cv2
@@ -43,7 +41,6 @@ for x in testfile.readlines():
 	#print cv2.imwrite(cleaned_file,thresh1);
 
 
-# In[3]:
 
 
 import numpy as np
@@ -92,7 +89,6 @@ for x in testfile.readlines():
 	'''
 
 
-# In[4]:
 
 
 

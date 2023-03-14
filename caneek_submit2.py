@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -24,7 +23,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 from fbprophet import Prophet
@@ -239,7 +237,6 @@ results = train_loop(p_est)
 print(p_est, pd.DataFrame(results)[1].mean(), pd.DataFrame(results)[2].mean())
 
 
-# In[3]:
 
 
 X_train

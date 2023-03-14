@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os, cv2, random
@@ -22,7 +21,6 @@ from keras.utils import np_utils
 from keras import backend as K K.set_image_dim_ordering('th')
 
 
-# In[2]:
 
 
 TRAIN_DIR = '../input/train/'
@@ -67,7 +65,6 @@ print("Train shape: {}".format(train.shape))
 print("Test shape: {}".format(test.shape))
 
 
-# In[3]:
 
 
 labels = []
@@ -81,7 +78,6 @@ sns.countplot(labels)
 sns.plt.title('Cats and Dogs')
 
 
-# In[4]:
 
 
 def show_cats_and_dogs(idx):
@@ -96,7 +92,6 @@ for idx in range(0,5):
     show_cats_and_dogs(idx)
 
 
-# In[5]:
 
 
 dog_avg = np.array([dog[0].T for i, dog in enumerate(train) if labels[i]==1]).mean(axis=0)
@@ -104,7 +99,6 @@ plt.imshow(dog_avg)
 plt.title('Your Average Dog')
 
 
-# In[6]:
 
 
 cat_avg = np.array([cat[0].T for i, cat in enumerate(train) if labels[i]==0]).mean(axis=0)
@@ -112,7 +106,6 @@ plt.imshow(cat_avg)
 plt.title('Your Average Cat')
 
 
-# In[7]:
 
 
 
@@ -163,7 +156,6 @@ def catdog():
 model = catdog()
 
 
-# In[8]:
 
 
 nb_epoch = 10
@@ -194,7 +186,6 @@ def run_catdog():
 predictions, history = run_catdog()
 
 
-# In[9]:
 
 
 loss = history.losses
@@ -210,7 +201,6 @@ plt.legend()
 plt.show()
 
 
-# In[10]:
 
 
 for i in range(0,10):

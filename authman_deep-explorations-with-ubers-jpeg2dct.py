@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import torch
@@ -9,7 +8,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# In[2]:
 
 
 get_ipython().system('rm /opt/conda/lib/libjpeg*')
@@ -24,14 +22,12 @@ get_ipython().system('git clone https://github.com/uber-research/jpeg2dct')
 get_ipython().system('pip install jpeg2dct/.')
 
 
-# In[3]:
 
 
 # Let's verify it linked to the right jpeglib version...
 get_ipython().system('ldd /opt/conda/lib/python3.7/site-packages/jpeg2dct/common/common_lib.cpython-37m-x86_64-linux-gnu.so')
 
 
-# In[4]:
 
 
 from jpeg2dct.numpy import load, loads
@@ -45,7 +41,6 @@ print ("Cb component DCT shape {} and type {}".format(dct_cb.shape, dct_cb.dtype
 print ("Cr component DCT shape {} and type {}".format(dct_cr.shape, dct_cr.dtype))
 
 
-# In[5]:
 
 
 def DCT_Basis(repeats=None):
@@ -65,7 +60,6 @@ def DCT_Basis(repeats=None):
     return torch.Tensor([basis,basis,basis]).permute((1,0,2,3))
 
 
-# In[6]:
 
 
 basis = DCT_Basis()
@@ -77,14 +71,12 @@ for i in range(64):
 plt.show()
 
 
-# In[7]:
 
 
 conv = torch.nn.Conv2d(in_channels=3, out_channels=64, kernel_size=8, stride=8)# , groups=3)
 conv.weight.data.shape
 
 
-# In[8]:
 
 
 conv.weight.data = DCT_Basis(repeats=3)
@@ -92,7 +84,6 @@ conv.required_grad = False
 conv.weight.data.shape
 
 
-# In[9]:
 
 
 from PIL import Image
@@ -102,7 +93,6 @@ image = Image.open('../input/alaska2-image-steganalysis/Cover/00001.jpg')
 plt.imshow(image)
 
 
-# In[10]:
 
 
 _, ax = plt.subplots(8,8,figsize=(32,32))
@@ -117,7 +107,6 @@ plt.axis("image")
 plt.show()
 
 
-# In[11]:
 
 
 _, ax = plt.subplots(8,8,figsize=(32,32))
@@ -132,7 +121,6 @@ plt.axis("image")
 plt.show()
 
 
-# In[12]:
 
 
 _, ax = plt.subplots(8,8,figsize=(32,32))
@@ -147,7 +135,6 @@ plt.axis("image")
 plt.show()
 
 
-# In[ ]:
 
 
 

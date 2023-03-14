@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # Put these at the top of every notebook, to get automatic reloading and inline plotting
@@ -10,7 +9,6 @@ get_ipython().run_line_magic('autoreload', '2')
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -37,14 +35,12 @@ LABELS = '../input/humpback-whale-identification/train.csv'
 SAMPLE_SUB = '../input/humpback-whale-identification/sample_submission.csv'
 
 
-# In[ ]:
 
 
 print(os.listdir("../input/humpback-whale-identification/test/"))
       
 
 
-# In[ ]:
 
 
 from fastai.vision import *
@@ -57,13 +53,11 @@ from utils import *
 print(os.listdir("../input/"))
 
 
-# In[ ]:
 
 
 get_ipython().system('pip show fastai')
 
 
-# In[ ]:
 
 
 cache_dir = os.path.expanduser(os.path.join('~', '.torch'))
@@ -77,7 +71,6 @@ if not os.path.exists(models_dir):
 get_ipython().system('cp ../input/resnet34/resnet34.pth /tmp/.torch/models/resnet34-333f7ec4.pth')
 
 
-# In[ ]:
 
 
 def apk(actual, predicted, k=10):
@@ -98,14 +91,12 @@ def apk(actual, predicted, k=10):
     return score / min(len(actual), k)
 
 
-# In[ ]:
 
 
 def mapk(actual, predicted, k=10):
     return np.mean([apk(a,p,k) for a,p in zip(actual, predicted)])
 
 
-# In[ ]:
 
 
 def map5(preds, targs):
@@ -114,7 +105,6 @@ def map5(preds, targs):
     res = mapk([[t] for t in targs.cpu().numpy()], top_5.cpu().numpy(), 5)
 
 
-# In[ ]:
 
 
 def top_5_pred_labels(preds, classes):
@@ -125,13 +115,11 @@ def top_5_pred_labels(preds, classes):
     return labels
 
 
-# In[ ]:
 
 
 def top_5_preds(preds): return np.argsort(preds.numpy())[:, ::-1][:, :5]
 
 
-# In[ ]:
 
 
 def top_5_pred_labels(preds, classes):
@@ -142,7 +130,6 @@ def top_5_pred_labels(preds, classes):
     return labels
 
 
-# In[ ]:
 
 
 def create_submission(preds, data, name, classes=None):
@@ -152,13 +139,11 @@ def create_submission(preds, data, name, classes=None):
     sub.to_csv(f'subs/{name}.csv.gz', index=False, compression='gzip')
 
 
-# In[ ]:
 
 
 get_ipython().system('pip show fastai')
 
 
-# In[ ]:
 
 
 
@@ -166,50 +151,42 @@ get_ipython().system('pwd')
 get_ipython().system('ls')
 
 
-# In[ ]:
 
 
 df = pd.read_csv('../input/humpback-whale-identification/train.csv')
 df.head()
 
 
-# In[ ]:
 
 
 df.Id.value_counts().head()
 
 
-# In[ ]:
 
 
 (df.Id == 'new_whale').mean()
 
 
-# In[ ]:
 
 
 (df.Id.value_counts() == 1).mean()
 
 
-# In[ ]:
 
 
 df.Id.nunique()
 
 
-# In[ ]:
 
 
 df.shape
 
 
-# In[ ]:
 
 
 fn2label = {row[1].Image: row[1].Id for row in df.iterrows()}
 
 
-# In[ ]:
 
 
 SZ = 224
@@ -218,7 +195,6 @@ NUM_WORKERS = 0
 SEED=0
 
 
-# In[ ]:
 
 
 data = (
@@ -232,13 +208,11 @@ data = (
 )
 
 
-# In[ ]:
 
 
 data.show_batch(rows=3)
 
 
-# In[ ]:
 
 
 name = f'res34-{SZ}'
@@ -246,92 +220,77 @@ import pathlib
 data.path = pathlib.Path('.')
 
 
-# In[ ]:
 
 
 learn = create_cnn(data, models.resnet34, metrics=[accuracy, map5])
 
 
-# In[ ]:
 
 
 learn.fit_one_cycle(2)
 
 
-# In[ ]:
 
 
 learn.recorder.plot_losses()
 
 
-# In[ ]:
 
 
 learn.save(f'{name}-stage-1')
 
 
-# In[ ]:
 
 
 learn.unfreeze()
 
 
-# In[ ]:
 
 
 learn.recorder.plot()
 
 
-# In[ ]:
 
 
 max_lr = 1e-4
 lrs = [max_lr/100, max_lr/10, max_lr]
 
 
-# In[ ]:
 
 
 learn.fit_one_cycle(5, lrs)
 
 
-# In[ ]:
 
 
 learn.save(f'{name}-stage-2')
 
 
-# In[ ]:
 
 
 learn.recorder.plot_losses()
 
 
-# In[ ]:
 
 
 preds, _ = learn.get_preds(DatasetType.Test)
 
 
-# In[ ]:
 
 
 mkdir -p subs
 
 
-# In[ ]:
 
 
 create_submission(preds, learn.data, name)
 
 
-# In[ ]:
 
 
 pd.read_csv(f'subs/{name}.csv.gz').head()
 
 
-# In[ ]:
 
 
 get_ipython().system('kaggle competitions submit -c humpback-whale-identification -f subs/{name}.csv.gz -m "{name}"')

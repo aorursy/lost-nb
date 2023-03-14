@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -35,59 +34,50 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 dstest = pd.read_csv("/kaggle/input/santander-customer-transaction-prediction/test.csv")
 dstrain = pd.read_csv("/kaggle/input/santander-customer-transaction-prediction/train.csv")
 
 
-# In[3]:
 
 
 dstest
 
 
-# In[4]:
 
 
 #dstestw = dstest.drop(['ID_code'], axis=1).astype('float32')
 #dstrainw = dstrain.drop(['ID_code', 'target'], axis=1).astype('float32')
 
 
-# In[5]:
 
 
 dstest.shape
 
 
-# In[6]:
 
 
 dstest.info()
 dstrain.info()
 
 
-# In[7]:
 
 
 dstest.describe()
 
 
-# In[8]:
 
 
 sns.countplot(dstrain['target'], palette='Set3')
 
 
-# In[9]:
 
 
 #X = dstrain.values
 #y = dstrain.target.astype('uint8').values
 
 
-# In[10]:
 
 
 # def plot_feature_distribution(df1, df2, label1, label2, features):
@@ -108,7 +98,6 @@ sns.countplot(dstrain['target'], palette='Set3')
 #     plt.show();
 
 
-# In[11]:
 
 
 # t0 = dstrain.loc[dstrain['target'] == 0]
@@ -117,7 +106,6 @@ sns.countplot(dstrain['target'], palette='Set3')
 # plot_feature_distribution(t0, t1, '0', '1', features)
 
 
-# In[12]:
 
 
 plt.figure(figsize=(16,6))
@@ -129,21 +117,18 @@ plt.legend()
 plt.show()
 
 
-# In[13]:
 
 
 # scale numerical features
 from sklearn.preprocessing import StandardScaler
 
 
-# In[14]:
 
 
 st_sc = StandardScaler()
 from sklearn.model_selection import train_test_split
 
 
-# In[15]:
 
 
 # split the inputs and outputs
@@ -155,26 +140,22 @@ X_train = X_train.iloc[:,X_train.columns != 'ID_code'].values
 # X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = 0.2, stratify = y, random_state = 0)
 
 
-# In[16]:
 
 
 # encode categoricals
 from sklearn.preprocessing import LabelEncoder
 
 
-# In[17]:
 
 
 le = LabelEncoder()
 
 
-# In[18]:
 
 
 import xgboost as xgb
 
 
-# In[19]:
 
 
 xg_cl = xgb.XGBClassifier(
@@ -186,102 +167,86 @@ xg_cl = xgb.XGBClassifier(
                           )
 
 
-# In[20]:
 
 
 # xg_cl.fit(X_train, y_train)
 
 
-# In[21]:
 
 
 # y_pred_xg=xg_cl.predict(X_test)
 
 
-# In[22]:
 
 
 # dataset_xg = pd.concat((dstest.ID_code, pd.Series(y_pred_xg).rename('target')), axis=1)
 # dataset_xg.target.value_counts()
 
 
-# In[23]:
 
 
 # dataset_xg.to_csv('xgbost_mid.csv', index=False)
 
 
-# In[24]:
 
 
 # from sklearn.neighbors import KNeighborsClassifier
 # knn = KNeighborsClassifier()
 
 
-# In[25]:
 
 
 # knn.fit(X_train, y_train)
 
 
-# In[26]:
 
 
 #  y_preds=knn.predict(X_test)
 
 
-# In[27]:
 
 
 # dataset_knn = pd.concat((dstest.ID_code, pd.Series(y_preds).rename('target')), axis=1)
 # dataset_knn.target.value_counts()
 
 
-# In[28]:
 
 
 #dataset_knn.to_csv('knn_mid.csv', index=False)
 
 
-# In[29]:
 
 
 from sklearn import svm
 clf = svm.SVC()
 
 
-# In[ ]:
 
 
 
 
 
-# In[30]:
 
 
 clf.fit(X_train, y_train)
 
 
-# In[31]:
 
 
 clf_preds = clf.predict(X_test)
 
 
-# In[32]:
 
 
 dataset_clf = pd.concat((dstest.ID_code, pd.Series(clf_preds).rename('target')), axis=1)
 dataset_clf.target.value_counts()
 
 
-# In[33]:
 
 
 dataset_clf.to_csv('clf_mid.csv', index=False)
 
 
-# In[ ]:
 
 
 

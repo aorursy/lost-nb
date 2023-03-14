@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 
@@ -44,7 +43,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
 
 
 train_df = pd.read_csv('../input/train.csv')
@@ -55,7 +53,6 @@ print("Train data:", train_df.info())
 print("Test data:", test_df.info())
 
 
-# In[3]:
 
 
 
@@ -80,25 +77,21 @@ print ("There are %d numerical features: %s"
        % (len(cat_vars), cat_vars))
 
 
-# In[4]:
 
 
 train_df.describe()
 
 
-# In[5]:
 
 
 test_df.describe()
 
 
-# In[6]:
 
 
 sns.countplot(train_df['target'])
 
 
-# In[7]:
 
 
 def missing_data(data):
@@ -113,19 +106,16 @@ def missing_data(data):
     return(np.transpose(tt))
 
 
-# In[8]:
 
 
 missing_data(train_df)
 
 
-# In[9]:
 
 
 missing_data(test_df)
 
 
-# In[10]:
 
 
 train_unique_df = train_df[num_vars].nunique().reset_index().        rename(columns={'index':'feature',0:'unique'}).        sort_values('unique')
@@ -133,7 +123,6 @@ sns.barplot(x='feature', y='unique',color='blue',
     data=train_unique_df)
 
 
-# In[11]:
 
 
 test_unique_df = test_df[num_vars].nunique().reset_index().        rename(columns={'index':'feature',0:'unique'}).        sort_values('unique')
@@ -141,14 +130,12 @@ sns.barplot(x='feature', y='unique',color='blue',
     data=test_unique_df)
 
 
-# In[12]:
 
 
 corr_df = full_df[num_vars].corr()
 corr_df
 
 
-# In[13]:
 
 
 cmap = sns.diverging_palette(220, 10, as_cmap=True)
@@ -157,7 +144,6 @@ sns.heatmap(corr_df, cmap=cmap, vmax=.3, center=0,
             square=True, linewidths=.5, cbar_kws={"shrink": .5})
 
 
-# In[14]:
 
 
 train_norm_df = train_df[num_vars].apply(lambda x:stats.normaltest(x)[1])
@@ -169,7 +155,6 @@ print("Top 5 features with highest P value:")
 train_norm_df.sort_values(ascending=False).head()
 
 
-# In[15]:
 
 
 test_norm_df = test_df[num_vars].apply(lambda x:stats.normaltest(x)[1])
@@ -180,45 +165,38 @@ print("Top 5 features with highest P value:")
 test_norm_df.sort_values(ascending=False).head()
 
 
-# In[16]:
 
 
 
 sns.distplot(train_df['var_146'])
 
 
-# In[17]:
 
 
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA, TruncatedSVD
 
 
-# In[18]:
 
 
 get_ipython().run_cell_magic('time', '', "\ntsne = TSNE(n_components=1)\ntsne1d = tsne.fit_transform(train_df[num_vars][:10000].values)\ntsne1d_df = pd.DataFrame({'tsne_0':tsne1d.reshape(-1), 'target':train_df['target'][:10000].values})\nsns.distplot(tsne1d_df.query('target==0')['tsne_0'], label='target:0')\nsns.distplot(tsne1d_df.query('target==1')['tsne_0'], label='target:1')\nplt.legend()")
 
 
-# In[19]:
 
 
 get_ipython().run_cell_magic('time', '', "\ntsne = TSNE(n_components=2)\ntsne2d = tsne.fit_transform(train_df[num_vars][:10000].values)\ntsne2d_df = pd.DataFrame({'tsne_0':tsne2d[:,0],'tsne_1':tsne2d[:,1], \n                          'target':train_df['target'][:10000].values})\nsns.lmplot(x='tsne_0', y='tsne_1', data=tsne2d_df, hue='target', fit_reg=False)\nplt.legend()")
 
 
-# In[20]:
 
 
 get_ipython().run_cell_magic('time', '', "\npca = PCA(n_components=2) \npca2d = pca.fit_transform(train_df[num_vars][:10000].values)\nprint (pca.explained_variance_ratio_) \nprint (pca.explained_variance_) \n\npca2d_df = pd.DataFrame({'pca_0':pca2d[:,0],\n                         'pca_1':pca2d[:,1], \n                          'target':train_df['target'][:10000].values})\n\nsns.lmplot(x='pca_0', y='pca_1', data=pca2d_df, hue='target', fit_reg=False)")
 
 
-# In[21]:
 
 
 get_ipython().run_cell_magic('time', '', "\nsvd = TruncatedSVD(n_components=2)\nsvd2d = svd.fit_transform(train_df[num_vars][:10000].values)\nsvd2d_df = pd.DataFrame({'svd_0':svd2d[:,0],'svd_1':svd2d[:,1], \n                          'target':train_df['target'][:10000].values})\nsns.lmplot(x='svd_0', y='svd_1', data=svd2d_df, hue='target', fit_reg=False)\n")
 
 
-# In[22]:
 
 
 std_scaler = StandardScaler()
@@ -230,13 +208,11 @@ test_std_df = pd.DataFrame(std_scaler.transform(test_df[num_vars].values) , colu
 train_std_df['target'] = train_df['target'].values
 
 
-# In[23]:
 
 
 train_std_df[num_vars].describe()
 
 
-# In[24]:
 
 
 from sklearn.model_selection import cross_val_score
@@ -255,25 +231,21 @@ lr_cv_raw = cross_val_score(LogisticRegression(),
 print("Logistic regression CV score with raw features:", lr_cv_raw.mean())
 
 
-# In[25]:
 
 
 get_ipython().run_cell_magic('time', '', 'train_x = train_std_df[num_vars].values\ntrain_y = train_std_df[\'target\'].values\ntest_x = test_std_df[num_vars].values\n\nlr_cv_std = cross_val_score(LogisticRegression(), \n                            train_x[:10000], train_y[:10000], \n                            scoring=\'roc_auc\',\n                            cv=5, \n                            n_jobs=-1)\n\nprint("Logistic regression CV score with standardized features:", lr_cv_std.mean())')
 
 
-# In[26]:
 
 
 get_ipython().run_cell_magic('time', '', "\npca = PCA(n_components=2)\npca2d = pca.fit_transform(train_std_df[num_vars][:10000].values)\npca2d_df = pd.DataFrame({'pca_0':pca2d[:,0],'pca_1':pca2d[:,1], \n                          'target':train_df['target'][:10000].values})\nsns.lmplot(x='pca_0', y='pca_1', data=pca2d_df, hue='target', fit_reg=False)")
 
 
-# In[27]:
 
 
 get_ipython().run_cell_magic('time', '', "\npca = PCA(n_components=1)\npca1d = pca.fit_transform(train_std_df[num_vars][:10000].values)\npca1d_df = pd.DataFrame({'pca_0':pca1d.reshape(-1), 'target':train_df['target'][:10000].values})\nsns.distplot(pca1d_df.query('target==0')['pca_0'], label='target:0')\nsns.distplot(pca1d_df.query('target==1')['pca_0'], label='target:1')\nplt.legend()")
 
 
-# In[28]:
 
 
 train_std_df['norm_2'] = train_std_df[num_vars].apply(lambda x:np.linalg.norm(x), axis=1)
@@ -284,13 +256,11 @@ sns.distplot(train_std_df.query('target==1')['norm_2'], label='target:1')
 plt.legend()
 
 
-# In[29]:
 
 
 roc_auc_score(train_y, train_std_df['norm_2'])
 
 
-# In[30]:
 
 
 train_x = train_std_df[num_vars].values
@@ -301,7 +271,6 @@ lr = LogisticRegression(solver='lbfgs')
 lr.fit(train_x, train_y)
 
 
-# In[31]:
 
 
 lr_feature_importance = pd.DataFrame({'feature':num_vars, 'lr_importance':lr.coef_.reshape(-1), 
@@ -310,14 +279,12 @@ lr_feature_importance = pd.DataFrame({'feature':num_vars, 'lr_importance':lr.coe
 lr_feature_importance.sort_values('abs_lr_importance', ascending=False).head()
 
 
-# In[32]:
 
 
 lgb_clf = lgb.LGBMClassifier(n_jobs=-1)
 lgb_clf.fit(train_x, train_y)
 
 
-# In[33]:
 
 
 lgb_feature_importance = pd.DataFrame({'feature':num_vars, 
@@ -326,34 +293,29 @@ lgb_feature_importance = pd.DataFrame({'feature':num_vars,
 lgb_feature_importance.sort_values('lgb_importance', ascending=False).head()
 
 
-# In[34]:
 
 
 feature_importance = pd.merge(lr_feature_importance, lgb_feature_importance, on='feature')
 feature_importance.head()
 
 
-# In[35]:
 
 
 sns.distplot(train_std_df['var_53'])
 
 
-# In[36]:
 
 
 # Target 1
 sns.distplot(train_std_df.query('target==1')['var_53'], label='target:0')
 
 
-# In[37]:
 
 
 # Target 0
 sns.distplot(train_std_df.query('target==0')['var_53'], label='target:0')
 
 
-# In[38]:
 
 
 # var_53 against target
@@ -362,7 +324,6 @@ sns.distplot(train_std_df.query('target==1')['var_53'], label='target:1')
 plt.legend()
 
 
-# In[39]:
 
 
 # var_81 against target
@@ -371,7 +332,6 @@ sns.distplot(train_std_df.query('target==1')['var_81'], label='target:1')
 plt.legend()
 
 
-# In[40]:
 
 
 lgb_params = {
@@ -432,7 +392,6 @@ for fold, (trn_idx, val_idx) in enumerate(skf.split(train_std_df, train_std_df['
     predictions['fold{}'.format(fold+1)] = lgb_clf.predict(X_test)
 
 
-# In[41]:
 
 
 mean_auc = np.mean(val_aucs)
@@ -441,7 +400,6 @@ all_auc = roc_auc_score(oof['target'], oof['predict'])
 print("Mean auc: %.9f, std: %.9f. All auc: %.9f." % (mean_auc, std_auc, all_auc))
 
 
-# In[42]:
 
 
 predictions['target'] = np.mean(predictions[[col for col in predictions.columns 
@@ -456,7 +414,6 @@ print(sub_df.head())
 sub_df.to_csv("lgb_submission.csv", index=False)
 
 
-# In[43]:
 
 
 gc.collect() 
@@ -530,7 +487,6 @@ print ("Best %s is %s with a score of %f" %(p, best_param_value, best_param_scor
 print ('\n Best manually tuned parameters:', best_lgb_params)   
 
 
-# In[44]:
 
 
 best_param_value = {'learning_rate': 0.1, 'metric': 'auc', 
@@ -543,7 +499,6 @@ best_param_value = {'learning_rate': 0.1, 'metric': 'auc',
 best_param_value['learning_rate'] = 0.01
 
 
-# In[45]:
 
 
 skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=1234)
@@ -588,7 +543,6 @@ for fold, (trn_idx, val_idx) in enumerate(skf.split(train_df, train_df['target']
     predictions['fold{}'.format(fold+1)] = lgb_clf.predict(X_test)
 
 
-# In[46]:
 
 
 mean_auc = np.mean(val_aucs)
@@ -597,7 +551,6 @@ all_auc = roc_auc_score(oof['target'], oof['predict'])
 print("Mean auc: %.9f, std: %.9f. All auc: %.9f." % (mean_auc, std_auc, all_auc))
 
 
-# In[47]:
 
 
 predictions['target'] = np.mean(predictions[[col for col in predictions.columns 
@@ -609,14 +562,12 @@ sub_df["target"] = predictions['target']
 sub_df.to_csv("lgb_sub_manual_tuned.csv", index=False)
 
 
-# In[48]:
 
 
 train_x = train_df[num_vars].values
 train_y = train_df['target'].values
 
 
-# In[49]:
 
 
 from bayes_opt import BayesianOptimization
@@ -676,19 +627,16 @@ lgb_BO = BayesianOptimization(lgb_evaluate,
 lgb_BO.maximize(init_points=3, n_iter=7)
 
 
-# In[50]:
 
 
 lgb_BO.max
 
 
-# In[51]:
 
 
 lgb_BO.res
 
 
-# In[52]:
 
 
 a = [{**x, **x.pop('params')} for x in xgb_BO.max]
@@ -696,7 +644,6 @@ xgb_BO_scores = pd.DataFrame(a)
 xgb_BO_max = pd.DataFrame(xgb_BO.max).T
 
 
-# In[53]:
 
 
 params= lgb_BO_max.iloc[1].to_dict()
@@ -758,7 +705,6 @@ for fold, (trn_idx, val_idx) in enumerate(skf.split(train_df, train_df['target']
     predictions['fold{}'.format(fold+1)] = lgb_clf.predict(X_test)
 
 
-# In[54]:
 
 
 def lgb_binary_stack(rgr_params, train_x, train_y, test_x, kfolds, stratified=False,  random_state=42,
@@ -852,7 +798,6 @@ def lgb_binary_stack(rgr_params, train_x, train_y, test_x, kfolds, stratified=Fa
     return train_blend_x, test_blend_x, blend_scores
 
 
-# In[55]:
 
 
 
@@ -907,7 +852,6 @@ def sk_binary_stack(models, train_x, train_y, test_x, kfolds, random_state=42, v
     return train_blend_x, test_blend_x, blend_scores
 
 
-# In[56]:
 
 
 full_vars = num_vars
@@ -916,14 +860,12 @@ train_y = train_df[target_var].values
 test_x = test_df[full_vars].values
 
 
-# In[57]:
 
 
 a = [{**x, **x.pop('params')} for x in lgb_BO.res]
 lgb_BO_scores = pd.DataFrame(a)
 
 
-# In[58]:
 
 
 lgb_stack_params = []
@@ -959,7 +901,6 @@ train_stack_x_lgb, test_stack_x_lgb, blend_scores_lgb =         lgb_binary_stack
                          y_dummy=train_y )
 
 
-# In[59]:
 
 
 from sklearn.linear_model import LogisticRegression
@@ -980,7 +921,6 @@ train_sk_stack_x_l2, test_sk_stack_x_l2, _ =         sk_binary_stack(l2_stack_mo
 print('All AUC for level 2 Logistic Regression:', roc_auc_score( train_y, train_sk_stack_x_l2.mean(axis=1)))
 
 
-# In[60]:
 
 
 ## Create submission
@@ -989,7 +929,6 @@ sub_df["target"] = test_sk_stack_x_l2.mean(axis=1)
 sub_df.to_csv("sub_l1_lgb_l2_lr.csv", index=False)
 
 
-# In[61]:
 
 
 train_stack_x_l1 = np.hstack((train_x, train_stack_x_lgb))
@@ -1006,7 +945,6 @@ train_stack_x_lgb_l2, test_stack_x_lgb_l2, blend_scores_lgb =         lgb_binary
                          y_dummy=train_y)
 
 
-# In[62]:
 
 
 ## Create submission

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -15,7 +14,6 @@ plt.style.use('ggplot')
 color_pal = [x['color'] for x in plt.rcParams['axes.prop_cycle']]
 
 
-# In[2]:
 
 
 # Transaction CSVs
@@ -26,7 +24,6 @@ train_identity = pd.read_csv('../input/train_identity.csv')
 test_identity = pd.read_csv('../input/test_identity.csv')
 
 
-# In[3]:
 
 
 print('train_transaction shape is {}'.format(train_transaction.shape))
@@ -35,7 +32,6 @@ print('train_identity shape is {}'.format(train_identity.shape))
 print('test_identity shape is {}'.format(test_identity.shape))
 
 
-# In[4]:
 
 
 # Here we confirm that all of the transactions in `train_identity`
@@ -43,7 +39,6 @@ print(np.sum(train_transaction['TransactionID'].isin(train_identity['Transaction
 print(np.sum(test_transaction['TransactionID'].isin(test_identity['TransactionID'].unique())))
 
 
-# In[5]:
 
 
 def reduce_mem_usage(df, verbose=True):
@@ -77,13 +72,11 @@ def reduce_mem_usage(df, verbose=True):
 #train_transaction = reduce_mem_usage(train_transaction)
 
 
-# In[6]:
 
 
 train_transaction['TransactionAmt'] = train_transaction['TransactionAmt'].astype(float)
 
 
-# In[7]:
 
 
 #Here we see that the train data is over a particular time period, and the test data is a sequence of future data.
@@ -102,7 +95,6 @@ plt.legend()
 plt.show()
 
 
-# In[8]:
 
 
 ax = train_transaction.plot(x='TransactionDT',
@@ -135,13 +127,11 @@ train_transaction.loc[train_transaction['isFraud'] == 1]     .plot(x='Transactio
 plt.show()
 
 
-# In[9]:
 
 
 print('  {:.4f}% of Transactions that are fraud in train '.format(train_transaction['isFraud'].mean() * 100))
 
 
-# In[10]:
 
 
 #Only about 3.5% of our data is fraud transactions. Such a dataset is called a skewed dataset.
@@ -155,7 +145,6 @@ train_transaction.groupby('isFraud')     .count()['TransactionID']     .plot(kin
 plt.show()
 
 
-# In[11]:
 
 
 train_transaction['TransactionAmt']     .apply(np.log)     .plot(kind='hist',
@@ -165,7 +154,6 @@ train_transaction['TransactionAmt']     .apply(np.log)     .plot(kind='hist',
 plt.show()
 
 
-# In[12]:
 
 
 #Here, we try to separate legitimate and fraud transactions using the amounts of both transactions.
@@ -197,14 +185,12 @@ train_transaction.loc[train_transaction['isFraud'] == 0]     ['TransactionAmt'] 
 plt.show()
 
 
-# In[13]:
 
 
 print('Mean transaction amt for fraud is {:.4f}'.format(train_transaction.loc[train_transaction['isFraud'] == 1]['TransactionAmt'].mean()))
 print('Mean transaction amt for non-fraud is {:.4f}'.format(train_transaction.loc[train_transaction['isFraud'] == 0]['TransactionAmt'].mean()))
 
 
-# In[14]:
 
 
 train_transaction.groupby('ProductCD')     ['TransactionID'].count()     .sort_index()     .plot(kind='barh',
@@ -213,7 +199,6 @@ train_transaction.groupby('ProductCD')     ['TransactionID'].count()     .sort_i
 plt.show()
 
 
-# In[15]:
 
 
 train_transaction.groupby('ProductCD')['isFraud']     .mean()     .sort_index()     .plot(kind='barh',
@@ -222,14 +207,12 @@ train_transaction.groupby('ProductCD')['isFraud']     .mean()     .sort_index() 
 plt.show()
 
 
-# In[16]:
 
 
 card_cols = [c for c in train_transaction.columns if 'card' in c]
 train_transaction[card_cols].head()
 
 
-# In[17]:
 
 
 color_idx = 0
@@ -244,7 +227,6 @@ for c in card_cols:
     plt.show()
 
 
-# In[18]:
 
 
 train_transaction_fr = train_transaction.loc[train_transaction['isFraud'] == 1]
@@ -257,14 +239,12 @@ train_transaction_nofr.groupby('card6')['card6'].count().plot(kind='barh', ax=ax
 plt.show()
 
 
-# In[19]:
 
 
 print(' addr1 - has {} NA values'.format(train_transaction['addr1'].isna().sum()))
 print(' addr2 - has {} NA values'.format(train_transaction['addr2'].isna().sum()))
 
 
-# In[20]:
 
 
 train_transaction['addr1'].plot(kind='hist', bins=500, figsize=(15, 2), title='addr1 distribution')
@@ -273,14 +253,12 @@ train_transaction['addr2'].plot(kind='hist', bins=500, figsize=(15, 2), title='a
 plt.show()
 
 
-# In[21]:
 
 
 train_transaction.loc[train_transaction.addr1.isin(train_transaction.addr1.value_counts()[train_transaction.addr1.value_counts() <= 5000 ].index), 'addr1'] = "Others"
 train_transaction.loc[train_transaction.addr2.isin(train_transaction.addr2.value_counts()[train_transaction.addr2.value_counts() <= 50 ].index), 'addr2'] = "Others"
 
 
-# In[22]:
 
 
 train_transaction['dist1'].plot(kind='hist',
@@ -299,7 +277,6 @@ train_transaction['dist2'].plot(kind='hist',
 plt.show()
 
 
-# In[23]:
 
 
 #We use log function to get a better understanding of the data.
@@ -320,14 +297,12 @@ train_transaction['dist2'].plot(kind='hist',
 plt.show()
 
 
-# In[24]:
 
 
 c_cols = [c for c in train_transaction if c[0] == 'C']
 train_transaction[c_cols].head()
 
 
-# In[25]:
 
 
 # Sample 500 fraud and 500 non-fraud examples to plot
@@ -341,14 +316,12 @@ sns.pairplot(sampled_train,
 plt.show()
 
 
-# In[26]:
 
 
 d_cols = [c for c in train_transaction if c[0] == 'D']
 train_transaction[d_cols].head()
 
 
-# In[27]:
 
 
 sns.pairplot(sampled_train, 
@@ -357,14 +330,12 @@ sns.pairplot(sampled_train,
 plt.show()
 
 
-# In[28]:
 
 
 m_cols = [c for c in train_transaction if c[0] == 'M']
 train_transaction[m_cols].head()
 
 
-# In[29]:
 
 
 (train_transaction[m_cols] == 'T').sum().plot(kind='bar',
@@ -387,7 +358,6 @@ for col in ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9']:
     train_transaction[col] = train_transaction[col].fillna("Miss")
 
 
-# In[30]:
 
 
 # Looking at M4 column since it is different than the others
@@ -397,26 +367,22 @@ train_transaction.groupby('M4')['TransactionID']     .count()     .plot(kind='ba
 plt.show()
 
 
-# In[31]:
 
 
 v_cols = [c for c in train_transaction if c[0] == 'V']
 train_transaction[v_cols].head()
 
 
-# In[32]:
 
 
 train_transaction[v_cols].describe()
 
 
-# In[33]:
 
 
 train_transaction['v_mean'] = train_transaction[v_cols].mean(axis=1)
 
 
-# In[34]:
 
 
 fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, figsize=(15, 6))
@@ -432,7 +398,6 @@ train_transaction.loc[train_transaction['isFraud'] == 0]['v_mean']     .apply(np
 plt.show()
 
 
-# In[35]:
 
 
 # Add the `isFraud` column for analysis
@@ -446,7 +411,6 @@ test_identity_ = test_identity.merge(test_transaction[['TransactionID',
                                     on=['TransactionID'])
 
 
-# In[36]:
 
 
 train_identity_.groupby('DeviceType')     .mean()['isFraud']     .sort_values()     .plot(kind='barh',
@@ -455,20 +419,17 @@ train_identity_.groupby('DeviceType')     .mean()['isFraud']     .sort_values() 
 plt.show()
 
 
-# In[37]:
 
 
 train_identity_.groupby('DeviceInfo')     .count()['TransactionID']     .sort_values(ascending=False)     .head(20)     .plot(kind='barh', figsize=(15, 5), title='Top 20 Devices in Train')
 plt.show()
 
 
-# In[38]:
 
 
 test_identity_.columns
 
 
-# In[39]:
 
 
 id_cols = [c for c in train_identity.columns if 'id' in c]
@@ -487,7 +448,6 @@ for i in id_cols_test:
         pass
 
 
-# In[40]:
 
 
 for c in ['addr2','C11','D5','D8','D1','D15','V144','V145','V150','V151','V159','V160']:
@@ -501,7 +461,6 @@ for c in ['addr2','C11','D5','D8','D1','D15','V144','V145','V150','V151','V159',
         pass
 
 
-# In[41]:
 
 
 #Again, here we are just reducing the memory usage for faster execution.
@@ -510,7 +469,6 @@ df_train = reduce_mem_usage(df_train)
 df_test = reduce_mem_usage(df_test)
 
 
-# In[42]:
 
 
 # Here, we map the emails to it's company, so that we find the shady ones.
@@ -549,7 +507,6 @@ for c in ['P_emaildomain', 'R_emaildomain']:
     df_test[c + '_suffix'] = df_test[c + '_suffix'].map(lambda x: x if str(x) not in us_emails else 'us')
 
 
-# In[44]:
 
 
 #Here, we encode the categorical features.
@@ -563,7 +520,6 @@ for f in df_train.drop('isFraud', axis=1).columns:
         df_test[f] = lbl.transform(list(df_test[f].values))   
 
 
-# In[45]:
 
 
 df_train['Trans_min_mean'] = df_train['TransactionAmt'] - df_train['TransactionAmt'].mean()
@@ -583,14 +539,12 @@ df_test['TransactionAmt_to_std_card1'] = df_test['TransactionAmt'] / df_test.gro
 df_test['TransactionAmt_to_std_card4'] = df_test['TransactionAmt'] / df_test.groupby(['card4'])['TransactionAmt'].transform('std')
 
 
-# In[46]:
 
 
 df_train['TransactionAmt'] = np.log(df_train['TransactionAmt'])
 df_test['TransactionAmt'] = np.log(df_test['TransactionAmt'])
 
 
-# In[47]:
 
 
 df_test['isFraud'] = 'test'
@@ -599,7 +553,6 @@ df = df.reset_index()
 df = df.drop('index', axis=1)
 
 
-# In[48]:
 
 
 def PCA_change(df, cols, n_components, prefix='PCA_', rand_seed=4):
@@ -618,13 +571,11 @@ def PCA_change(df, cols, n_components, prefix='PCA_', rand_seed=4):
     return df
 
 
-# In[49]:
 
 
 df = reduce_mem_usage(df)
 
 
-# In[ ]:
 
 
 # Here, we just remove features whicch are irrelevant to the output which is to be calculated.
@@ -633,7 +584,6 @@ df_train, df_test = df[df['isFraud'] != 'test'], df[df['isFraud'] == 'test'].dro
 df_train.shape
 
 
-# In[50]:
 
 
 X_train = df_train.sort_values('TransactionDT').drop(['isFraud', 
@@ -651,13 +601,11 @@ del df_train
 df_test = df_test[["TransactionDT"]]
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

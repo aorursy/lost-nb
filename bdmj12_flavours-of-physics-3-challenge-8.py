@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 version = '8.0'
 folder = '../input/'
 
 
-# In[ ]:
 
 
 ### THIS CELL IS JUST THE EVALUATION PYTHON FILE 
@@ -148,7 +146,6 @@ def roc_auc_truncated(labels, predictions, tpr_thresholds=(0.2, 0.4, 0.6, 0.8),
     return area
 
 
-# In[ ]:
 
 
 def check_ag_test(model,var):
@@ -164,7 +161,6 @@ def check_ag_test(model,var):
     return ks<0.09
 
 
-# In[ ]:
 
 
 def check_corr_test(model,var):
@@ -177,7 +173,6 @@ def check_corr_test(model,var):
     return cvm<0.002
 
 
-# In[ ]:
 
 
 from sklearn.model_selection import cross_val_score
@@ -190,7 +185,6 @@ def comp_auc(model,var,data):
     return AUC
 
 
-# In[ ]:
 
 
 def pred_file(model,var):
@@ -202,7 +196,6 @@ def pred_file(model,var):
     result.to_csv('prediction %s .csv' % version, index=False, sep=',')
 
 
-# In[ ]:
 
 
 import numpy as np
@@ -212,32 +205,27 @@ import sklearn
 import seaborn as sns
 
 
-# In[ ]:
 
 
 train = pd.read_csv(folder + 'training.csv', index_col='id')
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 train.info() # to check for missing values
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(5,20))
 sns.heatmap(train.corr()["signal"].to_frame().sort_values(by="signal", ascending=False), annot=True, center=0)
 
 
-# In[ ]:
 
 
 # these are the variables that we want to include 
@@ -250,7 +238,6 @@ variables = train.drop(["production", "min_ANNmuon","signal","mass", # these are
 variables
 
 
-# In[ ]:
 
 
 candidate_models = {}   # we'll store candidate models here
@@ -313,7 +300,6 @@ def test_model(model):
         print('failed')
 
 
-# In[ ]:
 
 
 from sklearn.ensemble import GradientBoostingClassifier
@@ -346,7 +332,6 @@ test_model(GradientBoostingClassifier(learning_rate=0.3, n_estimators=200,
                                  warm_start=True))
 
 
-# In[ ]:
 
 
 from sklearn.linear_model import LogisticRegression
@@ -356,7 +341,6 @@ for c in range(0,5):
     test_model(LogisticRegression(C=0.8 + c*0.2))
 
 
-# In[ ]:
 
 
 from sklearn.naive_bayes import GaussianNB
@@ -364,7 +348,6 @@ from sklearn.naive_bayes import GaussianNB
 test_model(GaussianNB())
 
 
-# In[ ]:
 
 
 from sklearn.neighbors import KNeighborsClassifier
@@ -376,7 +359,6 @@ print('-----')
 test_model(KNeighborsClassifier(n_neighbors=8,  leaf_size=20))           
 
 
-# In[ ]:
 
 
 from sklearn.tree import DecisionTreeClassifier
@@ -394,7 +376,6 @@ print('-----')
 test_model(DecisionTreeClassifier(max_depth = 8,max_features=10))
 
 
-# In[ ]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -414,7 +395,6 @@ print('-----')
 test_model(RandomForestClassifier(max_depth = 10,max_features=5,n_estimators=20))
 
 
-# In[ ]:
 
 
 from sklearn.neural_network import MLPClassifier
@@ -425,26 +405,22 @@ print('-----')
 test_model(MLPClassifier(hidden_layer_sizes=(150,) max_iter=200))
 
 
-# In[ ]:
 
 
 candidate_models
 
 
-# In[ ]:
 
 
 best_model = max(candidate_models, key=candidate_models.get)
 type(best_model)
 
 
-# In[ ]:
 
 
 candidate_models[best_model]
 
 
-# In[ ]:
 
 
 pred_file(best_model,variables)

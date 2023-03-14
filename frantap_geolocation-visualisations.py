@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np
@@ -13,14 +12,12 @@ from mpl_toolkits.basemap import Basemap
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[ ]:
 
 
 df_events = pd.read_csv("../input/events.csv", dtype={'device_id': np.str})
 df_events.head()
 
 
-# In[ ]:
 
 
 # Set up plot
@@ -48,7 +45,6 @@ plt.title("Global view of events")
 plt.show()
 
 
-# In[ ]:
 
 
 df_at0 = df_events[(df_events["longitude"]==0) & (df_events["latitude"]==0)]
@@ -59,7 +55,6 @@ print("# at (0,0)", len(df_at0))
 print("# near (0,0)", len(df_near0))
 
 
-# In[ ]:
 
 
 # Sample it down to only the China region
@@ -93,7 +88,6 @@ plt.title("China view of events")
 plt.show()
 
 
-# In[ ]:
 
 
 # Sample it down to only the Beijing region
@@ -127,7 +121,6 @@ plt.title("Beijing view of events")
 plt.show()
 
 
-# In[ ]:
 
 
 # Load the train data and join on the events
@@ -139,7 +132,6 @@ df_m = df_plot[df_plot["gender"]=="M"]
 df_f = df_plot[df_plot["gender"]=="F"]
 
 
-# In[ ]:
 
 
 # Male/female plot
@@ -178,14 +170,12 @@ plt.title("Female events in Beijing")
 plt.show()
 
 
-# In[ ]:
 
 
 print("# M obs:", len(df_m))
 print("# F obs:", len(df_f))
 
 
-# In[ ]:
 
 
 # Make a pivot table showing average age per area of a grid, also store the counts
@@ -197,7 +187,6 @@ df_age = pd.pivot_table(df_plot,                        values="age",           
 df_cnt = pd.pivot_table(df_plot,                        values="age",                        index="lon_round",                        columns="lat_round",                        aggfunc="count")
 
 
-# In[ ]:
 
 
 # Age plot

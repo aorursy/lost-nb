@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import tensorflow as tf
@@ -19,13 +18,11 @@ import os
 shutil.register_unpack_format('7zip', ['.7z'], unpack_7zarchive)
 
 
-# In[2]:
 
 
 shutil.unpack_archive('/kaggle/input/cifar-10/train.7z', '/kaggle/working')
 
 
-# In[3]:
 
 
 
@@ -35,7 +32,6 @@ print(".\\train:\t",train_dir_len)
 print("files:\t\t",train_dir[:3])
 
 
-# In[4]:
 
 
 train_labels = pd.read_csv('/kaggle/input/cifar-10/trainLabels.csv',dtype=str)
@@ -44,7 +40,6 @@ test_labels = pd.read_csv('/kaggle/input/cifar-10/sampleSubmission.csv')
 train_labels.info()
 
 
-# In[5]:
 
 
 path_base = '/kaggle/working/train/'
@@ -57,20 +52,17 @@ for index in range(0,train_dir_len):
 train_images.head(2)
 
 
-# In[6]:
 
 
 train_images.head(2)
 
 
-# In[7]:
 
 
 display_groupby = train_images.groupby(['label']).count()
 display_groupby.head(10)
 
 
-# In[8]:
 
 
 class_names = ['airplane','automobile','bird','cat','deer','dog','frog','horse','ship','truck']
@@ -82,7 +74,6 @@ display_groupby = train_images.groupby(['label']).count()
 display_groupby.head(10)
 
 
-# In[9]:
 
 
 path_base = '/kaggle/working/train'
@@ -103,13 +94,11 @@ train_generator = train_data_generator.flow_from_dataframe(dataframe=train_image
             class_mode="categorical")
 
 
-# In[10]:
 
 
 num_classes  = 10
 
 
-# In[11]:
 
 
 validation_generator = train_data_generator.flow_from_dataframe(dataframe=train_images,
@@ -123,7 +112,6 @@ validation_generator = train_data_generator.flow_from_dataframe(dataframe=train_
             class_mode="categorical")
 
 
-# In[12]:
 
 
 train_size = len(train_generator.filenames)
@@ -132,7 +120,6 @@ print('validation_size:\t',validation_size)
 print('train_size:\t\t',train_size)
 
 
-# In[13]:
 
 
 index = 0    
@@ -150,7 +137,6 @@ for item in train_images.values[:20]:
 plt.show()
 
 
-# In[14]:
 
 
 keras.backend.clear_session()
@@ -187,7 +173,6 @@ model.compile(loss=keras.losses.CategoricalCrossentropy(from_logits=True),
 model.input 
 
 
-# In[15]:
 
 
 
@@ -199,13 +184,11 @@ history = model.fit(train_generator,
                    )
 
 
-# In[16]:
 
 
 test_labels.head(2)
 
 
-# In[17]:
 
 
 if os.path.exists("./test"):
@@ -218,7 +201,6 @@ if not os.path.exists("./data"):
 shutil.unpack_archive('/kaggle/input/cifar-10/test.7z', '/kaggle/working/data')
 
 
-# In[18]:
 
 
 test_dir = os.listdir("./data/test");
@@ -229,7 +211,6 @@ print(".\\test:\t",test_dir_len)
 print("files:\t\t",test_dir[:3])
 
 
-# In[19]:
 
 
 test_data_generator = ImageDataGenerator(rescale=1./255.)
@@ -240,13 +221,11 @@ test_generator = test_data_generator.flow_from_directory(directory='/kaggle/work
             class_mode=None)
 
 
-# In[20]:
 
 
 predict_test = model.predict_generator(test_generator)
 
 
-# In[21]:
 
 
 predict_generator = np.argmax(predict_test, axis=1)
@@ -254,7 +233,6 @@ print(class_names)
 predict_generator[:2],[class_names[int(i)] for i in predict_generator[:2]]
 
 
-# In[22]:
 
 
 submission = pd.DataFrame(columns = ['id','label'],dtype=str)
@@ -263,13 +241,11 @@ submission["id"] = [ (''.join(filter(str.isdigit, name ))) for name in test_gene
 submission.head(101)
 
 
-# In[23]:
 
 
 submission.values[50:100]
 
 
-# In[24]:
 
 
 index = 0    
@@ -287,13 +263,11 @@ for item in submission.values[50:70]:
 plt.show()
 
 
-# In[25]:
 
 
 submission.to_csv("submission.csv",index=False)
 
 
-# In[26]:
 
 
 shutil.rmtree("./data")

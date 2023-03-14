@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import gc
@@ -12,7 +11,6 @@ from sklearn.metrics import matthews_corrcoef
 from operator import itemgetter
 
 
-# In[2]:
 
 
 def get_station_ohe():
@@ -72,31 +70,26 @@ def get_station_ohe():
     
 
 
-# In[3]:
 
 
 station_ohe,stations,date_cols = get_station_ohe()
 
 
-# In[4]:
 
 
 station_ohe['path_len'] = station_ohe[stations].sum(axis=1)
 
 
-# In[5]:
 
 
 station_ohe.head(20)
 
 
-# In[6]:
 
 
 station_ohe.shape
 
 
-# In[7]:
 
 
 def get_date_features():
@@ -130,7 +123,6 @@ def get_date_features():
 usefuldatefeatures = get_date_features()
 
 
-# In[8]:
 
 
 def create_new_feats():
@@ -190,49 +182,41 @@ def create_new_feats():
     return subset
 
 
-# In[9]:
 
 
 new_features = create_new_feats()
 
 
-# In[10]:
 
 
 new_features.head()
 
 
-# In[11]:
 
 
 new_features.sort_values(by=['mindate', 'Id'], inplace=True)
 
 
-# In[12]:
 
 
 new_features['mindate_id_diff'] = new_features.Id.diff()
 
 
-# In[13]:
 
 
 midr = np.full_like(new_features.mindate_id_diff.values, np.nan)
 
 
-# In[14]:
 
 
 midr[0:-1] = -new_features.mindate_id_diff.values[1:]
 
 
-# In[15]:
 
 
 new_features['mindate_id_diff_reverse'] = midr
 
 
-# In[16]:
 
 
 def mcc(tp, tn, fp, fn):
@@ -244,7 +228,6 @@ def mcc(tp, tn, fp, fn):
         return sup / np.sqrt(inf)
 
 
-# In[17]:
 
 
 def eval_mcc(y_true, y_prob, show=False):
@@ -280,7 +263,6 @@ def eval_mcc(y_true, y_prob, show=False):
         return best_mcc
 
 
-# In[18]:
 
 
 def mcc_eval(y_prob, dtrain):
@@ -289,7 +271,6 @@ def mcc_eval(y_prob, dtrain):
     return 'MCC', best_mcc
 
 
-# In[19]:
 
 
 def get_importance(gbm, features):
@@ -299,7 +280,6 @@ def get_importance(gbm, features):
     return importance
 
 
-# In[20]:
 
 
 directory = '../input/'
@@ -309,7 +289,6 @@ testfiles = ['test_date.csv',
                  'test_numeric.csv']
 
 
-# In[21]:
 
 
 #feature generate from Xgboost with 200,000 records
@@ -342,32 +321,27 @@ num_feats = ['Id',
  'Response']
 
 
-# In[22]:
 
 
 len(date_cols)
 
 
-# In[23]:
 
 
 cols = [['Id']+date_cols,num_feats]
 
 
-# In[24]:
 
 
 cols
 
 
-# In[25]:
 
 
 traindata = None
 testdata = None
 
 
-# In[26]:
 
 
 for i, f in enumerate(trainfiles):
@@ -392,13 +366,11 @@ for i, f in enumerate(trainfiles):
         gc.collect()
 
 
-# In[27]:
 
 
 del cols[1][-1]
 
 
-# In[28]:
 
 
 for i, f in enumerate(testfiles):
@@ -423,14 +395,12 @@ for i, f in enumerate(testfiles):
         gc.collect()
 
 
-# In[29]:
 
 
 del midr
 gc.collect()
 
 
-# In[30]:
 
 
 traindata = traindata.merge(new_features, on='Id')
@@ -439,7 +409,6 @@ testdata = testdata.merge(new_features, on='Id')
 testdata = testdata.merge(station_ohe, on='Id')
 
 
-# In[31]:
 
 
 del new_features
@@ -447,32 +416,27 @@ del station_ohe
 gc.collect()
 
 
-# In[32]:
 
 
 testdata['Response'] = 0 
 
 
-# In[33]:
 
 
 visibletraindata = traindata[::2]
 
 
-# In[34]:
 
 
 blindtraindata = traindata[1::2]
 
 
-# In[35]:
 
 
 del traindata
 gc.collect()
 
 
-# In[36]:
 
 
 def LeaveOneOut(data1, data2, columnName, useLOO=False):
@@ -494,7 +458,6 @@ def LeaveOneOut(data1, data2, columnName, useLOO=False):
     return x.fillna(x.mean())
 
 
-# In[37]:
 
 
 for i in range(2):
@@ -506,7 +469,6 @@ for i in range(2):
                                                testdata, col, False).values
 
 
-# In[38]:
 
 
 num_rounds =52
@@ -523,7 +485,6 @@ params['eval_metric']='auc'
 print('Fitting')
 
 
-# In[39]:
 
 
 trainpredictions = None
@@ -540,7 +501,6 @@ dtest =         xgb.DMatrix(testdata[features],
 folds = 1
 
 
-# In[40]:
 
 
 for i in range(folds):
@@ -559,7 +519,6 @@ for i in range(folds):
         predictions =             clf.predict(dvisibletrain, ntree_limit=limit)
 
 
-# In[41]:
 
 
 best_proba, best_mcc, y_pred = eval_mcc(dvisibletrain.Response,
@@ -569,7 +528,6 @@ print(best_proba)
 print(best_mcc)
 
 
-# In[42]:
 
 
 def create_feature_map(features):
@@ -579,7 +537,6 @@ def create_feature_map(features):
     outfile.close()
 
 
-# In[43]:
 
 
 if(trainpredictions is None):
@@ -594,7 +551,6 @@ else:
 imp = get_importance(clf, features)
 
 
-# In[44]:
 
 
 y_pred = (testpredictions/folds > 0.4).astype(int)
@@ -604,7 +560,6 @@ submission[['Id', 'Response']].to_csv('xgbsubmission'+str(folds)+'.csv',
                                           index=False)
 
 
-# In[45]:
 
 
 import matplotlib.pyplot as plt
@@ -613,13 +568,11 @@ xgb.plot_importance(clf, max_num_features=50, height=0.8, ax=ax,importance_type=
 plt.show()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

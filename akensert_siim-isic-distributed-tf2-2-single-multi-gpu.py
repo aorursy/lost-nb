@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install efficientnet -U')
 
 
-# In[2]:
 
 
 import numpy as np
@@ -60,7 +58,6 @@ else:
     print("Setting strategy to MirroredStrategy()")
 
 
-# In[3]:
 
 
 path = '../input/siim-isic-melanoma-classification/'
@@ -77,7 +74,6 @@ print("\ntrain shape =", train_data.shape)
 print(train_data.head(3))
 
 
-# In[4]:
 
 
 augmentor = (
@@ -242,7 +238,6 @@ for i, ax in enumerate(axes.reshape(-1)):
 plt.subplots_adjust(hspace=0.1, wspace=0.025)
 
 
-# In[5]:
 
 
 def sigmoid_focal_cross_entropy_with_logits(
@@ -508,7 +503,6 @@ class DistributedModel:
         return best_valid_preds, valid_names, test_preds, test_names 
 
 
-# In[6]:
 
 
 def get_optimizer(steps_per_epoch, lr_max, lr_min,
@@ -569,7 +563,6 @@ class WarmUp(tf.keras.optimizers.schedules.LearningRateSchedule):
         }
 
 
-# In[7]:
 
 
 config = {
@@ -682,7 +675,6 @@ with strategy.scope():
         # dist_model.reset_weights()
 
 
-# In[8]:
 
 
 final_preds = np.average(test_preds_accum, axis=0, weights=[1,1,1,1,1])
@@ -691,7 +683,6 @@ submission_data['target'] = submission_data.image_name.map(final_preds_map)
 submission_data.to_csv('submission.csv', index=False)
 
 
-# In[ ]:
 
 
 

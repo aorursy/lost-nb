@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 DATA_DIR = '/kaggle/input'
@@ -41,7 +40,6 @@ import glob
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[ ]:
 
 
 
@@ -50,7 +48,6 @@ import pydicom
 import glob
 
 
-# In[ ]:
 
 
 # The following parameters have been selected to reduce running time for demonstration purposes 
@@ -97,14 +94,12 @@ class DetectorConfig(Config):
 config = DetectorConfig()
 
 
-# In[ ]:
 
 
 train_dicom_dir = os.path.join(DATA_DIR, 'stage_1_train_images')
 test_dicom_dir = os.path.join(DATA_DIR, 'stage_1_test_images')
 
 
-# In[ ]:
 
 
 def get_dicom_fps(dicom_dir):
@@ -172,14 +167,12 @@ class DetectorDataset(utils.Dataset):
         return mask.astype(np.bool), class_ids.astype(np.int32)
 
 
-# In[ ]:
 
 
 anns = pd.read_csv(os.path.join(DATA_DIR, 'stage_1_train_labels.csv'))
 image_fps, image_annotations = parse_dataset(train_dicom_dir, anns=anns)
 
 
-# In[ ]:
 
 
 # Original DICOM image size: 1024 x 1024
@@ -206,38 +199,32 @@ image_fps_val = image_fps_list[split_index:]
 print(len(image_fps_train), len(image_fps_val))
 
 
-# In[ ]:
 
 
 dataset_train = DetectorDataset(image_fps_train, image_annotations, ORIG_SIZE, ORIG_SIZE)
 dataset_train.prepare()
 
 
-# In[ ]:
 
 
 dataset = dataset_train
 
 
-# In[ ]:
 
 
 masked = [i for i in dataset.image_ids if np.sum(dataset.load_mask(i)[0]) > 0]
 
 
-# In[ ]:
 
 
 len(dataset.image_ids), len(masked)
 
 
-# In[ ]:
 
 
 np.hstack([np.random.choice(dataset.image_ids, 4), np.random.choice(masked, 4)])
 
 
-# In[ ]:
 
 
 # Load random image and mask.
@@ -258,7 +245,6 @@ log("bbox", bbox)
 visualize.display_instances(image, bbox, mask, class_ids, dataset.class_names, show_mask=False)
 
 
-# In[ ]:
 
 
 # Load random image and mask.
@@ -294,34 +280,29 @@ show_image_with_resized(random.choice(dataset.image_ids))
 show_image_with_resized(random.choice(masked))
 
 
-# In[ ]:
 
 
 from https://www.kaggle.com/thomasjpfan/q-a-with-only-pictures it seems that ratio should start at 0.3
     
 
 
-# In[ ]:
 
 
 # are there any images with bbox but not diagnosed?
 np.sum((anns['width'] > 0) & (anns['Target'] == 0))
 
 
-# In[ ]:
 
 
 # are there any images without bbox but diagnosed?
 np.sum(~(anns['width'] > 0) & (anns['Target'] > 0))
 
 
-# In[ ]:
 
 
 predicted_anns = anns[anns.Target == 1]
 
 
-# In[ ]:
 
 
 import seaborn as sns
@@ -329,13 +310,11 @@ sns.distplot(predicted_anns['width'])
 sns.distplot(predicted_anns['height'])
 
 
-# In[ ]:
 
 
 sns.distplot((predicted_anns['width'] / predicted_anns['height']))
 
 
-# In[ ]:
 
 
 # lets pick this configuration:
@@ -346,7 +325,6 @@ config.RPN_ANCHOR_SCALES = np.array([96, 192, 256, 384, 512]) * (config.IMAGE_MI
 config.RPN_ANCHOR_SCALES
 
 
-# In[ ]:
 
 
 # Generate Anchors
@@ -372,7 +350,6 @@ for l in range(num_levels):
     print("Anchors in Level {}: {}".format(l, anchors_per_level[l]))
 
 
-# In[ ]:
 
 
 ## Visualize anchors of one cell at the center of the feature map of a specific level
@@ -407,13 +384,11 @@ for level in range(levels):
         ax.add_patch(p)
 
 
-# In[ ]:
 
 
 # let's display some image with regions:
 
 
-# In[ ]:
 
 
 # Create data generator
@@ -453,7 +428,6 @@ print("image_id: ", image_id, dataset.image_reference(image_id))
 mrcnn_class_ids = mrcnn_class_ids[:,:,0]
 
 
-# In[ ]:
 
 
 b = 0
@@ -485,19 +459,16 @@ visualize.draw_boxes(sample_image, boxes=anchors[positive_anchor_ids],
                      refined_boxes=refined_anchors)
 
 
-# In[ ]:
 
 
 visualize.draw_boxes(sample_image, boxes=anchors[negative_anchor_ids])
 
 
-# In[ ]:
 
 
 visualize.draw_boxes(sample_image, boxes=anchors[np.random.choice(neutral_anchor_ids, 100)])
 
 
-# In[ ]:
 
 
 if random_rois:
@@ -518,7 +489,6 @@ if random_rois:
     print("Unique ROIs: {} out of {}".format(len(idx), rois.shape[1]))
 
 
-# In[ ]:
 
 
 if random_rois:
@@ -538,7 +508,6 @@ if random_rois:
     display_images(images, titles, cols=4, cmap="Blues", interpolation="none")
 
 
-# In[ ]:
 
 
 # Check ratio of positive ROIs in a set of images.
@@ -556,31 +525,26 @@ if random_rois:
     print("Average percent: {:.2f}".format(total/(limit*ids.shape[1])))
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 get_ipython().system(' rm -rf /kaggle/working/*')
 
 
-# In[ ]:
 
 
 

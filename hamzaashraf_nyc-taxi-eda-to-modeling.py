@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -24,7 +23,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
 
 
 np.random.seed(1987)
@@ -34,7 +32,6 @@ train = pd.read_csv('../input/nyc-taxi-trip-duration/train.csv')
 test = pd.read_csv('../input/nyc-taxi-trip-duration/test.csv')
 
 
-# In[3]:
 
 
 print('training rows: {} and test rows:{} '.format(train.shape[0], test.shape[0]))
@@ -43,20 +40,17 @@ print('in training file dropoff_time will be droped while training the model')
 train.head(10)
 
 
-# In[4]:
 
 
 print('Training and testing files are mutualy exclusive. Id is unique so it wont be contributing any part in model training. Only 2 vendors are there in data set.')
 
 
-# In[5]:
 
 
 train['trip_duration'].max()/3600
 print('max trip_duration in hours are 979.52')
 
 
-# In[6]:
 
 
 df = train
@@ -75,7 +69,6 @@ dow_usage = pd.value_counts(df['dow']).sort_index()
 hour_usage = pd.value_counts(df['hour']).sort_index()
 
 
-# In[7]:
 
 
 # Set custom xtick labels
@@ -116,7 +109,6 @@ fig.tight_layout()
 print ("There were a total of %d Taxi pickups made" % (len(train)))
 
 
-# In[8]:
 
 
 # Count number of pickups made per vendor, over month, day of week and hour of day
@@ -128,7 +120,6 @@ hour_vendor = df.groupby(['hour', 'vendor_id']).size().unstack()
 server = df.groupby(['store_and_fwd_flag', 'vendor_id']).size().unstack()
 
 
-# In[9]:
 
 
 # Set custom xtick labels
@@ -171,14 +162,12 @@ plt.xticks(rotation=0)
 fig.tight_layout()
 
 
-# In[10]:
 
 
 print ("Max passengers at once: %d" % df['passenger_count'].max())
 print ("Average passengers at once: %d" % df['passenger_count'].mean())
 
 
-# In[11]:
 
 
 # Count number of pickups made per vendor, over month, day of week and hour of day
@@ -187,7 +176,6 @@ dow_pass = df.groupby(['dow', 'passenger_count']).size().unstack()
 hour_pass = df.groupby(['hour', 'passenger_count']).size().unstack()
 
 
-# In[12]:
 
 
 # Set custom xtick labels
@@ -228,7 +216,6 @@ plt.legend(loc = "upper left")
 fig.tight_layout()
 
 
-# In[13]:
 
 
 train['pickup_datetime'] = pd.to_datetime(train.pickup_datetime)
@@ -238,7 +225,6 @@ test.loc[:, 'pickup_date'] = test['pickup_datetime'].dt.date
 train['dropoff_datetime'] = pd.to_datetime(train.dropoff_datetime)
 
 
-# In[14]:
 
 
 train['log_trip_duration'] = np.log(train['trip_duration'].values + 1)
@@ -248,14 +234,12 @@ plt.ylabel('number of train records')
 plt.show()
 
 
-# In[15]:
 
 
 train['store_and_fwd_flag'] = 1 * (train.store_and_fwd_flag.values == 'Y')
 test['store_and_fwd_flag'] = 1 * (test.store_and_fwd_flag.values == 'Y')
 
 
-# In[16]:
 
 
 city_long_border = (-74.03, -73.75)
@@ -276,7 +260,6 @@ plt.xlim(city_long_border)
 plt.show()
 
 
-# In[17]:
 
 
 coords = np.vstack((train[['pickup_latitude', 'pickup_longitude']].values,
@@ -295,7 +278,6 @@ test['dropoff_pca0'] = pca.transform(test[['dropoff_latitude', 'dropoff_longitud
 test['dropoff_pca1'] = pca.transform(test[['dropoff_latitude', 'dropoff_longitude']])[:, 1]
 
 
-# In[18]:
 
 
 fig, ax = plt.subplots(ncols=2)
@@ -314,7 +296,6 @@ ax[1].set_ylim(pca_borders[:, 1].min(), pca_borders[:, 1].max())
 plt.show()
 
 
-# In[19]:
 
 
 def haversine_array(lat1, lng1, lat2, lng2):
@@ -355,7 +336,6 @@ test.loc[:, 'center_latitude'] = (test['pickup_latitude'].values + test['dropoff
 test.loc[:, 'center_longitude'] = (test['pickup_longitude'].values + test['dropoff_longitude'].values) / 2
 
 
-# In[20]:
 
 
 train.loc[:, 'pickup_weekday'] = train['pickup_datetime'].dt.weekday
@@ -373,7 +353,6 @@ test.loc[:, 'pickup_dt'] = (test['pickup_datetime'] - train['pickup_datetime'].m
 test.loc[:, 'pickup_week_hour'] = test['pickup_weekday'] * 24 + test['pickup_hour']
 
 
-# In[21]:
 
 
 train.loc[:, 'avg_speed_h'] = 1000 * train['distance_haversine'] / train['trip_duration']
@@ -390,7 +369,6 @@ fig.suptitle('Rush hour average traffic speed')
 plt.show()
 
 
-# In[22]:
 
 
 train.loc[:, 'pickup_lat_bin'] = np.round(train['pickup_latitude'], 3)
@@ -424,14 +402,12 @@ test.loc[:, 'center_long_bin'] = np.round(test['center_longitude'], 2)
 test.loc[:, 'pickup_dt_bin'] = (test['pickup_dt'] // (3 * 3600))
 
 
-# In[23]:
 
 
 sample_ind = np.random.permutation(len(coords))[:500000]
 kmeans = MiniBatchKMeans(n_clusters=100, batch_size=10000).fit(coords[sample_ind])
 
 
-# In[24]:
 
 
 train.loc[:, 'pickup_cluster'] = kmeans.predict(train[['pickup_latitude', 'pickup_longitude']])
@@ -442,7 +418,6 @@ t1 = dt.datetime.now()
 print('Time till clustering: %i seconds' % (t1 - t0).seconds)
 
 
-# In[25]:
 
 
 fig, ax = plt.subplots(ncols=1, nrows=1)
@@ -455,7 +430,6 @@ ax.set_ylabel('Latitude')
 plt.show()
 
 
-# In[26]:
 
 
 for gby_col in ['pickup_hour', 'pickup_date', 'pickup_dt_bin',
@@ -478,7 +452,6 @@ for gby_cols in [['center_lat_bin', 'center_long_bin'],
     test = pd.merge(test, coord_stats, how='left', on=gby_cols)
 
 
-# In[27]:
 
 
 group_freq = '60min'
@@ -499,7 +472,6 @@ train['dropoff_cluster_count'] = train[['pickup_datetime_group', 'dropoff_cluste
 test['dropoff_cluster_count'] = test[['pickup_datetime_group', 'dropoff_cluster']].merge(dropoff_counts, on=['pickup_datetime_group', 'dropoff_cluster'], how='left')['dropoff_cluster_count'].fillna(0)
 
 
-# In[28]:
 
 
 df_all = pd.concat((train, test))[['id', 'pickup_datetime', 'pickup_cluster', 'dropoff_cluster']]
@@ -509,7 +481,6 @@ train['pickup_cluster_count'] = train[['pickup_datetime_group', 'pickup_cluster'
 test['pickup_cluster_count'] = test[['pickup_datetime_group', 'pickup_cluster']].merge(pickup_counts, on=['pickup_datetime_group', 'pickup_cluster'], how='left')['pickup_cluster_count'].fillna(0)
 
 
-# In[29]:
 
 
 fr1 = pd.read_csv('../input/new-york-city-taxi-with-osrm/fastest_routes_train_part_1.csv', usecols=['id', 'total_distance', 'total_travel_time',  'number_of_steps'])
@@ -522,7 +493,6 @@ test = test.merge(test_street_info, how='left', on='id')
 train_street_info.head()
 
 
-# In[30]:
 
 
 feature_names = list(train.columns)
@@ -540,7 +510,6 @@ t1 = dt.datetime.now()
 print('Feature extraction time: %i seconds' % (t1 - t0).seconds)
 
 
-# In[31]:
 
 
 Xtr, Xv, ytr, yv = train_test_split(train[feature_names].values, y, test_size=0.2, random_state=1987)
@@ -550,7 +519,6 @@ dtest = xgb.DMatrix(test[feature_names].values)
 watchlist = [(dtrain, 'train'), (dvalid, 'valid')]
 
 
-# In[32]:
 
 
 xgb_pars = {'min_child_weight': 15, 'eta': 0.5, 'colsample_bytree': 0.3, 'max_depth': 10,
@@ -558,14 +526,12 @@ xgb_pars = {'min_child_weight': 15, 'eta': 0.5, 'colsample_bytree': 0.3, 'max_de
             'eval_metric': 'rmse', 'objective': 'reg:linear'}
 
 
-# In[33]:
 
 
 model = xgb.train(xgb_pars, dtrain, 10, watchlist, early_stopping_rounds=100,
                   maximize=False, verbose_eval=2)
 
 
-# In[34]:
 
 
 print('Modeling RMSLE %.5f' % model.best_score)
@@ -573,7 +539,6 @@ t1 = dt.datetime.now()
 print('Training time: %i seconds' % (t1 - t0).seconds)
 
 
-# In[35]:
 
 
 ytest = model.predict(dtest)

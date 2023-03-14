@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import sys
@@ -18,7 +17,6 @@ from sklearn.utils.extmath import cartesian
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 def sample_horse(size=1):
@@ -70,7 +68,6 @@ def sample(gift, quantity=1, size=1):
 print(sample("horse", 2, 10))
 
 
-# In[3]:
 
 
 def bag_name(bag):
@@ -89,7 +86,6 @@ bag_weight_sampler, name = create_bag_weight_sampler(bag)
 print("Sampling from bag {}: {}".format(name, bag_weight_sampler(3)))
 
 
-# In[4]:
 
 
 def plot_bag_weight_distributions(bags, size=10000):
@@ -130,7 +126,6 @@ single_gift_bags = [
 plot_bag_weight_distributions(single_gift_bags)
 
 
-# In[5]:
 
 
 example_bags = [
@@ -143,7 +138,6 @@ example_bags = [
 plot_bag_weight_distributions(example_bags)
 
 
-# In[6]:
 
 
 def plot_bag_utility_distributions(bags, size=10000, fit=norm):
@@ -163,7 +157,6 @@ print("Sampling utility from bag {}: {}\n".format(name, bag_utility_sampler(3)))
 plot_bag_utility_distributions(example_bags)
 
 
-# In[7]:
 
 
 def plot_score_distribution(bags, num_tries=60, size=10000, fit=norm, extremal_fit=gumbel_r):
@@ -189,7 +182,6 @@ def plot_extreme_value_distribution(scores, num_tries, size=10000):
 plot_score_distribution(example_bags)
 
 
-# In[8]:
 
 
 def n_bags(bag, n):
@@ -208,7 +200,6 @@ print("Computed statistics for {} bags: mean = {:0.2f}, std = {:0.2f}".format(n,
 plot_score_distribution(n_bags(bag, n))
 
 
-# In[9]:
 
 
 np.random.seed(42) # reset seed to make things reproducibe even if you fiddle around in the part above
@@ -230,7 +221,6 @@ gift_weight_distributions = get_gift_weight_distributions(gifts)
 print(pd.DataFrame(data=gift_weight_distributions, index=gifts, columns=["mean", "std"]))
 
 
-# In[10]:
 
 
 def get_mixed_item_bags_max_quantities(upper_limit=None):
@@ -244,7 +234,6 @@ print("maximum quantities:\n{}".format(np.dstack((np.array(gifts), mixed_item_ma
 print("number of different bags: {}".format(np.prod(mixed_item_max_quantities)))
 
 
-# In[11]:
 
 
 mixed_item_max_quantities = get_mixed_item_bags_max_quantities(11)
@@ -252,7 +241,6 @@ print("maximum quantities:\n{}".format(np.dstack((np.array(gifts), mixed_item_ma
 print("number of different bags: {}".format(np.prod(mixed_item_max_quantities)))
 
 
-# In[12]:
 
 
 def create_candidate_bags(max_quantities):
@@ -265,7 +253,6 @@ mixed_item_candiadte_bags = create_candidate_bags(mixed_item_max_quantities)
 print("Created candiadate bags: {}".format(mixed_item_candiadte_bags.shape))
 
 
-# In[13]:
 
 
 def get_bag_weight_distributions(candidate_bags, min_mean=30, max_mean=50):
@@ -288,7 +275,6 @@ mixed_item_candiadte_bags, mixed_item_bag_weight_distributions =     filter_by_m
 print("Candidate bags left: {}".format(mixed_item_candiadte_bags.shape))
 
 
-# In[14]:
 
 
 def get_low_weight_item_candidate_bags():
@@ -316,7 +302,6 @@ low_weight_item_candidate_bags, low_weight_item_bag_weight_distributions =     f
 print("Total number of canidate bags: {}".format(low_weight_item_candidate_bags.shape))
 
 
-# In[15]:
 
 
 def drop_duplicate(candidate_bags, distributions):
@@ -331,7 +316,6 @@ candidate_bags, bag_weight_distributions = drop_duplicate(candidate_bags, bag_we
 print("Final candidate bags without duplicates: {}".format(candidate_bags.shape))
 
 
-# In[16]:
 
 
 def get_bag_utility_distributions(candidate_bags):
@@ -354,7 +338,6 @@ bag_utility_distributions = get_bag_utility_distributions(candidate_bags)
 print(bag_utility_distributions.shape)
 
 
-# In[17]:
 
 
 num_gifts_available = {
@@ -370,7 +353,6 @@ num_gifts_available = {
 }
 
 
-# In[18]:
 
 
 def pack_linprog(bags, distributions, min_variance, max_bags=1000):
@@ -429,7 +411,6 @@ def pack_bags(bags, distributions, min_variance=None):
 packed_bags, packed_distributions, packed_quantities     = pack_bags(candidate_bags, bag_utility_distributions, min_variance=None)
 
 
-# In[19]:
 
 
 def evaluate_variances():
@@ -442,7 +423,6 @@ def evaluate_variances():
 scores_for_min_variance = evaluate_variances()
 
 
-# In[20]:
 
 
 def plot_expected_scores_after(num_submissions, score_distributions):
@@ -463,7 +443,6 @@ def plot_expected_scores_after(num_submissions, score_distributions):
 plot_expected_scores_after(60, scores_for_min_variance)
 
 
-# In[21]:
 
 
 def create_submissions(bags, quantities, num_submissions=60):
@@ -497,13 +476,11 @@ def create_submissions(bags, quantities, num_submissions=60):
 create_submissions(packed_bags, packed_quantities)
 
 
-# In[22]:
 
 
 pd.read_csv('submission_0.csv').head()
 
 
-# In[23]:
 
 
 

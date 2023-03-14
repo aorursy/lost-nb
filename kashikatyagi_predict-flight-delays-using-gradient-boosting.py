@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 from sklearn.preprocessing import StandardScaler
@@ -33,21 +31,18 @@ from xgboost import XGBClassifier
 from sklearn.metrics import roc_auc_score
 
 
-# In[3]:
 
 
 train = pd.read_csv("/kaggle/input/flight-delays-spring-2018/flight_delays_train.csv")
 train.head()
 
 
-# In[4]:
 
 
 test = pd.read_csv("/kaggle/input/flight-delays-spring-2018/flight_delays_test.csv")
 test.head()
 
 
-# In[5]:
 
 
 X_train, y_train = train[['Distance', 'DepTime']].values, train['dep_delayed_15min'].map({'Y': 1, 'N': 0}).values
@@ -55,19 +50,16 @@ X_test = test[['Distance', 'DepTime']].values
 X_train
 
 
-# In[6]:
 
 
 y_train
 
 
-# In[7]:
 
 
 X_test
 
 
-# In[8]:
 
 
 X_train_part, X_valid, y_train_part, y_valid =     train_test_split(X_train, y_train, 
@@ -79,13 +71,11 @@ X_valid = scaler.transform(X_valid)
 X_train_part
 
 
-# In[9]:
 
 
 X_valid
 
 
-# In[10]:
 
 
 logit = LogisticRegression()
@@ -96,13 +86,11 @@ logit_valid_pred = logit.predict_proba(X_valid)[:, 1]
 roc_auc_score(y_valid, logit_valid_pred)
 
 
-# In[11]:
 
 
 logit_valid_pred
 
 
-# In[12]:
 
 
 X_train_scaled = scaler.fit_transform(X_train)
@@ -116,20 +104,17 @@ pd.Series(logit_test_pred,
                                            index_label='id', header=True)
 
 
-# In[13]:
 
 
 logit_test_pred.shape
 
 
-# In[14]:
 
 
 logit_test_pred[logit_test_pred > 0.3] = 1
 logit_test_pred[logit_test_pred <= 0.3] = 0
 
 
-# In[15]:
 
 
 pd.Series(logit_test_pred, 

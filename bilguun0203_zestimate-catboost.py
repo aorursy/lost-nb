@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -13,7 +12,6 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 print('Loading Properties...')
@@ -28,7 +26,6 @@ print('Loading Sample ...')
 sample_submission = pd.read_csv('../input/sample_submission.csv', low_memory=False)
 
 
-# In[3]:
 
 
 def add_date_features(df):
@@ -40,7 +37,6 @@ def add_date_features(df):
     return df
 
 
-# In[4]:
 
 
 train2016 = add_date_features(train2016)
@@ -63,7 +59,6 @@ print("Train: ", train_df.shape)
 print("Test: ", test_df.shape)
 
 
-# In[5]:
 
 
 # print ("Replacing NaN values by -999 !!")
@@ -71,7 +66,6 @@ print("Test: ", test_df.shape)
 # test_df.fillna(-999, inplace=True)
 
 
-# In[6]:
 
 
 # print(train_df['hashottuborspa'])
@@ -86,7 +80,6 @@ print("Test: ", test_df.shape)
 # #         plt.show()
 
 
-# In[7]:
 
 
 # 98% нь хоосон бол хасна
@@ -104,7 +97,6 @@ print("We exclude: %s" % exclude_missing)
 print(len(exclude_missing))
 
 
-# In[8]:
 
 
 exclude_unique = []
@@ -118,7 +110,6 @@ print("We exclude: %s" % exclude_unique)
 print(len(exclude_unique))
 
 
-# In[9]:
 
 
 exclude_other = ['parcelid', 'logerror','propertyzoningdesc']
@@ -130,7 +121,6 @@ print("We use these for training: %s" % train_features)
 print(len(train_features))
 
 
-# In[10]:
 
 
 cat_feature_inds = []
@@ -143,7 +133,6 @@ for i, c in enumerate(train_features):
 print("Cat features are: %s" % [train_features[ind] for ind in cat_feature_inds])
 
 
-# In[11]:
 
 
 print ("Replacing NaN values by -999 !!")
@@ -151,7 +140,6 @@ train_df.fillna(-999, inplace=True)
 test_df.fillna(-999, inplace=True)
 
 
-# In[12]:
 
 
 def print_feature_importance(model, pool, X_train):
@@ -161,7 +149,6 @@ def print_feature_importance(model, pool, X_train):
         print('{}\t{}'.format(name, score))
 
 
-# In[13]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(train_df[train_features], train_df.logerror, test_size=0.2, random_state=99)
@@ -173,7 +160,6 @@ train_pool = Pool(X_train, y_train, cat_feature_inds)
 test_pool = Pool(X_test, y_test, cat_feature_inds)
 
 
-# In[14]:
 
 
 catboost_parameters = {
@@ -189,20 +175,17 @@ catboost_parameters = {
 }
 
 
-# In[15]:
 
 
 model = CatBoostRegressor(**catboost_parameters)
 model.fit(train_pool, eval_set=test_pool)
 
 
-# In[16]:
 
 
 print_feature_importance(model, train_pool, X_train)
 
 
-# In[17]:
 
 
 # submission = pd.DataFrame({
@@ -234,7 +217,6 @@ print_feature_importance(model, train_pool, X_train)
 # print("Finished.")
 
 
-# In[18]:
 
 
 num_ensembles = 5
@@ -249,7 +231,6 @@ for i in range(num_ensembles):
     print_feature_importance(models[i], train_pool, X_train)
 
 
-# In[19]:
 
 
 submission = pd.DataFrame({

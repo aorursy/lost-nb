@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import torch
@@ -17,7 +16,6 @@ import pandas as pd
 import random
 
 
-# In[2]:
 
 
 # 设置随机数种子
@@ -26,7 +24,6 @@ torch.manual_seed(0)
 torch.cuda.manual_seed(0)
 
 
-# In[3]:
 
 
 data_dir = '../input/dog-breed-identification'  # 数据集目录
@@ -35,7 +32,6 @@ new_data_dir = './train_valid_test'  # 整理之后的数据存放的目录
 valid_ratio = 0.1  # 验证集所占比例
 
 
-# In[4]:
 
 
 def mkdir_if_not_exist(path):
@@ -76,13 +72,11 @@ def reorg_dog_data(data_dir, label_file, train_dir, test_dir, new_data_dir, vali
                     os.path.join(new_data_dir, 'test', 'unknown'))
 
 
-# In[5]:
 
 
 reorg_dog_data(data_dir, label_file, train_dir, test_dir, new_data_dir, valid_ratio)
 
 
-# In[6]:
 
 
 transform_train = transforms.Compose([
@@ -108,7 +102,6 @@ transform_test = transforms.Compose([
 ])
 
 
-# In[7]:
 
 
 # new_data_dir目录下有train, valid, train_valid, test四个目录
@@ -123,7 +116,6 @@ test_ds = torchvision.datasets.ImageFolder(root=os.path.join(new_data_dir, 'test
                                             transform=transform_test)
 
 
-# In[8]:
 
 
 batch_size = 128
@@ -133,7 +125,6 @@ train_valid_iter = torch.utils.data.DataLoader(train_valid_ds, batch_size=batch_
 test_iter = torch.utils.data.DataLoader(test_ds, batch_size=batch_size, shuffle=False, num_workers=2)  # shuffle=False
 
 
-# In[9]:
 
 
 def get_net(device):
@@ -150,7 +141,6 @@ def get_net(device):
     return finetune_net
 
 
-# In[10]:
 
 
 def evaluate_loss_acc(data_iter, net, device):
@@ -171,7 +161,6 @@ def evaluate_loss_acc(data_iter, net, device):
     return l_sum / n, acc_sum / n
 
 
-# In[11]:
 
 
 def train(net, train_iter, valid_iter, num_epochs, lr, wd, device, lr_period,
@@ -205,7 +194,6 @@ def train(net, train_iter, valid_iter, num_epochs, lr, wd, device, lr_period,
         print(epoch_s + time_s + ', lr ' + str(lr))
 
 
-# In[12]:
 
 
 num_epochs, lr_period, lr_decay = 20, 10, 0.1
@@ -213,21 +201,18 @@ lr, wd = 0.03, 1e-4
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-# In[13]:
 
 
 # net = get_net(device)
 # train(net, train_iter, valid_iter, num_epochs, lr, wd, device, lr_period, lr_decay)
 
 
-# In[14]:
 
 
 net = get_net(device)
 train(net, train_valid_iter, None, num_epochs, lr, wd, device, lr_period, lr_decay)
 
 
-# In[15]:
 
 
 preds = []

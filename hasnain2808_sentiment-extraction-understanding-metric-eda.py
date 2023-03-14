@@ -1,19 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import math
 
 
-# In[2]:
 
 
 # math.floor(2.2)
 
 
-# In[3]:
 
 
 # import nltk 
@@ -23,7 +20,6 @@ import math
 # print ("Jaccard similarity of above two sentences is",1-nltk.jaccard_distance(w1, w2))
 
 
-# In[4]:
 
 
 # w1 = set('Kaggle is awesome'.lower().split())
@@ -31,13 +27,11 @@ import math
 # print("The Jaccard similarity is:",1-nltk.jaccard_distance(w1, w2))
 
 
-# In[5]:
 
 
 get_ipython().system('pip install pyspark')
 
 
-# In[6]:
 
 
 get_ipython().system('pip install "/kaggle/input/chart-studio/chart_studio-1.0.0-py3-none-any.whl"')
@@ -85,7 +79,6 @@ def jaccard(str1, str2):
     return float(len(c)) / (len(a) + len(b) - len(c))
 
 
-# In[7]:
 
 
 # import findspark
@@ -105,7 +98,6 @@ except ValueError:
     warnings.warn("SparkContext already exists in this scope")
 
 
-# In[8]:
 
 
 from pyspark.sql import SparkSession
@@ -115,7 +107,6 @@ spark = SparkSession(sc).builder     .master('local[*]')     .config("spark.driv
 
 
 
-# In[9]:
 
 
 # train = pd.read_csv('/kaggle/input/tweet-sentiment-extraction/train.csv')
@@ -123,13 +114,11 @@ spark = SparkSession(sc).builder     .master('local[*]')     .config("spark.driv
 # sub = pd.read_csv('/kaggle/input/tweet-sentiment-extraction/sample_submission.csv')
 
 
-# In[10]:
 
 
 # sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load('/kaggle/input/tweet-sentiment-extraction/test.csv')
 
 
-# In[11]:
 
 
 sp_train = sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load('/kaggle/input/tweet-sentiment-extraction/train.csv')
@@ -137,7 +126,6 @@ sp_test = sqlContext.read.format('com.databricks.spark.csv').options(header='tru
 sp_sub = sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load('/kaggle/input/tweet-sentiment-extraction/sample_submission.csv')
 
 
-# In[12]:
 
 
 # sp_train = spark.read.format("csv").option("header", "true").load("/kaggle/input/tweet-sentiment-extraction/train.csv") 
@@ -145,7 +133,6 @@ sp_sub = sqlContext.read.format('com.databricks.spark.csv').options(header='true
 # sp_sub = spark.read.format("csv").option("header", "true").load("/kaggle/input/tweet-sentiment-extraction/sample_submission.csv") 
 
 
-# In[13]:
 
 
 def remove_punctuations(text):
@@ -154,14 +141,12 @@ def remove_punctuations(text):
     return text
 
 
-# In[14]:
 
 
 from pyspark.sql.functions import regexp_replace, col
 import re
 
 
-# In[15]:
 
 
 
@@ -175,63 +160,53 @@ sp_test = sp_test.withColumn('text', regexp_replace('text', '[' + punc +']', '')
 # sp_test.take(5)
 
 
-# In[16]:
 
 
 sp_train = sp_train.dropna()
 sp_test = sp_test.dropna()
 
 
-# In[17]:
 
 
 sp_train.take(5)
 
 
-# In[18]:
 
 
 sp_test = sp_test.withColumn('selected_text', sp_test['text'])
 
 
-# In[19]:
 
 
 sp_test.take(5)
 
 
-# In[20]:
 
 
 print('Sentiment of text : {} \nOur training text :\n{}\nSelected text which we need to predict:\n{}'.format(sp_train.take(1)[0][3],sp_train.take(1)[0][2],sp_train.take(1)[0][1]))
 
 
-# In[21]:
 
 
 import itertools
 sp_train = sp_train.rdd.map(lambda x: [item for item in (x.text, x.selected_text, x.sentiment)])
 
 
-# In[22]:
 
 
 sp_test = sp_test.rdd.map(lambda x: [item for item in (x.text, x.selected_text, x.sentiment)])
 
 
-# In[23]:
 
 
 type(sp_train)
 
 
-# In[24]:
 
 
 sp_train.take(5)
 
 
-# In[25]:
 
 
 class config:
@@ -249,7 +224,6 @@ class config:
     EPOCHS = 5
 
 
-# In[26]:
 
 
 MAX_LEN = 128
@@ -265,7 +239,6 @@ TOKENIZER = tokenizers.ByteLevelBPETokenizer(
 )
 
 
-# In[27]:
 
 
 class TweetModel(nn.Module):
@@ -287,7 +260,6 @@ class TweetModel(nn.Module):
         return start_logits, end_logits
 
 
-# In[28]:
 
 
 def loss_fn(start_logits, end_logits, start_positions, end_positions):
@@ -355,7 +327,6 @@ def train_fn(data_loader, model, optimizer, device, scheduler=None):
         tk0.set_postfix(loss=losses.avg, jaccard=jaccards.avg)
 
 
-# In[29]:
 
 
 def calculate_jaccard_score(
@@ -437,7 +408,6 @@ def eval_fn(data_loader, model, device):
     return jaccards.avg
 
 
-# In[30]:
 
 
 device = torch.device("cuda")
@@ -454,7 +424,6 @@ model1.load_state_dict(torch.load("../input/roberta-weights/roberta_model_2.bin"
 model1.eval()
 
 
-# In[31]:
 
 
 class TweetDataset:
@@ -481,31 +450,26 @@ class TweetDataset:
         }
 
 
-# In[ ]:
 
 
 
 
 
-# In[32]:
 
 
 # sp_train = sp_train.rdd.map(lambda x: [item for item in (x.text, x.selected_text, x.sentiment)])
 
 
-# In[33]:
 
 
 # sp_test = sp_test.rdd.map(lambda x: [item for item in (x.text, x.selected_text, x.sentiment)])
 
 
-# In[ ]:
 
 
 
 
 
-# In[34]:
 
 
 
@@ -606,25 +570,21 @@ def process(item):
  }
 
 
-# In[35]:
 
 
 sp_train_processed = sp_train.map(process)
 
 
-# In[ ]:
 
 
 
 
 
-# In[36]:
 
 
 # sp_train_processed.take(5)
 
 
-# In[37]:
 
 
 sp_test_processed = sp_test.map(process)
@@ -632,79 +592,66 @@ sp_test_processed = sp_test.map(process)
 # sp_test_processed.take(5)
 
 
-# In[38]:
 
 
 # sp_test_processed.cache()
 
 
-# In[39]:
 
 
 # sp_train_processed.cache()
 
 
-# In[40]:
 
 
 # sp_test_processed.take(1)
 
 
-# In[41]:
 
 
 # sp_train_processed.take(1)
 
 
-# In[42]:
 
 
 # sp_test_processed.count()
 
 
-# In[43]:
 
 
 # sp_train_processed.count()
 
 
-# In[44]:
 
 
 test_processed_list  = sp_test_processed.collect()
 
 
-# In[45]:
 
 
 #sp_test_processed.unpersist(True)
 
 
-# In[46]:
 
 
 train_processed_list  = sp_train_processed.collect()
 
 
-# In[47]:
 
 
 #sp_train_processed.unpersist()
 
 
-# In[48]:
 
 
 import pickle
 
 
-# In[49]:
 
 
 spark.stop()
 
 
-# In[50]:
 
 
 dbfile = open('test_processed_list', 'ab') 
@@ -714,7 +661,6 @@ pickle.dump(test_processed_list, dbfile)
 dbfile.close() 
 
 
-# In[51]:
 
 
 dbfile = open('train_processed_list', 'ab') 
@@ -724,13 +670,11 @@ pickle.dump(train_processed_list, dbfile)
 dbfile.close() 
 
 
-# In[52]:
 
 
 ls
 
 
-# In[53]:
 
 
 # test_dataset = TweetDataset(
@@ -747,7 +691,6 @@ ls
 # )
 
 
-# In[54]:
 
 
 # def run(fold):
@@ -814,13 +757,11 @@ ls
 #             break
 
 
-# In[55]:
 
 
 # run(fold=245)
 
 
-# In[56]:
 
 
 # device = torch.device("cuda")
@@ -837,7 +778,6 @@ ls
 # model1.eval()
 
 
-# In[57]:
 
 
 # for d in data_loader:
@@ -855,7 +795,6 @@ ls
 #     pass
 
 
-# In[58]:
 
 
 # all_outputs = []
@@ -970,7 +909,6 @@ ls
 #     all_outputs.append(filtered_output.strip())
 
 
-# In[59]:
 
 
 # sample = pd.read_csv("../input/tweet-sentiment-extraction/sample_submission.csv")
@@ -978,19 +916,16 @@ ls
 # sample.to_csv("submission.csv", index=False)
 
 
-# In[60]:
 
 
 # sample
 
 
-# In[61]:
 
 
 # sample.head()
 
 
-# In[ ]:
 
 
 

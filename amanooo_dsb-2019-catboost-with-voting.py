@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -22,7 +21,6 @@ from catboost import CatBoostClassifier
 import category_encoders as ce
 
 
-# In[2]:
 
 
 Kaggle = True
@@ -35,7 +33,6 @@ else:
     task_type = 'GPU'
 
 
-# In[3]:
 
 
 train = pd.read_csv(os.path.join(DIR,'train.csv'))
@@ -44,7 +41,6 @@ specs = pd.read_csv(os.path.join(DIR,'specs.csv'))
 test = pd.read_csv(os.path.join(DIR,'test.csv'))
 
 
-# In[4]:
 
 
 print('train:\t\t',train.shape)
@@ -53,20 +49,17 @@ print('specs:\t\t',specs.shape)
 print('test:\t\t',test.shape)
 
 
-# In[5]:
 
 
 train.head()
 
 
-# In[6]:
 
 
 train[['event_id','game_session','installation_id',
        'title','type','world']].describe()
 
 
-# In[7]:
 
 
 event_code_n = train['event_code'].nunique()
@@ -75,7 +68,6 @@ print("'event_code': ",
       train['event_code'].min(), "-", train['event_code'].max())
 
 
-# In[8]:
 
 
 # 'event_data' exsample
@@ -84,38 +76,32 @@ print(train['event_data'][41])
 print(train['event_data'][43])
 
 
-# In[9]:
 
 
 train_labels.head()
 
 
-# In[10]:
 
 
 train_labels[['game_session','installation_id', 'title']].describe()
 
 
-# In[11]:
 
 
 # unique 'title' list
 train_labels['title'].unique()
 
 
-# In[12]:
 
 
 specs.head()
 
 
-# In[13]:
 
 
 specs.describe()
 
 
-# In[14]:
 
 
 # 'info' exsample
@@ -124,7 +110,6 @@ print(specs['info'][6])
 print(specs['info'][7])
 
 
-# In[15]:
 
 
 # 'args' exsample
@@ -132,20 +117,17 @@ print(specs['args'][0])
 print(specs['args'][1])
 
 
-# In[16]:
 
 
 test.head(8)
 
 
-# In[17]:
 
 
 test[['event_id','game_session','installation_id',
        'title','type','world']].describe()
 
 
-# In[18]:
 
 
 # make 'title' and 'event_code' list
@@ -153,7 +135,6 @@ title_list = list(set(train['title'].value_counts().index)                    .u
 event_code_list = list(set(train['event_code'].value_counts().index)                    .union(set(test['event_code'].value_counts().index)))
 
 
-# In[19]:
 
 
 # makes dict 'title to number(integer)'
@@ -166,7 +147,6 @@ title2win_code = dict(zip(title2num.values()                     ,(np.ones(len(t
 title2win_code[title2num['Bird Measurer (Assessment)']] = 4110
 
 
-# In[20]:
 
 
 # Convert 'title' to the number
@@ -179,7 +159,6 @@ train['timestamp'] = pd.to_datetime(train['timestamp'])
 test['timestamp'] = pd.to_datetime(test['timestamp'])
 
 
-# In[21]:
 
 
 # Convert the raw data into processed features
@@ -287,7 +266,6 @@ def get_data(user_sample, test_set=False):
     return user_assessments
 
 
-# In[22]:
 
 
 # get_data function is applyed to each installation_id
@@ -299,7 +277,6 @@ for i, (ins_id, user_sample) in tqdm(enumerate(train.groupby(                   
     compiled_data += get_data(user_sample)
 
 
-# In[23]:
 
 
 # the compiled_data is converted to DataFrame and deleted to save memmory
@@ -307,13 +284,11 @@ new_train = pd.DataFrame(compiled_data)
 del compiled_data
 
 
-# In[24]:
 
 
 new_train.head(10)
 
 
-# In[25]:
 
 
 # process test set, the same that was done with the train set
@@ -325,13 +300,11 @@ for ins_id, user_sample in tqdm(test.groupby('installation_id',sort=False),
 new_test = pd.DataFrame(new_test)
 
 
-# In[26]:
 
 
 new_test.head(10)
 
 
-# In[27]:
 
 
 # all_features but 'accuracy_group', that is the label y
@@ -340,7 +313,6 @@ all_features = [x for x in new_train.columns if x not in ['accuracy_group']]
 categorical_features = ['session_title','day_of_the_week']
 
 
-# In[28]:
 
 
 # Encode categorical_features to integer(for use with LightGB,XGBoost,etc)
@@ -355,25 +327,21 @@ X, y = temp_df.iloc[:len(new_train),:], new_train['accuracy_group']
 X_test = temp_df.iloc[len(new_train):,:]
 
 
-# In[29]:
 
 
 X.head()
 
 
-# In[30]:
 
 
 y.head()
 
 
-# In[31]:
 
 
 X_test.head()
 
 
-# In[32]:
 
 
 # makes the model and set the parameters
@@ -396,7 +364,6 @@ def make_classifier():
     return model
 
 
-# In[33]:
 
 
 # Train and make 5 models
@@ -425,7 +392,6 @@ print('finished in {}'.format(
     str(datetime.timedelta(seconds=time() - start_time))))
 
 
-# In[34]:
 
 
 # Check the effect of 'voting'
@@ -441,7 +407,6 @@ df['y'] = y
 df.head(10)
 
 
-# In[35]:
 
 
 kappa_score = []
@@ -454,7 +419,6 @@ print('Improved from',np.mean(kappa_score[:NFOLDS]),'to',
       kappa_score[-1],"by 'voting'")
 
 
-# In[36]:
 
 
 predictions = []
@@ -466,7 +430,6 @@ predictions = stats.mode(predictions, axis=1)[0].reshape(-1)
 print(predictions.shape)
 
 
-# In[37]:
 
 
 submission = pd.read_csv(os.path.join(DIR,'sample_submission.csv'))
@@ -474,13 +437,11 @@ submission['accuracy_group'] = np.round(predictions).astype('int')
 submission.head(10)
 
 
-# In[38]:
 
 
 submission['accuracy_group'].plot(kind='hist')
 
 
-# In[39]:
 
 
 submission.to_csv('submission.csv', index=None)

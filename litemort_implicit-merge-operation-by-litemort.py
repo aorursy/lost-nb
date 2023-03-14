@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -29,7 +28,6 @@ get_ipython().system("ls '../input/ashrae-energy-prediction/'")
 get_ipython().system("ls '.'")
 
 
-# In[2]:
 
 
 get_ipython().system('pip install -i https://test.pypi.org/simple/  litemort==0.1.18')
@@ -40,7 +38,6 @@ print(litemort.__version__)
 #profile.Snapshot(":");          profile.Stat(":","::")
 
 
-# In[3]:
 
 
 #isMORT = len(sys.argv)>1 and sys.argv[1] == "mort"
@@ -53,7 +50,6 @@ data_root = '../input/ashrae-energy-prediction/'
 print(f"====== ImplicitMerge={isImplicitMerge} gbm={gbm} ======\n\n")
 
 
-# In[4]:
 
 
 def LoadUCF(data_root):
@@ -86,7 +82,6 @@ def ReplaceUCF():
     print(sample_submission.head(100),sample_submission.tail(100))
 
 
-# In[5]:
 
 
 class Whether(object):
@@ -153,7 +148,6 @@ class Whether(object):
         return feat_list
 
 
-# In[6]:
 
 
 class ASHRAE_data(object):
@@ -267,7 +261,6 @@ class ASHRAE_data(object):
         return df
 
 
-# In[7]:
 
 
 def LoadBuilding(data_root):
@@ -286,7 +279,6 @@ weather_train_df = Whether('train', data_root).df()
 print(f"weather_train_df={weather_train_df.shape}")   #weather_train_df.head()
 
 
-# In[8]:
 
 
 #!pip install wurlitzer
@@ -361,7 +353,6 @@ def fit_regressor(train, val,target_meter,fold, some_params, devices=(-1,), merg
     return model, y_pred_valid, log
 
 
-# In[9]:
 
 
 train_datas = ASHRAE_data("train",data_root,building_meta_df,weather_train_df)
@@ -369,7 +360,6 @@ print(train_datas.building_mean.shape)
 print(train_datas.building_mean.head(5))
 
 
-# In[10]:
 
 
 folds = 8
@@ -427,7 +417,6 @@ for target_meter in range(nTargetMeter):
     gc.collect()
 
 
-# In[11]:
 
 
 def reduce_mem_usage(df, use_float16=False):
@@ -474,7 +463,6 @@ sample_submission = pd.read_csv(os.path.join(data_root, 'sample_submission.csv')
 reduce_mem_usage(sample_submission)
 
 
-# In[12]:
 
 
 test_datas = ASHRAE_data("test",data_root,building_meta_df,weather_test_df)
@@ -501,7 +489,6 @@ def pred(X_test, models, batch_size=1000000):
     return y_test_pred_total
 
 
-# In[13]:
 
 
 for target_meter in range(nTargetMeter):
@@ -525,7 +512,6 @@ else:
     print(sample_submission.head(10),sample_submission.tail(10))
 
 
-# In[14]:
 
 
 if use_ucf:

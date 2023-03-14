@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # It is defined by the kaggle/python docker image: https://github.com/kaggle/docker-python
 # This notebook was copied from https://www.kaggle.com/gouthamand/only-model-tflearn-13
 
 
-# In[ ]:
 
 
 import pandas as pd 
@@ -111,7 +109,6 @@ gc.collect()
 #!free -h
 
 
-# In[ ]:
 
 
 def removeSpecial (text):
@@ -119,7 +116,6 @@ def removeSpecial (text):
     return(text)
 
 
-# In[ ]:
 
 
 # Preprocssing of the of text columns 
@@ -199,7 +195,6 @@ gc.collect()
 #!free -h 
 
 
-# In[ ]:
 
 
 # Creating a raw text for the vocab using newNew and description columns
@@ -233,7 +228,6 @@ gc.collect()
 #!free -h
 
 
-# In[ ]:
 
 
 #word2vec.Word2Vec
@@ -267,7 +261,6 @@ print ('Completed building word2vec word2vecModel and time taken::',
        (time.strftime("%Hhrs:%Mm:%Ss",( time.gmtime((end_time - start_time))))))
 
 
-# In[ ]:
 
 
 # We will create a tfid scores matrix for every word in vocab
@@ -300,7 +293,6 @@ print ('Completed tfidf score matrix for the vocab and time taken::',
        (time.strftime("%Hhrs:%Mm:%Ss",( time.gmtime((end_time - start_time))))))
 
 
-# In[ ]:
 
 
 # We build a two dictionary 
@@ -352,7 +344,6 @@ print ('Completed  dictionary to replace null brand and time taken:',
 #print('UNI: The type (%s) and value:\n %s' %(type(strbrandMultiNames), strbrandMultiNames))
 
 
-# In[ ]:
 
 
 # searching for the brand in name 
@@ -411,7 +402,6 @@ def getBrand(text):
     return (rtext)
 
 
-# In[ ]:
 
 
 # Search name and description fileds for brand name 
@@ -460,7 +450,6 @@ print ('Completed replacing null brands and time taken to process:',
        (time.strftime("%Hhrs:%Mm:%Ss",( time.gmtime((end_time - start_time))))))
 
 
-# In[ ]:
 
 
 # creating two new features lenght for newName and descritpion columns
@@ -490,7 +479,6 @@ print ('Completed creating new feature len_description and len_name and time tak
        (time.strftime("%Hhrs:%Mm:%Ss",( time.gmtime((end_time - start_time))))))
 
 
-# In[ ]:
 
 
 # Creating a new feature using one hot encoding of shipping and item_condition columns
@@ -506,7 +494,6 @@ print ('Completed encoding of item_condition_id and shipping and time taken::',
        (time.strftime("%Hhrs:%Mm:%Ss",( time.gmtime((end_time - start_time))))))
 
 
-# In[ ]:
 
 
 # LabelEncoder on brand and newCategory
@@ -534,7 +521,6 @@ print ('Completed encoding Brand and newCategory and time taken to process:',
        (time.strftime("%Hhrs:%Mm:%Ss",( time.gmtime((end_time - start_time))))))
 
 
-# In[ ]:
 
 
 # we will creating a average score for each token 
@@ -565,7 +551,6 @@ def buildWordVector(tokens, size, vec):
     return vec
 
 
-# In[ ]:
 
 
 # Let us clean up our data and delete some of the columns that we do not require
@@ -602,7 +587,6 @@ print ('Completed deleting unwanted data and freeing memory and time taken to pr
        (time.strftime("%Hhrs:%Mm:%Ss",( time.gmtime((end_time - start_time))))))
 
 
-# In[ ]:
 
 
 # We will be splitting the trainning and test data
@@ -643,7 +627,6 @@ print ('Completed spliting train and test data and time taken::',
        (time.strftime("%Hhrs:%Mm:%Ss",( time.gmtime((end_time - start_time))))))
 
 
-# In[ ]:
 
 
 #Tflearn DATA DEFINITION
@@ -704,7 +687,6 @@ def get_tflearn_data(dataset, scaler):
     return (X)
 
 
-# In[ ]:
 
 
 # Build the model using our train dictionary data set
@@ -755,7 +737,6 @@ def getModel(dataset):
     return(model)
 
 
-# In[ ]:
 
 
 # prepare the data defination for the model
@@ -816,7 +797,6 @@ print ('Completed preparing data definations and time taken::',
 #print (end running)
 
 
-# In[ ]:
 
 
 #Compute the Root Mean Squared Log Error for hypthesis h and targets y
@@ -829,7 +809,6 @@ def rmsle(y_pred, y_actual):
     return np.sqrt(np.square(np.log(y_pred + 1) - np.log(y_actual + 1)).mean())
 
 
-# In[ ]:
 
 
 # We would be building the model 
@@ -856,7 +835,6 @@ print ('Completed building and training  the model and time taken::',
        (time.strftime("%Hhrs:%Mm:%Ss",( time.gmtime((end_time - start_time))))))
 
 
-# In[ ]:
 
 
 #let us evluate the model
@@ -878,7 +856,6 @@ print ('Completed evaluation of the model and time taken::',
        (time.strftime("%Hhrs:%Mm:%Ss",( time.gmtime((end_time - start_time))))))
 
 
-# In[ ]:
 
 
 # We are ready to predict price for test features

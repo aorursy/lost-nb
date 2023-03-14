@@ -1,74 +1,62 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install /kaggle/input/wheatds/pycocotools-2.0.1/')
 
 
-# In[2]:
 
 
 get_ipython().system('pip uninstall -y tensorflow')
 
 
-# In[3]:
 
 
 get_ipython().system('pip uninstall -y keras')
 
 
-# In[4]:
 
 
 get_ipython().system('pip install -U /kaggle/input/wheatds/tensorboard-1.15.0-py3-none-any.whl')
 
 
-# In[5]:
 
 
 get_ipython().system('pip install -U /kaggle/input/wheatds/tensorflow_estimator-1.15.1-py2.py3-none-any.whl')
 
 
-# In[6]:
 
 
 get_ipython().system('pip install -U /kaggle/input/wheatds/gast-0.2.2/gast-0.2.2')
 
 
-# In[7]:
 
 
 get_ipython().system('pip install -U /kaggle/input/wheatds/astor-0.7.1-py2.py3-none-any.whl')
 
 
-# In[8]:
 
 
 get_ipython().system('pip install -U /kaggle/input/wheatds/Keras_Applications-1.0.8-py3-none-any.whl')
 
 
-# In[9]:
 
 
 get_ipython().system('pip install -U /kaggle/input/wheatds/tensorflow_gpu-1.15.0-cp37-cp37m-manylinux2010_x86_64.whl')
 
 
-# In[10]:
 
 
 get_ipython().system('pip install -U /kaggle/input/wheatds/Keras-2.1.3-py2.py3-none-any.whl')
 
 
-# In[11]:
 
 
 import os
 os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 
-# In[12]:
 
 
 import numpy as np
@@ -78,27 +66,23 @@ from sklearn.model_selection import train_test_split
 tf.__version__
 
 
-# In[13]:
 
 
 import keras
 keras.__version__
 
 
-# In[14]:
 
 
 from tensorflow.python.client import device_lib
 print(device_lib.list_local_devices())
 
 
-# In[15]:
 
 
 # !sudo python3.6 -m pip install pycocotools
 
 
-# In[16]:
 
 
 from IPython.display import clear_output
@@ -109,13 +93,11 @@ from IPython.display import clear_output
 clear_output()
 
 
-# In[17]:
 
 
 # !pip install mask-rcnn-12rics
 
 
-# In[18]:
 
 
 import os 
@@ -152,7 +134,6 @@ plt.rcParams['figure.facecolor'] = 'white'
 clear_output()
 
 
-# In[19]:
 
 
 def get_ax(rows=1, cols=1, size=7):
@@ -167,7 +148,6 @@ def get_ax(rows=1, cols=1, size=7):
     return ax
 
 
-# In[20]:
 
 
 MODEL_DIR = OUT_DIR # directory to save logs and trained model
@@ -184,7 +164,6 @@ COCO_MODEL_PATH = os.path.join(MODELDATASET_DIR, "mask_rcnn_coco.h5")
 #     utils.download_trained_weights(COCO_MODEL_PATH)
 
 
-# In[21]:
 
 
 class WheatConfig(Config):
@@ -205,7 +184,6 @@ config = WheatConfig()
 config.display()
 
 
-# In[22]:
 
 
 # training dataset
@@ -214,7 +192,6 @@ anns = pd.read_csv(os.path.join(DATASET_DIR, 'train.csv'))
 anns.head()
 
 
-# In[23]:
 
 
 import glob
@@ -232,20 +209,17 @@ def parse_dataset(dicom_dir, anns):
     return image_fps, image_annotations 
 
 
-# In[24]:
 
 
 train_dir = os.path.join(DATASET_DIR, 'train')
 image_fps, image_annotations = parse_dataset(train_dir, anns=anns)
 
 
-# In[25]:
 
 
 image_annotations
 
 
-# In[26]:
 
 
 class WheatDataset(utils.Dataset):
@@ -306,13 +280,11 @@ class WheatDataset(utils.Dataset):
             super(self.__class__, self).image_reference(image_id)
 
 
-# In[27]:
 
 
 DEFAULT_LOGS_DIR
 
 
-# In[28]:
 
 
 model = modellib.MaskRCNN(
@@ -328,7 +300,6 @@ model.load_weights(
 )
 
 
-# In[29]:
 
 
 import glob
@@ -347,7 +318,6 @@ def parse_val_dataset(dicom_dir, anns):
     return image_fps, image_annotations 
 
 
-# In[30]:
 
 
 val_dir = os.path.join(DATASET_DIR, 'val')
@@ -355,14 +325,12 @@ val_dir = os.path.join(DATASET_DIR, 'val')
 image_val_fps, image_val_annotations = parse_val_dataset(val_dir, anns=anns)
 
 
-# In[31]:
 
 
 import warnings
 warnings.filterwarnings(action='ignore')
 
 
-# In[32]:
 
 
 # Training dataset.
@@ -392,7 +360,6 @@ model.train(
 )
 
 
-# In[33]:
 
 
 import os
@@ -400,7 +367,6 @@ if not os.path.exists('/kaggle/working/wheat_detector'):
     os.mkdir('/kaggle/working/wheat_detector')
 
 
-# In[34]:
 
 
 from shutil import copyfile
@@ -409,7 +375,6 @@ dst = '/kaggle/working/wheat_detector/mask_rcnn_wheat.h5'
 copyfile(src, dst)
 
 
-# In[35]:
 
 
 # Recreate the model in inference mode
@@ -429,7 +394,6 @@ print("Loading weights from ", dst)
 model.load_weights(dst, by_name=True)
 
 
-# In[36]:
 
 
 def predict_and_plot_differences(dataset, img_id):
@@ -473,7 +437,6 @@ predict_and_plot_differences(dataset_val, ind)
 # predict_and_plot_differences(dataset_test, ind)
 
 
-# In[37]:
 
 
 # Get filenames of test dataset DICOM images
@@ -481,7 +444,6 @@ test_dir = os.path.join(DATASET_DIR, 'test')
 test_image_fps = get_image_fps(test_dir)
 
 
-# In[38]:
 
 
 from PIL import Image
@@ -544,7 +506,6 @@ def predict(image_fps, filepath='submission.csv', min_conf=0.98):
             file.write(out_str+"\n")
 
 
-# In[39]:
 
 
 submission_fp = os.path.join(OUT_DIR, 'submission.csv')
@@ -552,49 +513,41 @@ predict(test_image_fps, filepath=submission_fp, min_conf=0.60)
 print(submission_fp)
 
 
-# In[40]:
 
 
 df_submission = pd.read_csv(submission_fp)
 
 
-# In[41]:
 
 
 df_submission.head(10)
 
 
-# In[42]:
 
 
 df_submission.replace(np.nan, '', inplace=True)
 
 
-# In[43]:
 
 
 sub_dict = df_submission.set_index('image_id').to_dict()['PredictionString']
 
 
-# In[44]:
 
 
 df_submission['PredictionString'] = df_submission['image_id'].apply(lambda x: sub_dict[x].strip())
 
 
-# In[45]:
 
 
 df_submission.head()
 
 
-# In[46]:
 
 
 df_submission.to_csv(submission_fp, index=False)
 
 
-# In[ ]:
 
 
 

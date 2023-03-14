@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import pandas as pd
@@ -24,13 +23,11 @@ import tensorflow as tf #DNN estimator model
 path = '../input/'
 
 
-# In[ ]:
 
 
 plt.rcParams["figure.figsize"] = [16,9]
 
 
-# In[ ]:
 
 
 def SMAPE (forecast, actual):
@@ -42,7 +39,6 @@ def SMAPE (forecast, actual):
     print('SMAPE Error Score: ' + str(round(sum(diff/avg)/len(forecast) * 100, 2)) + ' %')
 
 
-# In[ ]:
 
 
 def Fuller(TimeSeries):
@@ -55,7 +51,6 @@ def Fuller(TimeSeries):
         print('\t%s: %.3f' % (key, value))
 
 
-# In[ ]:
 
 
 """def ARIMA(TimeSeries, maxP, maxQ, maxD):"""
@@ -72,7 +67,6 @@ def Fuller(TimeSeries):
     return stepwise_model"""
 
 
-# In[ ]:
 
 
 def xboost(x_train, y_train, x_test):
@@ -91,7 +85,6 @@ def xboost(x_train, y_train, x_test):
     return pd.Series(bst.predict(dtest))
 
 
-# In[ ]:
 
 
 df = pd.read_csv(path +'train.csv', index_col=0)
@@ -99,13 +92,11 @@ df.index = pd.to_datetime(df.index)
 df.tail()
 
 
-# In[ ]:
 
 
 df.info()
 
 
-# In[ ]:
 
 
 stores = pd.DataFrame(df.groupby(['date','store']).sum()['sales']).unstack()
@@ -113,14 +104,12 @@ stores = stores.resample('7D',label='left').sum()
 stores.sort_index(inplace = True)
 
 
-# In[ ]:
 
 
 stores.plot(figsize=(16,9), title='Weekly Store Sales', legend=None)
 plt.show()
 
 
-# In[ ]:
 
 
 store_qtr = pd.DataFrame(stores.quantile([0.0,0.25,0.5,0.75,1.0],axis=1)).transpose()
@@ -130,7 +119,6 @@ store_qtr.plot(figsize=(16,9), title='Weekly Quartile Sales')
 plt.show()
 
 
-# In[ ]:
 
 
 seasonal = seasonal_decompose(pd.DataFrame(store_qtr['50%']).diff(1).iloc[1:,0],model='additive')
@@ -139,13 +127,11 @@ plt.suptitle = 'Additive Seasonal Decomposition of Average Store Week-to-Week Sa
 plt.show()
 
 
-# In[ ]:
 
 
 Fuller(pd.DataFrame(store_qtr['50%']).diff(1).iloc[1:,0])
 
 
-# In[ ]:
 
 
 items = pd.DataFrame(df.groupby(['date','item']).sum()['sales']).unstack()
@@ -155,14 +141,12 @@ items.sort_index(inplace = True)
 items.tail(13)
 
 
-# In[ ]:
 
 
 items.plot(figsize=(16,9), title='Weekly Item Sales', legend=None)
 plt.show()
 
 
-# In[ ]:
 
 
 item_WK_qtr = pd.DataFrame(items.quantile([0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0],axis=1)).transpose()
@@ -172,7 +156,6 @@ item_WK_qtr.plot(figsize=(16,9), title='Weekly Quartile Sales')
 plt.show()
 
 
-# In[ ]:
 
 
 seasonal = seasonal_decompose(pd.DataFrame(item_WK_qtr['50%']).diff(1).iloc[1:,0],model='additive')
@@ -181,13 +164,11 @@ plt.title = 'Additive Seasonal Decomposition of Average Item Week-to-Week Sales'
 plt.show()
 
 
-# In[ ]:
 
 
 Fuller(pd.DataFrame(item_WK_qtr['50%']).diff(1).iloc[1:,0])
 
 
-# In[ ]:
 
 
 store_item = df.groupby(by=['item','store']).sum()['sales'].groupby(level=0).apply(
@@ -197,7 +178,6 @@ sns.heatmap(store_item, cmap='Blues', linewidths=0.01, linecolor='gray').set_tit
 plt.show()
 
 
-# In[ ]:
 
 
 item_store = df.groupby(by=['store','item']).sum()['sales'].groupby(level=0).apply(
@@ -207,14 +187,12 @@ sns.heatmap(item_store , cmap='Blues', linewidths=0.01, linecolor='gray').set_ti
 plt.show()
 
 
-# In[ ]:
 
 
 df['Day'] = df.index.weekday_name
 df.head()
 
 
-# In[ ]:
 
 
 dow_store = df.groupby(['store','Day']).sum()['sales'].groupby(level=0).apply(
@@ -230,7 +208,6 @@ sns.heatmap(dow_store, cmap='Blues', linewidths=0.01, linecolor='gray').set_titl
 plt.show()
 
 
-# In[ ]:
 
 
 dow_item = df.groupby(['item','Day']).sum()['sales'].groupby(level=0).apply(
@@ -246,7 +223,6 @@ sns.heatmap(dow_item, cmap='Blues', linewidths=0.01, linecolor='gray').set_title
 plt.show()
 
 
-# In[ ]:
 
 
 dow = pd.DataFrame(df.groupby(['date','Day']).sum()['sales']).unstack()['sales'].loc[:,
@@ -261,28 +237,24 @@ dow = dow.resample('7D',label='left').sum()
 dow.sort_index(inplace = True)
 
 
-# In[ ]:
 
 
 dow.plot(figsize=(16,9), title='Sales by Day of Week')
 plt.show()
 
 
-# In[ ]:
 
 
 train = item_WK_qtr[:-13]
 test = df.loc[df.index >= pd.to_datetime('October 3, 2017')] # last 13 weeks of data
 
 
-# In[ ]:
 
 
 store_pct = store_item.transpose()
 store_pct
 
 
-# In[ ]:
 
 
 fitted_items_WK = []
@@ -295,7 +267,6 @@ for column in items:
     fitted_items_WK.append([column[1], qtr_list[0][1], qtr_list[0][0]])
 
 
-# In[ ]:
 
 
 """ARIMA_predictions = pd.DataFrame()
@@ -306,7 +277,6 @@ for column in item_WK_qtr:
     ARIMA_predictions[column] = model.predict(n_periods=13)"""
 
 
-# In[ ]:
 
 
 """item_WK_predictions = pd.DataFrame()
@@ -317,7 +287,6 @@ for i in range(50):
 item_WK_predictions.head()"""
 
 
-# In[ ]:
 
 
 """item_Day_pred = []
@@ -333,7 +302,6 @@ item_Day_fcst = pd.DataFrame(item_Day_pred, columns=['Week #','Day','item','Pred
 item_Day_fcst.head()"""
 
 
-# In[ ]:
 
 
 """store_item = pd.DataFrame(store_item.stack()).reset_index()
@@ -344,7 +312,6 @@ item_Day_fcst = item_Day_fcst.merge(store_item, on= 'item')
 item_Day_fcst['sales'] = item_Day_fcst['Prediction'] * item_Day_fcst['pct']/100"""
 
 
-# In[ ]:
 
 
 """item_Day_fcst = item_Day_fcst.loc[:,['Week #','Day','store','item','sales']]
@@ -352,7 +319,6 @@ item_Day_fcst['sales'] = item_Day_fcst['Prediction'] * item_Day_fcst['pct']/100"
 item_Day_fcst.head()"""
 
 
-# In[ ]:
 
 
 """def str_to_date(row):"""
@@ -376,7 +342,6 @@ item_Day_fcst['Date'] = item_Day_fcst.apply(lambda row: str_to_date(row), axis=1
 item_Day_fcst.index = item_Day_fcst['Date']"""
 
 
-# In[ ]:
 
 
 """item_Day_fcst.sort_values(['item','store','Date'], inplace=True)
@@ -386,19 +351,16 @@ item_Day_fcst = item_Day_fcst[['store','item','sales']].loc[
     item_Day_fcst.index < pd.to_datetime('January 1, 2018')]"""
 
 
-# In[ ]:
 
 
 """SMAPE(item_Day_fcst['sales'], test['sales'])"""
 
 
-# In[ ]:
 
 
 train = items['sales'][:-13]
 
 
-# In[ ]:
 
 
 """item_WK_predictions = pd.DataFrame()
@@ -409,7 +371,6 @@ for column in items['sales']:
     item_WK_predictions[column] = model.predict(n_periods=13)"""
 
 
-# In[ ]:
 
 
 """item_Day_pred = []
@@ -425,7 +386,6 @@ item_Day_fcst = pd.DataFrame(item_Day_pred, columns=['Week #','Day','item','Pred
 item_Day_fcst.head()"""
 
 
-# In[ ]:
 
 
 """item_Day_fcst = item_Day_fcst.merge(store_item, on= 'item')
@@ -433,20 +393,17 @@ item_Day_fcst.head()"""
 item_Day_fcst['sales'] = item_Day_fcst['Prediction'] * item_Day_fcst['pct']/100"""
 
 
-# In[ ]:
 
 
 """item_Day_fcst = item_Day_fcst.loc[:,['Week #','Day','store','item','sales']]"""
 
 
-# In[ ]:
 
 
 """item_Day_fcst['Date'] = item_Day_fcst.apply(lambda row: str_to_date(row), axis=1)
 item_Day_fcst.index = item_Day_fcst['Date']"""
 
 
-# In[ ]:
 
 
 """item_Day_fcst.sort_values(['item','store','Date'], inplace=True)
@@ -456,20 +413,17 @@ item_Day_fcst = item_Day_fcst[['store','item','sales']].loc[
     item_Day_fcst.index < pd.to_datetime('January 1, 2018')]"""
 
 
-# In[ ]:
 
 
 """SMAPE(item_Day_fcst['sales'], test['sales'])"""
 
 
-# In[ ]:
 
 
 ns_per_day = 86400000000000
 start_date = pd.to_datetime('January 1, 2013')
 
 
-# In[ ]:
 
 
 itm_quart = pd.DataFrame(fitted_items_WK, columns=['item','item_quart','item_metric'])
@@ -529,7 +483,6 @@ def add_feat(df, train_end_str):
     return dataf
 
 
-# In[ ]:
 
 
 df_test = add_feat(df, 'October 3, 2017') # Takes average of training data
@@ -537,13 +490,11 @@ df_test = add_feat(df, 'October 3, 2017') # Takes average of training data
 df_test.tail(10)
 
 
-# In[ ]:
 
 
 df_test.head(10)
 
 
-# In[ ]:
 
 
 x_train = df_test.loc[df['date'] < pd.to_datetime('October 3, 2017')].drop(['sales','date','Day', 'Weekday'], axis=1)
@@ -553,7 +504,6 @@ x_test = df_test.loc[df['date'] >= pd.to_datetime('October 3, 2017')].drop(['sal
 y_test = df_test.loc[df['date'] >= pd.to_datetime('October 3, 2017'), 'sales'].reset_index(drop=True)
 
 
-# In[ ]:
 
 
 feat_cols =[]
@@ -567,44 +517,37 @@ feat_cols.append(tf.feature_column.numeric_column(key='DoY_Mean'))
 feat_cols.append(tf.feature_column.numeric_column(key='DoW_Mean'))
 
 
-# In[ ]:
 
 
 input_func = tf.estimator.inputs.pandas_input_fn(x= x_train, y= y_train, batch_size= 180, num_epochs= 80,
                                                  shuffle= False)
 
 
-# In[ ]:
 
 
 regressor = tf.estimator.DNNRegressor(hidden_units= [20, 10, 20], feature_columns= feat_cols)
 
 
-# In[ ]:
 
 
 regressor.train(input_fn= input_func)
 
 
-# In[ ]:
 
 
 pred_fn = tf.estimator.inputs.pandas_input_fn(x= x_test, batch_size =len(x_test), shuffle=False)
 
 
-# In[ ]:
 
 
 x_test.head()
 
 
-# In[ ]:
 
 
 predictions = list(regressor.predict(input_fn= pred_fn))
 
 
-# In[ ]:
 
 
 final_pred = []
@@ -615,25 +558,21 @@ for pred in predictions:
 final_pred = pd.DataFrame(final_pred)
 
 
-# In[ ]:
 
 
 SMAPE(final_pred.iloc[:,0], y_test)
 
 
-# In[ ]:
 
 
 preds = xboost(x_train, y_train, x_test)
 
 
-# In[ ]:
 
 
 SMAPE(preds, y_test)
 
 
-# In[ ]:
 
 
 df1 = pd.read_csv(path +'train.csv', index_col=0)
@@ -642,7 +581,6 @@ df2 = pd.read_csv(path +'test.csv', index_col=1)
 df2.head()
 
 
-# In[ ]:
 
 
 df = pd.concat([df1,df2])
@@ -651,7 +589,6 @@ df.index = pd.to_datetime(df.index)
 df.tail()
 
 
-# In[ ]:
 
 
 df = add_feat(df, 'April 1, 2018') # Takes average of non-competition data
@@ -659,13 +596,11 @@ df = add_feat(df, 'April 1, 2018') # Takes average of non-competition data
 df.head(10)
 
 
-# In[ ]:
 
 
 df.tail(10)
 
 
-# In[ ]:
 
 
 x_train = df[pd.isnull(df['id'])].drop(['id','sales','date'], axis=1)
@@ -674,20 +609,17 @@ y_train = df[pd.isnull(df['id'])]['sales']
 x_test = df[pd.notnull(df['id'])].drop(['id','sales','date'], axis=1)
 
 
-# In[ ]:
 
 
 preds = pd.DataFrame(xboost(x_train, y_train, x_test)).reset_index()
 preds.columns =['id','sales']
 
 
-# In[ ]:
 
 
 preds.head()
 
 
-# In[ ]:
 
 
 preds.to_csv('sample.csv', index=False)

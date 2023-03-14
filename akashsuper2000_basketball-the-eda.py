@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -19,7 +18,6 @@ MENS_DIR = '../input/google-cloud-ncaa-march-madness-2020-division-1-mens-tourna
 WOMENS_DIR = '../input/google-cloud-ncaa-march-madness-2020-division-1-womens-tournament'
 
 
-# In[2]:
 
 
 def logloss(true_label, predicted, eps=1e-15):
@@ -29,7 +27,6 @@ def logloss(true_label, predicted, eps=1e-15):
     return -np.log(1 - p)
 
 
-# In[3]:
 
 
 print(f'Confident Wrong Prediction: \t\t {logloss(1, 0.01):0.4f}')
@@ -38,7 +35,6 @@ print(f'Non-Confident Wrong Prediction: \t {logloss(1, 0.49):0.4f}')
 print(f'Non-Confident Correct Prediction: \t {logloss(0, 0.49):0.4f}')
 
 
-# In[4]:
 
 
 Mss = pd.read_csv(f'{MENS_DIR}/MSampleSubmissionStage1_2020.csv')
@@ -46,14 +42,12 @@ Wss = pd.read_csv(f'{WOMENS_DIR}/WSampleSubmissionStage1_2020.csv')
 Mss.head()
 
 
-# In[5]:
 
 
 MTeams = pd.read_csv(f'{MENS_DIR}/MDataFiles_Stage1/MTeams.csv')
 MTeams.sort_values('FirstD1Season', ascending=False).head(5)
 
 
-# In[6]:
 
 
 # Womens' data does not contain years joined :(
@@ -61,7 +55,6 @@ WTeams = pd.read_csv(f'{WOMENS_DIR}/WDataFiles_Stage1/WTeams.csv')
 WTeams.head()
 
 
-# In[7]:
 
 
 MSeasons = pd.read_csv(f'{MENS_DIR}/MDataFiles_Stage1/MSeasons.csv')
@@ -69,35 +62,30 @@ WSeasons = pd.read_csv(f'{WOMENS_DIR}/WDataFiles_Stage1/WSeasons.csv')
 MSeasons.head()
 
 
-# In[8]:
 
 
 MNCAATourneySeeds = pd.read_csv(f'{MENS_DIR}/MDataFiles_Stage1/MNCAATourneySeeds.csv')
 WNCAATourneySeeds = pd.read_csv(f'{WOMENS_DIR}/WDataFiles_Stage1/WNCAATourneySeeds.csv')
 
 
-# In[9]:
 
 
 # As Lets join this with the teams data to see some of the past matchups
 WNCAATourneySeeds.merge(WTeams, validate='many_to_one').head()
 
 
-# In[10]:
 
 
 MRegularSeasonCompactResults = pd.read_csv(f'{MENS_DIR}/MDataFiles_Stage1/MRegularSeasonCompactResults.csv')
 WRegularSeasonCompactResults = pd.read_csv(f'{WOMENS_DIR}/WDataFiles_Stage1/WRegularSeasonCompactResults.csv')
 
 
-# In[11]:
 
 
 # We have the team the won, lost and the score.
 MRegularSeasonCompactResults.head(5)
 
 
-# In[12]:
 
 
 # Lets Add the winning and losing team names to the results
@@ -126,20 +114,17 @@ WRegularSeasonCompactResults =     WRegularSeasonCompactResults     .merge(WTeam
     .rename(columns={'TeamName': 'LTeamName'})
 
 
-# In[13]:
 
 
 WRegularSeasonCompactResults.head()
 
 
-# In[14]:
 
 
 WRegularSeasonCompactResults['Score_Diff'] = WRegularSeasonCompactResults['WScore'] - WRegularSeasonCompactResults['LScore']
 MRegularSeasonCompactResults['Score_Diff'] = MRegularSeasonCompactResults['WScore'] - MRegularSeasonCompactResults['LScore']
 
 
-# In[15]:
 
 
 plt.style.use('fivethirtyeight')
@@ -159,7 +144,6 @@ plt.legend()
 plt.show()
 
 
-# In[16]:
 
 
 plt.style.use('fivethirtyeight')
@@ -181,7 +165,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[17]:
 
 
 plt.style.use('fivethirtyeight')
@@ -204,7 +187,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[18]:
 
 
 mens_events = []
@@ -215,7 +197,6 @@ print(MEvents.shape)
 MEvents.head()
 
 
-# In[19]:
 
 
 womens_events = []
@@ -226,7 +207,6 @@ print(WEvents.shape)
 WEvents.head()
 
 
-# In[20]:
 
 
 del mens_events
@@ -234,7 +214,6 @@ del womens_events
 gc.collect()
 
 
-# In[21]:
 
 
 # Event Types
@@ -248,7 +227,6 @@ plt.xticks(rotation=0)
 plt.show()
 
 
-# In[22]:
 
 
 # Event Types
@@ -262,7 +240,6 @@ plt.xticks(rotation=0)
 plt.show()
 
 
-# In[23]:
 
 
 area_mapping = {0: np.nan,
@@ -283,7 +260,6 @@ area_mapping = {0: np.nan,
 MEvents['Area_Name'] = MEvents['Area'].map(area_mapping)
 
 
-# In[24]:
 
 
 MEvents.groupby('Area_Name')['counter'].sum()     .sort_values()     .plot(kind='barh',
@@ -292,7 +268,6 @@ MEvents.groupby('Area_Name')['counter'].sum()     .sort_values()     .plot(kind=
 plt.show()
 
 
-# In[25]:
 
 
 fig, ax = plt.subplots(figsize=(15, 8))
@@ -308,7 +283,6 @@ ax.set_ylim(0, 100)
 plt.show()
 
 
-# In[26]:
 
 
 # Normalize X, Y positions for court dimentions
@@ -320,7 +294,6 @@ WEvents['X_'] = (WEvents['X'] * (94/100))
 WEvents['Y_'] = (WEvents['Y'] * (50/100))
 
 
-# In[27]:
 
 
 def create_ncaa_full_court(ax=None, three_line='mens', court_color='#dfbb85',
@@ -579,7 +552,6 @@ create_ncaa_full_court(ax, three_line='both', paint_alpha=0.4)
 plt.show()
 
 
-# In[28]:
 
 
 fig, ax = plt.subplots(figsize=(15, 7.8))
@@ -598,7 +570,6 @@ ax.get_legend().remove()
 plt.show()
 
 
-# In[29]:
 
 
 COURT_COLOR = '#dfbb85'
@@ -627,7 +598,6 @@ ax2.set_xlabel('')
 plt.show()
 
 
-# In[30]:
 
 
 COURT_COLOR = '#dfbb85'
@@ -656,20 +626,17 @@ ax2.set_xlabel('')
 plt.show()
 
 
-# In[31]:
 
 
 MPlayers = pd.read_csv(f'{MENS_DIR}/MPlayers.csv', error_bad_lines=False)
 WPlayers = pd.read_csv(f'{WOMENS_DIR}/WPlayers.csv')
 
 
-# In[32]:
 
 
 MPlayers.head()
 
 
-# In[33]:
 
 
 # Merge Player name onto events
@@ -684,7 +651,6 @@ WEvents = WEvents.merge(WPlayers,
               right_on='PlayerID')
 
 
-# In[34]:
 
 
 MEvents.loc[MEvents['PlayerID'] == 2825].groupby('EventType')['EventID'].count()     .sort_values()     .plot(kind='barh',
@@ -694,7 +660,6 @@ MEvents.loc[MEvents['PlayerID'] == 2825].groupby('EventType')['EventID'].count()
 plt.show()
 
 
-# In[35]:
 
 
 ms = 10 # Marker Size
@@ -732,7 +697,6 @@ plt.legend()
 plt.show()
 
 
-# In[36]:
 
 
 ms = 10 # Marker Size
@@ -770,7 +734,6 @@ plt.legend()
 plt.show()
 
 
-# In[37]:
 
 
 N_bins = 100
@@ -794,7 +757,6 @@ ax.set_title('Shot Heatmap (Mens)')
 plt.show()
 
 
-# In[38]:
 
 
 N_bins = 100

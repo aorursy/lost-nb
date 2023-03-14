@@ -1,47 +1,40 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 #足し算
 3+2
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 #引き算
 3-2
 
 
-# In[ ]:
 
 
 #掛け算
 3*2
 
 
-# In[ ]:
 
 
 #割り算
 3/2
 
 
-# In[ ]:
 
 
 print("出力したい内容")#とします
 
 
-# In[ ]:
 
 
 #指数
@@ -56,7 +49,6 @@ print(7%3)
 print(7//2)
 
 
-# In[ ]:
 
 
 #変数を使うと便利
@@ -73,7 +65,6 @@ print(x)
 x+=1
 
 
-# In[ ]:
 
 
 '''
@@ -88,7 +79,6 @@ print("1"+"2")#12
 #このちがいがわかりましたでしょうか？
 
 
-# In[ ]:
 
 
 #↑のようにpythonではstring同士の足し算が可能
@@ -98,14 +88,12 @@ print('あいう'+'えお')
 print(あいうえお)
 
 
-# In[ ]:
 
 
 #「Hello,World!」という文字列を出力してみよう
 print("Hello,World!")
 
 
-# In[ ]:
 
 
 #tips:割り算に注意
@@ -120,7 +108,6 @@ print(6//2)
 print(int(6/2))
 
 
-# In[ ]:
 
 
 x=10000
@@ -135,7 +122,6 @@ else:
     print('ちいさい')
 
 
-# In[ ]:
 
 
 y=10
@@ -150,21 +136,18 @@ print(x!=y)
 #「同じかどうか」の判定には==を使う、否定の場合は!=
 
 
-# In[ ]:
 
 
 #nが偶数なら２で割って、奇数ならそのまま出力するコードを書こう
 n=12345
 
 
-# In[ ]:
 
 
 lstr=['a','b','c']
 lint=[1,1,2,3,5,8]
 
 
-# In[ ]:
 
 
 #長さの取得...なんこのデータが入っているのか
@@ -178,7 +161,6 @@ if lint[3]+lint[4]==lint[5]:
     print('fivo')
 
 
-# In[ ]:
 
 
 #要素の書き換え
@@ -195,7 +177,6 @@ lstr2=list(st)
 print(lstr2)
 
 
-# In[ ]:
 
 
 #データがかの確認
@@ -205,7 +186,6 @@ b = 1234
 print(type(b))
 
 
-# In[ ]:
 
 
 #スライス
@@ -213,7 +193,6 @@ print(type(b))
 print(lstr2[1:4])
 
 
-# In[ ]:
 
 
 #tips:リストの反転
@@ -221,7 +200,6 @@ print(lstr2[1:4])
 print(lstr2[::-1])
 
 
-# In[ ]:
 
 
 #tips:整数のリストはrangeで作れる
@@ -234,7 +212,6 @@ lnum2=list(range(5))
 print(lnum2)
 
 
-# In[ ]:
 
 
 for i in range(1,10):
@@ -244,7 +221,6 @@ for i in range(1,10):
 #変数iにリストの中身を一つずつ代入してその都度下のコードを実行している
 
 
-# In[ ]:
 
 
 su=0
@@ -255,7 +231,6 @@ for j in range(1,20):
 print(su,fact)
 
 
-# In[ ]:
 
 
 list=['x','y','z']
@@ -265,7 +240,6 @@ for i in list:
 print(s)
 
 
-# In[ ]:
 
 
 #ある動作をn回やりたいときに重宝
@@ -274,7 +248,6 @@ for i in range(10):
     print('WOW!')
 
 
-# In[ ]:
 
 
 #条件を満たしている間繰り返し続ける while もある(遅い)
@@ -284,19 +257,16 @@ while n>0:
     print(n)
 
 
-# In[ ]:
 
 
 #3
 
 
-# In[ ]:
 
 
 #4
 
 
-# In[ ]:
 
 
 def po(a,b):
@@ -305,7 +275,6 @@ c=po(a,b)
 print(c*3)
 
 
-# In[ ]:
 
 
 def po(a,b):
@@ -313,7 +282,6 @@ def po(a,b):
 po(a,b)
 
 
-# In[ ]:
 
 
 import os
@@ -327,7 +295,6 @@ print(x)
 print("データ型",type(x))
 
 
-# In[ ]:
 
 
 #パス（住所のようなもの）で指定したディレクトリに移動
@@ -335,7 +302,6 @@ os.chdir("/kaggle/input/house-prices-dataset")
 print(os.getcwd())#移動したかわかる
 
 
-# In[ ]:
 
 
 #パス（住所のようなもの）で指定したディレクトリを新規に作成
@@ -343,32 +309,27 @@ os.mkdir("/kaggle/working/new_dir")
 print(os.listdir("/kaggle/working"))#できた
 
 
-# In[ ]:
 
 
 #ここで
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 os.chdir("/kaggle/input/house-prices-dataset")
 get_ipython().system('ls')
 
 
-# In[ ]:
 
 
 #まずは読み込み
@@ -379,173 +340,145 @@ print(type(house))#DataFrameというデータ型です。
 print(len(house))
 
 
-# In[ ]:
 
 
 house.shape
 
 
-# In[ ]:
 
 
 house.head(10)#上からK行のデータを参照できます。
 
 
-# In[ ]:
 
 
 df_1 = pd.DataFrame({'Bob': ['I liked it.', 'It was awful.'], 'Sue': ['Pretty good.', 'Bland.']})
 
 
-# In[ ]:
 
 
 #DataFrame.shapeで大きさを得ます。
 df_1.shape
 
 
-# In[ ]:
 
 
 df_1.head()#DataFrameは自作できます。{}はdictというデータ型です。
 
 
-# In[ ]:
 
 
 s_1 = pd.Series([1, 2, 3, 4, 5])
 #これは自分でdfを作成するときにちょっと使ったりします。
 
 
-# In[ ]:
 
 
 house.LotArea
 
 
-# In[ ]:
 
 
 house["LotArea"]
 
 
-# In[ ]:
 
 
 house["LotArea"][0]#0行目
 
 
-# In[ ]:
 
 
 house.iloc[0]
 
 
-# In[ ]:
 
 
 house.iloc[:, 0]#スライスにおいて『 : 』は”任意の”を表します。この場合は全ての行とそれに対応する0列目を取ってきている。という意味です。
 
 
-# In[ ]:
 
 
 #ここに
 
 
-# In[ ]:
 
 
 a = [1,4,6]
 house.iloc[a, 0]#indexにはlistを入れても良いです。
 
 
-# In[ ]:
 
 
 house.loc[:, ['MSSubClass', 'Utilities', 'LotShape']]
 
 
-# In[ ]:
 
 
 house.iloc[:, 0:10]
 
 
-# In[ ]:
 
 
 house.loc[:, 0:10]
 
 
-# In[ ]:
 
 
 house.loc[house["LotShape"] == 'Reg']
 
 
-# In[ ]:
 
 
 reviews.loc[(house["LotShape"] == 'Reg') & (house["MiscVal"] >= 10)]
 
 
-# In[ ]:
 
 
 house.YrSold#dtype: int64なので格納されているのは整数です。
 
 
-# In[ ]:
 
 
 house.loc[house.YrSold.isin([2006, 2007])]
 
 
-# In[ ]:
 
 
 house["new_column_1"]="WOW"
 
 
-# In[ ]:
 
 
 #ここに
 
 
-# In[ ]:
 
 
 house.describe()
 
 
-# In[ ]:
 
 
 house.mean()#統計値の一つを見ることもできます。
 
 
-# In[ ]:
 
 
 house["SaleCondition"].unique()#
 
 
-# In[ ]:
 
 
 house["SaleCondition"]..value_counts()
 
 
-# In[ ]:
 
 
 house_SalePrice_mean = house.SalePrice.mean()
 house["SalePrice"].map(lambda p: p - house_SalePrice_mean)#順に適応していく
 
 
-# In[ ]:
 
 
 #各行に対して自作の関数を適応させる（細かいことをさせるために）ときはapply
@@ -556,44 +489,37 @@ def remean_points(row):
 house.apply(remean_points, axis="SalePrice")
 
 
-# In[ ]:
 
 
 house.head()
 
 
-# In[ ]:
 
 
 #ここに
 
 
-# In[ ]:
 
 
 house.groupby("SaleCondition").SaleCondition.count()
 
 
-# In[ ]:
 
 
 house.groupby("SaleCondition").count()
 
 
-# In[ ]:
 
 
 df_ = house.groupby("SaleCondition")
 df_.head()#df.groupby(列)はdfを列で集計した新しい表これに集計関数を.func()でつけて使う
 
 
-# In[ ]:
 
 
 df_.apply(lambda df: df.MSZoning.iloc[0])?
 
 
-# In[ ]:
 
 
 house=pd.read_csv("/kaggle/input/house-prices-dataset/train.csv")
@@ -601,27 +527,23 @@ house=pd.read_csv("/kaggle/input/house-prices-dataset/train.csv")
 house.groupby(['SalePrice', 'MoSold']).max()
 
 
-# In[ ]:
 
 
 #複数の関数を適応
 house.groupby(['SalePrice']).price.agg([len, min, max])
 
 
-# In[ ]:
 
 
 #並べ替え...df.sort_values(by="列の名前")大きい順にするのは調べてください『python df　sort』
 
 
-# In[5]:
 
 
 import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplitlib', 'inline#notebookで画像などを表示させるための宣言')
 
 
-# In[1]:
 
 
 import pandas as pd
@@ -630,26 +552,22 @@ train["image_id"] = train["image_id"]+".jpg"
 train.head()
 
 
-# In[6]:
 
 
 file_paths = train["image_id"].values[:]
 
 
-# In[4]:
 
 
 import glob
 x = glob.glob("/kaggle/input/plant-pathology-2020-fgvc7/images/*")
 
 
-# In[ ]:
 
 
 path
 
 
-# In[8]:
 
 
 import cv2
@@ -663,7 +581,6 @@ plt.imshow(img)
 plt.show()
 
 
-# In[9]:
 
 
 #画像の反転
@@ -680,7 +597,6 @@ plt.imshow(flip2)
 plt.show()
 
 
-# In[12]:
 
 
 #resize
@@ -691,7 +607,6 @@ plt.imshow(resize)
 plt.show()
 
 
-# In[13]:
 
 
 #回転
@@ -706,7 +621,6 @@ plt.imshow(rotate)
 plt.show()
 
 
-# In[14]:
 
 
 #トリミング
@@ -716,19 +630,16 @@ plt.imshow(clip)
 plt.show()
 
 
-# In[ ]:
 
 
 #ここに白黒化
 
 
-# In[ ]:
 
 
 
 
 
-# In[3]:
 
 
 import numpy as np
@@ -786,39 +697,33 @@ def crop(image): #引数は画像の相対パス
     croparea = cv2.rectangle(bgr, (x1_min, y1_min), (x2_max, y2_max), (255, 0, 0), 3)
 
 
-# In[ ]:
 
 
 #csvの読み込みをして、train_csvについてhead()を表示してください
 
 
-# In[ ]:
 
 
 #モデルがしっかり動くかどうかの確認のために何件かとってくる
 train = train.sample(n=100, random_state=2020)
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 
 
 
-# In[16]:
 
 
 labels = train.iloc[:,1:]
 labels.head()
 
 
-# In[4]:
 
 
 #使いそうなライブラリ
@@ -844,26 +749,22 @@ from keras.utils import np_utils
 import cv2
 
 
-# In[5]:
 
 
 #使うモデル
 vgg16_model=VGG16(include_top=False, weights='imagenet', input_tensor=None, input_shape=None)
 
 
-# In[49]:
 
 
 get_ipython().system('ls /kaggle/input')
 
 
-# In[48]:
 
 
 get_ipython().system('pwd')
 
 
-# In[6]:
 
 
 from tqdm import tqdm
@@ -885,25 +786,21 @@ def get_one_hot_form_df(df):
     return label_onehot 
 
 
-# In[42]:
 
 
 train.head()
 
 
-# In[28]:
 
 
 y = get_one_hot_form_df(train)
 
 
-# In[29]:
 
 
 
 
 
-# In[7]:
 
 
 def get_model_finetune(base_model,input_shape=[None,None,3], num_classes=4):#num_classesは今回何ですか？
@@ -927,7 +824,6 @@ def get_model_finetune(base_model,input_shape=[None,None,3], num_classes=4):#num
     return model
 
 
-# In[13]:
 
 
 test = pd.read_csv("/kaggle/input/plant-pathology-2020-fgvc7/test.csv")
@@ -936,7 +832,6 @@ test.head()
 test_x = get_images_from_df(test)
 
 
-# In[ ]:
 
 
 def auc(array):
@@ -944,7 +839,6 @@ def auc(array):
     
 
 
-# In[20]:
 
 
 #start_weight=model_test.get_weights()
@@ -975,34 +869,29 @@ for train_index, eval_index in kf.split(train):
     
 
 
-# In[31]:
 
 
 sub = pd.read_csv("/kaggle/input/plant-pathology-2020-fgvc7/sample_submission.csv")
 sub.head()
 
 
-# In[36]:
 
 
 df1 =pd.DataFrame(np.array(pred))
 sub[["healthy","multiple_diseases","rust","scab"]]=df1
 
 
-# In[37]:
 
 
 sub.head()
 
 
-# In[34]:
 
 
 df1 =pd.DataFrame(np.array(pred))
 df1.head()
 
 
-# In[ ]:
 
 
 import os
@@ -1010,7 +899,6 @@ os.listdir('/kaggle/input/pytorch-efnet-ns')
 import geffnet
 
 
-# In[ ]:
 
 
 import torch

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #data manipulation packages
@@ -24,7 +23,6 @@ pd.set_option('display.max_columns', 100)
 pd.set_option('display.max_rows', 400)
 
 
-# In[2]:
 
 
 path = '/kaggle/input/m5-forecasting-accuracy'
@@ -37,25 +35,21 @@ print(sales.shape)
 print(prices.shape)
 
 
-# In[3]:
 
 
 cal.head()
 
 
-# In[4]:
 
 
 sales.head()
 
 
-# In[5]:
 
 
 prices.head()
 
 
-# In[6]:
 
 
 colors = cycle(plt.rcParams['axes.prop_cycle'].by_key()['color'])
@@ -86,19 +80,16 @@ def plot_item(item_id):
     axes.legend()
 
 
-# In[7]:
 
 
 plot_item('HOBBIES_1_004_CA_1_validation')
 
 
-# In[8]:
 
 
 plot_item('FOODS_1_068_TX_1_validation')
 
 
-# In[9]:
 
 
 '''As observed above, some of the items, for one reason or another, have limited history throughout the time series.
@@ -146,19 +137,16 @@ for item_id in sales['id']:
         continue
 
 
-# In[10]:
 
 
 print(dict(itertools.islice(limited_items.items(), 3)))
 
 
-# In[11]:
 
 
 print('The percentage of items that have more than 150 consecutive days without the item being sold is: {}'.format((len(limited_items)/sales.shape[0])*100))
 
 
-# In[12]:
 
 
 '''Plotting how much of the items with limited history occur in the beginning, middle, and end'''
@@ -174,7 +162,6 @@ totals = Counter(location)
 plt.bar(totals.keys(), totals.values())
 
 
-# In[13]:
 
 
 selling_history = sales[d_cols]
@@ -186,13 +173,11 @@ plt.xlabel('Day')
 plt.ylabel('Percentage of Nonzero')
 
 
-# In[14]:
 
 
 plot_item('HOBBIES_1_288_CA_1_validation')
 
 
-# In[15]:
 
 
 def agg_plot(*args):
@@ -229,19 +214,16 @@ def agg_plot(*args):
         plt.show()
 
 
-# In[16]:
 
 
 agg_plot('foods','hobbies','household')
 
 
-# In[17]:
 
 
 agg_plot('household', 'hobbies')
 
 
-# In[18]:
 
 
 ##Thanks to https://www.kaggle.com/robikscube/m5-forecasting-starter-data-exploration for providing this.
@@ -262,7 +244,6 @@ plt.legend(store_list)
 plt.show()
 
 
-# In[19]:
 
 
 '''Plotting the 150/50 Day Moving Average of Items Sold by State'''
@@ -290,7 +271,6 @@ for s in range(len(state_list)):
  
 
 
-# In[20]:
 
 
 temp = prices.copy()
@@ -305,7 +285,6 @@ ax.set_ylabel('Item Category')
 ax.set_title('Item Sale Price by Item Category for Each State')
 
 
-# In[21]:
 
 
 #credit: https://www.kaggle.com/williamhuybui/holiday-s-visualization
@@ -331,7 +310,6 @@ event_df['Quantity']=quantity
 event_df
 
 
-# In[22]:
 
 
 #Top 2 and bottom 2 in terms of total sales
@@ -340,7 +318,6 @@ b=event_df.sort_values('Quantity',ascending=False)[['Event Name','Quantity']].ta
 a.append(b)
 
 
-# In[23]:
 
 
 average_quantity=sales.iloc[:,6:].sum().sum()/1913
@@ -357,7 +334,6 @@ plt.title("Sale quantity in some holidays compare to the average sale")
 plt.show()
 
 
-# In[ ]:
 
 
 

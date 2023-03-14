@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -25,7 +24,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 # Keras Package Load
@@ -57,14 +55,12 @@ from itertools import repeat
 from itertools import product
 
 
-# In[3]:
 
 
 SH_DIR = '../input/shufflecsvs/shuffle-csvs/shuffle-csvs/'
 INPUT_DIR = '../input/quickdraw-doodle-recognition/'
 
 
-# In[4]:
 
 
 SEED = 42
@@ -72,7 +68,6 @@ np.random.seed(seed=SEED)
 tf.set_random_seed(seed=SEED)
 
 
-# In[5]:
 
 
 def apk(actual, predicted, k=3):
@@ -104,7 +99,6 @@ def top_3_accuracy(y_true, y_pred):
     return top_k_categorical_accuracy(y_true, y_pred, k=3)
 
 
-# In[6]:
 
 
 def f2cat(filename: str) -> str:
@@ -115,7 +109,6 @@ def list_all_categories():
     return sorted([f2cat(f) for f in files], key=str.lower)
 
 
-# In[7]:
 
 
 mobile_BASE_SIZE = 256
@@ -135,7 +128,6 @@ lstm_STROKE_COUNT = 196
 BATCHSIZE = 128
 
 
-# In[8]:
 
 
 def draw_cv2(raw_strokes, size=256, lw=6, time_color=True):
@@ -151,7 +143,6 @@ def draw_cv2(raw_strokes, size=256, lw=6, time_color=True):
         return img
 
 
-# In[9]:
 
 
 def image_generator_xd(size, batchsize, ks, lw=6, time_color=True):
@@ -169,7 +160,6 @@ def image_generator_xd(size, batchsize, ks, lw=6, time_color=True):
                 yield x, y
 
 
-# In[10]:
 
 
 def df_to_image_array_xd(df, size, lw=6, time_color=True):
@@ -181,7 +171,6 @@ def df_to_image_array_xd(df, size, lw=6, time_color=True):
     return x
 
 
-# In[11]:
 
 
 def df_to_sequence_array(df, time_size):
@@ -192,7 +181,6 @@ def df_to_sequence_array(df, time_size):
     return x
 
 
-# In[12]:
 
 
 def _stack_it(raw_strokes, time_size):
@@ -215,7 +203,6 @@ def _stack_it(raw_strokes, time_size):
                          padding='post').swapaxes(0, 1)
 
 
-# In[13]:
 
 
 def read_batch(samples=5, 
@@ -236,7 +223,6 @@ def read_batch(samples=5,
     return full_df
 
 
-# In[14]:
 
 
 def image_generator_xd(size,time_size, batchsize, ks, lw=6, time_color=True):
@@ -258,33 +244,28 @@ def image_generator_xd(size,time_size, batchsize, ks, lw=6, time_color=True):
                 yield [x, x_lstm],  y
 
 
-# In[15]:
 
 
 train_datagen = image_generator_xd(size = mobile_SIZE, time_size=lstm_STROKE_COUNT, batchsize=mobile_BASE_SIZE, ks= range(mobile_NCSVS-1))
 x, y =next(train_datagen)
 
 
-# In[16]:
 
 
 print("CNN shape{}       \nLSTM shape {}".format(x[0].shape,x[1].shape))
 
 
-# In[17]:
 
 
 valid_df = pd.read_csv(os.path.join(SH_DIR, 'train_k{}.csv.gz'.format(mobile_NCSVS-1)), nrows = 34000)
 
 
-# In[18]:
 
 
 iterable_1 = product(np.array_split(valid_df, 100), [mobile_SIZE])
 iterable_2 = product(np.array_split(valid_df,  100), [lstm_STROKE_COUNT])
 
 
-# In[19]:
 
 
 # Virtual Core count
@@ -293,7 +274,6 @@ NJOBS = int(NJOBS[0])
 print(NJOBS)
 
 
-# In[20]:
 
 
 with Pool(processes=NJOBS) as p:
@@ -305,7 +285,6 @@ with Pool(processes=NJOBS) as p:
     x_lstm_valid = p.starmap(df_to_sequence_array, iterable_2)
 
 
-# In[21]:
 
 
 x_valid = np.vstack(np.array(x_valid))
@@ -318,7 +297,6 @@ print(
     \ny_valid size : {}'.format(x_valid.shape, x_lstm_valid.shape,  y_valid.shape))
 
 
-# In[22]:
 
 
 def mobiel_net(size):
@@ -330,7 +308,6 @@ def mobiel_net(size):
     return x, base_model.input
 
 
-# In[23]:
 
 
 def lstm_model(time_size ,f_size ):
@@ -374,26 +351,22 @@ def lstm_model(time_size ,f_size ):
     return batch_norm_2, stroke_input
 
 
-# In[24]:
 
 
 mobile_model, mobile_input = mobiel_net(mobile_SIZE)
 sequence_model, sequence_input = lstm_model(lstm_STROKE_COUNT, 3)
 
 
-# In[25]:
 
 
 print(mobile_model.shape,      sequence_model.shape)
 
 
-# In[26]:
 
 
 merge = concatenate([mobile_model, sequence_model])
 
 
-# In[27]:
 
 
 """ BATCH norm test _4"""
@@ -407,26 +380,22 @@ output = Dense(mobile_NCATS, activation = 'softmax')(merge_batch_norm)
 merge_model = Model(inputs = [mobile_input, sequence_input ], output = output, name = 'merge_model_fin_70')
 
 
-# In[28]:
 
 
 merge_model.name
 
 
-# In[29]:
 
 
 merge_model.summary()
 
 
-# In[30]:
 
 
 get_ipython().system(' mkdir ../working/weights')
 get_ipython().system(' mkdir ../working/logs')
 
 
-# In[31]:
 
 
 def directory_check(path):
@@ -434,7 +403,6 @@ def directory_check(path):
         os.mkdir(path)
 
 
-# In[32]:
 
 
 def compile_and_train(model, num_epochs, BATCHSIZE, OPTIMIZER):
@@ -474,19 +442,16 @@ def compile_and_train(model, num_epochs, BATCHSIZE, OPTIMIZER):
     return hist, weight_file
 
 
-# In[33]:
 
 
 model_his, model_weight = compile_and_train(merge_model, 60 , BATCHSIZE, Adam)
 
 
-# In[34]:
 
 
 history_df = pd.concat([pd.DataFrame(model_his.history)],sort = True)
 
 
-# In[35]:
 
 
 fig, axs = plt.subplots(nrows=2, sharex=True, figsize=(16, 10))
@@ -507,7 +472,6 @@ fig.savefig('merge_model_fin_70.png', dpi = 300)
 plt.show()
 
 
-# In[36]:
 
 
 valid_predictions = merge_model.predict([x_valid, x_lstm_valid], batch_size=BATCHSIZE, verbose=1)
@@ -515,14 +479,12 @@ map3 = mapk(valid_df[['y']].values, preds2catids(valid_predictions).values)
 print('MAP3 : {:.3f}'.format(map3))
 
 
-# In[37]:
 
 
 test  = pd.read_csv(os.path.join(INPUT_DIR, 'test_simplified.csv'))
 test.head()
 
 
-# In[38]:
 
 
 x_test = df_to_image_array_xd(test.copy(), mobile_SIZE)
@@ -532,7 +494,6 @@ print(test.shape, x_test.shape)
 print(test.shape, x_lstm_test.shape)
 
 
-# In[39]:
 
 
 test_predictions = merge_model.predict([x_test,x_lstm_test], batch_size=BATCHSIZE, verbose=1)
@@ -540,7 +501,6 @@ top3 = preds2catids(test_predictions)
 top3.head()
 
 
-# In[40]:
 
 
 cats = list_all_categories()
@@ -549,7 +509,6 @@ top3cats = top3.replace(id2cat)
 top3cats.head()
 
 
-# In[41]:
 
 
 test['word'] = top3cats['a'] + ' ' + top3cats['b'] + ' ' + top3cats['c']
@@ -557,7 +516,6 @@ submission = test[['key_id', 'word']]
 submission.to_csv('{}-submission-fin.csv'.format(merge_model.name), index=False)
 
 
-# In[42]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -33,7 +32,6 @@ from keras.utils import to_categorical
 import tensorflow as tf
 
 
-# In[2]:
 
 
 input_path = "../input/m5-forecasting-accuracy"
@@ -51,7 +49,6 @@ sales_train_val = pd.read_csv(os.path.join(input_path, 'sales_train_validation.c
 #sell_prices = pd.read_csv(os.path.join(input_path, 'sell_prices.csv'))
 
 
-# In[3]:
 
 
 # Prepare scalars to normalize data
@@ -100,7 +97,6 @@ del base
 gc.collect()
 
 
-# In[4]:
 
 
 def root_mean_squared_error(y_true, y_pred):
@@ -118,19 +114,16 @@ model.add(tf.keras.layers.Dense(n_steps_out))
 model.compile(optimizer='adam', loss=root_mean_squared_error) # this loss needs changing to competition loss.
 
 
-# In[5]:
 
 
 get_ipython().run_cell_magic('time', '', '\n# 0.6345 200 56\n# 0.5633 200 56 4m 14s\n\nmodel.fit(X_train, Y_train, epochs=2, verbose=1)')
 
 
-# In[6]:
 
 
 get_ipython().run_cell_magic('time', '', '\n# Take a slice of n{timesteps} from the input data\nx_pred = data.iloc[:,-timesteps:].to_numpy()\n\n# Reshape to fit the format for input scalar\nx_pred = x_pred.reshape((len(sales_train_val), x_pred.shape[1]))\n# Normalize the input\nx_pred = input_scaler.transform(x_pred)\n# Reshape to fit the format for LSTM model\nx_pred = x_pred.reshape((len(sales_train_val), x_pred.shape[1], 1))\n\n# Get our predictions\nraw_pred = model.predict(x_pred)\n\n# Inverse to transform to get the predictions at the right scale\nall_pred = output_scaler.inverse_transform(raw_pred)\n# Round the predictions back to integers\nall_pred = np.round(np.abs(all_pred))')
 
 
-# In[7]:
 
 
 # Stack our predictions into a dataframe

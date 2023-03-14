@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import matplotlib.pyplot as plt
@@ -31,7 +29,6 @@ import matplotlib.pyplot as plt
 from typing import Tuple
 
 
-# In[3]:
 
 
 fname_train = '../input/covid19-global-forecasting-week-2/train.csv'
@@ -39,7 +36,6 @@ fname_test = '../input/covid19-global-forecasting-week-2/test.csv'
 fname_sub = '../input/covid19-global-forecasting-week-2/submission.csv'
 
 
-# In[4]:
 
 
 df_train = pd.read_csv(fname_train,parse_dates=True)
@@ -47,7 +43,6 @@ df_test  = pd.read_csv(fname_test, parse_dates=True)
 df_sub   = pd.read_csv(fname_sub)
 
 
-# In[5]:
 
 
 # Week 2 globals
@@ -63,7 +58,6 @@ START_PREDICTION_DATE = df_test['Date'].min() # Week 2: '2020-03-19'
 END_PREDICTION_DATE   = df_test['Date'].max() # Week 2: '2020-04-30'
 
 
-# In[6]:
 
 
 # Tanu's population by country
@@ -71,25 +65,21 @@ fname_pop = '../input/population-by-country-2020/population_by_country_2020.csv'
 df_pop = pd.read_csv(fname_pop)
 
 
-# In[7]:
 
 
 df_pop.head()
 
 
-# In[8]:
 
 
 GLOBAL_FILL_STRING = 'not_provided'
 
 
-# In[9]:
 
 
 prediction_scores = {}  # create a dictionary of prediction scores so that I know where to consider improvements
 
 
-# In[10]:
 
 
 def check_first_ConfirmedCase_exists(df_in:pd.DataFrame,
@@ -108,7 +98,6 @@ def check_first_ConfirmedCase_exists(df_in:pd.DataFrame,
     return count_no_cases
 
 
-# In[11]:
 
 
 def evaluate_predictions(df_golden:pd.DataFrame,df_predictions:pd.DataFrame,                         num_wh=0, num_extended=0,                         model_name="no-name",verbose=False)->Tuple[(float,float)]:
@@ -159,7 +148,6 @@ def evaluate_predictions(df_golden:pd.DataFrame,df_predictions:pd.DataFrame,    
     return c_rmsle, f_rmsle
 
 
-# In[12]:
 
 
 def evaluate_predictions2(df_golden:pd.DataFrame,df_predictions:pd.DataFrame,                         num_wh=0, num_extended=0,                         model_name="no-name",verbose=False)->Tuple[(float,float)]:
@@ -210,7 +198,6 @@ def evaluate_predictions2(df_golden:pd.DataFrame,df_predictions:pd.DataFrame,   
     return c_rmsle, f_rmsle
 
 
-# In[13]:
 
 
 # From https://www.kaggle.com/marknagelberg/rmsle-function
@@ -223,7 +210,6 @@ def rmsle(y, y_pred):
     return (sum(terms_to_sum) * (1.0/len(y))) ** 0.5
 
 
-# In[14]:
 
 
 # unit test for evaluate_predictions, withheld = 1, extended = 2
@@ -246,7 +232,6 @@ unit_c, unit_f = evaluate_predictions(df_golden,df_predicted,1,2,'unit test',Fal
 assert((unit_c == 0.1777) & (unit_f == 0.4901)),'Failed unit test for evaluate_predictions'
 
 
-# In[15]:
 
 
 def create_parameter_database():
@@ -273,7 +258,6 @@ def create_parameter_database():
     return data
 
 
-# In[16]:
 
 
 def plot_train_predictions(df_pred_in,df_train_in,title_str,ylim_factor=1.2):
@@ -314,7 +298,6 @@ def plot_train_predictions(df_pred_in,df_train_in,title_str,ylim_factor=1.2):
         pass
 
 
-# In[17]:
 
 
 try: 
@@ -324,101 +307,85 @@ except:
     print('nah')
 
 
-# In[18]:
 
 
 df_train.head(n=2)
 
 
-# In[19]:
 
 
 df_train.tail(n=2)
 
 
-# In[20]:
 
 
 df_test.head(n=2)
 
 
-# In[21]:
 
 
 df_test.tail(n=2)
 
 
-# In[22]:
 
 
 df_sub.tail(n=2)
 
 
-# In[ ]:
 
 
 
 
 
-# In[23]:
 
 
 df_train[['Province_State','Country_Region']] = df_train[['Province_State','Country_Region']].fillna(GLOBAL_FILL_STRING)
 df_test[['Province_State','Country_Region']] = df_test[['Province_State','Country_Region']].fillna(GLOBAL_FILL_STRING)
 
 
-# In[24]:
 
 
 df_train['SimpleName'] = df_train['Province_State'] + '__' + df_train['Country_Region']   # for fetching data
 df_test['SimpleName'] = df_test['Province_State'] + '__' + df_test['Country_Region']      # for storing predictions
 
 
-# In[25]:
 
 
 df_train['DateTime'] = pd.to_datetime(df_train['Date'])   #format = '%Y-%m-%d'
 df_test['DateTime']  = pd.to_datetime(df_test['Date'])   #format = '%Y-%m-%d'
 
 
-# In[26]:
 
 
 df_test.tail(n=3)
 
 
-# In[27]:
 
 
 df_train.tail(n=3)
 
 
-# In[28]:
 
 
 df_test.dtypes
 
 
-# In[29]:
 
 
 df_train['SimpleName'].nunique()
 
 
-# In[30]:
 
 
 sname_set = list(set(df_train['SimpleName']))    # another handy global
 
 
-# In[31]:
 
 
 # Make sure there aren't any locations with no ConfirmedCases reported yet
 assert(0 == check_first_ConfirmedCase_exists(df_train,sname_set)),"Data contains locations with NO ConfirmedCases!"
 
 
-# In[32]:
 
 
 # Start with default values for all locations
@@ -427,32 +394,27 @@ parameter_data = create_parameter_database()
 db_parameters = pd.DataFrame(parameter_data, index=sname_set,                            columns=['beta','gamma','ifx','rfx','population'])
 
 
-# In[33]:
 
 
 db_parameters.head(n=2)
 
 
-# In[34]:
 
 
 ctry_col = r'Country (or dependency)'
 pop_col  = r'Population (2020)'
 
 
-# In[35]:
 
 
 df_pop[df_pop[ctry_col] == 'France'][pop_col].values[0]  # test
 
 
-# In[36]:
 
 
 df_pop.head(n=2)
 
 
-# In[37]:
 
 
 # TODO: Once the basic functionality generates a valid submission, this is where the creative model tweaks will happen
@@ -497,7 +459,6 @@ for index,row in db_parameters.iterrows():
         print("State missing population data: {}, {}".format(state,ctry))
 
 
-# In[38]:
 
 
 # Create placeholders for ConfirmedCases and Fatalities
@@ -511,21 +472,18 @@ df_test['Fatalities'] = zeros_column
 df_test['maxConfirmedCases'] = zeros_column
 
 
-# In[39]:
 
 
 df_train_preserve = df_train.copy()  # for debugging and testing
 df_test_preserve  = df_test.copy()
 
 
-# In[40]:
 
 
 # df_train ready to accept predictions
 df_test.tail(n=4)
 
 
-# In[41]:
 
 
 # check on France data in df_test -- sanity check of randomly selected location to confirm all 0
@@ -565,7 +523,6 @@ def evaluate_model
       Do the evaluation ONLY on the data that was withheld
              -- data prior to that will be 100% correct
              -- data in the extended section cannot be evaluated
-# In[42]:
 
 
 def prepare_prediction_template(df_in,withhold=0,extend_to_date = END_PREDICTION_DATE,
@@ -632,21 +589,18 @@ def prepare_prediction_template(df_in,withhold=0,extend_to_date = END_PREDICTION
     return df_local,num_extensions
 
 
-# In[43]:
 
 
 # unit test for prepare_predictions_template
 df_golden
 
 
-# In[44]:
 
 
 df_1, num_e = prepare_prediction_template(df_golden,withhold=1,extend_to_date='2020-06-09',verbose=True)
 print("Output num_e={} and df is \n {}".format(num_e,df_1))
 
 
-# In[45]:
 
 
 def calculate_SIR_next_step(S,I,R,N,beta,gamma):
@@ -680,7 +634,6 @@ def calculate_SIR_next_step(S,I,R,N,beta,gamma):
     return S,I,R  
 
 
-# In[46]:
 
 
 def sir_model(df_in,N=100000,beta=.2,gamma=.4,i_factor=1,r_factor=1,verbose=False):
@@ -735,7 +688,6 @@ def sir_model(df_in,N=100000,beta=.2,gamma=.4,i_factor=1,r_factor=1,verbose=Fals
     return df_local
 
 
-# In[47]:
 
 
 # Week 2's dates are
@@ -780,7 +732,6 @@ def copy_preditions_to_final_list(location, df_predictions, df_final_list,verbos
         #break
 
 
-# In[48]:
 
 
 # for each SimpleName, do an SIR forecast with a fixed set of parameters
@@ -837,19 +788,16 @@ def single_model(location, practice_withhold=0, verbose=False):
     return df_SIR_predictions, df_sname, plot_title
 
 
-# In[49]:
 
 
 mdf_SIR_practice, mdf_sname, mplot_title = single_model('Hubei__China',practice_withhold=24,verbose=False)
 
 
-# In[50]:
 
 
 prediction_scores
 
 
-# In[51]:
 
 
 practice_withhold = 7
@@ -874,25 +822,21 @@ this_beta, this_gamma, this_ifx, this_rfx, this_pop = db_parameters.loc[this_nam
 df_SIR_predictions = sir_model(df_sname_template,N=this_pop,                                beta=this_beta,gamma=this_gamma,                                i_factor = this_ifx, r_factor = this_rfx)
 
 
-# In[52]:
 
 
 df_sname
 
 
-# In[53]:
 
 
 df_sname_template
 
 
-# In[54]:
 
 
 df_SIR_predictions
 
 
-# In[55]:
 
 
 rmsle_c, rmsle_f = evaluate_predictions(df_sname,df_SIR_predictions,
@@ -908,61 +852,51 @@ print("Finished evaluating...{}: {} {}".format(this_name,rmsle_c,rmsle_f))
 print("Finished evaluating 2...{}: {} {}".format(this_name,rmsle_c2,rmsle_f2))
 
 
-# In[56]:
 
 
 ##### END single country investigation ###################
 
 
-# In[57]:
 
 
 df_sname = df_train[df_train['SimpleName'] == 'not_provided__Germany']
 
 
-# In[58]:
 
 
 df_sname_template_1,num_extended = prepare_prediction_template(df_sname,-5)
 
 
-# In[59]:
 
 
 num_extended
 
 
-# In[60]:
 
 
 # df_sname_template_1.tail(n=40)
 
 
-# In[61]:
 
 
 df_SIR_practice = sir_model(df_sname_template_1) # use all defaults
 
 
-# In[62]:
 
 
 # df_SIR_practice.tail(n=40)
 
 
-# In[63]:
 
 
 # df_sname.tail(n=40)
 
 
-# In[ ]:
 
 
 
 
 
-# In[64]:
 
 
 
@@ -971,19 +905,16 @@ df_SIR_practice = sir_model(df_sname_template_1) # use all defaults
 mdf_SIR_practice, mdf_sname, mplot_title = single_model('Hubei__China',practice_withhold=24,verbose=False)
 
 
-# In[65]:
 
 
 mdf_sname.head()
 
 
-# In[66]:
 
 
 plot_train_predictions(mdf_SIR_practice,mdf_sname,mplot_title,ylim_factor = 4)
 
 
-# In[67]:
 
 
 selected_country_region = "US"
@@ -993,56 +924,47 @@ sname = selected_province_state + '__' + selected_country_region
 print("Sanity check for {}".format(sname))
 
 
-# In[68]:
 
 
 mdf_SIR_practice, mdf_sname, mplot_title = single_model(sname,7)
 
 
-# In[69]:
 
 
 plot_train_predictions(mdf_SIR_practice,mdf_sname,mplot_title,ylim_factor = 2)
 
 
-# In[70]:
 
 
 db_parameters.loc['Isle of Man__United Kingdom']
 
 
-# In[71]:
 
 
 mdf_SIR_practice, mdf_sname, mplot_title = single_model('Isle of Man__United Kingdom',7)
 plot_train_predictions(mdf_SIR_practice,mdf_sname,mplot_title,ylim_factor = 2)
 
 
-# In[72]:
 
 
 mdf_sname.tail(n=15)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[73]:
 
 
 sname_set
@@ -1059,7 +981,6 @@ mini_set = ['not_provided__Togo',
  'not_provided__Haiti']
 
 
-# In[74]:
 
 
 # full set runs about 3 minutes
@@ -1068,7 +989,6 @@ df_train = df_train_preserve.copy()
 df_test = df_test_preserve.copy()
 
 
-# In[75]:
 
 
 # Run all models 
@@ -1076,7 +996,6 @@ for sname in sname_set:
     mdf_SIR_practice, mdf_sname, mplot_title = single_model(sname,0)   # omit last 7 days to check score
 
 
-# In[76]:
 
 
 # Sanity check that all models are complete
@@ -1084,37 +1003,31 @@ last_day = df_test[df_test['DateTime'] == pd.to_datetime('2020-04-30')]
 print("Final prediction for 2020-04-30 has {} ConfirmedCases and {} Fatalities".format(last_day['ConfirmedCases'].sum(),                                                                                          last_day['Fatalities'].sum()))
 
 
-# In[77]:
 
 
 last_day
 
 
-# In[78]:
 
 
 prediction_scores
 
 
-# In[79]:
 
 
 df_scores = pd.DataFrame.from_dict(prediction_scores,orient='index', columns=['cc_score','f_score'])
 
 
-# In[80]:
 
 
 df_scores['cc_score'].idxmax()
 
 
-# In[81]:
 
 
 df_scores['f_score'].idxmax()
 
 
-# In[82]:
 
 
 df_test.shape
@@ -1127,69 +1040,58 @@ df_f = df_f.drop(['ForecastId','Country_Region','Province_State','Date','Confirm
 
 df_ccp = df_cc.pivot(index='SimpleName',columns='DateTime')
 df_ccp.iloc[6].plot()
-# In[83]:
 
 
 df_test.head(n=3)
 
 
-# In[84]:
 
 
 # write out my results so that I can find issues
 # df_test.to_csv('df_test_results2.csv')
 
 
-# In[85]:
 
 
 df_sub = df_test.drop(['Province_State','SimpleName','Country_Region','Date','DateTime'],axis=1)
 
 
-# In[86]:
 
 
 # final dates 3/19/2020 to 4/30/2020
 
 
-# In[87]:
 
 
 df_sub.head()
 
 
-# In[88]:
 
 
 df_sub_mod = df_sub.drop('ConfirmedCases', axis=1)
 
 
-# In[89]:
 
 
 df_sub_mod.head()
 
 
-# In[90]:
 
 
 df_sub_mod.columns = ['ForecastId','Fatalities','ConfirmedCases']
 df_sub_mod.head()
 
 
-# In[91]:
 
 
 df_sub = df_sub_mod
 
 
-# In[92]:
 
 
 df_sub.tail()
 
 
-# In[93]:
 
 
 df_sub.to_csv('submission.csv',index=False)
@@ -1197,7 +1099,6 @@ df_sub.to_csv('submission.csv',index=False)
 ## turned out to have 12642 index lines, which is correct
 
 
-# In[ ]:
 
 
 

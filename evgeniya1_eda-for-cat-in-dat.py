@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -38,7 +37,6 @@ SEED = 42
 np.random.seed(SEED)
 
 
-# In[2]:
 
 
 ##############################
@@ -133,7 +131,6 @@ def mean_1_contrast(df,cols):
           pd.DataFrame(contrast,index=['contrast'])])
 
 
-# In[3]:
 
 
 '''Read in train and test data from csv files'''
@@ -154,7 +151,6 @@ d['top, %'] = d['freq']/df_train.shape[0]*100
 d.drop(['count','freq'],axis=1)
 
 
-# In[4]:
 
 
 #group columns by type
@@ -166,79 +162,67 @@ nom_cols = [col for col in df_train.columns if 'nom' in col]
 no_target = [col for col in df_train.columns if 'target' not in col]
 
 
-# In[5]:
 
 
 plot_target_dist(df_train, bin_cols, figsize = (16,8), grid_r=2, grid_c=3)
 
 
-# In[6]:
 
 
 #target: class 1 fraction
 df_train.target.value_counts(normalize=True)[1].round(3)
 
 
-# In[7]:
 
 
 #calculate contrast and avegare classes 1 proporsion
 mean_1_contrast(df_train,bin_cols)
 
 
-# In[8]:
 
 
 plot_target_dist(df_train,cyclic_cols, figsize = (18,5), grid_r=1, grid_c=2)
 
 
-# In[9]:
 
 
 #calculate contrast and avegare classes 1 proporsion
 mean_1_contrast(df_train,cyclic_cols)
 
 
-# In[10]:
 
 
 plot_target_dist(df_train, ord_cols, figsize = (16,8), grid_r=3, grid_c=2)
 
 
-# In[11]:
 
 
 #calculate contrast and avegare classes 1 proporsion
 mean_1_contrast(df_train,ord_cols)
 
 
-# In[12]:
 
 
 plot_target_dist(df_train, nom_cols[:5], figsize = (16,8), grid_r=3, grid_c=2)
 
 
-# In[13]:
 
 
 #calculate contrast and avegare classes 1 proporsion
 mean_1_contrast(df_train,nom_cols[:5])
 
 
-# In[14]:
 
 
 plot_target_dist(df_train, nom_cols[5:], figsize = (16,8), grid_r=3, grid_c=2)
 
 
-# In[15]:
 
 
 #calculate contrast and avegare classes 1 proporsion
 mean_1_contrast(df_train,nom_cols[5:])
 
 
-# In[16]:
 
 
 #distribution of class 1 fraction in nom_9 variable
@@ -261,14 +245,12 @@ plt.title('Distribution of class 1 fraction for ' + col, fontsize=15)
 plt.show()
 
 
-# In[17]:
 
 
 #how many observation per given value in nom_9?
 df_train.nom_9.value_counts().head()
 
 
-# In[ ]:
 
 
 

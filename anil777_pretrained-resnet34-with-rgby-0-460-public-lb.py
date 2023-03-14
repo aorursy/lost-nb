@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install fastai==0.7.0 --no-deps')
 get_ipython().system('pip install torch==0.4.1 torchvision==0.2.1')
 
 
-# In[2]:
 
 
 from fastai.conv_learner import *
@@ -23,7 +21,6 @@ import scipy.optimize as opt
 import matplotlib.pyplot as plt
 
 
-# In[3]:
 
 
 PATH = './'
@@ -34,7 +31,6 @@ SPLIT = '../input/protein-trainval-split/'
 nw = 2   #number of workers for data loader
 
 
-# In[4]:
 
 
 name_label_dict = {
@@ -68,7 +64,6 @@ name_label_dict = {
 27:  'Rods & rings' }
 
 
-# In[5]:
 
 
 #using a split that includes all classes in val
@@ -80,7 +75,6 @@ test_names = sorted({f[:36] for f in os.listdir(TEST)})
 print(len(tr_n),len(val_n))
 
 
-# In[6]:
 
 
 #creating duplicates for rare classes in train set
@@ -107,7 +101,6 @@ tr_n = [idx for idx in tr_n for _ in range(s.get(idx))]
 print(len(tr_n),flush=True)
 
 
-# In[7]:
 
 
 def open_rgby(path,id): #a function that reads RGBY image
@@ -118,7 +111,6 @@ def open_rgby(path,id): #a function that reads RGBY image
     return np.stack(img, axis=-1)
 
 
-# In[8]:
 
 
 class pdFilesDataset(FilesDataset):
@@ -146,7 +138,6 @@ class pdFilesDataset(FilesDataset):
     def get_c(self): return len(name_label_dict) #number of classes
 
 
-# In[9]:
 
 
 def get_data(sz,bs,is_test=False):
@@ -169,7 +160,6 @@ def get_data(sz,bs,is_test=False):
     return md
 
 
-# In[10]:
 
 
 bs = 16
@@ -180,7 +170,6 @@ x,y = next(iter(md.aug_dl))
 x.shape, y.shape
 
 
-# In[11]:
 
 
 def display_imgs(x):
@@ -199,7 +188,6 @@ def display_imgs(x):
 display_imgs(np.asarray(md.trn_ds.denorm(x)))
 
 
-# In[12]:
 
 
 #x_tot = np.zeros(4)
@@ -214,7 +202,6 @@ display_imgs(np.asarray(md.trn_ds.denorm(x)))
 #channel_avr,channel_std
 
 
-# In[13]:
 
 
 class Resnet34_4(nn.Module):
@@ -248,7 +235,6 @@ class Resnet34_4(nn.Module):
         return x
 
 
-# In[14]:
 
 
 class FocalLoss(nn.Module):
@@ -270,7 +256,6 @@ class FocalLoss(nn.Module):
         return loss.sum(dim=1).mean()
 
 
-# In[15]:
 
 
 def acc(preds,targs,th=0.0):
@@ -279,7 +264,6 @@ def acc(preds,targs,th=0.0):
     return (preds==targs).float().mean()
 
 
-# In[16]:
 
 
 class F1:
@@ -316,7 +300,6 @@ class F1_callback(Callback):
         self.f1.reset()
 
 
-# In[17]:
 
 
 sz = 256 #image size
@@ -332,7 +315,6 @@ learner.metrics = [acc,f1_callback.f1]
 learner.summary
 
 
-# In[18]:
 
 
 with warnings.catch_warnings():
@@ -341,7 +323,6 @@ with warnings.catch_warnings():
 learner.sched.plot()
 
 
-# In[19]:
 
 
 lr = 0.5e-2
@@ -350,14 +331,12 @@ with warnings.catch_warnings():
     learner.fit(lr,1,callbacks=[f1_callback])
 
 
-# In[20]:
 
 
 learner.unfreeze()
 lrs=np.array([lr/10,lr/3,lr])
 
 
-# In[21]:
 
 
 with warnings.catch_warnings():
@@ -365,7 +344,6 @@ with warnings.catch_warnings():
     learner.fit(lrs/4,4,cycle_len=2,use_clr=(10,20),callbacks=[f1_callback])
 
 
-# In[22]:
 
 
 with warnings.catch_warnings():
@@ -373,13 +351,11 @@ with warnings.catch_warnings():
     learner.fit(lrs/16,2,cycle_len=4,use_clr=(10,20),callbacks=[f1_callback])
 
 
-# In[23]:
 
 
 learner.sched.plot_lr()
 
 
-# In[24]:
 
 
 with warnings.catch_warnings():
@@ -387,13 +363,11 @@ with warnings.catch_warnings():
     learner.fit(lrs/32,1,cycle_len=8,use_clr=(10,20),callbacks=[f1_callback])
 
 
-# In[25]:
 
 
 learner.save('ResNet34_256_1')
 
 
-# In[26]:
 
 
 md = get_data(sz,bs,is_test=True)
@@ -403,7 +377,6 @@ preds = np.stack(preds, axis=-1)
 pred = preds.mean(axis=-1)
 
 
-# In[27]:
 
 
 def sigmoid_np(x):
@@ -424,7 +397,6 @@ def fit_val(x,y):
     return p
 
 
-# In[28]:
 
 
 th = fit_val(pred,y)
@@ -434,7 +406,6 @@ print('F1 macro (th = 0.0): ',f1_score(y, pred>0.0, average='macro'))
 print('F1 micro: ',f1_score(y, pred>th, average='micro'))
 
 
-# In[29]:
 
 
 from sklearn.model_selection import train_test_split
@@ -452,14 +423,12 @@ print('F1 macro: ',f1_score(y, pred>th, average='macro'))
 print('F1 micro: ',f1_score(y, pred>th, average='micro'))
 
 
-# In[30]:
 
 
 print('Fractions: ',(pred > th).mean(axis=0))
 print('Fractions (true): ',(y > 0.5).mean(axis=0))
 
 
-# In[31]:
 
 
 f1 = f1_score(y, pred>th, average=None)
@@ -473,7 +442,6 @@ for i in range(len(name_label_dict)):
     plt.show()
 
 
-# In[32]:
 
 
 preds_t,y_t = learner.TTA(n_aug=8,is_test=True)
@@ -481,7 +449,6 @@ preds_t = np.stack(preds_t, axis=-1)
 pred_t = preds_t.mean(axis=-1)
 
 
-# In[33]:
 
 
 def save_pred(pred, th=0.0, fname='protein_classification.csv'):
@@ -494,14 +461,12 @@ def save_pred(pred, th=0.0, fname='protein_classification.csv'):
     df.sort_values(by='Id').to_csv(fname, header=True, index=False)
 
 
-# In[34]:
 
 
 save_pred(pred_t,th,'protein_classification_v.csv')
 save_pred(pred_t,0.0,'protein_classification_0.csv')
 
 
-# In[35]:
 
 
 lb_prob = [
@@ -514,7 +479,6 @@ lb_prob = [
 # I replaced 0 by 0.01 since there may be a rounding error leading to 0
 
 
-# In[36]:
 
 
 def Count_soft(preds,th=0.0,d=50.0):
@@ -530,7 +494,6 @@ def fit_test(x,y):
     return p
 
 
-# In[37]:
 
 
 th_t = fit_test(pred_t,lb_prob)
@@ -539,13 +502,11 @@ print('Fractions: ',(pred_t > th_t).mean(axis=0))
 print('Fractions (th = 0.0): ',(pred_t > 0.0).mean(axis=0))
 
 
-# In[38]:
 
 
 save_pred(pred_t,th_t,'protein_classification_f.csv')
 
 
-# In[39]:
 
 
 class_list = [8,9,10,15,20,24,27]
@@ -554,7 +515,6 @@ for i in class_list:
 save_pred(pred_t,th_t,'protein_classification_c.csv')
 
 
-# In[40]:
 
 
 labels = pd.read_csv(LABELS).set_index('Id')
@@ -566,7 +526,6 @@ label_fraction = label_count.astype(np.float)/len(labels)
 label_count, label_fraction
 
 
-# In[41]:
 
 
 th_t = fit_test(pred_t,label_fraction)

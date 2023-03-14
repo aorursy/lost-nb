@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[5]:
 
 
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
@@ -12,13 +11,11 @@ from IPython.display import HTML
 import os
 
 
-# In[6]:
 
 
 os.listdir("../input/train_color")[0:10]
 
 
-# In[2]:
 
 
 training_img_names = os.listdir("../input/train_color") 
@@ -26,19 +23,16 @@ trainingImgNameDF = pd.DataFrame( list(map(lambda s : [s]+s.split("_") , trainin
 trainingImgNameDF.head()
 
 
-# In[8]:
 
 
 trainingImgNameDF[1].unique().shape
 
 
-# In[46]:
 
 
 trainingImgNameDF[4].unique().shape
 
 
-# In[47]:
 
 
 def visVid(trainingImgNameDF,sessionID,cameraID,startFrame=0,endFrame=10,dataRoot="../input/train_color/"):
@@ -56,7 +50,6 @@ def visVid(trainingImgNameDF,sessionID,cameraID,startFrame=0,endFrame=10,dataRoo
     
 
 
-# In[48]:
 
 
 uniqueVideoID = trainingImgNameDF[1].unique()
@@ -64,7 +57,6 @@ ani = visVid(trainingImgNameDF,uniqueVideoID[0],"5.jpg")
 HTML(ani.to_jshtml(default_mode="reflect"))
 
 
-# In[50]:
 
 
 uniqueVideoID = trainingImgNameDF[1].unique()

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -38,7 +37,6 @@ pd.set_option('display.max_columns', 50)
 pd.set_option('display.width', 1000)
 
 
-# In[2]:
 
 
 
@@ -73,7 +71,6 @@ print(X_train.info())
 X_train.head()
 
 
-# In[3]:
 
 
 def repeat_data(df):
@@ -117,7 +114,6 @@ def repeat_data(df):
 #print(X_train.shape)
 
 
-# In[4]:
 
 
 # Additional features
@@ -155,7 +151,6 @@ def addDateTypeAvg(df, cols):
 #X_train.head()
 
 
-# In[5]:
 
 
 
@@ -175,7 +170,6 @@ X_train = X_train.drop(cols_drop, axis='columns')
 X_train.info()
 
 
-# In[6]:
 
 
 cols_ignore = ['id', 'd', 'saleCount', 'type',
@@ -200,13 +194,11 @@ for c in X_train.select_dtypes(include=['category']).columns:
 X_train.info()
 
 
-# In[7]:
 
 
 X_train[(X_train['id'] == 'FOODS_3_318_CA_1_validation') &  mask_train]
 
 
-# In[8]:
 
 
 # dropping NAN values on price
@@ -227,7 +219,6 @@ X_train = repNAN(X_train, ['sell_price'], -1)
 X_train = repNAN(X_train, ['saleCount'], 0)
 
 
-# In[9]:
 
 
 # Basic neural network
@@ -288,7 +279,6 @@ def run_nn():
 #     print(i,j)
 
 
-# In[10]:
 
 
 # XGBoost model
@@ -324,7 +314,6 @@ def run_xgboost(max_depth=6,n_estimators=1000,min_child_weight=1, learning_rate=
     return model
 
 
-# In[11]:
 
 
 # Sklearn randomforest
@@ -369,7 +358,6 @@ def run_rf(n_range=1):
     return model
 
 
-# In[12]:
 
 
 def run_cb_val():
@@ -480,7 +468,6 @@ def run_cb_train():
     return model
 
 
-# In[13]:
 
 
 def feat_imp(model):
@@ -506,7 +493,6 @@ def rmse(model):
     print('RMSE (train, val): ', rmse_train, rmse_val)
 
 
-# In[14]:
 
 
 # RMSE (train, val):  0.0004321664752965253 0.0014114955018167845
@@ -525,13 +511,11 @@ model = run_cb_train()
 # model = run_xgboost(max_depth=10,n_estimators=150,min_child_weight=50, learning_rate=0.1, gamma=0, subsample=1,colsample_bytree = 0.4)
 
 
-# In[15]:
 
 
 feat_imp(model)
 
 
-# In[16]:
 
 
 # Generate test set features
@@ -555,7 +539,6 @@ d_max_val = X_train.loc[X_train['type'] == 'val', 'd'].max()
 X_test.loc[X_test['id'] == 'FOODS_3_318_CA_3_validation', :].head(100)
 
 
-# In[17]:
 
 
 for d in range(d_min_val,d_max_val+1):
@@ -574,13 +557,11 @@ for d in range(d_min_val,d_max_val+1):
 X_test.loc[(X_test['id'] == 'FOODS_3_318_CA_3_validation') & (X_test['type'] == 'val'), :].head(30)
 
 
-# In[18]:
 
 
 X_test[(X_test['d'] == d) & (X_test['saleCount'] < 0)]['d'].count()
 
 
-# In[19]:
 
 
 # negative salecount predictions
@@ -589,7 +570,6 @@ print('Negative sale predictions: ', len(neg_sales))
 neg_sales.head()
 
 
-# In[20]:
 
 
 print('Generating forecast')
@@ -617,7 +597,6 @@ X_forecast['d'] = 'F'+ X_forecast['d'].add(- day_min + 1).astype('str')
 print('Done')
 
 
-# In[21]:
 
 
 

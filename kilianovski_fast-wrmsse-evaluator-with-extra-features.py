@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,13 +21,11 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 get_ipython().run_cell_magic('time', '', "\ntrain_df = pd.read_csv('/kaggle/input/m5-forecasting-accuracy/sales_train_validation.csv')\ncalendar = pd.read_csv('/kaggle/input/m5-forecasting-accuracy/calendar.csv')\nprices = pd.read_csv('/kaggle/input/m5-forecasting-accuracy/sell_prices.csv')\n\ntrain_fold_df = train_df.iloc[:, :-28]\nvalid_fold_df = train_df.iloc[:, -28:]")
 
 
-# In[3]:
 
 
 from typing import Union
@@ -178,7 +175,6 @@ class WRMSSEEvaluator(object):
         return np.sum(self.contributors)
 
 
-# In[4]:
 
 
 from typing import Union
@@ -359,37 +355,31 @@ class FastWRMSSEEvaluator(object):
         return np.sum(self.contributors)
 
 
-# In[5]:
 
 
 get_ipython().run_cell_magic('time', '', 'e = WRMSSEEvaluator(train_fold_df.copy(), valid_fold_df.copy(), calendar, prices)')
 
 
-# In[6]:
 
 
 get_ipython().run_cell_magic('time', '', 'fast_e = FastWRMSSEEvaluator(train_fold_df.copy(), valid_fold_df.copy(), calendar, prices)')
 
 
-# In[7]:
 
 
 valid_preds = np.random.randint(4, size=valid_fold_df.shape)
 
 
-# In[8]:
 
 
 get_ipython().run_cell_magic('timeit', '-n 100 -r 5', '# n - execute the statement n times \n# r - repeat each loop r times and return the best\n\nfast_score = fast_e.score(valid_preds)')
 
 
-# In[9]:
 
 
 get_ipython().run_cell_magic('timeit', '-n 3 -r 3', '# n - execute the statement n times \n# r - repeat each loop r times and return the best\n\nscore = e.score(valid_preds)')
 
 
-# In[10]:
 
 
 valid_preds = np.random.randint(4, size=valid_fold_df.shape)
@@ -399,7 +389,6 @@ print(score, fast_score)
 assert np.isclose(score, fast_score)
 
 
-# In[11]:
 
 
 valid_preds = np.random.randint(3, size=valid_fold_df.shape)
@@ -409,7 +398,6 @@ print(score, fast_score)
 assert np.isclose(score, fast_score)
 
 
-# In[12]:
 
 
 valid_preds = np.random.randint(2, size=valid_fold_df.shape)
@@ -419,19 +407,16 @@ print(score, fast_score)
 assert np.isclose(score, fast_score)
 
 
-# In[13]:
 
 
 np.allclose(fast_e.contributors, e.contributors)
 
 
-# In[14]:
 
 
 np.allclose(fast_e.rmsse, e.rmsse)
 
 
-# In[15]:
 
 
 very_bad_preds = np.random.randint(30, size=valid_fold_df.shape)
@@ -442,7 +427,6 @@ print(score, fast_score)
 assert np.isclose(score, fast_score)
 
 
-# In[ ]:
 
 
 

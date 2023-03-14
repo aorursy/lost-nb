@@ -1,26 +1,21 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from IPython.display import HTML
 HTML('<center><iframe width="700" height="400" src="https://www.youtube.com/embed/mkYBxfKDyv0?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe></center>')
 
 
-# In[2]:
 
 
-pip install --upgrade efficientnet-pytorch
 
 
-# In[3]:
 
 
 get_ipython().system('pip install efficientnet_pytorch torchtoolbox')
 
 
-# In[4]:
 
 
 import os 
@@ -88,7 +83,6 @@ warnings.filterwarnings("ignore")
 
 
 
-# In[5]:
 
 
 IMAGE_PATH = "../input/siim-isic-melanoma-classification/jpeg/"
@@ -102,19 +96,16 @@ test_df = pd.read_csv(TEST_PATH)
 train_df = pd.read_csv(TRAIN_PATH)
 
 
-# In[6]:
 
 
 train_df.head()
 
 
-# In[7]:
 
 
 test_df.head()
 
 
-# In[8]:
 
 
 print(Fore.MAGENTA +"Sex:",Style.RESET_ALL,train_df["sex"].unique())
@@ -126,7 +117,6 @@ print(Fore.GREEN +"-----------------------",Style.RESET_ALL)
 print(Fore.BLUE +"Diagnosis:",Style.RESET_ALL,train_df["diagnosis"].unique())
 
 
-# In[9]:
 
 
 def load_image(img_name,df="train"):
@@ -139,7 +129,6 @@ def load_image(img_name,df="train"):
 train_imgs = train_df["image_name"][:100].progress_apply(load_image)
 
 
-# In[10]:
 
 
 red_values = [np.mean(train_imgs[idx][:, :, 0]) for idx in range(len(train_imgs))]
@@ -148,7 +137,6 @@ blue_values = [np.mean(train_imgs[idx][:, :, 2]) for idx in range(len(train_imgs
 values = [np.mean(train_imgs[idx]) for idx in range(len(train_imgs))]
 
 
-# In[11]:
 
 
 fig = ff.create_distplot([values], group_labels=["Channels"], colors=["purple"])
@@ -159,7 +147,6 @@ fig.data[0].marker.line.width = 0.5
 fig.show()
 
 
-# In[12]:
 
 
 fig = ff.create_distplot([red_values], group_labels=["R"], colors=["red"])
@@ -170,7 +157,6 @@ fig.data[0].marker.line.width = 0.5
 fig.show()
 
 
-# In[13]:
 
 
 fig = ff.create_distplot([green_values], group_labels=["G"], colors=["green"])
@@ -181,7 +167,6 @@ fig.data[0].marker.line.width = 0.5
 fig
 
 
-# In[14]:
 
 
 fig = ff.create_distplot([blue_values], group_labels=["B"], colors=["blue"])
@@ -192,7 +177,6 @@ fig.data[0].marker.line.width = 0.5
 fig
 
 
-# In[15]:
 
 
 fig = go.Figure()
@@ -210,25 +194,21 @@ fig.update_layout(yaxis_title="Mean value", xaxis_title="Color channel",
                   title="Mean value vs. Color channel", template="plotly_white")
 
 
-# In[16]:
 
 
 del train_imgs
 
 
-# In[17]:
 
 
 malignant_df=pd.DataFrame(data=train_df[train_df["target"]==1])
 
 
-# In[18]:
 
 
 benign_df=pd.DataFrame(data=train_df[train_df["target"]==0])
 
 
-# In[19]:
 
 
 def get_images(df):
@@ -238,7 +218,6 @@ def get_images(df):
     return df_imgs,img_dir
 
 
-# In[20]:
 
 
 def disp_imgs(df_imgs,img_dir):
@@ -251,26 +230,22 @@ def disp_imgs(df_imgs,img_dir):
     return plt.tight_layout()   
 
 
-# In[21]:
 
 
 maldf_imgs,malimg_dir=get_images(malignant_df)
 bedf_imgs,bedimg_dir=get_images(benign_df)
 
 
-# In[22]:
 
 
 disp_imgs(maldf_imgs,malimg_dir)
 
 
-# In[23]:
 
 
 disp_imgs(bedf_imgs,bedimg_dir)
 
 
-# In[24]:
 
 
 def sobel_filter(df_imgs,img_dir):
@@ -292,19 +267,16 @@ def sobel_filter(df_imgs,img_dir):
         
 
 
-# In[25]:
 
 
 sobel_filter(maldf_imgs,malimg_dir)
 
 
-# In[26]:
 
 
 sobel_filter(bedf_imgs,bedimg_dir)
 
 
-# In[27]:
 
 
 def canny_filter(df_imgs,img_dir,sigma=0.99):
@@ -325,32 +297,27 @@ def canny_filter(df_imgs,img_dir,sigma=0.99):
         
 
 
-# In[28]:
 
 
 canny_filter(maldf_imgs,malimg_dir)
 
 
-# In[29]:
 
 
 canny_filter(bedf_imgs,bedimg_dir)
 
 
-# In[30]:
 
 
 del maldf_imgs,malimg_dir,bedf_imgs,bedimg_dir,benign_df,malignant_df
 
 
-# In[31]:
 
 
 cmap = sns.diverging_palette(220, 20, sep=20, as_cmap=True)
 ax = sns.heatmap(train_df.corr(), annot=True,cmap=cmap)
 
 
-# In[32]:
 
 
 f, (ax1, ax2) = plt.subplots(1, 2, figsize = (16, 5))
@@ -362,19 +329,16 @@ ax1.set_title('Train Missing Values Map', fontsize = 13)
 ax2.set_title('Test Missing Values Map', fontsize = 13);
 
 
-# In[33]:
 
 
 ax = sns.countplot(x=train_df['sex'], data=train_df)
 
 
-# In[34]:
 
 
 anat=sns.countplot(x=train_df['anatom_site_general_challenge'],data = train_df,palette=sns.cubehelix_palette(8))
 
 
-# In[35]:
 
 
 fig = ff.create_distplot([train_df.loc[train_df['target'] == 1,'age_approx'].dropna()], group_labels=["Age"], colors=["magenta"])
@@ -385,7 +349,6 @@ fig.data[0].marker.line.width = 1
 fig
 
 
-# In[36]:
 
 
 fig = ff.create_distplot([train_df.loc[train_df['target'] == 0,'age_approx'].dropna()], group_labels=["Age"], colors=["orange"])
@@ -396,7 +359,6 @@ fig.data[0].marker.line.width = 1
 fig
 
 
-# In[37]:
 
 
 def seed_everything(seed_value):
@@ -416,13 +378,11 @@ seed_everything(seed)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-# In[38]:
 
 
 train_df=pd.read_csv('../input/melanoma-external-malignant-256/train_concat.csv')
 
 
-# In[39]:
 
 
 train_df['sex'] = train_df['sex'].map({'male': 1, 'female': 0})
@@ -431,7 +391,6 @@ train_df['sex'] = train_df['sex'].fillna(-1)
 test_df['sex'] = test_df['sex'].fillna(-1)
 
 
-# In[40]:
 
 
 imp_mean=(train_df["age_approx"].sum())/(train_df["age_approx"].count()-train_df["age_approx"].isna().sum())
@@ -441,13 +400,11 @@ imp_mean_test=(test_df["age_approx"].sum())/(test_df["age_approx"].count())
 test_df['age_approx']=test_df['age_approx'].fillna(imp_mean_test)
 
 
-# In[41]:
 
 
 train_df['patient_id'] = train_df['patient_id'].fillna(0)
 
 
-# In[44]:
 
 
 concat = pd.concat([train_df['anatom_site_general_challenge'], test_df['anatom_site_general_challenge']], ignore_index=True)
@@ -456,39 +413,33 @@ train_df = pd.concat([train_df, dummies.iloc[:train_df.shape[0]]], axis=1)
 test_df = pd.concat([test_df, dummies.iloc[train_df.shape[0]:].reset_index(drop=True)], axis=1)
 
 
-# In[45]:
 
 
 meta_features = ['sex', 'age_approx'] + [col for col in train_df.columns if 'site_' in col]
 meta_features.remove('anatom_site_general_challenge')
 
 
-# In[46]:
 
 
 test_df=test_df.drop(["anatom_site_general_challenge"],axis=1)
 train_df=train_df.drop(["anatom_site_general_challenge"],axis=1)
 
 
-# In[47]:
 
 
 train_df.head()
 
 
-# In[49]:
 
 
 test_df.head()
 
 
-# In[50]:
 
 
 print(Fore.YELLOW,meta_features)
 
 
-# In[51]:
 
 
 
@@ -544,7 +495,6 @@ class HairGrowth:
         return f'{self.__class__.__name__}(hairs={self.hairs}, hairs_folder="{self.hairs_folder}")'
 
 
-# In[52]:
 
 
 train_transform = transforms.Compose([
@@ -564,7 +514,6 @@ test_transform = transforms.Compose([HairGrowth(hairs = 5,hairs_folder='/kaggle/
 ])
 
 
-# In[53]:
 
 
 class MelanomaDataset(Dataset):
@@ -597,13 +546,11 @@ class MelanomaDataset(Dataset):
     
 
 
-# In[54]:
 
 
 skf = GroupKFold(n_splits=5)
 
 
-# In[55]:
 
 
 test = MelanomaDataset(df=test_df,
@@ -613,7 +560,6 @@ test = MelanomaDataset(df=test_df,
                        meta_features=meta_features)
 
 
-# In[56]:
 
 
 from torch.multiprocessing import Pool, Process, set_start_method
@@ -623,7 +569,6 @@ except RuntimeError:
     pass
 
 
-# In[57]:
 
 
 # Config
@@ -645,7 +590,6 @@ test_len = len(test_df)
 oof = np.zeros(shape = (train_len, 1))
 
 
-# In[58]:
 
 
 class EfficientNetwork(nn.Module):
@@ -720,7 +664,6 @@ class EfficientNetwork(nn.Module):
         return out
 
 
-# In[ ]:
 
 
 #comment out in you don't want to Train
@@ -843,19 +786,16 @@ for fold, (train_idx, val_idx) in enumerate(skf.split(X=np.zeros(len(train_df)),
         
 
 
-# In[59]:
 
 
 test_loader = DataLoader(dataset=test, batch_size=batch_size2, shuffle=False, num_workers=0)
 
 
-# In[ ]:
 
 
 print('Out of the Folds Score:',roc_auc_score(train_df['target'], oof))
 
 
-# In[ ]:
 
 
 model = torch.load('/kaggle/input/melanoma/model3.pth')
@@ -878,7 +818,6 @@ with torch.no_grad():
 preds /= skf.n_splits 
 
 
-# In[ ]:
 
 
 sub = pd.read_csv('/kaggle/input/siim-isic-melanoma-classification/sample_submission.csv')

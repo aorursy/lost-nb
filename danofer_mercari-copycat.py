@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pyximport; pyximport.install()
@@ -52,7 +51,6 @@ def to_categorical(dataset):
     dataset['item_condition_id'] = dataset['item_condition_id'].astype('category')
 
 
-# In[2]:
 
 
 start_time = time.time()
@@ -61,7 +59,6 @@ test = pd.read_table('../input/test.tsv', engine='c')
 print('[{}] Finished to load data'.format(time.time() - start_time))
 
 
-# In[3]:
 
 
 nrow_train = train.shape[0]
@@ -70,7 +67,6 @@ merge: pd.DataFrame = pd.concat([train, test])
 submission: pd.DataFrame = test[['test_id']]
 
 
-# In[4]:
 
 
 start_time = time.time()
@@ -79,7 +75,6 @@ merge.drop('category_name', axis=1, inplace=True)
 print('[{}] Split categories completed.'.format(time.time() - start_time))
 
 
-# In[5]:
 
 
 start_time = time.time()
@@ -87,7 +82,6 @@ handle_missing_inplace(merge)
 print('[{}] Handle missing completed.'.format(time.time() - start_time))
 
 
-# In[6]:
 
 
 start_time = time.time()
@@ -95,7 +89,6 @@ cutting(merge)
 print('[{}] Cut completed.'.format(time.time() - start_time))
 
 
-# In[7]:
 
 
 start_time = time.time()
@@ -103,7 +96,6 @@ to_categorical(merge)
 print('[{}] Convert categorical completed'.format(time.time() - start_time))
 
 
-# In[8]:
 
 
 start_time = time.time()
@@ -113,7 +105,6 @@ X_name = cv.fit_transform(merge['name'])
 print('[{}] Count vectorize `name` completed.'.format(time.time() - start_time))
 
 
-# In[9]:
 
 
 start_time = time.time()
@@ -124,7 +115,6 @@ X_category3 = cv.fit_transform(merge['subcat_2'])
 print('[{}] Count vectorize `categories` completed.'.format(time.time() - start_time))
 
 
-# In[10]:
 
 
 start_time = time.time()
@@ -136,7 +126,6 @@ X_description = tv.fit_transform(merge['item_description'])
 print('[{}] TFIDF vectorize `item_description` completed.'.format(time.time() - start_time))
 
 
-# In[11]:
 
 
 start_time = time.time()
@@ -145,7 +134,6 @@ X_brand = lb.fit_transform(merge['brand_name'])
 print('[{}] Label binarize `brand_name` completed.'.format(time.time() - start_time))
 
 
-# In[12]:
 
 
 start_time = time.time()
@@ -154,7 +142,6 @@ X_dummies = csr_matrix(pd.get_dummies(merge[['item_condition_id', 'shipping']],
 print('[{}] Get dummies on `item_condition_id` and `shipping` completed.'.format(time.time() - start_time))    
 
 
-# In[13]:
 
 
 start_time = time.time()
@@ -162,7 +149,6 @@ sparse_merge = hstack((X_dummies, X_description, X_brand, X_category1, X_categor
 print('[{}] Create sparse merge completed'.format(time.time() - start_time))
 
 
-# In[14]:
 
 
 start_time = time.time()
@@ -174,7 +160,6 @@ model.fit(X, y)
 print('[{}] Train ridge completed'.format(time.time() - start_time))
 
 
-# In[15]:
 
 
 start_time = time.time()
@@ -182,7 +167,6 @@ predsR = model.predict(X=X_test)
 print('[{}] Predict ridge completed'.format(time.time() - start_time))
 
 
-# In[16]:
 
 
 start_time = time.time()
@@ -206,7 +190,6 @@ predsL = model.predict(X_test)
 print('[{}] Predict lgb 1 completed.'.format(time.time() - start_time))
 
 
-# In[17]:
 
 
 start_time = time.time()
@@ -230,7 +213,6 @@ predsL2 = model.predict(X_test)
 print('[{}] Predict lgb 2 completed.'.format(time.time() - start_time))
 
 
-# In[18]:
 
 
 preds = predsR*0.5 + predsL*0.25 + predsL2*0.25
@@ -238,7 +220,6 @@ submission['price'] = np.expm1(preds)
 submission.to_csv("submission_opttry1.csv", index=False)
 
 
-# In[19]:
 
 
 

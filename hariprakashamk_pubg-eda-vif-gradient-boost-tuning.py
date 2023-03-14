@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 import numpy as np
@@ -46,54 +44,46 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[ ]:
 
 
 import os
 print(os.listdir("../input"))
 
 
-# In[ ]:
 
 
 train_complete=pd.read_csv("../input/train_V2.csv")
 train_complete.head()
 
 
-# In[ ]:
 
 
 train=train_complete.sample(100000,random_state =1)
 train.head()
 
 
-# In[ ]:
 
 
 train=train.drop(['Id','groupId','matchId'],axis=1)
 train.head()
 
 
-# In[ ]:
 
 
 train.info()
 
 
-# In[ ]:
 
 
 dftrain=train.copy()
 
 
-# In[ ]:
 
 
 corr=dftrain.corr()
 corr
 
 
-# In[ ]:
 
 
 
@@ -101,7 +91,6 @@ plt.figure(figsize=(15,10))
 sns.heatmap(corr,annot=True)
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(15,10))
@@ -109,14 +98,12 @@ corr1=corr.abs()>0.5
 sns.heatmap(corr1,annot=True)
 
 
-# In[ ]:
 
 
 plt.title('Correlation B/w Winning % and other Independent Variable')
 dftrain.corr()['winPlacePerc'].sort_values(ascending=False).plot(kind='bar',figsize=(10,8))
 
 
-# In[ ]:
 
 
 k = 10 #number of variables for heatmap
@@ -128,7 +115,6 @@ hm = sns.heatmap(cm, cbar=True, annot=True, square=True, fmt='.2f', annot_kws={'
 plt.show()
 
 
-# In[ ]:
 
 
 sns.set()
@@ -137,20 +123,17 @@ sns.pairplot(dftrain[cols], size = 2.5)
 plt.show()
 
 
-# In[ ]:
 
 
 train.info()
 
 
-# In[ ]:
 
 
 train_complete=pd.get_dummies(train)
 train_complete.head()
 
 
-# In[ ]:
 
 
 from statsmodels.stats.outliers_influence import variance_inflation_factor
@@ -164,7 +147,6 @@ vif_factors['vif'] = vif
 vif_factors.sort_values(by=['vif'],ascending=False)[0:10]
 
 
-# In[ ]:
 
 
 x_features=list(train_complete)
@@ -183,7 +165,6 @@ vif_factors['vif'] = vif
 vif_factors.sort_values(by=['vif'],ascending=False)[0:10]
 
 
-# In[ ]:
 
 
 x=train_complete[x_features]
@@ -194,7 +175,6 @@ seed = 1
 x_train, x_validation, y_train, y_validation = train_test_split(x, y, test_size=validation_size, random_state=seed)
 
 
-# In[ ]:
 
 
 model_final=GradientBoostingRegressor(n_estimators=100,learning_rate=0.5)
@@ -203,7 +183,6 @@ print(model_final.score(x_train,y_train))
 print(model_final.score(x_validation,y_validation))
 
 
-# In[ ]:
 
 
 test=pd.read_csv('../input/test_V2.csv')
@@ -211,34 +190,29 @@ dftest=test.drop(['Id','groupId','matchId'],axis=1)
 dftest.head()
 
 
-# In[ ]:
 
 
 dftest.info()
 
 
-# In[ ]:
 
 
 test_complete=pd.get_dummies(dftest)
 x_test=test_complete[x_features]
 
 
-# In[ ]:
 
 
 pred=model_final.predict(x_test)
 pred[1:5]
 
 
-# In[ ]:
 
 
 pred_df=pd.DataFrame(pred,test['Id'],columns=['winPlacePerc'])
 pred_df.head()
 
 
-# In[ ]:
 
 
 pred_df.to_csv('sample_submission.csv')

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import pandas as pd
@@ -16,7 +15,6 @@ test = pd.read_csv("../input/test.tsv", sep = '\t')
 sub = pd.read_csv("../input/sampleSubmission.csv")
 
 
-# In[ ]:
 
 
 train['Phrase'] = train['Phrase'].str.replace(r'\'s', '')
@@ -37,7 +35,6 @@ train['Phrase'] = train['Phrase'].str.replace(r'wo n\'t', 'will not')
 train['Phrase'] = train['Phrase'].str.replace(r'n\'t', 'not')
 
 
-# In[ ]:
 
 
 test['Phrase'] = test['Phrase'].str.replace(r'\'s', '')
@@ -58,20 +55,17 @@ test['Phrase'] = test['Phrase'].str.replace(r'wo n\'t', 'will not')
 test['Phrase'] = test['Phrase'].str.replace(r'n\'t', 'not')
 
 
-# In[ ]:
 
 
 y_train = train['Sentiment']
 
 
-# In[ ]:
 
 
 #train = train.drop('Sentiment', axis=1)
 #train
 
 
-# In[ ]:
 
 
 # Vectorization
@@ -84,7 +78,6 @@ X = cv.transform(train.Phrase)
 X_test = cv.transform(test.Phrase)
 
 
-# In[ ]:
 
 
 pos = [3,4]
@@ -97,7 +90,6 @@ train_neg = train[train.Sentiment.isin(neg)]
 train_neg = train_neg['Phrase']
 
 
-# In[ ]:
 
 
 from wordcloud import WordCloud,STOPWORDS
@@ -123,13 +115,11 @@ print("Negative words")
 wordcloud_draw(train_neg)
 
 
-# In[ ]:
 
 
 # Building Classifier
 
 
-# In[ ]:
 
 
 from sklearn.linear_model import LogisticRegression
@@ -150,13 +140,11 @@ for c in [0.01, 0.05, 0.25, 0.5, 1]:
            % (c, accuracy_score(y_val, lr.predict(X_val))))
 
 
-# In[ ]:
 
 
 y_train.shape
 
 
-# In[ ]:
 
 
 final_model = LogisticRegression(C=1)
@@ -164,13 +152,11 @@ final_model = LogisticRegression(C=1)
 final_model.fit(X_train, y_train)
 
 
-# In[ ]:
 
 
 len(cv.get_feature_names())
 
 
-# In[ ]:
 
 
 from sklearn.feature_extraction.text import CountVectorizer
@@ -178,72 +164,61 @@ cv = CountVectorizer()
 cv.fit(train.Phrase)
 
 
-# In[ ]:
 
 
 neg_doc_mat = train.Phrase[train['Sentiment'] == 0]
 neg_document_matrix = cv.transform(train.Phrase[train['Sentiment'] == 0])
 
 
-# In[ ]:
 
 
 pos_doc_mat = train.Phrase[train['Sentiment'] == 4]
 pos_document_matrix = cv.transform(pos_doc_mat)
 
 
-# In[ ]:
 
 
 neu_doc_mat = train.Phrase[train['Sentiment'] == 2]
 neu_document_matrix = cv.transform(neu_doc_mat)
 
 
-# In[ ]:
 
 
 sneg_doc_mat = train.Phrase[train['Sentiment'] == 1]
 sneg_document_matrix = cv.transform(sneg_doc_mat)
 
 
-# In[ ]:
 
 
 spos_doc_mat = train.Phrase[train['Sentiment'] == 3]
 spos_document_matrix = cv.transform(spos_doc_mat)
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'neg_batches = np.linspace(0,156061,100).astype(int)\ni=0\nneg_tf = []\nwhile i < len(neg_batches)-1:\n    batch_result = np.sum(neg_document_matrix[neg_batches[i]:neg_batches[i+1]].toarray(),axis=0)\n    neg_tf.append(batch_result)\n    if (i % 10 == 0) | (i == len(neg_batches)-2):\n        print(neg_batches[i+1],"entries\' term frequency calculated")\n    i += 1')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'pos_batches = np.linspace(0,156061,100).astype(int)\ni=0\npos_tf = []\nwhile i < len(pos_batches)-1:\n    batch_result = np.sum(pos_document_matrix[pos_batches[i]:pos_batches[i+1]].toarray(),axis=0)\n    pos_tf.append(batch_result)\n    if (i % 10 == 0) | (i == len(pos_batches)-2):\n        print(pos_batches[i+1],"entries\' term frequency calculated")\n    i += 1')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'neu_batches = np.linspace(0,156061,100).astype(int)\ni=0\nneu_tf = []\nwhile i < len(neu_batches)-1:\n    batch_result = np.sum(neu_document_matrix[neu_batches[i]:neu_batches[i+1]].toarray(),axis=0)\n    neu_tf.append(batch_result)\n    if (i % 10 == 0) | (i == len(neu_batches)-2):\n        print(neu_batches[i+1],"entries\' term frequency calculated")\n    i += 1')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'sneg_batches = np.linspace(0,156061,100).astype(int)\ni=0\nsneg_tf = []\nwhile i < len(sneg_batches)-1:\n    batch_result = np.sum(sneg_document_matrix[sneg_batches[i]:sneg_batches[i+1]].toarray(),axis=0)\n    sneg_tf.append(batch_result)\n    if (i % 10 == 0) | (i == len(sneg_batches)-2):\n        print(sneg_batches[i+1],"entries\' term frequency calculated")\n    i += 1')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'spos_batches = np.linspace(0,156061,100).astype(int)\ni=0\nspos_tf = []\nwhile i < len(spos_batches)-1:\n    batch_result = np.sum(spos_document_matrix[spos_batches[i]:spos_batches[i+1]].toarray(),axis=0)\n    spos_tf.append(batch_result)\n    if (i % 10 == 0) | (i == len(spos_batches)-2):\n        print(spos_batches[i+1],"entries\' term frequency calculated")\n    i += 1')
 
 
-# In[ ]:
 
 
 neg = np.sum(neg_tf,axis=0)
@@ -255,7 +230,6 @@ term_freq_df = pd.DataFrame([neg,pos, neu, sneg, spos],columns=cv.get_feature_na
 term_freq_df.head()
 
 
-# In[ ]:
 
 
 term_freq_df.columns = ['negative', 'positive', 'neutral', 'somewhat negative', 'somewhat positive']
@@ -263,13 +237,11 @@ term_freq_df['total'] = term_freq_df['negative'] + term_freq_df['positive'] + te
 term_freq_df.sort_values(by='total', ascending=False).iloc[:10]
 
 
-# In[ ]:
 
 
 type(term_freq_df)
 
 
-# In[ ]:
 
 
 neg_phrases = train[train.Sentiment == 0]
@@ -286,7 +258,6 @@ plt.axis("off")
 plt.show()
 
 
-# In[ ]:
 
 
 pos_phrases = train[train.Sentiment == 4]
@@ -303,7 +274,6 @@ plt.axis("off")
 plt.show()
 
 
-# In[ ]:
 
 
 y_pos = np.arange(500)
@@ -316,7 +286,6 @@ plt.ylabel('Frequency')
 plt.title('Top 500 tokens in the Phrases')
 
 
-# In[ ]:
 
 
 from sklearn.feature_extraction.text import CountVectorizer
@@ -324,31 +293,26 @@ cvec = CountVectorizer(stop_words='english',max_features=10000)
 cvec.fit(train.Phrase)
 
 
-# In[ ]:
 
 
 neg_document_matrix_nostop = cvec.transform(train.Phrase[train['Sentiment'] == 0])
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'neg_batches = np.linspace(0,156061,100).astype(int)\ni=0\nneg_tf = []\nwhile i < len(neg_batches)-1:\n    batch_result = np.sum(neg_document_matrix_nostop[neg_batches[i]:neg_batches[i+1]].toarray(),axis=0)\n    neg_tf.append(batch_result)\n    print(neg_batches[i+1],"entries\' term frequency calculated")\n    i += 1')
 
 
-# In[ ]:
 
 
 pos_document_matrix_nostop = cvec.transform(train.Phrase[train['Sentiment'] == 4])
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'pos_batches = np.linspace(0,156061,100).astype(int)\ni=0\npos_tf = []\nwhile i < len(pos_batches)-1:\n    batch_result = np.sum(pos_document_matrix_nostop[pos_batches[i]:pos_batches[i+1]].toarray(),axis=0)\n    pos_tf.append(batch_result)\n    print(pos_batches[i+1],"entries\' term frequency calculated")\n    i += 1')
 
 
-# In[ ]:
 
 
 neg = np.sum(neg_tf,axis=0)
@@ -359,7 +323,6 @@ term_freq_df2['total'] = term_freq_df2['negative'] + term_freq_df2['positive']
 term_freq_df2.sort_values(by='total', ascending=False).iloc[:10]
 
 
-# In[ ]:
 
 
 y_pos = np.arange(50)
@@ -371,7 +334,6 @@ plt.xlabel('Top 50 negative words')
 plt.title('Top 50 tokens in negative sentiments')
 
 
-# In[ ]:
 
 
 y_pos = np.arange(50)
@@ -383,7 +345,6 @@ plt.xlabel('Top 50 positive tokens')
 plt.title('Top 50 tokens in positive sentiments')
 
 
-# In[ ]:
 
 
 import seaborn as sns
@@ -394,21 +355,18 @@ plt.xlabel('Negative Frequency')
 plt.title('Negative Frequency vs Positive Frequency')
 
 
-# In[ ]:
 
 
 term_freq_df2['pos_rate'] = term_freq_df2['positive'] * 1./term_freq_df2['total']
 term_freq_df2.sort_values(by='pos_rate', ascending=False).iloc[:10]
 
 
-# In[ ]:
 
 
 term_freq_df2['pos_freq_pct'] = term_freq_df2['positive'] * 1./term_freq_df2['positive'].sum()
 term_freq_df2.sort_values(by='pos_freq_pct', ascending=False).iloc[:10]
 
 
-# In[ ]:
 
 
 from scipy.stats import hmean
@@ -419,7 +377,6 @@ term_freq_df2['pos_hmean'] = term_freq_df2.apply(lambda x: (hmean([x['pos_rate']
 term_freq_df2.sort_values(by='pos_hmean', ascending=False).iloc[:10]
 
 
-# In[ ]:
 
 
 import warnings
@@ -436,7 +393,6 @@ term_freq_df2['neg_hmean'] = term_freq_df2.apply(lambda x: (hmean([x['neg_rate']
 #term_freq_df2.sort_values(by='neg_normcdf_hmean', ascending=False).iloc[:10]
 
 
-# In[ ]:
 
 
 from scipy.stats import norm
@@ -449,7 +405,6 @@ term_freq_df2['pos_freq_pct_normcdf'] = normcdf(term_freq_df2['pos_freq_pct'])
 #term_freq_df2.sort_values(by='pos_normcdf_hmean', ascending=False).iloc[:10]
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(8,6))
@@ -459,7 +414,6 @@ plt.xlabel('Negative Rate and Frequency Harmonic Mean')
 plt.title('neg hmean vs pos hmean')
 
 
-# In[ ]:
 
 
 x = train.Phrase
@@ -472,7 +426,6 @@ x_train, x_validation_and_test, y_train, y_validation_and_test = train_test_spli
 x_validation, x_test, y_validation, y_test = train_test_split(x_validation_and_test, y_validation_and_test, test_size=.5, random_state=SEED)
 
 
-# In[ ]:
 
 
 from sklearn.feature_extraction.text import CountVectorizer
@@ -482,7 +435,6 @@ from time import time
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
 
 
-# In[ ]:
 
 
 def accuracy_summary(pipeline, x_train, y_train, x_test, y_test):
@@ -526,13 +478,11 @@ def nfeature_accuracy_checker(vectorizer=cvec, n_features=n_features, stop_words
     return result
 
 
-# In[ ]:
 
 
 # Just to check if these top 10 words in term frequency data frame are actually included in Sklearn’s stop words list
 
 
-# In[ ]:
 
 
 from sklearn.feature_extraction import text
@@ -542,13 +492,11 @@ b = text.ENGLISH_STOP_WORDS
 set(a).issubset(set(b))
 
 
-# In[ ]:
 
 
 my_stop_words = frozenset(list(term_freq_df.sort_values(by='total', ascending=False).iloc[:10].index))
 
 
-# In[ ]:
 
 
 print("RESULT FOR UNIGRAM WITHOUT STOP WORDS\n")
@@ -561,7 +509,6 @@ print("RESULT FOR UNIGRAM WITHOUT CUSTOM STOP WORDS (Top 10 frequent words)\n")
 feature_result_wocsw = nfeature_accuracy_checker(stop_words=my_stop_words)
 
 
-# In[ ]:
 
 
 nfeatures_plot_ug = pd.DataFrame(feature_result_ug,columns=['nfeatures','validation_accuracy','train_test_time'])
@@ -578,7 +525,6 @@ plt.ylabel("Validation set accuracy")
 plt.legend()
 
 
-# In[ ]:
 
 
 print("RESULT FOR BIGRAM WITH STOP WORDS\n")
@@ -588,7 +534,6 @@ print("RESULT FOR TRIGRAM WITH STOP WORDS\n")
 feature_result_tg = nfeature_accuracy_checker(ngram_range=(1, 3))
 
 
-# In[ ]:
 
 
 nfeatures_plot_tg = pd.DataFrame(feature_result_tg,columns=['nfeatures','validation_accuracy','train_test_time'])
@@ -605,7 +550,6 @@ plt.ylabel("Validation set accuracy")
 plt.legend()
 
 
-# In[ ]:
 
 
 print("RESULT FOR BIGRAM WITHOUT STOP WORDS\n")
@@ -615,7 +559,6 @@ print("RESULT FOR TRIGRAM WITHOUT STOP WORDS\n")
 feature_result_tg_nostop = nfeature_accuracy_checker(ngram_range=(1, 3), stop_words='english')
 
 
-# In[ ]:
 
 
 nfeatures_plot_bg_nostop = pd.DataFrame(feature_result_bg_nostop,columns=['nfeatures','validation_accuracy','train_test_time'])
@@ -630,7 +573,6 @@ plt.ylabel("Validation set accuracy")
 plt.legend()
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(8,6))
@@ -642,7 +584,6 @@ plt.ylabel("Validation set accuracy")
 plt.legend()
 
 
-# In[ ]:
 
 
 def train_test_and_evaluate(pipeline, x_train, y_train, x_test, y_test):
@@ -674,19 +615,16 @@ def train_test_and_evaluate(pipeline, x_train, y_train, x_test, y_test):
     print(classification_report(y_test, y_pred, target_names=['negative','somewhat negative', 'neutral','somewhat positive', 'positive']))
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', "tg_cvec = CountVectorizer(max_features=80000,ngram_range=(1, 3))\ntg_pipeline = Pipeline([\n        ('vectorizer', tg_cvec),\n        ('classifier', lr)\n    ])\ntrain_test_and_evaluate(tg_pipeline, x_train, y_train, x_validation, y_validation)")
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', "bg_cvec = CountVectorizer(max_features=80000,ngram_range=(1, 2))\nbg_pipeline = Pipeline([\n        ('vectorizer', bg_cvec),\n        ('classifier', lr)\n    ])\ntrain_test_and_evaluate(bg_pipeline, x_train, y_train, x_validation, y_validation)")
 
 
-# In[ ]:
 
 
 cv_train = bg_cvec.fit_transform(train.Phrase)
@@ -696,7 +634,6 @@ cv_test = bg_cvec.transform(test.Phrase)
 print(cv_test.shape)
 
 
-# In[ ]:
 
 
 from sklearn.linear_model import LogisticRegression
@@ -726,7 +663,6 @@ abc.fit(cv_train,y)
 lsvc.fit(cv_train,y)
 
 
-# In[ ]:
 
 
 lr_y_pred = lr.predict(cv_test)
@@ -736,7 +672,6 @@ lr_sub = pd.DataFrame({"PhraseId": sub['PhraseId'], "Sentiment" : lr_y_pred})
 lr_sub.to_csv("LR_submission.csv",index=False)
 
 
-# In[ ]:
 
 
 mn_y_pred = mn.predict(cv_test)
@@ -746,7 +681,6 @@ mn_sub = pd.DataFrame({"PhraseId": sub['PhraseId'], "Sentiment" : mn_y_pred})
 mn_sub.to_csv("MN_submission.csv",index=False)
 
 
-# In[ ]:
 
 
 rc_y_pred = rc.predict(cv_test)
@@ -756,7 +690,6 @@ rc_sub = pd.DataFrame({"PhraseId": sub['PhraseId'], "Sentiment" : rc_y_pred})
 rc_sub.to_csv("RC_submission.csv",index=False)
 
 
-# In[ ]:
 
 
 abc_y_pred = abc.predict(cv_test)
@@ -766,7 +699,6 @@ abc_sub = pd.DataFrame({"PhraseId": sub['PhraseId'], "Sentiment" : abc_y_pred})
 abc_sub.to_csv("abc_submission.csv",index=False)
 
 
-# In[ ]:
 
 
 bnb_y_pred = bnb.predict(cv_test)
@@ -776,7 +708,6 @@ bnb_sub = pd.DataFrame({"PhraseId": sub['PhraseId'], "Sentiment" : bnb_y_pred})
 bnb_sub.to_csv("bnb_submission.csv",index=False)
 
 
-# In[ ]:
 
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -784,21 +715,18 @@ from wordcloud import WordCloud, STOPWORDS
 tvec = TfidfVectorizer(smooth_idf=False, sublinear_tf=False, norm=None, analyzer='word')
 
 
-# In[ ]:
 
 
 txt_fitted = tvec.fit(train.Phrase)
 txt_transformed = txt_fitted.transform(train.Phrase)
 
 
-# In[ ]:
 
 
 idf = tvec.idf_
 print(dict(zip(txt_fitted.get_feature_names(), idf)))
 
 
-# In[ ]:
 
 
 # Instantiate the vectorizer
@@ -820,7 +748,6 @@ X_train_word_features = word_vectorizer.transform(train.Phrase)
 test_features = word_vectorizer.transform(test.Phrase)
 
 
-# In[ ]:
 
 
 td_train = word_vectorizer.fit_transform(train.Phrase)
@@ -830,7 +757,6 @@ td_test = word_vectorizer.transform(test.Phrase)
 print(td_test.shape)
 
 
-# In[ ]:
 
 
 from sklearn.linear_model import LogisticRegression
@@ -853,7 +779,6 @@ abc = AdaBoostClassifier()
 lsvc = LinearSVC()
 
 
-# In[ ]:
 
 
 lr.fit(td_train,y)
@@ -864,7 +789,6 @@ abc.fit(td_train,y)
 lsvc.fit(td_train,y)
 
 
-# In[ ]:
 
 
 lr_y_pred_td = lr.predict(td_test)
@@ -874,7 +798,6 @@ lr_sub_td = pd.DataFrame({"PhraseId": sub['PhraseId'], "Sentiment" : lr_y_pred_t
 lr_sub_td.to_csv("LR_td_submission.csv",index=False)
 
 
-# In[ ]:
 
 
 mn_y_pred_td = mn.predict(td_test)
@@ -884,7 +807,6 @@ mn_sub_td = pd.DataFrame({"PhraseId": sub['PhraseId'], "Sentiment" : mn_y_pred_t
 mn_sub_td.to_csv("MN_td_submission.csv",index=False)
 
 
-# In[ ]:
 
 
 bnb_y_pred_td = bnb.predict(td_test)
@@ -894,7 +816,6 @@ bnb_sub_td = pd.DataFrame({"PhraseId": sub['PhraseId'], "Sentiment" : bnb_y_pred
 bnb_sub_td.to_csv("BN_td_submission.csv",index=False)
 
 
-# In[ ]:
 
 
 rc_y_pred_td = rc.predict(td_test)
@@ -904,7 +825,6 @@ rc_sub_td = pd.DataFrame({"PhraseId": sub['PhraseId'], "Sentiment" : rc_y_pred_t
 rc_sub_td.to_csv("RC_td_submission.csv",index=False)
 
 
-# In[ ]:
 
 
 abc_y_pred_td = rc.predict(td_test)
@@ -914,7 +834,6 @@ abc_sub_td = pd.DataFrame({"PhraseId": sub['PhraseId'], "Sentiment" : abc_y_pred
 abc_sub_td.to_csv("ABC_td_submission.csv",index=False)
 
 
-# In[ ]:
 
 
 lsvc_y_pred_td = lsvc.predict(td_test)
@@ -924,31 +843,26 @@ lsvc_sub_td = pd.DataFrame({"PhraseId": sub['PhraseId'], "Sentiment" : lsvc_y_pr
 lsvc_sub_td.to_csv("LSVC_td_submission.csv",index=False)
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'print("RESULT FOR UNIGRAM WITH STOP WORDS (Tfidf)\\n")\nfeature_result_ugt = nfeature_accuracy_checker(vectorizer=tvec)\n\nprint("RESULT FOR UNIGRAM WITHOUT STOP WORDS (Tfidf)\\n")\nfeature_result_ugt_nostop = nfeature_accuracy_checker(vectorizer=tvec, stop_words = \'english\')')
 
 
-# In[ ]:
 
 
 max(feature_result_ugt)
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'print("RESULT FOR BIGRAM WITH STOP WORDS (Tfidf)\\n")\nfeature_result_bgt = nfeature_accuracy_checker(vectorizer=tvec,ngram_range=(1, 2))')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'print("RESULT FOR TRIGRAM WITH STOP WORDS (Tfidf)\\n")\nfeature_result_tgt = nfeature_accuracy_checker(vectorizer=tvec,ngram_range=(1, 3))')
 
 
-# In[ ]:
 
 
 nfeatures_plot_tgt = pd.DataFrame(feature_result_tgt,columns=['nfeatures','validation_accuracy','train_test_time'])
@@ -968,25 +882,21 @@ plt.ylabel("Validation set accuracy")
 plt.legend()
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'print("RESULT FOR UNIGRAM WITHOUT STOP WORDS (Tfidf)\\n")\nfeature_result_ugt_nostop = nfeature_accuracy_checker(vectorizer=tvec, stop_words=STOPWORDS)')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'print("RESULT FOR BIGRAM WITHOUT STOP WORDS (Tfidf)\\n")\nfeature_result_bgt_nostop = nfeature_accuracy_checker(vectorizer=tvec,ngram_range=(1, 2),stop_words=STOPWORDS)')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'print("RESULT FOR TRIGRAM WITH STOP WORDS (Tfidf)\\n")\nfeature_result_tgt_nostop = nfeature_accuracy_checker(vectorizer=tvec,ngram_range=(1, 3),stop_words=STOPWORDS)')
 
 
-# In[ ]:
 
 
 nfeatures_plot_tgt_nostop = pd.DataFrame(feature_result_tgt_nostop,columns=['nfeatures','validation_accuracy','train_test_time'])
@@ -1006,7 +916,6 @@ plt.ylabel("Validation set accuracy")
 plt.legend()
 
 
-# In[ ]:
 
 
 print("RESULT FOR BIGRAM WITHOUT STOP WORDS\n")
@@ -1019,7 +928,6 @@ print("RESULT FOR UNIGRAM WITHOUT STOP WORDS\n")
 feature_result_ug_nostop = nfeature_accuracy_checker(vectorizer=cvec, ngram_range=(1, 1), stop_words=STOPWORDS)
 
 
-# In[ ]:
 
 
 nfeatures_plot_tg_nostop = pd.DataFrame(feature_result_tg_nostop, columns=['nfeatures','validation_accuracy','train_test_time'])
@@ -1027,7 +935,6 @@ nfeatures_plot_bg_nostop = pd.DataFrame(feature_result_bg_nostop, columns=['nfea
 nfeatures_plot_ug_nostop = pd.DataFrame(feature_result_ug_nostop, columns=['nfeatures','validation_accuracy','train_test_time'])
 
 
-# In[ ]:
 
 
 nfeatures_plot_tgt_nostop = pd.DataFrame(feature_result_tgt_nostop,columns=['nfeatures','validation_accuracy','train_test_time'])
@@ -1047,7 +954,6 @@ plt.ylabel("Validation set accuracy")
 plt.legend()
 
 
-# In[ ]:
 
 
 

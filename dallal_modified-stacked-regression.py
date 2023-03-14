@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os, gc
@@ -33,7 +32,6 @@ from pandas.api.types import is_categorical_dtype
 from pandas.api.types import is_datetime64_any_dtype as is_datetime
 
 
-# In[2]:
 
 
 # Memory optimization
@@ -80,14 +78,12 @@ def reduce_mem_usage(data, use_float16=False) -> pd.DataFrame:
     return data
 
 
-# In[3]:
 
 
 # Path to data 
 PATH = 'C:\\Users\\HassanEldeeb\\Downloads\\ashrae-energy-prediction\\'
 
 
-# In[4]:
 
 
 # Import train data
@@ -98,7 +94,6 @@ weather_train = pd.read_csv(f'{PATH}weather_train.csv')
 metadata = pd.read_csv(f'{PATH}building_metadata.csv')
 
 
-# In[5]:
 
 
 # Remove outliers in train data
@@ -106,7 +101,6 @@ train = train[train['building_id'] != 1099]
 train = train.query('not (building_id <= 104 & meter == 0 & timestamp <= "2016-05-20")')
 
 
-# In[6]:
 
 
 # Function for weather data processing
@@ -164,14 +158,12 @@ def weather_data_parser(weather_data) -> pd.DataFrame:
     return weather_data
 
 
-# In[7]:
 
 
 # Train weather data processing
 weather_train = weather_data_parser(weather_train)
 
 
-# In[8]:
 
 
 # Memory optimization
@@ -180,7 +172,6 @@ weather_train = reduce_mem_usage(weather_train, use_float16=True)
 metadata = reduce_mem_usage(metadata, use_float16=True)
 
 
-# In[9]:
 
 
 # Merge train data 
@@ -190,7 +181,6 @@ train = train.merge(weather_train, on=['site_id', 'timestamp'], how='left')
 del weather_train; gc.collect()
 
 
-# In[10]:
 
 
 summer_heater_ids = train.query('(meter in [2,3]                                     & timestamp >= "2016-06-21" & timestamp <= "2016-09-22"                                    & meter_reading > 0)')
@@ -210,7 +200,6 @@ for bid in bad_buildings_ids[1:]:
 train.drop(winter_bad.index, inplace=True)
 
 
-# In[11]:
 
 
 # Function for train and test data processing
@@ -235,14 +224,12 @@ def data_parser(data) -> pd.DataFrame:
     return data
 
 
-# In[12]:
 
 
 # Train data processing
 train = data_parser(train)
 
 
-# In[13]:
 
 
 # Define target and predictors
@@ -252,7 +239,6 @@ features = train.drop(['meter_reading'], axis = 1)
 del train; gc.collect()
 
 
-# In[14]:
 
 
 # Process categorical features
@@ -267,7 +253,6 @@ for feature in categorical_features:
     features[feature] = features[feature] / features_size
 
 
-# In[15]:
 
 
 # Missing data imputation
@@ -276,7 +261,6 @@ imputer.fit(features)
 features = imputer.transform(features)
 
 
-# In[16]:
 
 
 # Regressors
@@ -292,7 +276,6 @@ sgd = SGDRegressor(loss='squared_loss', penalty='l2', alpha=0.0001, l1_ratio=0.1
 #knn = KNeighborsRegressor()
 
 
-# In[17]:
 
 
 kfold = KFold(n_splits=3, shuffle=False)
@@ -318,7 +301,6 @@ for idx, (train_idx, val_idx) in enumerate(kfold.split(features)):
 del features, target; gc.collect()
 
 
-# In[18]:
 
 
 # Import test data
@@ -326,21 +308,18 @@ test = pd.read_csv(f'{PATH}test.csv')
 weather_test = pd.read_csv(f'{PATH}weather_test.csv')
 
 
-# In[19]:
 
 
 row_ids = test['row_id']
 test.drop('row_id', axis=1, inplace=True)
 
 
-# In[20]:
 
 
 # Test weather data processing
 weather_test = weather_data_parser(weather_test)
 
 
-# In[21]:
 
 
 # Memory optimization
@@ -348,7 +327,6 @@ test = reduce_mem_usage(test, use_float16=True)
 weather_test = reduce_mem_usage(weather_test, use_float16=True)
 
 
-# In[22]:
 
 
 # Merge test data
@@ -358,7 +336,6 @@ test = test.merge(weather_test, on=['site_id', 'timestamp'], how='left')
 del metadata; gc.collect()
 
 
-# In[23]:
 
 
 # Test data processing
@@ -371,7 +348,6 @@ for feature in categorical_features:
 test = imputer.transform(test)
 
 
-# In[24]:
 
 
 # Make predictions
@@ -383,7 +359,6 @@ for model in models:
 del test, models; gc.collect()
 
 
-# In[25]:
 
 
 # Create submission file
@@ -394,7 +369,6 @@ submission = pd.DataFrame({
 submission.to_csv('submission.csv', index=False, float_format='%.4f')
 
 
-# In[26]:
 
 
 submission.shape

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,20 +22,17 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 train=  pd.read_csv("../input/train.csv")
 
 
 
-# In[3]:
 
 
 train.head()
 
 
-# In[4]:
 
 
 import matplotlib.pyplot as plt 
@@ -45,13 +41,11 @@ train.scalar_coupling_constant.describe()
 sns.distplot( train.scalar_coupling_constant.values)
 
 
-# In[5]:
 
 
 sns.countplot(train.type.values)
 
 
-# In[6]:
 
 
 train.boxplot(column="scalar_coupling_constant",        # Column to plot
@@ -59,37 +53,31 @@ train.boxplot(column="scalar_coupling_constant",        # Column to plot
                  figsize= (8,8)) 
 
 
-# In[7]:
 
 
 train.groupby('molecule_name',group_keys=False).size()
 
 
-# In[ ]:
 
 
 
 
 
-# In[8]:
 
 
 test= pd.read_csv("../input/test.csv")
 
 
-# In[9]:
 
 
 test.head()
 
 
-# In[10]:
 
 
 sns.countplot(test.type.values)
 
 
-# In[11]:
 
 
 import sklearn
@@ -100,13 +88,11 @@ X_train, X_test = sklearn.model_selection.train_test_split(train,test_size=int(n
 X_train, X_val = sklearn.model_selection.train_test_split(X_train,test_size=int(nrow*0.2),random_state=1)
 
 
-# In[12]:
 
 
 dt=  X_train['scalar_coupling_constant'].groupby(X_train['type']).mean()
 
 
-# In[13]:
 
 
 X_train['Mean'] = X_train.groupby('type')['scalar_coupling_constant'].transform(np.average)  
@@ -120,50 +106,42 @@ rms = sqrt(mean_squared_error(X_train.Mean.values, X_train.scalar_coupling_const
 print("RMSE for mean by type is "+ str(rms))
 
 
-# In[14]:
 
 
 sample_submission=  pd.read_csv("../input/sample_submission.csv")
 sample_submission.head()
 
 
-# In[ ]:
 
 
 
 
 
-# In[15]:
 
 
 Poetential_energy= pd.read_csv("../input/potential_energy.csv")
 
 
-# In[16]:
 
 
 Poetential_energy.head()
 
 
-# In[17]:
 
 
 Mulliken_charges= pd.read_csv("../input/mulliken_charges.csv")
 
 
-# In[18]:
 
 
 Mulliken_charges.head()
 
 
-# In[19]:
 
 
 scalar_coupling_contributions= pd.read_csv("../input/scalar_coupling_contributions.csv")
 
 
-# In[20]:
 
 
 scalar_coupling_contributions.head()

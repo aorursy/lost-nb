@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np
@@ -118,7 +117,6 @@ y2 = df2["variable"]
 del df, df2
 
 
-# In[ ]:
 
 
 #Jetzt geht es zu den wirklichen Testdaten
@@ -209,7 +207,6 @@ X_Test.head()
 del df
 
 
-# In[ ]:
 
 
 X = pd.concat([X1,X_Test], axis=0)
@@ -247,7 +244,6 @@ y2 = y2.replace(['ind_cco_fin_ult1', 'ind_cno_fin_ult1', 'ind_ctju_fin_ult1',
        'ind_recibo_ult1'], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19])
 
 
-# In[ ]:
 
 
 from sklearn.metrics import f1_score
@@ -265,7 +261,6 @@ from sklearn.cross_validation import train_test_split
 X1_train, X1_test, y1_train, y1_test = train_test_split(X1, y1, test_size=0.20, random_state=42)
 
 
-# In[ ]:
 
 
 from sklearn.metrics import make_scorer
@@ -312,57 +307,48 @@ mod1.get_params()['max_depth']
 performance_metric(y1_test, y1_predict)
 
 
-# In[ ]:
 
 
 mod1
 
 
-# In[ ]:
 
 
 mod1.feature_importances_
 
 
-# In[ ]:
 
 
 X1_train.head()
 
 
-# In[ ]:
 
 
 importances = mod1.feature_importances_
 indices = np.argsort(importances)[::-1]
 
 
-# In[ ]:
 
 
 indices
 
 
-# In[ ]:
 
 
 for f in range(X1_train.shape[1]):
     print("%d. feature %d (%f)" % (f + 1, indices[f], importances[indices[f]]))
 
 
-# In[ ]:
 
 
 X1_train.columns[indices][:18]
 
 
-# In[ ]:
 
 
 X1_train.describe()
 
 
-# In[ ]:
 
 
 

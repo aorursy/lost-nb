@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # basics
@@ -33,19 +32,16 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 
-# In[2]:
 
 
 cuda_idx = 0
 
 
-# In[3]:
 
 
 all_start = time.time()
 
 
-# In[4]:
 
 
 def timer(fn):
@@ -59,7 +55,6 @@ def timer(fn):
     return func
 
 
-# In[5]:
 
 
 def seed_torch(seed=1019):
@@ -74,7 +69,6 @@ SEED = 1019
 seed_torch(SEED)
 
 
-# In[6]:
 
 
 # model parameters
@@ -110,7 +104,6 @@ class Config:
 c = Config()
 
 
-# In[7]:
 
 
 puncts = [
@@ -127,7 +120,6 @@ puncts = [
 ]
 
 
-# In[8]:
 
 
 abbreviations = {
@@ -268,7 +260,6 @@ abbreviations = {
 }
 
 
-# In[9]:
 
 
 spells = {
@@ -315,7 +306,6 @@ spells = {
 }
 
 
-# In[10]:
 
 
 @timer
@@ -462,7 +452,6 @@ def get_all_vocabs(texts):
     return vocab
 
 
-# In[11]:
 
 
 def add_features(df):
@@ -477,7 +466,6 @@ def add_features(df):
     return df[['caps_vs_length', 'words_vs_unique', 'num_words']]
 
 
-# In[12]:
 
 
 class Embeddings(nn.Module):
@@ -574,7 +562,6 @@ class Embeddings(nn.Module):
         return self._make_embeddings(embeddings_index, word_index, emb_mean, emb_std)
 
 
-# In[13]:
 
 
 num_cores = 2
@@ -588,7 +575,6 @@ def df_parallelize_run(df, func, num_cores=2):
     return df
 
 
-# In[14]:
 
 
 train_df, test_df = load_data(c.datadir)
@@ -603,7 +589,6 @@ train_x = tokenize_and_padding(train_x, tokenizer, c.max_length)
 test_x = tokenize_and_padding(test_x, tokenizer, c.max_length)
 
 
-# In[15]:
 
 
 ss = StandardScaler()
@@ -612,7 +597,6 @@ train_features = ss.transform(train_features)
 test_features = ss.transform(test_features)
 
 
-# In[16]:
 
 
 start = time.time()
@@ -622,7 +606,6 @@ embeddings = Embeddings(c, tokenizer, all_vocabs)
 print(time.time() - start)
 
 
-# In[17]:
 
 
 class GRULayer(nn.Module):
@@ -656,7 +639,6 @@ class GRULayer(nn.Module):
             
 
 
-# In[18]:
 
 
 class LSTMLayer(nn.Module):
@@ -689,7 +671,6 @@ class LSTMLayer(nn.Module):
         return self.dropout(lstm_outputs), lstm_states
 
 
-# In[19]:
 
 
 # https://github.com/anandsaha/pytorch.cyclic.learning.rate/blob/master/cls.py
@@ -777,7 +758,6 @@ class CyclicLR(object):
         return lrs
 
 
-# In[20]:
 
 
 class SimpleRNN(nn.Module):
@@ -823,7 +803,6 @@ class SimpleRNN(nn.Module):
         return out
 
 
-# In[21]:
 
 
 def sigmoid(x):
@@ -844,7 +823,6 @@ def threshold_search(y_true, y_proba, plot=False):
     return search_result 
 
 
-# In[22]:
 
 
 def cut_length(data, mask):
@@ -858,7 +836,6 @@ def cut_length(data, mask):
     return data
 
 
-# In[23]:
 
 
 @timer
@@ -946,27 +923,23 @@ def training(train_x, train_f, train_y, test_x, test_f, c, embeddings):
     return train_preds, test_preds
 
 
-# In[24]:
 
 
 train_preds, test_preds = training(train_x, train_features, train_y, test_x, test_features, c, embeddings)
 
 
-# In[25]:
 
 
 search_result = threshold_search(train_y, train_preds)
 search_result
 
 
-# In[26]:
 
 
 all_elapsed = time.time() - all_start
 all_elapsed
 
 
-# In[27]:
 
 
 # kernel only

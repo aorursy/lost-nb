@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,14 +21,12 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 #Analysis done by: Abhishe Mukherjee
 #Queries/questions/contradictions can be directly addressed to: abhi0787@gmail.com or amukher3@rockets.utoledo.edu
 
 
-# In[ ]:
 
 
 COVID-19 Analysis/Exploratory Data Analysis Week-2 kaggle Data
@@ -39,7 +36,6 @@ Various locations across the world. Data includes the Week-2 data for the month 
 A note about using filters and link to the data used: https://github.com/amukher3/COVID-19/blob/master/README.md
 
 
-# In[ ]:
 
 
 # An assemblage of the entire analysis. 
@@ -49,19 +45,16 @@ A note about using filters and link to the data used: https://github.com/amukher
 #China seems to have the highest numbers. 
 
 
-# In[4]:
 
 
 get_ipython().run_cell_magic('HTML', '', "<div class='tableauPlaceholder' id='viz1586128490041' style='position: relative'><noscript><a href='#'><img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;CO&#47;COVID_19_Kaggle_Data&#47;World_Map_cases&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='COVID_19_Kaggle_Data&#47;World_Map_cases' /><param name='tabs' value='yes' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;CO&#47;COVID_19_Kaggle_Data&#47;World_Map_cases&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1586128490041');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';                    var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>")
 
 
-# In[3]:
 
 
 get_ipython().run_cell_magic('HTML', '', "<div class='tableauPlaceholder' id='viz1586128929322' style='position: relative'><noscript><a href='#'><img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;83&#47;83W2SPDK5&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='path' value='shared&#47;83W2SPDK5' /> <param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;83&#47;83W2SPDK5&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1586128929322');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';                    var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>")
 
 
-# In[ ]:
 
 
 #**Role of Longitude:
@@ -71,13 +64,11 @@ get_ipython().run_cell_magic('HTML', '', "<div class='tableauPlaceholder' id='vi
 #grown at a steady pace following Italy. **
 
 
-# In[2]:
 
 
 get_ipython().run_cell_magic('HTML', '', "<div class='tableauPlaceholder' id='viz1586128981746' style='position: relative'><noscript><a href='#'><img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;D4&#47;D4RKFC39H&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='path' value='shared&#47;D4RKFC39H' /> <param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;D4&#47;D4RKFC39H&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1586128981746');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';                    var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>")
 
 
-# In[ ]:
 
 
 #The curve with time: 
@@ -96,13 +87,11 @@ get_ipython().run_cell_magic('HTML', '', "<div class='tableauPlaceholder' id='vi
 #surpassing countries the countries which were finding it difficult to deal with the pandemic.
 
 
-# In[1]:
 
 
 get_ipython().run_cell_magic('HTML', '', "<div class='tableauPlaceholder' id='viz1586135344971' style='position: relative'><noscript><a href='#'><img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;X9&#47;X9R8DF2ZN&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='path' value='shared&#47;X9R8DF2ZN' /> <param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;X9&#47;X9R8DF2ZN&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1586135344971');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';                    var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>")
 
 
-# In[ ]:
 
 
 #Curve flexion(St.Patrick's day):
@@ -118,7 +107,6 @@ get_ipython().run_cell_magic('HTML', '', "<div class='tableauPlaceholder' id='vi
 #community transmission phase.
 
 
-# In[ ]:
 
 
 # February 12th: 
@@ -131,7 +119,6 @@ get_ipython().run_cell_magic('HTML', '', "<div class='tableauPlaceholder' id='vi
 #Inspite of the sudden jump in the number of confirmed cases China seems to have flattened the curve within a week.  
 
 
-# In[ ]:
 
 
 #Italy: 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -38,13 +37,11 @@ pd.set_option('max_columns', 500)
 # from workalendar.america import Brazil
 
 
-# In[2]:
 
 
 get_ipython().run_cell_magic('time', '', "train = pd.read_csv('../input/train.csv', parse_dates=['first_active_month'])\ntest = pd.read_csv('../input/test.csv', parse_dates=['first_active_month'])\nsubmission = pd.read_csv('../input/sample_submission.csv')")
 
 
-# In[3]:
 
 
 def reduce_mem_usage(df, verbose=True):
@@ -76,14 +73,12 @@ def reduce_mem_usage(df, verbose=True):
     return df
 
 
-# In[4]:
 
 
 e = pd.read_excel('../input/Data_Dictionary.xlsx', sheet_name='train')
 e
 
 
-# In[5]:
 
 
 train['feature_1'] = train['feature_1'].astype('category')
@@ -92,13 +87,11 @@ train['feature_3'] = train['feature_3'].astype('category')
 train.head()
 
 
-# In[6]:
 
 
 train.info()
 
 
-# In[7]:
 
 
 fig, ax = plt.subplots(1, 3, figsize = (16, 6))
@@ -108,7 +101,6 @@ sns.violinplot(x="feature_2", y="target", data=train, ax=ax[1], title='feature_2
 sns.violinplot(x="feature_3", y="target", data=train, ax=ax[2], title='feature_3');
 
 
-# In[8]:
 
 
 fig, ax = plt.subplots(1, 3, figsize = (16, 6));
@@ -118,7 +110,6 @@ train['feature_3'].value_counts().sort_index().plot(kind='bar', ax=ax[2], color=
 plt.suptitle('Counts of categiories for features');
 
 
-# In[9]:
 
 
 test['feature_1'] = test['feature_1'].astype('category')
@@ -126,7 +117,6 @@ test['feature_2'] = test['feature_2'].astype('category')
 test['feature_3'] = test['feature_3'].astype('category')
 
 
-# In[10]:
 
 
 d1 = train['first_active_month'].value_counts().sort_index()
@@ -140,26 +130,22 @@ layout = go.Layout(dict(title = "Counts of first active",
 py.iplot(dict(data=data, layout=layout))
 
 
-# In[11]:
 
 
 test.loc[test['first_active_month'].isna(), 'first_active_month'] = test.loc[(test['feature_1'] == 5) & (test['feature_2'] == 2) & (test['feature_3'] == 1), 'first_active_month'].min()
 
 
-# In[12]:
 
 
 plt.hist(train['target']);
 plt.title('Target distribution');
 
 
-# In[13]:
 
 
 print('There are {0} samples with target lower than -20.'.format(train.loc[train.target < -20].shape[0]))
 
 
-# In[14]:
 
 
 max_date = train['first_active_month'].dt.date.max()
@@ -174,14 +160,12 @@ def process_main(df):
     return df
 
 
-# In[15]:
 
 
 train = process_main(train)
 test = process_main(test)
 
 
-# In[16]:
 
 
 historical_transactions = pd.read_csv('../input/historical_transactions.csv')
@@ -189,72 +173,61 @@ e = pd.read_excel('../input/Data_Dictionary.xlsx', sheet_name='history')
 e
 
 
-# In[17]:
 
 
 print(f'{historical_transactions.shape[0]} samples in data')
 historical_transactions.head()
 
 
-# In[18]:
 
 
 # let's convert the authorized_flag to a binary value.
 historical_transactions['authorized_flag'] = historical_transactions['authorized_flag'].apply(lambda x: 1 if x == 'Y' else 0)
 
 
-# In[19]:
 
 
 print(f"At average {historical_transactions['authorized_flag'].mean() * 100:.4f}% transactions are authorized")
 historical_transactions['authorized_flag'].value_counts().plot(kind='barh', title='authorized_flag value counts');
 
 
-# In[20]:
 
 
 autorized_card_rate = historical_transactions.groupby(['card_id'])['authorized_flag'].mean().sort_values()
 autorized_card_rate.head()
 
 
-# In[21]:
 
 
 autorized_card_rate.tail()
 
 
-# In[22]:
 
 
 historical_transactions['installments'].value_counts()
 
 
-# In[23]:
 
 
 historical_transactions.groupby(['installments'])['authorized_flag'].mean()
 
 
-# In[24]:
 
 
 historical_transactions['installments'] = historical_transactions['installments'].astype('category')
 
 
-# In[25]:
 
 
 historical_transactions['purchase_date'] = pd.to_datetime(historical_transactions['purchase_date'])
 
 
-# In[26]:
 
 
 plt.title('Purchase amount distribution.');
 historical_transactions['purchase_amount'].plot(kind='hist');
 
 
-# In[27]:
 
 
 for i in [-1, 0]:
@@ -265,14 +238,12 @@ for i in [0, 10, 100]:
     print(f"There are {n} transactions with purchase_amount more than {i}.")
 
 
-# In[28]:
 
 
 plt.title('Purchase amount distribution for negative values.');
 historical_transactions.loc[historical_transactions['purchase_amount'] < 0, 'purchase_amount'].plot(kind='hist');
 
 
-# In[29]:
 
 
 map_dict = {'Y': 0, 'N': 1}
@@ -280,13 +251,11 @@ historical_transactions['category_1'] = historical_transactions['category_1'].ap
 historical_transactions.groupby(['category_1']).agg({'purchase_amount': ['mean', 'std', 'count'], 'authorized_flag': ['mean', 'std']})
 
 
-# In[30]:
 
 
 historical_transactions.groupby(['category_2']).agg({'purchase_amount': ['mean', 'std', 'count'], 'authorized_flag': ['mean', 'std']})
 
 
-# In[31]:
 
 
 map_dict = {'A': 0, 'B': 1, 'C': 2, 'nan': 3}
@@ -294,14 +263,12 @@ historical_transactions['category_3'] = historical_transactions['category_3'].ap
 historical_transactions.groupby(['category_3']).agg({'purchase_amount': ['mean', 'std', 'count'], 'authorized_flag': ['mean', 'std']})
 
 
-# In[32]:
 
 
 for col in ['city_id', 'merchant_category_id', 'merchant_id', 'state_id', 'subsector_id']:
     print(f"There are {historical_transactions[col].nunique()} unique values in {col}.")
 
 
-# In[33]:
 
 
 def aggregate_historical_transactions(trans, prefix):
@@ -355,7 +322,6 @@ def aggregate_historical_transactions(trans, prefix):
     return agg_trans
 
 
-# In[34]:
 
 
 def aggregate_per_month(history):
@@ -379,13 +345,11 @@ def aggregate_per_month(history):
 final_group = aggregate_per_month(historical_transactions) 
 
 
-# In[35]:
 
 
 get_ipython().run_cell_magic('time', '', "del d1, d2, autorized_card_rate\ngc.collect()\nhistorical_transactions = reduce_mem_usage(historical_transactions)\nhistory = aggregate_historical_transactions(historical_transactions, prefix='hist_')\nhistory = reduce_mem_usage(history)\ngc.collect()")
 
 
-# In[36]:
 
 
 train = pd.merge(train, history, on='card_id', how='left')
@@ -393,14 +357,12 @@ test = pd.merge(test, history, on='card_id', how='left')
 del history
 
 
-# In[37]:
 
 
 del historical_transactions
 gc.collect()
 
 
-# In[38]:
 
 
 new_merchant_transactions = pd.read_csv('../input/new_merchant_transactions.csv')
@@ -408,66 +370,56 @@ e = pd.read_excel('../input/Data_Dictionary.xlsx', sheet_name='new_merchant_peri
 e
 
 
-# In[39]:
 
 
 print(f'{new_merchant_transactions.shape[0]} samples in data')
 new_merchant_transactions.head()
 
 
-# In[40]:
 
 
 # let's convert the authorized_flag to a binary value.
 new_merchant_transactions['authorized_flag'] = new_merchant_transactions['authorized_flag'].apply(lambda x: 1 if x == 'Y' else 0)
 
 
-# In[41]:
 
 
 print(f"At average {new_merchant_transactions['authorized_flag'].mean() * 100:.4f}% transactions are authorized")
 new_merchant_transactions['authorized_flag'].value_counts().plot(kind='barh', title='authorized_flag value counts');
 
 
-# In[42]:
 
 
 card_total_purchase = new_merchant_transactions.groupby(['card_id'])['purchase_amount'].sum().sort_values()
 card_total_purchase.head()
 
 
-# In[43]:
 
 
 card_total_purchase.tail()
 
 
-# In[44]:
 
 
 new_merchant_transactions['installments'].value_counts()
 
 
-# In[45]:
 
 
 new_merchant_transactions.groupby(['installments'])['purchase_amount'].sum()
 
 
-# In[46]:
 
 
 new_merchant_transactions['installments'] = new_merchant_transactions['installments'].astype('category')
 
 
-# In[47]:
 
 
 plt.title('Purchase amount distribution.');
 new_merchant_transactions['purchase_amount'].plot(kind='hist');
 
 
-# In[48]:
 
 
 for i in [-1, 0]:
@@ -478,14 +430,12 @@ for i in [0, 10, 100]:
     print(f"There are {n} transactions with purchase_amount more than {i}.")
 
 
-# In[49]:
 
 
 plt.title('Purchase amount distribution for negative values.');
 new_merchant_transactions.loc[new_merchant_transactions['purchase_amount'] < 0, 'purchase_amount'].plot(kind='hist');
 
 
-# In[50]:
 
 
 map_dict = {'Y': 0, 'N': 1}
@@ -493,13 +443,11 @@ new_merchant_transactions['category_1'] = new_merchant_transactions['category_1'
 new_merchant_transactions.groupby(['category_1']).agg({'purchase_amount': ['mean', 'std', 'count']})
 
 
-# In[51]:
 
 
 new_merchant_transactions.groupby(['category_2']).agg({'purchase_amount': ['mean', 'std', 'count']})
 
 
-# In[52]:
 
 
 map_dict = {'A': 0, 'B': 1, 'C': 2, 'nan': 3}
@@ -507,20 +455,17 @@ new_merchant_transactions['category_3'] = new_merchant_transactions['category_3'
 new_merchant_transactions.groupby(['category_3']).agg({'purchase_amount': ['mean', 'std', 'count']})
 
 
-# In[53]:
 
 
 for col in ['city_id', 'merchant_category_id', 'merchant_id', 'state_id', 'subsector_id']:
     print(f"There are {new_merchant_transactions[col].nunique()} unique values in {col}.")
 
 
-# In[54]:
 
 
 new_merchant_transactions['purchase_date'] = pd.to_datetime(new_merchant_transactions['purchase_date'])
 
 
-# In[55]:
 
 
 def aggregate_historical_transactions(trans, prefix):
@@ -573,13 +518,11 @@ def aggregate_historical_transactions(trans, prefix):
     return agg_trans
 
 
-# In[56]:
 
 
 get_ipython().run_cell_magic('time', '', "gc.collect()\nnew_transactions = reduce_mem_usage(new_merchant_transactions)\nhistory = aggregate_historical_transactions(new_merchant_transactions, prefix='new')\nhistory = reduce_mem_usage(history)\ndel new_merchant_transactions\ngc.collect()\ntrain = pd.merge(train, history, on='card_id', how='left')\ntest = pd.merge(test, history, on='card_id', how='left')\ndel history\ngc.collect()")
 
 
-# In[57]:
 
 
 train = pd.merge(train, final_group, on='card_id')
@@ -588,7 +531,6 @@ gc.collect()
 del final_group
 
 
-# In[58]:
 
 
 merchants = pd.read_csv('../input/merchants.csv')
@@ -596,14 +538,12 @@ e = pd.read_excel('../input/Data_Dictionary.xlsx', sheet_name='merchant')
 e
 
 
-# In[59]:
 
 
 print(f'{merchants.shape[0]} merchants in data')
 merchants.head()
 
 
-# In[60]:
 
 
 # encoding categories.
@@ -613,33 +553,28 @@ merchants.loc[merchants['category_2'].isnull(), 'category_2'] = 0
 merchants['category_4'] = merchants['category_4'].apply(lambda x: map_dict[x])
 
 
-# In[61]:
 
 
 merchants['merchant_category_id'].nunique(), merchants['merchant_group_id'].nunique()
 
 
-# In[62]:
 
 
 plt.hist(merchants['numerical_1']);
 plt.title('Distribution of numerical_1');
 
 
-# In[63]:
 
 
 np.percentile(merchants['numerical_1'], 95)
 
 
-# In[64]:
 
 
 plt.hist(merchants.loc[merchants['numerical_1'] < 0.1, 'numerical_1']);
 plt.title('Distribution of numerical_1 less than 0.1');
 
 
-# In[65]:
 
 
 min_n1 = merchants['numerical_1'].min()
@@ -647,14 +582,12 @@ _ = sum(merchants['numerical_1'] == min_n1) / merchants['numerical_1'].shape[0]
 print(f'{_ * 100:.4f}% of values in numerical_1 are equal to {min_n1}')
 
 
-# In[66]:
 
 
 plt.hist(merchants['numerical_2']);
 plt.title('Distribution of numerical_2');
 
 
-# In[67]:
 
 
 plt.hist(merchants.loc[merchants['numerical_2'] < 0.1, 'numerical_2']);
@@ -664,19 +597,16 @@ _ = sum(merchants['numerical_1'] == min_n1) / merchants['numerical_1'].shape[0]
 print(f'{_ * 100:.4f}% of values in numerical_1 are equal to {min_n1}')
 
 
-# In[68]:
 
 
 (merchants['numerical_1'] != merchants['numerical_2']).sum() / merchants.shape[0]
 
 
-# In[69]:
 
 
 merchants['most_recent_sales_range'].value_counts().plot('bar');
 
 
-# In[70]:
 
 
 d = merchants['most_recent_sales_range'].value_counts().sort_index()
@@ -690,7 +620,6 @@ layout = go.Layout(dict(title = "Counts of values in categories of most_recent_s
 py.iplot(dict(data=data, layout=layout))
 
 
-# In[71]:
 
 
 d = merchants['most_recent_purchases_range'].value_counts().sort_index()
@@ -704,7 +633,6 @@ layout = go.Layout(dict(title = "Counts of values in categories of most_recent_p
 py.iplot(dict(data=data, layout=layout))
 
 
-# In[72]:
 
 
 plt.hist(merchants['avg_sales_lag3'].fillna(0));
@@ -712,7 +640,6 @@ plt.hist(merchants['avg_sales_lag6'].fillna(0));
 plt.hist(merchants['avg_sales_lag12'].fillna(0));
 
 
-# In[73]:
 
 
 for col in ['avg_sales_lag3', 'avg_sales_lag6', 'avg_sales_lag12']:
@@ -720,7 +647,6 @@ for col in ['avg_sales_lag3', 'avg_sales_lag6', 'avg_sales_lag12']:
     print(f'Min value of {col} is {merchants[col].min()}')
 
 
-# In[74]:
 
 
 plt.hist(merchants.loc[(merchants['avg_sales_lag12'] < 3) & (merchants['avg_sales_lag12'] > -10), 'avg_sales_lag12'].fillna(0), label='avg_sales_lag12');
@@ -729,13 +655,11 @@ plt.hist(merchants.loc[(merchants['avg_sales_lag3'] < 3) & (merchants['avg_sales
 plt.legend();
 
 
-# In[75]:
 
 
 merchants['avg_purchases_lag3'].nlargest()
 
 
-# In[76]:
 
 
 merchants.loc[merchants['avg_purchases_lag3'] == np.inf, 'avg_purchases_lag3'] = 6000
@@ -743,7 +667,6 @@ merchants.loc[merchants['avg_purchases_lag6'] == np.inf, 'avg_purchases_lag6'] =
 merchants.loc[merchants['avg_purchases_lag12'] == np.inf, 'avg_purchases_lag12'] = 6000
 
 
-# In[77]:
 
 
 plt.hist(merchants['avg_purchases_lag3'].fillna(0));
@@ -751,7 +674,6 @@ plt.hist(merchants['avg_purchases_lag6'].fillna(0));
 plt.hist(merchants['avg_purchases_lag12'].fillna(0));
 
 
-# In[78]:
 
 
 plt.hist(merchants.loc[(merchants['avg_purchases_lag12'] < 4), 'avg_purchases_lag12'].fillna(0), label='avg_purchases_lag12');
@@ -760,13 +682,11 @@ plt.hist(merchants.loc[(merchants['avg_purchases_lag3'] < 4), 'avg_purchases_lag
 plt.legend();
 
 
-# In[79]:
 
 
 train.head()
 
 
-# In[80]:
 
 
 for col in train.columns:
@@ -774,7 +694,6 @@ for col in train.columns:
         train[col] = train[col].fillna(0)
 
 
-# In[81]:
 
 
 for col in test.columns:
@@ -782,19 +701,16 @@ for col in test.columns:
         test[col] = test[col].fillna(0)
 
 
-# In[82]:
 
 
 y = train['target']
 
 
-# In[83]:
 
 
 col_to_drop = ['first_active_month', 'card_id', 'target']
 
 
-# In[84]:
 
 
 for col in col_to_drop:
@@ -804,14 +720,12 @@ for col in col_to_drop:
         test.drop([col], axis=1, inplace=True)
 
 
-# In[85]:
 
 
 train['feature_3'] = train['feature_3'].astype(int)
 test['feature_3'] = test['feature_3'].astype(int)
 
 
-# In[86]:
 
 
 categorical_feats = ['feature_1', 'feature_2']
@@ -823,13 +737,11 @@ for col in categorical_feats:
     test[col] = lbl.transform(list(test[col].values.astype('str')))
 
 
-# In[87]:
 
 
 train.head()
 
 
-# In[88]:
 
 
 for col in ['newpurchase_amount_max', 'newpurchase_date_max', 'purchase_amount_max_mean']:
@@ -837,14 +749,12 @@ for col in ['newpurchase_amount_max', 'newpurchase_date_max', 'purchase_amount_m
     test[col + '_to_mean'] = test[col] / test[col].mean()
 
 
-# In[89]:
 
 
 X = train
 X_test = test
 
 
-# In[90]:
 
 
 n_fold = 5
@@ -852,7 +762,6 @@ folds = KFold(n_splits=n_fold, shuffle=True, random_state=42)
 # folds = RepeatedKFold(n_splits=n_fold, n_repeats=2, random_state=11)
 
 
-# In[91]:
 
 
 def train_model(X=X, X_test=X_test, y=y, params=None, folds=folds, model_type='lgb', plot_feature_importance=False):
@@ -939,7 +848,6 @@ def train_model(X=X, X_test=X_test, y=y, params=None, folds=folds, model_type='l
         return oof, prediction
 
 
-# In[92]:
 
 
 params = {'num_leaves': 54,
@@ -961,20 +869,17 @@ params = {'num_leaves': 54,
          'subsample': 0.8767547959893627,}
 
 
-# In[93]:
 
 
 oof_lgb, prediction_lgb, feature_importance = train_model(params=params, model_type='lgb', plot_feature_importance=True)
 
 
-# In[94]:
 
 
 submission['target'] = prediction_lgb
 submission.to_csv('lgb.csv', index=False)
 
 
-# In[95]:
 
 
 xgb_params = {'eta': 0.01, 'max_depth': 11, 'subsample': 0.8, 'colsample_bytree': 0.8, 
@@ -982,27 +887,23 @@ xgb_params = {'eta': 0.01, 'max_depth': 11, 'subsample': 0.8, 'colsample_bytree'
 oof_xgb, prediction_xgb = train_model(params=xgb_params, model_type='xgb')
 
 
-# In[96]:
 
 
 submission['target'] = prediction_xgb
 submission.to_csv('xgb.csv', index=False)
 
 
-# In[97]:
 
 
 oof_rcv, prediction_rcv = train_model(params=None, model_type='rcv')
 
 
-# In[98]:
 
 
 submission['target'] = prediction_rcv
 submission.to_csv('rcv.csv', index=False)
 
 
-# In[99]:
 
 
 cat_params = {'learning_rate': 0.02,
@@ -1017,14 +918,12 @@ cat_params = {'learning_rate': 0.02,
 oof_cat, prediction_cat = train_model(params=cat_params, model_type='cat')
 
 
-# In[100]:
 
 
 submission['target'] = (prediction_lgb + prediction_xgb + prediction_rcv + prediction_cat) / 4
 submission.to_csv('blend.csv', index=False)
 
 
-# In[101]:
 
 
 train_stack = np.vstack([oof_lgb, oof_xgb, oof_rcv, oof_cat]).transpose()
@@ -1033,13 +932,11 @@ test_stack = np.vstack([prediction_lgb, prediction_xgb, prediction_rcv, predicti
 test_stack = pd.DataFrame(test_stack)
 
 
-# In[102]:
 
 
 oof_lgb_stack, prediction_lgb_stack = train_model(X=train_stack, X_test=test_stack, params=params, model_type='lgb')
 
 
-# In[103]:
 
 
 sample_submission = pd.read_csv('../input/sample_submission.csv')
@@ -1047,13 +944,11 @@ sample_submission['target'] = prediction_lgb_stack
 sample_submission.to_csv('stacker_lgb.csv', index=False)
 
 
-# In[104]:
 
 
 oof_rcv_stack, prediction_rcv_stack = train_model(X=train_stack, X_test=test_stack, params=None, model_type='rcv')
 
 
-# In[105]:
 
 
 sample_submission = pd.read_csv('../input/sample_submission.csv')

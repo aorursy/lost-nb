@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Loading libraries
@@ -17,7 +16,6 @@ import os
 print(os.listdir("../input/"))
 
 
-# In[2]:
 
 
 pixel_status = pd.read_csv('../input/recursion-cellular-image-classification/pixel_stats.csv')
@@ -34,25 +32,21 @@ print('Dimensions: \n pixel_status: %s'     '\n train_df: %s \n test_df: %s'    
                             test_controls.shape, sub.shape))
 
 
-# In[3]:
 
 
 pixel_status.head()
 
 
-# In[4]:
 
 
 train_controls.head()
 
 
-# In[5]:
 
 
 test_df.head()
 
 
-# In[6]:
 
 
 # Image from dataset with index 1
@@ -70,7 +64,6 @@ sample = np.stack([img_ar for img_ar in img_names],axis=0)
 sample.shape
 
 
-# In[7]:
 
 
 def plot_cell(sample_img):    
@@ -90,7 +83,6 @@ def plot_cell(sample_img):
 plot_cell(sample)
 
 
-# In[8]:
 
 
 # Loading libraries
@@ -100,7 +92,6 @@ package_path = '../input/efficientnet/efficientnet-pytorch/EfficientNet-PyTorch/
 sys.path.append(package_path)
 
 
-# In[9]:
 
 
 # Loading libraries
@@ -116,7 +107,6 @@ import torchvision
 import torchvision.transforms as transforms
 
 
-# In[10]:
 
 
 class CellDataset(Dataset):
@@ -149,7 +139,6 @@ class CellDataset(Dataset):
             
 
 
-# In[11]:
 
 
 # Augmentations for data
@@ -168,7 +157,6 @@ test_dataset = CellDataset(df=test_df, img_dir='../input/recursion-cellular-imag
 test_loader = DataLoader(dataset=test_dataset, batch_size=15, shuffle=False)
 
 
-# In[12]:
 
 
 #train_loader checking
@@ -176,7 +164,6 @@ data, target = next(iter(train_loader))
 print(data.shape, target.shape)
 
 
-# In[13]:
 
 
 #test_loader checking
@@ -184,7 +171,6 @@ test_data = next(iter(test_loader))
 print(test_data.shape)
 
 
-# In[14]:
 
 
 data, target = next(iter(train_loader))
@@ -192,13 +178,11 @@ print('Dimension:', data.shape, ",", target[:, 0].shape)
 print('Datatype: ', data.type(),",", target.type())
 
 
-# In[15]:
 
 
 plot_cell(data.numpy()[1,:,:,:])
 
 
-# In[16]:
 
 
 # Model parameters
@@ -208,7 +192,6 @@ in_ch = 6
 lr = 0.001
 
 
-# In[17]:
 
 
 model = EfficientNet.from_pretrained('efficientnet-b0', num_classes=1108)
@@ -223,7 +206,6 @@ model._conv_stem = new_conv
 model = model.cuda()
 
 
-# In[18]:
 
 
 # Loss and Optimizer
@@ -231,7 +213,6 @@ criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
 
-# In[19]:
 
 
 # Train model
@@ -252,7 +233,6 @@ for epoch in range(num_epochs):
 torch.save(model.state_dict(), 'model.pt')
 
 
-# In[20]:
 
 
 predictions = []
@@ -266,7 +246,6 @@ with torch.no_grad():
             predictions.append(pred.astype(int))
 
 
-# In[21]:
 
 
 sub['sirna'] = predictions
@@ -274,13 +253,11 @@ sub.to_csv('submission.csv', index=False, columns=['id_code','sirna'])
 print('Number of unique values:',len(sub['sirna'].value_counts()))
 
 
-# In[22]:
 
 
 sub.head()
 
 
-# In[23]:
 
 
 print(sample.shape)
@@ -295,7 +272,6 @@ img_composit = Image.composite(rgb1, rgb2, rgb3)
 img_composit
 
 
-# In[24]:
 
 
 # Code from https://github.com/recursionpharma/rxrx1-utils/blob/master/rxrx/io.py
@@ -342,7 +318,6 @@ def convert_tensor_to_rgb(t, channels=DEFAULT_CHANNELS, vmax=255, rgb_map=RGB_MA
     return im
 
 
-# In[25]:
 
 
 # Convert images -> tensors -> list rgb -> video
@@ -375,7 +350,6 @@ def tensor_rgb_video(df, img_dir, experiment, video_name):
     video.release()
 
 
-# In[26]:
 
 
 # Recursive function call

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import math
@@ -41,7 +39,6 @@ train = pd.read_csv("/kaggle/input/nfl-big-data-bowl-2020/train.csv", low_memory
 train.head(5)
 
 
-# In[3]:
 
 
 # Initial features and data correction
@@ -66,7 +63,6 @@ cols_to_drop = ['GameId', 'PlayId', 'NflId', 'DisplayName', 'NflIdRusher']
 # train.isnull().sum()
 
 
-# In[4]:
 
 
 # def create_football_field(linenumbers=True,
@@ -146,7 +142,6 @@ cols_to_drop = ['GameId', 'PlayId', 'NflId', 'DisplayName', 'NflIdRusher']
 # # create_football_field()
 
 
-# In[5]:
 
 
 # def get_dx_dy(radian_angle, dist):
@@ -174,13 +169,11 @@ cols_to_drop = ['GameId', 'PlayId', 'NflId', 'DisplayName', 'NflIdRusher']
 #     plt.show()
 
 
-# In[6]:
 
 
 # show_play(20170907000118)
 
 
-# In[7]:
 
 
 print(train.shape)
@@ -190,7 +183,6 @@ train.reset_index(inplace=True)
 train.shape
 
 
-# In[8]:
 
 
 # create home binary feature from Team, home=1 and away=0
@@ -198,7 +190,6 @@ train['home'] = train['Team'].map({'home': 1, 'away': 0})
 # can drop 'Team' field
 
 
-# In[9]:
 
 
 # Get game date feature from GameId field
@@ -208,7 +199,6 @@ print(train['GameDate'].min(), train['GameDate'].max())
 train['GameDate'].value_counts().head()
 
 
-# In[10]:
 
 
 # Converting gameclock string to gametime timedelta
@@ -226,7 +216,6 @@ train['GameTimeMins'].value_counts()
 # can drop 'GameClock' and 'GameTime' fields
 
 
-# In[11]:
 
 
 # create fature is_home_offensive
@@ -234,7 +223,6 @@ train['is_home_offensive'] = (train['PossessionTeam'] == train['HomeTeamAbbr']).
 train['is_home_offensive'].value_counts(dropna=False)
 
 
-# In[12]:
 
 
 # create a feature explaining if the field position is on offensive / defensive team side
@@ -251,7 +239,6 @@ def update_field_pos(home_offensive, field_pos, home_team, visitor_team):
 train['FieldPosition'].value_counts(dropna=False)
 
 
-# In[13]:
 
 
 # train[train['FieldPosition'].isnull()]['YardLine'].sum()/6424 
@@ -261,20 +248,17 @@ train['field_pos'].value_counts()
 # Can drop the field "FieldPosition"
 
 
-# In[14]:
 
 
 # Normalizing season to 1,2,3,4 etc.,
 train['Season'] = train['Season'] - 2016
 
 
-# In[15]:
 
 
 train.OffenseFormation.value_counts(dropna=False)/22
 
 
-# In[16]:
 
 
 # train.groupby(['OffensePersonnel'], as_index=False).agg({
@@ -284,7 +268,6 @@ train.OffenseFormation.value_counts(dropna=False)/22
 # # 2 RB, 3 TE, 1 WR
 
 
-# In[17]:
 
 
 train.OffenseFormation.fillna('UNKNOWN', inplace=True)
@@ -293,13 +276,11 @@ train.loc[train["OffenseFormation"]=="EMPTY","OffenseFormation"] = 'UNKNOWN'
 train.OffenseFormation.value_counts(dropna=False)/22
 
 
-# In[18]:
 
 
 train.DefendersInTheBox.value_counts(dropna=False)/22
 
 
-# In[19]:
 
 
 train.DefendersInTheBox.fillna(4.0, inplace=True)
@@ -310,7 +291,6 @@ train.loc[train.DefendersInTheBox < 4, 'DefendersInTheBox'] = 4
 train.DefendersInTheBox.value_counts(dropna=False)/22
 
 
-# In[20]:
 
 
 train['TimeHandoff'] = pd.to_datetime(train['TimeHandoff'], format="%Y-%m-%dT%H:%M:%S.%fZ")
@@ -319,7 +299,6 @@ train['time_btw_handoff_snap'] = (train['TimeHandoff'] - train['TimeSnap']).asty
 train['time_btw_handoff_snap'].value_counts()/22
 
 
-# In[21]:
 
 
 # train['OffensePersonnel'].str.split("\, |\ ").head()
@@ -331,7 +310,6 @@ OffensePersonnelSet = OffensePersonnelSet - {""}
 OffensePersonnelSet
 
 
-# In[22]:
 
 
 DefensePersonnelSet = set()
@@ -342,7 +320,6 @@ DefensePersonnelSet = DefensePersonnelSet - {""}
 DefensePersonnelSet
 
 
-# In[23]:
 
 
 print("Before: ", train.shape)
@@ -355,7 +332,6 @@ for col in DefensePersonnelSet:
 print("After: ", train.shape)
 
 
-# In[24]:
 
 
 # lst = [1, 'RB', 1, 'TE', 3, 'WR']
@@ -369,7 +345,6 @@ train['offense_dict'] = train['OffensePersonnel'].str.split("\, |\ ").apply(lamb
 train['offense_dict'].head()
 
 
-# In[25]:
 
 
 def get_pos(lst):
@@ -382,7 +357,6 @@ train['defense_dict'] = train['DefensePersonnel'].str.split("\, |\ ").apply(lamb
 train['defense_dict'].head()
 
 
-# In[26]:
 
 
 def off_explode_map(playid, pos_dict):
@@ -399,26 +373,22 @@ def def_explode_map(playid, pos_dict):
 # train[['PlayId','offense_dict']].apply(lambda x: off_explode_map(*x), axis=1)
 
 
-# In[27]:
 
 
 train[['Stadium','Location','StadiumType','Turf','GameWeather','Temperature','Humidity','WindSpeed','WindDirection']].isnull().sum()/22
 
 
-# In[28]:
 
 
 train[train.StadiumType.isnull()].Stadium.value_counts()
 
 
-# In[29]:
 
 
 train[train.Stadium=="MetLife Stadium"].StadiumType.value_counts(dropna=False) 
 # Outdoor
 
 
-# In[30]:
 
 
 train[train.Stadium=="StubHub Center"].StadiumType.value_counts(dropna=False) 
@@ -426,27 +396,23 @@ train[train.Stadium=="StubHub Center"].StadiumType.value_counts(dropna=False)
 # Dignity Health Sports Park
 
 
-# In[31]:
 
 
 train[train.Stadium=="TIAA Bank Field"].StadiumType.value_counts(dropna=False) 
 # Outdoor
 
 
-# In[32]:
 
 
 # StadiumType imputation
 train.StadiumType.fillna('Outdoor', inplace=True)
 
 
-# In[33]:
 
 
 train.StadiumType.value_counts()
 
 
-# In[34]:
 
 
 # Distinct stadium types - outdoor, indoor, ret_roof_open, ret_roof_closed, dome_open, dome_closed
@@ -470,69 +436,58 @@ train.loc[train.StadiumType == "Bowl", 'StadiumType'] = 'outdoor'
 train.loc[train.StadiumType == "Cloudy", 'StadiumType'] = 'outdoor'
 
 
-# In[35]:
 
 
 train.StadiumType.value_counts()/22
 
 
-# In[36]:
 
 
 train[train.Temperature.isnull()]['StadiumType'].value_counts()
 
 
-# In[37]:
 
 
 train[train.StadiumType=='open']['Temperature'].mean()
 
 
-# In[38]:
 
 
 for sdum in ['indoor', 'closed', 'open']:
     train.loc[(train.Temperature.isnull()) & (train.StadiumType==sdum), 'Temperature'] = train[train.StadiumType==sdum]['Temperature'].mean()
 
 
-# In[39]:
 
 
 sns.distplot(train.Temperature);
 
 
-# In[40]:
 
 
 train[train.Humidity.isnull()]['StadiumType'].value_counts()
 
 
-# In[41]:
 
 
 train[train.StadiumType=='indoor']['Humidity'].mean()
 
 
-# In[42]:
 
 
 for sdum in ['indoor', 'closed']:
     train.loc[(train.Humidity.isnull()) & (train.StadiumType==sdum), 'Humidity'] = train[train.StadiumType==sdum]['Humidity'].mean()
 
 
-# In[43]:
 
 
 sns.distplot(train.Humidity);
 
 
-# In[44]:
 
 
 train.Turf.value_counts()
 
 
-# In[45]:
 
 
 train.loc[train.Turf=='DD GrassMaster', 'Turf'] = 'hybrid'
@@ -546,45 +501,38 @@ train.loc[train.Turf.str.contains(r'natural', case=False), 'Turf'] = 'natural'
 train.loc[train.Turf.str.contains(r'grass', case=False), 'Turf'] = 'natural'
 
 
-# In[46]:
 
 
 train.Turf.value_counts()/22
 
 
-# In[47]:
 
 
 train.Location.value_counts()/22
 
 
-# In[48]:
 
 
 train.loc[train.Location.str.contains(r'Rutherford'), 'Location'] = 'Rutherford, NJ'
 train['city'] = train.Location.str.split(r',|\.\sI|\sOh|\s[FN]').str[0]
 
 
-# In[49]:
 
 
 train['city'].value_counts()
 
 
-# In[50]:
 
 
 import Levenshtein as lev
 from fuzzywuzzy import fuzz
 
 
-# In[51]:
 
 
 train['Stadium_lower'] = train.Stadium.str.lower().str.replace(" ","")                                     .str.replace("stadium","").str.replace("dome","")                                     .str.replace("super","").str.replace("link","")                                     .str.replace("field", "").str.replace("bank","")                                     .str.replace("stdium","").str.replace("-","")
 
 
-# In[52]:
 
 
 stadium_lst = set(train.Stadium_lower.unique().tolist())
@@ -592,13 +540,11 @@ stadium_lst_cpy = set(train.Stadium_lower.unique().tolist())
 len(stadium_lst), len(stadium_lst_cpy)
 
 
-# In[53]:
 
 
 print(stadium_lst, end=", ")
 
 
-# In[54]:
 
 
 # fuzz.token_sort_ratio('M&T Bank Stadium', 'Bank of America Stadium')
@@ -609,7 +555,6 @@ print(stadium_lst, end=", ")
 # st1^set([4,3,7])
 
 
-# In[55]:
 
 
 stadium_map = dict()
@@ -626,43 +571,36 @@ print(len(stadium_map))
 stadium_map        
 
 
-# In[56]:
 
 
 train['Stadium_lower'] = train.Stadium_lower.map(stadium_map)
 
 
-# In[57]:
 
 
 # train.Stadium_lower.value_counts()/22
 
 
-# In[58]:
 
 
 train.Stadium_lower.nunique()
 
 
-# In[59]:
 
 
 train.GameWeather.value_counts(dropna=False)/22
 
 
-# In[60]:
 
 
 train.GameWeather.unique()
 
 
-# In[61]:
 
 
 train['GameWeather_lower'] = train.GameWeather.str.lower().str.replace("showers","rain")                                             .str.replace("coudy","cloudy").str.replace("clouidy","cloudy")                                             .str.replace("fair","clear").str.replace("controlled","indoor")                                             .str.replace("overcast","dull").str.replace("cold","snow")                                             .str.replace("hazy","dull").str.replace("t: 51","snow")
 
 
-# In[62]:
 
 
 weather_lst = set(train.GameWeather_lower.unique().tolist())
@@ -670,7 +608,6 @@ weather_lst_cpy = set(train.GameWeather_lower.unique().tolist())
 len(weather_lst), len(weather_lst_cpy)
 
 
-# In[63]:
 
 
 weather_map = dict()
@@ -687,32 +624,27 @@ print(len(weather_map), len(weather_lst_cpy))
 weather_map        
 
 
-# In[64]:
 
 
 weather_lst_cpy
 
 
-# In[65]:
 
 
 train['GameWeather_lower'] = train.GameWeather_lower.map(weather_map)
 
 
-# In[66]:
 
 
 train.city.value_counts()/22
 
 
-# In[67]:
 
 
 # train[train.GameWeather.isnull()]['Location'].value_counts()/22
 train[train.GameWeather=='Cloudy with periods of rain, thunder possible. Winds shifting to WNW, 10-20 mph.'].sample(10)
 
 
-# In[68]:
 
 
 for cty in train.city.unique():
@@ -720,14 +652,12 @@ for cty in train.city.unique():
     train.loc[(train.city==cty) & (train.GameWeather.isnull()), 'GameWeather_lower'] = to_fill
 
 
-# In[69]:
 
 
 # train.loc[(train.Humidity.isnull()) & (train.StadiumType==sdum), 'Humidity'] = train[train.StadiumType==sdum]['Humidity'].mean()
 train.GameWeather_lower.value_counts(dropna=False)/22
 
 
-# In[70]:
 
 
 for ws in ['SE','SSW','E']:
@@ -737,13 +667,11 @@ for ws in ['SE','SSW','E']:
     train.loc[train.WindSpeed==ws,'WindDirection'] = win_dir
 
 
-# In[71]:
 
 
 train['WindSpeed_crtd'] = train.WindSpeed.str.replace(r'mph',"",case=False).str.replace("Calm","1")                                             .str.replace(" ","").str.replace("gustsupto", "-")
 
 
-# In[72]:
 
 
 # train.WindSpeed_crtd.dtype
@@ -751,32 +679,27 @@ train.loc[(train.WindSpeed_crtd.str.contains("-") & ~(train.WindSpeed_crtd.isnul
 train.WindSpeed_crtd = train.WindSpeed_crtd.astype('float64')
 
 
-# In[73]:
 
 
 # train.WindSpeed_crtd = train.WindSpeed_crtd.astype('float64')
 train.WindSpeed_crtd.value_counts(dropna=False)
 
 
-# In[74]:
 
 
 train[train.WindSpeed_crtd.isnull()].sample(10)
 
 
-# In[75]:
 
 
 train[train.WindSpeed_crtd.isnull()]['StadiumType'].value_counts()/22
 
 
-# In[76]:
 
 
 train.loc[~(train.WindSpeed_crtd.isnull()) & (train.StadiumType=='outdoor') & (train.Season==2018), 'WindSpeed_crtd'].mean()
 
 
-# In[77]:
 
 
 for yr in [2017,2018]:
@@ -785,37 +708,31 @@ for yr in [2017,2018]:
         train.loc[(train.WindSpeed_crtd.isnull()) & (train.StadiumType==st_typ) & (train.Season==yr), 'WindSpeed_crtd'] = temp_val
 
 
-# In[78]:
 
 
 sns.distplot(train.WindSpeed_crtd);
 
 
-# In[79]:
 
 
 train['WindDirection_crtd'] = train.WindDirection.str.lower().str.replace(" ","")                                                 .str.replace(r'from',"",case=False).str.replace("-","")                                                 .str.replace("/","").str.replace("north","n")                                                 .str.replace("south","s").str.replace("east","e")                                                 .str.replace("west","w")
 
 
-# In[80]:
 
 
 train.loc[~train.WindDirection_crtd.str.contains(r'[news]', na=True),'WindDirection_crtd'] = np.nan
 
 
-# In[81]:
 
 
 train.WindDirection_crtd.value_counts(dropna=False)/22
 
 
-# In[82]:
 
 
 train[train.WindDirection_crtd.isnull()]['city'].value_counts().index
 
 
-# In[83]:
 
 
 for cty in train[train.WindDirection_crtd.isnull()]['city'].value_counts().index:
@@ -828,43 +745,36 @@ for cty in train[train.WindDirection_crtd.isnull()]['city'].value_counts().index
         train.loc[(train.city==cty) & (train.WindDirection_crtd.isnull()), 'WindDirection_crtd'] = "indoor"
 
 
-# In[84]:
 
 
 train.WindDirection_crtd.value_counts(dropna=False)/22
 
 
-# In[85]:
 
 
 train.X.nunique(), train.Y.nunique(), train.S.nunique(), train.A.nunique(), train.Dis.nunique(), train.Orientation.nunique(), train.Dir.nunique()
 
 
-# In[86]:
 
 
 train[['X','Y','S','A','Dis','Orientation','Dir','PlayerHeight','PlayerWeight','Position']].isnull().sum()
 
 
-# In[87]:
 
 
 train[['X','Y','S','A','Dis','Orientation','Dir','PlayerHeight','PlayerWeight','Position']].dtypes
 
 
-# In[88]:
 
 
 train[['X','Y','S','A','Dis','Orientation','Dir','PlayerHeight','PlayerWeight','Position']].head(10)
 
 
-# In[89]:
 
 
 train.tail()
 
 
-# In[ ]:
 
 
 

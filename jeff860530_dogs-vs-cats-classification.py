@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 
@@ -20,7 +19,6 @@ import random
 import gc   #Gabage collector for cleaning deleted data from memory
 
 
-# In[2]:
 
 
 train_dir = '../input/dogs-vs-cats-redux-kernels-edition/train'
@@ -41,7 +39,6 @@ del train_cats
 gc.collect()   #collect garbage to save memory
 
 
-# In[3]:
 
 
 import matplotlib.image as mpimg
@@ -51,7 +48,6 @@ for ima in train_imgs[900:903]:
     plt.show()
 
 
-# In[4]:
 
 
 #Lets declare our image dimensions
@@ -83,26 +79,22 @@ def read_and_process_image(list_of_images):
     return X, y
 
 
-# In[5]:
 
 
 #get the train and label data
 X, y = read_and_process_image(train_imgs)
 
 
-# In[6]:
 
 
 X[0]
 
 
-# In[7]:
 
 
 y
 
 
-# In[8]:
 
 
 #Lets view some of the pics
@@ -113,7 +105,6 @@ for i in range(columns):
     plt.imshow(X[i])
 
 
-# In[9]:
 
 
 import seaborn as sns
@@ -129,14 +120,12 @@ sns.countplot(y)
 plt.title('Labels for Cats and Dogs')
 
 
-# In[10]:
 
 
 print("Shape of train images is:", X.shape)
 print("Shape of labels is:", y.shape)
 
 
-# In[11]:
 
 
 #Lets split the data into train and test set
@@ -149,7 +138,6 @@ print("Shape of labels is:", y_train.shape)
 print("Shape of labels is:", y_val.shape)
 
 
-# In[12]:
 
 
 #clear memory
@@ -165,7 +153,6 @@ nval = len(X_val)
 batch_size = 32
 
 
-# In[13]:
 
 
 from keras import layers
@@ -189,14 +176,12 @@ model.add(layers.Dense(512, activation='relu'))
 model.add(layers.Dense(1, activation='sigmoid'))  #Sigmoid function at the end because we have just two classes
 
 
-# In[14]:
 
 
 #Lets see our model
 model.summary()
 
 
-# In[15]:
 
 
 #We'll use the RMSprop optimizer with a learning rate of 0.0001
@@ -204,7 +189,6 @@ model.summary()
 model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(lr=1e-4), metrics=['acc'])
 
 
-# In[16]:
 
 
 #Lets create the augmentation configuration
@@ -220,7 +204,6 @@ train_datagen = ImageDataGenerator(rescale=1./255,   #Scale the image between 0 
 val_datagen = ImageDataGenerator(rescale=1./255)  #We do not augment validation data. we only perform rescale
 
 
-# In[17]:
 
 
 #Create the image generators
@@ -228,7 +211,6 @@ train_generator = train_datagen.flow(X_train, y_train, batch_size=batch_size)
 val_generator = val_datagen.flow(X_val, y_val, batch_size=batch_size)
 
 
-# In[18]:
 
 
 #The training part
@@ -240,7 +222,6 @@ history = model.fit_generator(train_generator,
                               validation_steps=nval // batch_size)
 
 
-# In[19]:
 
 
 #Save the model
@@ -248,7 +229,6 @@ model.save_weights('model_wieghts.h5')
 model.save('model_keras.h5')
 
 
-# In[20]:
 
 
 #lets plot the train and val curve
@@ -276,7 +256,6 @@ plt.legend()
 plt.show()
 
 
-# In[21]:
 
 
 #Now lets predict on the first 10 Images of the test set
@@ -285,7 +264,6 @@ x = np.array(X_test)
 test_datagen = ImageDataGenerator(rescale=1./255)
 
 
-# In[22]:
 
 
 i = 0
@@ -306,7 +284,6 @@ for batch in test_datagen.flow(x, batch_size=1):
 plt.show()
 
 
-# In[23]:
 
 
 #lets save our prediction and submit

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import seaborn as sns
@@ -46,7 +44,6 @@ from scipy.stats import norm, skew #for some statistics
 import os
 
 
-# In[3]:
 
 
 import pandas as pd
@@ -55,56 +52,47 @@ test = pd.read_csv("/kaggle/input/santander-customer-transaction-prediction/test
 train = pd.read_csv("/kaggle/input/santander-customer-transaction-prediction/train.csv")
 
 
-# In[4]:
 
 
 train.info()
 
 
-# In[5]:
 
 
 train.describe()
 
 
-# In[6]:
 
 
 sns.countplot(x='target', data=train)
 
 
-# In[7]:
 
 
 print(train.shape, test.shape)
 
 
-# In[8]:
 
 
 print (train.isna().sum())
 print (train.isnull().sum())
 
 
-# In[9]:
 
 
 X, y = train.iloc[:,2:], train.iloc[:,1]
 
 
-# In[10]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.3, random_state = 123, stratify = y)
 
 
-# In[11]:
 
 
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, classification_report, confusion_matrix
 
 
-# In[12]:
 
 
 from sklearn.model_selection import GridSearchCV
@@ -112,14 +100,12 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold
 
 
-# In[13]:
 
 
 logreg=LogisticRegression()
 logreg.fit(X_train,y_train)
 
 
-# In[14]:
 
 
 from sklearn.metrics import confusion_matrix
@@ -128,14 +114,12 @@ confusion_matrix = confusion_matrix(y_test, y_pred)
 print(confusion_matrix)
 
 
-# In[15]:
 
 
 from sklearn.metrics import classification_report
 print(classification_report(y_test, y_pred))
 
 
-# In[16]:
 
 
 test_inp = test.drop(columns = ['ID_code'])
@@ -145,13 +129,11 @@ submit['target'] = y_pred
 submit.head()
 
 
-# In[17]:
 
 
 submit.to_csv('log_reg_baseline.csv', index = False)
 
 
-# In[18]:
 
 
 from sklearn.svm import SVC
@@ -159,13 +141,11 @@ from sklearn.svm import SVC
 #svclassifier.fit(X_train, y_train)
 
 
-# In[19]:
 
 
 #y_pred_svm = svclassifier.predict(X_test)
 
 
-# In[20]:
 
 
 #from sklearn.metrics import classification_report, confusion_matrix
@@ -173,7 +153,6 @@ from sklearn.svm import SVC
 #print(classification_report(y_test, y_pred_svm))
 
 
-# In[21]:
 
 
 #submission_svm = pd.DataFrame({
@@ -183,7 +162,6 @@ from sklearn.svm import SVC
 #submission_svm.to_csv('svm_submission.csv', index=False)
 
 
-# In[22]:
 
 
 from sklearn.naive_bayes import GaussianNB
@@ -191,19 +169,16 @@ from sklearn.naive_bayes import GaussianNB
 gnb = GaussianNB()
 
 
-# In[23]:
 
 
 gnb.fit(X_train, y_train)
 
 
-# In[24]:
 
 
 y_predit_svc = gnb.predict(X_test)
 
 
-# In[25]:
 
 
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, classification_report, confusion_matrix
@@ -211,43 +186,36 @@ from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_sc
 accuracy_score(y_test, y_predit_svc)
 
 
-# In[26]:
 
 
 confusion_matrix(y_test,y_predit_svc)
 
 
-# In[27]:
 
 
 print(classification_report(y_test, y_predit_svc))
 
 
-# In[28]:
 
 
 y_preds_res = gnb.predict(X)
 
 
-# In[29]:
 
 
 accuracy_score(y, y_preds_res)
 
 
-# In[30]:
 
 
 confusion_matrix(y, y_preds_res)
 
 
-# In[31]:
 
 
 print(classification_report(y, y_preds_res))
 
 
-# In[32]:
 
 
 submission_nb = pd.DataFrame({
@@ -257,7 +225,6 @@ submission_nb = pd.DataFrame({
 submission_nb.to_csv('naive_baise_submission.csv', index=False)
 
 
-# In[33]:
 
 
 #from sklearn.tree import DecisionTreeClassifier
@@ -266,20 +233,17 @@ submission_nb.to_csv('naive_baise_submission.csv', index=False)
 #tree.fit(X, y)
 
 
-# In[34]:
 
 
 #y_predit_tree = tree.predict(X_test)
 
 
-# In[35]:
 
 
 #print(classification_report(y_test, y_predit_tree))
 #print(confusion_matrix(y_test,y_predit_tree))
 
 
-# In[36]:
 
 
 #from sklearn import metrics
@@ -290,39 +254,33 @@ submission_nb.to_csv('naive_baise_submission.csv', index=False)
                                      n_jobs=-1)
 
 
-# In[37]:
 
 
 #clf.fit(x_train, y_train)
 
 
-# In[38]:
 
 
 #y_pred = clf.predict(x_train)
 
 
-# In[39]:
 
 
 #print('Score:', clf.score(x_train, y_train))
 
 
-# In[40]:
 
 
 
 #print('AUC Score:', metrics.roc_auc_score(y_train, y_pred))
 
 
-# In[41]:
 
 
 #print(classification_report(y_train, y_pred))
 #print(confusion_matrix(y_train, y_pred))
 
 
-# In[42]:
 
 
 #submission_res = pd.DataFrame({
@@ -332,14 +290,12 @@ submission_nb.to_csv('naive_baise_submission.csv', index=False)
 #submission_res.to_csv('naive_baise_submission.csv', index=False)
 
 
-# In[43]:
 
 
 #model_xgb = xgb.XGBRegressor(n_estimators=5, max_depth=4, learning_rate=0.5) 
 #model_xgb.fit(X_train, y_train)
 
 
-# In[44]:
 
 
 #xgb_preds = model_xgb.predict(X_test)
@@ -350,31 +306,26 @@ submission_nb.to_csv('naive_baise_submission.csv', index=False)
 #submission_xgb.to_csv('naive_baise_submission.csv', index=False)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

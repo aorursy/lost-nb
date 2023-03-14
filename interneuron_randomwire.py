@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install torchviz')
 
 
-# In[2]:
 
 
 import pandas as pd, numpy as np, os, sys
@@ -31,7 +29,6 @@ from torchviz import make_dot, make_dot_from_trace
 print(os.listdir("../input"))
 
 
-# In[3]:
 
 
 class RandomGraph(object):
@@ -93,7 +90,6 @@ class RandomGraph(object):
         return nx.read_yaml("./saved_graph/" + path)
 
 
-# In[4]:
 
 
 rg = RandomGraph(8, 0.75)
@@ -101,7 +97,6 @@ gf = rg.make_graph()
 rg.get_graph_info(gf)
 
 
-# In[5]:
 
 
 def weights_init(m):
@@ -232,7 +227,6 @@ class RandWire(nn.Module):
         return out
 
 
-# In[6]:
 
 
 class RandNN(nn.Module):
@@ -300,7 +294,6 @@ class RandNN(nn.Module):
         return out
 
 
-# In[7]:
 
 
 def rw(f=None):
@@ -308,26 +301,22 @@ def rw(f=None):
     return m
 
 
-# In[8]:
 
 
 m = rw()
 
 
-# In[9]:
 
 
 #m
 
 
-# In[10]:
 
 
 tr = pd.read_csv('../input/train.csv')
 te = pd.read_csv('../input/sample_submission.csv')
 
 
-# In[11]:
 
 
 import fastai
@@ -335,7 +324,6 @@ from fastai.vision import *
 path = Path('../input')
 
 
-# In[12]:
 
 
 SZ = 128
@@ -350,7 +338,6 @@ data = (train.split_by_rand_pct(0.1, seed=42)
         .databunch(path=Path('.'), bs=BS).normalize(imagenet_stats))
 
 
-# In[13]:
 
 
 # Source: https://www.kaggle.com/c/human-protein-atlas-image-classification/discussion/78109
@@ -371,7 +358,6 @@ class FocalLoss(nn.Module):
         return loss.mean()
 
 
-# In[14]:
 
 
 learn = cnn_learner(data, 
@@ -383,21 +369,18 @@ learn = cnn_learner(data,
 learn = learn.to_fp16(loss_scale=64, dynamic=True)
 
 
-# In[15]:
 
 
 #learn.lr_find()
 #learn.recorder.plot()
 
 
-# In[16]:
 
 
 learn.unfreeze()
 learn.fit_one_cycle(10, slice(1e-3,2e-2))
 
 
-# In[17]:
 
 
 learn.recorder.plot()
@@ -405,7 +388,6 @@ learn.recorder.plot_losses()
 learn.recorder.plot_metrics()
 
 
-# In[18]:
 
 
 def find_best_fixed_threshold(preds, targs, do_plot=True):
@@ -430,7 +412,6 @@ def join_preds(preds, thr):
     return [' '.join(i2c[np.where(t==1)[0],1].astype(str)) for t in (preds[0].sigmoid()>thr).long()]
 
 
-# In[19]:
 
 
 # Validation predictions
@@ -438,7 +419,6 @@ valid_preds = learn.get_preds(DatasetType.Valid)
 best_thr = find_best_fixed_threshold(*valid_preds)
 
 
-# In[20]:
 
 
 test_preds = learn.get_preds(DatasetType.Test)
@@ -446,69 +426,58 @@ te.attribute_ids = join_preds(test_preds, best_thr)
 te.head()
 
 
-# In[21]:
 
 
 te.to_csv('submission.csv', index=False)
 
 
-# In[22]:
 
 
 x = torch.randn(2,3,64,64).half().cuda()
 make_dot(learn.model(x), params=dict(learn.model.named_parameters()))
 
 
-# In[23]:
 
 
 
 
 
-# In[23]:
 
 
 x = torch.randn(2,3,64,64).half().cuda()
 make_dot(learn.model[0][0:2](x), params=dict(learn.model[0][0:2].named_parameters()))
 
 
-# In[24]:
 
 
 
 
 
-# In[24]:
 
 
 
 
 
-# In[24]:
 
 
 
 
 
-# In[24]:
 
 
 
 
 
-# In[24]:
 
 
 
 
 
-# In[24]:
 
 
 
 
 
-# In[24]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -11,7 +10,6 @@ from google.colab import auth
 from oauth2client.client import GoogleCredentials
 
 
-# In[2]:
 
 
 auth.authenticate_user()
@@ -20,81 +18,68 @@ gauth.credentials = GoogleCredentials.get_application_default()
 drive = GoogleDrive(gauth)
 
 
-# In[3]:
 
 
 download = drive.CreateFile({'id': '1VKmIegctrMDkVEhKsr_7m9I5ltMIZ3e3'})
 download.GetContentFile('coins.zip')
 
 
-# In[4]:
 
 
 download = drive.CreateFile({'id': '1SDd6umHK0IqwPuPUYs1p0woRI7lsHnvK'})
 download.GetContentFile('test.zip')
 
 
-# In[5]:
 
 
 get_ipython().system('unzip test.zip -d test')
 
 
-# In[6]:
 
 
 get_ipython().system('pwd')
 
 
-# In[7]:
 
 
 get_ipython().system('ls')
 
 
-# In[8]:
 
 
 get_ipython().system('unzip coins.zip -d data')
 
 
-# In[9]:
 
 
 get_ipython().system('ls')
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[10]:
 
 
 import pathlib
@@ -102,7 +87,6 @@ from fastai.vision import *
 from fastai.metrics import error_rate , accuracy
 
 
-# In[11]:
 
 
 
@@ -113,25 +97,21 @@ import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import os
 
 
-# In[12]:
 
 
 print(os.listdir("/content/data/Coins"))
 
 
-# In[13]:
 
 
 get_ipython().system('pip install split-folders')
 
 
-# In[14]:
 
 
 get_ipython().system('mkdir babes')
 
 
-# In[15]:
 
 
 import split_folders
@@ -141,13 +121,11 @@ import split_folders
 split_folders.ratio('/content/data/Coins', output="/content/newdata", seed=1337, ratio=(.8, .1, .1)) # default values
 
 
-# In[16]:
 
 
 print(os.listdir("/content/data/Coins"))
 
 
-# In[17]:
 
 
 
@@ -155,38 +133,32 @@ get_ipython().system('mv /content/newdata/val /content/newdata/valid ')
 print(os.listdir("../content/newdata"))
 
 
-# In[18]:
 
 
 rm -rf /content/newdata/train/*
 
 
-# In[19]:
 
 
 print(os.listdir("../content/newdata/train"))
 
 
-# In[20]:
 
 
 mv  -v /content/data/Coins/* /content/newdata/train/
 
 
-# In[21]:
 
 
 print(os.listdir("../content/newdata/train/taiwan"))
 
 
-# In[22]:
 
 
 from pathlib import Path
 path = Path("../content/newdata")
 
 
-# In[23]:
 
 
 #creating an object of get_transform class from fastai.vision
@@ -198,13 +170,11 @@ tfms = get_transforms(do_flip=False)
 data = ImageDataBunch.from_folder(path,ds_tfms=tfms, size=256).normalize(imagenet_stats)
 
 
-# In[24]:
 
 
 data.show_batch(rows=3, figsize=(7,6))
 
 
-# In[25]:
 
 
 learn = cnn_learner(data, models.resnet50, metrics=accuracy,callback_fns=ShowGraph)
@@ -212,7 +182,6 @@ learn.lr_find()
 learn.recorder.plot()
 
 
-# In[26]:
 
 
 learn.recorder.plot(suggestion=True)
@@ -220,50 +189,42 @@ best_clf_lr = learn.recorder.min_grad_lr
 lr=best_clf_lr
 
 
-# In[27]:
 
 
 import matplotlib.pyplot as plt
 
 
-# In[28]:
 
 
 plt.style.use("seaborn")
 
 
-# In[29]:
 
 
 learn.fit_one_cycle(10, max_lr=0.005248074602497722)
 
 
-# In[30]:
 
 
 
 learn.save('stage-1')
 
 
-# In[31]:
 
 
 learn.load('stage-1')
 
 
-# In[ ]:
 
 
 
 
 
-# In[32]:
 
 
 learn.fit_one_cycle(10, max_lr=0.005248074602497722)
 
 
-# In[33]:
 
 
 interp = ClassificationInterpretation.from_learner(learn)
@@ -273,13 +234,11 @@ losses,idxs = interp.top_losses()
 len(data.valid_ds)==len(losses)==len(idxs)
 
 
-# In[34]:
 
 
 interp.plot_top_losses(9, figsize=(15,11))
 
 
-# In[35]:
 
 
 interp = ClassificationInterpretation.from_learner(learn)
@@ -289,13 +248,11 @@ losses,idxs = interp.top_losses()
 len(data.valid_ds)==len(losses)==len(idxs)
 
 
-# In[36]:
 
 
 p = Path("../working/data/train")
 
 
-# In[37]:
 
 
 directories = p.glob("*")
@@ -317,26 +274,22 @@ for fol in directories:
             country_dic[class_name] = country
 
 
-# In[38]:
 
 
 labels
 
 
-# In[39]:
 
 
 country_dic
 
 
-# In[40]:
 
 
 from pathlib import Path
 p = Path("/content/test/test")
 
 
-# In[41]:
 
 
 dire = p.glob("*.jpg")
@@ -353,33 +306,28 @@ for img_path in dire:
     
 
 
-# In[42]:
 
 
 output.remove(0)
 # since zeroth index not needed
 
 
-# In[43]:
 
 
 output = np.array(output,dtype="str")
 
 
-# In[44]:
 
 
 df = pd.DataFrame(output)
 df.to_csv("../content/Answer.csv")
 
 
-# In[45]:
 
 
 df.head()
 
 
-# In[46]:
 
 
 import base64
@@ -401,7 +349,6 @@ def create_download_link(df, title = "Download CSV file", filename = "Answer.csv
 create_download_link(df)
 
 
-# In[ ]:
 
 
 

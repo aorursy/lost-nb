@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # basic imports
@@ -12,14 +11,12 @@ import pandas as pd
 import numpy as np
 
 
-# In[ ]:
 
 
 # what do we have here?
 print (os.listdir("../input"))
 
 
-# In[ ]:
 
 
 # global variables
@@ -64,27 +61,23 @@ TEST_PROCESSED_CSV_FILE="stage_1_test_processed.csv"
 TEST_PROCESSED_CSV_COLUMN_NAMES=['patientId', 'sex', 'age', 'viewPosition']
 
 
-# In[ ]:
 
 
 # how many unique training examples (patient images) do we have?
 print ("Unique training examples provided: {}".format(len(os.listdir(TRAIN_DIR))))
 
 
-# In[ ]:
 
 
 # remember 25684!
 
 
-# In[ ]:
 
 
 # how many test cases we have to analyze?
 print ("Test cases to be predicted: {}".format(len(os.listdir(TEST_DIR))))
 
 
-# In[ ]:
 
 
 # read a random training patient data file
@@ -95,14 +88,12 @@ print("Training Patient Dataset: \n.{}\n".format(trainpatientdata))
 print("Training Patient Dataset Attributes: \n{}\n".format(trainpatientdata.dir()))
 
 
-# In[ ]:
 
 
 # PatientSex, PatientAge, and ViewPosition look like useful attributes of trainpatientdata.
 # the image is in trainpatientdata.pixel_array.
 
 
-# In[ ]:
 
 
 # utility to check dicom files
@@ -118,7 +109,6 @@ def checkImages (directory, filelist):
         assert patientidfromfilename == patientidfromfile, "Error: Patient ID mismatch"
 
 
-# In[ ]:
 
 
 # make sure training images are ok (no assertion errors)
@@ -126,7 +116,6 @@ def checkImages (directory, filelist):
 checkImages(TRAIN_DIR, TRAIN_LIST)
 
 
-# In[ ]:
 
 
 # make sure test images are ok (no assertion errors)
@@ -134,7 +123,6 @@ checkImages(TRAIN_DIR, TRAIN_LIST)
 checkImages(TEST_DIR, TEST_LIST)
 
 
-# In[ ]:
 
 
 # utility to load a dicom image and/or key attributes
@@ -157,7 +145,6 @@ def loadImage (directory, filename, mode="metadata"):
     return patientid, attributes, imagearray
 
 
-# In[ ]:
 
 
 # utility to save meta data to csv files
@@ -172,63 +159,54 @@ def saveMetaData (directory, filelist, csvfilename):
         file.write(csvrecord)
 
 
-# In[ ]:
 
 
 # save training meta data
 saveMetaData(TRAIN_DIR, TRAIN_LIST, TRAIN_METADATA_CSV_FILE)
 
 
-# In[ ]:
 
 
 # how many unique records did we save in stage_1_train_metadata.csv?
 get_ipython().system('printf "Number of unique training meta data records stored: "; grep -v "patientId,sex,age,viewPosition" stage_1_train_metadata.csv | sort | uniq| wc -l')
 
 
-# In[ ]:
 
 
 # what does the stage_1_train_metadata.csv file look like?
 get_ipython().system('printf "First 10 rows, including header, in stage_1_train_metadata.csv:\\n\\n";          head -10 stage_1_train_metadata.csv')
 
 
-# In[ ]:
 
 
 # save test meta data
 saveMetaData(TEST_DIR, TEST_LIST, TEST_METADATA_CSV_FILE)
 
 
-# In[ ]:
 
 
 # how many unique records did we save in stage_1_test_metadata.csv?
 get_ipython().system('printf "Number of unique test meta data records stored: "; grep -v "patientId,sex,age,viewPosition" stage_1_test_metadata.csv | sort | uniq| wc -l')
 
 
-# In[ ]:
 
 
 # what does the stage_1_test_metadata.csv file look like?
 get_ipython().system('printf "First 10 rows, including header, in stage_1_test_metadata.csv:\\n\\n";          head -10 stage_1_test_metadata.csv')
 
 
-# In[ ]:
 
 
 # what does the stage_1_train_labels.csv file look like?
 get_ipython().system('printf "First 10 rows, including header, in stage_1_train_labels.csv: \\n\\n";          head -10 ../input/stage_1_train_labels.csv')
 
 
-# In[ ]:
 
 
 # what does the stage_1_detailed_class_info.csv file look like?
 get_ipython().system('printf "First 10 rows, including header, in stage_1_detailed_class_info.csv:\\n\\n";          head -10 ../input/stage_1_detailed_class_info.csv')
 
 
-# In[ ]:
 
 
 def combineBoundingBoxes(bboxesin):
@@ -253,7 +231,6 @@ def combineBoundingBoxes(bboxesin):
     return combinedbboxlist
 
 
-# In[ ]:
 
 
 # read TRAIN_LABELS_CSV_FILE into a pandas dataframe
@@ -267,7 +244,6 @@ print (labelsbboxdf.shape)
 print (labelsbboxdf.head(n=10))
 
 
-# In[ ]:
 
 
 # grab labels by unique patienId
@@ -277,7 +253,6 @@ labelsdf=pd.DataFrame(labelsdf.groupby(['patientId'])['label'].first(), columns=
 print (labelsdf.head(n=10))
 
 
-# In[ ]:
 
 
 # after 'label' is popped off, x1,y1,width,height are left in labelsbboxdf
@@ -287,7 +262,6 @@ bboxesdf=pd.DataFrame(labelsbboxdf.dropna())
 print(bboxesdf.head(n=10))
 
 
-# In[ ]:
 
 
 # compute the largest bounding box by patientId
@@ -297,7 +271,6 @@ combinedbboxdf.iat[0,0]=[264.0, 152.0, 554.0, 453.0]
 combinedbboxdf.head(n=10)
 
 
-# In[ ]:
 
 
 # consolidate train labels, classes, and meta-data by unique patientId
@@ -398,42 +371,36 @@ testmetadf['viewPosition']=testmetadf['viewPosition'].replace(to_replace=VIEWPOS
 testmetadf.to_csv(TEST_PROCESSED_CSV_FILE)
 
 
-# In[ ]:
 
 
 # how many unique records did we save in stage_1_train_boundingboxes.csv?
 get_ipython().system('printf "Number of bounding box data records (not unique) stored: "; grep -v "patientId,boundingbox" stage_1_train_boundingboxes.csv | sort | uniq| wc -l')
 
 
-# In[ ]:
 
 
 # what does the stage_1_train_boundingboxes.csv file look like?
 get_ipython().system('printf "First 10 rows, including header, in stage_1_train_boundingboxes.csv:\\n\\n";          head -10 stage_1_train_boundingboxes.csv')
 
 
-# In[ ]:
 
 
 # how many unique records did we save in stage_1_train_processed.csv?
 get_ipython().system('printf "Number of unique train processed data records stored: "; grep -v "patientId,label,class,sex,age,viewPosition" stage_1_train_processed.csv | sort | uniq| wc -l')
 
 
-# In[ ]:
 
 
 # what does the stage_1_train_processed.csv file look like?
 get_ipython().system('printf "First 10 rows, including header, in stage_1_train_processed.csv:\\n\\n";          head -10 stage_1_train_processed.csv')
 
 
-# In[ ]:
 
 
 # how many unique records did we save in stage_1_test_processed.csv?
 get_ipython().system('printf "Number of unique train processed data records stored: "; grep -v "patientId,sex,age,viewPosition" stage_1_test_processed.csv | sort | uniq| wc -l')
 
 
-# In[ ]:
 
 
 # what does the stage_1_test_processed.csv file look like?

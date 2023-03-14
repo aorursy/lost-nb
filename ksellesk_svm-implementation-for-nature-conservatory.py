@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -41,7 +40,6 @@ for d in dir_names:
      class_num += 1
 
 
-# In[2]:
 
 
 # General steps:
@@ -120,7 +118,6 @@ for key in file_paths:
             break
 
 
-# In[3]:
 
 
 # Alright! Now we've got features extracted and labels
@@ -134,7 +131,6 @@ clf = svm.SVC(kernel='linear', C = 1.0, probability=True)
 clf.fit(X,y)
 
 
-# In[4]:
 
 
 # Now, extract one of the images and predict it
@@ -150,7 +146,6 @@ print(clf.predict_proba(vector_data))  # shows all probabilities for each class.
                                        #    need this for the competition
 
 
-# In[5]:
 
 
 # save SVM model
@@ -158,7 +153,6 @@ print(clf.predict_proba(vector_data))  # shows all probabilities for each class.
 # to load SVM model, use:  clf = joblib.load('filename.pkl')
 
 
-# In[6]:
 
 
 # early stoppage...
@@ -211,7 +205,6 @@ for f in fnames:
     i += 1
 
 
-# In[7]:
 
 
 # Write to csv

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ import os
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 get_ipython().run_line_magic('reload_ext', 'autoreload')
@@ -30,7 +28,6 @@ get_ipython().run_line_magic('autoreload', '2')
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[3]:
 
 
 import fastai
@@ -45,7 +42,6 @@ warnings.filterwarnings("ignore")
 fastai.__version__
 
 
-# In[4]:
 
 
 import cv2
@@ -72,7 +68,6 @@ def seed_everything(seed):
 seed_everything(SEED)
 
 
-# In[5]:
 
 
 df_label = pd.read_csv(LABELS)
@@ -81,14 +76,12 @@ print(nunique)
 df_label.head()
 
 
-# In[6]:
 
 
 class_map_df = pd.read_csv('../input/bengaliai-cv19/class_map.csv')
 class_map_df.tail()
 
 
-# In[7]:
 
 
 stats, fold, nfolds = ([0.08547], [0.22490]), 0, 4
@@ -101,7 +94,6 @@ data = (ImageList.from_df(df_label, path='.', folder=TRAIN, suffix='.png', cols=
 data.show_batch()
 
 
-# In[8]:
 
 
 class MyModel(nn.Module):
@@ -122,7 +114,6 @@ class MyModel(nn.Module):
         return out1, out2, out3
 
 
-# In[9]:
 
 
 class Loss_combine(nn.Module):
@@ -136,7 +127,6 @@ class Loss_combine(nn.Module):
         return 0.7*F.cross_entropy(x1,y[:,0],reduction=reduction) + 0.1*F.cross_entropy(x2,y[:,1],reduction=reduction) +           0.2*F.cross_entropy(x3,y[:,2],reduction=reduction)
 
 
-# In[10]:
 
 
 class Metric_idx(Callback):
@@ -217,7 +207,6 @@ class Metric_tot(Callback):
                 0.25*self.vowel._recall() + 0.25*self.consonant._recall())
 
 
-# In[11]:
 
 
 class MixUpLoss(Module):
@@ -283,7 +272,6 @@ class MixUpCallback(LearnerCallback):
         if self.stack_y: self.learn.loss_func = self.learn.loss_func.get_old()
 
 
-# In[12]:
 
 
 model = MyModel()
@@ -291,7 +279,6 @@ model = MyModel()
 model;
 
 
-# In[13]:
 
 
 learn = Learner(data, model, loss_func=Loss_combine(), opt_func=Over9000,
@@ -301,7 +288,6 @@ learn.clip_grad = 1.0
 learn.split([model.fc_graph]);
 
 
-# In[14]:
 
 
 learn.fit_one_cycle(5, slice(3e-2), 
@@ -309,13 +295,11 @@ callbacks = [logger, SaveModelCallback(learn,monitor='metric_tot',mode='max',nam
 #metrics: Metric_grapheme, Metric_vowel, Metric_consonant, Metric_tot (competition metric)
 
 
-# In[15]:
 
 
 learn.unfreeze()
 
 
-# In[16]:
 
 
 lr = 3e-2
@@ -324,7 +308,6 @@ callbacks = [logger, SaveModelCallback(learn,monitor='metric_tot',mode='max',nam
 #metrics: Metric_grapheme, Metric_vowel, Metric_consonant, Metric_tot (competition metric)
 
 
-# In[17]:
 
 
 import torch
@@ -352,13 +335,11 @@ my_rn34=MyRn34()
 my_rn34;
 
 
-# In[18]:
 
 
 torch.save({'state_dict': learn.model.state_dict()}, '/kaggle/working/model_1.pth')
 
 
-# In[19]:
 
 
 model=my_rn34
@@ -367,7 +348,6 @@ model.load_state_dict(weighties['state_dict'], strict=False)
 model.cuda();
 
 
-# In[20]:
 
 
 nworkers = 2
@@ -381,7 +361,6 @@ df_test = pd.read_csv(PATH+'test.csv')
 df_test.describe()
 
 
-# In[21]:
 
 
 HEIGHT = 137
@@ -414,7 +393,6 @@ def crop_resize(img0, size=SIZE, pad=16):
     return cv2.resize(img,(size,size))
 
 
-# In[22]:
 
 
 class GraphemeDataset(Dataset):
@@ -434,7 +412,6 @@ class GraphemeDataset(Dataset):
         return img, name
 
 
-# In[23]:
 
 
 row_id,target = [],[]

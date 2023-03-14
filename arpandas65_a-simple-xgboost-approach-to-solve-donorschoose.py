@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # importing nesessary Libraries
@@ -26,7 +25,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[2]:
 
 
 # Reading Data
@@ -35,7 +33,6 @@ resource_data = pd.read_csv('../input/resources.csv')
 test_data=pd.read_csv('../input/test.csv')
 
 
-# In[3]:
 
 
 # Merging two dataframes 
@@ -46,7 +43,6 @@ project_data = pd.merge(project_data, price_data, on='id', how='left')
 test_data=pd.merge(test_data,price_data,on='id',how='left')
 
 
-# In[4]:
 
 
 # Data Overview
@@ -56,7 +52,6 @@ print('-'*50)
 print("The attributes of data :", project_data.columns.values)
 
 
-# In[5]:
 
 
 
@@ -67,7 +62,6 @@ project_data.sort_values(by=['Date'], inplace=True)
 project_data = project_data[cols]
 
 
-# In[6]:
 
 
 cols = ['Date' if x=='project_submitted_datetime' else x for x in list(test_data.columns)]
@@ -77,7 +71,6 @@ test_data.sort_values(by=['Date'], inplace=True)
 test_data = test_data[cols]
 
 
-# In[7]:
 
 
 
@@ -94,13 +87,11 @@ test_data.drop(['project_essay_3'], axis=1, inplace=True)
 test_data.drop(['project_essay_4'], axis=1, inplace=True)
 
 
-# In[8]:
 
 
 project_data.isna().sum()
 
 
-# In[9]:
 
 
 project_data.fillna(value='undefined',inplace=True)
@@ -108,7 +99,6 @@ test_data.fillna(value='undefined',inplace=True)
 project_data.isna().sum()
 
 
-# In[10]:
 
 
 y = project_data['project_is_approved'].values
@@ -117,13 +107,11 @@ project_data.head(1)
 x=project_data
 
 
-# In[11]:
 
 
 x_train,x_cv,y_train,y_cv=train_test_split(x,y,test_size=0.33,stratify=y)
 
 
-# In[12]:
 
 
 # Function to Pre Process project subject Categories
@@ -154,7 +142,6 @@ def clean_categories(df,col='project_subject_categories'):
     return sorted_cat_dict
 
 
-# In[13]:
 
 
 sorted_dict_key_x_train=clean_categories(x_train)
@@ -162,7 +149,6 @@ sorted_dict_key_x_cv=clean_categories(x_cv)
 sorted_dict_key_test=clean_categories(test_data)
 
 
-# In[14]:
 
 
 # Function to Pre Process project subject Sub Categories
@@ -193,7 +179,6 @@ def clean_subcategories(df,col='project_subject_subcategories'):
     return sorted_sub_cat_dict
 
 
-# In[15]:
 
 
 sorted_sub_dict_key_x_train=clean_subcategories(x_train)
@@ -201,7 +186,6 @@ sorted_sub_dict_key_x_cv=clean_subcategories(x_cv)
 sorted_sub_dict_key_test=clean_subcategories(test_data)
 
 
-# In[16]:
 
 
 # https://stackoverflow.com/a/47091490/4084039
@@ -224,7 +208,6 @@ def decontracted(phrase):
     return phrase
 
 
-# In[17]:
 
 
 # https://gist.github.com/sebleier/554280
@@ -232,7 +215,6 @@ def decontracted(phrase):
 stopwords= ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', "you're", "you've",            "you'll", "you'd", 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself',             'she', "she's", 'her', 'hers', 'herself', 'it', "it's", 'its', 'itself', 'they', 'them', 'their',            'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', "that'll", 'these', 'those',             'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does',             'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of',             'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after',            'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further',            'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more',            'most', 'other', 'some', 'such', 'only', 'own', 'same', 'so', 'than', 'too', 'very',             's', 't', 'can', 'will', 'just', 'don', "don't", 'should', "should've", 'now', 'd', 'll', 'm', 'o', 're',             've', 'y', 'ain', 'aren', "aren't", 'couldn', "couldn't", 'didn', "didn't", 'doesn', "doesn't", 'hadn',            "hadn't", 'hasn', "hasn't", 'haven', "haven't", 'isn', "isn't", 'ma', 'mightn', "mightn't", 'mustn',            "mustn't", 'needn', "needn't", 'shan', "shan't", 'shouldn', "shouldn't", 'wasn', "wasn't", 'weren', "weren't",             'won', "won't", 'wouldn', "wouldn't"]
 
 
-# In[18]:
 
 
 # Preprocessing Essay Column
@@ -257,7 +239,6 @@ preprocessed_essays_x_cv=preprocess_essay(x_cv['essay'])
 preprocessed_essays_test=preprocess_essay(test_data['essay'])
 
 
-# In[19]:
 
 
 # Preprocessing project title column
@@ -279,14 +260,12 @@ preprocessed_title_x_cv=preprocess_title(x_cv['project_title'])
 preprocessed_title_test=preprocess_title(test_data['project_title'])
 
 
-# In[20]:
 
 
 # data overview of project grade category
 project_data['project_grade_category'].tail(3)
 
 
-# In[21]:
 
 
 # Preprocessing Grade
@@ -306,7 +285,6 @@ preprocessed_grade_test=preprocess_grade(test_data['project_grade_category'])
 
 
 
-# In[22]:
 
 
 x_train['clean_grade']=preprocessed_grade_x_train
@@ -314,19 +292,16 @@ x_cv['clean_grade']=preprocessed_grade_x_cv
 test_data['clean_grade']=preprocessed_grade_test
 
 
-# In[23]:
 
 
 test_data.columns
 
 
-# In[24]:
 
 
 consolidated=pd.concat([x_train,x_cv,test_data],axis=0)
 
 
-# In[25]:
 
 
 # Label Encoder
@@ -346,7 +321,6 @@ for c in cols:
     test_data[c] = le.transform(test_data[c].astype(str))
 
 
-# In[26]:
 
 
 # Encoding categorical features of Train Data
@@ -358,7 +332,6 @@ grade_encoded_x_train=x_train['clean_grade'].values.reshape(-1,1)
 print(cat_encoded_x_train.shape)
 
 
-# In[27]:
 
 
 # Encoding categorical features of Cross Validation Data
@@ -370,7 +343,6 @@ grade_encoded_x_cv=x_cv['clean_grade'].values.reshape(-1,1)
 print(cat_encoded_x_cv.shape)
 
 
-# In[28]:
 
 
 # Encoding categorical features of Test Data
@@ -382,7 +354,6 @@ grade_encoded_test=test_data['clean_grade'].values.reshape(-1,1)
 print(cat_encoded_test.shape)
 
 
-# In[29]:
 
 
 # TFIDF Encoding of essay text
@@ -399,7 +370,6 @@ print(X_cv_essay_tfidf.shape, y_cv.shape)
 print(test_essay_tfidf.shape)
 
 
-# In[30]:
 
 
 # TFIDF encoding of project_title ,We are considering only the words which appeared in at least 10 documents(rows or projects).
@@ -414,7 +384,6 @@ print(X_cv_title_tfidf.shape, y_cv.shape)
 print(test_title_tfidf.shape)
 
 
-# In[31]:
 
 
 # Normalizing price
@@ -430,7 +399,6 @@ print(X_train_price_norm.shape, y_train.shape)
 print(X_cv_price_norm.shape, y_cv.shape)
 
 
-# In[32]:
 
 
 # Normalizing teacher_number_of_previously_posted_projects
@@ -444,7 +412,6 @@ print(X_train_teacher_number_of_previously_posted_projects_norm.shape, y_train.s
 print(X_cv_teacher_number_of_previously_posted_projects_norm.shape, y_cv.shape)
 
 
-# In[33]:
 
 
 from scipy.sparse import hstack
@@ -456,7 +423,6 @@ test_eval=hstack((cat_encoded_test,sub_cat_encoded_test,state_encoded_test,prefi
 test_essay_tfidf,test_price_norm,test_teacher_number_of_previously_posted_projects_norm)).tocsr()
 
 
-# In[34]:
 
 
 print(x_train.shape)
@@ -466,7 +432,6 @@ print(y_cv.shape)
 print(test_eval.shape)
 
 
-# In[35]:
 
 
 # Trainning XGBoost Model
@@ -484,7 +449,6 @@ clf.fit(x_train,y_train)
 
 
 
-# In[36]:
 
 
 # Predicting Train and AUC Scores using our model
@@ -494,7 +458,6 @@ y_pred_cv=clf.predict(x_cv)
 cv_fpr,cv_tpr,cv_threshold=roc_curve(y_pred_cv,y_cv)
 
 
-# In[37]:
 
 
 # Plot results obtained from the model 
@@ -507,7 +470,6 @@ plt.title('FPR vs TPR')
 plt.legend()
 
 
-# In[38]:
 
 
 submission = pd.DataFrame()

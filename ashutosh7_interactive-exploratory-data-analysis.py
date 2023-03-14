@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 
@@ -17,7 +16,6 @@ import os
 print(os.listdir("../input"))
 
 
-# In[ ]:
 
 
 train_df = pd.read_csv("../input/training_set.csv", dtype={"object_id": "object"})
@@ -29,38 +27,32 @@ test_meta_df = pd.read_csv("../input/test_set_metadata.csv", iterator=True, dtyp
 sample_submission_df = pd.read_csv("../input/sample_submission.csv", dtype={"object_id": "object"})
 
 
-# In[ ]:
 
 
 train_df.head()
 
 
-# In[ ]:
 
 
 test_df.get_chunk(size=5)
 
 
-# In[ ]:
 
 
 train_meta_df.head()
 
 
-# In[ ]:
 
 
 test_meta_df.get_chunk(size=5)
 
 
-# In[ ]:
 
 
 print("--------------Shape------------------")
 print(" Train: {}\n Train meta: {}".format(train_df.shape, train_meta_df.shape))
 
 
-# In[ ]:
 
 
 ID_col = "object_id"
@@ -71,13 +63,11 @@ static_cols = ["ra", "decl", "gal_l", "gal_b", "ddf", "hostgal_specz",
                "hostgal_photoz", "hostgal_photoz_err", "distmod", "mwebv"]
 
 
-# In[ ]:
 
 
 train_df[ts_index_col] =train_df[ts_index_col].apply(lambda x : )
 
 
-# In[ ]:
 
 
 @interact(object_id=train_df.object_id.unique())
@@ -91,7 +81,6 @@ def plot_ts(object_id):
     plt.show()
 
 
-# In[ ]:
 
 
 @interact(bins= (5, 40))
@@ -103,13 +92,11 @@ def plt_series_len(bins):
     plt.show()
 
 
-# In[ ]:
 
 
 ### Distribution of train labels
 
 
-# In[ ]:
 
 
 train_lbls = train_meta_df[target_col].value_counts()
@@ -122,13 +109,11 @@ plt.title("Class wise object distribution")
 plt.show()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

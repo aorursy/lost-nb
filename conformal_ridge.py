@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import matplotlib.pyplot as plt 
@@ -351,7 +350,6 @@ def submit(model, submit, test):
     test_id.to_csv(submit, index=False)
 
 
-# In[2]:
 
 
 path = '../input/'
@@ -360,7 +358,6 @@ ridge = train(x, y)
 submit(ridge, "ans.csv", test)
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -14,7 +13,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
 
 
 from keras import backend as K
@@ -36,7 +34,6 @@ def f1(y_true, y_pred):
     return 2*((precision*recall)/(precision+recall+K.epsilon()))
 
 
-# In[3]:
 
 
 main_path = "/kaggle/input/taller1ann-usm/"
@@ -48,7 +45,6 @@ sample_submission_path = main_path + 'sample_submission.csv'
 submission_last = 'submission_last.csv'
 
 
-# In[4]:
 
 
 df = pd.read_csv(train_labels_path)
@@ -57,14 +53,12 @@ class_names = list(bd.keys())
 num_class = len(class_names)
 
 
-# In[5]:
 
 
 img = plt.imread(train_path + df.iloc[0]['Id']+'.jpg')
 shape_img = img.shape
 
 
-# In[6]:
 
 
 df_q = pd.read_csv(train_labels_path)
@@ -85,7 +79,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[7]:
 
 
 labels = pd.read_csv(train_labels_path).set_index('Id')
@@ -98,7 +91,6 @@ df = df.astype({'labels': str})
 df['images'] = df['images'].map(lambda s: s+'.jpg')
 
 
-# In[8]:
 
 
 from sklearn.model_selection import train_test_split
@@ -109,7 +101,6 @@ print(f'train_df: {train_df.shape}')
 print(f'validation_df: {validation_df.shape}')
 
 
-# In[9]:
 
 
 from keras.preprocessing.image import ImageDataGenerator
@@ -123,7 +114,6 @@ datagen = ImageDataGenerator(
     preprocessing_function=inception_resnet_v2.preprocess_input)
 
 
-# In[10]:
 
 
 train_generator = datagen.flow_from_dataframe(
@@ -145,7 +135,6 @@ validation_generator = datagen.flow_from_dataframe(
        class_mode='categorical')
 
 
-# In[11]:
 
 
 from keras.layers import Dense, Dropout, GlobalAveragePooling2D, Input
@@ -160,14 +149,12 @@ predictions = Dense(len(class_names), activation='softmax')(x)
 model_resnet_v2_inception = Model(inputs=base_model.input, outputs = predictions)
 
 
-# In[12]:
 
 
 from keras.optimizers import Adam,SGD
 model_resnet_v2_inception.compile(loss="categorical_crossentropy", optimizer=SGD(learning_rate=0.001, momentum=0.9), metrics=[f1,'accuracy'])
 
 
-# In[13]:
 
 
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau
@@ -177,14 +164,12 @@ reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=4, verbos
 callbacks_list = [early_stop, reduce_lr]
 
 
-# In[14]:
 
 
 from keras.utils.vis_utils import plot_model
 plot_model(model_resnet_v2_inception, show_shapes=True, show_layer_names=True)
 
 
-# In[15]:
 
 
 STEP_SIZE_TRAIN=train_generator.n//train_generator.batch_size
@@ -199,7 +184,6 @@ model_history = model_resnet_v2_inception.fit_generator(
                 callbacks=callbacks_list)
 
 
-# In[16]:
 
 
 from matplotlib import pyplot as plt
@@ -220,13 +204,11 @@ for ite, pac in enumerate(metrics):
 plt.show()
 
 
-# In[24]:
 
 
 sample_submission_path
 
 
-# In[31]:
 
 
 df_test = pd.read_csv(sample_submission_path).set_index('Id').to_dict()
@@ -248,13 +230,11 @@ filenames = [filename for filename in test_generator.filenames]
 nb_samples = len(filenames)
 
 
-# In[32]:
 
 
 predictions = model_resnet_v2_inception.predict_generator(test_generator,steps = nb_samples, verbose=1)
 
 
-# In[33]:
 
 
 y_pred_labels = np.argmax(predictions, axis = 1)

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import torch
@@ -17,7 +16,6 @@ from sklearn import metrics
 import time
 
 
-# In[2]:
 
 
 class ToTensor:
@@ -34,7 +32,6 @@ class ToTensor:
         return result
 
 
-# In[3]:
 
 
 class IGDataset(Dataset):
@@ -71,7 +68,6 @@ class IGDataset(Dataset):
         return x, y        
 
 
-# In[4]:
 
 
 class IGClassifier(nn.Module):
@@ -104,7 +100,6 @@ class IGClassifier(nn.Module):
         return out
 
 
-# In[5]:
 
 
 class CyclicLR(object):
@@ -200,7 +195,6 @@ class CyclicLR(object):
         return lrs
 
 
-# In[6]:
 
 
 def sigmoid(x):
@@ -296,7 +290,6 @@ def train_model(model, train_loader,valid_loader, test_loader, loss_fn, lr=0.001
     return results_dict
 
 
-# In[7]:
 
 
 def train_on_folds(train, test, splits, n_epochs=50, validate=False):
@@ -338,7 +331,6 @@ def train_on_folds(train, test, splits, n_epochs=50, validate=False):
     return test_preds
 
 
-# In[8]:
 
 
 import random
@@ -353,7 +345,6 @@ def set_seed(seed: int = 0):
 set_seed(42)
 
 
-# In[9]:
 
 
 train = pd.read_csv("../input/train.csv") 
@@ -369,7 +360,6 @@ train = all_data[:len_train].reset_index(drop=True)
 test = all_data[len_train:].reset_index(drop=True)
 
 
-# In[10]:
 
 
 batchsize = 1024
@@ -377,13 +367,11 @@ n_fold = 5
 splits = list(StratifiedKFold(n_splits=n_fold, shuffle=True, random_state=42).split(train, train['target']))
 
 
-# In[11]:
 
 
 test_preds = train_on_folds(train, test, splits, n_epochs=200, validate=True)
 
 
-# In[12]:
 
 
 sub['target'] = sigmoid(test_preds.mean(1))

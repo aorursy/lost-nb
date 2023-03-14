@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -24,7 +23,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import IPython
@@ -36,7 +34,6 @@ def display(*dfs):
 import cufflinks
 
 
-# In[3]:
 
 
 ## Function to reduce the DF size
@@ -69,20 +66,17 @@ def reduce_mem_usage(df, verbose=True):
     return df
 
 
-# In[4]:
 
 
 get_ipython().run_line_magic('time', "df = pd.read_csv('/kaggle/input/data-science-bowl-2019/train.csv', engine='c')")
 labels = pd.read_csv('/kaggle/input/data-science-bowl-2019/train_labels.csv')
 
 
-# In[5]:
 
 
 df_test = pd.read_csv('/kaggle/input/data-science-bowl-2019/test.csv')
 
 
-# In[6]:
 
 
 df = reduce_mem_usage(df)
@@ -90,14 +84,12 @@ labels = reduce_mem_usage(labels)
 df_test = reduce_mem_usage(df_test)
 
 
-# In[7]:
 
 
 import gc
 gc.collect()
 
 
-# In[8]:
 
 
 train_id = df.installation_id.unique()
@@ -108,50 +100,42 @@ print('# of unique ids in test:', test_id.shape[0])
 print('# of unique ids from test set in train set:', np.isin(test_id, train_id).sum())
 
 
-# In[9]:
 
 
 time = df.timestamp.copy()
 
 
-# In[10]:
 
 
 df['timestamp'] = pd.to_datetime(df['timestamp'])
 df_test['timestamp'] = pd.to_datetime(df_test['timestamp'])
 
 
-# In[11]:
 
 
 df.timestamp.min(), df_test.timestamp.min()
 
 
-# In[12]:
 
 
 df.timestamp.max(), df_test.timestamp.max()
 
 
-# In[13]:
 
 
 df.timestamp.max() - df.timestamp.min(), df_test.timestamp.max() - df_test.timestamp.min()
 
 
-# In[14]:
 
 
 df.game_session.nunique() == df.drop_duplicates(['game_session', 'installation_id']).game_session.nunique()
 
 
-# In[15]:
 
 
 df_test.game_session.nunique() == df_test.drop_duplicates(['game_session', 'installation_id']).game_session.nunique()
 
 
-# In[16]:
 
 
 def event_finished(df):
@@ -160,7 +144,6 @@ def event_finished(df):
     return df_wt_BM.append(df_BM)
 
 
-# In[17]:
 
 
 # for test
@@ -168,7 +151,6 @@ assessment = df_test[df_test.type=='Assessment']
 assessment_finished = event_finished(assessment)
 
 
-# In[18]:
 
 
 print('# ids in TEST\t # ids in assessment\t # ids in finished assessments')
@@ -176,7 +158,6 @@ print(test_id.shape,'\t', assessment.installation_id.unique().shape, '\t\t',
       assessment_finished.installation_id.unique().shape)
 
 
-# In[19]:
 
 
 # for train
@@ -184,7 +165,6 @@ assessment = df[df.type=='Assessment']
 assessment_finished = event_finished(assessment)
 
 
-# In[20]:
 
 
 print('# ids in TRAIN\t # ids in assessment\t # ids in finished assessments')
@@ -192,14 +172,12 @@ print(train_id.shape,'\t', assessment.installation_id.unique().shape, '\t\t',
       assessment_finished.installation_id.unique().shape)
 
 
-# In[21]:
 
 
 # we will look only on users which have info about attempts
 df = df[df.installation_id.isin(labels.installation_id)]
 
 
-# In[22]:
 
 
 test_last = df_test.groupby('installation_id').last()
@@ -207,7 +185,6 @@ print(test_last.event_count.nunique(), test_last.event_code.nunique(), test_last
 test_last
 
 
-# In[23]:
 
 
 train_last = df.groupby('installation_id').last()
@@ -215,7 +192,6 @@ print(train_last.event_count.nunique(), train_last.event_code.nunique(), train_l
 train_last
 
 
-# In[24]:
 
 
 def check_attempt(df):
@@ -260,13 +236,11 @@ def get_last_assessment(df, test=False):
     return df
 
 
-# In[25]:
 
 
 get_ipython().run_cell_magic('time', '', 'check_start_assessment(df_test)\ncheck_attempt(df_test)\ncheck_attempt_pre_assessment(df_test)\ncheck_correct(df_test)\n\ncheck_start_assessment(df)\ncheck_attempt(df)\ncheck_attempt_pre_assessment(df)\ncheck_correct(df)')
 
 
-# In[26]:
 
 
 # check that at each game session can be only 1 correct attempt
@@ -274,19 +248,16 @@ assert (df.groupby('game_session').correct.sum() > 1).sum() == 0
 assert (df_test.groupby('game_session').correct.sum() > 1).sum() == 0
 
 
-# In[27]:
 
 
 df_ini = df.copy()
 
 
-# In[28]:
 
 
 # df = df_ini.copy()
 
 
-# In[29]:
 
 
 print(df.shape)
@@ -294,7 +265,6 @@ df = get_last_assessment(df)
 df_test = get_last_assessment(df_test, test=True)
 
 
-# In[30]:
 
 
 df['to_cut'] = 0
@@ -306,7 +276,6 @@ df = df.drop('to_cut', axis=1)
 df.shape
 
 
-# In[31]:
 
 
 user_id = '01242218'
@@ -315,14 +284,12 @@ user = df_test[df_test.installation_id == user_id].copy()
 user[user.title == user.last_title]
 
 
-# In[32]:
 
 
 test_group = df_test.groupby('installation_id')
 train_group = df.groupby('installation_id')
 
 
-# In[33]:
 
 
 import matplotlib.pyplot as plt
@@ -330,7 +297,6 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 
-# In[34]:
 
 
 fig = make_subplots(rows=1, cols=2)
@@ -343,13 +309,11 @@ fig.update_layout(title='Histogram of number attempt per user',
                            size=18,color="#7f7f7f"))
 
 
-# In[35]:
 
 
 'Mode:', test_group.attempt.sum().mode()[0],  train_group.attempt.sum().mode()[0]
 
 
-# In[36]:
 
 
 temp = test_group.attempt.sum().astype('int')
@@ -358,7 +322,6 @@ print('will be with nan (%)')
 temp.cumsum().shift()
 
 
-# In[37]:
 
 
 fig = make_subplots(rows=1, cols=2)
@@ -372,13 +335,11 @@ fig.update_layout(title='Histogram of correct attempt number per user',
                            size=18,color="#7f7f7f"))
 
 
-# In[38]:
 
 
 'Mode:', test_group.correct.sum().mode()[0],  train_group.correct.sum().mode()[0]
 
 
-# In[39]:
 
 
 def count_last_assessment_repeat(df):
@@ -403,7 +364,6 @@ def count_last_assessment_repeat(df):
     return results, totals
 
 
-# In[40]:
 
 
 total_repeat_test, total_assessment_test = count_last_assessment_repeat(df_test) 
@@ -413,13 +373,11 @@ lst_assessment_repeat_test = (total_repeat_test != 0).sum().unstack(level=0)[['a
 lst_assessment_repeat_train = (total_repeat_train != 0).sum().unstack(level=0)[['assessment_start', 'got_attempt', 'correct']]
 
 
-# In[41]:
 
 
 display(lst_assessment_repeat_test, total_assessment_test)
 
 
-# In[42]:
 
 
 def set_annotation(ax):
@@ -429,7 +387,6 @@ def set_annotation(ax):
     return ax
 
 
-# In[43]:
 
 
 fig = plt.figure(figsize=(15,5))
@@ -448,7 +405,6 @@ ax.set_title('Train\nRelation number of repeated assessments to its initial numb
 ax = set_annotation(ax)    
 
 
-# In[44]:
 
 
 import scipy 
@@ -510,7 +466,6 @@ def proportions_diff_z_test(z_stat, alternative = 'two-sided'):
         return 1 - scipy.stats.norm.cdf(z_stat)
 
 
-# In[45]:
 
 
 for test,total_test, train,total_train, idx in zip(lst_assessment_repeat_test.sum(), 
@@ -529,7 +484,6 @@ for test,total_test, train,total_train, idx in zip(lst_assessment_repeat_test.su
     
 
 
-# In[46]:
 
 
 fig = plt.figure(figsize=(10,12))
@@ -551,7 +505,6 @@ ax.set_title('Train\nRelation number of repeated assessments to its initial numb
 ax = set_annotation(ax)
 
 
-# In[47]:
 
 
 total_repeat_train = total_repeat_train.reset_index()                                       .rename(columns={'last_game_session': 'game_session'})
@@ -568,7 +521,6 @@ assert total_repeat_train.accuracy_group.isna().sum() == 0
 total_repeat_train.shape
 
 
-# In[48]:
 
 
 # sum along title assessments
@@ -590,7 +542,6 @@ for i, action in enumerate(['assessment_start', 'got_attempt', 'correct']):
     
 
 
-# In[49]:
 
 
 acc0 = temp.loc[temp.accuracy_group == 0]
@@ -605,14 +556,12 @@ for action in ['assessment_start', 'got_attempt', 'correct']:
     print(f'{action}  p-value: {p} {reject}')
 
 
-# In[50]:
 
 
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 pairwise_tukeyhsd(temp.correct,temp.accuracy_group).plot_simultaneous();#.summary()
 
 
-# In[51]:
 
 
 titles = df_test[df_test.type=='Assessment'].groupby('world').title.unique()

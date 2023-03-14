@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[88]:
 
 
 import numpy as np 
@@ -20,7 +19,6 @@ import tensorflow as tf
 print(tf.__version__)
 
 
-# In[ ]:
 
 
 submission_example = pd.read_csv("../input/covid19-global-forecasting-week-2/submission.csv")
@@ -29,25 +27,21 @@ train = pd.read_csv("../input/covid19-global-forecasting-week-2/train.csv")
 world_population = pd.read_csv("/kaggle/input/population-by-country-2020/population_by_country_2020.csv")
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 submission_example
 
 
-# In[ ]:
 
 
 train.Country_Region.value_counts()
 
 
-# In[ ]:
 
 
 # Merge train and test, exclude overlap
@@ -56,13 +50,11 @@ train2 = train.loc[~train['Date'].isin(dates_overlap)]
 df = pd.concat([train2, test], axis = 0, sort=False)
 
 
-# In[ ]:
 
 
 train.dtypes
 
 
-# In[ ]:
 
 
 df['Date'] = pd.to_datetime(df.Date)
@@ -70,13 +62,11 @@ df.sort_values(by='Date', inplace = True)
 df.reset_index(drop=True)
 
 
-# In[ ]:
 
 
 world_population
 
 
-# In[ ]:
 
 
 df['Day'] = df['Date'].dt.day
@@ -94,19 +84,16 @@ df['Id'].fillna(-1, inplace=True)
 df['ForecastId'].fillna(-1, inplace=True)
 
 
-# In[ ]:
 
 
 df
 
 
-# In[ ]:
 
 
 df.columns
 
 
-# In[ ]:
 
 
 # Apply log transformation to all ConfirmedCases and Fatalities columns, except for trends
@@ -114,33 +101,28 @@ df[['ConfirmedCases', 'Fatalities']] = df[['ConfirmedCases', 'Fatalities']].asty
 df[['ConfirmedCases', 'Fatalities']] = df[['ConfirmedCases', 'Fatalities']].apply(lambda x: np.log(x))
 
 
-# In[ ]:
 
 
 # Replace infinites
 df.replace([np.inf, -np.inf], 0, inplace=True)
 
 
-# In[ ]:
 
 
 df.dtypes
 
 
-# In[ ]:
 
 
 world_population = world_population[['Country (or dependency)', 'Population (2020)', 'Density (P/Km²)', 'Land Area (Km²)', 'Med. Age', 'Urban Pop %']]
 world_population.columns = ['Country (or dependency)', 'Population (2020)', 'Density', 'Land Area', 'Med Age', 'Urban Pop']
 
 
-# In[ ]:
 
 
 world_population['Urban Pop']
 
 
-# In[ ]:
 
 
 # Replace United States by US
@@ -150,7 +132,6 @@ world_population.loc[world_population['Country (or dependency)']=='United States
 world_population['Urban Pop'] = world_population['Urban Pop'].str.rstrip('%')
 
 
-# In[ ]:
 
 
 # Replace Urban Pop and Med Age "N.A" by their respective modes, then transform to int
@@ -160,13 +141,11 @@ world_population.loc[world_population['Med Age']=='N.A.', 'Med Age'] = int(world
 world_population['Med Age'] = world_population['Med Age'].astype('int16')
 
 
-# In[ ]:
 
 
 world_population
 
 
-# In[ ]:
 
 
 # join the dataset, fill na
@@ -174,13 +153,11 @@ df = df.merge(world_population, left_on='Country_Region', right_on='Country (or 
 df[['Population (2020)', 'Density', 'Land Area', 'Med Age', 'Urban Pop']] = df[['Population (2020)', 'Density', 'Land Area', 'Med Age', 'Urban Pop']].fillna(0)
 
 
-# In[ ]:
 
 
 df
 
 
-# In[ ]:
 
 
 from sklearn import preprocessing
@@ -205,13 +182,11 @@ province = le.inverse_transform(df['Province_State'])
 province_dict = dict(zip(province, number_p)) 
 
 
-# In[ ]:
 
 
 df.to_csv('features.csv', index=False)
 
 
-# In[ ]:
 
 
 # Split data into train/test
@@ -234,19 +209,16 @@ def split_data(data):
     return x_train, y_train_1, y_train_2, x_test
 
 
-# In[ ]:
 
 
 Y_train_confirmed
 
 
-# In[ ]:
 
 
 X_train
 
 
-# In[ ]:
 
 
 # Linear regression model
@@ -270,7 +242,6 @@ def lin_reg(X_train, Y_train, X_test):
     return lr_model, y_pred
 
 
-# In[ ]:
 
 
 def lin_regression(X_train, Y_train, X_test):
@@ -291,7 +262,6 @@ def lin_regression(X_train, Y_train, X_test):
     return lr_model, y_pred, w, b
 
 
-# In[ ]:
 
 
 # Submission function
@@ -312,7 +282,6 @@ def prepare_submissionFormat(df, target1, target2):
     submission.to_csv('test_submission.csv', index=False)
 
 
-# In[ ]:
 
 
 ts = time.time()
@@ -327,13 +296,11 @@ df_pred['Predicted_ConfirmedCases'] = [0]*len(df_pred)
 df_pred['Predicted_Fatalities'] = [0]*len(df_pred)
 
 
-# In[ ]:
 
 
 df2['Country_Region'].unique()
 
 
-# In[ ]:
 
 
 data2 = data.loc[data.Day_num >= day_start]
@@ -345,7 +312,6 @@ data_pred['Predicted_ConfirmedCases'] = [0]*len(data_pred)
 data_pred['Predicted_Fatalities'] = [0]*len(data_pred)
 
 
-# In[ ]:
 
 
 # For every countries, run the linear regression
@@ -374,7 +340,6 @@ for c in df2['Country_Region'].unique():
         df_pred.loc[(df_pred['Country_Region']==c), 'Pred_Fatalities'] = pred_2
 
 
-# In[ ]:
 
 
 def linreg_basic_all_countries(data, day_start):
@@ -421,7 +386,6 @@ def linreg_basic_all_countries(data, day_start):
     return data_pred
 
 
-# In[ ]:
 
 
 ts = time.time()
@@ -432,7 +396,6 @@ get_submission(df_pred, 'Predicted_ConfirmedCases', 'Predicted_Fatalities')
 print("Process finished in ", round(time.time() - ts, 2), " seconds")
 
 
-# In[ ]:
 
 
 def get_train_data(scaled_x_data, scaled_y_data, divide_train_valid_index, time_step):
@@ -497,7 +460,6 @@ def get_test_data(scaled_x_data, scaled_y_data, divide_valid_test_index, time_st
     return test_x, test_y, test_remain
 
 
-# In[ ]:
 
 
 import matplotlib.pyplot as plt
@@ -516,14 +478,12 @@ stop_loss = np.float32(0.04)  #
 train_keep_prob = [1.0, 0.5, 1.0] 
 
 
-# In[ ]:
 
 
 divide_train_valid_index = 39
 divide_valid_test_index = 5
 
 
-# In[ ]:
 
 
 def lstm(X, keep_prob):
@@ -555,7 +515,6 @@ def lstm(X, keep_prob):
     return output, state
 
 
-# In[ ]:
 
 
 def get_fit_seq(x, remain, sess, output, X, keep_prob, scaler, inverse):
@@ -583,7 +542,6 @@ def get_fit_seq(x, remain, sess, output, X, keep_prob, scaler, inverse):
     return fit_seq
 
 
-# In[ ]:
 
 
 def train_lstm():
@@ -642,7 +600,6 @@ def train_lstm():
 #fit_loss_seq, valid_loss_seq, train_fit_seq, valid_fit_seq, test_fit_seq = train_lstm()
 
 
-# In[ ]:
 
 
 

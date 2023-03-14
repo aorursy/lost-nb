@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -33,7 +32,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 train_df = pd.read_csv('../input/tweet-sentiment-extraction/train.csv')
@@ -52,7 +50,6 @@ def seedall(seed):
         torch.backends.cudnn.benchmark = True
 
 
-# In[3]:
 
 
 MAX_LEN=192
@@ -77,13 +74,11 @@ sentiment_ids={'positive':1313,'negative':2430,'neutral':7974}
 DEVICE=torch.device("cuda")
 
 
-# In[4]:
 
 
 seedall(SEED)
 
 
-# In[5]:
 
 
 class TweetDataset(torch.utils.data.Dataset):
@@ -188,7 +183,6 @@ def get_test_loader(df, batch_size=32):
     return loader
 
 
-# In[6]:
 
 
 class TweetModel(nn.Module):
@@ -225,7 +219,6 @@ class TweetModel(nn.Module):
         return start_logits, end_logits
 
 
-# In[7]:
 
 
 def loss_fn(start_logits, end_logits, start_positions, end_positions):
@@ -236,7 +229,6 @@ def loss_fn(start_logits, end_logits, start_positions, end_positions):
     return total_loss
 
 
-# In[8]:
 
 
 def get_selected_text(text, start_idx, end_idx, offsets):
@@ -266,7 +258,6 @@ def compute_jaccard_score(text, start_idx, end_idx, start_logits, end_logits, of
     return jaccard(true, pred)
 
 
-# In[9]:
 
 
 def train_model(model, dataloaders_dict, criterion, optimizer, num_epochs, filename):
@@ -328,86 +319,82 @@ def train_model(model, dataloaders_dict, criterion, optimizer, num_epochs, filen
     torch.save(model.state_dict(), filename)
 
 
-# In[10]:
 
 
 skf = StratifiedKFold(n_splits=4, shuffle=True, random_state=SEED)
 
 
-# In[11]:
 
 
-"""
-for fold, (train_idx, val_idx) in enumerate(skf.split(train_df, train_df.sentiment), start=1): 
-    print(f'Fold: {fold}')
+# """
+# for fold, (train_idx, val_idx) in enumerate(skf.split(train_df, train_df.sentiment), start=1): 
+#     print(f'Fold: {fold}')
 
-    model = TweetModel()
-    optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, betas=(0.9, 0.999))
-    criterion = loss_fn    
-    dataloaders_dict = get_train_val_loaders(train_df, train_idx, val_idx, BATCH_SIZE)
+#     model = TweetModel()
+#     optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, betas=(0.9, 0.999))
+#     criterion = loss_fn    
+#     dataloaders_dict = get_train_val_loaders(train_df, train_idx, val_idx, BATCH_SIZE)
 
-    train_model(
-        model, 
-        dataloaders_dict,
-        criterion, 
-        optimizer, 
-        EPOCHS,
-        f'roberta_fold{fold}.pth')
-
-
-# In[12]:
+#     train_model(
+#         model, 
+#         dataloaders_dict,
+#         criterion, 
+#         optimizer, 
+#         EPOCHS,
+#         f'roberta_fold{fold}.pth')
 
 
-test_df = pd.read_csv('../input/tweet-sentiment-extraction/test.csv')
-test_df['text'] = test_df['text'].astype(str)
-test_loader = get_test_loader(test_df)
-predictions = []
-models = []
-for fold in range(skf.n_splits):
-    model = TweetModel()
-    model.cuda()
+
+
+# test_df = pd.read_csv('../input/tweet-sentiment-extraction/test.csv')
+# test_df['text'] = test_df['text'].astype(str)
+# test_loader = get_test_loader(test_df)
+# predictions = []
+# models = []
+# for fold in range(skf.n_splits):
+#     model = TweetModel()
+#     model.cuda()
     
-   ## model.load_state_dict(torch.load(f'roberta_fold{fold+1}.pth'))
+#    ## model.load_state_dict(torch.load(f'roberta_fold{fold+1}.pth'))
 
-    model.load_state_dict(torch.load(ROBERTAFOLD+f'roberta_fold{fold+1}.pth'))
+#     model.load_state_dict(torch.load(ROBERTAFOLD+f'roberta_fold{fold+1}.pth'))
     
-    model.eval()
-    models.append(model)
+#     model.eval()
+#     models.append(model)
 
-for data in test_loader:
-    ids = data['ids'].cuda()
-    masks = data['masks'].cuda()
-    tweet = data['tweet']
-    offsets = data['offsets'].numpy()
+# for data in test_loader:
+#     ids = data['ids'].cuda()
+#     masks = data['masks'].cuda()
+#     tweet = data['tweet']
+#     offsets = data['offsets'].numpy()
 
-    start_logits = []
-    end_logits = []
-    for model in models:
-        with torch.no_grad():
-            output = model(ids, masks)
-            start_logits.append(torch.softmax(output[0], dim=1).cpu().detach().numpy())
-            end_logits.append(torch.softmax(output[1], dim=1).cpu().detach().numpy())
+#     start_logits = []
+#     end_logits = []
+#     for model in models:
+#         with torch.no_grad():
+#             output = model(ids, masks)
+#             start_logits.append(torch.softmax(output[0], dim=1).cpu().detach().numpy())
+#             end_logits.append(torch.softmax(output[1], dim=1).cpu().detach().numpy())
 
-    start_logits = np.mean(start_logits, axis=0)
-    end_logits = np.mean(end_logits, axis=0)
-    for i in range(len(ids)):    
-        start_pred = np.argmax(start_logits[i])
-        end_pred = np.argmax(end_logits[i])
-        if start_pred > end_pred:
-            pred = tweet[i]
-        else:
-            pred = get_selected_text(tweet[i], start_pred, end_pred, offsets[i])
-        predictions.append(pred)
-
-
-# In[13]:
+#     start_logits = np.mean(start_logits, axis=0)
+#     end_logits = np.mean(end_logits, axis=0)
+#     for i in range(len(ids)):    
+#         start_pred = np.argmax(start_logits[i])
+#         end_pred = np.argmax(end_logits[i])
+#         if start_pred > end_pred:
+#             pred = tweet[i]
+#         else:
+#             pred = get_selected_text(tweet[i], start_pred, end_pred, offsets[i])
+#         predictions.append(pred)
 
 
-sub_df = pd.read_csv('../input/tweet-sentiment-extraction/sample_submission.csv')
-sub_df['selected_text'] = predictions
-sub_df['selected_text'] = sub_df['selected_text'].apply(lambda x: x.replace('!!!!', '!') if len(x.split())==1 else x)
-sub_df['selected_text'] = sub_df['selected_text'].apply(lambda x: x.replace('..', '.') if len(x.split())==1 else x)
-sub_df['selected_text'] = sub_df['selected_text'].apply(lambda x: x.replace('...', '.') if len(x.split())==1 else x)
-sub_df.to_csv('submission.csv', index=False)
-sub_df.head()
 
+
+# sub_df = pd.read_csv('../input/tweet-sentiment-extraction/sample_submission.csv')
+# sub_df['selected_text'] = predictions
+# sub_df['selected_text'] = sub_df['selected_text'].apply(lambda x: x.replace('!!!!', '!') if len(x.split())==1 else x)
+# sub_df['selected_text'] = sub_df['selected_text'].apply(lambda x: x.replace('..', '.') if len(x.split())==1 else x)
+# sub_df['selected_text'] = sub_df['selected_text'].apply(lambda x: x.replace('...', '.') if len(x.split())==1 else x)
+# sub_df.to_csv('submission.csv', index=False)
+# sub_df.head()
+# """

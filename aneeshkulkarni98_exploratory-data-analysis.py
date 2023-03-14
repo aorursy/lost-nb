@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('cd', '../input/tmdb-box-office-prediction')
 
 
-# In[2]:
 
 
 import os
@@ -15,7 +13,6 @@ get_ipython().system('unzip train.csv.zip')
 get_ipython().system('unzip test.csv.zip')
 
 
-# In[3]:
 
 
 import pandas as pd
@@ -26,13 +23,11 @@ for i, e in enumerate(df_train['cast'][:5]):
   print(ast.literal_eval(e)[0]['character'])
 
 
-# In[4]:
 
 
 df_train.head()
 
 
-# In[5]:
 
 
 import matplotlib.pyplot as plt
@@ -47,7 +42,6 @@ ax2.set_xlabel('Budget')
 ax2.set_ylabel('Log Revenue')
 
 
-# In[6]:
 
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize = (15, 5))
@@ -60,7 +54,6 @@ ax2.set_xlabel('Popularity')
 ax2.set_ylabel('Log Revenue')
 
 
-# In[7]:
 
 
 import seaborn as sns
@@ -68,13 +61,11 @@ plt.figure(figsize=(10, 10))
 sns.boxplot(x = 'original_language', y = 'revenue', data = df_train, whis = 0.0, showfliers = False)
 
 
-# In[8]:
 
 
 df_train[['release_month', 'release_day', 'release_year']] = df_train['release_date'].str.split('/', expand = True)                                                                                                .replace(np.nan, -1)
 
 
-# In[9]:
 
 
 df_train['release_month'] = df_train['release_month'].astype(int)
@@ -84,20 +75,17 @@ df_train.loc[(df_train['release_year'] <= 19) & (df_train['release_year'] < 100)
 df_train.loc[(df_train['release_year'] > 19)  & (df_train['release_year'] < 100), "release_year"] += 1900                                                                     
 
 
-# In[10]:
 
 
 indices = list([x - 1 for x in df_train.release_month.value_counts().index])
 indices
 
 
-# In[11]:
 
 
 df_train.release_month.value_counts().sort_index()
 
 
-# In[12]:
 
 
 import plotly.graph_objs as go
@@ -116,7 +104,6 @@ fig.update_layout(title = 'Revenue Vs Release Month', xaxis_title = 'Release Mon
 fig.show()
 
 
-# In[13]:
 
 
 yearly_data = df_train.release_year.value_counts().sort_index()
@@ -131,13 +118,11 @@ fig.update_layout(xaxis_tickangle = -90, title = 'Revenue Vs Year', xaxis_title 
 fig.show()
 
 
-# In[14]:
 
 
 df_train[df_train['status'] == 'Rumored']
 
 
-# In[15]:
 
 
 from collections import Counter
@@ -155,13 +140,11 @@ def extract_values(text):
 count_genres = extract_values(df_train['genres'].replace(np.nan, ""))
 
 
-# In[16]:
 
 
 x, y = zip(*count_genres.items())
 
 
-# In[17]:
 
 
 data = go.Bar(x = x,
@@ -173,7 +156,6 @@ fig = go.Figure(data = data)
 fig.show()
 
 
-# In[18]:
 
 
 # CHECKING FOR NULL VALUES
@@ -181,19 +163,16 @@ nrows = df_train.shape[0]
 null_check = df_train.isnull().sum()
 
 
-# In[19]:
 
 
 pct_null = pd.DataFrame(null_check.sort_values(ascending = False) * 100 / nrows)
 
 
-# In[20]:
 
 
 pct_null
 
 
-# In[21]:
 
 
 count_prod_comp = extract_values(df_train['production_countries'].replace(np.nan, ""))
@@ -210,7 +189,6 @@ fig.update_layout(width = 1000, height = 1000, xaxis = dict(tickmode = 'array',
 fig.show()
 
 
-# In[22]:
 
 
 year = df_train['release_year']
@@ -224,7 +202,6 @@ fig.update_layout(title = 'Year Vs Average Revenue',
                   yaxis_title = 'Average Revenue')
 
 
-# In[23]:
 
 
 year = df_train['release_year']
@@ -238,7 +215,6 @@ fig.update_layout(title = 'Year Vs Runtime',
                   yaxis_title = 'Runtime')
 
 
-# In[24]:
 
 
 revenue = df_train.groupby('release_month')["revenue"].aggregate('mean')
@@ -254,20 +230,17 @@ fig = go.Figure(data = data)
 fig.show()
 
 
-# In[25]:
 
 
 count_prod_companies = extract_values(df_train['production_companies'].replace(np.nan, ""))
 print(pd.DataFrame({'Name':list(count_prod_companies.keys()), 'No. of Movies Produced':list(count_prod_companies.values())}).head())
 
 
-# In[26]:
 
 
 df_train['homepage'].isnull().value_counts()
 
 
-# In[27]:
 
 
 import plotly.express as px
@@ -279,7 +252,6 @@ fig = px.box(slice_data, x = "revenue", y = "homepage", orientation = 'h', point
 fig.show()
 
 
-# In[28]:
 
 
 count_keywords = extract_values(df_train['Keywords'].replace(np.nan, ""))
@@ -298,7 +270,6 @@ fig.update_layout(title = 'Top 20 keywords',
 fig.show()
 
 
-# In[29]:
 
 
 count_spoken_languages = extract_values(df_train['spoken_languages'].replace(np.nan, ""))
@@ -317,13 +288,11 @@ fig.update_layout(title = 'Language Films',
 fig.show()
 
 
-# In[30]:
 
 
 get_ipython().system('pip install googletrans')
 
 
-# In[31]:
 
 
 from googletrans import Translator
@@ -347,13 +316,11 @@ fig.update_layout(title = 'Language Films',
 fig.show()
 
 
-# In[32]:
 
 
 df_train['revenue'].hist()
 
 
-# In[33]:
 
 
 ### NUMBER OF CAST VS REVENUE ###
@@ -366,14 +333,12 @@ df_train['cast'] = df_train['cast'].replace(np.nan, "[]")
 df_train["cast"] = df_train['cast'].replace("","[]")
 
 
-# In[34]:
 
 
 df_train["num_cast"] = df_train['cast'].apply(lambda x: get_cast_length(x))
 df_train.loc[:,['num_cast','revenue']]
 
 
-# In[35]:
 
 
 from plotly.subplots import make_subplots
@@ -385,13 +350,11 @@ fig.update_layout(**params)
 fig.show()
 
 
-# In[36]:
 
 
 agg_data = df_train.groupby('original_language').aggregate({'revenue':np.mean})
 
 
-# In[37]:
 
 
 langs = df_train['original_language'].unique()
@@ -408,7 +371,6 @@ fig.update_layout(**params)
 fig.show()
 
 
-# In[38]:
 
 
 from collections import defaultdict
@@ -422,13 +384,11 @@ for index, row in df_train.iterrows():
     continue
 
 
-# In[39]:
 
 
 genre_revenue_data.keys()
 
 
-# In[40]:
 
 
 fig = go.Figure()
@@ -444,13 +404,11 @@ fig.update_layout(**params)
 fig.show()
 
 
-# In[41]:
 
 
 count_prod_companies.most_common(15)
 
 
-# In[42]:
 
 
 x, y = zip(*count_prod_companies.most_common(10))
@@ -461,7 +419,6 @@ fig = go.Figure(data = data)
 fig.show()
 
 
-# In[43]:
 
 
 from collections import defaultdict
@@ -475,7 +432,6 @@ for index, row in df_train.iterrows():
     continue
 
 
-# In[44]:
 
 
 fig = go.Figure()
@@ -491,7 +447,6 @@ fig.update_layout(**params)
 fig.show()
 
 
-# In[45]:
 
 
 q1, q3 = np.percentile(df_train['popularity'].sort_values(),[25,75])
@@ -505,19 +460,16 @@ px.box(slice_data, title = 'Original Language vs Popularity' ,y = 'original_lang
        orientation = 'h',width = 1000, height = 1000)
 
 
-# In[46]:
 
 
 df_train.head()
 
 
-# In[47]:
 
 
 df_train['production_companies'].isnull().value_counts()
 
 
-# In[48]:
 
 
 company_revenue_data = defaultdict(list)
@@ -530,7 +482,6 @@ for index, row in df_train.iterrows():
     continue
 
 
-# In[49]:
 
 
 company_revenue_mean = defaultdict(int)
@@ -538,7 +489,6 @@ for company in company_revenue_data.keys():
   company_revenue_mean[company] = np.mean(company_revenue_data[company])
 
 
-# In[50]:
 
 
 company_revenue_mean = pd.Series(company_revenue_mean).sort_values(ascending = False).head(20)
@@ -552,7 +502,6 @@ fig.update_layout(**params)
 fig.show()
 
 
-# In[51]:
 
 
 country_revenue_data = defaultdict(list)

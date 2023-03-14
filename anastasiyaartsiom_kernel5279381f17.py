@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,91 +21,77 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import tensorflow
 import tensorflow.keras as keras
 
 
-# In[3]:
 
 
 test_df = pd.read_csv('/kaggle/input/Kannada-MNIST/test.csv')
 train_df = pd.read_csv('/kaggle/input/Kannada-MNIST/train.csv')
 
 
-# In[4]:
 
 
 # train_df
 
 
-# In[5]:
 
 
 y = train_df['label'].values
 # y.shape
 
 
-# In[6]:
 
 
 X = train_df.loc[:, train_df.columns[1:]].values
 # X.shape
 
 
-# In[7]:
 
 
 # from sklearn.preprocessing import MinMaxScaler
 
 
-# In[8]:
 
 
 # scaler = MinMaxScaler(feature_range=(-1, 1))
 # X_scaled = scaler.fit_transform(X)
 
 
-# In[9]:
 
 
 from skimage.io import imshow, imshow_collection
 
 
-# In[10]:
 
 
 imshow_collection(X[:12].reshape(12, 28, 28))
 
 
-# In[11]:
 
 
 from sklearn.model_selection import train_test_split
 
 
-# In[12]:
 
 
 # X_train, X_valid, y_train, y_valid = X, test_df.loc[:, test_df.columns[1:]].values, y, test_df.loc[:, test_df.columns[:1]].values
 
 
-# In[13]:
 
 
 X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.1, random_state=100500)
 
 
-# In[14]:
 
 
 X_train = X_train.reshape(X_train.shape[0],28,28,1)
 X_valid = X_valid.reshape(X_valid.shape[0],28,28,1)
 
 
-# In[15]:
 
 
 # train_datagen = ImageDataGenerator(rescale=1./255.,
@@ -120,7 +105,6 @@ X_valid = X_valid.reshape(X_valid.shape[0],28,28,1)
 # valid_datagen = ImageDataGenerator(rescale=1./255.)
 
 
-# In[16]:
 
 
 from keras.layers import *
@@ -130,7 +114,6 @@ from keras.models import Sequential
 from keras.layers import Conv2D, Dropout, Dense, Flatten, BatchNormalization, MaxPooling2D
 
 
-# In[17]:
 
 
 
@@ -174,13 +157,11 @@ model.compile(optimizer ='sgd',
 model.summary()
 
 
-# In[18]:
 
 
 batch_size = 256
 
 
-# In[19]:
 
 
 
@@ -196,13 +177,11 @@ model.fit(X_train, y_train,
           ])
 
 
-# In[20]:
 
 
 model = keras.models.load_model('model.h5')
 
 
-# In[21]:
 
 
 X_test = test_df.loc[:, test_df.columns[1:]].values)
@@ -210,19 +189,16 @@ X_test = test_df.loc[:, test_df.columns[1:]].values)
 X_test = X_test.reshape(X_test.shape[0],28,28,1)
 
 
-# In[ ]:
 
 
 
 
 
-# In[22]:
 
 
 pred_probas = model.predict(X_test, batch_size=batch_size)
 
 
-# In[23]:
 
 
 result = pd.read_csv('/kaggle/input/Kannada-MNIST/sample_submission.csv')
@@ -231,7 +207,6 @@ result['label'] = pred_probas.argmax(axis=1)
 result
 
 
-# In[24]:
 
 
 result.to_csv('submission.csv', index=False)

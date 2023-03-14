@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #Let's start importing the libraries that we will use
@@ -35,7 +34,6 @@ def pearson(x,y):
 		return (sumxy - len(x)*np.mean(x)*np.mean(y))			/((len(x)-1)*np.std(x, ddof=1)*np.std(y, ddof=1))
 
 
-# In[2]:
 
 
 #Import the dataset and do some basic manipulation
@@ -70,14 +68,12 @@ x_train = scaler.transform(x_train) #standardize the training values
 #x_test = scaler.transform(x_test)
 
 
-# In[3]:
 
 
 #Initialise the K-fold with k=5
 kfold = KFold(n_splits=5, shuffle=True, random_state=4)
 
 
-# In[4]:
 
 
 #Initialise Naive Bayes
@@ -87,7 +83,6 @@ nb = GaussianNB()
 nb_validation=[nb.fit(x_train[train], y_train[train]).score(x_train[test], y_train[test]).mean()            for train, test in kfold.split(x_train)]
 
 
-# In[5]:
 
 
 #Initialise Extra-Trees Random Forest
@@ -98,7 +93,6 @@ rf = ExtraTreesClassifier(n_estimators=500, random_state=0)
 rf_validation=[rf.fit(x_train[train], y_train[train]).score(x_train[test], y_train[test]).mean()                for train, test in kfold.split(x_train)]
 
 
-# In[6]:
 
 
 #We extract the importances, their indices and standard deviations
@@ -125,7 +119,6 @@ gs1.tight_layout(fig)
 #plt.show()
 
 
-# In[7]:
 
 
 #We first define the ranges for each parameter we are interested in searching 
@@ -143,7 +136,6 @@ gs = GridSearchCV(lr, params, scoring=None, refit='True', cv=3)
 gs_validation=[gs.fit(x_train[train], y_train[train]).score(x_train[test], y_train[test]).mean()                for train, test in kfold.split(x_train)]
 
 
-# In[8]:
 
 
 print("Validation Results\n==========================================")
@@ -152,7 +144,6 @@ print("Random Forest: " + '{:1.3f}'.format(np.mean(rf_validation)) + u' \u00B1 '
 print("Logistic Regression: " + '{:1.3f}'.format(np.mean(gs_validation)) + u' \u00B1 '        + '{:1.3f}'.format(np.std(gs_validation)))
 
 
-# In[9]:
 
 
 #First we find the sets of margin, shape and texture columns 
@@ -232,7 +223,6 @@ gs1.tight_layout(fig)
 #plt.show()
 
 
-# In[10]:
 
 
 #We initialise pca choosing Minka’s MLE to guess the minimum number of output components necessary
@@ -247,7 +237,6 @@ print("Number of descriptors before PCA: " + '{:1.0f}'.format(x_train.shape[1]))
 print("Number of descriptors after PCA: " + '{:1.0f}'.format(x_train_pca.shape[1]))
 
 
-# In[11]:
 
 
 #Naive Bayes
@@ -264,7 +253,6 @@ print("Random Forest: " + '{:1.3f}'.format(np.mean(rf_validation)) + u' \u00B1 '
 print("Logistic Regression: " + '{:1.3f}'.format(np.mean(gs_validation)) + u' \u00B1 '        + '{:1.3f}'.format(np.std(gs_validation)))
 
 
-# In[12]:
 
 
 #Again, we can check if anything changed in the features importance of our Random Forest classifier

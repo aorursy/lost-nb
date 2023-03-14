@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,40 +21,34 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 get_ipython().system('pip install fastai==0.7.0')
 
 
-# In[3]:
 
 
 from fastai import *
 from fastai.structured import *
 
 
-# In[4]:
 
 
 from sklearn.metrics import *
 from sklearn.ensemble import *
 
 
-# In[5]:
 
 
 import pathlib
 from tqdm import tqdm_notebook as tqdm
 
 
-# In[6]:
 
 
 pd.set_option("display.expand_frame_repr", False)
 
 
-# In[7]:
 
 
 PATH = '/kaggle/input/data-science-bowl-2019'
@@ -65,20 +58,17 @@ path = pathlib.Path(PATH)
 path_w = pathlib.Path(PATH_W)
 
 
-# In[8]:
 
 
 get_ipython().system('ls {path}')
 
 
-# In[9]:
 
 
 get_ipython().system("head -n 300000 {path}/'train.csv' > {path_w}/'sample_train.csv'")
 get_ipython().system("head -n 300000 {path}/'specs.csv' > {path_w}/'sample_specs.csv'")
 
 
-# In[10]:
 
 
 sample_train = pd.read_csv(path_w/'sample_train.csv')
@@ -86,7 +76,6 @@ sample_specs = pd.read_csv(path_w/'sample_specs.csv')
 train_labels = pd.read_csv(path/'train_labels.csv')
 
 
-# In[11]:
 
 
 train = pd.read_csv('/kaggle/input/data-science-bowl-2019/train.csv')
@@ -96,13 +85,11 @@ test = pd.read_csv('/kaggle/input/data-science-bowl-2019/test.csv')
 submission = pd.read_csv('/kaggle/input/data-science-bowl-2019/sample_submission.csv')
 
 
-# In[12]:
 
 
 train.query('game_session=="0848ef14a8dc6892" & event_code!=4110')
 
 
-# In[13]:
 
 
 #The following code copied from https://www.kaggle.com/artgor/quick-and-dirty-regression
@@ -319,7 +306,6 @@ train, test, train_labels, win_code, list_of_user_activities, list_of_event_code
 reduce_train, reduce_test, categoricals = get_train_and_test(train, test)
 
 
-# In[14]:
 
 
 def preprocess(reduce_train, reduce_test):
@@ -344,13 +330,11 @@ def preprocess(reduce_train, reduce_test):
 reduce_train, reduce_test, features = preprocess(reduce_train, reduce_test)
 
 
-# In[15]:
 
 
 temp_copy_train = reduce_train.copy()
 
 
-# In[16]:
 
 
 int_encode = list(range(len(temp_copy_train.installation_id.unique())))
@@ -359,7 +343,6 @@ installation_id_int_encoding = {x:y for x,y in zip(temp_copy_train.installation_
 installation_id_int_encoding
 
 
-# In[17]:
 
 
 all_installation_codes = []
@@ -369,20 +352,17 @@ for x in temp_copy_train.installation_id:
 all_installation_codes
 
 
-# In[18]:
 
 
 temp_copy_train['installation_id'] = all_installation_codes
 temp_copy_train.installation_id
 
 
-# In[19]:
 
 
 train_cats(temp_copy_train)
 
 
-# In[20]:
 
 
 #removoing the y_fld from reduce_train
@@ -390,7 +370,6 @@ y_trn = temp_copy_train['accuracy_group']
 df_trn = temp_copy_train.drop('accuracy_group',axis=1)
 
 
-# In[21]:
 
 
 def split_vals(a,n): return a[:n],a[n:]
@@ -402,26 +381,22 @@ y_train, y_valid = split_vals(y_trn,n_train)
 raw_train, raw_valid = split_vals(reduce_train,n_train)
 
 
-# In[22]:
 
 
 get_ipython().run_line_magic('pinfo', 'train_cats')
 
 
-# In[23]:
 
 
 from collections import defaultdict
 
 
-# In[24]:
 
 
 # sample_train = sample_train.query('(event_code==4100 | event_code==4110) & type=="Assessment"')
 len(sample_train.game_session.unique())
 
 
-# In[25]:
 
 
 # def label_assign(sample_trn,game_sess_id):
@@ -473,7 +448,6 @@ len(sample_train.game_session.unique())
 #     return sample_df, game_sess.groups[game_sess_id]    #ssample dict, indexes of all the rows of the groupby clause
 
 
-# In[26]:
 
 
 # sample_train['num_correct'] = 0
@@ -485,7 +459,6 @@ len(sample_train.game_session.unique())
 # temp_1
 
 
-# In[27]:
 
 
 # y = sample_train.loc[temp_1[1]].query('event_code==4100 | event_code==4110')
@@ -512,7 +485,6 @@ len(sample_train.game_session.unique())
 # # sample_train.loc[other_idxs,'accuracy_group'] = 0
 
 
-# In[28]:
 
 
 # sample_train['num_correct'] = 0
@@ -536,19 +508,16 @@ len(sample_train.game_session.unique())
     
 
 
-# In[29]:
 
 
 sample_train.to_feather({path_w}/'saved_sample_trn_raw')
 
 
-# In[30]:
 
 
 from sklearn.metrics import *
 
 
-# In[31]:
 
 
 def print_score(m):
@@ -557,51 +526,43 @@ def print_score(m):
     print("Scores = ",results)
 
 
-# In[32]:
 
 
 set_rf_samples(5000)
 
 
-# In[33]:
 
 
 from sklearn.tree import *
 
 
-# In[34]:
 
 
 model = DecisionTreeClassifier(min_samples_leaf=3,max_features=0.5)
 model.fit(df_trn,y_trn)
 
 
-# In[35]:
 
 
 model.score(df_trn,y_trn)
 
 
-# In[36]:
 
 
 print_score(model)
 
 
-# In[37]:
 
 
 train_data = pd.read_csv(path/'train.csv')
 
 
-# In[38]:
 
 
 train_data = train_data.query('(event_code==4100 | event_code==4110) & type=="Assessment"')
 train_data
 
 
-# In[39]:
 
 
 corr_count = defaultdict(lambda :0)
@@ -654,40 +615,34 @@ labels['accuracy_group'] = temp
     
 
 
-# In[40]:
 
 
 train_w_gt = pd.merge(left=train_data,right=labels,on='game_session',how='left')
 train_w_gt
 
 
-# In[41]:
 
 
 train_w_gt.drop(columns='event_data',inplace=True)
 train_w_gt
 
 
-# In[42]:
 
 
 add_datepart(train_w_gt,fldname='timestamp')
 train_w_gt.dtypes
 
 
-# In[43]:
 
 
 train_cats(train_w_gt)
 
 
-# In[44]:
 
 
 df_trn, y_trn, nas = proc_df(train_w_gt,y_fld='accuracy_group')
 
 
-# In[45]:
 
 
 def split_vals(a,n): return a[:n],a[n:]
@@ -699,19 +654,16 @@ y_train, y_valid = split_vals(y_trn,n_train)
 raw_train, raw_valid = split_vals(train_w_gt,n_train)
 
 
-# In[46]:
 
 
 X_valid
 
 
-# In[47]:
 
 
 set_rf_samples(50000)
 
 
-# In[48]:
 
 
 model = RandomForestClassifier(n_estimators=10,min_samples_leaf=3,max_features=0.5,n_jobs=-1)
@@ -719,13 +671,11 @@ model.fit(X_train,y_train)
 print_score(model)
 
 
-# In[49]:
 
 
 X_valid.iloc[0]
 
 
-# In[ ]:
 
 
 

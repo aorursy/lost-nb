@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
 import pandas as pd
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/train.tsv', sep='\t')
@@ -20,13 +18,11 @@ test = test.rename(columns={"test_id": "id"})
 data = pd.concat([train,test])
 
 
-# In[3]:
 
 
 train.shape,test.shape,data.shape
 
 
-# In[4]:
 
 
 def split_cat(text):
@@ -34,25 +30,21 @@ def split_cat(text):
     except: return ("No Label", "No Label", "No Label")
 
 
-# In[5]:
 
 
 data['general_cat'], data['subcat_1'], data['subcat_2'] = zip(*data['category_name'].apply(lambda x: split_cat(x)))
 
 
-# In[6]:
 
 
 data.drop('category_name',axis=1,inplace=True)
 
 
-# In[7]:
 
 
 data.brand_name = data.brand_name.fillna("None")
 
 
-# In[8]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -64,13 +56,11 @@ for label in labels:
     data[label] = le.transform(data[label])
 
 
-# In[9]:
 
 
 data.head()
 
 
-# In[10]:
 
 
 from sklearn.feature_extraction.text import CountVectorizer,TfidfVectorizer
@@ -80,7 +70,6 @@ vectorizer = CountVectorizer(token_pattern='\d+')
 x = vectorizer.fit_transform(data.general_cat)
 
 
-# In[11]:
 
 
 data.item_description = data.item_description.fillna("None")
@@ -92,13 +81,11 @@ data.subcat_2 = data.subcat_2.astype(str)
 data.brand_name = data.brand_name.astype(str)
 
 
-# In[12]:
 
 
 data.dtypes
 
 
-# In[13]:
 
 
 default_preprocessor = CountVectorizer().build_preprocessor()
@@ -137,13 +124,11 @@ vectorizer = FeatureUnion([
 ])
 
 
-# In[14]:
 
 
 X = vectorizer.fit_transform(data.values)
 
 
-# In[15]:
 
 
 trainData = X[:train.shape[0]]
@@ -152,14 +137,12 @@ target = np.log1p(train.price)
 testData = X[train.shape[0]:]
 
 
-# In[16]:
 
 
 from sklearn.model_selection import train_test_split
 X_train, X_valid, y_train, y_valid = train_test_split(trainData, target, test_size=0.3, random_state=0)
 
 
-# In[17]:
 
 
 import xgboost as xgb
@@ -173,7 +156,6 @@ score = mean_squared_error(y_valid, np.array(y_pred))
 print("XGBoost Score: "+str(np.sqrt(score)))
 
 
-# In[18]:
 
 
 testmat=xgb.DMatrix(testData)
@@ -185,7 +167,6 @@ submission.rename(columns={"id": "test_id"})
 submission.to_csv("submission.csv",header=["test_id","price"], index=False)
 
 
-# In[19]:
 
 
 

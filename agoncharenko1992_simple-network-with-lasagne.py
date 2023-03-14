@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -29,7 +28,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 def train_data_load():
@@ -62,7 +60,6 @@ def gen_minibatches(X, y, batch_size, shuffle=False):
         yield X[ii], y[ii]
 
 
-# In[3]:
 
 
 input_var = T.matrix('inputs', dtype=theano.config.floatX)
@@ -78,7 +75,6 @@ def model_construction(input_var, num_units_list, features_count, classes_count)
     return network    
 
 
-# In[4]:
 
 
 save_path = 'super_model'
@@ -190,7 +186,6 @@ def train(X_train, y_train, X_val, y_val, X_test, y_test, network, num_epochs=50
     return network          
 
 
-# In[5]:
 
 
 def predict_proba(network, Xtest_vals, save_path):
@@ -222,13 +217,11 @@ def main():
     predicted.to_csv("sample_submission.csv", index=False)
 
 
-# In[6]:
 
 
 main()
 
 
-# In[7]:
 
 
 

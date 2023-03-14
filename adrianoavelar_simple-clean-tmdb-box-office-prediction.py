@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -29,7 +28,6 @@ def rmse(y, y_pred):
     return np.sqrt(mean_squared_error(y, y_pred))
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/train.csv')
@@ -38,32 +36,27 @@ train.index = train['id']
 test.index = test['id']
 
 
-# In[3]:
 
 
 print("Train : " + str(train.shape))
 print("Teset : "+ str(test.shape))
 
 
-# In[4]:
 
 
 train.head()
 
 
-# In[5]:
 
 
 print("Types columns : \n" + str(train.dtypes))
 
 
-# In[6]:
 
 
 train.isna().sum().sort_values(ascending=False)
 
 
-# In[7]:
 
 
 missing=train.isna().sum().sort_values(ascending=False)
@@ -71,85 +64,71 @@ sns.barplot(missing[:8],missing[:8].index)
 plt.show()
 
 
-# In[8]:
 
 
 train['belongs_to_collection'][:5]
 
 
-# In[9]:
 
 
 train['homepage'][:5]
 
 
-# In[10]:
 
 
 train['tagline'][:5]
 
 
-# In[11]:
 
 
 train['Keywords'][:5]
 
 
-# In[12]:
 
 
 train['production_companies'][:5]
 
 
-# In[13]:
 
 
 train['production_countries'][:5]
 
 
-# In[14]:
 
 
 train['spoken_languages'][:5]
 
 
-# In[15]:
 
 
 train['crew'][:5]
 
 
-# In[16]:
 
 
 train['cast'][:5]
 
 
-# In[17]:
 
 
 train['overview'][:5]
 
 
-# In[18]:
 
 
 train['genres'][:5]
 
 
-# In[19]:
 
 
 train['runtime'][:5]
 
 
-# In[20]:
 
 
 train['poster_path'][:5]
 
 
-# In[21]:
 
 
 train.loc[train['id'] == 16,'revenue'] = 192864         
@@ -203,7 +182,6 @@ train.loc[train['id'] == 2256,'budget'] = 1
 train.loc[train['id'] == 2696,'budget'] = 10000000
 
 
-# In[22]:
 
 
 test.loc[test['id'] == 3033,'budget'] = 250 
@@ -289,38 +267,32 @@ test.loc[test['id'] == 6473,'budget'] = 100
 test.loc[test['id'] == 6842,'budget'] = 30
 
 
-# In[23]:
 
 
 from sklearn.preprocessing import LabelEncoder
 le = LabelEncoder()
 
 
-# In[24]:
 
 
 train.head()
 
 
-# In[25]:
 
 
 test.head()
 
 
-# In[26]:
 
 
 train.describe()
 
 
-# In[27]:
 
 
 train.columns.values
 
 
-# In[28]:
 
 
 #Transform Text to Dictionary. Because these columns are in json format.
@@ -338,13 +310,11 @@ for col in dict_columns:
     train[col]=dfx[col]
 
 
-# In[29]:
 
 
 train.head(5)
 
 
-# In[30]:
 
 
 dfx = text_to_dict(test)
@@ -352,7 +322,6 @@ for col in dict_columns:
        test[col]=dfx[col]   
 
 
-# In[31]:
 
 
 def date(x):
@@ -384,7 +353,6 @@ plt.gca().set_xticklabels(["Monday","Tuesday","Wednesday","Thursday","Friday","S
 plt.ylabel('No of releases')
 
 
-# In[32]:
 
 
 def data_preprocessing(df):
@@ -449,13 +417,11 @@ def data_preprocessing(df):
     return df
 
 
-# In[33]:
 
 
 train.head()
 
 
-# In[34]:
 
 
 '''
@@ -543,20 +509,17 @@ def  data_preprocessing2(df):
 '''
 
 
-# In[35]:
 
 
 test['revenue'] = np.nan
 all_data=data_preprocessing((pd.concat([train,test]))).reset_index(drop=True)
 
 
-# In[36]:
 
 
 all_data.head(10)
 
 
-# In[37]:
 
 
 train=all_data.loc[:train.shape[0]-1,:]
@@ -565,20 +528,17 @@ print("Train shape",train.shape)
 print("Test shape",train.shape)
 
 
-# In[38]:
 
 
 train.info()
 
 
-# In[39]:
 
 
 features = list(train.columns)
 features =  [i for i in features if i != 'id' and i != 'revenue']
 
 
-# In[40]:
 
 
 from sklearn.metrics import mean_squared_error
@@ -593,7 +553,6 @@ def score(data, y):
                                      np.log1p(validation_res["predictedrevenue"].values)))
 
 
-# In[41]:
 
 
 from sklearn.model_selection import GroupKFold
@@ -650,13 +609,11 @@ class KFoldValidation():
         return full_score
 
 
-# In[42]:
 
 
 Kfolder = KFoldValidation(train)
 
 
-# In[43]:
 
 
 lgbmodel = lgb.LGBMRegressor(n_estimators=10000, 
@@ -679,19 +636,16 @@ lgbmodel = lgb.LGBMRegressor(n_estimators=10000,
                              use_best_model=True)
 
 
-# In[44]:
 
 
 Kfolder.validate(train, test, features , lgbmodel, name="lgbfinal", prepare_stacking=True) 
 
 
-# In[45]:
 
 
 #lgbmodel.FI.mean(axis=1).sort_values()[180:250].plot(kind="barh",title = "Features Importance", figsize = (10,10))
 
 
-# In[46]:
 
 
 xgbmodel = xgb.XGBRegressor(max_depth=5, 
@@ -706,13 +660,11 @@ xgbmodel = xgb.XGBRegressor(max_depth=5,
                             colsample_bylevel=0.5)
 
 
-# In[47]:
 
 
 Kfolder.validate(train, test, features, xgbmodel, name="xgbfinal", prepare_stacking=True)
 
 
-# In[48]:
 
 
 catmodel = cat.CatBoostRegressor(iterations=10000, 
@@ -726,14 +678,12 @@ catmodel = cat.CatBoostRegressor(iterations=10000,
                                  random_seed=random_seed)
 
 
-# In[49]:
 
 
 Kfolder.validate(train, test, features , catmodel, name="catfinal", prepare_stacking=True,
                fit_params={"use_best_model": True, "verbose": 100})
 
 
-# In[50]:
 
 
 train['Revenue_lgb'] = train["lgbfinal"]
@@ -753,7 +703,6 @@ train['Revenue_Dragon2'] = 0.35 * train["lgbfinal"] +                           
 print("RMSE model Dragon2 :" ,score(train, train.Revenue_Dragon2))
 
 
-# In[51]:
 
 
 test['revenue'] =  np.expm1(test["lgbfinal"])
@@ -761,7 +710,6 @@ test[['id','revenue']].to_csv('submission_lgb.csv', index=False)
 test[['id','revenue']].head()
 
 
-# In[52]:
 
 
 test['revenue'] =  np.expm1(test["xgbfinal"])
@@ -769,7 +717,6 @@ test[['id','revenue']].to_csv('submission_xgb.csv', index=False)
 test[['id','revenue']].head()
 
 
-# In[53]:
 
 
 test['revenue'] =  np.expm1(test["catfinal"])
@@ -777,7 +724,6 @@ test[['id','revenue']].to_csv('submission_cat.csv', index=False)
 test[['id','revenue']].head()
 
 
-# In[54]:
 
 
 test['revenue'] =  np.expm1(0.4 * test["lgbfinal"]+ 0.4 * test["catfinal"] + 0.2 * test["xgbfinal"])
@@ -785,7 +731,6 @@ test[['id','revenue']].to_csv('submission_Dragon1.csv', index=False)
 test[['id','revenue']].head()
 
 
-# In[55]:
 
 
 test['revenue'] =  np.expm1((test["lgbfinal"] + test["catfinal"] + test["xgbfinal"])/3)

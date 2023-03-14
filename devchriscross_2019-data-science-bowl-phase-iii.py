@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -31,7 +30,6 @@ def print_log(string):
     print(string)
 
 
-# In[2]:
 
 
 def load_dataset():
@@ -90,7 +88,6 @@ def load_dataset():
     return df_train
 
 
-# In[3]:
 
 
 import re
@@ -120,7 +117,6 @@ class PropExtractor():
             return ""
 
 
-# In[4]:
 
 
 def extract_args(df_train):
@@ -138,7 +134,6 @@ def extract_args(df_train):
     return df_train
 
 
-# In[5]:
 
 
 def add_prev_assessment(df_train):
@@ -176,7 +171,6 @@ def add_clip_duration(df_train):
     return df_train
 
 
-# In[6]:
 
 
 outlier_cap_val = dict()
@@ -205,7 +199,6 @@ def remove_outliers(df, col, extreme=None):
     return df
 
 
-# In[7]:
 
 
 def handle_outliers(df_train):
@@ -242,7 +235,6 @@ def handle_outliers(df_train):
 #     df_correct = remove_outliers(df_correct, "duration")
 
 
-# In[8]:
 
 
 def accumulate(df, col, op):
@@ -256,7 +248,6 @@ def accumulate(df, col, op):
     return df
 
 
-# In[9]:
 
 
 # Capped outliers
@@ -381,7 +372,6 @@ def assessment_agg(df_train):
     return df_correct
 
 
-# In[10]:
 
 
 def aggregate_data(df_train):
@@ -408,7 +398,6 @@ def aggregate_data(df_train):
     return df_train_data
 
 
-# In[11]:
 
 
 def plot_distribution_mean(df_train_data):
@@ -425,7 +414,6 @@ def plot_distribution_mean(df_train_data):
         sns.pointplot(x=col, y="accuracy_group", data=df_plot, ax=ax[i, 1])
 
 
-# In[12]:
 
 
 from pandas.api.types import is_numeric_dtype
@@ -435,7 +423,6 @@ def print_missing_percent(df_train_data):
             print(col, "Percentage of missing values:", df_train_data[col].isnull().mean(), "====","Minimum value:", df_train_data[col].min())
 
 
-# In[13]:
 
 
 def fill_missing_values(df_train_data):
@@ -482,7 +469,6 @@ def fill_missing_values(df_train_data):
     return df_train_data
 
 
-# In[14]:
 
 
 def compile_train_data():
@@ -509,7 +495,6 @@ def compile_train_data():
 df_train_data = compile_train_data()
 
 
-# In[15]:
 
 
 gs_index_map = df_train[df_train.game_session==df_train.gs_to_eval].groupby(["gs_to_eval"]).head(1).reset_index().set_index("gs_to_eval")[["index"]]
@@ -518,14 +503,12 @@ gs_index_map = gs_index_map["index"].to_dict()
 id_index_map = df_train.groupby(["installation_id"]).head(1).reset_index().set_index("installation_id")["index"].to_dict()
 
 
-# In[16]:
 
 
 plt.figure(figsize=(30, 30))
 sns.heatmap(df_train_data.drop(columns=["installation_id"]).corr(), annot=True, fmt=".1f").set_title("Correlational Matrix")
 
 
-# In[17]:
 
 
 from sklearn.experimental import enable_hist_gradient_boosting  # noqa
@@ -583,7 +566,6 @@ for train_index, test_index in GroupKFold().split(dfx_train, dfy_train, groups=i
     print("Quadratic Kappa score: (test set)", cohen_kappa_score(y_test, preds, weights="quadratic"), "====\n")
 
 
-# In[18]:
 
 
 from sklearn.model_selection import GroupKFold
@@ -608,7 +590,6 @@ def plot_learning_curve(rfc, X, y, groups, scoring):
     g.fig.set_figwidth(20)
 
 
-# In[19]:
 
 
 ################ Grid Search ################
@@ -620,7 +601,6 @@ grid_result = gsc.fit(dfx_train, dfy_train)
 grid_result.best_params_
 
 
-# In[20]:
 
 
 rfc = HistGradientBoostingClassifier(loss="categorical_crossentropy", learning_rate=0.1, max_iter=100, n_iter_no_change=25, max_depth=6, l2_regularization=0.01,
@@ -629,7 +609,6 @@ validate_model(rfc, dfx_train, dfy_train, id_groups)
 plot_learning_curve(rfc, dfx_train, dfy_train, id_groups, kappa_score)
 
 
-# In[21]:
 
 
 from sklearn.metrics import roc_auc_score
@@ -645,7 +624,6 @@ for train_index, test_index in GroupKFold(5).split(dfx_train, dfy_train, groups=
     print("ROC Area Under Curve Score: ", roc_auc_score(y_test, rfc.predict_proba(X_test), multi_class="ovo"), "\n")
 
 
-# In[22]:
 
 
 from joblib import dump

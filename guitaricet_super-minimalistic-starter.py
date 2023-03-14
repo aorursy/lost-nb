@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import re
@@ -19,7 +18,6 @@ AUTO = tf.data.experimental.AUTOTUNE
 tf.__version__
 
 
-# In[2]:
 
 
 # Detect hardware, return appropriate distribution strategy
@@ -38,7 +36,6 @@ except ValueError:
 print("REPLICAS: ", strategy.num_replicas_in_sync)
 
 
-# In[3]:
 
 
 IMAGE_SIZE = [192, 192]
@@ -58,7 +55,6 @@ CLASSES = ['pink primrose',    'hard-leaved pocket orchid', 'canterbury bells', 
 N_CLASSES = len(CLASSES)
 
 
-# In[4]:
 
 
 def decode_image(image_data):
@@ -94,7 +90,6 @@ def count_data_items(filenames):
     return np.sum(n)
 
 
-# In[5]:
 
 
 GCS_DS_PATH = KaggleDatasets().get_gcs_path()
@@ -111,7 +106,6 @@ train_ds = tf.data.TFRecordDataset(filenames=train_fnames)    .map(read_labeled_
 valid_ds = tf.data.TFRecordDataset(filenames=valid_fnames)    .map(read_labeled_tfrecord, num_parallel_calls=AUTO)    .cache()
 
 
-# In[6]:
 
 
 show_n = 3
@@ -123,7 +117,6 @@ for i, (image, label) in enumerate(train_ds.take(show_n)):
     plt.title(CLASSES[label])
 
 
-# In[7]:
 
 
 with strategy.scope():  # device specification (TPU/GPU/CPU)
@@ -137,7 +130,6 @@ with strategy.scope():  # device specification (TPU/GPU/CPU)
     ])
 
 
-# In[8]:
 
 
 batch, label = next(iter(train_ds.batch(2)))
@@ -146,7 +138,6 @@ out = model(batch)
 out.shape
 
 
-# In[9]:
 
 
 model.compile(
@@ -157,7 +148,6 @@ model.compile(
 model.summary()
 
 
-# In[10]:
 
 
 steps_per_epoch = n_train // BATCH_SIZE + int(n_train % BATCH_SIZE > 0)
@@ -171,7 +161,6 @@ history = model.fit(train_dl,
     epochs=5)
 
 
-# In[11]:
 
 
 plt.figure(figsize=(15,7))
@@ -181,7 +170,6 @@ plt.title('Accuracy')
 plt.legend()
 
 
-# In[12]:
 
 
 get_image_lambda = lambda image, id_: image  # Autograph asked to create lambda as a standalone statement
@@ -202,7 +190,6 @@ np.savetxt('submission.csv', np.rec.fromarrays([test_ids, predictions]), fmt=['%
 get_ipython().system('head submission.csv')
 
 
-# In[ ]:
 
 
 

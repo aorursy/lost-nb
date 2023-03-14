@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import codecs
@@ -16,7 +15,6 @@ import time
 from typing import Dict, List, Sequence, Set, Tuple, Union
 
 
-# In[2]:
 
 
 import matplotlib.pyplot as plt
@@ -41,7 +39,6 @@ from transformers import AutoTokenizer, XLMRobertaTokenizer
 from transformers import TFXLMRobertaModel, XLMRobertaConfig
 
 
-# In[3]:
 
 
 class LossFunctionWrapper(tf.keras.losses.Loss):
@@ -67,7 +64,6 @@ class LossFunctionWrapper(tf.keras.losses.Loss):
         return dict(list(base_config.items()) + list(config.items()))
 
 
-# In[4]:
 
 
 def distance_based_log_loss(y_true, y_pred):
@@ -78,7 +74,6 @@ def distance_based_log_loss(y_true, y_pred):
     return tf.keras.backend.binary_crossentropy(target=y_true, output=p)
 
 
-# In[5]:
 
 
 class DBLLogLoss(LossFunctionWrapper):
@@ -88,7 +83,6 @@ class DBLLogLoss(LossFunctionWrapper):
                                          reduction=reduction)
 
 
-# In[6]:
 
 
 class MaskCalculator(tf.keras.layers.Layer):
@@ -121,7 +115,6 @@ class MaskCalculator(tf.keras.layers.Layer):
         return tuple(shape)
 
 
-# In[7]:
 
 
 class WeightPosteriorCallback(tf.keras.callbacks.Callback):
@@ -162,7 +155,6 @@ class WeightPosteriorCallback(tf.keras.callbacks.Callback):
             self.logged_epochs[epoch + 1] = (qm_vals, qs_vals)
 
 
-# In[8]:
 
 
 def plot_weight_posteriors(layer_names: List[str],
@@ -199,7 +191,6 @@ def plot_weight_posteriors(layer_names: List[str],
     plt.show()
 
 
-# In[9]:
 
 
 def regular_encode(texts: List[str], tokenizer: XLMRobertaTokenizer,
@@ -214,7 +205,6 @@ def regular_encode(texts: List[str], tokenizer: XLMRobertaTokenizer,
     return np.array(enc_di['input_ids']), np.array(enc_di['attention_mask'])
 
 
-# In[10]:
 
 
 def load_train_set(file_name: str, text_field: str, sentiment_fields: List[str],
@@ -280,7 +270,6 @@ def load_train_set(file_name: str, text_field: str, sentiment_fields: List[str],
     return data_by_lang
 
 
-# In[11]:
 
 
 def load_test_set(file_name: str, id_field: str, text_field: str,
@@ -334,7 +323,6 @@ def load_test_set(file_name: str, id_field: str, text_field: str,
     return data_by_lang
 
 
-# In[12]:
 
 
 def build_siamese_dataset(texts: Dict[str, List[Tuple[str, int]]],
@@ -486,7 +474,6 @@ def build_siamese_dataset(texts: Dict[str, List[Tuple[str, int]]],
     return dataset, n_steps
 
 
-# In[13]:
 
 
 def build_feature_extractor(transformer_name: str, hidden_state_size: int,
@@ -524,7 +511,6 @@ def build_feature_extractor(transformer_name: str, hidden_state_size: int,
     return fe_model
 
 
-# In[14]:
 
 
 def euclidean_distance(vects):
@@ -536,7 +522,6 @@ def euclidean_distance(vects):
     )
 
 
-# In[15]:
 
 
 def eucl_dist_output_shape(shapes):
@@ -544,7 +529,6 @@ def eucl_dist_output_shape(shapes):
     return (shape1[0], 1)
 
 
-# In[16]:
 
 
 def build_siamese_nn(transformer_name: str, hidden_state_size: int, max_len: int,
@@ -579,7 +563,6 @@ def build_siamese_nn(transformer_name: str, hidden_state_size: int, max_len: int
     return nn, fe_
 
 
-# In[17]:
 
 
 def build_classifier(language: str, feature_vector_size: int, n_train_samples: int,
@@ -646,7 +629,6 @@ def build_classifier(language: str, feature_vector_size: int, n_train_samples: i
     return cls_model
 
 
-# In[18]:
 
 
 def build_datasets_for_classifier(
@@ -665,7 +647,6 @@ def build_datasets_for_classifier(
     return data_for_training, data_for_testing
 
 
-# In[19]:
 
 
 def train_classifier(trainset: tf.data.Dataset, n_steps: int, bayesian_classifier: tf.keras.Model,
@@ -704,7 +685,6 @@ def train_classifier(trainset: tf.data.Dataset, n_steps: int, bayesian_classifie
         bayesian_classifier.load_weights(tmp_file_name)
 
 
-# In[20]:
 
 
 def evaluate_classifier(X_test: np.ndarray, y_test: np.ndarray, language_for_testing: str,
@@ -727,7 +707,6 @@ def evaluate_classifier(X_test: np.ndarray, y_test: np.ndarray, language_for_tes
     return quality
 
 
-# In[21]:
 
 
 def show_training_process(history: tf.keras.callbacks.History, metric_name: str,
@@ -750,7 +729,6 @@ def show_training_process(history: tf.keras.callbacks.History, metric_name: str,
     plt.show()
 
 
-# In[22]:
 
 
 def train_siamese_nn(nn: tf.keras.Model, trainset: tf.data.Dataset, steps_per_trainset: int,
@@ -776,7 +754,6 @@ def train_siamese_nn(nn: tf.keras.Model, trainset: tf.data.Dataset, steps_per_tr
     show_training_process(history, 'loss')
 
 
-# In[23]:
 
 
 def show_roc_auc(y_true: np.ndarray, probabilities: np.ndarray, label: str,
@@ -795,7 +772,6 @@ def show_roc_auc(y_true: np.ndarray, probabilities: np.ndarray, label: str,
     plt.show()
 
 
-# In[24]:
 
 
 def calculate_features_of_texts(texts: Dict[str, List[Tuple[str, int]]],
@@ -845,7 +821,6 @@ def calculate_features_of_texts(texts: Dict[str, List[Tuple[str, int]]],
     return datasets_by_languages
 
 
-# In[25]:
 
 
 def predict_with_model(classifier: tf.keras.Model, input_data: np.ndarray,
@@ -857,7 +832,6 @@ def predict_with_model(classifier: tf.keras.Model, input_data: np.ndarray,
     return predicted / float(n_monte_carlo)
 
 
-# In[26]:
 
 
 def select_best_model(data_for_training: List[Dict[str, Tuple[np.ndarray, np.ndarray]]],
@@ -961,13 +935,11 @@ def select_best_model(data_for_training: List[Dict[str, Tuple[np.ndarray, np.nda
     return best_parameters
 
 
-# In[27]:
 
 
 experiment_start_time = time.time()
 
 
-# In[28]:
 
 
 try:
@@ -1000,7 +972,6 @@ print('Batch size for the Bayesian NN is {0}'.format(
     batch_size_for_cls))
 
 
-# In[29]:
 
 
 random.seed(42)
@@ -1008,7 +979,6 @@ np.random.seed(42)
 tf.random.set_seed(42)
 
 
-# In[30]:
 
 
 siamese_learning_rate = 1e-6
@@ -1022,7 +992,6 @@ tmp_roberta_name = '/kaggle/working/siamese_xlmr.h5'
 tmp_cls_name = '/kaggle/working/bayesian_cls.h5'
 
 
-# In[31]:
 
 
 xlmroberta_tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -1030,7 +999,6 @@ xlmroberta_config = XLMRobertaConfig.from_pretrained(model_name)
 print(xlmroberta_config)
 
 
-# In[32]:
 
 
 sentence_embedding_size = xlmroberta_config.hidden_size
@@ -1038,7 +1006,6 @@ print('Sentence embedding size is {0}'.format(sentence_embedding_size))
 assert max_seq_len <= xlmroberta_config.max_position_embeddings
 
 
-# In[33]:
 
 
 corpus_for_training = load_train_set(
@@ -1050,7 +1017,6 @@ corpus_for_training = load_train_set(
 assert 'en' in corpus_for_training
 
 
-# In[34]:
 
 
 random.shuffle(corpus_for_training['en'])
@@ -1059,7 +1025,6 @@ corpus_for_validation = {'en': corpus_for_training['en'][:n_validation]}
 corpus_for_training = {'en': corpus_for_training['en'][n_validation:]}
 
 
-# In[35]:
 
 
 multilingual_corpus = load_train_set(
@@ -1076,7 +1041,6 @@ for language in sorted(list(multilingual_corpus.keys())):
         max_size = len(multilingual_corpus[language])
 
 
-# In[36]:
 
 
 texts_for_submission = load_test_set(
@@ -1088,7 +1052,6 @@ for language in sorted(list(texts_for_submission.keys())):
     print('  {0}\t\t{1} samples'.format(language, len(texts_for_submission[language])))
 
 
-# In[37]:
 
 
 dataset_for_training, n_batches_per_data = build_siamese_dataset(
@@ -1098,7 +1061,6 @@ dataset_for_training, n_batches_per_data = build_siamese_dataset(
 )
 
 
-# In[38]:
 
 
 dataset_for_validation, n_batches_per_epoch = build_siamese_dataset(
@@ -1108,14 +1070,12 @@ dataset_for_validation, n_batches_per_epoch = build_siamese_dataset(
 )
 
 
-# In[39]:
 
 
 del corpus_for_training, corpus_for_validation
 gc.collect()
 
 
-# In[40]:
 
 
 preparing_duration = int(round(time.time() - experiment_start_time))
@@ -1123,7 +1083,6 @@ print("Duration of data loading and preparing to the Siamese NN training is "
       "{0} seconds.".format(preparing_duration))
 
 
-# In[41]:
 
 
 with strategy.scope():
@@ -1135,7 +1094,6 @@ with strategy.scope():
     )
 
 
-# In[42]:
 
 
 train_siamese_nn(nn=siamese_network, trainset=dataset_for_training,
@@ -1146,7 +1104,6 @@ train_siamese_nn(nn=siamese_network, trainset=dataset_for_training,
                  model_weights_path=tmp_roberta_name)
 
 
-# In[43]:
 
 
 del dataset_for_training
@@ -1154,20 +1111,17 @@ del dataset_for_validation
 gc.collect()
 
 
-# In[44]:
 
 
 siamese_network.load_weights(tmp_roberta_name)
 
 
-# In[45]:
 
 
 del siamese_network
 gc.collect()
 
 
-# In[46]:
 
 
 dataset_for_training = calculate_features_of_texts(
@@ -1179,7 +1133,6 @@ dataset_for_training = calculate_features_of_texts(
 assert len(dataset_for_training) == 3
 
 
-# In[47]:
 
 
 dataset_for_submission = calculate_features_of_texts(
@@ -1190,7 +1143,6 @@ dataset_for_submission = calculate_features_of_texts(
 )
 
 
-# In[48]:
 
 
 X_embedded = []
@@ -1235,14 +1187,12 @@ X_embedded = np.vstack(X_embedded)
 y_embedded = np.concatenate(y_embedded)
 
 
-# In[49]:
 
 
 del dataset_for_training, dataset_for_submission
 del feature_extractor, xlmroberta_tokenizer
 
 
-# In[50]:
 
 
 all_languages = sorted(list(split_by_languages.keys()))
@@ -1254,7 +1204,6 @@ for cur_lang in all_languages[1:]:
     prev_lang = cur_lang
 
 
-# In[51]:
 
 
 indices_of_samples = random.sample(
@@ -1269,13 +1218,11 @@ X_embedded = X_embedded[indices_of_samples]
 y_embedded = y_embedded[indices_of_samples]
 
 
-# In[52]:
 
 
 X_embedded = TSNE(n_components=2, n_jobs=-1).fit_transform(X_embedded)
 
 
-# In[53]:
 
 
 indices_of_unknown_classes = list(filter(
@@ -1304,7 +1251,6 @@ plt.legend(loc='best')
 plt.show()
 
 
-# In[54]:
 
 
 del indices_of_negative_classes
@@ -1314,7 +1260,6 @@ del indices_of_samples
 del X_embedded, y_embedded
 
 
-# In[55]:
 
 
 gc.collect()
@@ -1326,7 +1271,6 @@ if tpu:
     strategy = tf.distribute.experimental.TPUStrategy(tpu)
 
 
-# In[56]:
 
 
 splitted_data_for_training = []
@@ -1345,7 +1289,6 @@ for cur_lang in all_languages:
     del datasets
 
 
-# In[57]:
 
 
 experiment_duration = int(round(time.time() - experiment_start_time))
@@ -1353,7 +1296,6 @@ print('Duration of siamese XLM-RoBERTa preparing is {0} seconds.'.format(
     experiment_duration))
 
 
-# In[58]:
 
 
 bnn_params = select_best_model(
@@ -1368,27 +1310,23 @@ bnn_params = select_best_model(
 )
 
 
-# In[59]:
 
 
 del splitted_data_for_training
 
 
-# In[60]:
 
 
 if os.path.isfile(tmp_cls_name):
     os.remove(tmp_cls_name)
 
 
-# In[61]:
 
 
 n_total_train_samples = featured_data_for_training[1].shape[0]
 n_steps_per_epoch = int(np.ceil(n_total_train_samples / float(batch_size_for_cls)))
 
 
-# In[62]:
 
 
 with strategy.scope():
@@ -1402,7 +1340,6 @@ with strategy.scope():
     )
 
 
-# In[63]:
 
 
 train_classifier(
@@ -1416,7 +1353,6 @@ train_classifier(
 )
 
 
-# In[64]:
 
 
 result_of_submission = predict_with_model(
@@ -1427,13 +1363,11 @@ result_of_submission = predict_with_model(
 )
 
 
-# In[65]:
 
 
 assert identifies_for_submission.shape == result_of_submission.shape
 
 
-# In[66]:
 
 
 with codecs.open('submission.csv', mode='w', encoding='utf-8', errors='ignore') as fp:
@@ -1444,7 +1378,6 @@ with codecs.open('submission.csv', mode='w', encoding='utf-8', errors='ignore') 
         fp.write('{0},{1:.9f}\n'.format(id_val, proba_val))
 
 
-# In[67]:
 
 
 print('Experiment duration is {0:.3f}.'.format(time.time() - experiment_start_time))

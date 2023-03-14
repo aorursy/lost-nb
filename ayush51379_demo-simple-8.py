@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,14 +21,12 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 
 train = pd.read_csv('/kaggle/input/data-science-bowl-2019/train.csv')
 
 
-# In[3]:
 
 
 train_labels = pd.read_csv('/kaggle/input/data-science-bowl-2019/train_labels.csv')
@@ -37,7 +34,6 @@ test = pd.read_csv('/kaggle/input/data-science-bowl-2019/test.csv')
 sample_submission = pd.read_csv('/kaggle/input/data-science-bowl-2019/sample_submission.csv')
 
 
-# In[4]:
 
 
 import warnings
@@ -46,7 +42,6 @@ warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 
-# In[5]:
 
 
 def test_in_sub(test):
@@ -60,7 +55,6 @@ def test_in_sub(test):
     return tgms1
 
 
-# In[6]:
 
 
 def c_accuracy_group(df):
@@ -81,7 +75,6 @@ def c_accuracy_group(df):
             
 
 
-# In[7]:
 
 
 def test_to_label(test):
@@ -114,7 +107,6 @@ def test_to_label(test):
     
 
 
-# In[8]:
 
 
 def get_time_gm(train, train_labels):
@@ -133,7 +125,6 @@ def get_time_gm(train, train_labels):
     return train_labels_t
 
 
-# In[9]:
 
 
 
@@ -273,7 +264,6 @@ def get_final_feat2(train, train_labels_derive_time):
     return train_labels_derive_time_corr
 
 
-# In[10]:
 
 
 def get_misses_all(train,train_all_other):
@@ -315,7 +305,6 @@ def get_misses_all(train,train_all_other):
     return train_all_other1
 
 
-# In[11]:
 
 
 def get_all2(train):
@@ -326,7 +315,6 @@ def get_all2(train):
     return get_miss
 
 
-# In[12]:
 
 
 def get_sub2(test):
@@ -337,7 +325,6 @@ def get_sub2(test):
     return get_miss
 
 
-# In[13]:
 
 
 import pandas as pd
@@ -364,7 +351,6 @@ from xgboost import plot_importance
 import lightgbm as lgb
 
 
-# In[14]:
 
 
 import numpy as np
@@ -375,7 +361,6 @@ from time import time
 from tqdm import tqdm_notebook as tqdm
 
 
-# In[15]:
 
 
 from sklearn.metrics import confusion_matrix
@@ -412,7 +397,6 @@ def qwk(act,pred,n=4,hist_range=(0,3)):
     
 
 
-# In[16]:
 
 
 # this function makes the model and sets the parameters
@@ -437,79 +421,66 @@ def make_classifier1():
     return clf1
 
 
-# In[17]:
 
 
 get2_test = get_all2(test)
 
 
-# In[18]:
 
 
 get2_test.to_csv("get2_test.csv")
 
 
-# In[19]:
 
 
 get2_train = get_all2(train)
 
 
-# In[20]:
 
 
 get2_train.to_csv("get2_train.csv")
 
 
-# In[21]:
 
 
 get2_sub = get_sub2(test)
 
 
-# In[22]:
 
 
 get2_sub.to_csv("get2_sub.csv")
 
 
-# In[23]:
 
 
 get2A = get2_train.drop(columns = ["installation_id","game_session"]).sample(frac=1,random_state = 42).reset_index(drop=True)
 
 
-# In[24]:
 
 
 get2A_test = get2_test.drop(columns = ["installation_id","game_session"]).sample(frac=1,random_state = 42).reset_index(drop=True)
 
 
-# In[25]:
 
 
 get2A_sub = get2_sub.drop(columns = ["installation_id","game_session"])#.sample(frac=1,random_state = 42).reset_index(drop=True)
 
 
-# In[26]:
 
 
 get2A.to_csv("get2A_train.csv")
 
 
-# In[27]:
 
 
 labels_map = {"Mushroom Sorter (Assessment)":1,"Bird Measurer (Assessment)":2,"Cauldron Filler (Assessment)":3,"Chest Sorter (Assessment)":4,"Cart Balancer (Assessment)":5}
 
 
-# In[28]:
 
 
 world_map = {"Mushroom Sorter (Assessment)":1,"Bird Measurer (Assessment)":1,"Cauldron Filler (Assessment)":2,"Chest Sorter (Assessment)":3,"Cart Balancer (Assessment)":3}
 
 
-# In[29]:
 
 
 get2A['world'] = get2A['title'].map(world_map)
@@ -519,44 +490,37 @@ get2A['title'] = get2A['title'].map(labels_map)
 get2A_test['title'] = get2A_test['title'].map(labels_map)
 
 
-# In[30]:
 
 
 get2A_sub['world'] = get2A_sub['title'].map(world_map)
 get2A_sub['title'] = get2A_sub['title'].map(labels_map)
 
 
-# In[31]:
 
 
 get2A.to_csv("get2A_train.csv", index=None)
 
 
-# In[32]:
 
 
 get2A_test.to_csv("get2A_test.csv")
 
 
-# In[33]:
 
 
 get2A_sub.to_csv("get2A_sub.csv")
 
 
-# In[34]:
 
 
 get2_train
 
 
-# In[35]:
 
 
 get2A
 
 
-# In[36]:
 
 
 get2A1_test = get2A_test.drop(columns = ["accuracy_group","correct","incorrect","accuracy"])
@@ -564,7 +528,6 @@ get2A1_test["accuracy_group"] = get2A_test["accuracy_group"]
 get2A1_test
 
 
-# In[37]:
 
 
 get2A1 = get2A.drop(columns = ["accuracy_group","correct","incorrect","accuracy"])
@@ -572,20 +535,17 @@ get2A1["accuracy_group"] = get2A["accuracy_group"]
 get2A1
 
 
-# In[38]:
 
 
 Xmod1 = get2A.drop(columns = ["accuracy_group","correct","incorrect","accuracy"])
 Ymod1 = get2A["accuracy_group"]
 
 
-# In[39]:
 
 
 Xmod1
 
 
-# In[40]:
 
 
 # CART Classification
@@ -606,20 +566,17 @@ results = cross_val_score(model, X, Y, cv=kfold)
 print(results.mean())
 
 
-# In[41]:
 
 
 model.fit(X,Y)
 
 
-# In[42]:
 
 
 y_pr = model.predict(X)
 qwk(Y,y_pr)
 
 
-# In[43]:
 
 
 dataframe1 = get2A1_test
@@ -630,7 +587,6 @@ y_pr1 = model.predict(X1)
 qwk(Y1,y_pr1)
 
 
-# In[44]:
 
 
 # Compare Algorithms
@@ -681,7 +637,6 @@ ax.set_xticklabels(names)
 pyplot.show()
 
 
-# In[45]:
 
 
 # Compare Algorithms
@@ -732,7 +687,6 @@ ax.set_xticklabels(names)
 pyplot.show()
 
 
-# In[46]:
 
 
 # Compare Algorithms
@@ -784,7 +738,6 @@ ax.set_xticklabels(names)
 pyplot.show()
 
 
-# In[47]:
 
 
 # Compare Algorithms
@@ -837,13 +790,11 @@ ax.set_xticklabels(names)
 pyplot.show()
 
 
-# In[48]:
 
 
 X1
 
 
-# In[49]:
 
 
 # Compare Algorithms
@@ -896,13 +847,11 @@ ax.set_xticklabels(names)
 pyplot.show()
 
 
-# In[50]:
 
 
 get2A1
 
 
-# In[51]:
 
 
 get2A1_1 = get2A1[get2A1.title == 1]
@@ -928,7 +877,6 @@ Y_5 = df5[:,18]
 get2A1_1
 
 
-# In[52]:
 
 
 # Compare Algorithms
@@ -981,7 +929,6 @@ ax.set_xticklabels(names)
 pyplot.show()
 
 
-# In[53]:
 
 
 # Compare Algorithms
@@ -1034,7 +981,6 @@ ax.set_xticklabels(names)
 pyplot.show()
 
 
-# In[54]:
 
 
 # Compare Algorithms
@@ -1087,7 +1033,6 @@ ax.set_xticklabels(names)
 pyplot.show()
 
 
-# In[55]:
 
 
 # Compare Algorithms
@@ -1140,7 +1085,6 @@ ax.set_xticklabels(names)
 pyplot.show()
 
 
-# In[56]:
 
 
 # Compare Algorithms
@@ -1193,7 +1137,6 @@ ax.set_xticklabels(names)
 pyplot.show()
 
 
-# In[57]:
 
 
 import lightgbm as lgb
@@ -1251,7 +1194,6 @@ ax.set_xticklabels(names)
 pyplot.show()
 
 
-# In[58]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -1311,7 +1253,6 @@ ax.set_xticklabels(names)
 pyplot.show()
 
 
-# In[59]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -1371,7 +1312,6 @@ ax.set_xticklabels(names)
 pyplot.show()
 
 
-# In[60]:
 
 
 # Create a pipeline that extracts features from the data then creates a model
@@ -1408,7 +1348,6 @@ print(results.mean())
 feature_union
 
 
-# In[61]:
 
 
 # Create a pipeline that extracts features from the data then creates a model
@@ -1445,7 +1384,6 @@ print(results.mean())
 features
 
 
-# In[62]:
 
 
 # Create a pipeline that extracts features from the data then creates a model
@@ -1482,7 +1420,6 @@ print(results.mean())
 features
 
 
-# In[63]:
 
 
 # Create a pipeline that extracts features from the data then creates a model
@@ -1519,13 +1456,11 @@ print(results.mean())
 features
 
 
-# In[ ]:
 
 
 
 
 
-# In[64]:
 
 
 dataframe1 = get2A2_test
@@ -1536,32 +1471,27 @@ y_pr1 = model.predict(X1)
 qwk(Y1,y_pr1)
 
 
-# In[ ]:
 
 
 
 
 
-# In[65]:
 
 
 Xmod2 = Xmod1.reset_index()
 Xmod2
 
 
-# In[66]:
 
 
 Xmod2.columns
 
 
-# In[67]:
 
 
 Xmod2.describe()
 
 
-# In[68]:
 
 
 from numba import jit 
@@ -1587,7 +1517,6 @@ def qwk3(a1, a2, max_rat=3):
     return 1 - o / e
 
 
-# In[69]:
 
 
 #define the parameters for lgbm.
@@ -1612,7 +1541,6 @@ params = {
 features = [i for i in final_train_df.columns if i not in ['accuracy_group']]
 
 
-# In[70]:
 
 
 X_train = Xmod1
@@ -1620,13 +1548,11 @@ y_train = Ymod1
 final_test_df = Xmod1test
 
 
-# In[ ]:
 
 
 
 
 
-# In[71]:
 
 
 def model(train_X,train_Y, test, params, n_splits=N_FOLD):
@@ -1677,40 +1603,34 @@ def model(train_X,train_Y, test, params, n_splits=N_FOLD):
     return xgb_model,pred
 
 
-# In[72]:
 
 
 xgb_model,pred = model(X_train,y_train,final_test_df,params)
 
 
-# In[73]:
 
 
 new_str = str(Xmod2['title'][0])+" "+str(Xmod2['game_time'][0])
 new_str
 
 
-# In[74]:
 
 
 Xmod2.index[0]
 
 
-# In[75]:
 
 
 Xmod2_q = Xmod2["index"].to_frame()
 Xmod2_q
 
 
-# In[76]:
 
 
 Xmod2_q["new_event"] = "a"
 Xmod2_q
 
 
-# In[77]:
 
 
 i=0
@@ -1718,13 +1638,11 @@ new_str1 = str(Xmod2['title'][i])+" "+str(Xmod2['game_time'][i])+" "+str(Xmod2['
 new_str1
 
 
-# In[78]:
 
 
 get_ipython().run_cell_magic('time', '', 'for i in range(0,len(Xmod2_q)):\n    Xmod2_q["new_event"][i] = str(Xmod2[\'title\'][i]))+" "+str(Xmod2[\'game_time\'][i])+" "+str(Xmod2[\'correct_all\'][i])+" "+str(Xmod2[\'incorrect_all\'][i])+" "+str(Xmod2[\'avg_acc_r\'][i])+" "+str(Xmod2[\'avg_inacc_r\'][i])+" "+str(Xmod2[\'acc_r_single\'][i])+" "+str(Xmod2[\'inacc_r_single\'][i])+" "+str(Xmod2[\'score\'][i])+" "+str(Xmod2[\'score_c\'][i])+" "+str(Xmod2[\'average_score\'][i])+" "+str(Xmod2[\'acc_r\'][i])+" "+str(Xmod2[\'inacc_r\'][i])+" "+str(Xmod2[\'misses\'][i])+" "+str(Xmod2[\'missc\'])+" "+str(Xmod2[\'missm\'][i])+" "+str(Xmod2[\'misst\'][i])+" "+str(Xmod2[\'world\'][i])')
 
 
-# In[79]:
 
 
 label = []
@@ -1740,26 +1658,22 @@ for i in range(0,len(Ymod1)):
 label
 
 
-# In[80]:
 
 
 len(label)
 
 
-# In[81]:
 
 
 Xmod1test = get2A_test.drop(columns = ["accuracy_group","correct","incorrect","accuracy"])
 Ymod1test = get2A_test["accuracy_group"]
 
 
-# In[ ]:
 
 
 
 
 
-# In[82]:
 
 
 labelt = []
@@ -1775,19 +1689,16 @@ for i in range(0,len(Ymod1test)):
 labelt
 
 
-# In[83]:
 
 
 len(labelt)
 
 
-# In[84]:
 
 
 Xmod1sub = get2A_sub
 
 
-# In[85]:
 
 
 import pandas as pd
@@ -1797,7 +1708,6 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 
-# In[86]:
 
 
 get2A1 = get2A.drop(columns = ["accuracy", "correct","incorrect","accuracy_group"])
@@ -1805,13 +1715,11 @@ get2A1["accuracy_group"] = get2A["accuracy_group"]
 get2A1
 
 
-# In[87]:
 
 
 get2A1.to_csv("daat.csv",header=False,index=None) #df.to_csv('file.csv', header=False, index=False)
 
 
-# In[88]:
 
 
 
@@ -1819,7 +1727,6 @@ daat = numpy.loadtxt("daat.csv", delimiter=",")
 daat
 
 
-# In[89]:
 
 
 Xk = daat[:,0:18]
@@ -1827,19 +1734,16 @@ Yk = daat[:,18]
 Xk
 
 
-# In[90]:
 
 
 Yk
 
 
-# In[91]:
 
 
 Xmod1.to_csv("Xmod1.csv",header=False,index=None) #df.to_csv('file.csv', header=False, index=False)
 
 
-# In[92]:
 
 
 
@@ -1847,7 +1751,6 @@ dataf = numpy.loadtxt("dataf.csv", delimiter=",")
 dataf
 
 
-# In[93]:
 
 
 
@@ -1855,13 +1758,11 @@ dataset = numpy.loadtxt("Xmod1.csv", delimiter=",")
 dataset
 
 
-# In[94]:
 
 
 Xmod1
 
 
-# In[95]:
 
 
 # create model
@@ -1871,27 +1772,23 @@ model.add(Dense(12, input_dim=18, init= 'uniform' , activation= 'relu' ))
 model.add(Dense(1, init= 'uniform' , activation= 'sigmoid' ))
 
 
-# In[96]:
 
 
 # Compile model
 model.compile(loss= 'mean_squared_error' , optimizer= 'adam' , metrics=[ 'accuracy' ])
 
 
-# In[97]:
 
 
 # Fit the model
 model.fit(dataset, Ymod1, nb_epoch=100,validation_split=0.2, batch_size=64)
 
 
-# In[98]:
 
 
 get_ipython().run_cell_magic('time', '', "import numpy as np\nimport catboost\nfrom catboost import CatBoostClassifier, Pool\n\n# train model on all data once\npoolmod2 = Pool(Xmod1, Ymod1,cat_features=['title','world'], feature_names=list(Xmod1.columns))\nclfmode2 = make_classifier1()\nclfmode2.fit(poolmod2, plot=True)")
 
 
-# In[99]:
 
 
 predictedmod2 = clfmode2.predict(Xmod1test)
@@ -1900,7 +1797,6 @@ reportcatmod2 = classification_report(Ymod1test, predictedmod2)
 print(reportcatmod2)
 
 
-# In[100]:
 
 
 predictedmodtr = clfmode2.predict(Xmod1)
@@ -1909,46 +1805,39 @@ reportcatmodtr = classification_report(Ymod1, predictedmodtr)
 print(reportcatmodtr)
 
 
-# In[101]:
 
 
 clfmode2.get_feature_importance()
 
 
-# In[102]:
 
 
 Xmod1test.columns
 
 
-# In[103]:
 
 
 # oof is an zeroed array of the same size of the input dataset
 print('OOF QWK:', qwk(Ymod1test, predictedmod2))
 
 
-# In[104]:
 
 
 # oof is an zeroed array of the same size of the input dataset
 print('OOF QWK:', qwk(Ymod1, predictedmodtr))
 
 
-# In[105]:
 
 
 X
 
 
-# In[106]:
 
 
 all_features = Xmod1.columns
 all_features
 
 
-# In[107]:
 
 
 import numpy as np
@@ -1961,13 +1850,11 @@ from collections import Counter
 from scipy import stats
 
 
-# In[108]:
 
 
 get_ipython().run_cell_magic('time', '', '# CV\nX = Xmod1\ny = Ymod1\ncat_features = ["title"]\nfrom sklearn.model_selection import KFold\n# oof is an zeroed array of the same size of the input dataset\noof = np.zeros(len(X))\nNFOLDS = 5\n# here the KFold class is used to split the dataset in 5 diferents training and validation sets\n# this technique is used to assure that the model isn\'t overfitting and can performs aswell in \n# unseen data. More the number of splits/folds, less the test will be impacted by randomness\nfolds = KFold(n_splits=NFOLDS, shuffle=True, random_state=2019)\ntraining_start_time = time()\nmodels = []\nfor fold, (trn_idx, test_idx) in enumerate(folds.split(X, y)):\n    # each iteration of folds.split returns an array of indexes of the new training data and validation data\n    start_time = time()\n    print(f\'Training on fold {fold+1}\')\n    # creates the model\n    clfm = make_classifier1()\n    # fits the model using .loc at the full dataset to select the splits indexes and features used\n    clfm.fit(X.loc[trn_idx, all_features], y.loc[trn_idx], eval_set=(X.loc[test_idx, all_features], y.loc[test_idx]),\n                          use_best_model=True, verbose=500, cat_features=cat_features)\n    \n    # then, the predictions of each split is inserted into the oof array\n    oof[test_idx] = clfm.predict(X.loc[test_idx, all_features]).reshape(len(test_idx))\n    models.append(clfm)\n    oof1 = np.zeros(len(X.loc[trn_idx, all_features]))\n    oof1 = clfm.predict(X.loc[trn_idx, all_features])\n    print(\'OOF validation QWK:\', qwk(y.loc[test_idx], oof[test_idx]))\n    print(\'OOF training QWK:\', qwk(y.loc[trn_idx], oof1))\n    print(\'Fold {} finished in {}\'.format(fold + 1, str(datetime.timedelta(seconds=time() - start_time))))\n    print(\'____________________________________________________________________________________________\\n\')\n    #break\n    \nprint(\'-\' * 30)\n# and here, the complete oof is tested against the real data using que metric (quadratic weighted kappa)\nprint(\'OOF QWK:\', qwk(y, oof))\nprint(\'-\' * 30)')
 
 
-# In[109]:
 
 
 from sklearn.metrics import classification_report
@@ -1975,7 +1862,6 @@ reportcatmodo = classification_report(y, oof)
 print(reportcatmodo)
 
 
-# In[110]:
 
 
 # make predictions on test set once
@@ -1989,20 +1875,17 @@ print(predictions.shape)
 #del X_test
 
 
-# In[111]:
 
 
 predictions
 
 
-# In[112]:
 
 
 # oof is an zeroed array of the same size of the input dataset
 print('OOF QWK:', qwk(Ymod1test, predictions))
 
 
-# In[113]:
 
 
 from sklearn.metrics import classification_report
@@ -2010,31 +1893,26 @@ reportcatmodo1 = classification_report(Ymod1test, predictions)
 print(reportcatmodo1)
 
 
-# In[114]:
 
 
 oof
 
 
-# In[115]:
 
 
 len(oof)
 
 
-# In[116]:
 
 
 train_labels_exp = train_labels
 
 
-# In[117]:
 
 
 train_labels_exp
 
 
-# In[118]:
 
 
 for i in range(0, len(train_labels_exp)):
@@ -2042,19 +1920,16 @@ for i in range(0, len(train_labels_exp)):
 train_labels_exp.groupby(["accuracy_group"]).size()
 
 
-# In[119]:
 
 
 train_labels = pd.read_csv('/kaggle/input/data-science-bowl-2019/train_labels.csv')
 
 
-# In[120]:
 
 
 train_labels.groupby(["accuracy_group"]).size()
 
 
-# In[121]:
 
 
 from keras.models import Sequential
@@ -2092,44 +1967,37 @@ model.compile(
     optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 
-# In[122]:
 
 
 predictedmod2120 = clfmode2.predict(Xmod1sub)
 
 
-# In[123]:
 
 
 sample_submission = pd.read_csv('/kaggle/input/data-science-bowl-2019/sample_submission.csv')
 
 
-# In[124]:
 
 
 sample_submission2120 = sample_submission
 
 
-# In[125]:
 
 
 for i in range(0,len(sample_submission2120)):
     sample_submission2120["accuracy_group"][i] = int(predictedmod2120[i])
 
 
-# In[126]:
 
 
 sample_submission2120.to_csv("submission.csv", index=None)
 
 
-# In[127]:
 
 
 sample_submission2120.groupby("accuracy_group").size()
 
 
-# In[128]:
 
 
 import os
@@ -2148,25 +2016,21 @@ from sklearn.model_selection import KFold
 from tqdm import tqdm
 
 
-# In[129]:
 
 
 tqdm.pandas()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[130]:
 
 
 def cv_train(X, y, cv, **kwargs):
@@ -2193,7 +2057,6 @@ def cv_train(X, y, cv, **kwargs):
     return models
 
 
-# In[131]:
 
 
 def cv_predict(models, X):
@@ -2204,32 +2067,27 @@ def cv_predict(models, X):
     return np.mean([model.predict(X) for model in models], axis=0)
 
 
-# In[132]:
 
 
 Xmod1
 
 
-# In[133]:
 
 
 Ymod1
 
 
-# In[134]:
 
 
 get_ipython().run_cell_magic('time', '', "X = Xmod1.values\ny = Ymod1.values\nparams = {\n    'learning_rate': 0.01,\n    'bagging_fraction': 0.95,\n    'feature_fraction': 0.2,\n    'max_height': 10,\n    'lambda_l1': 10,\n    'lambda_l2': 10,\n    'metric': 'multiclass',\n    'objective': 'multiclass',\n    'num_classes': 4,\n    'random_state': 2019\n}\nmodels11 = cv_train(X, y, cv=10, params=params, num_boost_round=5000,\n                  early_stopping_rounds=100, verbose_eval=250)")
 
 
-# In[135]:
 
 
 X_test11 = Xmod1test.values
 test_pred11 = cv_predict(models=models11, X=X_test11).argmax(axis=1)
 
 
-# In[136]:
 
 
 from sklearn.metrics import classification_report
@@ -2237,20 +2095,17 @@ reportcatmod2f11 = classification_report(Ymod1test,test_pred11)
 print(reportcatmod2f11)
 
 
-# In[137]:
 
 
 # oof is an zeroed array of the same size of the input dataset
 print('OOF QWK:', qwk(Ymod1test, test_pred11))
 
 
-# In[138]:
 
 
 test_pred1b1 = cv_predict(models=models11, X=X).argmax(axis=1)
 
 
-# In[139]:
 
 
 from sklearn.metrics import classification_report
@@ -2258,14 +2113,12 @@ reportcatmod2f1b1 = classification_report(y,test_pred1b1)
 print(reportcatmod2f1b1)
 
 
-# In[140]:
 
 
 # oof is an zeroed array of the same size of the input dataset
 print('OOF QWK:', qwk(y, test_pred1b1))
 
 
-# In[141]:
 
 
 # Feature Scaling
@@ -2275,7 +2128,6 @@ x_train = sc.fit_transform(Xmod1)
 x_test = sc.transform(Xmod1test)
 
 
-# In[142]:
 
 
 import lightgbm as lgb
@@ -2304,7 +2156,6 @@ params = {
 clflgb = lgb.train(params, d_train, 100)
 
 
-# In[143]:
 
 
 #Prediction
@@ -2312,13 +2163,11 @@ y_pred1=clflgb.predict(x_test)
 y_pred1
 
 
-# In[144]:
 
 
 len(Ymod1test)
 
 
-# In[145]:
 
 
 for i in range(0,len(Ymod1test)):
@@ -2332,13 +2181,11 @@ for i in range(0,len(Ymod1test)):
         Y_pred1.append(3)
 
 
-# In[146]:
 
 
 Y_pred1
 
 
-# In[147]:
 
 
 from sklearn.metrics import classification_report
@@ -2346,7 +2193,6 @@ reportcatmod2l = classification_report(Ymod1test, Y_pred1)
 print(reportcatmod2l)
 
 
-# In[ ]:
 
 
 

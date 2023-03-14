@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 from __future__ import print_function
@@ -45,7 +43,6 @@ import matplotlib.image as mpimg
 from tqdm import tqdm_notebook as tqdm
 
 
-# In[3]:
 
 
 batch_size = 32
@@ -67,7 +64,6 @@ imgs, label = next(iter(train_loader))
 imgs = imgs.numpy().transpose(0, 2, 3, 1)
 
 
-# In[4]:
 
 
 for i in range(5):
@@ -75,7 +71,6 @@ for i in range(5):
     plt.show()
 
 
-# In[5]:
 
 
 def weights_init(m):
@@ -90,7 +85,6 @@ def weights_init(m):
         m.bias.data.fill_(0)
 
 
-# In[6]:
 
 
 class Generator(nn.Module):
@@ -151,14 +145,12 @@ class Discriminator(nn.Module):
         return out.view(-1, 1)
 
 
-# In[7]:
 
 
 get_ipython().system('mkdir results')
 get_ipython().system('ls')
 
 
-# In[8]:
 
 
 # Creating the generator
@@ -166,7 +158,6 @@ netG = Generator()
 netG.apply(weights_init)
 
 
-# In[9]:
 
 
 # Creating the discriminator
@@ -174,7 +165,6 @@ netD = Discriminator()
 netD.apply(weights_init)
 
 
-# In[10]:
 
 
 batch_size = 32
@@ -191,7 +181,6 @@ nz = 128
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-# In[11]:
 
 
 netG = Generator(nz).to(device)
@@ -209,7 +198,6 @@ D_losses = []
 epoch_time = []
 
 
-# In[12]:
 
 
 def plot_loss (G_losses, D_losses, epoch):
@@ -223,7 +211,6 @@ def plot_loss (G_losses, D_losses, epoch):
     plt.show()
 
 
-# In[13]:
 
 
 def show_generated_img(n_images=5):
@@ -244,7 +231,6 @@ def show_generated_img(n_images=5):
     plt.close()
 
 
-# In[14]:
 
 
 for epoch in range(epochs):
@@ -305,19 +291,16 @@ for epoch in range(epochs):
     epoch_time.append(time.time()- start)
 
 
-# In[15]:
 
 
 print (">> average EPOCH duration = ", np.mean(epoch_time))
 
 
-# In[16]:
 
 
 show_generated_img(7)
 
 
-# In[17]:
 
 
 if not os.path.exists('../output_images'):
@@ -335,7 +318,6 @@ for i_batch in tqdm(range(0, n_images, im_batch_size)):
         save_image(gen_images[i_image, :, :, :], os.path.join('../output_images', f'image_{i_batch+i_image:05d}.png'))
 
 
-# In[18]:
 
 
 fig = plt.figure(figsize=(25, 16))
@@ -345,21 +327,18 @@ for i, j in enumerate(images[:32]):
     plt.imshow(j)
 
 
-# In[19]:
 
 
 import shutil
 shutil.make_archive('images', 'zip', '../output_images')
 
 
-# In[20]:
 
 
 torch.save(netG.state_dict(), 'generator.pth')
 torch.save(netD.state_dict(), 'discriminator.pth')
 
 
-# In[ ]:
 
 
 

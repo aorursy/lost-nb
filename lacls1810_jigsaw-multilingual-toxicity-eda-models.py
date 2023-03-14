@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install -q pyicu')
@@ -11,7 +10,6 @@ get_ipython().system('pip install -q textstat')
 get_ipython().system('pip install -q googletrans')
 
 
-# In[2]:
 
 
 import warnings
@@ -113,7 +111,6 @@ tokenizer=TweetTokenizer()
 np.random.seed(0)
 
 
-# In[3]:
 
 
 # Detect hardware, return appropriate distribution strategy
@@ -136,14 +133,12 @@ else:
 print("REPLICAS: ", strategy.num_replicas_in_sync)
 
 
-# In[4]:
 
 
 DATA_PATH = "/kaggle/input/jigsaw-multilingual-toxic-comment-classification/"
 os.listdir(DATA_PATH)
 
 
-# In[5]:
 
 
 TEST_PATH = DATA_PATH + "test.csv"
@@ -155,25 +150,21 @@ test_data = pd.read_csv(TEST_PATH)
 train_data = pd.read_csv(TRAIN_PATH)
 
 
-# In[6]:
 
 
 train_data.head()
 
 
-# In[7]:
 
 
 val_data.head()
 
 
-# In[8]:
 
 
 test_data.head()
 
 
-# In[9]:
 
 
 def nonan(x):
@@ -189,7 +180,6 @@ fig = px.imshow(wordcloud)
 fig.update_layout(title_text='Common words in comments')
 
 
-# In[10]:
 
 
 def get_language(text):
@@ -198,7 +188,6 @@ def get_language(text):
 train_data["lang"] = train_data["comment_text"].progress_apply(get_language)
 
 
-# In[11]:
 
 
 lang_list = sorted(list(set(train_data["lang"])))
@@ -223,7 +212,6 @@ fig.data[1].textposition = "outside"
 fig
 
 
-# In[12]:
 
 
 fig = px.bar(df.query("Language != 'English' and Language != 'un'").query("Count >= 50"),
@@ -234,7 +222,6 @@ fig.update_layout(showlegend=False)
 fig
 
 
-# In[13]:
 
 
 fig = go.Figure([go.Pie(labels=df.query("Language != 'English' and Language != 'un'").query("Count >= 50")["Language"],
@@ -246,7 +233,6 @@ fig.data[0].textposition = "outside"
 fig.show()
 
 
-# In[14]:
 
 
 def get_country(language):
@@ -303,7 +289,6 @@ def get_country(language):
 df["country"] = df["Language"].progress_apply(get_country)
 
 
-# In[15]:
 
 
 fig = px.choropleth(df.query("Language != 'English' and Language != 'un' and country != 'None'").query("Count >= 5"), locations="country", hover_name="country",
@@ -314,7 +299,6 @@ fig = px.choropleth(df.query("Language != 'English' and Language != 'un' and cou
 fig.show()
 
 
-# In[16]:
 
 
 fig = px.choropleth(df.query("Language != 'English' and Language != 'un' and country != 'None'"), locations="country", hover_name="country",
@@ -325,7 +309,6 @@ fig = px.choropleth(df.query("Language != 'English' and Language != 'un' and cou
 fig.show()
 
 
-# In[17]:
 
 
 fig = px.choropleth(df.query("Language != 'English' and Language != 'un' and country != 'None'"), locations="country", hover_name="country",
@@ -336,7 +319,6 @@ fig = px.choropleth(df.query("Language != 'English' and Language != 'un' and cou
 fig.show()
 
 
-# In[18]:
 
 
 fig = px.choropleth(df.query("Language != 'English' and Language != 'un' and country != 'None'").query("Count >= 5"), locations="country", hover_name="country",
@@ -347,7 +329,6 @@ fig = px.choropleth(df.query("Language != 'English' and Language != 'un' and cou
 fig.show()
 
 
-# In[19]:
 
 
 def new_len(x):
@@ -366,7 +347,6 @@ fig.update_layout(title_text="Comment words", xaxis_title="Comment words", templ
 fig.show()
 
 
-# In[20]:
 
 
 df = pd.DataFrame(np.transpose([lang_list, train_data.groupby("lang").mean()["comment_words"]]))
@@ -379,7 +359,6 @@ fig.update_layout(xaxis_title="Language", yaxis_title="Average comment words", t
 fig.show()
 
 
-# In[21]:
 
 
 df["country"] = df["Language"].apply(get_country)
@@ -391,7 +370,6 @@ fig = px.choropleth(df, locations="country", hover_name="country",
 fig
 
 
-# In[22]:
 
 
 def polarity(x):
@@ -404,7 +382,6 @@ SIA = SentimentIntensityAnalyzer()
 train_data["polarity"] = train_data["comment_text"].progress_apply(polarity)
 
 
-# In[23]:
 
 
 fig = go.Figure(go.Histogram(x=[pols["neg"] for pols in train_data["polarity"] if pols["neg"] != 0], marker=dict(
@@ -415,7 +392,6 @@ fig.update_layout(xaxis_title="Negativity sentiment", title_text="Negativity sen
 fig.show()
 
 
-# In[24]:
 
 
 train_data["negativity"] = train_data["polarity"].apply(lambda x: x["neg"])
@@ -432,7 +408,6 @@ fig = px.choropleth(df, locations="country", hover_name="country",
 fig.show()
 
 
-# In[25]:
 
 
 nums_1 = train_data.sample(frac=0.1).query("toxic == 1")["negativity"]
@@ -446,7 +421,6 @@ fig.update_layout(title_text="Negativity vs. Toxicity", xaxis_title="Negativity"
 fig.show()
 
 
-# In[26]:
 
 
 fig = go.Figure(go.Histogram(x=[pols["pos"] for pols in train_data["polarity"] if pols["pos"] != 0], marker=dict(
@@ -457,7 +431,6 @@ fig.update_layout(xaxis_title="Positivity sentiment", title_text="Positivity sen
 fig.show()
 
 
-# In[27]:
 
 
 train_data["positivity"] = train_data["polarity"].apply(lambda x: x["pos"])
@@ -473,7 +446,6 @@ fig = px.choropleth(df, locations="country", hover_name="country",
 fig.show()
 
 
-# In[28]:
 
 
 nums_1 = train_data.sample(frac=0.1).query("toxic == 1")["positivity"]
@@ -487,7 +459,6 @@ fig.update_layout(title_text="Positivity vs. Toxicity", xaxis_title="Positivity"
 fig.show()
 
 
-# In[29]:
 
 
 fig = go.Figure(go.Histogram(x=[pols["neu"] for pols in train_data["polarity"] if pols["neu"] != 1], marker=dict(
@@ -498,7 +469,6 @@ fig.update_layout(xaxis_title="Neutrality sentiment", title_text="Neutrality sen
 fig.show()
 
 
-# In[30]:
 
 
 train_data["neutrality"] = train_data["polarity"].apply(lambda x: x["neu"])
@@ -515,7 +485,6 @@ fig = px.choropleth(df, locations="country", hover_name="country",
 fig.show()
 
 
-# In[31]:
 
 
 nums_1 = train_data.sample(frac=0.1).query("toxic == 1")["neutrality"]
@@ -529,7 +498,6 @@ fig.update_layout(title_text="Neutrality vs. Toxicity", xaxis_title="Neutrality"
 fig.show()
 
 
-# In[32]:
 
 
 fig = go.Figure(go.Histogram(x=[pols["compound"] for pols in train_data["polarity"] if pols["compound"] != 0], marker=dict(
@@ -540,7 +508,6 @@ fig.update_layout(xaxis_title="Compound sentiment", title_text="Compound sentime
 fig.show()
 
 
-# In[33]:
 
 
 train_data["compound"] = train_data["polarity"].apply(lambda x: x["compound"])
@@ -557,7 +524,6 @@ fig = px.choropleth(df, locations="country", hover_name="country",
 fig.show()
 
 
-# In[34]:
 
 
 nums_1 = train_data.sample(frac=0.1).query("toxic == 1")["compound"]
@@ -571,7 +537,6 @@ fig.update_layout(title_text="Compound vs. Toxicity", xaxis_title="Compound", te
 fig.show()
 
 
-# In[35]:
 
 
 train_data["flesch_reading_ease"] = train_data["comment_text"].progress_apply(textstat.flesch_reading_ease)
@@ -579,7 +544,6 @@ train_data["automated_readability"] = train_data["comment_text"].progress_apply(
 train_data["dale_chall_readability"] = train_data["comment_text"].progress_apply(textstat.dale_chall_readability_score)
 
 
-# In[36]:
 
 
 fig = go.Figure(go.Histogram(x=train_data.query("flesch_reading_ease > 0")["flesch_reading_ease"], marker=dict(
@@ -590,7 +554,6 @@ fig.update_layout(xaxis_title="Flesch reading ease", title_text="Flesch reading 
 fig.show()
 
 
-# In[37]:
 
 
 df = pd.DataFrame(np.transpose([lang_list, train_data.groupby("lang").mean()["flesch_reading_ease"].tolist()]))
@@ -606,7 +569,6 @@ fig = px.choropleth(df, locations="country", hover_name="country",
 fig.show()
 
 
-# In[38]:
 
 
 nums_1 = train_data.sample(frac=0.1).query("toxic == 1")["flesch_reading_ease"]
@@ -620,7 +582,6 @@ fig.update_layout(title_text="Flesch reading ease vs. Toxicity", xaxis_title="Fl
 fig.show()
 
 
-# In[39]:
 
 
 fig = go.Figure(go.Histogram(x=train_data.query("automated_readability < 100")["automated_readability"], marker=dict(
@@ -631,7 +592,6 @@ fig.update_layout(xaxis_title="Automated readability", title_text="Automated rea
 fig.show()
 
 
-# In[40]:
 
 
 df = pd.DataFrame(np.transpose([lang_list, train_data.groupby("lang").mean()["automated_readability"].tolist()]))
@@ -647,7 +607,6 @@ fig = px.choropleth(df, locations="country", hover_name="country",
 fig.show()
 
 
-# In[41]:
 
 
 nums_1 = train_data.sample(frac=0.1).query("toxic == 1")["automated_readability"]
@@ -661,7 +620,6 @@ fig.update_layout(title_text="Automated readability vs. Toxicity", xaxis_title="
 fig.show()
 
 
-# In[42]:
 
 
 fig = go.Figure(go.Histogram(x=train_data.query("dale_chall_readability < 20")["dale_chall_readability"], marker=dict(
@@ -672,7 +630,6 @@ fig.update_layout(xaxis_title="Dale-Chall readability", title_text="Dale-Chall r
 fig.show()
 
 
-# In[43]:
 
 
 df = pd.DataFrame(np.transpose([lang_list, train_data.groupby("lang").mean()["dale_chall_readability"].tolist()]))
@@ -688,7 +645,6 @@ fig = px.choropleth(df, locations="country", hover_name="country",
 fig.show()
 
 
-# In[44]:
 
 
 nums_1 = train_data.sample(frac=0.1).query("toxic == 1")["dale_chall_readability"]
@@ -702,7 +658,6 @@ fig.update_layout(title_text="Dale-Chall readability vs. Toxicity", xaxis_title=
 fig.show()
 
 
-# In[45]:
 
 
 clean_mask=np.array(Image.open("../input/imagesforkernal/safe-zone.png"))
@@ -732,7 +687,6 @@ plt.imshow(wc.recolor(colormap= 'viridis' , random_state=17), alpha=0.98)
 plt.show()
 
 
-# In[46]:
 
 
 toxic_mask=np.array(Image.open("../input/imagesforkernal/toxic-sign.png"))
@@ -787,7 +741,6 @@ plt.imshow(wc.recolor(colormap= 'Paired_r' , random_state=244), alpha=0.98)
 plt.show()
 
 
-# In[47]:
 
 
 fig = go.Figure(data=[
@@ -799,7 +752,6 @@ fig.update_layout(title_text="Pie chart of labels")
 fig.show()
 
 
-# In[48]:
 
 
 fig = go.Figure(data=[
@@ -814,7 +766,6 @@ fig.update_layout(title_text="Bar chart of labels", template="plotly_white")
 fig.show()
 
 
-# In[49]:
 
 
 df = pd.DataFrame(np.transpose([lang_list, train_data.groupby("lang").mean()["toxic"].tolist()]))
@@ -829,7 +780,6 @@ fig = px.choropleth(df, locations="country", hover_name="country",
 fig.show()
 
 
-# In[50]:
 
 
 val = val_data
@@ -848,7 +798,6 @@ test_data["content"] = clean(test_data["content"])
 train["comment_text"] = clean(train["comment_text"])
 
 
-# In[51]:
 
 
 class RocAucEvaluation(Callback):
@@ -865,7 +814,6 @@ class RocAucEvaluation(Callback):
             print("\n ROC-AUC - epoch: {:d} - score: {:.6f}".format(epoch+1, score))
 
 
-# In[52]:
 
 
 def fast_encode(texts, tokenizer, chunk_size=240, maxlen=512):
@@ -881,7 +829,6 @@ def fast_encode(texts, tokenizer, chunk_size=240, maxlen=512):
     return np.array(all_ids)
 
 
-# In[53]:
 
 
 AUTO = tf.data.experimental.AUTOTUNE
@@ -897,7 +844,6 @@ EPOCHS = 2
 BATCH_SIZE = 32 * strategy.num_replicas_in_sync
 
 
-# In[54]:
 
 
 tokenizer = transformers.DistilBertTokenizer.from_pretrained('distilbert-base-multilingual-cased')
@@ -911,7 +857,6 @@ fast_tokenizer = BertWordPieceTokenizer('distilbert_base_uncased/vocab.txt',
                                         lowercase=True)
 
 
-# In[55]:
 
 
 x_train = fast_encode(train.comment_text.astype(str), 
@@ -925,7 +870,6 @@ y_valid = val.toxic.values
 y_train = train.toxic.values
 
 
-# In[56]:
 
 
 train_dataset = (
@@ -952,7 +896,6 @@ test_dataset = (
 )
 
 
-# In[57]:
 
 
 def build_vnn_model(transformer, max_len):
@@ -976,7 +919,6 @@ def build_vnn_model(transformer, max_len):
     return model
 
 
-# In[58]:
 
 
 with strategy.scope():
@@ -986,13 +928,11 @@ with strategy.scope():
 model_vnn.summary()
 
 
-# In[59]:
 
 
 SVG(tf.keras.utils.model_to_dot(model_vnn, dpi=70).create(prog='dot', format='svg'))
 
 
-# In[60]:
 
 
 def callback():
@@ -1012,7 +952,6 @@ def callback():
     return cb
 
 
-# In[61]:
 
 
 N_STEPS = x_train.shape[0] // BATCH_SIZE
@@ -1027,7 +966,6 @@ train_history = model_vnn.fit(
 )
 
 
-# In[62]:
 
 
 translator = Translator()
@@ -1065,7 +1003,6 @@ def visualize_model_preds(model, indices=[0, 17, 1, 24]):
 visualize_model_preds(model_vnn)
 
 
-# In[63]:
 
 
 def build_cnn_model(transformer, max_len):
@@ -1100,7 +1037,6 @@ def build_cnn_model(transformer, max_len):
     return model
 
 
-# In[64]:
 
 
 with strategy.scope():
@@ -1109,13 +1045,11 @@ with strategy.scope():
 model_cnn.summary()
 
 
-# In[65]:
 
 
 SVG(tf.keras.utils.model_to_dot(model_cnn, dpi=70).create(prog='dot', format='svg'))
 
 
-# In[66]:
 
 
 train_history = model_cnn.fit(
@@ -1127,13 +1061,11 @@ train_history = model_cnn.fit(
 )
 
 
-# In[67]:
 
 
 visualize_model_preds(model_cnn)
 
 
-# In[68]:
 
 
 class AttentionWeightedAverage(Layer):
@@ -1185,7 +1117,6 @@ class AttentionWeightedAverage(Layer):
             return None
 
 
-# In[69]:
 
 
 def build_lstm_model(transformer, max_len):
@@ -1213,7 +1144,6 @@ def build_lstm_model(transformer, max_len):
     return model
 
 
-# In[70]:
 
 
 with strategy.scope():
@@ -1222,13 +1152,11 @@ with strategy.scope():
 model_lstm.summary()
 
 
-# In[71]:
 
 
 SVG(tf.keras.utils.model_to_dot(model_lstm, dpi=70).create(prog='dot', format='svg'))
 
 
-# In[72]:
 
 
 train_history = model_lstm.fit(
@@ -1240,13 +1168,11 @@ train_history = model_lstm.fit(
 )
 
 
-# In[73]:
 
 
 visualize_model_preds(model_lstm)
 
 
-# In[74]:
 
 
 def squash(x, axis=-1):
@@ -1336,7 +1262,6 @@ class Capsule(Layer):
         return (None, self.num_capsule, self.dim_capsule)
 
 
-# In[75]:
 
 
 def build_capsule_model(transformer, max_len):
@@ -1364,7 +1289,6 @@ def build_capsule_model(transformer, max_len):
     return model
 
 
-# In[76]:
 
 
 with strategy.scope():
@@ -1373,7 +1297,6 @@ with strategy.scope():
 model_capsule.summary()
 
 
-# In[77]:
 
 
 train_history = model_capsule.fit(
@@ -1385,19 +1308,16 @@ train_history = model_capsule.fit(
 )
 
 
-# In[78]:
 
 
 SVG(tf.keras.utils.model_to_dot(model_capsule, dpi=70).create(prog='dot', format='svg'))
 
 
-# In[79]:
 
 
 visualize_model_preds(model_capsule)
 
 
-# In[80]:
 
 
 def build_distilbert_model(transformer, max_len=512):
@@ -1417,7 +1337,6 @@ def build_distilbert_model(transformer, max_len=512):
     return model
 
 
-# In[81]:
 
 
 with strategy.scope():
@@ -1426,7 +1345,6 @@ with strategy.scope():
 model_distilbert.summary()
 
 
-# In[82]:
 
 
 train_history = model_distilbert.fit(
@@ -1438,19 +1356,16 @@ train_history = model_distilbert.fit(
 )
 
 
-# In[83]:
 
 
 SVG(tf.keras.utils.model_to_dot(model_distilbert, dpi=70).create(prog='dot', format='svg'))
 
 
-# In[84]:
 
 
 visualize_model_preds(model_distilbert)
 
 
-# In[85]:
 
 
 sub = pd.read_csv(DATA_PATH + 'sample_submission.csv')

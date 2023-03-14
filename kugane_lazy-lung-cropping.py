@@ -1,20 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('cd', '../input/python3gdcm')
 
 
-# In[2]:
 
 
 get_ipython().system('dpkg -i build_1-1_amd64.deb')
 get_ipython().system('apt-get install -f')
 
 
-# In[3]:
 
 
 get_ipython().system('cp /usr/local/lib/gdcm.py /opt/conda/lib/python3.7/site-packages/.')
@@ -24,25 +21,21 @@ get_ipython().system('cp /usr/local/lib/libgdcm* /opt/conda/lib/python3.7/site-p
 get_ipython().system('ldconfig')
 
 
-# In[4]:
 
 
 get_ipython().run_line_magic('cd', '-')
 
 
-# In[5]:
 
 
 ls ../input/
 
 
-# In[6]:
 
 
 get_ipython().system('pip install ../input/dicom-parser/dicom_parser-0.1.3-py3-none-any.whl > /dev/null')
 
 
-# In[7]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -69,13 +62,11 @@ import matplotlib.pyplot as plt
 TRAIN_ROOT_PATH = Path('/kaggle/input/osic-pulmonary-fibrosis-progression/train/')
 
 
-# In[8]:
 
 
 path_dict = {p.stem: list(TRAIN_ROOT_PATH.glob('%s/*.dcm'%(p.stem,))) for p in TRAIN_ROOT_PATH.glob('*')}
 
 
-# In[9]:
 
 
 """
@@ -99,7 +90,6 @@ def get_smpl(idx):
     return image
 
 
-# In[10]:
 
 
 image = get_smpl(8)
@@ -110,7 +100,6 @@ plt.imshow(np.flip(image, axis=1), cmap='gray')
 plt.show()
 
 
-# In[11]:
 
 
 image = get_smpl(4)
@@ -122,13 +111,11 @@ plt.title("Original Slice")
 plt.show()
 
 
-# In[12]:
 
 
 len(path_dict['ID00122637202216437668965'])
 
 
-# In[13]:
 
 
 image = get_smpl(16)
@@ -141,7 +128,6 @@ plt.imshow(np.flip(image, axis=1), cmap='gray')
 plt.show()
 
 
-# In[14]:
 
 
 no_lung = []
@@ -185,13 +171,11 @@ for patient_id, pathes_dcm in path_dict.items():
             
 
 
-# In[15]:
 
 
 no_lung
 
 
-# In[16]:
 
 
 def get_smpl(idx):
@@ -205,7 +189,6 @@ def get_smpl(idx):
     return image
 
 
-# In[17]:
 
 
 image = get_smpl(4)
@@ -218,7 +201,6 @@ plt.imshow(np.flip(image, axis=1), cmap='gray')
 plt.show()
 
 
-# In[18]:
 
 
 image = get_smpl(30)
@@ -231,7 +213,6 @@ plt.imshow(np.flip(image, axis=1), cmap='gray')
 plt.show()
 
 
-# In[19]:
 
 
 plt.imshow(jl.load(list(Path('.').glob('*.xz'))[np.random.randint(100)])[0], cmap='gray')

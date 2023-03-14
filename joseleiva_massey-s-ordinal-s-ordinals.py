@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -19,7 +18,6 @@ ordinals_df = ordinals_df.groupby(['SystemName','Season','TeamID']).last().reset
 ordinals_df.head()
 
 
-# In[2]:
 
 
 # Add winner's ordinals
@@ -33,7 +31,6 @@ games_df = games_df.merge(ordinals_df,left_on=['Season','LTeamID','SystemName'],
 games_df.head()
 
 
-# In[3]:
 
 
 ## Add column with 1 if result is correct
@@ -43,13 +40,11 @@ results_by_system = games_df.groupby('SystemName').agg({'prediction':('mean','co
 results_by_system['prediction']['mean'].sort_values(ascending=False)[:50].plot.bar(ylim=[.7,.8])
 
 
-# In[4]:
 
 
 results_by_system['prediction'].sort_values('mean',ascending=False)[:50]
 
 
-# In[5]:
 
 
 games_df['Wrating'] = 100-4*np.log(games_df['OrdinalRankW']+1)-games_df['OrdinalRankW']/22
@@ -59,7 +54,6 @@ loss_results = games_df[games_df.Season>=2015].groupby('SystemName')['prob'].agg
 loss_results['loss'].sort_values()[:50].plot.bar(ylim=[.4,.6])
 
 
-# In[6]:
 
 
 ref_system = 'POM'
@@ -81,7 +75,6 @@ submission_df[['ID', 'Pred']].to_csv('submission.csv', index=False)
 submission_df[['ID', 'Pred']].head()
 
 
-# In[7]:
 
 
 submission_df.tail()

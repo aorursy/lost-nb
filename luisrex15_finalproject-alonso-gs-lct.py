@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 ls ../input/rsna-intracranial-hemorrhage-detection/rsna-intracranial-hemorrhage-detection/
 
 
-# In[2]:
 
 
 import os
@@ -37,7 +35,6 @@ from torch.utils.data import Dataset, random_split
 from matplotlib import pyplot as plt
 
 
-# In[3]:
 
 
 data_path = '../input/rsna-intracranial-hemorrhage-detection/rsna-intracranial-hemorrhage-detection/'
@@ -62,7 +59,6 @@ train.to_csv('train.csv', index = False)
 print(train.shape) #just to know shape of dataset 
 
 
-# In[4]:
 
 
 #Same code as before, just changing names
@@ -78,7 +74,6 @@ test.to_csv('test.csv', index = False)
 print(test.shape) #just to know shape of dataset 
 
 
-# In[5]:
 
 
 class RSNA(Dataset):
@@ -109,7 +104,6 @@ class RSNA(Dataset):
             return {'image': img}
 
 
-# In[6]:
 
 
 transform_train = Compose([ShiftScaleRotate(),ToTensor()])
@@ -123,7 +117,6 @@ data_train_generator = torch.utils.data.DataLoader(dataset=train_dataset,batch_s
 data_test_generator = torch.utils.data.DataLoader(dataset=test_dataset,batch_size=batch_size,shuffle=False)
 
 
-# In[7]:
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -134,7 +127,6 @@ model = torch.nn.Sequential(model0, torch.nn.Linear(1000, 6)).to(device)
 #model = {alexnet,vgg, resnet18}
 
 
-# In[8]:
 
 
 num_epochs = 3
@@ -142,7 +134,6 @@ optimizer = optim.Adam(model.parameters(), lr=4e-5)
 criterion = torch.nn.BCEWithLogitsLoss()
 
 
-# In[9]:
 
 
 def train_model(model,criterion,optimizer,num_epochs=1):
@@ -182,13 +173,11 @@ def train_model(model,criterion,optimizer,num_epochs=1):
     return model
 
 
-# In[10]:
 
 
 model_trained = train_model(model,criterion,optimizer,num_epochs)
 
 
-# In[11]:
 
 
 for param in model.parameters():
@@ -210,13 +199,11 @@ for i, batch_ in enumerate(tqdm(data_test_generator)):
             pred).detach().cpu().reshape((len(batch_) * 6, 1))  
 
 
-# In[12]:
 
 
 ls ../input/rsna-intracranial-hemorrhage-detection/rsna-intracranial-hemorrhage-detection/
 
 
-# In[13]:
 
 
 submission =  pd.read_csv(os.path.join(data_path, 'stage_2_sample_submission.csv'))

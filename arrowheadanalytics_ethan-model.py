@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #imports
@@ -26,7 +25,6 @@ from keras.utils import to_categorical
 from sklearn.metrics import f1_score
 
 
-# In[2]:
 
 
 #Set display options for our dataframes
@@ -36,7 +34,6 @@ pd.set_option('display.max_rows', 100)
 pd.set_option('mode.chained_assignment', None)
 
 
-# In[3]:
 
 
 import os
@@ -53,7 +50,6 @@ outcomes = train_df[['GameId','PlayId','Yards']].drop_duplicates()
 print(len(outcomes))
 
 
-# In[4]:
 
 
 #Get how many defenders are in the box - I found that binning the outliers (<5 defenders and >9 defenders) worked well
@@ -82,7 +78,6 @@ for n in box:
     box_cdf[n] = predict_cdf
 
 
-# In[5]:
 
 
 plt.style.use('seaborn-talk')
@@ -97,7 +92,6 @@ plt.ylabel('Cumulative Probability')
 plt.xlabel('Expected Yards Gained')
 
 
-# In[6]:
 
 
 #Repeat the same process, this time binning by both defenders in the box AND yards to go
@@ -125,7 +119,6 @@ for n in box:
     box_cdf[n] = predict_cdf
 
 
-# In[7]:
 
 
 plt.style.use('seaborn-talk')
@@ -140,7 +133,6 @@ plt.ylabel('Cumulative Probability')
 plt.xlabel('Expected Yards Gained')
 
 
-# In[8]:
 
 
 #Function to create the features we want to create for each play - and we won't use our outcomes for when we are testing, 
@@ -559,7 +551,6 @@ def create_features(df, test=False):
     return feature_table
 
 
-# In[9]:
 
 
 get_ipython().run_line_magic('time', 'train_feats = create_features(train_df, False)')
@@ -570,21 +561,18 @@ train_feats.replace([np.inf, -np.inf], np.nan, inplace=True)
 train_feats = train_feats.dropna()
 
 
-# In[10]:
 
 
 #Get a list of all our features we engineered
 list(train_feats)
 
 
-# In[11]:
 
 
 #Show the first few plays
 train_feats.head(10)
 
 
-# In[12]:
 
 
 #Get our explanatory variables
@@ -609,7 +597,6 @@ for idx, target in enumerate(list(yards)):
 X.drop(['GameId','PlayId','Yards'], axis=1, inplace=True)
 
 
-# In[13]:
 
 
 #Standarize our variables. This helps our model train quicker
@@ -617,7 +604,6 @@ scaler = StandardScaler()
 X = scaler.fit_transform(X)
 
 
-# In[14]:
 
 
 class CRPSCallback(Callback):
@@ -654,7 +640,6 @@ class CRPSCallback(Callback):
             logs['CRPS_score_val'] = val_s
 
 
-# In[15]:
 
 
 def get_model(x_tr,y_tr,x_val,y_val):
@@ -702,7 +687,6 @@ def get_model(x_tr,y_tr,x_val,y_val):
     return model,crps
 
 
-# In[16]:
 
 
 losses = []
@@ -743,13 +727,11 @@ def predict(x_te):
     return y_pred
 
 
-# In[17]:
 
 
 print("mean crps is %f"%np.mean(crps_csv))
 
 
-# In[18]:
 
 
 from kaggle.competitions import nflrush
@@ -778,13 +760,11 @@ for (test_df, sample_prediction_df) in iter_test:
 env.write_submission_file()
 
 
-# In[19]:
 
 
 from kaggle.competitions import nflrush
 
 
-# In[20]:
 
 
 env = nflrush.make_env()

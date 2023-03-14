@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -19,31 +18,26 @@ from scipy.sparse import vstack, hstack, csr_matrix
 from scipy import sparse
 
 
-# In[2]:
 
 
 data_train = pd.read_csv('/kaggle/input/mercari-price-suggestion-challenge/train.tsv', delimiter='\t')
 
 
-# In[3]:
 
 
 data_test =  pd.read_csv('/kaggle/input/mercari-price-suggestion-challenge/test_stg2.tsv', delimiter='\t')
 
 
-# In[4]:
 
 
 data_train.head(5)
 
 
-# In[5]:
 
 
 data_test.head(5)
 
 
-# In[6]:
 
 
 #we will use isnull() function to get missing values
@@ -54,13 +48,11 @@ print("Test DataFrame")
 print(pd.isnull(data_test).sum())
 
 
-# In[7]:
 
 
 print((pd.isnull(data_train['brand_name']).sum())*100/data_train.shape[0])
 
 
-# In[8]:
 
 
 print("{0:.2f}% brand_name has missing value in train data".format((pd.isnull(data_train['brand_name']).sum())*100/data_train.shape[0]))
@@ -68,7 +60,6 @@ print("{0:.2f}% brand_name has missing value in train data".format((pd.isnull(da
 print("{0:.2f}% category_name has missing value in train data".format((pd.isnull(data_train['category_name']).sum())*100/data_train.shape[0]))
 
 
-# In[9]:
 
 
 print("{0:.2f}% brand_name has missing value in test data".format((pd.isnull(data_test['brand_name']).sum())*100/data_test.shape[0]))
@@ -76,7 +67,6 @@ print("{0:.2f}% brand_name has missing value in test data".format((pd.isnull(dat
 print("{0:.2f}% category_name has missing value in test data".format((pd.isnull(data_test['category_name']).sum())*100/data_test.shape[0]))
 
 
-# In[10]:
 
 
 # filling missing values with brand_name as Unknown
@@ -84,7 +74,6 @@ data_train['brand_name'] = data_train['brand_name'].fillna('Unknown')
 data_test['brand_name'] = data_test['brand_name'].fillna('Unknown')
 
 
-# In[11]:
 
 
 # filling missing values with category_name as NO/NO/NO or we cn simply remove these rows
@@ -92,7 +81,6 @@ data_train['category_name'] = data_train['category_name'].fillna('No/No/No')
 data_test['category_name'] = data_test['category_name'].fillna('No/No/No')
 
 
-# In[12]:
 
 
 #checking the levels of sub categories
@@ -108,7 +96,6 @@ print("90 percentile  of levels:{0:.0f} ".format(np.percentile(levels, 90)+1))
 print("MAX no of levels:        {0:.0f}".format(np.max(levels)+1))
 
 
-# In[13]:
 
 
 ##### seperate sub categories from main
@@ -121,7 +108,6 @@ def find_sub_cat(X):
     
 
 
-# In[14]:
 
 
 data_train['main_category']=''
@@ -134,7 +120,6 @@ data_train['main_category'],data_train['sub_category_1'],data_train['sub_categor
 #https://www.youtube.com/watch?v=Rlak6CTcUDI
 
 
-# In[15]:
 
 
 data_test['main_category']=''
@@ -147,20 +132,17 @@ data_test['main_category'],data_test['sub_category_1'],data_test['sub_category_2
 #https://www.youtube.com/watch?v=Rlak6CTcUDI
 
 
-# In[16]:
 
 
 #data_train['main_category']
 
 
-# In[17]:
 
 
 #data_train = data_train.drop('category_name',axis=1)
 data_train.head(5)
 
 
-# In[18]:
 
 
 #to get better display format follow below link
@@ -170,7 +152,6 @@ pd.set_option('display.float_format', lambda x: '%.5f' % x)
 data_train.describe()
 
 
-# In[19]:
 
 
 plt.figure(figsize=(10,5))
@@ -180,7 +161,6 @@ plt.xlabel('Price')
 plt.show()
 
 
-# In[20]:
 
 
 plt.figure(figsize=(10,5))
@@ -190,14 +170,12 @@ plt.xlabel('log_Price')
 plt.show()
 
 
-# In[21]:
 
 
 ax = sns.countplot('item_condition_id',data=data_train)
 ax.set_title('Count of each Item_condition_id')
 
 
-# In[22]:
 
 
 #list of top 10 frequent brand name in data
@@ -208,7 +186,6 @@ brands = data_train['brand_name'].value_counts()
 print(brands[:10])
 
 
-# In[23]:
 
 
 plt.figure(figsize=(20,15))
@@ -272,14 +249,12 @@ plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.95, hspace=0.25,
 plt.show()
 
 
-# In[24]:
 
 
 #list of less 10 frequent brand
 print(brands[200:210])
 
 
-# In[25]:
 
 
 plt.figure(figsize=(20,15))
@@ -343,13 +318,11 @@ plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.95, hspace=0.25,
 plt.show()
 
 
-# In[26]:
 
 
 (data_train['shipping'].value_counts())*100/data_train.shape[0]
 
 
-# In[27]:
 
 
 plt.figure(figsize=(10,8))
@@ -361,13 +334,11 @@ plt.legend(loc='upper right')
 plt.title('Shiping')
 
 
-# In[28]:
 
 
 print("There are %d unique main_categories." % data_train['main_category'].nunique())
 
 
-# In[29]:
 
 
 plt.figure(figsize=(10,8))
@@ -376,7 +347,6 @@ ax.set_xticklabels(ax.get_xticklabels(), rotation=40, ha="right")
 ax.set_title('Count of each main_category')
 
 
-# In[30]:
 
 
 plt.figure(figsize=(20,15))
@@ -440,19 +410,16 @@ plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.95, hspace=0.25,
 plt.show()
 
 
-# In[31]:
 
 
 data_train.groupby('main_category')['price'].describe()
 
 
-# In[32]:
 
 
 print("There are %d unique sub_category_1." % data_train['sub_category_1'].nunique())
 
 
-# In[33]:
 
 
 plt.figure(figsize=(10,8))
@@ -461,7 +428,6 @@ ax.set_xticklabels(ax.get_xticklabels(), rotation=40, ha="right")
 ax.set_title('Count of each sub_category_1')
 
 
-# In[34]:
 
 
 plt.figure(figsize=(20,15))
@@ -525,19 +491,16 @@ plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.95, hspace=0.25,
 plt.show()
 
 
-# In[35]:
 
 
 data_train.groupby('sub_category_1')['price'].describe()[:10]
 
 
-# In[36]:
 
 
 print("There are %d unique sub_category_2." % data_train['sub_category_2'].nunique())
 
 
-# In[37]:
 
 
 plt.figure(figsize=(10,8))
@@ -546,7 +509,6 @@ ax.set_xticklabels(ax.get_xticklabels(), rotation=40, ha="right")
 ax.set_title('Count of each sub_category_2')
 
 
-# In[38]:
 
 
 plt.figure(figsize=(20,15))
@@ -610,13 +572,11 @@ plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.95, hspace=0.25,
 plt.show()
 
 
-# In[39]:
 
 
 data_train.groupby('sub_category_2')['price'].describe()[:10]
 
 
-# In[40]:
 
 
 # https://gist.github.com/sebleier/554280
@@ -624,7 +584,6 @@ data_train.groupby('sub_category_2')['price'].describe()[:10]
 stopwords= ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', "you're", "you've",            "you'll", "you'd", 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself',             'she', "she's", 'her', 'hers', 'herself', 'it', "it's", 'its', 'itself', 'they', 'them', 'their',            'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', "that'll", 'these', 'those',             'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does',             'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of',             'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after',            'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further',            'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more',            'most', 'other', 'some', 'such', 'only', 'own', 'same', 'so', 'than', 'too', 'very',             's', 't', 'can', 'will', 'just', 'don', "don't", 'should', "should've", 'now', 'd', 'll', 'm', 'o', 're',             've', 'y', 'ain', 'aren', "aren't", 'couldn', "couldn't", 'didn', "didn't", 'doesn', "doesn't", 'hadn',            "hadn't", 'hasn', "hasn't", 'haven', "haven't", 'isn', "isn't", 'ma', 'mightn', "mightn't", 'mustn',            "mustn't", 'needn', "needn't", 'shan', "shan't", 'shouldn', "shouldn't", 'wasn', "wasn't", 'weren', "weren't",             'won', "won't", 'wouldn', "wouldn't"]
 
 
-# In[41]:
 
 
 import re
@@ -649,7 +608,6 @@ def decontracted(phrase):
         return 0
 
 
-# In[42]:
 
 
 def wordCount_with_cleaning(sentance):
@@ -667,7 +625,6 @@ def wordCount_with_cleaning(sentance):
         return 0 
 
 
-# In[43]:
 
 
 def wordCount_without_cleaning(sentance):
@@ -680,14 +637,12 @@ def wordCount_without_cleaning(sentance):
         return 0
 
 
-# In[44]:
 
 
 def len_str(x):
     return(len(x))
 
 
-# In[45]:
 
 
 # words in name
@@ -697,7 +652,6 @@ plt.hist(x,bins = 30,range=[0,10])
 plt.show()
 
 
-# In[46]:
 
 
 #length of name
@@ -706,7 +660,6 @@ plt.hist(x,bins = 30,range=[0,50],edgecolor='white')
 plt.show()
 
 
-# In[47]:
 
 
 text = data_train['name'].values
@@ -720,7 +673,6 @@ plt.tight_layout(pad=0)
 plt.show()
 
 
-# In[48]:
 
 
 # words count without cleaning in description
@@ -730,7 +682,6 @@ plt.hist(x,bins = 30,range=[0,10])
 plt.show()
 
 
-# In[49]:
 
 
 #length of description
@@ -740,7 +691,6 @@ plt.hist(x,bins = 30,range=[0,50],edgecolor='white')
 plt.show()
 
 
-# In[50]:
 
 
 fig = plt.figure(figsize = (40, 30))
@@ -789,7 +739,6 @@ plt.tight_layout(pad=1)
 plt.show()
 
 
-# In[51]:
 
 
 fig = plt.figure(figsize = (40, 30))
@@ -840,7 +789,6 @@ plt.title("Tops & Blouses",fontsize= 50)
 plt.show()
 
 
-# In[52]:
 
 
 fig = plt.figure(figsize = (40, 30))
@@ -891,7 +839,6 @@ plt.title("T-Shirts",fontsize= 50)
 plt.show()
 
 
-# In[53]:
 
 
 from tqdm import tqdm
@@ -908,7 +855,6 @@ for sentance in tqdm(data_train['item_description'].values):
     preprocessed_item_description.append(sent.lower().strip())
 
 
-# In[54]:
 
 
 from tqdm import tqdm
@@ -925,7 +871,6 @@ for sentance in tqdm(data_test['item_description'].values):
     preprocessed_test_item_description.append(sent.lower().strip())
 
 
-# In[55]:
 
 
 # after preprocesing
@@ -934,7 +879,6 @@ data_train['item_description'] = preprocessed_item_description
 data_train.head(2)
 
 
-# In[56]:
 
 
 # after preprocesing
@@ -943,39 +887,33 @@ data_test['item_description'] = preprocessed_test_item_description
 data_test.head(2)
 
 
-# In[57]:
 
 
 #data  = data_train.drop(['main_category','sub_category_1','sub_category_2'],axis=1)
 
 
-# In[58]:
 
 
 data_train.head(5)
 
 
-# In[59]:
 
 
 y = np.log10(np.array(data_train['price'])+1)
 X = data_train.drop('price',axis=1)
 
 
-# In[60]:
 
 
 X_train,X_cv,Y_train,Y_cv = train_test_split(X, y, test_size=0.20, random_state=42)
 #X_test,X_cv,Y_test,Y_cv = train_test_split(X_test, Y_test, test_size=0.50, random_state=42)
 
 
-# In[ ]:
 
 
 
 
 
-# In[61]:
 
 
 # creating dictionary containing brand_name and category_name
@@ -991,7 +929,6 @@ def brandfinder(name, category):
     return 'Unknown'
 
 
-# In[62]:
 
 
 brand_names_categories = dict(X_train[X_train['brand_name'] != 'Unknown'][['brand_name','category_name']].astype('str')                              .groupby('brand_name').agg(concat_categories).reset_index().values.tolist())
@@ -999,7 +936,6 @@ brand_names_categories = dict(X_train[X_train['brand_name'] != 'Unknown'][['bran
 brands_sorted_by_size = list(sorted(filter(lambda y: len(y) >= 3,                                            list(brand_names_categories.keys())),                                             key = lambda x: -len(x)))
 
 
-# In[63]:
 
 
 train_names_unknown_brands_train = X_train[X_train['brand_name'] == 'Unknown'][['name','category_name']].                            astype('str').values
@@ -1007,13 +943,11 @@ train_names_unknown_brands_train = X_train[X_train['brand_name'] == 'Unknown'][[
 train_names_unknown_brands_cv = X_cv[X_cv['brand_name'] == 'Unknown'][['name','category_name']].                            astype('str').values
 
 
-# In[64]:
 
 
 train_names_unknown_brands_data_test = data_test[data_test['brand_name'] == 'Unknown'][['name','category_name']].                            astype('str').values
 
 
-# In[65]:
 
 
 train_estimated_brands_train = []
@@ -1022,7 +956,6 @@ for name, category in tqdm(train_names_unknown_brands_train):
     train_estimated_brands_train.append(brand)
 
 
-# In[66]:
 
 
 train_estimated_brands_cv = []
@@ -1031,7 +964,6 @@ for name, category in tqdm(train_names_unknown_brands_cv):
     train_estimated_brands_cv.append(brand)
 
 
-# In[67]:
 
 
 train_estimated_brands_data_test = []
@@ -1040,7 +972,6 @@ for name, category in tqdm(train_names_unknown_brands_data_test):
     train_estimated_brands_data_test.append(brand)
 
 
-# In[68]:
 
 
 X_train.loc[X_train['brand_name'] == 'Unknown', 'brand_name'] = train_estimated_brands_train
@@ -1050,7 +981,6 @@ X_cv.loc[X_cv['brand_name'] == 'Unknown', 'brand_name'] = train_estimated_brands
 data_test.loc[data_test['brand_name'] == 'Unknown', 'brand_name'] = train_estimated_brands_data_test
 
 
-# In[69]:
 
 
 max_brand = 2500
@@ -1060,7 +990,6 @@ name_min_df =10
 max_item_description_features = 50000
 
 
-# In[70]:
 
 
 # cutting brand names
@@ -1071,7 +1000,6 @@ X_cv.loc[~X_cv['brand_name'].isin(keep_brand), 'brand_name'] = 'Unknown'
 data_test.loc[~data_test['brand_name'].isin(keep_brand), 'brand_name'] = 'Unknown'
 
 
-# In[71]:
 
 
 # cutting category
@@ -1092,7 +1020,6 @@ data_test.loc[~data_test['sub_category_1'].isin(keep_category2), 'sub_category_1
 data_test.loc[~data_test['sub_category_2'].isin(keep_category3), 'sub_category_1'] = 'Unknown'
 
 
-# In[72]:
 
 
 # item_description...TfidfVectorizer
@@ -1104,7 +1031,6 @@ X_cv_item_description_tfidf = tv.transform(X_cv['item_description'])
 data_test_item_description_tfidf = tv.transform(data_test['item_description'])
 
 
-# In[73]:
 
 
 # name.......CountVectorizer
@@ -1116,7 +1042,6 @@ X_cv_name_tfidf = tv.transform(X_cv['name'])
 data_test_name_tfidf = tv.transform(data_test['name'])
 
 
-# In[74]:
 
 
 # category_name......CountVectorizer
@@ -1148,7 +1073,6 @@ data_test_category =cv.transform(data_test['category_name'].astype('category'))
 #data_test_sub_category_2 =cv.transform(data_test['sub_category_2'].astype('category'))
 
 
-# In[75]:
 
 
 # brand_name.....LabelBinarizer
@@ -1159,7 +1083,6 @@ X_cv_brand = lb.transform(X_cv['brand_name'])
 data_test_brand = lb.transform(data_test['brand_name'])
 
 
-# In[76]:
 
 
 # shipping...pd.getdummies
@@ -1172,7 +1095,6 @@ X_cv_dummies = csr_matrix(pd.get_dummies(X_cv[['item_condition_id', 'shipping']]
 data_test_dummies = csr_matrix(pd.get_dummies(data_test[['item_condition_id', 'shipping']], sparse=True).values)
 
 
-# In[77]:
 
 
 # word count for item description
@@ -1181,7 +1103,6 @@ X_cv_word_count_item_desc = X_cv['item_description'].apply(lambda x: wordCount_w
 data_test_word_count_item_desc = data_test['item_description'].apply(lambda x: wordCount_with_cleaning(x))
 
 
-# In[78]:
 
 
 # word count for name
@@ -1190,7 +1111,6 @@ X_cv_word_count_name = X_cv['name'].apply(lambda x: wordCount_with_cleaning(x))
 data_test_word_count_name = data_test['name'].apply(lambda x: wordCount_with_cleaning(x))
 
 
-# In[79]:
 
 
 #check the shapes
@@ -1206,7 +1126,6 @@ print(X_train_word_count_item_desc.shape)
 print(X_train_word_count_name.shape)
 
 
-# In[80]:
 
 
 #check the shapes
@@ -1222,7 +1141,6 @@ print(X_cv_word_count_item_desc.shape)
 print(X_cv_word_count_name.shape)
 
 
-# In[81]:
 
 
 #check the shapes
@@ -1238,20 +1156,17 @@ print(data_test_word_count_item_desc.shape)
 print(data_test_word_count_name.shape)
 
 
-# In[82]:
 
 
 # stacking features vectors together
 X_train_vectorized = hstack((X_train_item_description_tfidf,                             X_train_name_tfidf,                             X_train_category,                             X_train_brand,                             X_train_dummies,                             X_train_word_count_item_desc.values.reshape(-1,1),                             X_train_word_count_name.values.reshape(-1,1))).tocsr()
 
 
-# In[83]:
 
 
 X_train_vectorized.shape
 
 
-# In[84]:
 
 
 # stacking features vectors together
@@ -1266,26 +1181,22 @@ X_train_vectorized.shape
 #                             X_train_word_count_name.values.reshape(-1,1))).tocsr()
 
 
-# In[85]:
 
 
 #X_train_vectorized_with_sub_cat.shape
 
 
-# In[86]:
 
 
 # stacking features vectors together
 X_cv_vectorized = hstack((X_cv_item_description_tfidf,                             X_cv_name_tfidf,                             X_cv_category,                             X_cv_brand,                             X_cv_dummies,                             X_cv_word_count_item_desc.values.reshape(-1,1),                             X_cv_word_count_name.values.reshape(-1,1))).tocsr()
 
 
-# In[87]:
 
 
 X_cv_vectorized.shape
 
 
-# In[88]:
 
 
 # stacking features vectors together
@@ -1300,26 +1211,22 @@ X_cv_vectorized.shape
 #                             X_cv_word_count_name.values.reshape(-1,1))).tocsr()
 
 
-# In[89]:
 
 
 #X_cv_vectorized_with_sub_cat.shape
 
 
-# In[90]:
 
 
 # stacking features vectors together
 data_test_vectorized = hstack((data_test_item_description_tfidf,                            data_test_name_tfidf,                            data_test_category,                            data_test_brand,                            data_test_dummies,                            data_test_word_count_item_desc.values.reshape(-1,1),                            data_test_word_count_name.values.reshape(-1,1))).tocsr()
 
 
-# In[91]:
 
 
 data_test_vectorized.shape
 
 
-# In[92]:
 
 
 # stacking features vectors together
@@ -1334,13 +1241,11 @@ data_test_vectorized.shape
 #                             data_test_word_count_name.values.reshape(-1,1))).tocsr()
 
 
-# In[93]:
 
 
 #data_test_vectorized_with_sub_cat.shape
 
 
-# In[94]:
 
 
 import gc
@@ -1379,7 +1284,6 @@ del(X_cv_item_description_tfidf,
 gc.collect()
 
 
-# In[95]:
 
 
 def rmsle(y, y0):
@@ -1387,13 +1291,11 @@ def rmsle(y, y0):
     return np.sqrt(np.mean(np.power(np.log1p(y)-np.log1p(y0), 2)))
 
 
-# In[96]:
 
 
 Error_dict  = {}
 
 
-# In[97]:
 
 
 import lightgbm as lgb
@@ -1424,7 +1326,6 @@ model_1 = lgb.train(params, train_set=d_train,valid_sets=watchlist,num_boost_rou
 #clf = lgb.train(params, d_train)
 
 
-# In[98]:
 
 
 lgbm_1_pred_train=model_1.predict(X_train_vectorized)
@@ -1432,21 +1333,18 @@ lgbm_1_pred_cv=model_1.predict(X_cv_vectorized)
 lgbm_1_pred_data_test=model_1.predict(data_test_vectorized)
 
 
-# In[99]:
 
 
 print("Train rmsle: "+str(rmsle(10 ** Y_train-1, 10 ** lgbm_1_pred_train-1)))
 print("CV rmsle: "+str(rmsle(10 ** Y_cv-1, 10 ** lgbm_1_pred_cv-1)))
 
 
-# In[100]:
 
 
 Error_dict['lgbm_1_Train_rmsle'] = rmsle(10 ** Y_train-1, 10 ** lgbm_1_pred_train-1) 
 Error_dict['lgbm_1_cv_rmsle'] = rmsle(10 ** Y_cv-1, 10 ** lgbm_1_pred_cv-1) 
 
 
-# In[101]:
 
 
 # Ridge model
@@ -1455,7 +1353,6 @@ reg_ridge = Ridge(solver='sag', alpha=5)
 reg_ridge.fit(X_train_vectorized, Y_train)
 
 
-# In[102]:
 
 
 reg_ridge_pred_train=reg_ridge.predict(X_train_vectorized)
@@ -1463,21 +1360,18 @@ reg_ridge_pred_cv=reg_ridge.predict(X_cv_vectorized)
 reg_ridge_pred_data_test=reg_ridge.predict(data_test_vectorized)
 
 
-# In[103]:
 
 
 print("Train rmsle: "+str(rmsle(10 ** Y_train-1, 10 ** reg_ridge_pred_train-1)))
 print("CV rmsle: "+str(rmsle(10 ** Y_cv-1, 10 ** reg_ridge_pred_cv-1)))
 
 
-# In[104]:
 
 
 Error_dict['reg_ridge_Train_rmsle'] = rmsle(10 ** Y_train-1, 10 ** reg_ridge_pred_train-1) 
 Error_dict['reg_ridge_Cv_rmsle'] = rmsle(10 ** Y_cv-1, 10 ** reg_ridge_pred_cv-1 ) 
 
 
-# In[105]:
 
 
 stacked_pred_train = pd.DataFrame(index=np.array(range(X_train.shape[0])))
@@ -1502,7 +1396,6 @@ stacked_pred_data_test.insert(1,"Ridge_model_pred",reg_ridge_pred_data_test)
 #final_pred_test = (lgbm_1_pred_test + lgbm_2_pred_test)/2
 
 
-# In[106]:
 
 
 X_train_stacked = sparse.csr_matrix(hstack([X_train_vectorized, sparse.csr_matrix(stacked_pred_train)]))
@@ -1510,7 +1403,6 @@ X_cv_stacked = sparse.csr_matrix(hstack([X_cv_vectorized, sparse.csr_matrix(stac
 data_test_stacked = sparse.csr_matrix(hstack([data_test_vectorized, sparse.csr_matrix(stacked_pred_data_test)]))
 
 
-# In[107]:
 
 
 import lightgbm as lgb
@@ -1539,7 +1431,6 @@ watchlist = [d_train, d_valid]
 final_lgbm = lgb.train(params, train_set=d_train,valid_sets=watchlist,num_boost_round=2000,verbose_eval=200,early_stopping_rounds=100) 
 
 
-# In[108]:
 
 
 final_pred_train=final_lgbm.predict(X_train_stacked)
@@ -1547,14 +1438,12 @@ final_pred_cv=final_lgbm.predict(X_cv_stacked)
 final_pred_data_test=final_lgbm.predict(data_test_stacked)
 
 
-# In[109]:
 
 
 print("Train rmsle: "+str(rmsle(10 ** Y_train-1, 10 ** final_pred_train-1)))
 print("CV rmsle: "+str(rmsle(10 ** Y_cv-1, 10 ** final_pred_cv-1)))
 
 
-# In[110]:
 
 
 submission = pd.DataFrame()

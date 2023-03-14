@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from os.path import join as pjoin
@@ -13,52 +12,44 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 
 
-# In[2]:
 
 
 PATH_TO_DATA = '../input/lab12-classification-problem'
 
 
-# In[3]:
 
 
 data_train = pd.read_csv(pjoin(PATH_TO_DATA, 'train.csv'))
 data_train.shape
 
 
-# In[4]:
 
 
 data_train.head()
 
 
-# In[5]:
 
 
 data_test = pd.read_csv(pjoin(PATH_TO_DATA, 'test.csv'))
 data_test.shape
 
 
-# In[6]:
 
 
 data_test.head()
 
 
-# In[7]:
 
 
 words = data_train['Word']
 labels = data_train['Label']
 
 
-# In[8]:
 
 
 labels.value_counts()
 
 
-# In[9]:
 
 
 def explore_words_length(data):
@@ -68,19 +59,16 @@ def explore_words_length(data):
     print(f'Median length: {word_len.median()}')    
 
 
-# In[10]:
 
 
 explore_words_length(data_train)
 
 
-# In[11]:
 
 
 explore_words_length(data_test)
 
 
-# In[12]:
 
 
 def label_distplots(values, labels, kde=True, hist=True):
@@ -89,34 +77,29 @@ def label_distplots(values, labels, kde=True, hist=True):
     plt.legend();
 
 
-# In[13]:
 
 
 words_len = words.str.len()
 label_distplots(words_len, labels, hist=False)
 
 
-# In[14]:
 
 
 is_first_letter_capital = words.str.slice(0, 1).str.isupper()
 pd.crosstab(is_first_letter_capital, labels).plot(kind='bar')
 
 
-# In[15]:
 
 
 is_all_letters_capital = words.str.isupper()
 pd.crosstab(is_all_letters_capital, labels, margins=True, normalize=True)
 
 
-# In[ ]:
 
 
 
 
 
-# In[16]:
 
 
 from collections import Counter
@@ -125,59 +108,50 @@ counter = Counter(concatenated_words)
 counter
 
 
-# In[17]:
 
 
 is_symbol_in_word = words.str.contains('\W')
 pd.crosstab(is_symbol_in_word, labels)
 
 
-# In[ ]:
 
 
 
 
 
-# In[18]:
 
 
 vowels = 'аеёиоуыэюя'
 consonants = 'бвгджзйклмнпрстфхчцшщъь'
 
 
-# In[19]:
 
 
 n_vowels = words.str.lower().str.count(f'[{vowels}]')
 label_distplots(n_vowels, labels, kde=False)
 
 
-# In[20]:
 
 
 n_consonants = words.str.lower().str.count(f'[{consonants}]')
 label_distplots(n_vowels, labels, kde=False)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[21]:
 
 
 plt.rcParams['figure.figsize'] = 6, 4
 
 
-# In[22]:
 
 
 def plot_labels_ratio_bar(values, labels):
@@ -191,7 +165,6 @@ def plot_labels_ratio_bar(values, labels):
     plt.rcParams['figure.figsize'] = 6, 4
 
 
-# In[23]:
 
 
 last_letter = words.str.slice(-1, None).str.lower()
@@ -199,7 +172,6 @@ last_letter.name = 'last_letter'
 plot_labels_ratio_bar(last_letter, labels)
 
 
-# In[24]:
 
 
 first_letter = words.str.slice(0, 1).str.lower()
@@ -207,7 +179,6 @@ first_letter.name = 'first_letter'
 plot_labels_ratio_bar(first_letter, labels)
 
 
-# In[25]:
 
 
 from scipy  import sparse
@@ -223,7 +194,6 @@ from sklearn.ensemble import GradientBoostingClassifier
 from catboost import CatBoostClassifier
 
 
-# In[26]:
 
 
 def extract_features(words):
@@ -260,7 +230,6 @@ def extract_features(words):
     return data
 
 
-# In[27]:
 
 
 def get_cat_features(X: pd.DataFrame) -> List[str]:
@@ -312,7 +281,6 @@ def one_hot_encode(
     return features, encoders  
 
 
-# In[28]:
 
 
 def calc_metrics(
@@ -331,26 +299,22 @@ def calc_metrics(
     return res
 
 
-# In[29]:
 
 
 X_train = extract_features(data_train['Word'])
 y_train = data_train['Label']
 
 
-# In[30]:
 
 
 X_train_ohe, one_hot_encoders = one_hot_encode(X_train)
 
 
-# In[31]:
 
 
 X_train_le, label_encoders = label_encode(X_train)
 
 
-# In[32]:
 
 
 lr = LogisticRegression(solver='liblinear', penalty='l2', random_state=1)
@@ -368,19 +332,16 @@ gscv_lr = GridSearchCV(
 gscv_lr.fit(X_train_ohe, y_train);
 
 
-# In[33]:
 
 
 gscv_lr.best_params_, gscv_lr.best_score_
 
 
-# In[ ]:
 
 
 
 
 
-# In[34]:
 
 
 dt = DecisionTreeClassifier(max_leaf_nodes=100, random_state=1)
@@ -398,19 +359,16 @@ gscv_dt = GridSearchCV(
 gscv_dt.fit(X_train_le, y_train);
 
 
-# In[35]:
 
 
 gscv_dt.best_params_, gscv_dt.best_score_
 
 
-# In[ ]:
 
 
 
 
 
-# In[36]:
 
 
 gb = GradientBoostingClassifier(random_state=1)
@@ -432,20 +390,17 @@ gscv_gb = GridSearchCV(
 gscv_gb.fit(X_train_le, y_train);
 
 
-# In[37]:
 
 
 gscv_gb.best_params_, gscv_gb.best_score_
 
 
-# In[38]:
 
 
 cv_results = pd.DataFrame(gscv_gb.cv_results_)
 cv_results[['params', 'mean_fit_time', 'mean_train_score', 'mean_test_score']]     .sort_values('mean_test_score', ascending=False)
 
 
-# In[39]:
 
 
 cb = CatBoostClassifier(
@@ -475,27 +430,23 @@ gscv_cb = GridSearchCV(
 gscv_cb.fit(X_train, y_train);
 
 
-# In[40]:
 
 
 gscv_cb.best_params_, gscv_cb.best_score_
 
 
-# In[41]:
 
 
 cv_results = pd.DataFrame(gscv_cb.cv_results_)
 cv_results[['params', 'mean_fit_time', 'mean_train_score', 'mean_test_score']]     .sort_values('mean_test_score', ascending=False)
 
 
-# In[ ]:
 
 
 
 
 X_train_train, X_train_test, y_train_train, y_train_test = \
     train_test_split(X_train, y_train, test_size=0.3, random_state=1)
-# In[42]:
 
 
 classifier = CatBoostClassifier(
@@ -511,26 +462,22 @@ classifier = CatBoostClassifier(
 classifier.fit(X_train, y_train);
 
 
-# In[ ]:
 
 
 
 
 
-# In[43]:
 
 
 X_test = extract_features(data_test['Word'])
 
 
-# In[44]:
 
 
 pred_train = classifier.predict_proba(X_train)[:, 1]
 calc_metrics(y_train, pred_train)
 
 
-# In[45]:
 
 
 pd.DataFrame({
@@ -539,13 +486,11 @@ pd.DataFrame({
 }).sort_values('importance', ascending=False)
 
 
-# In[ ]:
 
 
 
 
 
-# In[46]:
 
 
 pred_test = classifier.predict_proba(X_test)[:, 1]
@@ -553,19 +498,16 @@ res = pd.DataFrame({'Id': data_test.index, 'Prediction': pred_test})
 res.to_csv('res_150est_d6.csv', index=False)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[47]:
 
 
 pr, rec, thr = precision_recall_curve(y_train, pred_train)
@@ -576,14 +518,12 @@ plt.ylabel('F1')
 plt.grid()
 
 
-# In[48]:
 
 
 best_thr = thr[f1.argmax() - 1]
 best_thr, f1.max()
 
 
-# In[ ]:
 
 
 

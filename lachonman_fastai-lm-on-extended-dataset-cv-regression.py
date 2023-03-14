@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from IPython.display import Image
 
 
-# In[2]:
 
 
 import pickle
@@ -20,13 +18,11 @@ from sklearn import metrics
 from torch import nn
 
 
-# In[3]:
 
 
 import neptune
 
 
-# In[4]:
 
 
 class MSELoss(nn.MSELoss):
@@ -35,7 +31,6 @@ class MSELoss(nn.MSELoss):
     return super().forward(input.view(-1), target.view(-1))
 
 
-# In[5]:
 
 
 k_folds = 8
@@ -60,13 +55,11 @@ identity_columns = [
     'muslim', 'black', 'white', 'psychiatric_or_mental_illness']
 
 
-# In[6]:
 
 
 get_ipython().system('cp ../input/toxic-regression-model/exported_reg_mse_toxic_lm_extended_15ep.pkl ../working/')
 
 
-# In[7]:
 
 
 # data
@@ -97,7 +90,6 @@ final_model_prod_result_file = 'toxic_production_final_{}'.format(exp_nb)
 final_submission_predictions = 'toxic_final_submission_exp_nb_{}.csv'.format(exp_nb)
 
 
-# In[8]:
 
 
 neptune.init(api_token='YOUR_API_TOKEN',
@@ -125,7 +117,6 @@ nep_exp.append_tag('k folds CV')
 nep_exp.append_tag('pretrained extended LangModel')
 
 
-# In[9]:
 
 
 data_lm = (TextList.from_csv(path_lm, lm_csv_file, cols='comment_text')
@@ -134,116 +125,97 @@ data_lm = (TextList.from_csv(path_lm, lm_csv_file, cols='comment_text')
                 .databunch(bs=bs))
 
 
-# In[10]:
 
 
 data_lm.save(pre_trained_path/data_lm_file)
 
 
-# In[11]:
 
 
 data_lm = load_data(pre_trained_path, data_lm_file, bs=bs)
 
 
-# In[12]:
 
 
 data_lm.show_batch()
 
 
-# In[13]:
 
 
 learn = language_model_learner(data_lm, AWD_LSTM, pretrained=True, drop_mult=0.3)
 
 
-# In[14]:
 
 
 learn.lr_find()
 
 
-# In[15]:
 
 
 learn.recorder.plot(skip_end=15, suggestion=True)
 
 
-# In[16]:
 
 
 Image("../input/fastai-lm-on-extended-datasetcv-regression-source/lm_lr_find1.png")
 
 
-# In[17]:
 
 
 learn.fit_one_cycle(1, 1e-2, moms=(0.8,0.7))
 
 
-# In[18]:
 
 
 Image("../input/fastai-lm-on-extended-datasetcv-regression-source/lm_fit_ep1_loss_table.png")
 
 
-# In[19]:
 
 
 learn.save('fit_head_basic_toxic_lm1ep_extended')
 
 
-# In[20]:
 
 
 learn.load('fit_head_basic_toxic_lm1ep_extended');
 
 
-# In[21]:
 
 
 learn.unfreeze()
 
 
-# In[22]:
 
 
 learn.fit_one_cycle(15, 1e-3, moms=(0.8,0.7))
 
 
-# In[23]:
 
 
 Image("../input/fastai-lm-on-extended-datasetcv-regression-source/lm_fit_ep15_loss_table.png")
 
 
-# In[24]:
 
 
 learn.save('fine_tuned_basic_toxic_lm15ep_extended')
 
 
-# In[25]:
 
 
 learn.load('fine_tuned_basic_toxic_lm15ep_extended');
 
 
-# In[26]:
 
 
 learn.save_encoder('fine_tuned_encoder_basic_toxic_lm15ep_extended')
 
 
-# In[27]:
 
 
 with open('fine_tuned_basic_toxic_vocab_lm15ep_extended.pcl', 'wb') as f:
     pickle.dump(data_lm.vocab, f)
 
 
-# In[28]:
 
 
 def get_k_stratified_folds_indexes_given_continues_variable(df, k_folds, continuous_target_col_name):
@@ -273,7 +245,6 @@ def get_train_and_valid_idxs_split_given_fold_nb(folds_idxs, k):
     return train_idxs, test_idxs
 
 
-# In[29]:
 
 
 
@@ -291,13 +262,11 @@ def get_df_with_class_target_col(df, target_col_name, target_class_col_name):
     return df
 
 
-# In[30]:
 
 
 df_train_initial = pd.read_csv(path/clas_csv_file)
 
 
-# In[31]:
 
 
 df_train_initial = get_df_with_converted_categorical_cols_to_bool(
@@ -309,7 +278,6 @@ df_train_initial = get_df_with_class_target_col(
     target_class_col_name=target_class_col_name)
 
 
-# In[32]:
 
 
 df_train_initial = df_train_initial.sample(frac=1 ,random_state=SEED)
@@ -317,7 +285,6 @@ df_train_initial = df_train_initial.sample(frac=1 ,random_state=SEED)
 holdout_and_k_folds_idxs = get_k_stratified_folds_indexes_given_continues_variable(df_train_initial, k_folds, target_col_name)
 
 
-# In[33]:
 
 
 models_performance = {}
@@ -349,7 +316,6 @@ for k in range(k_folds-1):
                              'valid_loss': learn.recorder.val_losses}
 
 
-# In[34]:
 
 
 train_folds_losses = []
@@ -365,14 +331,12 @@ avg_train_loss = avg_train_losses[-1]
 print('avg train loss', avg_train_loss)
 
 
-# In[35]:
 
 
 folds train losses [0.018044915050268173, 0.019446002319455147, 0.018564680591225624, 0.017788488417863846, 0.018882934004068375, 0.01710507646203041, 0.017085056751966476]
 avg train loss 0.01813102194241115
 
 
-# In[36]:
 
 
 valid_folds_losses = [models_performance[x]['valid_loss'][-1] for x in models_performance]
@@ -381,26 +345,22 @@ avg_valid_loss = np.mean(valid_folds_losses, axis=0)
 print('avg valid loss', avg_valid_loss)
 
 
-# In[37]:
 
 
 folds valid losses [0.5292527, 54.811653, 0.017135596, 0.29703587, 0.026240299, 26.354286, 0.049951334]
 avg valid loss 11.726507
 
 
-# In[38]:
 
 
 holdout_group_preds = [models_performance[x]['holdout_preds'] for x in models_performance]
 
 
-# In[39]:
 
 
 avg_holdout_preds = np.mean(holdout_group_preds, axis=0)
 
 
-# In[40]:
 
 
 correct_preds_count = 0
@@ -420,14 +380,12 @@ holdout_loss = sum(mse_loss_holdout)/len(mse_loss_holdout)
 print('holdout_loss ', holdout_loss)
 
 
-# In[41]:
 
 
 holdout_acc 0.9462703502932038
 holdout_loss  5.278712082137559
 
 
-# In[42]:
 
 
 SUBGROUP_AUC = 'subgroup_auc'
@@ -477,7 +435,6 @@ def compute_bias_metrics_for_model(dataset,
     return pd.DataFrame(records).sort_values('subgroup_auc', ascending=True)
 
 
-# In[43]:
 
 
 def calculate_overall_auc(df, model_name):
@@ -498,7 +455,6 @@ def get_final_metric(bias_df, overall_auc, POWER=-5, OVERALL_MODEL_WEIGHT=0.25):
     return (OVERALL_MODEL_WEIGHT * overall_auc) + ((1 - OVERALL_MODEL_WEIGHT) * bias_score)
 
 
-# In[44]:
 
 
 MODEL_NAME = 'regression'
@@ -510,33 +466,28 @@ bias_metrics_df = compute_bias_metrics_for_model(validate_df, identity_columns, 
 bias_metrics_df
 
 
-# In[45]:
 
 
 Image("../input/fastai-lm-on-extended-datasetcv-regression-source/toxic_subgroups_auc.png")
 
 
-# In[46]:
 
 
 toxic_metric_acc = get_final_metric(bias_metrics_df, calculate_overall_auc(validate_df, MODEL_NAME))
 
 
-# In[47]:
 
 
 for fold_nb in range(len(valid_folds_losses)):
     neptune.send_metric(channel_name='valid_loss per fold', x=fold_nb, y=valid_folds_losses[fold_nb])
 
 
-# In[48]:
 
 
 for step in range(len(avg_train_losses)):
     neptune.send_metric(channel_name='train_avg_folds_losses', x=step, y=avg_train_losses[step])
 
 
-# In[49]:
 
 
 neptune.send_metric(channel_name='avg_train_loss', x=exp_nb, y=avg_train_loss)
@@ -548,7 +499,6 @@ neptune.send_metric(channel_name='holdout_acc', x=exp_nb, y=holdout_acc)
 neptune.send_metric(channel_name='toxic_metric', x=exp_nb, y=toxic_metric_acc)
 
 
-# In[50]:
 
 
 for _, row in bias_metrics_df.iterrows():
@@ -556,19 +506,16 @@ for _, row in bias_metrics_df.iterrows():
     neptune.send_metric(channel_name=key, x=exp_nb, y=row['subgroup_auc'])
 
 
-# In[51]:
 
 
 neptune.experiments.get_current_experiment().get_hardware_utilization()
 
 
-# In[52]:
 
 
 neptune.stop()
 
 
-# In[53]:
 
 
 data_clas = (TextList.from_df(df_train_initial, path=path, cols=x_col_name, vocab=data_lm.vocab)
@@ -585,25 +532,21 @@ learn.freeze_to(freeze_layer_idx)
 learn.fit_one_cycle(epochs, layer2_lr, moms=momentum)
 
 
-# In[54]:
 
 
 Image("../input/fastai-lm-on-extended-datasetcv-regression-source/final_model_table_loss.png")
 
 
-# In[55]:
 
 
 learn.export(final_model_prod_result_file)
 
 
-# In[56]:
 
 
 test_df = pd.read_csv(path/test_csv_file)
 
 
-# In[57]:
 
 
 #learn = load_learner(pretrained_reg_path, reg_model_file)
@@ -614,7 +557,6 @@ batch_preds = [pred[0] for pred in prob_preds[0].numpy()]
 batch_preds[:5]
 
 
-# In[58]:
 
 
 test_df['prediction'] = batch_preds
@@ -622,19 +564,16 @@ submission = test_df[['id','prediction']]
 submission[:5]
 
 
-# In[59]:
 
 
 submission.to_csv(path/final_submission_predictions, index=False)
 
 
-# In[60]:
 
 
 df_submit = pd.read_csv('../input/preds-toxic-reg/toxic_final_submission_exp_nb_2.csv')
 
 
-# In[61]:
 
 
 df_submit.to_csv('submission.csv', index=False)

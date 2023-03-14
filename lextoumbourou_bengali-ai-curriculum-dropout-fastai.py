@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('reload_ext', 'autoreload')
@@ -23,7 +22,6 @@ warnings.filterwarnings("ignore")
 fastai.__version__
 
 
-# In[2]:
 
 
 sz = 128
@@ -47,7 +45,6 @@ def seed_everything(seed):
 seed_everything(SEED)
 
 
-# In[3]:
 
 
 n = 10 * 128
@@ -56,7 +53,6 @@ plt.title(f'Cosigning annealing over {n} steps')
 plt.show()
 
 
-# In[4]:
 
 
 from fastai.callbacks import *
@@ -123,7 +119,6 @@ class ModuleParamScheduler(Callback):
             setattr(module, self.module_param, self.last_val)
 
 
-# In[5]:
 
 
 df = pd.read_csv(LABELS)
@@ -132,7 +127,6 @@ print(nunique)
 df.head()
 
 
-# In[6]:
 
 
 stats = ([0.0692], [0.2051])
@@ -146,7 +140,6 @@ data = (ImageList.from_df(df, path='.', folder=TRAIN, suffix='.png',
 data.show_batch()
 
 
-# In[7]:
 
 
 class Head(nn.Module):
@@ -207,7 +200,6 @@ class Dnet_1ch(nn.Module):
         return x1,x2,x3
 
 
-# In[8]:
 
 
 class Loss_combine(nn.Module):
@@ -221,7 +213,6 @@ class Loss_combine(nn.Module):
         return 0.7*F.cross_entropy(x1,y[:,0],reduction=reduction) + 0.1*F.cross_entropy(x2,y[:,1],reduction=reduction) +           0.2*F.cross_entropy(x3,y[:,2],reduction=reduction)
 
 
-# In[9]:
 
 
 class Metric_idx(Callback):
@@ -302,7 +293,6 @@ class Metric_tot(Callback):
                 0.25*self.vowel._recall() + 0.25*self.consonant._recall())
 
 
-# In[10]:
 
 
 #fix the issue in fast.ai of saving gradients along with weights
@@ -345,7 +335,6 @@ class SaveModelCallback(TrackerCallback):
             self.model.load_state_dict(torch.load(f'{self.name}.pth'))
 
 
-# In[11]:
 
 
 class MixUpLoss(Module):
@@ -411,7 +400,6 @@ class MixUpCallback(LearnerCallback):
         if self.stack_y: self.learn.loss_func = self.learn.loss_func.get_old()
 
 
-# In[12]:
 
 
 model = Dnet_1ch()
@@ -423,7 +411,6 @@ learn.split([model.head1])
 learn.unfreeze()
 
 
-# In[13]:
 
 
 dropout_sched_callbacks = [
@@ -438,7 +425,6 @@ dropout_sched_callbacks = [
 ]
 
 
-# In[14]:
 
 
 learn.fit_one_cycle(

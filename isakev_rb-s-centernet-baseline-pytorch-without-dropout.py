@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip -q install efficientnet-pytorch')
 
 
-# In[2]:
 
 
 import numpy as np
@@ -56,7 +54,6 @@ def torch_seed_everything(seed=base_seed):
 torch_seed_everything()
 
 
-# In[3]:
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -69,7 +66,6 @@ if device == 'cuda':
 #!nvidia-smi
 
 
-# In[4]:
 
 
 platform =  'Kaggle'  #'Kaggle' # 'Colab' # 'gcp'
@@ -79,7 +75,6 @@ if platform == 'Colab':
     drive.mount("/content/drive", force_remount=False)
 
 
-# In[5]:
 
 
 debug = False
@@ -141,7 +136,6 @@ print("\nlogs, output dir:", out_path)
 print("\npath directory list:", os.listdir(path))   
 
 
-# In[6]:
 
 
 train = pd.read_csv(osj(path, 'train.csv'), nrows = n_samples)
@@ -162,7 +156,6 @@ print("train.shape:", train.shape, "\ttest.shape:",  test.shape)
 train.head(2)
 
 
-# In[7]:
 
 
 def imread(path, fast_mode=False):
@@ -198,7 +191,6 @@ def add_number_of_cars(df):
     return df
 
 
-# In[8]:
 
 
 DISTANCE_THRESH_CLEAR = 2
@@ -276,7 +268,6 @@ def get_img_coords(s):
     return img_xs, img_ys
 
 
-# In[9]:
 
 
 def _regr_preprocess(regr_dict):
@@ -326,7 +317,6 @@ def get_mask_and_regr(img_orig_height, img_orig_width, labels):
     return mask, regr
 
 
-# In[10]:
 
 
 def remove_out_image_cars(df):
@@ -367,7 +357,6 @@ def remove_out_image_cars(df):
 train = remove_out_image_cars(train)
 
 
-# In[11]:
 
 
 xs, ys = [], []
@@ -383,7 +372,6 @@ plt.imshow(imread(osj(train_test_path,'train_images', train['ImageId'][train_ima
 plt.scatter(xs, ys, color='red', s=20, alpha=1);
 
 
-# In[12]:
 
 
 # convert euler angle to rotation matrix
@@ -448,7 +436,6 @@ def visualize(img, coords):
     return img
 
 
-# In[13]:
 
 
 albu_list = [RandomBrightnessContrast(brightness_limit=(-0.3, 0.3), contrast_limit=(-0.3, 0.3), p=0.3),
@@ -466,7 +453,6 @@ p_transform_val = 0.05
 albu_transform_valid = Compose(albu_list, p=p_transform_val)
 
 
-# In[14]:
 
 
 def aug_visualize(original_imgs: list, augmented_images: list):
@@ -482,7 +468,6 @@ def aug_visualize(original_imgs: list, augmented_images: list):
         ax[i,1].set_title('Augmented image', fontsize=12)
 
 
-# In[15]:
 
 
 means = np.array([80.302637, 73.818344, 69.698726]).reshape(1,1,3)
@@ -613,7 +598,6 @@ class backup_CarDataset(Dataset):
         return [img, mask, regr]
 
 
-# In[16]:
 
 
 class double_conv(nn.Module):
@@ -669,7 +653,6 @@ def get_mesh(batch_size, shape_x, shape_y):
     return mesh
 
 
-# In[17]:
 
 
 def set_dropout(model, drop_rate):
@@ -733,7 +716,6 @@ class MyUNet(nn.Module):
         return x
 
 
-# In[18]:
 
 
 def build_model(drop_rate):
@@ -744,7 +726,6 @@ def build_model(drop_rate):
     return model
 
 
-# In[19]:
 
 
 def criter_metric(prediction, mask, regr, size_average=True):
@@ -790,7 +771,6 @@ def criter_objective(prediction, mask, regr, size_average=True):
     return loss
 
 
-# In[20]:
 
 
 
@@ -874,7 +854,6 @@ def train_eval_model(model, epoch, best_val_loss, history=None):
     return model, optimizer, history, best_val_loss, val_loss
 
 
-# In[21]:
 
 
 
@@ -946,7 +925,6 @@ for epoch in range(epoch_start, n_epochs+epoch_start):
 history.to_csv(osj(out_path, f"history_final_fold_{fld}.csv"), index=False)
 
 
-# In[22]:
 
 
 history_old = pd.read_csv('../input/dropout-change-eff-b0-2-01-no-aug-epochs-6/history_final_fold_3.csv')
@@ -957,26 +935,22 @@ history_new = pd.concat([history_old, history_new], axis=0)
 history_new.tail()
 
 
-# In[23]:
 
 
 if not debug: history['train_loss'].iloc[100:].plot();
 
 
-# In[24]:
 
 
 ### History of validation loss (including previously trained model)
 
 
-# In[25]:
 
 
 series = history_new.dropna()['val_loss']
 plt.scatter(series.index, series);
 
 
-# In[26]:
 
 
 def plot_pred_mask(model, idx, threshold):
@@ -1015,7 +989,6 @@ idx = 0
 plot_pred_mask(model, idx, threshold0)
 
 
-# In[27]:
 
 
 torch.cuda.empty_cache()
@@ -1043,7 +1016,6 @@ for idx in random.sample(range(len(dev_dataset)), n_imgs):
     plt.show()
 
 
-# In[28]:
 
 
 # load best epoch end model or else initially loaded model
@@ -1060,7 +1032,6 @@ except:
 model.load_state_dict(checkpoint['state_dict'])
 
 
-# In[29]:
 
 
 def predict_test(model, threshold = 0): #-1.2  # -1.0) #-0.5)
@@ -1090,7 +1061,6 @@ def predict_test(model, threshold = 0): #-1.2  # -1.0) #-0.5)
     return preds, preds_before_drop_mask
 
 
-# In[30]:
 
 
 threshold0 = -1.5
@@ -1114,7 +1084,6 @@ for thresh in tqdm([threshold0]): #[-2, -1.5, -1]):
     test_thresh_before['thresh_'+str(thresh)] = preds_test_before
 
 
-# In[31]:
 
 
 sub = test_thresh['thresh_'+str(thresh)]
@@ -1131,7 +1100,6 @@ numcars_compare.head()
               
 
 
-# In[32]:
 
 
 def print_numcar_stats(df, prefix):
@@ -1145,14 +1113,12 @@ print_numcar_stats(numcars_before, prefix)
 print(f"\nnum cars in train: {train['new_numcars'].sum():,d}, \tratio cars to images in train: {(train['new_numcars'].sum()/train.shape[0]):.2f}")
 
 
-# In[33]:
 
 
 sub.to_csv(osj(out_path, f'sub_thresh_{threshold0:.2f}_cv_3045_eff_b0_dropout_change_resume_KGL.csv'), index=False)
 sub.head()
 
 
-# In[ ]:
 
 
 

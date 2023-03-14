@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -18,7 +17,6 @@ import pydicom as dicom
 import nibabel as nib
 
 
-# In[2]:
 
 
 # TODO: modify the following paths
@@ -35,7 +33,6 @@ if 'hmvsa0loxh3ek2y8rzmcyb6zrrh9mwyp' in train_list:
 print('Train data:', len(train_list))
 
 
-# In[3]:
 
 
 def load_dicom_volume(src_dir, suffix='*.dcm'):
@@ -62,7 +59,6 @@ def load_label(label_fpath, transpose=False):
     return encode_name, label_array
 
 
-# In[4]:
 
 
 train_image_npz_folder = './npz/train_images/'
@@ -71,7 +67,6 @@ if not os.path.exists(train_image_npz_folder):
     os.makedirs(train_image_npz_folder)
 
 
-# In[5]:
 
 
 for encode in tqdm.tqdm(train_list):
@@ -88,13 +83,11 @@ for encode in tqdm.tqdm(train_list):
     del volume_image
 
 
-# In[6]:
 
 
 get_ipython().system("ls './npz/train_images/'")
 
 
-# In[7]:
 
 
 train_label_npz_folder = './npz/train_labels/'
@@ -103,7 +96,6 @@ if not os.path.exists(train_label_npz_folder):
     os.makedirs(train_label_npz_folder)
 
 
-# In[8]:
 
 
 for encode in tqdm.tqdm(train_list):
@@ -120,7 +112,6 @@ for encode in tqdm.tqdm(train_list):
     del label_array
 
 
-# In[9]:
 
 
 from keras.models import Model, load_model
@@ -134,7 +125,6 @@ from keras.callbacks import ModelCheckpoint
 K.tensorflow_backend._get_available_gpus()
 
 
-# In[10]:
 
 
 map_image_list = sorted(glob.glob(os.path.join(train_image_npz_folder, '*/*.npz')))
@@ -144,7 +134,6 @@ map_df = pd.DataFrame(data={'image': map_image_list, 'label': map_label_list})
 map_df.head()
 
 
-# In[11]:
 
 
 class LungSliceModelGenerator(kutils.Sequence):
@@ -192,14 +181,12 @@ class LungSliceModelGenerator(kutils.Sequence):
         return X, y
 
 
-# In[12]:
 
 
 batch_size = 16
 slice_generator = LungSliceModelGenerator(map_df, batch_size=batch_size)
 
 
-# In[13]:
 
 
 def _dice_coefficient(threshold = 0.3):
@@ -214,7 +201,6 @@ def dice_coefficient_loss(y_true, y_pred):
     return 1 - _dice_coefficient()(y_true, y_pred)
 
 
-# In[14]:
 
 
 def unet(pretrained_weights=None, input_size=[512, 512, 1], depth=3, init_filter=8, 
@@ -286,7 +272,6 @@ def unet(pretrained_weights=None, input_size=[512, 512, 1], depth=3, init_filter
     return model
 
 
-# In[15]:
 
 
 model = unet(depth=3)
@@ -294,7 +279,6 @@ model.compile(optimizer=Adam(lr=1e-3), loss='binary_crossentropy', metrics=[_dic
 model.summary()
 
 
-# In[16]:
 
 
 model_folder = os.path.join('./model', 'sample-code')
@@ -308,7 +292,6 @@ callbacks.append(ModelCheckpoint(os.path.join(model_folder, 'model-{epoch:03d}.h
                                  period=5))
 
 
-# In[17]:
 
 
 history = model.fit_generator(slice_generator,
@@ -317,7 +300,6 @@ history = model.fit_generator(slice_generator,
                               callbacks=callbacks)
 
 
-# In[18]:
 
 
 def retrieve_pred_str(src_dir, model, threshold=0.4):
@@ -354,7 +336,6 @@ def retrieve_pred_str(src_dir, model, threshold=0.4):
     return (encode_name, label_str)
 
 
-# In[19]:
 
 
 sample_submission = np.genfromtxt('../input/sample_submission.csv', 
@@ -363,13 +344,11 @@ sample_submission = np.genfromtxt('../input/sample_submission.csv',
                                   skip_header = 1)
 
 
-# In[20]:
 
 
 test_encode_list = sample_submission[:, 0]
 
 
-# In[21]:
 
 
 pred_pair_list = []
@@ -379,7 +358,6 @@ for encode_name in tqdm.tqdm(test_encode_list, total=len(test_encode_list)):
     pred_pair_list.append((encode, label_str))
 
 
-# In[22]:
 
 
 solution_path = './sample-code_pred.csv'
@@ -391,7 +369,6 @@ with open(solution_path, 'w') as f:
         f.write(encode + ',' + label_str + '\n')
 
 
-# In[23]:
 
 
 get_ipython().system('rm -r ./npz')

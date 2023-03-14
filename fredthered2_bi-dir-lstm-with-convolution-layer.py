@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 import math
@@ -40,38 +38,32 @@ from tensorflow.keras import initializers, regularizers, constraints, optimizers
 from tensorflow.keras.callbacks import EarlyStopping
 
 
-# In[3]:
 
 
 from tqdm import tqdm
 tqdm.pandas()
 
 
-# In[4]:
 
 
 df_train=pd.read_csv('/kaggle/input/quora-insincere-questions-classification/train.csv' )
 
 
-# In[5]:
 
 
 df_train.head()
 
 
-# In[6]:
 
 
 df_test=pd.read_csv('/kaggle/input/quora-insincere-questions-classification/test.csv' )
 
 
-# In[7]:
 
 
 from zipfile import ZipFile
 
 
-# In[8]:
 
 
 '''embeddings1_index = {}
@@ -89,7 +81,6 @@ print('Found %s word vectors.' % len(embeddings1_index))
 '''
 
 
-# In[9]:
 
 
 import io
@@ -107,44 +98,37 @@ with zipfile.ZipFile("../input/quora-insincere-questions-classification/embeddin
             embeddings1_index[word]=vectors
 
 
-# In[10]:
 
 
 #del vectors,word,values,line,f,zf,io
 
 
-# In[11]:
 
 
 #del ZipFile
 
 
-# In[12]:
 
 
 print('Found %s word vectors.' % len(embeddings1_index))
 
 
-# In[13]:
 
 
 del zipfile
 
 
-# In[14]:
 
 
 import gc
 gc.collect()
 
 
-# In[ ]:
 
 
 
 
 
-# In[15]:
 
 
 ## Creating the vocabulary of words
@@ -160,7 +144,6 @@ def build_vocab(sentences,verbose=True):
     return vocab    
 
 
-# In[16]:
 
 
 sentences=df_train['question_text'].progress_apply(lambda x : x.split()).values
@@ -168,7 +151,6 @@ vocab=build_vocab(sentences)
 print({k : vocab[k] for k in list(vocab)[:5]})
 
 
-# In[17]:
 
 
 import operator
@@ -191,25 +173,21 @@ def check_coverage(vocab, embeddings_index):
     return sorted_x   
 
 
-# In[18]:
 
 
 oov = check_coverage(vocab,embeddings1_index)
 
 
-# In[19]:
 
 
 oov[:20]
 
 
-# In[20]:
 
 
 contraction_mapping = {"ain't": "is not", "aren't": "are not","can't": "cannot", "'cause": "because", "could've": "could have", "couldn't": "could not", "didn't": "did not",  "doesn't": "does not", "don't": "do not", "hadn't": "had not", "hasn't": "has not", "haven't": "have not", "he'd": "he would","he'll": "he will", "he's": "he is", "how'd": "how did", "how'd'y": "how do you", "how'll": "how will", "how's": "how is",  "I'd": "I would", "I'd've": "I would have", "I'll": "I will", "I'll've": "I will have","I'm": "I am", "I've": "I have", "i'd": "i would", "i'd've": "i would have", "i'll": "i will",  "i'll've": "i will have","i'm": "i am", "i've": "i have", "isn't": "is not", "it'd": "it would", "it'd've": "it would have", "it'll": "it will", "it'll've": "it will have","it's": "it is", "let's": "let us", "ma'am": "madam", "mayn't": "may not", "might've": "might have","mightn't": "might not","mightn't've": "might not have", "must've": "must have", "mustn't": "must not", "mustn't've": "must not have", "needn't": "need not", "needn't've": "need not have","o'clock": "of the clock", "oughtn't": "ought not", "oughtn't've": "ought not have", "shan't": "shall not", "sha'n't": "shall not", "shan't've": "shall not have", "she'd": "she would", "she'd've": "she would have", "she'll": "she will", "she'll've": "she will have", "she's": "she is", "should've": "should have", "shouldn't": "should not", "shouldn't've": "should not have", "so've": "so have","so's": "so as", "this's": "this is","that'd": "that would", "that'd've": "that would have", "that's": "that is", "there'd": "there would", "there'd've": "there would have", "there's": "there is", "here's": "here is","they'd": "they would", "they'd've": "they would have", "they'll": "they will", "they'll've": "they will have", "they're": "they are", "they've": "they have", "to've": "to have", "wasn't": "was not", "we'd": "we would", "we'd've": "we would have", "we'll": "we will", "we'll've": "we will have", "we're": "we are", "we've": "we have", "weren't": "were not", "what'll": "what will", "what'll've": "what will have", "what're": "what are",  "what's": "what is", "what've": "what have", "when's": "when is", "when've": "when have", "where'd": "where did", "where's": "where is", "where've": "where have", "who'll": "who will", "who'll've": "who will have", "who's": "who is", "who've": "who have", "why's": "why is", "why've": "why have", "will've": "will have", "won't": "will not", "won't've": "will not have", "would've": "would have", "wouldn't": "would not", "wouldn't've": "would not have", "y'all": "you all", "y'all'd": "you all would","y'all'd've": "you all would have","y'all're": "you all are","y'all've": "you all have","you'd": "you would", "you'd've": "you would have", "you'll": "you will", "you'll've": "you will have", "you're": "you are", "you've": "you have" }
 
 
-# In[21]:
 
 
 def clean_contractions(text, mapping):
@@ -220,7 +198,6 @@ def clean_contractions(text, mapping):
     return text
 
 
-# In[22]:
 
 
 df_train['question_text']=df_train['question_text'].progress_apply(lambda x: clean_contractions(x,contraction_mapping))
@@ -230,19 +207,16 @@ sentences= df_train['question_text'].apply(lambda x : x.split())
 vocab = build_vocab(sentences)
 
 
-# In[23]:
 
 
 oov = check_coverage(vocab,embeddings1_index)
 
 
-# In[24]:
 
 
 punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&'
 
 
-# In[25]:
 
 
 def unknown_punct(embed, punct):
@@ -254,19 +228,16 @@ def unknown_punct(embed, punct):
     return unknown
 
 
-# In[26]:
 
 
 print(unknown_punct(embeddings1_index, punct))
 
 
-# In[27]:
 
 
 punct_mapping = {"‘": "'", "₹": "e", "´": "'", "°": "", "€": "e", "™": "tm", "√": " sqrt ", "×": "x", "²": "2", "—": "-", "–": "-", "’": "'", "_": "-", "`": "'", '“': '"', '”': '"', '“': '"', "£": "e", '∞': 'infinity', 'θ': 'theta', '÷': '/', 'α': 'alpha', '•': '.', 'à': 'a', '−': '-', 'β': 'beta', '∅': '', '³': '3', 'π': 'pi', }
 
 
-# In[28]:
 
 
 def clean_special_chars(text, punct, mapping):
@@ -283,7 +254,6 @@ def clean_special_chars(text, punct, mapping):
     return text
 
 
-# In[29]:
 
 
 df_train['question_text'] = df_train['question_text'].apply(lambda x: clean_special_chars(x, punct, punct_mapping))
@@ -293,25 +263,21 @@ sentences= df_train['question_text'].apply(lambda x : x.split())
 vocab = build_vocab(sentences)
 
 
-# In[30]:
 
 
 oov = check_coverage(vocab,embeddings1_index)
 
 
-# In[31]:
 
 
 oov[:10]
 
 
-# In[32]:
 
 
 mispell_dict = {'colour': 'color', 'centre': 'center', 'favourite': 'favorite', 'travelling': 'traveling', 'counselling': 'counseling', 'theatre': 'theater', 'cancelled': 'canceled', 'labour': 'labor', 'organisation': 'organization', 'wwii': 'world war 2', 'citicise': 'criticize', 'youtu ': 'youtube ', 'Qoura': 'Quora', 'sallary': 'salary', 'Whta': 'What', 'narcisist': 'narcissist', 'howdo': 'how do', 'whatare': 'what are', 'howcan': 'how can', 'howmuch': 'how much', 'howmany': 'how many', 'whydo': 'why do', 'doI': 'do I', 'theBest': 'the best', 'howdoes': 'how does', 'mastrubation': 'masturbation', 'mastrubate': 'masturbate', "mastrubating": 'masturbating', 'pennis': 'penis', 'Etherium': 'Ethereum', 'narcissit': 'narcissist', 'bigdata': 'big data', '2k17': '2017', '2k18': '2018', 'qouta': 'quota', 'exboyfriend': 'ex boyfriend', 'airhostess': 'air hostess', "whst": 'what', 'watsapp': 'whatsapp', 'demonitisation': 'demonetization', 'demonitization': 'demonetization', 'demonetisation': 'demonetization', 'pokémon': 'pokemon'}
 
 
-# In[33]:
 
 
 def correct_spelling(x, dic):
@@ -320,7 +286,6 @@ def correct_spelling(x, dic):
     return x
 
 
-# In[34]:
 
 
 df_train['question_text'] = df_train['question_text'].progress_apply(lambda x: correct_spelling(x, mispell_dict))
@@ -331,46 +296,39 @@ sentences = [[word for word in sentence] for sentence in tqdm(sentences)]
 vocab = build_vocab(sentences)
 
 
-# In[35]:
 
 
 oov = check_coverage(vocab,embeddings1_index)
 
 
-# In[36]:
 
 
 #del sentences,build_vocab,vocab,oov,mispell_dict,punct,contraction_mapping
 #del check_coverage
 
 
-# In[37]:
 
 
 gc.collect()
 
 
-# In[38]:
 
 
 len_voc = 95000
 max_len =60
 
 
-# In[ ]:
 
 
 
 
 
-# In[39]:
 
 
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 
 
-# In[40]:
 
 
 t = Tokenizer(num_words=len_voc, filters='')
@@ -382,37 +340,31 @@ X_test = pad_sequences(X_test, maxlen=max_len)
 word_index=t.word_index
 
 
-# In[41]:
 
 
 y = df_train['target'].values
 
 
-# In[42]:
 
 
 from sklearn.model_selection import train_test_split
 
 
-# In[43]:
 
 
 X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.1, random_state=420)
 
 
-# In[44]:
 
 
 del df_train
 
 
-# In[45]:
 
 
 gc.collect()
 
 
-# In[46]:
 
 
 def make_embed_matrix(embeddings_index, word_index, len_voc):
@@ -432,7 +384,6 @@ def make_embed_matrix(embeddings_index, word_index, len_voc):
  return embedding_matrix
 
 
-# In[47]:
 
 
 embedding = make_embed_matrix(embeddings1_index, word_index, len_voc)
@@ -441,13 +392,11 @@ del word_index
 gc.collect()
 
 
-# In[48]:
 
 
 early = EarlyStopping(monitor='val_loss', mode="min", patience=2)
 
 
-# In[49]:
 
 
 lstm = Sequential()
@@ -466,26 +415,22 @@ lstm.add(Dense(units = 1, activation = 'sigmoid'))
 lstm.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 
 
-# In[50]:
 
 
 lstm.summary()
 
 
-# In[51]:
 
 
 epochs = 3
 batch_size = 128
 
 
-# In[52]:
 
 
 hist = lstm.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_val,y_val),callbacks=[early])
 
 
-# In[53]:
 
 
 import matplotlib.pyplot as plt
@@ -498,61 +443,51 @@ plt.legend()
 plt.show()
 
 
-# In[54]:
 
 
 from sklearn.metrics import confusion_matrix,classification_report
 
 
-# In[55]:
 
 
 pred_val_y = lstm.predict([X_val], batch_size=1024, verbose=0)
 
 
-# In[56]:
 
 
 pred_val_y = (pred_val_y > 0.50).astype(int)
 
 
-# In[57]:
 
 
 print(classification_report(y_val,pred_val_y))
 
 
-# In[58]:
 
 
 print(confusion_matrix(y_val,pred_val_y))
 
 
-# In[59]:
 
 
 pred_test=lstm.predict([X_test], batch_size=1024, verbose=0)
 
 
-# In[60]:
 
 
 pred_test = (pred_test > 0.50).astype(int)
 
 
-# In[61]:
 
 
 out_df = pd.DataFrame({"qid":df_test["qid"].values})
 
 
-# In[62]:
 
 
 out_df['prediction'] = pred_test
 
 
-# In[63]:
 
 
 out_df.to_csv("submission.csv", index=False)

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import os
@@ -36,7 +35,6 @@ import tensorflow as tf
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 
 
-# In[ ]:
 
 
 # Set some parameters
@@ -47,7 +45,6 @@ path_train = '../input/train/'
 path_test = '../input/test/'
 
 
-# In[ ]:
 
 
 ids= ['1f1cc6b3a4.png','5b7c160d0d.png','6c40978ddf.png','7dfdf6eeb8.png','7e5a6e5013.png']
@@ -65,13 +62,11 @@ for j, img_name in enumerate(ids):
 plt.show()
 
 
-# In[ ]:
 
 
 os.listdir('../input/train/images/')[:10]
 
 
-# In[ ]:
 
 
 
@@ -88,32 +83,27 @@ plt.show()
     
 
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('pinfo2', 'plt.imshow')
 
 
-# In[ ]:
 
 
 train_ids = next(os.walk(path_train+"images"))[2]
 test_ids = next(os.walk(path_test+"images"))[2]
 
 
-# In[ ]:
 
 
 train_ids[:5]
 
 
-# In[ ]:
 
 
 len(train_ids)
 
 
-# In[ ]:
 
 
 # Get and resize train images and masks
@@ -133,13 +123,11 @@ for n, id_ in tqdm_notebook(enumerate(train_ids), total=len(train_ids)):
 print('Done!')
 
 
-# In[ ]:
 
 
 X_train.shape,Y_train.shape#训练样本和label
 
 
-# In[ ]:
 
 
 # Check if training data looks all right
@@ -154,13 +142,11 @@ plt.imshow(np.dstack((tmp,tmp,tmp)))
 plt.show()
 
 
-# In[ ]:
 
 
 Y_trainain[0]
 
 
-# In[ ]:
 
 
 # Define IoU metric
@@ -176,7 +162,6 @@ def mean_iou(y_true, y_pred):
     return K.mean(K.stack(prec), axis=0)
 
 
-# In[ ]:
 
 
 # Build U-Net model
@@ -234,7 +219,6 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=[mean_iou])#
 model.summary()
 
 
-# In[ ]:
 
 
 earlystopper = EarlyStopping(patience=10, verbose=1)
@@ -243,7 +227,6 @@ results = model.fit(X_train, Y_train, validation_split=0.1, batch_size=8, epochs
                     callbacks=[checkpointer])#commit时将 epochs设置为1
 
 
-# In[ ]:
 
 
 # Get and resize test images
@@ -262,7 +245,6 @@ for n, id_ in tqdm_notebook(enumerate(test_ids), total=len(test_ids)):
 print('Done!')
 
 
-# In[ ]:
 
 
 # Predict on train, val and test
@@ -277,7 +259,6 @@ preds_val_t = (preds_val > 0.5).astype(np.uint8)
 preds_test_t = (preds_test > 0.5).astype(np.uint8)
 
 
-# In[ ]:
 
 
 index = 102
@@ -296,7 +277,6 @@ plt.imshow(np.dstack((tmp,tmp,tmp)))
 plt.show()
 
 
-# In[ ]:
 
 
 # Create list of upsampled test masks
@@ -308,13 +288,11 @@ for i in tnrange(len(preds_test)):
 print(preds_test_upsampled[0].shape)#preds_test_upsampled里面是预测好的mask 切大小为101*101
 
 
-# In[ ]:
 
 
 X_train[0].shape
 
 
-# In[ ]:
 
 
 # Perform a sanity check on some random training samples
@@ -329,7 +307,6 @@ plt.imshow(np.dstack((tmp,tmp,tmp)))
 plt.show()
 
 
-# In[ ]:
 
 
 def RLenc(img, order='F', format=True):#将预测号的mask 转化为行程编码
@@ -372,7 +349,6 @@ def RLenc(img, order='F', format=True):#将预测号的mask 转化为行程编�
 pred_dict = {fn[:-4]:RLenc(np.round(preds_test_upsampled[i])) for i,fn in tqdm_notebook(enumerate(test_ids))}
 
 
-# In[ ]:
 
 
 sub = pd.DataFrame.from_dict(pred_dict,orient='index')
@@ -381,19 +357,16 @@ sub.columns = ['rle_mask']
 sub.to_csv('submission.csv')
 
 
-# In[ ]:
 
 
 pred_dict = {fn[:-4]:RLenc(np.round(np.random.rand(101,101)*255)) for i,fn in tqdm_notebook(enumerate(str([range(10)])))}
 
 
-# In[ ]:
 
 
 get_ipython().system('ls')
 
 
-# In[ ]:
 
 
 # import the modules we'll need
@@ -421,7 +394,6 @@ create_download_link(df)
 # ↓ ↓ ↓  Yay, download link! ↓ ↓ ↓ 
 
 
-# In[ ]:
 
 
 

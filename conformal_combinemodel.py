@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -518,7 +517,6 @@ def embeding_model(MAX_CATEGORY, MAX_CATEGORY1, MAX_CATEGORY2, MAX_CATEGORY3, MA
     return model
 
 
-# In[2]:
 
 
 path = "../input/"
@@ -600,7 +598,6 @@ del train
 gc.collect()
 
 
-# In[3]:
 
 
 from sklearn.linear_model import LinearRegression
@@ -619,7 +616,6 @@ test_id["price"] = pred
 test_id.to_csv("ans.csv", index=False)
 
 
-# In[ ]:
 
 
 

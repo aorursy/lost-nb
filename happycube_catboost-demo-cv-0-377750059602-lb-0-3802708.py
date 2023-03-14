@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -21,14 +20,12 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import xgboost
 import catboost
 
 
-# In[3]:
 
 
 def load_data(path_data):
@@ -196,14 +193,12 @@ def ka_add_groupby_features_n_vs_1(df, group_columns_list, target_columns_list, 
         return df_new
 
 
-# In[4]:
 
 
 path_data = '../input/'
 priors, train, orders, products, aisles, departments, sample_submission = load_data(path_data)
 
 
-# In[5]:
 
 
 try:
@@ -312,7 +307,6 @@ except:
     data.to_pickle('kernel38-data.pkl')
 
 
-# In[6]:
 
 
 try:
@@ -341,7 +335,6 @@ except:
     df_train_gt.to_csv('train.csv')
 
 
-# In[7]:
 
 
 def compare_results(df_gt, df_preds):
@@ -364,20 +357,17 @@ def compare_results(df_gt, df_preds):
     return(np.mean(f1))
 
 
-# In[8]:
 
 
 data = pd.merge(data, products.drop('product_name', axis=1), on='product_id')
 
 
-# In[16]:
 
 
 X_test = data.loc[data.eval_set == "test",:].copy()
 X_test.drop(['eval_set'], axis=1, inplace=True)
 
 
-# In[9]:
 
 
 train = data.loc[data.eval_set == "train",:].copy()
@@ -385,7 +375,6 @@ train.drop(['eval_set'], axis=1, inplace=True)
 train.loc[:, 'reordered'] = train.reordered.fillna(0)
 
 
-# In[10]:
 
 
 def catboost_cv(X_train, y_train, X_val, y_val, features_to_use):
@@ -412,7 +401,6 @@ def catboost_cv(X_train, y_train, X_val, y_val, features_to_use):
     return cb
 
 
-# In[ ]:
 
 
 df_cvfolds = []
@@ -463,20 +451,17 @@ for fold in range(4):
     df_cvfolds.append(fullfold)
 
 
-# In[15]:
 
 
 df_cv = pd.concat(df_cvfolds)
 print(compare_results(df_train_gt, df_cv))
 
 
-# In[42]:
 
 
 ### now run model with 100% of train set for submission
 
 
-# In[18]:
 
 
 cb_full = catboost.CatBoostClassifier(iterations=100, 
@@ -497,7 +482,6 @@ cb_full.fit(X=train[features_to_use].values,
        )
 
 
-# In[20]:
 
 
 testpreds = X_test[['user_id', 'product_id', 'order_id']].copy()
@@ -505,7 +489,6 @@ testpreds['reordered'] = (cb_full.predict_proba(X_test[features_to_use].values)[
 testpreds.product_id = testpreds.product_id.astype(str)
 
 
-# In[30]:
 
 
 g = testpreds[testpreds.reordered == 1].groupby('order_id', sort=False)
@@ -514,7 +497,6 @@ df_testpreds = g[['product_id']].agg(lambda x: ' '.join(set(x)))
 df_testpreds.head()
 
 
-# In[34]:
 
 
 # complete (but empty) test df
@@ -523,14 +505,12 @@ df_test.index.name = 'order_id'
 df_test['products'] = ['None'] * len(df_test)
 
 
-# In[35]:
 
 
 # yup, there are ~3345 order_id's with no orders
 len(df_test), len(df_testpreds)
 
 
-# In[37]:
 
 
 # combine empty output df with predictions

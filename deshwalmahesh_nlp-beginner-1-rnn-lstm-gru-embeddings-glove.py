@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd # data handling
@@ -21,7 +20,6 @@ import time # time module
 import os # import operating system
 
 
-# In[2]:
 
 
 SEED = 13 # reproducible results: Same results in every run
@@ -44,14 +42,12 @@ plt.style.use('seaborn') # use seaborn style plotting
 # nltk.download('punkt') # if using first time. Kaggle has all the things already downloaded
 
 
-# In[3]:
 
 
 df = pd.read_csv(DATA_PATH+'jigsaw-toxic-comment-train.csv')
 df.head()
 
 
-# In[4]:
 
 
 df['toxic'].value_counts().plot(kind='pie',autopct='%.2f%%',labels=['Not Toxic','Toxic'],cmap='Set2') 
@@ -59,7 +55,6 @@ df['toxic'].value_counts().plot(kind='pie',autopct='%.2f%%',labels=['Not Toxic',
 plt.show()
 
 
-# In[5]:
 
 
 text = " ".join(comment for comment in df.comment_text) # join all the comments to make a new one big comment
@@ -74,7 +69,6 @@ plt.axis("off")
 plt.show()'''
 
 
-# In[6]:
 
 
 df = df.loc[:,['comment_text','toxic']] # we need just the two columns
@@ -83,7 +77,6 @@ df.dropna(subset=['comment_text','toxic'],inplace=True) # we do not need any of 
 df.head()
 
 
-# In[7]:
 
 
 df,test_df = train_test_split(df,test_size=0.25,random_state=SEED,stratify=df['toxic'])
@@ -101,7 +94,6 @@ val_df.to_csv(OUT_PATH+'val.csv',index=False)
 test_df.to_csv(OUT_PATH+'test.csv',index=False)
 
 
-# In[8]:
 
 
 text_field = Field(tokenize=word_tokenize)
@@ -117,7 +109,6 @@ train, val, test = TabularDataset.splits(path=OUT_PATH, train='train.csv',valida
                                          format='csv',skip_header=True,fields=fields)
 
 
-# In[9]:
 
 
 print(f'Type of "train:" {type(train)}\n Length of "train": {len(train)}\n' )
@@ -127,7 +118,6 @@ print("Contents at random index:\n",vars(train.examples[i]))
 # vars is used to see the whole dictonary when the classes or modules have __dict__() used
 
 
-# In[10]:
 
 
 text_field.build_vocab(train,max_size=100000) 
@@ -140,7 +130,6 @@ print({k: text_field.vocab.stoi[k] for k in list(text_field.vocab.stoi)[:15]})
 # this is just pure python code to get first N elements from a a dictonary, as a dictonary
 
 
-# In[11]:
 
 
 print(f"Most common 15 words in the vocab are: {text_field.vocab.freqs.most_common(15)}")
@@ -148,7 +137,6 @@ print(f"Most common 15 words in the vocab are: {text_field.vocab.freqs.most_comm
 # number of times this specific word has apprered in the whole training data set
 
 
-# In[12]:
 
 
 train_iter, val_iter, test_iter = BucketIterator.splits((train,val,test), batch_sizes=(32,128,128),
@@ -157,7 +145,6 @@ train_iter, val_iter, test_iter = BucketIterator.splits((train,val,test), batch_
                                               device=device) # use the cuda device if available
 
 
-# In[13]:
 
 
 class Network(torch.nn.Module):
@@ -237,7 +224,6 @@ class Network(torch.nn.Module):
         return self.dense(hidden_squeezed) # these are not the probabilities. We still need to use an activation  
 
 
-# In[14]:
 
 
 def train_network(network,train_iter,optimizer,loss_fn,epoch_num):
@@ -290,7 +276,6 @@ def train_network(network,train_iter,optimizer,loss_fn,epoch_num):
     return epoch_loss/len(train_iter), epoch_acc/len(train_iter)
 
 
-# In[15]:
 
 
 def evaluate_network(network,val_test_iter,optimizer,loss_fn):
@@ -329,7 +314,6 @@ def evaluate_network(network,val_test_iter,optimizer,loss_fn):
         return total_loss/len(val_test_iter), total_acc/len(val_test_iter)
 
 
-# In[16]:
 
 
 in_neuron = len(text_field.vocab)
@@ -350,7 +334,6 @@ for epoch in range(EPOCH):
     tqdm.write(f'''End of Epoch: {epoch+1}  |  Train Loss: {train_loss:.3f}  |  Val Loss: {val_loss:.3f}  |  Train Acc: {train_acc*100:.2f}%  |  Val Acc: {val_acc*100:.2f}%''')
 
 
-# In[17]:
 
 
 network = Network(in_neuron,m_type='lstm') 
@@ -366,7 +349,6 @@ for epoch in range(EPOCH):
     tqdm.write(f'''End of Epoch: {epoch+1}  |  Train Loss: {train_loss:.3f}  |  Val Loss: {val_loss:.3f}  |  Train Acc: {train_acc*100:.2f}%  |  Val Acc: {val_acc*100:.2f}%''')
 
 
-# In[18]:
 
 
 class DeepNetwork(torch.nn.Module):
@@ -431,7 +413,6 @@ class DeepNetwork(torch.nn.Module):
         return self.dense(t)
 
 
-# In[19]:
 
 
 rnn_kwargs = {'num_layers':2,'bidirectional':True}
@@ -450,7 +431,6 @@ for epoch in range(EPOCH):
     tqdm.write(f'''End of Epoch: {epoch+1}  |  Train Loss: {train_loss:.3f}  |  Val Loss: {val_loss:.3f}  |  Train Acc: {train_acc*100:.2f}%  |  Val Acc: {val_acc*100:.2f}%''')
 
 
-# In[20]:
 
 
 glove = vocab.Vectors(IN_PATH+GLOVE_TEXT_PATH, OUT_PATH)
@@ -461,13 +441,11 @@ print(f'Shape of GloVe vectors is {glove.vectors.shape}')
 # by default it'll load (300*840Billion) dimensional matrix but we'll use 100D version
 
 
-# In[21]:
 
 
 print(f"eminem is represented by the index location at: {glove.stoi['eminem']} and has the following vector values: \n {glove['eminem']}")
 
 
-# In[22]:
 
 
 def get_vector(glove,word):
@@ -541,19 +519,16 @@ def find_analogy(glove,w1,w11,w2,n=7):
     return closest_n
 
 
-# In[23]:
 
 
 print_neatly(find_closest(glove,'eminem'))
 
 
-# In[24]:
 
 
 print_neatly(find_analogy(glove,'eminem','rapper','messi'))
 
 
-# In[25]:
 
 
 text_field = Field(tokenize=word_tokenize)
@@ -584,7 +559,6 @@ train_iter, val_iter, test_iter = BucketIterator.splits((train,val,test), batch_
                                               device=device) 
 
 
-# In[26]:
 
 
 in_neuron = len(text_field.vocab)
@@ -618,7 +592,6 @@ if torch.cuda.is_available():
 # model.embedding.weight.requires_grad = False
 
 
-# In[27]:
 
 
 for epoch in range(EPOCH):
@@ -627,7 +600,6 @@ for epoch in range(EPOCH):
     tqdm.write(f'''End of Epoch: {epoch+1}  |  Train Loss: {train_loss:.3f}  |  Val Loss: {val_loss:.3f}  |  Train Acc: {train_acc*100:.2f}%  |  Val Acc: {val_acc*100:.2f}%''')
 
 
-# In[ ]:
 
 
 

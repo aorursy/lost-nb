@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install pandas pillow matplotlib sklearn torch torchvision albumentations -q')
@@ -41,13 +40,11 @@ get_ipython().system('pip install --upgrade pip -q')
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 get_ipython().system('ls ../input/understanding_cloud_organization')
 
 
-# In[3]:
 
 
 home = '../input/understanding_cloud_organization'
@@ -81,21 +78,18 @@ print(data.shape)
 data.head()
 
 
-# In[4]:
 
 
 #  number of labels in each image
 data.groupby('id').count().sort_values('label')
 
 
-# In[5]:
 
 
 #  number of images that have a number of labels
 data.groupby('id').count().sort_values('label').groupby('label').count()
 
 
-# In[6]:
 
 
 from PIL import Image
@@ -146,13 +140,11 @@ images = list(set(data.index))
 plot_images(images)
 
 
-# In[7]:
 
 
 plot_images(images)
 
 
-# In[8]:
 
 
 def get_img(data, idx=None, folder='train_images'):
@@ -182,13 +174,11 @@ def plot_with_aug(aug, img):
     return f
 
 
-# In[9]:
 
 
 f = plot_with_aug(albu.HorizontalFlip(p=0.5), get_img(data)[0])
 
 
-# In[10]:
 
 
 f = plot_with_aug(albu.ShiftScaleRotate(
@@ -200,7 +190,6 @@ f = plot_with_aug(albu.ShiftScaleRotate(
 ), get_img(data)[0])
 
 
-# In[11]:
 
 
 f = plot_with_aug(albu.GridDistortion(
@@ -208,7 +197,6 @@ f = plot_with_aug(albu.GridDistortion(
 ), get_img(data)[0])
 
 
-# In[12]:
 
 
 f = plot_with_aug(albu.OpticalDistortion(
@@ -216,7 +204,6 @@ f = plot_with_aug(albu.OpticalDistortion(
 ), get_img(data)[0])
 
 
-# In[13]:
 
 
 def make_all_masks(data, img_id, shape=(1400, 2100)):
@@ -238,7 +225,6 @@ def make_all_masks(data, img_id, shape=(1400, 2100)):
 masks = make_all_masks(data, data.index[0])
 
 
-# In[14]:
 
 
 class CloudDataset(Dataset):
@@ -303,7 +289,6 @@ def get_training_augmentation():
     return albu.Compose(train_transform)
 
 
-# In[15]:
 
 
 
@@ -341,13 +326,11 @@ loaders = {
 }
 
 
-# In[16]:
 
 
 len(DataLoader(valid_dataset, batch_size=bs, shuffle=True, num_workers=num_workers))
 
 
-# In[17]:
 
 
 # model, criterion, optimizer
@@ -422,7 +405,6 @@ criterion = BCEDiceLoss(eps=1.)  #  training on CE, reporting on DICE
 runner = SupervisedRunner()
 
 
-# In[18]:
 
 
 runner.train(
@@ -438,7 +420,6 @@ runner.train(
 )
 
 
-# In[19]:
 
 
 from catalyst.dl import utils
@@ -449,7 +430,6 @@ utils.plot_metrics(
 )
 
 
-# In[20]:
 
 
 from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, InferCallback, CheckpointCallback
@@ -482,7 +462,6 @@ for i, (batch, output) in enumerate(tqdm.tqdm(zip(
         probabilities[i * 4 + j, :, :] = probability
 
 
-# In[21]:
 
 
 def post_process(probability, threshold, min_size):
@@ -543,7 +522,6 @@ for class_id in range(4):
     class_params[class_id] = (best_threshold, best_size)
 
 
-# In[22]:
 
 
 print(class_params)

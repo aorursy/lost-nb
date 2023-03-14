@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import os
@@ -36,7 +35,6 @@ import tensorflow as tf
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 
 
-# In[ ]:
 
 
 # Set some parameters
@@ -47,7 +45,6 @@ path_train = '../input/train/'
 path_test = '../input/test/'
 
 
-# In[ ]:
 
 
 ids= ['1f1cc6b3a4','5b7c160d0d','6c40978ddf','7dfdf6eeb8','7e5a6e5013']
@@ -64,14 +61,12 @@ for j, img_name in enumerate(ids):
 plt.show()
 
 
-# In[ ]:
 
 
 train_ids = next(os.walk(path_train+"images"))[2]
 test_ids = next(os.walk(path_test+"images"))[2]
 
 
-# In[ ]:
 
 
 # Get and resize train images and masks
@@ -91,13 +86,11 @@ for n, id_ in tqdm_notebook(enumerate(train_ids), total=len(train_ids)):
 print('Done!')
 
 
-# In[ ]:
 
 
 X_train[ix].shape
 
 
-# In[ ]:
 
 
 # Check if training data looks all right
@@ -109,7 +102,6 @@ plt.imshow(np.dstack((tmp,tmp,tmp)))
 plt.show()
 
 
-# In[ ]:
 
 
 # Define IoU metric
@@ -125,7 +117,6 @@ def mean_iou(y_true, y_pred):
     return K.mean(K.stack(prec), axis=0)
 
 
-# In[ ]:
 
 
 # Build U-Net model
@@ -178,7 +169,6 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=[mean_iou])
 model.summary()
 
 
-# In[ ]:
 
 
 earlystopper = EarlyStopping(patience=5, verbose=1)
@@ -187,7 +177,6 @@ results = model.fit(X_train, Y_train, validation_split=0.1, batch_size=8, epochs
                     callbacks=[earlystopper, checkpointer])
 
 
-# In[ ]:
 
 
 # Get and resize test images
@@ -207,7 +196,6 @@ for n, id_ in tqdm_notebook(enumerate(test_ids), total=len(test_ids)):
 print('Done!')
 
 
-# In[ ]:
 
 
 # Predict on train, val and test
@@ -222,7 +210,6 @@ preds_val_t = (preds_val > 0.5).astype(np.uint8)
 preds_test_t = (preds_test > 0.5).astype(np.uint8)
 
 
-# In[ ]:
 
 
 # Create list of upsampled test masks
@@ -233,13 +220,11 @@ for i in tnrange(len(preds_test)):
                                        mode='constant', preserve_range=True))
 
 
-# In[ ]:
 
 
 preds_test_upsampled[0].shape
 
 
-# In[ ]:
 
 
 # Perform a sanity check on some random training samples
@@ -254,7 +239,6 @@ plt.imshow(np.dstack((tmp,tmp,tmp)))
 plt.show()
 
 
-# In[ ]:
 
 
 def RLenc(img, order='F', format=True):
@@ -297,7 +281,6 @@ def RLenc(img, order='F', format=True):
 pred_dict = {fn[:-4]:RLenc(np.round(preds_test_upsampled[i])) for i,fn in tqdm_notebook(enumerate(test_ids))}
 
 
-# In[ ]:
 
 
 sub = pd.DataFrame.from_dict(pred_dict,orient='index')
@@ -306,13 +289,11 @@ sub.columns = ['rle_mask']
 sub.to_csv('submission.csv')
 
 
-# In[ ]:
 
 
 os.listdir('../working/')
 
 
-# In[ ]:
 
 
 

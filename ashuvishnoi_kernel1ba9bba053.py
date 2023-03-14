@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -35,7 +34,6 @@ from keras.utils import np_utils
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 TRAIN_DIR = '../input/train/'
@@ -52,31 +50,26 @@ train_cats =   [TRAIN_DIR+i for i in os.listdir(TRAIN_DIR) if 'cat' in i]
 test_images =  [TEST_DIR+i for i in os.listdir(TEST_DIR)]
 
 
-# In[ ]:
 
 
 train_images = train_dogs[:1000] + train_cats[:1000]
 
 
-# In[ ]:
 
 
 random.shuffle(train_images)
 
 
-# In[ ]:
 
 
 test_images =  test_images[:25]
 
 
-# In[ ]:
 
 
 img=cv2.imread(train_images)
 
 
-# In[ ]:
 
 
 def read_image(path):
@@ -93,14 +86,12 @@ def load(z):
     return arr
 
 
-# In[ ]:
 
 
 train=load(train_images)
 test=load(test_images)
 
 
-# In[ ]:
 
 
 labels=[]
@@ -111,19 +102,16 @@ for i in train_images:
         labels.append(0)
 
 
-# In[ ]:
 
 
 sns.countplot(labels)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 optimizer = RMSprop(lr=1e-4)
@@ -173,7 +161,6 @@ def catdog():
 model = catdog()
 
 
-# In[ ]:
 
 
 nb_epoch = 10
@@ -190,7 +177,6 @@ def run_catdog():
 predictions = run_catdog()
 
 
-# In[ ]:
 
 
 for i in range(0,10):
@@ -203,7 +189,6 @@ for i in range(0,10):
     plt.show()
 
 
-# In[ ]:
 
 
 

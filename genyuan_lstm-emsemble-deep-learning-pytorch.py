@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import re
@@ -29,7 +28,6 @@ import torch.utils.data
 tqdm.pandas()
 
 
-# In[2]:
 
 
 def seed_torch(seed=43):
@@ -41,7 +39,6 @@ def seed_torch(seed=43):
     torch.backends.cudnn.deterministic = True
 
 
-# In[3]:
 
 
 embed_size = 300      # how big is each word vector
@@ -54,7 +51,6 @@ train_epochs = 4
 SEED = 43
 
 
-# In[4]:
 
 
 puncts = [',', '.', '"', ':', ')', '(', '-', '!', '?', '|', ';', "'", '$', '&', '/', '[', ']', '>', '%', '=', '#', '*', '+', '\\', '•',  '~', '@', '£', 
@@ -170,7 +166,6 @@ def correct_first_word(x):
     return x
 
 
-# In[5]:
 
 
 def load_and_prec():
@@ -227,7 +222,6 @@ def load_and_prec():
 train_X, test_X, train_y, word_index = load_and_prec()
 
 
-# In[6]:
 
 
 def load_glove(word_index):
@@ -293,7 +287,6 @@ def load_para(word_index):
     return embedding_matrix
 
 
-# In[7]:
 
 
 embedding_matrix_1 = load_glove(word_index)
@@ -306,7 +299,6 @@ embedding_matrix23 = np.concatenate([embedding_matrix_2, embedding_matrix_3], ax
 embedding_matrixs = [embedding_matrix12, embedding_matrix13, embedding_matrix23, embedding_matrix13]
 
 
-# In[8]:
 
 
 class Attention(nn.Module):
@@ -351,7 +343,6 @@ class Attention(nn.Module):
         return torch.sum(weighted_input, 1)
 
 
-# In[9]:
 
 
 class NeuralNet(nn.Module):
@@ -397,7 +388,6 @@ class NeuralNet(nn.Module):
         return out
 
 
-# In[10]:
 
 
 class CyclicLR(object):
@@ -493,14 +483,12 @@ class CyclicLR(object):
         return lrs
 
 
-# In[11]:
 
 
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 
-# In[12]:
 
 
 def threshold_search(y_true, y_proba):
@@ -515,7 +503,6 @@ def threshold_search(y_true, y_proba):
     return search_result
 
 
-# In[13]:
 
 
 def train_and_predict1():
@@ -596,7 +583,6 @@ def train_and_predict1():
     return valid_y0, valid_preds, test_preds
 
 
-# In[14]:
 
 
 def train_and_predict2():
@@ -674,7 +660,6 @@ def train_and_predict2():
     return avgThreshold, test_preds
 
 
-# In[15]:
 
 
 def train_and_predict3():
@@ -752,7 +737,6 @@ def train_and_predict3():
     return train_preds, test_preds
 
 
-# In[16]:
 
 
 #valid_y0, valid_preds, test_preds = train_and_predict1()
@@ -763,7 +747,6 @@ def train_and_predict3():
 #sub.to_csv("submission.csv", index=False)
 
 
-# In[17]:
 
 
 #avgThreshold, test_preds = train_and_predict2()
@@ -773,7 +756,6 @@ def train_and_predict3():
 #sub.to_csv("submission.csv", index=False)
 
 
-# In[18]:
 
 
 train_preds, test_preds = train_and_predict3()
@@ -783,7 +765,6 @@ sub.prediction = (test_preds > search_result['threshold']).astype(int)
 sub.to_csv("submission.csv", index=False)
 
 
-# In[19]:
 
 
 print(search_result)

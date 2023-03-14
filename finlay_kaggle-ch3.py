@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import os
@@ -16,7 +15,6 @@ from sklearn.metrics import log_loss
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 
 
-# In[ ]:
 
 
 # hold-out
@@ -37,7 +35,6 @@ from sklearn.model_selection import TimeSeriesSplit
 from sklearn.utils import resample
 
 
-# In[ ]:
 
 
 # X = np.zeros((20, 5))
@@ -49,7 +46,6 @@ Y = np.array([1]*5 + [2]*5 + [3]*5 + [4]*5)
 print(X, Y)
 
 
-# In[ ]:
 
 
 # 直接按照比例拆分
@@ -61,7 +57,6 @@ train_X, val_X, train_y, val_y = train_test_split(X, Y, test_size = 0.2, stratif
 print(train_y, val_y)
 
 
-# In[ ]:
 
 
 kf = KFold(n_splits=5)
@@ -71,7 +66,6 @@ for train_idx, test_idx, in kf.split(X, Y):
     print('')
 
 
-# In[ ]:
 
 
 kf = RepeatedKFold(n_splits=5, n_repeats=2)
@@ -81,7 +75,6 @@ for train_idx, test_idx, in kf.split(X, Y):
     print('')
 
 
-# In[ ]:
 
 
 kf = StratifiedKFold(n_splits=5)
@@ -91,7 +84,6 @@ for train_idx, test_idx, in kf.split(X, Y):
     print('')
 
 
-# In[ ]:
 
 
 kf = RepeatedStratifiedKFold(n_splits=5, n_repeats=2)
@@ -101,7 +93,6 @@ for train_idx, test_idx, in kf.split(X, Y):
     print('')
 
 
-# In[ ]:
 
 
 kf = TimeSeriesSplit(n_splits=5)
@@ -111,7 +102,6 @@ for train_idx, test_idx, in kf.split(X, Y):
     print('')
 
 
-# In[ ]:
 
 
 train_X, train_Y = resample(X, Y, n_samples=16)
@@ -119,20 +109,17 @@ val_X, val_Y = resample(X, Y, n_samples=4)
 print(train_Y, val_Y)
 
 
-# In[ ]:
 
 
 get_ipython().system(' unzip ../input/two-sigma-connect-rental-listing-inquiries/train.json.zip')
 get_ipython().system(' unzip ../input/two-sigma-connect-rental-listing-inquiries/test.json.zip')
 
 
-# In[ ]:
 
 
 get_ipython().system('ls ./')
 
 
-# In[ ]:
 
 
 train_df = pd.read_json('./train.json')
@@ -171,7 +158,6 @@ train_df["created_hour"] = train_df["created"].dt.hour
 test_df["created_hour"] = test_df["created"].dt.hour
 
 
-# In[ ]:
 
 
 categorical = ["display_address", "manager_id", "building_id", "street_address"]
@@ -185,7 +171,6 @@ for f in categorical:
             features_to_use.append(f)
 
 
-# In[ ]:
 
 
 train_df['features'] = train_df["features"].apply(lambda x: " ".join(["_".join(i.split(" ")) for i in x]))
@@ -203,7 +188,6 @@ train_y = np.array(train_df['interest_level'].apply(lambda x: target_num_map[x])
 print(train_X.shape, test_X.shape)
 
 
-# In[ ]:
 
 
 from warnings import filterwarnings
@@ -217,7 +201,6 @@ from xgboost import XGBClassifier
 from sklearn.preprocessing import StandardScaler
 
 
-# In[ ]:
 
 
 clf = LogisticRegression()
@@ -226,7 +209,6 @@ clf = LGBMClassifier()
 # clf = XGBClassifier()
 
 
-# In[ ]:
 
 
 # 这写了一个bug，你能改好吗？
@@ -250,7 +232,6 @@ for train_idx, test_idx, in kf.split(train_X, train_df['interest_level']):
 test_pred /= 5
 
 
-# In[ ]:
 
 
 train_X = train_df[features_to_use].values
@@ -273,7 +254,6 @@ for train_idx, test_idx, in kf.split(train_X, train_df['interest_level']):
 test_pred /= 5
 
 
-# In[ ]:
 
 
 # lightGBM
@@ -301,7 +281,6 @@ for train_idx, test_idx, in kf.split(train_X, train_df['interest_level']):
 test_pred /= 5
 
 
-# In[ ]:
 
 
 out_df = pd.DataFrame(test_pred)
@@ -310,13 +289,11 @@ out_df["listing_id"] = test_df.listing_id.values
 out_df.to_csv("xgb_starter2.csv", index=False)
 
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('pinfo', 'LGBMClassifier')
 
 
-# In[ ]:
 
 
 from sklearn.metrics import make_scorer
@@ -336,7 +313,6 @@ clf = GridSearchCV(LGBMClassifier(), param_grid=parameters, n_jobs=6, scoring=my
 clf.fit(train_X, train_y)
 
 
-# In[ ]:
 
 
 from sklearn.metrics import make_scorer

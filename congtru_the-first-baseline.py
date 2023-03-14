@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -28,14 +27,12 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 app_train=pd.read_csv('/kaggle/input/home-credit-default-risk/application_train.csv')
 app_test=pd.read_csv('/kaggle/input/home-credit-default-risk/application_test.csv')
 
 
-# In[3]:
 
 
 install=pd.read_csv('/kaggle/input/home-credit-default-risk/installments_payments.csv')
@@ -48,32 +45,27 @@ prev=pd.read_csv('/kaggle/input/home-credit-default-risk/previous_application.cs
 default=pd.read_csv('/kaggle/input/home-credit-default-risk/bureau_balance.csv')
 
 
-# In[4]:
 
 
 print(app_train.shape, app_test.shape)
 
 
-# In[5]:
 
 
 sample=pd.read_csv('/kaggle/input/home-credit-default-risk/sample_submission.csv')
 sample.head()
 
 
-# In[6]:
 
 
 app_train.describe()
 
 
-# In[7]:
 
 
 app_test.describe()
 
 
-# In[8]:
 
 
 def mis_data(data):
@@ -87,7 +79,6 @@ mis_test=mis_data(app_train)
 print(mis_test.head(10))
 
 
-# In[9]:
 
 
 num_cols=app_train.drop(['SK_ID_CURR', 'TARGET'], axis=1).select_dtypes(include='number').columns
@@ -95,14 +86,12 @@ print(num_cols)
 print(len(num_cols))
 
 
-# In[10]:
 
 
 num_n_val=pd.DataFrame({'n_values':app_train[num_cols].nunique().sort_values(ascending=False)})
 num_n_val[:10]
 
 
-# In[11]:
 
 
 # Put the negative values to positive
@@ -110,7 +99,6 @@ app_train[num_cols]=np.sign(app_train[num_cols])*app_train[num_cols]
 app_test[num_cols]=np.sign(app_test[num_cols])*app_test[num_cols]
 
 
-# In[12]:
 
 
 # Outliers
@@ -120,7 +108,6 @@ def outlier(data, cols):
     return data
 
 
-# In[13]:
 
 
 #processing outliers
@@ -129,7 +116,6 @@ app_train=outlier(app_train, outlier_col)
 app_test=outlier(app_test, outlier_col)
 
 
-# In[14]:
 
 
 def hist_plot(data, cols, m,n, n_bins):
@@ -141,7 +127,6 @@ def hist_plot(data, cols, m,n, n_bins):
         sns.distplot(data[i], bins=n_bins)
 
 
-# In[15]:
 
 
 def box_plot(data, cols, m,n):
@@ -153,7 +138,6 @@ def box_plot(data, cols, m,n):
         sns.boxplot(y=data[i])
 
 
-# In[16]:
 
 
 #Logarit transform for the amt_cols
@@ -162,7 +146,6 @@ app_train[amt_cols]=np.log(app_train[amt_cols])
 app_test[amt_cols]=np.log(app_test[amt_cols])
 
 
-# In[17]:
 
 
 #transform the day to year for the day_cols
@@ -172,7 +155,6 @@ for col in day_cols:
     app_test[col]=app_test[col]//365
 
 
-# In[18]:
 
 
 """
@@ -185,7 +167,6 @@ def discretization(data, cols, n_bins):
     """
 
 
-# In[19]:
 
 
 def discretization(train, test, n_bins, cols):
@@ -200,7 +181,6 @@ def discretization(train, test, n_bins, cols):
     return train, test
 
 
-# In[20]:
 
 
 discret_cols=amt_cols+['EXT_SOURCE_1', 'EXT_SOURCE_2', 'EXT_SOURCE_3']
@@ -208,7 +188,6 @@ app_train, app_test=discretization(app_train, app_test, 20, discret_cols)
 app_train, app_test=discretization(app_train, app_test, 10, day_cols)
 
 
-# In[21]:
 
 
 cut_cols=discret_cols+day_cols
@@ -216,7 +195,6 @@ cut_cols=[s+'_cut' for s in cut_cols]
 cut_cols
 
 
-# In[22]:
 
 
 """
@@ -227,7 +205,6 @@ app_test=discretization(app_test, ['DAYS_EMPLOYED'], range(0, 40, 5))
 """
 
 
-# In[23]:
 
 
 from sklearn.preprocessing import MinMaxScaler
@@ -243,26 +220,22 @@ def scale(train, test, cols):
     return train, test
 
 
-# In[24]:
 
 
 #scale_cols=list(set(num_cols).difference({'DAYS_EMPLOYED', 'DAYS_BIRTH'}))
 app_train, app_test=scale(app_train, app_test, num_cols)
 
 
-# In[25]:
 
 
 app_train[num_cols].head()
 
 
-# In[26]:
 
 
 app_test[num_cols].head()
 
 
-# In[27]:
 
 
 """
@@ -320,7 +293,6 @@ box_plot(app_train, num_n_val.index[20:40], 5,4)
 box_plot(app_train, num_n_val.index[60:80], 5,4)
 
 
-# In[28]:
 
 
 object_cols=app_train.select_dtypes(include='object').columns
@@ -328,14 +300,12 @@ print(object_cols)
 print(len(object_cols))
 
 
-# In[29]:
 
 
 obj_val=pd.DataFrame({'n_values':app_train[object_cols].nunique().sort_values(ascending=False)})
 obj_val
 
 
-# In[30]:
 
 
 """#ORGANIZATION_TYPE
@@ -346,7 +316,6 @@ print(ratio_label)
 """
 
 
-# In[31]:
 
 
 """for col in object_cols:
@@ -355,7 +324,6 @@ print(ratio_label)
     """
 
 
-# In[32]:
 
 
 """
@@ -394,14 +362,12 @@ for i in range(7):
 """
 
 
-# In[33]:
 
 
 app_train[object_cols].replace(['XNA', 'unknown'], np.nan, inplace=True)
 app_test[object_cols].replace(['XNA', 'unknown'], np.nan, inplace=True)
 
 
-# In[34]:
 
 
 """
@@ -413,7 +379,6 @@ for col in object_cols:
 """
 
 
-# In[35]:
 
 
 #frequence encoding the object values
@@ -426,7 +391,6 @@ def obj_enc(train, test, cols):
     return train, test
 
 
-# In[36]:
 
 
 app_train, app_test=obj_enc(app_train, app_test, object_cols)
@@ -435,7 +399,6 @@ print('-----------')
 print(app_test['NAME_CONTRACT_TYPE'].value_counts())
 
 
-# In[37]:
 
 
 y_train=app_train['TARGET']
@@ -443,13 +406,11 @@ X_train=app_train.drop(['SK_ID_CURR','TARGET'], axis=1)
 X_test=app_test.drop(['SK_ID_CURR'], axis=1)
 
 
-# In[38]:
 
 
 X_train.columns
 
 
-# In[39]:
 
 
 #from sklearn.experimental import enable_iterative_imputer
@@ -461,7 +422,6 @@ def impute_iterative(data):
     return imp_data
 
 
-# In[40]:
 
 
 def impute_knn(data):
@@ -471,7 +431,6 @@ def impute_knn(data):
     return imp_data
 
 
-# In[41]:
 
 
 from sklearn.impute import SimpleImputer
@@ -483,7 +442,6 @@ def impute_simple(data):
     return imp_data
 
 
-# In[42]:
 
 
 """
@@ -493,7 +451,6 @@ X_test=impute_simple(X_test)
 """
 
 
-# In[43]:
 
 
 """
@@ -505,7 +462,6 @@ for col in object_cols:
         """
 
 
-# In[44]:
 
 
 #calulate the woe
@@ -523,7 +479,6 @@ def woe_feature(train, test, cols, label):
     return train, test
 
 
-# In[45]:
 
 
 #target encoding
@@ -545,14 +500,12 @@ def reg(trn_set, label, cols):
     return trn_set    
 
 
-# In[46]:
 
 
 for i in object_cols:
     print(i, X_train[i].value_counts())
 
 
-# In[47]:
 
 
 import lightgbm as lgb
@@ -563,13 +516,11 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import auc, roc_curve
 
 
-# In[48]:
 
 
 print(X_train.shape, X_test.shape, y_train.shape)
 
 
-# In[49]:
 
 
 #GridSearchCV
@@ -591,7 +542,6 @@ print(rdf_grid.cv_results_['mean_test_score'])
 '''
 
 
-# In[50]:
 
 
 """
@@ -631,7 +581,6 @@ for idx_tr, idx_te in kf.split(X_train):
     """
 
 
-# In[51]:
 
 
 """
@@ -640,7 +589,6 @@ imp_feature[:20].plot.barh(figsize=(8,8))
 """
 
 
-# In[52]:
 
 
 #woe columns
@@ -655,7 +603,6 @@ X_train=impute_simple(X_train)
 X_test=impute_simple(X_test)
 
 
-# In[53]:
 
 
 #model
@@ -676,7 +623,6 @@ submission=pd.DataFrame({'SK_ID_CURR':app_test['SK_ID_CURR'], 'TARGET':y_test})
 submission.to_csv('rdf_submission.csv', index=False)
 
 
-# In[54]:
 
 
 imp_feat_woe=pd.DataFrame({'imp_values':rdf_woe.feature_importances_},
@@ -684,7 +630,6 @@ imp_feat_woe=pd.DataFrame({'imp_values':rdf_woe.feature_importances_},
 imp_feat_woe[:30]
 
 
-# In[55]:
 
 
 """

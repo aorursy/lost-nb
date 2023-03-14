@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 #read/write image data
@@ -14,7 +13,6 @@ get_ipython().system('pip install kaggle')
 get_ipython().system('pip install ipywidgets')
 
 
-# In[ ]:
 
 
 #File input output
@@ -35,7 +33,6 @@ from torch.utils import data
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[ ]:
 
 
 #allows us to upload files into colab
@@ -51,14 +48,12 @@ files.upload()
 '''
 
 
-# In[ ]:
 
 
 #ensure its there
 get_ipython().system('ls -lha kaggle.json')
 
 
-# In[ ]:
 
 
 # The Kaggle API client expects this file to be in ~/.kaggle,
@@ -70,14 +65,12 @@ get_ipython().system('cp kaggle.json ~/.kaggle/')
 get_ipython().system('chmod 600 ~/.kaggle/kaggle.json')
 
 
-# In[ ]:
 
 
 #lets now download our dataset
 get_ipython().system('kaggle competitions download -c tgs-salt-identification-challenge ')
 
 
-# In[ ]:
 
 
 #and we'll need those training images unzipped
@@ -85,7 +78,6 @@ get_ipython().system('ls')
 get_ipython().system('unzip train.zip')
 
 
-# In[ ]:
 
 
 #lets create a class to represent this data, to make it easier to access
@@ -118,7 +110,6 @@ class TGSSaltDataset(data.Dataset):
         return image, mask
 
 
-# In[ ]:
 
 
 #only run in Google.colab.research
@@ -137,7 +128,6 @@ dataset = TGSSaltDataset(train_path, file_list)
 '''
 
 
-# In[ ]:
 
 
 #function to visualize these images
@@ -152,7 +142,6 @@ def plot2x2Array(image, mask):
     axarr[1].set_title('Mask')
 
 
-# In[ ]:
 
 
 #only run in Google.colab.research
@@ -162,7 +151,6 @@ for i in range(5):
     plot2x2Array(image, mask)
 
 
-# In[ ]:
 
 
 '''plt.figure(figsize = (6, 6))
@@ -170,7 +158,6 @@ plt.hist(depth['z'], bins = 50)
 plt.title('Depth distribution')'''
 
 
-# In[ ]:
 
 
 #convert to image
@@ -202,7 +189,6 @@ def rleToMask(rleString,height,width):
     return img
 
 
-# In[ ]:
 
 
 #only run in Google.research.colab
@@ -217,7 +203,6 @@ def salt_proportion(imgArray):
         return 0.0
 
 
-# In[ ]:
 
 
 #only run in Google.research.colab
@@ -226,7 +211,6 @@ train_mask['mask'] = train_mask['rle_mask'].apply(lambda x: rleToMask(x, 101,101
 train_mask['salt_proportion'] = train_mask['mask'].apply(lambda x: salt_proportion(x))
 
 
-# In[ ]:
 
 
 #only run in Google.research.colab
@@ -235,7 +219,6 @@ merged = train_mask.merge(depth, how = 'left')
 merged.head()
 
 
-# In[ ]:
 
 
 #only run in Google.research.colab
@@ -245,7 +228,6 @@ plt.scatter(merged['salt_proportion'], merged['z'])
 plt.title('Proportion of salt v. depth')
 
 
-# In[ ]:
 
 
 #only run in Google.research.colab
@@ -253,7 +235,6 @@ plt.title('Proportion of salt v. depth')
 print("Correlation: ", np.corrcoef(merged['salt_proportion'], merged['z'])[0, 1])
 
 
-# In[ ]:
 
 
 from keras.models import Model, load_model
@@ -266,7 +247,6 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras import backend as K
 
 
-# In[ ]:
 
 
 im_width = 128
@@ -278,7 +258,6 @@ n_features = 1 # Number of extra features, like depth
 #path_test = '../input/test/'
 
 
-# In[ ]:
 
 
 # Build U-Net model
@@ -337,13 +316,11 @@ model.compile(optimizer='adam', loss='binary_crossentropy') #, metrics=[mean_iou
 model.summary()
 
 
-# In[ ]:
 
 
 get_ipython().system('pip install ipywidgets')
 
 
-# In[ ]:
 
 
 #only run in Google.research.colab
@@ -392,7 +369,6 @@ for n, id_ in tqdm(enumerate(train_ids), total=len(train_ids)):
 print('Done!')
 
 
-# In[ ]:
 
 
 #only run in Google.research.colab
@@ -401,7 +377,6 @@ print('Done!')
 X_train, X_valid, X_feat_train, X_feat_valid, y_train, y_valid = train_test_split(X, X_feat, y, test_size=0.15, random_state=42)
 
 
-# In[ ]:
 
 
 #only run in Google.research.colab
@@ -416,31 +391,26 @@ results = model.fit({'img': X_train, 'feat': X_feat_train}, y_train, batch_size=
                     validation_data=({'img': X_valid, 'feat': X_feat_valid}, y_valid))
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

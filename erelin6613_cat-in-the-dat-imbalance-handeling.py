@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install imblearn')
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -31,7 +29,6 @@ test = pd.read_csv("../input/cat-in-the-dat-ii/test.csv")
 train = pd.read_csv("../input/cat-in-the-dat-ii/train.csv")
 
 
-# In[3]:
 
 
 def replace_nans(dataframe):
@@ -46,7 +43,6 @@ def replace_nans(dataframe):
     return dataframe
 
 
-# In[4]:
 
 
 def encoder(dataframe, columns, enc_type='bin'):
@@ -64,7 +60,6 @@ def encoder(dataframe, columns, enc_type='bin'):
 	return dataframe
 
 
-# In[5]:
 
 
 def fitter(clf, X_train, X_test, y_train, y_test):
@@ -80,7 +75,6 @@ def fitter(clf, X_train, X_test, y_train, y_test):
     return clf
 
 
-# In[6]:
 
 
 def generate_samples(X, y, cat_features=None):
@@ -91,7 +85,6 @@ def generate_samples(X, y, cat_features=None):
     return X, y
 
 
-# In[7]:
 
 
 def main_2():
@@ -179,13 +172,11 @@ def main_2():
     submission_data.to_csv('submission.csv', index=False)
 
 
-# In[8]:
 
 
 main_2()
 
 
-# In[ ]:
 
 
 

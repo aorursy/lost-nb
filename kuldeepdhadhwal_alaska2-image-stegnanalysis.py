@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[31]:
 
 
 import numpy as np # linear algebra
@@ -12,7 +11,6 @@ import matplotlib.image as mpimg
 import torch
 
 
-# In[32]:
 
 
 PATH = '/kaggle/input/alaska2-image-steganalysis'
@@ -23,19 +21,16 @@ test_images = pd.Series(os.listdir(PATH + '/Test')).sort_values(ascending=True).
 sample_submission = pd.read_csv(f'{PATH}/sample_submission.csv')
 
 
-# In[ ]:
 
 
 es4 = .alexnet(pretrained=True)
 
 
-# In[27]:
 
 
 sample_submission.head()
 
 
-# In[24]:
 
 
 fig, ax = plt.subplots(nrows=2, ncols=4, figsize=(16, 8))
@@ -50,7 +45,6 @@ plt.suptitle('Samples from Cover Images', fontsize=14)
 plt.show()
 
 
-# In[26]:
 
 
 fig, ax = plt.subplots(nrows=2, ncols=4, figsize=(16, 8))
@@ -65,7 +59,6 @@ plt.suptitle('Samples from Test Images', fontsize=14)
 plt.show()
 
 
-# In[30]:
 
 
 for folder in os.listdir(PATH):
@@ -75,7 +68,6 @@ for folder in os.listdir(PATH):
         print(f'{folder}')
 
 
-# In[38]:
 
 
 folders = ['Cover', 'JMiPOD', 'JUNIWARD', 'UERD']
@@ -115,7 +107,6 @@ plt.suptitle('Pixel Deviation from Cover Image', fontsize=14)
 plt.show()
 
 
-# In[44]:
 
 
 print('{} images with Cover Images '.format(train_images.nunique()))

@@ -1,20 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_cell_magic('writefile', 'score.c', '\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <math.h>\n\n#define NF 5000\nint cost[NF][101];\nint fs[NF];\n\nint cf[NF][10];\n\nint loaded=0;\n\nfloat acc[301][301];\n\nvoid precompute_acc() {\n    \nfor(int i=125;i<=300;i++) \n    for(int j=125;j<=300;j++)\n      acc[i][j] = (i-125.0)/400.0 * pow(i , 0.5 + fabs(i-j) / 50 );    \n}\n\nvoid read_fam() {\n  FILE *f;\n  char s[1000];\n  int d[101],fid,n;\n  int *c;\n\n  f=fopen("../input/santa-workshop-tour-2019/family_data.csv","r");\n  if (fgets(s,1000,f)==NULL)\n    exit(-1);\n\n  for(int i=0;i<5000;i++) {\n    c = &cf[i][0];\n    if (fscanf(f,"%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",\n               &fid,&c[0],&c[1],&c[2],&c[3],&c[4],&c[5],&c[6],&c[7],&c[8],&c[9],&fs[i])!=12)\n      exit(-1);\n\n    //    printf("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\\n",\n    //fid,c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7],c[8],c[9],fs[i]);\n    n = fs[i];\n\n    for(int j=1;j<=100;j++) {\n      if (j==c[0]) cost[i][j]=0;\n      else if (j==c[1]) cost[i][j]=50;\n      else if (j==c[2]) cost[i][j]=50 + 9 * n;\n      else if (j==c[3]) cost[i][j]=100 + 9 * n;\n      else if (j==c[4]) cost[i][j]=200 + 9 * n;\n      else if (j==c[5]) cost[i][j]=200 + 18 * n;\n      else if (j==c[6]) cost[i][j]=300 + 18 * n;\n      else if (j==c[7]) cost[i][j]=300 + 36 * n;\n      else if (j==c[8]) cost[i][j]=400 + 36 * n;\n      else if (j==c[9]) cost[i][j]=500 + 36 * n + 199 * n;\n      else cost[i][j]=500 + 36 * n + 398 * n;\n    }\n  }\n\n}\n\nfloat max_cost=1000000000;\n\nint day_occ[102];\n\nstatic inline int day_occ_ok(int d) {\n  return !(d <125 || d>300);\n}\n\nfloat score(int *pred) {\n  float r=0;\n    \n  if (!loaded) {\n      read_fam();\n      precompute_acc();\n      loaded = 1;\n  }\n\n  // validate day occupancy\n  memset(day_occ,0,101*sizeof(int));\n\n  for(int i=0;i<NF;i++) {\n    day_occ[pred[i]]+=fs[i];\n    r+=cost[i][pred[i]];\n  }\n       \n  day_occ[101]=day_occ[100];\n\n  for (int d=1;d<=100;d++) {\n    if (day_occ[d]<125)                                                       \n      r += 100000 * (125 - day_occ[d]);                                      \n    else if (day_occ[d] > 300)                                               \n      r += 100000 * (day_occ[d] - 300);      \n    r += acc[day_occ[d]][day_occ[d+1]];\n  }\n  return r;\n}  \n\nvoid score_bunch(int *pred, int n, float *dest) {\n    for(int i = 0; i < n; ++i) {\n        dest[i] = score(pred + i * NF);\n    }\n}')
 
 
-# In[2]:
 
 
 get_ipython().system('gcc -O5 -shared -Wl,-soname,score     -o score.so     -fPIC score.c')
 get_ipython().system('ls -l score.so')
 
 
-# In[3]:
 
 
 import ctypes
@@ -33,7 +30,6 @@ def bunch_cost_function(bunch):
     return result
 
 
-# In[4]:
 
 
 import numpy as np
@@ -48,7 +44,6 @@ submission = pd.read_csv(fpath, index_col='family_id')
 data.head()
 
 
-# In[5]:
 
 
 def iteration(population, costs=None, size_of_population=100, n_of_childs=100):
@@ -66,7 +61,6 @@ def iteration(population, costs=None, size_of_population=100, n_of_childs=100):
     return selection(population, costs, children, size_of_population)
 
 
-# In[6]:
 
 
 def crossover(parents0, parents1):
@@ -74,7 +68,6 @@ def crossover(parents0, parents1):
     return np.where(crossover_mask, parents0, parents1)
 
 
-# In[7]:
 
 
 matrix = data[['choice_0', 'choice_1', 'choice_2', 'choice_3', 'choice_4',
@@ -124,7 +117,6 @@ def mutate(children):
     return children
 
 
-# In[8]:
 
 
 def selection(population, costs, children, size_of_population):
@@ -173,20 +165,17 @@ def get_dublicates_indices(data, indices):
     return [i for i in indices if i not in not_dublicates]
 
 
-# In[9]:
 
 
 population = np.array([np.int32(submission.assigned_day.values)])
 [cost_function(s) for s in population]
 
 
-# In[10]:
 
 
 get_ipython().run_cell_magic('time', '', 'cost = np.array([cost_function(population[i]) for i in range(population.shape[0])])\nprint(0, np.sort(cost)[:3], cost.max())\nfor n in range(10000):\n    population, cost, _ = iteration(population, cost, 100, 100)\n    if n % 100 == 0:\n        print(n, np.sort(cost)[:3], cost.max())\n        \nprint(10000, np.sort(cost)[:3], cost.max())')
 
 
-# In[11]:
 
 
 submission['assigned_day'] = population[0]

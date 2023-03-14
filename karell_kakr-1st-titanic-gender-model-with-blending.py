@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -20,7 +19,6 @@ print(train.info())
 train.sample(5)
 
 
-# In[2]:
 
 
 x_train = train.drop(['PassengerId', 'Survived'], axis=1)
@@ -32,7 +30,6 @@ all = pd.concat([x_train, x_test]).reset_index(drop=True)
 print('[All data] \n', all.isnull().sum())
 
 
-# In[3]:
 
 
 age_med = np.nanmedian(all.Age)
@@ -62,7 +59,6 @@ print(all.isnull().sum())
 #print(all.info())
 
 
-# In[4]:
 
 
 def data_Preprocessing(df):
@@ -95,7 +91,6 @@ def data_Preprocessing(df):
     return df
 
 
-# In[5]:
 
 
 df = data_Preprocessing(all)
@@ -126,7 +121,6 @@ df.loc[(df.Gender == 'boy') & (df.Family_survival == 1), 'predict'] = 1
 df.loc[(df.Gender == 'woman') & (df.Family_survival == 0), 'predict'] = 0
 
 
-# In[6]:
 
 
 sub_GM = test[['PassengerId']]
@@ -136,14 +130,12 @@ sub_GM.to_csv('kernel_GM.csv', index=False)
 sub_GM.sample(10)
 
 
-# In[7]:
 
 
 blend = pd.read_csv('../input/titanic-first-blending/blendind_material.csv')
 blend.head(5)
 
 
-# In[8]:
 
 
 for i in range(0, len(blend)):
@@ -159,14 +151,12 @@ for i in range(0, len(blend)):
 blend.head(10)  
 
 
-# In[9]:
 
 
 blend = blend.iloc[:, 0:2]
 blend.to_csv('kernel_blend_1st.csv', index=False)
 
 
-# In[10]:
 
 
 blend2 = pd.read_csv('../input/titanic-second-blending/blendind_material2.csv')
@@ -183,7 +173,6 @@ for i in range(0, len(blend2)):
 blend2.head(10)   
 
 
-# In[11]:
 
 
 blend2 = blend2.iloc[:, 0:2]

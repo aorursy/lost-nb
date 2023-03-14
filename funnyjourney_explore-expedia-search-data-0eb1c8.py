@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import datetime
@@ -15,7 +14,6 @@ from sklearn.cross_validation import train_test_split
 import ml_metrics as metrics
 
 
-# In[2]:
 
 
 dtype={'is_booking':bool,
@@ -40,19 +38,16 @@ dtype={'is_booking':bool,
 #Specifying dtypes helps reduce memory requirements for reading in csv file later.
 
 
-# In[3]:
 
 
 df0 = pd.read_csv('../input/train.csv',dtype=dtype, usecols=dtype, parse_dates=['date_time'] ,sep=',',nrows=2000000)
 
 
-# In[4]:
 
 
 df0.head()
 
 
-# In[5]:
 
 
 
@@ -62,20 +57,17 @@ train = df0.query('is_booking==True & year==2014').sample(frac=0.6)
 train.shape
 
 
-# In[6]:
 
 
 
 train.tail()
 
 
-# In[7]:
 
 
 train.isnull().sum(axis=0)
 
 
-# In[8]:
 
 
 #datetime features
@@ -87,13 +79,11 @@ train['plan_time'] = ((train['srch_ci']-train['date_time'])/np.timedelta64(1,'D'
 train['hotel_nights']=((train['srch_co']-train['srch_ci'])/np.timedelta64(1,'D')).astype(float)
 
 
-# In[9]:
 
 
 train.head()
 
 
-# In[10]:
 
 
 #fill Missing Values
@@ -106,7 +96,6 @@ train['orig_destination_distance']=train.orig_destination_distance.fillna(m)
 train.fillna(-1,inplace=True)
 
 
-# In[11]:
 
 
 # Since we extract the plan_time from srch_ci and date_time, we drop date_time and srch_ci
@@ -115,32 +104,27 @@ lst_drop=['date_time','srch_ci','srch_co']
 train.drop(lst_drop,axis=1,inplace=True)
 
 
-# In[12]:
 
 
 train.head()
 
 
-# In[13]:
 
 
 y=train['hotel_cluster']
 X=train.drop(['hotel_cluster','is_booking','year'],axis=1) # in training dataset, have clicking and booking event
 
 
-# In[14]:
 
 
 y.shape,X.shape
 
 
-# In[15]:
 
 
 y.nunique()
 
 
-# In[16]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.33)
@@ -148,7 +132,6 @@ rf_tree = RandomForestClassifier(n_estimators=31,max_depth=10,random_state=123)
 rf_tree.fit(X_train,y_train)
 
 
-# In[17]:
 
 
 importance = rf_tree.feature_importances_
@@ -156,7 +139,6 @@ indices=np.argsort(importance)[::-1][:10]
 importance[indices]
 
 
-# In[18]:
 
 
 plt.barh(range(10), importance[indices],color='r')
@@ -165,13 +147,11 @@ plt.xlabel('Feature Importance')
 plt.show()
 
 
-# In[19]:
 
 
 rf_tree.classes_
 
 
-# In[20]:
 
 
 dict_cluster = {}
@@ -179,7 +159,6 @@ for (k,v) in enumerate(rf_tree.classes_):
     dict_cluster[k] = v
 
 
-# In[21]:
 
 
 y_pred=rf_tree.predict_proba(X_test)
@@ -187,19 +166,16 @@ y_pred=rf_tree.predict_proba(X_test)
 a=y_pred.argsort(axis=1)[:,-5:]
 
 
-# In[22]:
 
 
 y_pred
 
 
-# In[23]:
 
 
 a
 
 
-# In[24]:
 
 
 
@@ -211,25 +187,21 @@ cluster_pred = np.array(b).reshape(a.shape)
 cluster_pred
 
 
-# In[25]:
 
 
 print("score:",metrics.mapk(y_test,cluster_pred,k=5))
 
 
-# In[26]:
 
 
 get_ipython().run_line_magic('pinfo', 'metrics.mapk')
 
 
-# In[27]:
 
 
 y_test.head()
 
 
-# In[28]:
 
 
 #import and process test data
@@ -247,7 +219,6 @@ dtype1={'srch_ci' : np.str_,
         'hotel_market':np.str_}
 
 
-# In[29]:
 
 
 # feature engineering on test data
@@ -264,19 +235,16 @@ test['orig_destination_distance']=test.orig_destination_distance.fillna(m)
 test.fillna(-1,inplace=True)
 
 
-# In[30]:
 
 
 test1=test.sample(frac=0.1) # random sampled 5% of the test data
 
 
-# In[31]:
 
 
 test1.shape, train.shape
 
 
-# In[32]:
 
 
 lst_drop=['date_time','srch_ci','srch_co']
@@ -286,7 +254,6 @@ train1=train.drop(['hotel_cluster','is_booking','year'],axis=1)
 train1.shape, test1.shape
 
 
-# In[33]:
 
 
 #on All training sample
@@ -294,7 +261,6 @@ rf_all = RandomForestClassifier(n_estimators=31,max_depth=10,random_state=123)
 rf_all.fit(train1,target)
 
 
-# In[34]:
 
 
 importance = rf_all.feature_importances_
@@ -307,27 +273,23 @@ plt.xlabel('Feature Importance')
 plt.show()
 
 
-# In[35]:
 
 
 y_pred=rf_all.predict_proba(test1) # predict on test dataset
 y_pred
 
 
-# In[36]:
 
 
 #take largest 5 probablities' indexes
 a=y_pred.argsort(axis=1)[:,-5:]
 
 
-# In[37]:
 
 
 a
 
 
-# In[38]:
 
 
 dict_cluster = {}
@@ -339,19 +301,16 @@ for i in a.flatten():
 predict_class=np.array(b).reshape(a.shape)
 
 
-# In[39]:
 
 
 predict_class
 
 
-# In[40]:
 
 
 predict_class=map(lambda x: ' '.join(map(str,x)), predict_class)
 
 
-# In[41]:
 
 
 submission = pd.DataFrame()
@@ -359,19 +318,16 @@ submission['hotel_cluster'] = predict_class
 submission.to_csv('rf01expedia.csv', index=False)
 
 
-# In[42]:
 
 
 
 
 
-# In[42]:
 
 
 
 
 
-# In[42]:
 
 
 # IMPORTANT! - Another Method for Hotel Cluster Prediction

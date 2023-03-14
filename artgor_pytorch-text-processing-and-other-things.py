@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -41,7 +40,6 @@ from sklearn import metrics
 from keras.preprocessing.sequence import pad_sequences
 
 
-# In[2]:
 
 
 tqdm.pandas()
@@ -696,7 +694,6 @@ class CyclicLR(object):
         return lrs
 
 
-# In[3]:
 
 
 # setting parameters.
@@ -712,32 +709,27 @@ embed_size = 300
 max_features = 120000
 
 
-# In[4]:
 
 
 get_ipython().run_cell_magic('time', '', "load = True\nif not load:\n    train = pd.read_csv('../input/jigsaw-unintended-bias-in-toxicity-classification/train.csv')\n    test = pd.read_csv('../input/jigsaw-unintended-bias-in-toxicity-classification/test.csv')\n    train = df_parallelize_run(train, text_clean_wrapper)\n    test = df_parallelize_run(test, text_clean_wrapper)\n    train.to_csv('processed_train.csv', index=False)\n    test.to_csv('processed_test.csv', index=False)\nelse:\n    train = pd.read_csv('../input/jigsaw-public-files/train.csv')\n    test = pd.read_csv('../input/jigsaw-public-files/test.csv')\n    # after processing some of the texts are emply\n    train['comment_text'] = train['comment_text'].fillna('')\n    test['comment_text'] = test['comment_text'].fillna('')")
 
 
-# In[5]:
 
 
 get_ipython().run_cell_magic('time', '', 'glove_embed = load_embed(glove_embedding_path)\noovs = vocab_check_coverage(train, glove_embed)')
 
 
-# In[6]:
 
 
 del glove_embed
 print(oovs[0]['oov_words'][:20])
 
 
-# In[7]:
 
 
 get_ipython().run_cell_magic('time', '', "if not load:\n    tokenizer = text.Tokenizer(lower=False, num_words=max_features)\n    tokenizer.fit_on_texts(list(train['comment_text']) + list(test['comment_text']))\n    \n    # by default tokenizer keeps all words, I leave only top max_features\n    sorted_by_word_count = sorted(tokenizer.word_counts.items(), key=lambda x: x[1], reverse=True)\n    tokenizer.word_index = {}\n    i = 0\n    for word,count in sorted_by_word_count:\n        if i == max_features:\n            break\n        tokenizer.word_index[word] = i + 1    # <= because tokenizer is 1 indexed\n        i += 1\n    \n    with open(f'tokenizer_{max_features}.pickle', 'wb') as f:\n        pickle.dump(tokenizer, f)\nelse:\n    with open(f'../input/jigsaw-public-files/tokenizer_{max_features}.pickle', 'rb') as f:\n        tokenizer = pickle.load(f)\n    \nX_train = tokenizer.texts_to_sequences(train['comment_text'])\nX_test = tokenizer.texts_to_sequences(test['comment_text'])\nx_train_lens = [len(i) for i in X_train]\nx_test_lens  = [len(i) for i in X_test]")
 
 
-# In[8]:
 
 
 y_train = np.where(train['target'] >= 0.5, 1, 0)
@@ -745,26 +737,22 @@ y_aux_train = train[['target', 'severe_toxicity', 'obscene', 'identity_attack', 
 final_y_train = np.hstack([y_train[:, np.newaxis], y_aux_train])
 
 
-# In[9]:
 
 
 get_ipython().run_cell_magic('time', '', "crawl_matrix, unknown_words_crawl = build_matrix(tokenizer.word_index, crawl_embedding_path, embed_size)\nprint('n unknown words (crawl): ', len(unknown_words_crawl))\n\nglove_matrix, unknown_words_glove = build_matrix(tokenizer.word_index, glove_embedding_path, embed_size)\nprint('n unknown words (glove): ', len(unknown_words_glove))\n\nembedding_matrix = crawl_matrix * 0.5 +  glove_matrix * 0.5\n\ndel crawl_matrix\ndel glove_matrix\ngc.collect()")
 
 
-# In[10]:
 
 
 embedding_matrix_small = np.zeros((embedding_matrix.shape[0], 30))
 
 
-# In[11]:
 
 
 # splits for training
 splits = list(KFold(n_splits=5, shuffle=True, random_state=42).split(X_train, final_y_train))
 
 
-# In[12]:
 
 
 X_train_padded = pad_sequences(X_train, maxlen = max_len)
@@ -773,14 +761,12 @@ batch_size = 512
 test_loader = torch.utils.data.DataLoader(X_test_padded, batch_size=batch_size, shuffle=False)
 
 
-# In[13]:
 
 
 test_preds = train_on_folds(X_train_padded, x_train_lens, final_y_train, test_loader, x_test_lens,
                             splits, embedding_matrix, embedding_matrix_small, n_epochs=1, validate=False, debug=False)
 
 
-# In[14]:
 
 
 submission = pd.DataFrame.from_dict({

@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
-pip install mtcnn
 
 
-# In[2]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -43,7 +40,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[3]:
 
 
 INPUT_PATH = '/kaggle/input/deepfake-detection-challenge/'
@@ -55,7 +51,6 @@ BATCH_SIZE = 32
 CASCADE_PATH = cv2.data.haarcascades # with this line, you do not need to download the XML files from web. Later.
 
 
-# In[4]:
 
 
 SEED = 13
@@ -64,7 +59,6 @@ tf_rnd.set_seed(SEED) # tensor flow randomness remover
 plt.style.use('seaborn-whitegrid') # just some fancy un useful stuff
 
 
-# In[5]:
 
 
 # iterate through the directory to get all the file names and save them as a DataFrame. No need to pay attention to
@@ -80,33 +74,28 @@ files_df = pd.DataFrame({'filename':train_files, 'type':ext})
 files_df.head()
 
 
-# In[6]:
 
 
 files_df.shape # 401 files
 
 
-# In[7]:
 
 
 files_df['type'].value_counts() # 400 mp4 files and 1 json file
 
 
-# In[8]:
 
 
 meta_df = pd.read_json(INPUT_PATH+TRAIN_PATH+'metadata.json') # We have Transpose the Df
 meta_df.head()
 
 
-# In[9]:
 
 
 meta_df = meta_df.T
 meta_df.head()
 
 
-# In[10]:
 
 
 meta_df.reset_index(inplace=True) # set the index as 0,1,2....
@@ -115,19 +104,16 @@ meta_df.rename(columns={'index':'names'},inplace=True)
 meta_df.head()
 
 
-# In[11]:
 
 
 meta_df.isna().sum() # 77 original files are missing
 
 
-# In[12]:
 
 
 meta_df['label'].value_counts().plot(kind='pie',autopct='%1.1f%%',label='Real Vs Fake')
 
 
-# In[13]:
 
 
 class VideoFeatures():
@@ -209,7 +195,6 @@ class VideoFeatures():
     
 
 
-# In[14]:
 
 
 class FrameProcessor():
@@ -327,33 +312,28 @@ class FrameProcessor():
         
 
 
-# In[15]:
 
 
 vf =  VideoFeatures() # instantiate both the classes to use later
 fp = FrameProcessor()
 
 
-# In[16]:
 
 
 vf.get_properties(INPUT_PATH+TRAIN_PATH+'cwrtyzndpx.mp4') # get properties of video
 
 
-# In[17]:
 
 
 vf.play_video(INPUT_PATH+TRAIN_PATH+'cwrtyzndpx.mp4') # see the magic of HTML with Python
 
 
-# In[18]:
 
 
 img = vf.get_frames(INPUT_PATH+TRAIN_PATH+'cwrtyzndpx.mp4',first_only=True,show=True)
 # get first frame from image and display it too
 
 
-# In[19]:
 
 
 detected_face = fp.detect_face_eye(img,minNeighbors=5,scaleFactor=1.3,minSize=(50,50))
@@ -362,27 +342,23 @@ detected_face = fp.detect_face_eye(img,minNeighbors=5,scaleFactor=1.3,minSize=(5
 fp.plot_frame(detected_face)
 
 
-# In[20]:
 
 
 frames = vf.get_frames(INPUT_PATH+TRAIN_PATH+'cwrtyzndpx.mp4') # get all the frames
 fp.plot_frame(frames[54]) # plot a random frame from the frames 
 
 
-# In[21]:
 
 
 # plt.plot(range(1,len(frames)),fp.frames_similarity(frames))
 
 
-# In[22]:
 
 
 zoomed_face = fp.detect_face_eye(frames[13],get_cropped_face=True,) # get cropped image array which has pixels of face
 fp.plot_frame(zoomed_face)
 
 
-# In[23]:
 
 
 class MTCNNWrapper():
@@ -444,7 +420,6 @@ class MTCNNWrapper():
             return img[y-PAD:y+height+PAD, x-PAD:x+width+PAD]
 
 
-# In[24]:
 
 
 img = VideoFeatures().get_frames(INPUT_PATH+TRAIN_PATH+'cwrtyzndpx.mp4',first_only=True)
@@ -452,13 +427,11 @@ mt_wrapper = MTCNNWrapper()
 mt_wrapper.show_faces(img)
 
 
-# In[25]:
 
 
 mt_wrapper.get_cropped(img,show_only=True) # show only. it does not return anything
 
 
-# In[26]:
 
 
 #os.makedirs('train_1') # run this line of code only once.
@@ -466,7 +439,6 @@ import shutil
 # shutil.rmtree('train_1') # just in case you want to delete the directory
 
 
-# In[27]:
 
 
 x = '''
@@ -499,7 +471,6 @@ images_csv.to_csv('video_faces.csv')
 '''
 
 
-# In[28]:
 
 
 images_df = pd.read_csv('video_faces.csv')
@@ -510,7 +481,6 @@ images_df.head()
 images_df.to_csv('video_faces.csv')
 
 
-# In[ ]:
 
 
 

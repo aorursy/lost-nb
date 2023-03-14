@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -42,7 +41,6 @@ Fraud Detection for Kaggle competition
 '''
 
 
-# In[2]:
 
 
 # Run on whole data
@@ -69,7 +67,6 @@ warnings.simplefilter('ignore')
 gc.collect()
 
 
-# In[3]:
 
 
 
@@ -89,7 +86,6 @@ print('Current test shape:', test.values.shape)
 gc.collect()
 
 
-# In[4]:
 
 
 print(train.info())
@@ -98,7 +94,6 @@ print(train.head())
 gc.collect()
 
 
-# In[5]:
 
 
 # EDA: TransactionAMT decimal part as new feature
@@ -124,7 +119,6 @@ test['hour_of_day'] = np.floor(test['TransactionDT']/ (3600)) % 24
 gc.collect()
 
 
-# In[6]:
 
 
 # Encode category features
@@ -141,7 +135,6 @@ print(train.head())
 gc.collect()
 
 
-# In[7]:
 
 
 null = train.isnull().sum()
@@ -149,7 +142,6 @@ print('Null values for now: \n')
 print(null[null > 0].sort_values(ascending = False))
 
 
-# In[8]:
 
 
 # LightGBM could deal with missing values better ? Why?
@@ -165,7 +157,6 @@ print('Testing data shape:', test.values.shape)
 gc.collect()
 
 
-# In[9]:
 
 
 # Start training
@@ -223,7 +214,6 @@ print('-'*30)
 '''
 
 
-# In[10]:
 
 
 # Check the speed of lightgbm vs. xgboost 
@@ -242,7 +232,6 @@ x_train =
 xgbm.fit()
 
 
-# In[11]:
 
 
 '''
@@ -275,7 +264,6 @@ score = logit.score(x_valid, y_valid)
 print('Logistic Regression score:', score)
 
 
-# In[12]:
 
 
 from keras.applications import vgg16
@@ -286,7 +274,6 @@ vgg16 = vgg16(include_top = False)
 gc.collect()
 
 
-# In[13]:
 
 
 # Save the predicted result to submission.csv

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -22,33 +21,28 @@ from mlxtend.classifier import StackingCVClassifier
 import copy
 
 
-# In[2]:
 
 
 train = pd.read_csv("/kaggle/input/cat-in-the-dat/train.csv", index_col=['id'])
 test = pd.read_csv("/kaggle/input/cat-in-the-dat/test.csv", index_col=['id'])
 
 
-# In[3]:
 
 
 train.dtypes
 
 
-# In[4]:
 
 
 display(train.head())
 
 
-# In[5]:
 
 
 X = train.drop("target", axis = 1)
 y = train.loc[:,"target"]
 
 
-# In[6]:
 
 
 X.bin_3 = X.bin_3.apply(lambda x: 1 if x == "T" else 0)
@@ -57,7 +51,6 @@ X.bin_4 = X.bin_4.apply(lambda x: 1 if x == "Y" else 0)
 print(X.columns)
 
 
-# In[7]:
 
 
 # h = FeatureHasher(input_type='string', n_features=1000)
@@ -77,7 +70,6 @@ X = X.drop(["nom_0", "nom_1", "nom_2", "nom_3", "nom_4"], axis=1)         .join(
 print(X.columns)
 
 
-# In[8]:
 
 
 X.ord_1.replace(to_replace = ['Novice', 'Contributor','Expert', 'Master', 'Grandmaster'],
@@ -95,7 +87,6 @@ X.ord_5 = oe.fit_transform(X.ord_5.values.reshape(-1,1))
 print(X.columns)
 
 
-# In[9]:
 
 
 def date_cyc_enc(df, col, max_vals):
@@ -110,7 +101,6 @@ X.drop(['day', 'month'], axis=1, inplace = True)
 print(X.columns)
 
 
-# In[10]:
 
 
 # lr = LogisticRegression()
@@ -118,7 +108,6 @@ print(X.columns)
 # print("Accuracy: %0.2f (+/- %0.2f)" % (scores_lr.mean(), scores_lr.std() * 2))
 
 
-# In[11]:
 
 
 # rc = RidgeClassifier()
@@ -126,7 +115,6 @@ print(X.columns)
 # print("Accuracy: %0.2f (+/- %0.2f)" % (scores_rc.mean(), scores_rc.std() * 2))
 
 
-# In[12]:
 
 
 # lda = LinearDiscriminantAnalysis()
@@ -134,7 +122,6 @@ print(X.columns)
 # print("Accuracy: %0.2f (+/- %0.2f)" % (scores_lda.mean(), scores_lda.std() * 2))
 
 
-# In[13]:
 
 
 # linear_svm = LinearSVC(penalty="l2")
@@ -142,7 +129,6 @@ print(X.columns)
 # print("Accuracy: %0.2f (+/- %0.2f)" % (scores_linear_svm.mean(), scores_linear_svm.std() * 2))
 
 
-# In[14]:
 
 
 # fr = DecisionTreeClassifier(random_state=0)
@@ -150,7 +136,6 @@ print(X.columns)
 # print("Accuracy: %0.2f (+/- %0.2f)" % (scores_dt.mean(), scores_dt.std() * 2))
 
 
-# In[15]:
 
 
 # sgdc = SGDClassifier()
@@ -158,7 +143,6 @@ print(X.columns)
 # print("Accuracy: %0.2f (+/- %0.2f)" % (scores_sgdc.mean(), scores_sgdc.std() * 2))
 
 
-# In[16]:
 
 
 # ab = AdaBoostClassifier()
@@ -166,7 +150,6 @@ print(X.columns)
 # print("Accuracy: %0.2f (+/- %0.2f)" % (scores_ab.mean(), scores_ab.std() * 2))
 
 
-# In[17]:
 
 
 # gbm = GradientBoostingClassifier()
@@ -174,7 +157,6 @@ print(X.columns)
 # print("Accuracy: %0.2f (+/- %0.2f)" % (scores_gbm.mean(), scores_gbm.std() * 2))
 
 
-# In[18]:
 
 
 # rf = RandomForestClassifier()
@@ -182,7 +164,6 @@ print(X.columns)
 # print("Accuracy: %0.2f (+/- %0.2f)" % (scores_rf.mean(), scores_rf.std() * 2))
 
 
-# In[19]:
 
 
 # et = ExtraTreesClassifier()
@@ -190,7 +171,6 @@ print(X.columns)
 # print("Accuracy: %0.2f (+/- %0.2f)" % (scores_et.mean(), scores_et.std() * 2))
 
 
-# In[20]:
 
 
 # xgb = XGBClassifier()
@@ -198,7 +178,6 @@ print(X.columns)
 # print("Accuracy: %0.2f (+/- %0.2f)" % (scores_xgb.mean(), scores_xgb.std() * 2))
 
 
-# In[21]:
 
 
 # params = {
@@ -227,7 +206,6 @@ print(X.columns)
 # print(random_search.best_params_)
 
 
-# In[22]:
 
 
 # means = random_search.cv_results_['mean_test_score']
@@ -236,7 +214,6 @@ print(X.columns)
 #     print("%0.3f (+/-%0.03f) for %r"% (mean, std * 2, params))
 
 
-# In[23]:
 
 
 # params2 = {
@@ -261,7 +238,6 @@ print(X.columns)
 # print(random_search2.best_params_)
 
 
-# In[24]:
 
 
 # means = random_search2.cv_results_['mean_test_score']
@@ -270,7 +246,6 @@ print(X.columns)
 #     print("%0.3f (+/-%0.03f) for %r"% (mean, std * 2, params))
 
 
-# In[25]:
 
 
 # lr_params = {'solver': ['newton-cg', 'lbfgs', 'sag', 'saga'], 
@@ -291,7 +266,6 @@ print(X.columns)
 # print(random_search3.best_params_)
 
 
-# In[26]:
 
 
 # means = random_search3.cv_results_['mean_test_score']
@@ -300,7 +274,6 @@ print(X.columns)
 #     print("%0.3f (+/-%0.03f) for %r"% (mean, std * 2, params))
 
 
-# In[27]:
 
 
 # xgb_clf = XGBClassifier(booster='gbtree', gamma=5, colsample_bytree=0.8,
@@ -333,14 +306,12 @@ print(X.columns)
 # stack = stack.fit(X, y)
 
 
-# In[28]:
 
 
 X_train = train.drop("target", axis = 1)
 y_train = train.loc[:,"target"]
 
 
-# In[29]:
 
 
 X_train.bin_3 = X_train.bin_3.apply(lambda x: 1 if x == "T" else 0)
@@ -359,13 +330,11 @@ oe = OrdinalEncoder(categories='auto')
 X_train.ord_5 = oe.fit_transform(X_train.ord_5.values.reshape(-1,1))
 
 
-# In[30]:
 
 
 X_test = copy.deepcopy(test)
 
 
-# In[31]:
 
 
 X_test.bin_3 = X_test.bin_3.apply(lambda x: 1 if x == "T" else 0)
@@ -384,14 +353,12 @@ oe = OrdinalEncoder(categories='auto')
 X_test.ord_5 = oe.fit_transform(X_test.ord_5.values.reshape(-1,1))
 
 
-# In[32]:
 
 
 data = pd.concat([X_train, X_test])
 print(data.shape)
 
 
-# In[33]:
 
 
 columns = data.columns
@@ -401,21 +368,18 @@ dummies = pd.get_dummies(data,
                          sparse=True)
 
 
-# In[34]:
 
 
 print(dummies.shape)
 print(X_train.shape[0])
 
 
-# In[35]:
 
 
 X_train = dummies.iloc[:X_train.shape[0], :]
 X_test = dummies.iloc[X_train.shape[0]:, :]
 
 
-# In[36]:
 
 
 del dummies
@@ -424,7 +388,6 @@ print (X_train.shape)
 print(X_test.shape)
 
 
-# In[37]:
 
 
 X_train = X_train.sparse.to_coo().tocsr()
@@ -434,7 +397,6 @@ X_train = X_train.astype("float32")
 X_test = X_test.astype("float32")
 
 
-# In[38]:
 
 
 lr = LogisticRegression()
@@ -443,7 +405,6 @@ pred = lr.predict_proba(X_test)
 pred[:10,1]
 
 
-# In[39]:
 
 
 # lr = LogisticRegression(solver="lbfgs", C=0.1, max_iter=10000)
@@ -452,7 +413,6 @@ pred[:10,1]
 # pred2[:10,1]
 
 
-# In[40]:
 
 
 predictions = pd.Series(pred[:,1], index=test.index, dtype=y.dtype)

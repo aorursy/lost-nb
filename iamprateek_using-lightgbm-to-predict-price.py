@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -26,26 +25,22 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 train_df = pd.read_csv("../input/train_2016_v2.csv", parse_dates=["transactiondate"])
 train_df.shape
 
 
-# In[3]:
 
 
 train_df.head()
 
 
-# In[4]:
 
 
 train_df.dtypes
 
 
-# In[5]:
 
 
 plt.figure(figsize=(8,6))
@@ -55,7 +50,6 @@ plt.ylabel('logerror', fontsize=12)
 plt.show()
 
 
-# In[6]:
 
 
 #replacing outliers with the values for the 1st and 99th percentile
@@ -70,7 +64,6 @@ plt.xlabel('logerror', fontsize=12)
 plt.show()
 
 
-# In[7]:
 
 
 #let us explore the date field. Let us first check the number of transactions in each month.
@@ -84,14 +77,12 @@ plt.ylabel('Number of Occurrences', fontsize=12)
 plt.show()
 
 
-# In[8]:
 
 
 #let's see parcelid
 (train_df['parcelid'].value_counts().reset_index())['parcelid'].value_counts()
 
 
-# In[9]:
 
 
 #Now let us explore the properties_2016 file
@@ -99,13 +90,11 @@ prop_df = pd.read_csv("../input/properties_2016.csv",low_memory=False)
 prop_df.shape
 
 
-# In[10]:
 
 
 prop_df.head()
 
 
-# In[11]:
 
 
 #check missing data in properties
@@ -125,7 +114,6 @@ ax.set_title("Number of missing values in each column")
 plt.show()
 
 
-# In[12]:
 
 
 #Let us explore the latitude and longitude variable to begin with
@@ -136,7 +124,6 @@ plt.xlabel('Latitude', fontsize=12)
 plt.show()
 
 
-# In[13]:
 
 
 #So let us merge the two files and then carry out our analysis.
@@ -144,7 +131,6 @@ train_df = pd.merge(train_df, prop_df, on='parcelid', how='left')
 train_df.head()
 
 
-# In[14]:
 
 
 #check the dtypes of different types of variable
@@ -154,14 +140,12 @@ dtype_df.columns = ["Count", "Column Type"]
 dtype_df
 
 
-# In[15]:
 
 
 #count the dtypes
 dtype_df.groupby("Column Type").aggregate('count').reset_index()
 
 
-# In[16]:
 
 
 #check the number of Nulls in this new merged dataset
@@ -171,7 +155,6 @@ missing_df['missing_ratio'] = missing_df['missing_count'] / train_df.shape[0]
 missing_df.loc[missing_df['missing_ratio']>0.999]
 
 
-# In[17]:
 
 
 # Let us just impute the missing values with mean values to compute correlation coefficients
@@ -201,7 +184,6 @@ ax.set_title("Correlation coefficient of the variables")
 plt.show()
 
 
-# In[18]:
 
 
 corr_zero_cols = ['assessmentyear', 'storytypeid', 'pooltypeid2', 'pooltypeid7', 'pooltypeid10', 'poolcnt', 'decktypeid', 'buildingclasstypeid']
@@ -209,7 +191,6 @@ for col in corr_zero_cols:
     print(col, len(train_df_new[col].unique()))
 
 
-# In[19]:
 
 
 #Let us take the variables with high correlation values and then do some analysis on them
@@ -217,7 +198,6 @@ corr_df_sel = corr_df.loc[(corr_df['corr_values']>0.02) | (corr_df['corr_values'
 corr_df_sel
 
 
-# In[20]:
 
 
 cols_to_use = corr_df_sel.col_labels.tolist()
@@ -232,7 +212,6 @@ plt.title("Important variables correlation map", fontsize=15)
 plt.show()
 
 
-# In[21]:
 
 
 #Let us seee how the finished square feet 12 varies with the log error
@@ -250,7 +229,6 @@ plt.title("Finished square feet 12 Vs Log error", fontsize=15)
 plt.show()
 
 
-# In[22]:
 
 
 #Calculated finished square feet:
@@ -268,7 +246,6 @@ plt.title("Calculated finished square feet Vs Log error", fontsize=15)
 plt.show()
 
 
-# In[23]:
 
 
 #Bathroom Count:
@@ -281,7 +258,6 @@ plt.title("Frequency of Bathroom count", fontsize=15)
 plt.show()
 
 
-# In[24]:
 
 
 #check how the log error changes based on this
@@ -294,7 +270,6 @@ plt.title("How log error changes with bathroom count?", fontsize=15)
 plt.show()
 
 
-# In[25]:
 
 
 #Bedroom count:
@@ -307,7 +282,6 @@ plt.title("Frequency of Bedroom count", fontsize=15)
 plt.show()
 
 
-# In[26]:
 
 
 train_df['bedroomcnt'].loc[train_df['bedroomcnt']>7] = 7
@@ -318,7 +292,6 @@ plt.ylabel('Log Error', fontsize=12)
 plt.show()
 
 
-# In[27]:
 
 
 col = "taxamount"
@@ -335,7 +308,6 @@ plt.title("Tax Amount Vs Log error", fontsize=15)
 plt.show()
 
 
-# In[28]:
 
 
 #YearBuilt:
@@ -343,21 +315,18 @@ from ggplot import *
 ggplot(aes(x='yearbuilt', y='logerror'), data=train_df) +     geom_point(color='steelblue', size=1) +     stat_smooth()
 
 
-# In[29]:
 
 
 #let us see how the logerror varies with respect to latitude and longitude
 ggplot(aes(x='latitude', y='longitude', color='logerror'), data=train_df) +     geom_point() +     scale_color_gradient(low = 'red', high = 'blue')
 
 
-# In[30]:
 
 
 #Let us take the variables with highest positive correlation and highest negative correlation to see if we can see some visible patterns
 ggplot(aes(x='finishedsquarefeet12', y='taxamount', color='logerror'), data=train_df) +     geom_point(alpha=0.7) +     scale_color_gradient(low = 'pink', high = 'blue')
 
 
-# In[31]:
 
 
 train_y = train_df['logerror'].values
@@ -382,7 +351,6 @@ plt.xlim([-1, len(indices)])
 plt.show()
 
 
-# In[32]:
 
 
 import xgboost as xgb
@@ -404,7 +372,6 @@ xgb.plot_importance(model, max_num_features=50, height=0.8, ax=ax)
 plt.show()
 
 
-# In[33]:
 
 
 # Parameters
@@ -418,7 +385,6 @@ import lightgbm as lgb
 import gc
 
 
-# In[34]:
 
 
 print( "\nReading data from disk ...")
@@ -426,7 +392,6 @@ prop = pd.read_csv('../input/properties_2016.csv',low_memory=False)
 train = pd.read_csv("../input/train_2016_v2.csv",low_memory=False)
 
 
-# In[35]:
 
 
 print( "\nProcessing data for LightGBM ..." )
@@ -443,7 +408,6 @@ y_train = df_train['logerror'].values
 print(x_train.shape, y_train.shape)
 
 
-# In[36]:
 
 
 train_columns = x_train.columns
@@ -457,7 +421,6 @@ x_train = x_train.values.astype(np.float32, copy=False)
 d_train = lgb.Dataset(x_train, label=y_train)
 
 
-# In[37]:
 
 
 params = {}
@@ -510,7 +473,6 @@ print( "\nUnadjusted LightGBM predictions:" )
 print( pd.DataFrame(p_test).head() )
 
 
-# In[38]:
 
 
 print( "\nPreparing results for write ..." )
@@ -537,7 +499,6 @@ output.to_csv('sub{}.csv'.format(datetime.now().strftime('%Y%m%d_%H%M%S')), inde
 print( "\nFinished ..." )
 
 
-# In[39]:
 
 
 

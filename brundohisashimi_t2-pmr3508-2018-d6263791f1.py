@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import pandas as pd
@@ -13,7 +12,6 @@ from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 
 
-# In[ ]:
 
 
 train = pd.read_csv("../input/dataset/train_data.csv",
@@ -21,19 +19,16 @@ train = pd.read_csv("../input/dataset/train_data.csv",
         engine='python')
 
 
-# In[ ]:
 
 
 train
 
 
-# In[ ]:
 
 
 list(train)
 
 
-# In[ ]:
 
 
 Xtrain = train[['word_freq_make',
@@ -97,7 +92,6 @@ Xtrain = train[['word_freq_make',
 Ytrain = train["ham"]
 
 
-# In[ ]:
 
 
 test = pd.read_csv("../input/dataset/test_features.csv",
@@ -106,13 +100,11 @@ test = pd.read_csv("../input/dataset/test_features.csv",
         na_values="?")
 
 
-# In[ ]:
 
 
 list(test)
 
 
-# In[ ]:
 
 
 Xtest = test[['word_freq_make',
@@ -174,49 +166,42 @@ Xtest = test[['word_freq_make',
  'capital_run_length_total']]
 
 
-# In[ ]:
 
 
 model = GaussianNB()  
 fittedModel = model.fit(Xtrain,Ytrain)
 
 
-# In[ ]:
 
 
 scores = cross_val_score(fittedModel, Xtrain, Ytrain, cv=10)
 scores
 
 
-# In[ ]:
 
 
 predictions = fittedModel.predict(Xtest)
 predictions
 
 
-# In[ ]:
 
 
 knn = KNeighborsClassifier(n_neighbors=30)
 knn.fit(Xtrain,Ytrain)
 
 
-# In[ ]:
 
 
 scores = cross_val_score(knn, Xtrain, Ytrain, cv=10)
 scores
 
 
-# In[ ]:
 
 
 YtestPred = knn.predict(Xtest)
 YtestPred
 
 
-# In[ ]:
 
 
 

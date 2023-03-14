@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # importing essentials
@@ -15,7 +14,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
 
 
 # reading dataset
@@ -24,14 +22,12 @@ df_test = pd.read_csv('../input/google-quest-challenge/test.csv')
 df_train.shape, df_test.shape
 
 
-# In[3]:
 
 
 # download pretrained glove vectors : https://nlp.stanford.edu/projects/glove/
 get_ipython().system('wget --header="Host: downloads.cs.stanford.edu" --header="User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36" --header="Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9" --header="Accept-Language: en-US,en;q=0.9" "http://downloads.cs.stanford.edu/nlp/data/glove.6B.zip" -c -O \'glove.6B.zip\'')
 
 
-# In[4]:
 
 
 get_ipython().system("mkdir './glove/'")
@@ -39,7 +35,6 @@ get_ipython().system("mv './glove.6B.zip' './glove/'")
 get_ipython().system("unzip './glove/glove.6B.zip' -d './glove/'")
 
 
-# In[5]:
 
 
 # defining a function to remove stop_words
@@ -57,7 +52,6 @@ def stopwrd_removal(sent):
   return " ".join(lst)
 
 
-# In[6]:
 
 
 def text_preprocessor(column, remove_stopwords = False, remove_specialchar = False):
@@ -99,7 +93,6 @@ def text_preprocessor(column, remove_stopwords = False, remove_specialchar = Fal
   df_train[column] = [re.sub('  +', ' ', i) for i in df_train[column].values]
 
 
-# In[7]:
 
 
 df_train['clean_title'] = df_train['question_title']
@@ -110,7 +103,6 @@ text_preprocessor('clean_body',  remove_stopwords = False, remove_specialchar = 
 text_preprocessor('clean_answer',  remove_stopwords = False, remove_specialchar = False)
 
 
-# In[8]:
 
 
 # 1. setting up target features
@@ -137,7 +129,6 @@ tar_features = question_tar + answer_tar
 len(tar_features)
 
 
-# In[9]:
 
 
 # 2. splitting dataset train_test_split
@@ -147,7 +138,6 @@ X_train, X_cv, y_train, y_cv = train_test_split(df_train[['clean_title', 'clean_
 X_train.shape, X_cv.shape, y_train.shape, y_cv.shape
 
 
-# In[10]:
 
 
 # 3. creating training features : title + body = title_body | answer_train | title + body + answer = title_body_answer
@@ -168,7 +158,6 @@ title_body_cv = [i+' '+j for i,j in zip(title_cv, body_cv)]
 len(title_body_train), len(answer_train), len(title_body_cv), len(answer_cv)
 
 
-# In[11]:
 
 
 import tensorflow as tf
@@ -177,7 +166,6 @@ from tensorflow.keras.layers import Input, Softmax, GRU, LSTM, Conv1D, Embedding
 from tensorflow.keras.models import Model
 
 
-# In[12]:
 
 
 # 2. tokenizing
@@ -201,7 +189,6 @@ answer_seq_cv = answer_token.texts_to_sequences(answer_cv)
 answer_vocab = answer_token.word_index
 
 
-# In[13]:
 
 
 # 3. building vocab
@@ -209,7 +196,6 @@ print('Total no.of words in title_body vocab =', len(title_body_vocab))
 print('Total no.of words in answer vocab =', len(answer_vocab))
 
 
-# In[14]:
 
 
 # 4.1. padding : max lengths
@@ -219,7 +205,6 @@ answer_max_len = max([len(i) for  i in answer_seq_train])
 print('MAX seq_len in title_body sentences = {}\nMAX seq_len in answer sequences = {}'.format(title_body_max_len, answer_max_len))
 
 
-# In[15]:
 
 
 # 4.2. padding : setting up sequence max_len threshold using percentile method (for padding the seq)
@@ -233,7 +218,6 @@ for i in np.arange(80, 101, 1):
   print('percentile = {} | seq_len = {} | no.of datapts NOT covered = {}'.format(round(i, 2), round(np.percentile(len_lst_2, i)), round(len(len_lst_2) - (i*len(len_lst_2)*0.01))))
 
 
-# In[16]:
 
 
 # 4.3. padding : setting up sequence max_len threshold using elbow_method
@@ -264,7 +248,6 @@ plt.xticks(ticks = range(0, 40), labels = lst_i)
 plt.show()
 
 
-# In[17]:
 
 
 # 4.4. padding : padding the train and test sequence
@@ -278,7 +261,6 @@ answer_seq_cv = pad_sequences(answer_seq_cv, maxlen = 300, padding = 'post', tru
 title_body_seq_train.shape, title_body_seq_cv.shape, answer_seq_train.shape, answer_seq_cv.shape
 
 
-# In[18]:
 
 
 # 5. initializing Embedding Matrix using glove_dict
@@ -294,7 +276,6 @@ file.close()
 print('Total no. of words :', len(glove_dict))
 
 
-# In[19]:
 
 
 # 5.2 Embedding Matrix : question
@@ -315,7 +296,6 @@ for word, i in answer_vocab.items():
 print(embedding_matrix_answer.shape)
 
 
-# In[20]:
 
 
 # 6. Constructing a model
@@ -353,7 +333,6 @@ model = get_model(embedding_matrix_text_body, embedding_matrix_answer)
 model.summary()
 
 
-# In[21]:
 
 
 # post processing : binning
@@ -377,7 +356,6 @@ def binned_out(y_pred):
   return final_pred
 
 
-# In[22]:
 
 
 # Defining callbacks
@@ -446,7 +424,6 @@ print_spearman_fn = print_spearman(train_data = ([title_body_seq_train, answer_s
 callbacks = [print_spearman_fn, reduce_lr, checkpt, tensorboard_callback]
 
 
-# In[23]:
 
 
 # LSTM : training a model
@@ -460,7 +437,6 @@ history = model.fit(x = [title_body_seq_train, answer_seq_train], y =  y_train.v
                     batch_size = 32, epochs = 20, callbacks = callbacks)
 
 
-# In[24]:
 
 
 # plotting model graphs
@@ -497,7 +473,6 @@ plt.grid()
 plt.show()
 
 
-# In[25]:
 
 
 def text_preprocessor(column, df, remove_stopwords = False, remove_specialchar = False):
@@ -539,7 +514,6 @@ def text_preprocessor(column, df, remove_stopwords = False, remove_specialchar =
   df[column] = [re.sub('  +', ' ', i) for i in df[column].values]
 
 
-# In[26]:
 
 
 # 1. text preprocessing
@@ -551,7 +525,6 @@ text_preprocessor('clean_body',df = df_test,  remove_stopwords = False, remove_s
 text_preprocessor('clean_answer',df = df_test,  remove_stopwords = False, remove_specialchar = False)
 
 
-# In[27]:
 
 
 # 2. preparing input data
@@ -562,7 +535,6 @@ answer_test = df_test['clean_answer'].values
 title_body_test = [i+' '+j for i,j in zip(title_test, body_test)]
 
 
-# In[28]:
 
 
 # 3. tokenizing
@@ -574,7 +546,6 @@ title_body_seq_test = pad_sequences(title_body_seq_test, maxlen = 300, padding =
 answer_seq_test = pad_sequences(answer_seq_test, maxlen = 300, padding = 'post', truncating='post')
 
 
-# In[29]:
 
 
 # 5. loading best model weights 
@@ -585,14 +556,12 @@ model.load_weights('./saved model/'+ str(best_epoch))
 y_pred_test = model.predict([title_body_seq_test, answer_seq_test])
 
 
-# In[30]:
 
 
 # 7. post_processing : binning
 final_pred = binned_out(y_pred_test)
 
 
-# In[31]:
 
 
 # 8. submission file 

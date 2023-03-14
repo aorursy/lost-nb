@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install pycountry-convert')
@@ -10,7 +9,6 @@ get_ipython().system('pip install plotly')
 get_ipython().system('pip install plotly_express')
 
 
-# In[25]:
 
 
 # import libararies
@@ -32,14 +30,12 @@ from plotly.subplots import make_subplots
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[3]:
 
 
 # global constants
 BASE_DATASET_DIR = "/kaggle/input/covid19-global-forecasting-week-4"
 
 
-# In[4]:
 
 
 TRAIN_DF = pd.read_csv(os.path.join(BASE_DATASET_DIR, "train.csv"))
@@ -51,7 +47,6 @@ TEST = "test"
 BASE_DFS = {TRAIN: TRAIN_DF, TEST: TEST_DF}
 
 
-# In[5]:
 
 
 display(TRAIN_DF.head())
@@ -60,7 +55,6 @@ display(TRAIN_DF.info())
 display(TRAIN_DF.dtypes)
 
 
-# In[6]:
 
 
 # reformat the 'Date' field first
@@ -68,7 +62,6 @@ for df in BASE_DFS.values():
     df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')
 
 
-# In[7]:
 
 
 min_train_date = BASE_DFS[TRAIN]["Date"].min()
@@ -78,7 +71,6 @@ print(f"Our training dataset ranges from {min_train_date} to {max_train_date}")
 print("Total of %d days" % (max_train_date - min_train_date).days)
 
 
-# In[8]:
 
 
 min_test_date = BASE_DFS[TEST]["Date"].min()
@@ -88,7 +80,6 @@ print(f"Our testing dataset ranges from {min_test_date} to {max_test_date}")
 print("Total of %d days" % (max_test_date - min_test_date).days)
 
 
-# In[9]:
 
 
 for df in BASE_DFS.values():
@@ -96,7 +87,6 @@ for df in BASE_DFS.values():
     df.set_index(id_col)
 
 
-# In[10]:
 
 
 def co_to_continent(alpha_2):
@@ -135,7 +125,6 @@ def co_to_country(country_name):
     return result
 
 
-# In[11]:
 
 
 cc = coco.CountryConverter()
@@ -158,7 +147,6 @@ for df in BASE_DFS.values():
     df["continent"] = df["country_iso2"].apply(co_to_continent)
 
 
-# In[12]:
 
 
 # replace the NaN values
@@ -166,7 +154,6 @@ for df in BASE_DFS.values():
     df["Province_State"].fillna("NaN", inplace=True)
 
 
-# In[13]:
 
 
 df_temp = BASE_DFS[TRAIN].copy()
@@ -183,7 +170,6 @@ fig = px.treemap(df_temp, path=['world', 'continent', 'Country_Region','Province
 fig.show()
 
 
-# In[14]:
 
 
 df_temp = BASE_DFS[TRAIN].copy()
@@ -200,7 +186,6 @@ fig = px.treemap(df_temp, path=['world', 'continent', 'Country_Region','Province
 fig.show()
 
 
-# In[15]:
 
 
 df_world = (BASE_DFS[TRAIN].copy()).groupby(['Date']).sum()
@@ -214,7 +199,6 @@ fig.update_layout(barmode='overlay', title='Global Cumulative Confirmed Cases an
 fig.show()
 
 
-# In[87]:
 
 
 print("Current global fatality rate: %.2f%%" 
@@ -222,7 +206,6 @@ print("Current global fatality rate: %.2f%%"
          / df_world['ConfirmedCases'].max() * 100))
 
 
-# In[16]:
 
 
 def filter_down(df, filtered_df, parent_col, parent_val, child_cols, val_col, suffix):
@@ -274,7 +257,6 @@ def discrete_growth(df, date_col, filter_cols, cum_sum_col, suffix="_discrete"):
     return new_df
 
 
-# In[17]:
 
 
 dg_df = BASE_DFS[TRAIN].copy()
@@ -282,7 +264,6 @@ dg_df = discrete_growth(dg_df, "Date", ["continent", "Country_Region", "Province
 dg_df = discrete_growth(dg_df, "Date", ["continent", "Country_Region", "Province_State"], "Fatalities")
 
 
-# In[24]:
 
 
 dg_df_world = dg_df.groupby(['Date']).sum()
@@ -313,7 +294,6 @@ fig.update_layout(barmode='overlay', title='Global Daily Confirmed Cases and Fat
 fig.show()
 
 
-# In[19]:
 
 
 map_df = BASE_DFS[TRAIN].copy()
@@ -325,7 +305,6 @@ map_df['ln(ConfirmedCases)'] = np.log(map_df.ConfirmedCases + 1)
 map_df['ln(Fatalities)'] = np.log(map_df.Fatalities + 1)
 
 
-# In[20]:
 
 
 px.choropleth(map_df, 
@@ -338,7 +317,6 @@ px.choropleth(map_df,
               title='Total Confirmed Cases (Ln Scale) by Country/Region Filtered by Date')
 
 
-# In[21]:
 
 
 px.choropleth(map_df, 
@@ -351,14 +329,12 @@ px.choropleth(map_df,
               title='Total Fatalities (Ln Scale) by Country/Region Filtered by Date')
 
 
-# In[30]:
 
 
 r = requests.get(url="https://raw.githubusercontent.com/rowanhogan/australian-states/master/states.geojson")
 topology = r.json()
 
 
-# In[40]:
 
 
 aus_df = (BASE_DFS[TRAIN].copy())
@@ -378,7 +354,6 @@ fig.update_geos(fitbounds="locations", visible=True)
 fig.show()
 
 
-# In[71]:
 
 
 px.line(aus_df, x='Date', y='ConfirmedCases', color='Province_State', 
@@ -387,14 +362,12 @@ px.line(aus_df, x='Date', y='Fatalities', color='Province_State',
         title='Australia: Total Fatalities by State and Date').show()
 
 
-# In[43]:
 
 
 aus_df['ln(ConfirmedCases)'] = np.log(aus_df.ConfirmedCases + 1)
 aus_df['ln(Fatalities)'] = np.log(aus_df.Fatalities + 1)
 
 
-# In[70]:
 
 
 px.line(aus_df, x='Date', y='ln(ConfirmedCases)', color='Province_State', 
@@ -403,7 +376,6 @@ px.line(aus_df, x='Date', y='ln(Fatalities)', color='Province_State',
         title='Australia: Total ln(Fatalities) by State and Date').show()
 
 
-# In[76]:
 
 
 gth_aus_df = discrete_growth(aus_df, "Date", 
@@ -414,7 +386,6 @@ gth_aus_df = discrete_growth(gth_aus_df, "Date",
                              "Fatalities")
 
 
-# In[77]:
 
 
 dg_df_world = gth_aus_df.groupby(['Date']).sum()
@@ -445,7 +416,6 @@ fig.update_layout(barmode='overlay', title='Global Daily Confirmed Cases and Fat
 fig.show()
 
 
-# In[86]:
 
 
 grped_aus_df = aus_df.groupby('Date').sum()
@@ -455,7 +425,6 @@ print("Current Austrailian fatality rate: %.2f%%"
          / grped_aus_df['ConfirmedCases'].max() * 100))
 
 
-# In[ ]:
 
 
 

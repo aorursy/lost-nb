@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -21,7 +20,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
         print(os.path.join(dirname, filename))
 
 
-# In[2]:
 
 
 df_train = pd.read_csv("../input/google-quest-challenge/train.csv")
@@ -29,7 +27,6 @@ df_test = pd.read_csv("../input/google-quest-challenge/test.csv")
 df_sub = pd.read_csv("../input/google-quest-challenge/sample_submission.csv")
 
 
-# In[3]:
 
 
 def resumetable(df):
@@ -50,32 +47,27 @@ def resumetable(df):
     return summary
 
 
-# In[4]:
 
 
 resumetable(df_train)[:10]
 
 
-# In[5]:
 
 
 resumetable(df_test)[:10]
 
 
-# In[6]:
 
 
 print(f"Shape of submission: {df_sub.shape}")
 target_cols = df_train[df_train.columns[df_train.columns.isin(df_sub.columns[1:])]].columns
 
 
-# In[7]:
 
 
 df_train.head(3)
 
 
-# In[8]:
 
 
 ## I will use the host column, split and get the first string
@@ -84,7 +76,6 @@ for i in range(len(df_train)):
 df_train.drop('host', axis=1, inplace=True)
 
 
-# In[9]:
 
 
 host = df_train.groupby(['host_cat'])['url'].nunique().sort_values(ascending=False)
@@ -124,14 +115,12 @@ plt.subplots_adjust(hspace = 0.3, top = 0.90)
 plt.show()
 
 
-# In[10]:
 
 
 print(f"Total Unique Users in 'Question User Name': {df_train['question_user_name'].nunique()}")
 print(f"Total Unique Users in 'Answer User Name': {df_train['answer_user_name'].nunique()}")
 
 
-# In[11]:
 
 
 plt.figure(figsize=(12,8))
@@ -144,7 +133,6 @@ plt.title('Comparison of Question and Answer Users Intersection\n', fontsize=20)
 plt.show()
 
 
-# In[12]:
 
 
 import matplotlib.gridspec as gridspec # to do the grid of plots
@@ -168,7 +156,6 @@ plt.subplots_adjust(top = 0.9, hspace=.1)
 plt.show()
 
 
-# In[13]:
 
 
 grid = gridspec.GridSpec(5, 3)
@@ -190,7 +177,6 @@ plt.subplots_adjust(top = 0.9, hspace=.1)
 plt.show()
 
 
-# In[14]:
 
 
 # Tokenize each item in the review column
@@ -207,7 +193,6 @@ for i in range(len(word_tokens)):
 df_train['question_n_words'] = len_tokens
 
 
-# In[15]:
 
 
 grid = gridspec.GridSpec(5, 3)
@@ -244,7 +229,6 @@ plt.subplots_adjust(top = 0.90, hspace=.4, wspace=.15)
 plt.show()
 
 
-# In[16]:
 
 
 grid = gridspec.GridSpec(10, 3)
@@ -268,7 +252,6 @@ plt.subplots_adjust(top = 0.95, hspace=.9, wspace=.2)
 plt.show()
 
 
-# In[17]:
 
 
 pca = PCA(n_components=3, random_state=42)
@@ -284,7 +267,6 @@ principalDf.rename(columns=lambda x: str(prefix)+str(x), inplace=True)
 df_train = pd.concat([df_train, principalDf], axis=1)
 
 
-# In[18]:
 
 
 print("TOP 3 PCA Explanability: ")
@@ -292,7 +274,6 @@ print("TOP 3 PCA Explanability: ")
 print(f"Sum of 3 Principal components: {round(pca.explained_variance_ratio_[:3].sum()*100,3)}%")
 
 
-# In[19]:
 
 
 plt.figure(figsize=(15,6))
@@ -304,7 +285,6 @@ g.set_ylabel("TARGET PCA 1", fontsize=16)
 plt.show()
 
 
-# In[20]:
 
 
 g = sns.FacetGrid(df_train[df_train.host_cat.isin(top_host)], col='host_cat',
@@ -315,14 +295,12 @@ g.set_titles('{col_name}', fontsize=17)
 plt.show()
 
 
-# In[21]:
 
 
 plt.figure(figsize=(16,10))
 sns.heatmap(df_train[target_cols].corr(),vmin=-1,cmap='YlGnBu')
 
 
-# In[22]:
 
 
 from wordcloud import WordCloud, STOPWORDS
@@ -333,7 +311,6 @@ newStopWords = ['amp', 'gt', 'lt', 'div', 'id',
 stopwords.update(newStopWords)
 
 
-# In[23]:
 
 
 grid = gridspec.GridSpec(5, 2)
@@ -364,7 +341,6 @@ plt.subplots_adjust(top = 0.95, hspace=.2, wspace=.1 )
 plt.show()
 
 
-# In[24]:
 
 
 #newStopWords = ['fruit', "Drink", "black"]
@@ -400,7 +376,6 @@ plt.subplots_adjust(top = 0.95, hspace=.2, wspace=.1 )
 plt.show()
 
 
-# In[25]:
 
 
 from textblob import TextBlob
@@ -414,7 +389,6 @@ df_train['ans_subjectivity']= df_train['answer'].apply(sub)
 df_train[['answer', 'category', 'ans_polarity', 'ans_subjectivity']].head()
 
 
-# In[26]:
 
 
 plt.figure(figsize=(16,5))
@@ -428,7 +402,6 @@ g.set_ylabel("Subjective ",fontsize=18)
 plt.show()
 
 
-# In[27]:
 
 
 polarity_answers = df_train.groupby('category')['ans_polarity', 'ans_subjectivity'].describe().reset_index()
@@ -436,13 +409,11 @@ polarity_answers = df_train.groupby('category')['ans_polarity', 'ans_subjectivit
 polarity_answers
 
 
-# In[28]:
 
 
 stopwords.update(['amp', 'lt', 'gt', 'frac'])
 
 
-# In[29]:
 
 
 import re
@@ -506,7 +477,6 @@ def replace_contractions(text):
     return contractions_re.sub(replace, text)
 
 
-# In[30]:
 
 
 # Here, the order is important
@@ -514,7 +484,6 @@ df_train['answer'] = df_train['answer'].apply(replace_contractions)
 df_train['answer'] = df_train['answer'].apply(clean_text)
 
 
-# In[31]:
 
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
@@ -561,14 +530,12 @@ plt.subplots_adjust(top = 0.95, hspace=.9, wspace=.1)
 plt.show()
 
 
-# In[32]:
 
 
 extra_cols = ['host_cat', 'question_n_words', 'Target_PCA0',
               'Target_PCA1', 'Target_PCA2', 'ans_polarity', 'ans_subjectivity']
 
 
-# In[33]:
 
 
 y_train = df_train[target_cols].copy()
@@ -579,7 +546,6 @@ X_test = df_test.copy()
 del df_test
 
 
-# In[34]:
 
 
 ## Shell 
@@ -589,7 +555,6 @@ import sys
 sys.path.insert(0, "../input/transformers/")
 
 
-# In[35]:
 
 
 import pandas as pd
@@ -612,7 +577,6 @@ np.set_printoptions(suppress=True)
 print(tf.__version__)
 
 
-# In[36]:
 
 
 np.set_printoptions(suppress=True)
@@ -625,7 +589,6 @@ tokenizer = BertTokenizer.from_pretrained(BERT_PATH+'bert-base-uncased-vocab.txt
 MAX_SEQUENCE_LENGTH = 512
 
 
-# In[37]:
 
 
 ## The function to creat the masks using to the title, question and answer
@@ -691,7 +654,6 @@ def compute_output_arrays(df, columns):
     return np.asarray(df[columns])
 
 
-# In[38]:
 
 
 
@@ -739,7 +701,6 @@ def create_model():
     return model
 
 
-# In[39]:
 
 
 outputs = compute_output_arrays(y_train, y_train.columns)
@@ -747,7 +708,6 @@ inputs = compute_input_arrays(X_train, X_train.columns, tokenizer, MAX_SEQUENCE_
 test_inputs = compute_input_arrays(X_test, X_test.columns, tokenizer, MAX_SEQUENCE_LENGTH)
 
 
-# In[40]:
 
 
 ## Creating Kfold with 5 splits 
@@ -790,7 +750,6 @@ for fold, (train_idx, valid_idx) in enumerate(gkf):
         print('validation score = ', rho_val)
 
 
-# In[41]:
 
 
 df_sub.iloc[:, 1:] = np.average(test_preds, axis=0) # for weighted average set weights=[...]
@@ -798,19 +757,16 @@ df_sub.iloc[:, 1:] = np.average(test_preds, axis=0) # for weighted average set w
 df_sub.to_csv('submission.csv', index=False)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

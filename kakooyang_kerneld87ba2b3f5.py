@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 
 
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -33,32 +31,27 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 os.listdir('../input/')
 
 
-# In[3]:
 
 
 df = pd.read_csv('../input/train.csv')
 df.head(10)
 
 
-# In[4]:
 
 
 os.listdir('../input/test/test')
 
 
-# In[5]:
 
 
 os.listdir('../input/train/train')
 
 
-# In[6]:
 
 
 data_dir = '../input/train/train/'
@@ -69,14 +62,12 @@ path
 test_dir = '../input/test/test/'
 
 
-# In[7]:
 
 
 image_pil = Image.open(path)
 image_pil
 
 
-# In[8]:
 
 
 image = np.array(image_pil)
@@ -84,14 +75,12 @@ plt.imshow(image)
 plt.show()
 
 
-# In[9]:
 
 
 has_cactus = df['has_cactus'][0]
 has_cactus
 
 
-# In[10]:
 
 
 image = np.array(image_pil)
@@ -100,31 +89,26 @@ plt.imshow(image)
 plt.show()
 
 
-# In[11]:
 
 
 np.mean(df['has_cactus']) # cactus가 포함될 비율
 
 
-# In[12]:
 
 
 np.sum(df['has_cactus']), len(df['has_cactus'])
 
 
-# In[13]:
 
 
 image.shape
 
 
-# In[14]:
 
 
 np.min(image), np.max(image)
 
 
-# In[15]:
 
 
 
@@ -146,13 +130,11 @@ def get_data(pathtuple):
     
 
 
-# In[16]:
 
 
 get_ipython().run_line_magic('pinfo', 'tf.keras.utils.to_categorical')
 
 
-# In[17]:
 
 
 heights = []
@@ -183,7 +165,6 @@ for testfilename in os.listdir(test_dir):
 test_data = np.array(test_arr)
 
 
-# In[18]:
 
 
 # batch dataset
@@ -210,13 +191,11 @@ def make_batch(batch_paths):
 #images.shape, labels.shape 
 
 
-# In[19]:
 
 
 batch_size = 32
 
 
-# In[20]:
 
 
 def data_gen(data_paths, is_training=True):
@@ -231,7 +210,6 @@ def data_gen(data_paths, is_training=True):
         yield images, labels
 
 
-# In[21]:
 
 
 #generator = data_gen(train_paths)
@@ -248,7 +226,6 @@ for i, (img, lbl) in enumerate(generator):
         
 
 
-# In[22]:
 
 
 from __future__ import absolute_import
@@ -271,7 +248,6 @@ tf.enable_eager_execution()
 os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 
-# In[23]:
 
 
 batch_size = 32
@@ -282,7 +258,6 @@ num_classes = 2
 input_shape = (32, 32, 3)
 
 
-# In[24]:
 
 
 # VGG16
@@ -337,7 +312,6 @@ net = layers.Activation('softmax')(net)
 model = tf.keras.Model(inputs=inputs, outputs=net)
 
 
-# In[25]:
 
 
 model.compile(loss='categorical_crossentropy', 
@@ -345,7 +319,6 @@ model.compile(loss='categorical_crossentropy',
              metrics=['accuracy'])
 
 
-# In[26]:
 
 
 #callbacks = [
@@ -353,13 +326,11 @@ model.compile(loss='categorical_crossentropy',
 #]
 
 
-# In[27]:
 
 
 get_ipython().run_line_magic('pinfo', 'model.fit_generator')
 
 
-# In[28]:
 
 
 steps_per_epoch = len(train_filenames) // batch_size
@@ -371,13 +342,11 @@ history=model.fit_generator(generator=data_gen(train_filenames),
                     #callbacks=callbacks)
 
 
-# In[29]:
 
 
 print(history.history.keys())
 
 
-# In[30]:
 
 
 # summarize history for accuracy
@@ -394,13 +363,11 @@ plt.xlabel('epoch')
 plt.show()
 
 
-# In[ ]:
 
 
 
 
 
-# In[31]:
 
 
 test_predictions = []
@@ -411,14 +378,12 @@ for i in range(test_data.shape[0]):
     test_predictions.append(np.argmax(tf.squeeze(predictions)))
 
 
-# In[32]:
 
 
 #print(test_predictions[0])
 #len(test_predictions)
 
 
-# In[33]:
 
 
 test_filenames=os.listdir(test_dir)
@@ -428,7 +393,6 @@ test_df = pd.DataFrame({'id': test_filenames, 'has_cactus': test_predictions },c
 test_df.to_csv('test_submission.csv', index=False)
 
 
-# In[34]:
 
 
 #test_batches_per_epoch = len(test_paths) // batch_size
@@ -437,13 +401,11 @@ test_df.to_csv('test_submission.csv', index=False)
 #                        verbose=1)
 
 
-# In[35]:
 
 
 #model.predict(np.expand_dims(image,0))
 
 
-# In[36]:
 
 
 #model.save(model.name+'_cactus.h5')
@@ -452,25 +414,21 @@ test_df.to_csv('test_submission.csv', index=False)
 #model = tf.keras.models.load_model(model.name + '_cactus.h5')
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[37]:
 
 
 #!tensorboard --logdir=./logs
 
 
-# In[38]:
 
 
 
@@ -479,31 +437,26 @@ test_df.to_csv('test_submission.csv', index=False)
 #print(t)
 
 
-# In[39]:
 
 
 #(df['id']==path.split('/')[-1])==1
 
 
-# In[40]:
 
 
 #from tqdm import tqdm_notebook
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -21,7 +20,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 For the Traveling Santa 2018 competition. All computation is done
@@ -32,14 +30,12 @@ Note: The prime_thread code, built on top of the linkern code from Concorde, use
 random seed the current time. The behavior of the Kernel is random.
 
 
-# In[ ]:
 
 
 cities = pd.read_csv('../input/cities.csv', index_col=['CityId'], nrows=None)
 cities_1000 = cities * 1000
 
 
-# In[ ]:
 
 
 def write_tsp(nodes, filename, name='Santa Prime Paths'):
@@ -58,25 +54,21 @@ def write_tsp(nodes, filename, name='Santa Prime Paths'):
 write_tsp(cities_1000, 'santa197769.tsp')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'rm -r LKH-2.0.9\nrm LKH-2.0.9.t*\nwget http://akira.ruc.dk/~keld/research/LKH/LKH-2.0.9.tgz')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'tar xzvf LKH-2.0.9.tgz\ncd LKH-2.0.9\nmake\nmv LKH ..\ncd ..\nrm -r LKH-2.0.9')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'ls')
 
 
-# In[ ]:
 
 
 def write_parameters(parameters, filename):
@@ -118,19 +110,16 @@ write_parameters(parameters0, "par0.par")
 write_parameters(parameters7, "par7.par")
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', './LKH par0.par')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', './LKH par7.par')
 
 
-# In[ ]:
 
 
 def write_xy(nodes, filename):
@@ -143,97 +132,81 @@ def write_xy(nodes, filename):
 write_xy(cities, 'kaggle.xy')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'wget http://www.math.uwaterloo.ca/tsp/pm/gen_primes.c\ngcc -o gen_primes gen_primes.c -lm\n./gen_primes\nhead primes.txt\nrm gen_primes*')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'wget http://www.math.uwaterloo.ca/tsp/pm/PM_1.tgz\ntar xzvf PM_1.tgz\ncd PM_1\nmake prime_thread\nmv prime_thread ..\ncd ..\nrm -r PM_1')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'ls')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', './prime_thread -P primes.txt -Z santa.rohenew.tour -o kick.tour -t7200.0 kaggle.xy')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'rm -r PM-LKH*\nwget http://www.math.uwaterloo.ca/tsp/pm/PM-LKH-3b.tgz\ntar xzvf PM-LKH-3b.tgz\nmv PM-LKH-3b PM-LKH\ncd PM-LKH\nmake\nrm -r PMSRC_DIV')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cp kaggle.xy PM-LKH/\ncp santa197769.tsp PM-LKH/\ncp primes.txt PM-LKH/primes_list')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cd PM-LKH\n./run_Segment_Optimization ../kick.tour 10000 post.tour')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cd PM-LKH\nmv submission.csv ../submission.csv\nrm -r DIV\nrm -r DIV_TOURS')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cd PM-LKH\n./run_Segment_Optimization post.tour 5000 post2.tour')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cd PM-LKH\nmv submission.csv ../submission.csv\nrm -r DIV\nrm -r DIV_TOURS')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cd PM-LKH\n./run_Segment_Optimization post2.tour 7500 post3.tour')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cd PM-LKH\nmv submission.csv ../submission.csv\nrm -r DIV\nrm -r DIV_TOURS')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cd PM-LKH\n./run_Segment_Optimization post3.tour 6250 post4.tour')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cd PM-LKH\nmv submission.csv ../submission.csv\nmv post4.tour ../post4.tour\nrm -r DIV\nrm -r DIV_TOURS')
 
 
-# In[ ]:
 
 
 Final run of the linkern-based code to search for global impprovemnts.
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', './prime_thread -P primes.txt -Z post4.tour -t3000.0 kaggle.xy')

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 import matplotlib as mpl
@@ -61,7 +59,6 @@ from ipywidgets import interact
 import random
 
 
-# In[ ]:
 
 
 class DriverImageDataset(Dataset):
@@ -150,14 +147,12 @@ class DriverImageDataset(Dataset):
         return im
 
 
-# In[ ]:
 
 
 new_shape = (int(640 / 2), int(480 / 2))  # 1/5th of original shape
 new_shape
 
 
-# In[ ]:
 
 
 # Hyperparameters
@@ -191,7 +186,6 @@ test_loader  = DataLoader(testData, batch_size = BATCH_SIZE,
                           num_workers = WORKERS, shuffle = True)
 
 
-# In[ ]:
 
 
 class simpleCNN(nn.Module):
@@ -223,7 +217,6 @@ class simpleCNN(nn.Module):
         return y  # Will learn to treat 'a' as the natural parameters of a multinomial distr. 
 
 
-# In[ ]:
 
 
 cNN_net = simpleCNN()
@@ -235,7 +228,6 @@ print("----")
 print(cNN_net.parameters)
 
 
-# In[ ]:
 
 
 import torch.cuda
@@ -253,7 +245,6 @@ else:
         return x
 
 
-# In[ ]:
 
 
 net = togpu(cNN_net)
@@ -262,7 +253,6 @@ criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(params = net.parameters(), lr = LEARNING_RATE)
 
 
-# In[ ]:
 
 
 def compute_eval_loss(net, criterion, loader):
@@ -285,7 +275,6 @@ def compute_eval_loss(net, criterion, loader):
     return eval_loss
 
 
-# In[ ]:
 
 
 def run_simpleCNN(net, optimizer, criterion, epoch = 2, best_eval_loss = float('inf')):
@@ -335,7 +324,6 @@ def run_simpleCNN(net, optimizer, criterion, epoch = 2, best_eval_loss = float('
                                                           tend-tstart))
 
 
-# In[ ]:
 
 
 import sys, os
@@ -378,25 +366,21 @@ def report(net, evalData):
     print(classification_report(targets, predictions))
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', "b_loss = float('inf')  # Assign infinity\nrun_simpleCNN(net, optimizer, criterion, epoch = 10, best_eval_loss = b_loss)\nepoch, b_loss, ehist, thist = resume(net, optimizer, fn = 'simpleCNN-best.pth.tar')\nreport(net, evalData)")
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', "submission_04 = pd.DataFrame({'img':testData.driver_imgs_list.iloc[:, 0], \n                              'c0':np.zeros(len(testData)),\n                              'c1':np.zeros(len(testData)),\n                              'c2':np.zeros(len(testData)),\n                              'c3':np.zeros(len(testData)),\n                              'c4':np.zeros(len(testData)),\n                              'c5':np.zeros(len(testData)),\n                              'c6':np.zeros(len(testData)),\n                              'c7':np.zeros(len(testData)),\n                              'c8':np.zeros(len(testData)),\n                              'c9':np.zeros(len(testData)) })\n\nfor i  in tqdm.tnrange(len(testData)):\n        x = testData[i].float()\n        # I have to add one extra axis at the beginning by None\n        p = tocpu(net(togpu(x[None,...]))).argmax(1)[0]\n        p = int(p) # Changing Tensors into integers\n        submission_04.at[i, 'c' + str(p)] = 1.0\n        \n    \nprint(submission_04)")
 
 
-# In[ ]:
 
 
 submission_04.to_csv('submission_04_01.csv', index = False)
 
 
-# In[ ]:
 
 
 

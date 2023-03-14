@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -10,7 +9,6 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 from tqdm import tqdm
@@ -25,43 +23,36 @@ from keras.regularizers import l2
 from PIL import Image
 
 
-# In[3]:
 
 
 ls ../input
 
 
-# In[4]:
 
 
 trainDf=pd.read_csv("../input/train.csv")
 
 
-# In[5]:
 
 
 trainDf.head()
 
 
-# In[6]:
 
 
 trainDf.shape
 
 
-# In[7]:
 
 
 trainDf['has_cactus'].hist()
 
 
-# In[8]:
 
 
 trainDf['has_cactus'].value_counts()
 
 
-# In[9]:
 
 
 def load_df(dataframe=None,batchSize=16):
@@ -80,14 +71,12 @@ def load_df(dataframe=None,batchSize=16):
     return trainGen,testGen
 
 
-# In[10]:
 
 
 # Okay lets load the data 
 trainGen,testGen=load_df(batchSize=32)
 
 
-# In[11]:
 
 
 model=Sequential()
@@ -114,7 +103,6 @@ model.add(Dropout(0.5))
 model.add(Dense(2, activation='softmax'))
 
 
-# In[12]:
 
 
 model.compile(loss=keras.losses.categorical_crossentropy,
@@ -123,31 +111,26 @@ model.compile(loss=keras.losses.categorical_crossentropy,
 model.summary()
 
 
-# In[13]:
 
 
 model.fit_generator(trainGen,steps_per_epoch=5000,epochs=3,validation_data=testGen,validation_steps=500,shuffle=True)
 
 
-# In[14]:
 
 
 submission_set=pd.read_csv('../input/sample_submission.csv')
 
 
-# In[15]:
 
 
 submission_set.head()
 
 
-# In[16]:
 
 
 submission_set.shape
 
 
-# In[17]:
 
 
 predictions=np.empty((submission_set.shape[0],))
@@ -160,25 +143,21 @@ submission_set['has_cactus']=predictions
 submission_set.to_csv('sample_submission.csv',index=False)    
 
 
-# In[18]:
 
 
 Image.open("../input/test/test/000940378805c44108d287872b2f04ce.jpg")
 
 
-# In[19]:
 
 
 ls ../input/test/test
 
 
-# In[20]:
 
 
 submission_set.head()
 
 
-# In[21]:
 
 
 

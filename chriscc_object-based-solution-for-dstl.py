@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -75,13 +73,11 @@ test_image_ids = sample_submission.ImageId.unique()
 train_image_ids = TRAIN_WKT.ImageId.unique()
 
 
-# In[3]:
 
 
 ## !mkdir ../input/feature;mkdir ../input/feature_train;mkdir ../input/feature/segment
 
 
-# In[4]:
 
 
 from rsgislib.segmentation import segutils
@@ -102,7 +98,6 @@ def run_image_segmentation(input_image, output_image, num_clusters=60, min_pixel
     print ('Segmentation for image "%s" finished in %d seconds.' % (input_image, time.time()-start))
 
 
-# In[5]:
 
 
 # imageIds in a DataFrame
@@ -114,7 +109,6 @@ for image_id in all_image_ids:
     run_image_segmentation(input_image, output_image)
 
 
-# In[6]:
 
 
 import tifffile as tiff
@@ -170,7 +164,6 @@ def image_to_array(image_id,image_type='M'):
     return image
 
 
-# In[7]:
 
 
 ## Feature extraction for testing images
@@ -196,7 +189,6 @@ for image_id in test_image_ids:
     print ('Feature extraction for image %s finished in %d seconds' % (image_id,time.time() - start))
 
 
-# In[8]:
 
 
 ## Extract features for training images
@@ -205,7 +197,6 @@ for image_id in test_image_ids:
 get_ipython().system('source activate osgeoenv;pip install shapely;pip install opencv-python;pip install rasterio')
 
 
-# In[9]:
 
 
 ## !source activate osgeoenv;pip install shapely
@@ -387,7 +378,6 @@ def train_image_to_feature(image_id):
     return features, labels, segment_ids  
 
 
-# In[10]:
 
 
 ## Feature extraction for training images
@@ -415,7 +405,6 @@ for image_id in train_image_ids:
 
 
 
-# In[11]:
 
 
 train_df = pd.DataFrame()
@@ -424,7 +413,6 @@ for image_id in train_image_ids:
     train_df = pd.concat([train_df, pd.read_csv('../input/feature_train/'+image_id+'.csv')],axis=0)
 
 
-# In[12]:
 
 
 full_cols = train_df.columns.tolist()
@@ -435,7 +423,6 @@ full_cols.remove('class_type')
 target = 'class_type'
 
 
-# In[13]:
 
 
 from sklearn.model_selection import train_test_split
@@ -447,7 +434,6 @@ clf.fit(train_df[full_cols].values,train_df[target].values)
 print (time.time()-start)
 
 
-# In[14]:
 
 
 from matplotlib import pyplot as plt
@@ -482,7 +468,6 @@ def predict_image(image_id, clf, full_cols,plot_image = False):
     return test_pred_mask
 
 
-# In[15]:
 
 
 # Make predictions
@@ -511,7 +496,6 @@ for image_id in test_image_ids:
     
 
 
-# In[16]:
 
 
 preds_df=pd.DataFrame(preds, columns = ['ImageId','ClassType','MultipolygonWKT'])

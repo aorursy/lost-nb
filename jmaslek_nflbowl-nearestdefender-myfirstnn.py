@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from kaggle.competitions import nflrush
@@ -27,7 +26,6 @@ df_train=pd.read_csv('../input/nfl-big-data-bowl-2020/train.csv',low_memory=Fals
 df = df_train
 
 
-# In[2]:
 
 
 def personnelmap(val):
@@ -51,14 +49,12 @@ def DefensePersonnelSplit(x):
     return dic
 
 
-# In[3]:
 
 
 df['OffensePersonnel'] = df['OffensePersonnel'].apply(personnelmap)
 print(df.columns)
 
 
-# In[4]:
 
 
 get_ipython().run_line_magic('time', '')
@@ -100,7 +96,6 @@ df['Turf'] = df['Turf'].map(Turf)
 df = pd.concat([df.drop(['Turf'], axis=1), pd.get_dummies(df['Turf'], prefix='Turf')], axis=1)
 
 
-# In[5]:
 
 
 df['PossessionTeam'] = df['PossessionTeam'].map(map_abbr)
@@ -149,7 +144,6 @@ df_rusher.drop(columns='Direction_Rad')
 print(list(df_rusher.columns))
 
 
-# In[6]:
 
 
 import tensorflow as tf
@@ -182,7 +176,6 @@ normed_train_data = pd.DataFrame(scaled_df, columns=train_dataset.columns)
 dummy_col = normed_train_data.columns
 
 
-# In[7]:
 
 
 def build_model():
@@ -220,7 +213,6 @@ model = build_model()
 model.summary()
 
 
-# In[8]:
 
 
 rkf = RepeatedKFold(n_splits=5, n_repeats=5)
@@ -243,7 +235,6 @@ x2 = time.time()
 print(x2-x1)
 
 
-# In[9]:
 
 
 def calc_crps(y_pred_cdfs, actuals):
@@ -253,14 +244,12 @@ def calc_crps(y_pred_cdfs, actuals):
      return crps
 
 
-# In[10]:
 
 
 ypred = model.predict(X_train) 
 calc_crps(np.cumsum(ypred,axis=1),np.array(Y_train))/199
 
 
-# In[11]:
 
 
 def make_pred(df,sample,env,model):
@@ -331,7 +320,6 @@ def make_pred(df,sample,env,model):
     return y_pred
 
 
-# In[12]:
 
 
 env=nflrush.make_env()

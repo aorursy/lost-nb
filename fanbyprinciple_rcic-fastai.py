@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ import os
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 import os
@@ -33,7 +31,6 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 from fastai.vision import *
 
 
-# In[3]:
 
 
 # deterministic, are we ?
@@ -49,14 +46,12 @@ SEED = 42
 seed_everything(SEED)
 
 
-# In[4]:
 
 
 train_df = pd.read_csv('../input/recursion-cellular-image-classification/train.csv')
 train_df.head(10)
 
 
-# In[5]:
 
 
 def generate_df(train_df,sample_num=1):
@@ -66,13 +61,11 @@ def generate_df(train_df,sample_num=1):
 proc_train_df = generate_df(train_df)
 
 
-# In[6]:
 
 
 proc_train_df.head(10)
 
 
-# In[7]:
 
 
 import cv2
@@ -83,7 +76,6 @@ plt.imshow(gray_img)
 gray_img.shape
 
 
-# In[8]:
 
 
 
@@ -103,13 +95,11 @@ class MultiChannelImageList(ImageList):
         return open_rcic_image(fn)
 
 
-# In[9]:
 
 
 il = MultiChannelImageList.from_df(df=proc_train_df, path="../input/recursion-cellular-image-classification/train/")
 
 
-# In[10]:
 
 
 def image2np(image:Tensor)->np.ndarray:
@@ -127,13 +117,11 @@ def image2np(image:Tensor)->np.ndarray:
 vision.image.image2np = image2np
 
 
-# In[11]:
 
 
 il[0]
 
 
-# In[12]:
 
 
 # creating a stratified split of data and getting the indices
@@ -144,7 +132,6 @@ train_df,val_df = train_test_split(proc_train_df,test_size=0.035, stratify = pro
 _proc_train_df = pd.concat([train_df,val_df])
 
 
-# In[13]:
 
 
 # creating databunch
@@ -157,26 +144,22 @@ data = (MultiChannelImageList.from_df(df=_proc_train_df,path='../input/recursion
        )
 
 
-# In[14]:
 
 
 data.show_batch()
 
 
-# In[15]:
 
 
 get_ipython().system('pip install efficientnet_pytorch')
 #!pip install cv2
 
 
-# In[18]:
 
 
 from efficientnet_pytorch import *
 
 
-# In[17]:
 
 
 import torchvision
@@ -234,7 +217,6 @@ def efficientnet_multichannel(pretrained=True,name='b0',num_classes=1108,num_cha
     return model
 
 
-# In[20]:
 
 
 def resnet1(pretrained, num_channels=6):
@@ -251,7 +233,6 @@ def efficientnetb0(pretrained=True, num_channels=6):
     return efficientnet_multichannel(pretrained=pretrained, name='b0', num_channels=num_channels)
 
 
-# In[21]:
 
 
 from fastai.metrics import *
@@ -259,14 +240,12 @@ learn = Learner(data, efficientnetb0(), metrics=[accuracy]).to_fp16()
 learn.path = Path('../')
 
 
-# In[22]:
 
 
 # Let us unfreexe and train the entire model
 learn.unfreeze()
 
 
-# In[23]:
 
 
 learn.fit_one_cycle(5, 1e-3)]
@@ -275,66 +254,56 @@ learn.fit_one_cycle(5, 1e-3)]
 # need to find out more out it
 
 
-# In[ ]:
 
 
 learn.recorder.plot_losses()
 learn.recorder.plot_metrics()
 
 
-# In[ ]:
 
 
 learn.save('stage-2')
 learn.export()
 
 
-# In[ ]:
 
 
 test_df = pd.read_csv("../input/recursion-cellular-image-classification/test")
 proc_test_df = generate_df(test_df.copy())
 
 
-# In[ ]:
 
 
 data_test = MultiChannelImageList.from_df(df=proc_test_df, path='../input/recursion-cellular-image-classification/test')
 learn.data.add_test(data_test)
 
 
-# In[ ]:
 
 
 preds, _ = learn.get_preds(DatasetType.Test)
 
 
-# In[ ]:
 
 
 preds_ = preds.argmax(dim=-1)
 
 
-# In[ ]:
 
 
 test_df.head(10)
 
 
-# In[ ]:
 
 
 submission_df = pd.read_csv('../input/recursion-cellular-image-classification/submission.csv')
 
 
-# In[ ]:
 
 
 submission_df.sirna = preds_.numpy().astype(int)
 submission_df.head(10)
 
 
-# In[ ]:
 
 
 submission_df.to_csv('submission.csv', index=False)

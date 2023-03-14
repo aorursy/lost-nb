@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -9,7 +8,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-# In[2]:
 
 
 df_cal = pd.read_csv('../input/m5-forecasting-accuracy/calendar.csv')
@@ -17,7 +15,6 @@ df_sales = pd.read_csv('../input/m5-forecasting-accuracy/sales_train_validation.
 df_price = pd.read_csv('../input/m5-forecasting-accuracy/sell_prices.csv')
 
 
-# In[3]:
 
 
 # Check for missing entries
@@ -26,7 +23,6 @@ df_cal['date'] = pd.to_datetime(df_cal['date'])
 assert (df_cal['date'].max() - df_cal['date'].min()).days + 1 == df_cal.shape[0], 'Missing Dates in the data'
 
 
-# In[4]:
 
 
 df_cal['weekday'] = pd.Categorical(df_cal['weekday'], 
@@ -34,7 +30,6 @@ df_cal['weekday'] = pd.Categorical(df_cal['weekday'],
                                    ordered=True)
 
 
-# In[5]:
 
 
 df_event_types = pd.wide_to_long(df_cal[['event_name_1','event_type_1','event_name_2','event_type_2']].reset_index(), 
@@ -47,7 +42,6 @@ df_event_types = pd.wide_to_long(df_cal[['event_name_1','event_type_1','event_na
     .rename(columns={'event_type_':'Event Type','event_name_':'Event Name', 'num':'Counts'})
 
 
-# In[6]:
 
 
 fig, ax = plt.subplots(1,1,figsize=(10,12))
@@ -57,7 +51,6 @@ ax.legend(loc='center left', bbox_to_anchor=(1.01,0.5))
 plt.show()
 
 
-# In[7]:
 
 
 df_cal[['year','weekday','snap_CA','snap_TX','snap_WI']]    .groupby(['year','weekday'])    .sum()    .plot(kind='bar', 
@@ -66,7 +59,6 @@ df_cal[['year','weekday','snap_CA','snap_TX','snap_WI']]    .groupby(['year','we
           title='SNAP Purchases (Year and Days)')
 
 
-# In[8]:
 
 
 snap_by_month = df_cal[['date','snap_CA','snap_TX','snap_WI']]    .resample(rule='M',on='date')    .sum()
@@ -81,7 +73,6 @@ ax.legend(loc='center left', bbox_to_anchor=(1.01,0.5))
 plt.show()
 
 
-# In[9]:
 
 
 df_cat_dept = df_sales[['dept_id','cat_id','id']].groupby(['cat_id','dept_id']).count().reset_index()
@@ -96,7 +87,6 @@ ax.legend(loc='center left', bbox_to_anchor=(1.01,0.5), title='cat_id')
 plt.show()
 
 
-# In[10]:
 
 
 df_sales['Total_sales'] = df_sales.iloc[:, 6:].sum(axis=1)
@@ -111,7 +101,6 @@ ax.legend(loc='center left', bbox_to_anchor=(1.01,0.5), title='cat_id')
 plt.show()
 
 
-# In[11]:
 
 
 fig, ax = plt.subplots(1,1, figsize=(12,6))
@@ -126,7 +115,6 @@ ax.legend(loc='center left', bbox_to_anchor=(1.01,0.5), title='state_id')
 plt.show()
 
 
-# In[12]:
 
 
 df_total_store_sales = df_sales[['state_id','store_id','Total_sales']].groupby(['state_id','store_id'], as_index=False).sum()
@@ -139,7 +127,6 @@ ax.legend(loc='center left', bbox_to_anchor=(1.01,0.5), title='state_id')
 plt.show()
 
 
-# In[13]:
 
 
 d_cols = list(df_sales.columns[df_sales.columns.str.startswith('d_')])
@@ -155,7 +142,6 @@ df_merged = df_days_long.merge(df_price.set_index(['item_id','store_id','wm_yr_w
 df_merged['sale_value'] = df_merged['sale_unit'] * df_merged['sell_price']
 
 
-# In[14]:
 
 
 df_sales_value_by_store = (df_merged['sale_value'].groupby(level=[1]).sum() / 1_000_000)    .round(1).rename('Sales Value ($ millions)')    .to_frame()    .reset_index()

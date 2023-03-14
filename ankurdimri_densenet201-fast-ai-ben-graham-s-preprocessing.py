@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -24,7 +23,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 get_ipython().run_line_magic('reload_ext', 'autoreload')
@@ -32,7 +30,6 @@ get_ipython().run_line_magic('autoreload', '2')
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[3]:
 
 
 from fastai import *
@@ -43,13 +40,11 @@ import os
 import pandas as pd
 
 
-# In[4]:
 
 
 path = Path('../input/')
 
 
-# In[5]:
 
 
 def seed_everything(seed):
@@ -64,20 +59,17 @@ SEED = 42
 seed_everything(SEED)
 
 
-# In[6]:
 
 
 print(torch.cuda.is_available())
 
 
-# In[7]:
 
 
 df_train = pd.read_csv(path/'train.csv')
 df_train.head()
 
 
-# In[8]:
 
 
 # Image porcessed with size (224,224) as previously built models have performed well
@@ -86,7 +78,6 @@ import cv2
 IMG_SIZE = 224
 
 
-# In[9]:
 
 
 from PIL import Image
@@ -128,7 +119,6 @@ def load_ben_color(path, sigmaX=10):
     return image
 
 
-# In[10]:
 
 
 from fastai.vision import Image
@@ -146,7 +136,6 @@ def _load_format(path,convert_mode, after_open) -> Image :
 vision.data.open_image = _load_format
 
 
-# In[11]:
 
 
 src = (ImageList.from_csv(path, 'train.csv', folder='train_images', suffix='.png')
@@ -155,7 +144,6 @@ src = (ImageList.from_csv(path, 'train.csv', folder='train_images', suffix='.png
 src
 
 
-# In[12]:
 
 
 tfms = get_transforms(do_flip=True,
@@ -165,7 +153,6 @@ tfms = get_transforms(do_flip=True,
 tfms
 
 
-# In[13]:
 
 
 data = (src.transform(tfms,size=224,resize_method=ResizeMethod.SQUISH,padding_mode='reflection')
@@ -173,13 +160,11 @@ data = (src.transform(tfms,size=224,resize_method=ResizeMethod.SQUISH,padding_mo
 data
 
 
-# In[14]:
 
 
 data.show_batch(rows=2, figsize=(12,9))
 
 
-# In[15]:
 
 
 # Definition of Quadratic Kappa
@@ -188,13 +173,11 @@ def quadratic_kappa(y_hat, y):
     return torch.tensor(cohen_kappa_score(torch.round(y_hat), y, weights='quadratic'),device='cuda:0')
 
 
-# In[16]:
 
 
 learn = cnn_learner(data, models.densenet201, metrics=[quadratic_kappa],model_dir='/kaggle')
 
 
-# In[17]:
 
 
 # Find a good learning rate
@@ -202,34 +185,29 @@ learn.lr_find()
 learn.recorder.plot(suggestion=True)
 
 
-# In[18]:
 
 
 lr = 1.20E-02
 lr
 
 
-# In[19]:
 
 
 learn.fit_one_cycle(4,lr)
 
 
-# In[20]:
 
 
 learn.recorder.plot_losses()
 learn.recorder.plot_metrics()
 
 
-# In[21]:
 
 
 # Save the model
 learn.save("stage-1", return_path=True)
 
 
-# In[22]:
 
 
 # Unfreeze and finding best LR
@@ -238,27 +216,23 @@ learn.lr_find()
 learn.recorder.plot(suggestion=True)
 
 
-# In[23]:
 
 
 learn.fit_one_cycle(4, max_lr=slice(1e-6,1e-4))
 
 
-# In[24]:
 
 
 # Save the model
 learn.save("stage-2", return_path=True)
 
 
-# In[25]:
 
 
 learn.recorder.plot_losses()
 learn.recorder.plot_metrics()
 
 
-# In[26]:
 
 
 import scipy as sp
@@ -266,13 +240,11 @@ from functools import partial
 from sklearn import metrics
 
 
-# In[27]:
 
 
 valid_preds = learn.get_preds(ds_type=DatasetType.Valid)
 
 
-# In[28]:
 
 
 # ref: https://www.kaggle.com/abhishek/optimizer-for-quadratic-weighted-kappa , thanks Abhishek Thakur
@@ -323,21 +295,18 @@ class OptimizedRounder(object):
         return self.coef_['x']
 
 
-# In[29]:
 
 
 optR = OptimizedRounder()
 optR.fit(valid_preds[0],valid_preds[1])
 
 
-# In[30]:
 
 
 coefficients = optR.coefficients()
 print(coefficients)
 
 
-# In[31]:
 
 
 # test_df = pd.read_csv(path/'test.csv')
@@ -346,7 +315,6 @@ sample_df = pd.read_csv(path/'sample_submission.csv')
 sample_df.head()
 
 
-# In[32]:
 
 
 learn.data.add_test(ImageList.from_df(sample_df,path,folder='test_images',suffix='.png'))
@@ -354,14 +322,12 @@ preds,y = learn.get_preds(DatasetType.Test)
 test_predictions = optR.predict(preds, coefficients)
 
 
-# In[33]:
 
 
 sample_df.diagnosis = test_predictions.astype(int)
 sample_df.head()
 
 
-# In[34]:
 
 
 sample_df.to_csv('submission.csv',index=False)

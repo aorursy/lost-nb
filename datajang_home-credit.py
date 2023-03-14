@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -20,32 +19,27 @@ from sklearn.metrics import roc_auc_score
 import warnings
 
 
-# In[2]:
 
 
 warnings.simplefilter(action = 'ignore', category = FutureWarning)
 
 
-# In[3]:
 
 
 pd.set_option('display.max_rows', 60)
 pd.set_option('display.max_columns', 100)
 
 
-# In[4]:
 
 
 debug = True
 
 
-# In[5]:
 
 
 num_rows = 30000 if debug else None
 
 
-# In[6]:
 
 
 NUM_THREADS = 4
@@ -53,34 +47,29 @@ DATA_DIRECTORY = "../input/"
 SUBMISSION_SUFIX = "_model2_04"
 
 
-# In[7]:
 
 
 path = DATA_DIRECTORY
 num_rows = num_rows
 
 
-# In[8]:
 
 
 train =pd.read_csv(os.path.join(path, 'application_train.csv'), nrows = num_rows)
 test = pd.read_csv(os.path.join(path, 'application_test.csv'), nrows = num_rows)
 
 
-# In[9]:
 
 
 train.head()
 
 
-# In[10]:
 
 
 # imbalance 한 Target값 확인
 train['TARGET'].value_counts().plot.bar()
 
 
-# In[11]:
 
 
 # trian과 test를 append 로 합침 (concat으로도 합칠수 있음)
@@ -88,19 +77,16 @@ df = train.append(test)
 df
 
 
-# In[12]:
 
 
 del train, test;
 
 
-# In[13]:
 
 
 gc.collect()
 
 
-# In[14]:
 
 
 # CODE_GENDER에 XNA(결측치)가 4개가 있으므로 결측치 처리를 해준다
@@ -108,14 +94,12 @@ df['CODE_GENDER'].value_counts().plot.bar()
 df = df[df['CODE_GENDER'] != 'XNA']
 
 
-# In[15]:
 
 
 # test 셋과 train set의 AMT_INCOME_TOTAL개수를 맞춤
 df = df[df['AMT_INCOME_TOTAL']< 20000000 ]
 
 
-# In[16]:
 
 
 # DAYS_EMPLOYED 일한 날을 나타내는 데이터인데 outlier값을 없에줌 -> 365243(의미없는 값이 11120개 있음)
@@ -124,7 +108,6 @@ df = df[df['AMT_INCOME_TOTAL']< 20000000 ]
 df['DAYS_EMPLOYED'].replace(365243, np.nan, inplace = True)
 
 
-# In[17]:
 
 
 # 핸드폰 바꾼일자를 나타내는 값인데 outlier 값을 없에줌 -> 0(의미없는 값을 NAN으로 처리)
@@ -132,26 +115,22 @@ df['DAYS_EMPLOYED'].replace(365243, np.nan, inplace = True)
 df['DAYS_LAST_PHONE_CHANGE'].replace(0, np.nan, inplace = True)
 
 
-# In[18]:
 
 
 # docs 에  FLAG_DOC column 을 모두 저장 -> 유한님 EDA를 참고하면 FLAG_DOC의 값이 0~3 으로 나타나 있기 때문
 docs = [f for f in df.columns if 'FLAG_DOC' in f]
 
 
-# In[19]:
 
 
 df['DOCUMENT_COUNT'] = df[docs].sum(axis=1)
 
 
-# In[20]:
 
 
 df['DOCUMENT_COUNT'].hist()
 
 
-# In[21]:
 
 
 # kurtosis (분포가 어떻게 되어있는가를 확인하는 통계방법)
@@ -159,20 +138,17 @@ df['DOCUMENT_COUNT'].hist()
 df[docs].kurtosis(axis = 1).hist()
 
 
-# In[22]:
 
 
 df['NEW_DOC_KURT'] = df[docs].kurtosis(axis=1)
 
 
-# In[23]:
 
 
 # DAYS_BIRTH 라는 값은 태어난 날인데 해당값은 음수이고, 정확한 수치가 아니기 때문에 아래와 같은 함수로 값을 처리한다
 df['DAYS_BIRTH']
 
 
-# In[24]:
 
 
 def get_age_label(days_birth):
@@ -186,34 +162,29 @@ def get_age_label(days_birth):
     else: return 0
 
 
-# In[25]:
 
 
 # apply 와 lambda 함수를 이용하여 df에 적용
 df['AGE_RANGE'] = df['DAYS_BIRTH'].apply(lambda x: get_age_label(x))
 
 
-# In[26]:
 
 
 # df['EXT_SOURCE_1'] , df['EXT_SOURCE_2'] , df['EXT_SOURCE_3'] 값들은 EDA에서 항상 좋은값을 보여왔으므로 뭔진몰라도 다 곱해서 파생변수에 저장
 df['EXT_SOURCE_PROD']=df['EXT_SOURCE_1'] * df['EXT_SOURCE_2'] * df['EXT_SOURCE_3'] 
 
 
-# In[27]:
 
 
 # 어떤 사람이 이 값이 가장 좋다고 해서 가져다 씀..ㅋ
 df['EXT_SOURCE_WEIGHTED']=df['EXT_SOURCE_1'] * 2 + df['EXT_SOURCE_2'] * 1 + df['EXT_SOURCE_3'] * 3
 
 
-# In[28]:
 
 
 np.warnings.filterwarnings('ignore', r'All-NaN (slice|axis) encountered')
 
 
-# In[29]:
 
 
 # eval 을 사용해서 반복작업을 해결함
@@ -222,13 +193,11 @@ for function_name in ['min', 'max', 'mean', 'nanmedian', 'var']:
     df[feature_name] = eval('np.{}'.format(function_name))(df[['EXT_SOURCE_1', 'EXT_SOURCE_2','EXT_SOURCE_3']], axis =1)
 
 
-# In[30]:
 
 
 df
 
 
-# In[31]:
 
 
 # 연금보험당 융자(빚)를 구한 파생변수를 생성
@@ -237,7 +206,6 @@ df['CREDIT_TO_ANNUITY_RATIO'] = df['AMT_CREDIT'] / df['AMT_ANNUITY']
 df['CREDIT_TO_GOODS_RATIO'] = df['AMT_CREDIT'] / df['AMT_GOODS_PRICE']
 
 
-# In[32]:
 
 
 df['ANNUITY_TO_INCOME_RATIO'] = df['AMT_ANNUITY'] / df['AMT_INCOME_TOTAL']
@@ -246,7 +214,6 @@ df['INCOME_TO_EMPLOYED_RATIO'] = df['AMT_INCOME_TOTAL'] / df['DAYS_EMPLOYED']
 df['INCOME_TO_BIRTH_RATIO'] = df['AMT_INCOME_TOTAL'] / df['DAYS_BIRTH']
 
 
-# In[33]:
 
 
 df['EMPLOYED_TO_BIRTH_RATIO'] = df['DAYS_EMPLOYED'] / df['DAYS_BIRTH']
@@ -256,58 +223,49 @@ df['CAR_TO_EMPLOYED_RATIO'] = df['OWN_CAR_AGE'] / df['DAYS_EMPLOYED']
 df['PHONE_TO_BIRTH_RATIO'] = df['DAYS_LAST_PHONE_CHANGE'] / df['DAYS_BIRTH']
 
 
-# In[34]:
 
 
 group = ['ORGANIZATION_TYPE', 'NAME_EDUCATION_TYPE', 'OCCUPATION_TYPE', 'AGE_RANGE', 'CODE_GENDER']
 
 
-# In[35]:
 
 
 df, group_cols, counted, agg_name = df, group, 'EXT_SOURCES_MEAN','GROUP_EXT_SOURCES_MEDIAN'
 
 
-# In[36]:
 
 
 df[group_cols + [counted]]
 
 
-# In[37]:
 
 
 df[group_cols + [counted]].groupby(group_cols)[counted].median().reset_index()
 
 
-# In[38]:
 
 
 gp = df[group_cols + [counted]].groupby(group_cols)[counted].median().reset_index().rename(columns = {counted:agg_name})
 gp
 
 
-# In[39]:
 
 
 df = df.merge(gp, on = group_cols , how = 'left')
 df
 
 
-# In[40]:
 
 
 agg = {}
 agg['counted'] = {'max','min','median','std','mean'}
 
 
-# In[41]:
 
 
 F = df[group_cols + [counted]].groupby(group_cols)[counted].agg(agg).reset_index()
 
 
-# In[42]:
 
 
 # aggregate을 활용한 값에 이름 넣기
@@ -315,7 +273,6 @@ F.columns = [''.join(col).strip() for col in F.columns.values]
 F
 
 
-# In[43]:
 
 
 def do_mean(df, group_cols, counted, agg_name):
@@ -354,7 +311,6 @@ def do_sum(df, group_cols, counted, agg_name):
     return df
 
 
-# In[44]:
 
 
 df = do_median(df, group, 'EXT_SOURCES_MEAN', 'GROUP_EXT_SOURCES_MEDIAN')
@@ -368,7 +324,6 @@ df = do_mean(df, group, 'AMT_ANNUITY', 'GROUP_ANNUITY_MEAN')
 df = do_std(df, group, 'AMT_ANNUITY', 'GROUP_ANNUITY_STD')
 
 
-# In[45]:
 
 
 #라벨 인코더 함수 사용, sklearn 의 labelencoder 보다 pandas의 factorize가 더 빠름
@@ -381,13 +336,11 @@ def label_encoder(df, categorical_columns=None):
     return df, categorical_columns
 
 
-# In[46]:
 
 
 df, le_encoded_cols = label_encoder(df, None)
 
 
-# In[47]:
 
 
 # EDA를 통해 나온 결과값을 보고 필요없는 column 들을 삭제
@@ -416,7 +369,6 @@ def drop_application_columns(df):
     return df
 
 
-# In[48]:
 
 
 # bureau는 다른 회사의 카드거래 data를 가져온것
@@ -424,7 +376,6 @@ bureau = pd.read_csv(os.path.join(path, 'bureau.csv'), nrows = num_rows)
 bureau
 
 
-# In[49]:
 
 
 # Credit duration and credit/account end date difference
@@ -432,7 +383,6 @@ bureau['CREDIT_DURATION'] = -bureau['DAYS_CREDIT'] + bureau['DAYS_CREDIT_ENDDATE
 bureau['ENDDATE_DIF'] = bureau['DAYS_CREDIT_ENDDATE'] - bureau['DAYS_ENDDATE_FACT']
 
 
-# In[50]:
 
 
 # Credit to debt ratio and difference
@@ -441,7 +391,6 @@ bureau['DEBT_CREDIT_DIFF'] = bureau['AMT_CREDIT_SUM'] - bureau['AMT_CREDIT_SUM_D
 bureau['CREDIT_TO_ANNUITY_RATIO'] = bureau['AMT_CREDIT_SUM'] / bureau['AMT_ANNUITY']
 
 
-# In[51]:
 
 
 '''
@@ -461,39 +410,33 @@ def one_hot_encoder(df, categorical_columns=None, nan_as_category=True):
     return df, categorical_columns
 
 
-# In[52]:
 
 
 bureau, categorical_columns = one_hot_encoder(bureau, nan_as_category=False)
 
 
-# In[53]:
 
 
 bb = pd.read_csv(os.path.join(path, 'bureau_balance.csv'), nrows= num_rows)
 bb
 
 
-# In[54]:
 
 
 bb, categorical_cols = one_hot_encoder(bb, nan_as_category= False)
 
 
-# In[55]:
 
 
 bb_processed = bb.groupby('SK_ID_BUREAU')[categorical_cols].mean().reset_index()
 
 
-# In[56]:
 
 
 agg = {'MONTHS_BALANCE' : ['min','max','mean','size']}
 #bb_processed = group_and_merge(bb, bb_processed, '', agg, 'SK_ID_BUREAU')
 
 
-# In[57]:
 
 
 df_to_agg = bb
@@ -503,7 +446,6 @@ aggregations = agg
 aggregate_by = 'SK_ID_BUREAU'
 
 
-# In[58]:
 
 
 def group(df_to_agg, prefix, aggregations, aggregate_by= 'SK_ID_CURR'):
@@ -513,7 +455,6 @@ def group(df_to_agg, prefix, aggregations, aggregate_by= 'SK_ID_CURR'):
     return agg_df.reset_index()
 
 
-# In[59]:
 
 
 def group_and_merge(df_to_agg, df_to_merge, prefix, aggregations, aggregate_by= 'SK_ID_CURR'):
@@ -521,7 +462,6 @@ def group_and_merge(df_to_agg, df_to_merge, prefix, aggregations, aggregate_by= 
     return df_to_merge.merge(agg_df, how='left', on= aggregate_by)
 
 
-# In[60]:
 
 
 def get_bureau_balance(path, num_rows= None):
@@ -536,14 +476,12 @@ def get_bureau_balance(path, num_rows= None):
     return bb_processed
 
 
-# In[61]:
 
 
 bureau = bureau.merge(get_bureau_balance(path, num_rows), how='left', on='SK_ID_BUREAU')
 bureau
 
 
-# In[62]:
 
 
 bureau['STATUS_12345'] = 0
@@ -551,14 +489,12 @@ for i in range(1,6):
         bureau['STATUS_12345'] += bureau['STATUS_{}'.format(i)]
 
 
-# In[63]:
 
 
 features = ['AMT_CREDIT_MAX_OVERDUE', 'AMT_CREDIT_SUM_OVERDUE', 'AMT_CREDIT_SUM',
        'AMT_CREDIT_SUM_DEBT', 'DEBT_PERCENTAGE', 'DEBT_CREDIT_DIFF', 'STATUS_0', 'STATUS_12345']
 
 
-# In[64]:
 
 
 # MONTHS_BALANCE_SIZE(이자가 남은 기간)을 기준으로 features의 평균을 전부 구한것
@@ -566,32 +502,27 @@ features = ['AMT_CREDIT_MAX_OVERDUE', 'AMT_CREDIT_SUM_OVERDUE', 'AMT_CREDIT_SUM'
 agg_length = bureau.groupby('MONTHS_BALANCE_SIZE')[features].mean().reset_index()
 
 
-# In[65]:
 
 
 # rename을 정말 똑똑하게 했내..
 agg_length.rename({feat:'LL_' + feat for feat in features}, axis = 1, inplace = True)
 
 
-# In[66]:
 
 
 {feat:'LL_' + feat for feat in features}
 
 
-# In[67]:
 
 
 bureau = bureau.merge(agg_length, how = 'left', on = 'MONTHS_BALANCE_SIZE')
 
 
-# In[68]:
 
 
 del agg_length; gc.collect()
 
 
-# In[69]:
 
 
 BUREAU_AGG = {
@@ -627,20 +558,17 @@ BUREAU_AGG = {
 }
 
 
-# In[70]:
 
 
 bureau.groupby('SK_ID_CURR').agg(BUREAU_AGG)
 
 
-# In[71]:
 
 
 agg_bureau = group(bureau, 'BUREAU_', BUREAU_AGG)
 agg_bureau
 
 
-# In[72]:
 
 
 BUREAU_ACTIVE_AGG = {
@@ -659,27 +587,23 @@ BUREAU_ACTIVE_AGG = {
 }
 
 
-# In[73]:
 
 
 active = bureau[bureau['CREDIT_ACTIVE_Active'] == 1]
 active
 
 
-# In[74]:
 
 
 agg_bureau = group_and_merge(active, agg_bureau, 'BUREAU_ACTIVE_',BUREAU_ACTIVE_AGG)
 
 
-# In[75]:
 
 
 closed = bureau[bureau['CREDIT_ACTIVE_Closed']==1]
 closed
 
 
-# In[76]:
 
 
 BUREAU_CLOSED_AGG = {
@@ -695,13 +619,11 @@ BUREAU_CLOSED_AGG = {
 }
 
 
-# In[77]:
 
 
 del active, closed; gc.collect()
 
 
-# In[78]:
 
 
 BUREAU_LOAN_TYPE_AGG = {
@@ -715,7 +637,6 @@ BUREAU_LOAN_TYPE_AGG = {
 }
 
 
-# In[79]:
 
 
 # Aggregations for the main loan types
@@ -726,13 +647,11 @@ for credit_type in ['Consumer credit', 'Credit card', 'Mortgage', 'Car loan', 'M
     del type_df; gc.collect()
 
 
-# In[80]:
 
 
 'BUREAU_' + credit_type.split(' ')[0].upper() + '_'
 
 
-# In[81]:
 
 
 BUREAU_TIME_AGG = {
@@ -747,7 +666,6 @@ BUREAU_TIME_AGG = {
 }
 
 
-# In[82]:
 
 
 # Time based aggregations: last x months
@@ -758,58 +676,49 @@ for time_frame in [6, 12]:
     del time_frame_df; gc.collect()
 
 
-# In[83]:
 
 
 sort_bureau = bureau.sort_values(by=['DAYS_CREDIT'])
 
 
-# In[84]:
 
 
 #last()는 가장 최근것을 보여줌
 gr = sort_bureau.groupby('SK_ID_CURR')['AMT_CREDIT_MAX_OVERDUE'].last().reset_index()
 
 
-# In[85]:
 
 
 gr.rename(columns={'AMT_CREDIT_MAX_OVERDUE':'BUREAU_LAST_LOAN_MAX_OVERDUE'},inplace = True)
 
 
-# In[86]:
 
 
 agg_bureau = agg_bureau.merge(gr, on = 'SK_ID_CURR', how = 'left')
 
 
-# In[87]:
 
 
 agg_bureau['BUREAU_DEBT_OVER_CREDIT'] =     agg_bureau['BUREAU_AMT_CREDIT_SUM_DEBT_SUM']/agg_bureau['BUREAU_AMT_CREDIT_SUM_SUM']
 agg_bureau['BUREAU_ACTIVE_DEBT_OVER_CREDIT'] =     agg_bureau['BUREAU_ACTIVE_AMT_CREDIT_SUM_DEBT_SUM']/agg_bureau['BUREAU_ACTIVE_AMT_CREDIT_SUM_SUM']
 
 
-# In[88]:
 
 
 df = df.merge(agg_bureau, on = 'SK_ID_CURR', how='left')
 
 
-# In[89]:
 
 
 df.head()
 
 
-# In[90]:
 
 
 prev = pd.read_csv(os.path.join(path, 'previous_application.csv'), nrows= num_rows)
 pay = pd.read_csv(os.path.join(path, 'installments_payments.csv'), nrows= num_rows)
 
 
-# In[91]:
 
 
 ohe_columns = [
@@ -818,13 +727,11 @@ ohe_columns = [
         'NAME_PRODUCT_TYPE', 'NAME_CLIENT_TYPE']
 
 
-# In[92]:
 
 
 prev, categorical_cols = one_hot_encoder(prev, ohe_columns, nan_as_category=False)
 
 
-# In[93]:
 
 
 # AMT_APPLICATION -> 신용등급?
@@ -834,7 +741,6 @@ prev['CREDIT_TO_ANNUITY_RATIO'] = prev['AMT_CREDIT'] / prev['AMT_ANNUITY']
 prev['DOWN_PAYMENT_TO_CREDIT'] = prev['AMT_DOWN_PAYMENT'] / prev['AMT_CREDIT']
 
 
-# In[94]:
 
 
 # Interest ratio on previous application
@@ -844,14 +750,12 @@ total_payment = prev['AMT_ANNUITY'] * prev['CNT_PAYMENT']
 prev['SIMPLE_INTERESTS'] = (total_payment/prev['AMT_CREDIT'] -1) / prev['CNT_PAYMENT']
 
 
-# In[95]:
 
 
 approved = prev[prev['NAME_CONTRACT_STATUS_Approved'] == 1]
 active_df = approved[approved['DAYS_LAST_DUE']== 365243]
 
 
-# In[96]:
 
 
 # home credit data 설명 참고
@@ -863,7 +767,6 @@ active_pay_agg = active_pay.groupby('SK_ID_PREV')[['AMT_INSTALMENT', 'AMT_PAYMEN
 active_pay_agg.reset_index(inplace = True)
 
 
-# In[97]:
 
 
 # Active loans: difference of what was payed and installments
@@ -874,7 +777,6 @@ active_df['REMAINING_DEBT'] = active_df['AMT_CREDIT'] - active_df['AMT_PAYMENT']
 active_df['REPAYMENT_RATIO'] = active_df['AMT_PAYMENT'] / active_df['AMT_CREDIT']
 
 
-# In[98]:
 
 
 PREVIOUS_ACTIVE_AGG = {
@@ -895,26 +797,22 @@ PREVIOUS_ACTIVE_AGG = {
 }
 
 
-# In[99]:
 
 
 # Perform aggregations for active applications
 active_agg_df = group(active_df,'PREV_ACTIVE_',PREVIOUS_ACTIVE_AGG)
 
 
-# In[100]:
 
 
 active_agg_df['TOTAL_REPAYMENT_RATIO'] = active_agg_df['PREV_ACTIVE_AMT_PAYMENT_SUM']/                                         active_agg_df['PREV_ACTIVE_AMT_CREDIT_SUM']
 
 
-# In[101]:
 
 
 del active_pay, active_pay_agg, active_df; gc.collect()
 
 
-# In[102]:
 
 
 # change 364,243 values to nan
@@ -925,7 +823,6 @@ prev['DAYS_LAST_DUE'].replace(365243, np.nan, inplace = True)
 prev['DAYS_TERMINATION'].replace(365243, np.nan, inplace = True)
 
 
-# In[103]:
 
 
 # Days last due difference(유효기간)
@@ -933,14 +830,12 @@ prev['DAYS_LAST_DUE_DIFF'] = prev['DAYS_LAST_DUE_1ST_VERSION'] - prev['DAYS_LAST
 approved['DAYS_LAST_DUE_DIFF'] = approved['DAYS_LAST_DUE_1ST_VERSION'] - approved['DAYS_LAST_DUE']
 
 
-# In[104]:
 
 
 #Categorical features
 categorical_agg = {key:['mean'] for key in categorical_cols}
 
 
-# In[105]:
 
 
 PREVIOUS_AGG = {
@@ -960,7 +855,6 @@ PREVIOUS_AGG = {
 }
 
 
-# In[106]:
 
 
 #Perform general aggregations
@@ -968,20 +862,17 @@ PREVIOUS_AGG = {
 agg_prev = group(prev, 'PREV_', {**PREVIOUS_AGG, **categorical_agg})
 
 
-# In[107]:
 
 
 # Merge active loans dataframe on agg_prev
 agg_prev = agg_prev.merge(active_agg_df, how='left', on = 'SK_ID_CURR')
 
 
-# In[108]:
 
 
 del active_agg_df; gc.collect()
 
 
-# In[109]:
 
 
 PREVIOUS_APPROVED_AGG = {
@@ -1008,7 +899,6 @@ PREVIOUS_APPROVED_AGG = {
 }
 
 
-# In[110]:
 
 
 PREVIOUS_REFUSED_AGG = {
@@ -1025,7 +915,6 @@ PREVIOUS_REFUSED_AGG = {
 }
 
 
-# In[111]:
 
 
 # Aggregations for approved and refused loans
@@ -1035,7 +924,6 @@ agg_prev = group_and_merge(refused, agg_prev, 'REFUSED_', PREVIOUS_REFUSED_AGG)
 del approved, refused; gc.collect()
 
 
-# In[112]:
 
 
 # Aggregations for Consumer loans and Cash loans
@@ -1046,7 +934,6 @@ for loan_type in ['Consumer loans', 'Cash loans']:
     del type_df; gc.collect()
 
 
-# In[113]:
 
 
 PREVIOUS_LOAN_TYPE_AGG = {
@@ -1061,7 +948,6 @@ PREVIOUS_LOAN_TYPE_AGG = {
 }
 
 
-# In[114]:
 
 
 PREVIOUS_LATE_PAYMENTS_AGG = {
@@ -1075,7 +961,6 @@ PREVIOUS_LATE_PAYMENTS_AGG = {
 }
 
 
-# In[115]:
 
 
 # Get the SK_ID_PREV for loans with late payments (days past due, 기한이 지난 날)
@@ -1085,14 +970,12 @@ pay['LATE_PAYMENT'] = pay['LATE_PAYMENT'].apply(lambda x:1 if x>0 else 0)
 dpd_id = pay[pay['LATE_PAYMENT']>0]['SK_ID_PREV'].unique()
 
 
-# In[116]:
 
 
 # prev에 연체가 있는 사람들만 추출
 prev[prev['SK_ID_PREV'].isin(dpd_id)]
 
 
-# In[117]:
 
 
 #Aggregations for loans with late payments
@@ -1100,7 +983,6 @@ agg_dpd = group_and_merge(prev[prev['SK_ID_PREV'].isin(dpd_id)],agg_prev,'PREV_L
 del agg_dpd, dpd_id; gc.collect
 
 
-# In[118]:
 
 
 PREVIOUS_TIME_AGG = {
@@ -1118,7 +1000,6 @@ PREVIOUS_TIME_AGG = {
 }
 
 
-# In[119]:
 
 
 #Aggregataions for loans in the last x months
@@ -1130,7 +1011,6 @@ for time_frame in [12,24]:
     del time_frame_df; gc.collect()
 
 
-# In[120]:
 
 
 POS_CASH_AGG = {
@@ -1142,20 +1022,17 @@ POS_CASH_AGG = {
 }
 
 
-# In[121]:
 
 
 pos = pd.read_csv(os.path.join(path,'POS_CASH_balance.csv'), nrows =num_rows)
 
 
-# In[122]:
 
 
 # null value가 있어도 LGBM이 가능하므로 Null 안없엠
 pos, categorical_cols = one_hot_encoder(pos, nan_as_category= False)
 
 
-# In[123]:
 
 
 #Flag months with late payment
@@ -1163,7 +1040,6 @@ pos, categorical_cols = one_hot_encoder(pos, nan_as_category= False)
 pos['LATE_PAYMENT'] = pos['SK_DPD'].apply(lambda x:1 if x>0 else 0)
 
 
-# In[124]:
 
 
 #Aggregate by SK_ID_CURR
@@ -1171,7 +1047,6 @@ categorical_agg = {key : ['mean'] for key in categorical_cols}
 pos_agg = group(pos, 'POS_', {**POS_CASH_AGG, **categorical_agg})
 
 
-# In[125]:
 
 
 #Sort and group by SK_ID_PREV
@@ -1182,7 +1057,6 @@ df['SK_ID_CURR'] = gp['SK_ID_CURR'].first()
 df['MONTHS_BALANCE_MAX'] = gp['MONTHS_BALANCE'].max()
 
 
-# In[126]:
 
 
 #Percentage of previous loans completed and completed before initial term
@@ -1193,7 +1067,6 @@ df['POS_COMPLETED_BEFORE_MEAN'] = gp['CNT_INSTALMENT'].first() - gp['CNT_INSTALM
 df['POS_COMPLETED_BEFORE_MEAN'] = df.apply(lambda x:1 if x['POS_COMPLETED_BEFORE_MEAN']>0 and x['POS_LOAN_COMPLETED_MEAN'] > 0 else 0, axis = 1)
 
 
-# In[127]:
 
 
 # Number of remaining installments (future installments) and percentage from total
@@ -1202,7 +1075,6 @@ df['POS_REMAINING_INSTALMENTS'] = gp['CNT_INSTALMENT_FUTURE'].last()
 df['POS_REMAINING_INSTALMENTS_RATIO'] = gp['CNT_INSTALMENT_FUTURE'].last()/gp['CNT_INSTALMENT'].last()
 
 
-# In[128]:
 
 
 # Group by SK_ID_CURR and merge
@@ -1212,7 +1084,6 @@ pos_agg = pd.merge(pos_agg, df_gp, on = 'SK_ID_CURR', how= 'left')
 del df, gp, df_gp, sort_pos; gc.collect()
 
 
-# In[129]:
 
 
 '''
@@ -1228,7 +1099,6 @@ pos = do_sum(pos, ['SK_ID_PREV'],'LATE_PAYMENT','LATE_PAYMENT_SUM')
 # pos.groupby(['SK_ID_PREV'])['LATE_PAYMENT'].sum().reset_index().rename(columns = {'LATE_PAYMENT':'LATE_PAYMENT_SUM'})
 
 
-# In[130]:
 
 
 # Last month of each application
@@ -1236,7 +1106,6 @@ pos = do_sum(pos, ['SK_ID_PREV'],'LATE_PAYMENT','LATE_PAYMENT_SUM')
 last_month_df = pos.groupby('SK_ID_PREV')['MONTHS_BALANCE'].idxmax()
 
 
-# In[131]:
 
 
 # Most recent applications (last 3)
@@ -1246,7 +1115,6 @@ gp_mean = gp.groupby('SK_ID_CURR').mean().reset_index()
 pos_agg = pd.merge(pos_agg, gp_mean[['SK_ID_CURR','LATE_PAYMENT_SUM']], on='SK_ID_CURR', how='left')
 
 
-# In[132]:
 
 
 # Drop some useless categorical features
@@ -1256,37 +1124,31 @@ drop_features = [
 pos_agg.drop(drop_features, axis=1, inplace=True)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -30,7 +29,6 @@ print(os.listdir("../input/freesound-audio-tagging-2019"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 # Author: Trent J. Bradberry <trentjason@hotmail.com>
@@ -231,7 +229,6 @@ class MultilabelStratifiedKFold(_BaseKFold):
         return super(MultilabelStratifiedKFold, self).split(X, y, groups)
 
 
-# In[3]:
 
 
 def calculate_overall_lwlrap_sklearn(truth, scores):
@@ -246,7 +243,6 @@ def calculate_overall_lwlrap_sklearn(truth, scores):
     return overall_lwlrap
 
 
-# In[4]:
 
 
 # models
@@ -301,7 +297,6 @@ def cnn_6(lr, do=0, l2reg=0):
     return model
 
 
-# In[5]:
 
 
 # Creates parent-label mappings.
@@ -422,7 +417,6 @@ for file, label in train_labels_dict.items():
     i += 1
 
 
-# In[6]:
 
 
 # Stores MFCC arrays of children files.
@@ -519,7 +513,6 @@ for file_name in test['fname'].tolist():
 print('test data done')
 
 
-# In[7]:
 
 
 # utilities to get X, y, and arithmetic and geometric averaging.
@@ -704,7 +697,6 @@ def geometric_average_val_scores(filenames_val, y_pred, y_true):
     return filenames_parents, y_pred_parents, y_true_parents
 
 
-# In[8]:
 
 
 # learning rate scheduler
@@ -747,7 +739,6 @@ filnames_test_parents, y_test_pred, _ = geometric_average_val_scores(filenames_t
 print('training complete')
 
 
-# In[9]:
 
 
 # construct dataframe from array and insert 'fname' column

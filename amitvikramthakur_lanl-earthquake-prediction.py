@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -52,7 +50,6 @@ from sklearn.model_selection import KFold, cross_validate, cross_val_predict, Ti
 #print(sklearn.__version__) # => '0.20.3'
 
 
-# In[3]:
 
 
 print("reading the file...")
@@ -63,19 +60,16 @@ pd.options.display.precision = 15 # pandas doesn't show us all the decimals
 df_trainset.head()
 
 
-# In[4]:
 
 
 df_trainset.head()
 
 
-# In[5]:
 
 
 df_trainset[0:150000].describe()
 
 
-# In[6]:
 
 
 def PlotLinearGraph_Actual_vs_Pred_absolute(y_actual,y_pred):
@@ -104,7 +98,6 @@ def PlotLinearGraph_Actual_vs_Pred_absolute(y_actual,y_pred):
     print(f'MSE: {score_mse:0.3f}')
 
 
-# In[7]:
 
 
 #Preparation of Training and Validation datasets ("segment_150000")
@@ -431,7 +424,6 @@ def addParameters_150000(seg_150000,X_150000,segment_150000):
     
 
 
-# In[8]:
 
 
 
@@ -467,7 +459,6 @@ for segment_150000 in tqdm_notebook(range(segments_150000)):
     addParameters_150000(seg_150000,X_train_150000,segment_150000)
 
 
-# In[9]:
 
 
 ## #Preparation of Validation dataset ("segment_150000")
@@ -505,7 +496,6 @@ for segment_150000 in tqdm_notebook(range(segments_150000)):
     addParameters_150000(seg_150000,X_validate_150000,segment_150000)
 
 
-# In[10]:
 
 
 
@@ -714,14 +704,12 @@ preprocess_function_test(X_validate_150000_2)
 
 
 
-# In[11]:
 
 
 #X_train_150000_2['kmeans_cluster'] = kmeans_150000_2.labels_
 #X_validate_150000_2['kmeans_cluster'] = kmeans_150000_2.predict(X_validate_kmeans_150000_2)
 
 
-# In[12]:
 
 
 
@@ -731,25 +719,21 @@ X_validate = X_validate_150000_2.copy()
 y_validate = y_validate_150000_2.copy()
 
 
-# In[13]:
 
 
 X_train.head()
 
 
-# In[14]:
 
 
 X_validate.head()
 
 
-# In[15]:
 
 
 y_train.head()
 
 
-# In[16]:
 
 
 '''
@@ -773,7 +757,6 @@ rf.fit(X_train, y_train.values.flatten())
 '''
 
 
-# In[17]:
 
 
 '''
@@ -798,7 +781,6 @@ SVG(graph.pipe(format='svg'))
 '''
 
 
-# In[18]:
 
 
 
@@ -814,7 +796,6 @@ plt.show()
 '''
 
 
-# In[19]:
 
 
 '''
@@ -828,7 +809,6 @@ y_pred_model_rf = rf.predict(X_validate)
 '''
 
 
-# In[20]:
 
 
 '''
@@ -837,7 +817,6 @@ PlotLinearGraph_Actual_vs_Pred_absolute(y_validate.values.flatten(),y_pred_model
 '''
 
 
-# In[21]:
 
 
 # CatBoost
@@ -864,13 +843,11 @@ Validation MAE Score for 1000 iterations = 2.636
 '''
 
 
-# In[22]:
 
 
 #cross_validate_results.keys()
 
 
-# In[23]:
 
 
 #num_folds=10
@@ -879,13 +856,11 @@ Validation MAE Score for 1000 iterations = 2.636
 #    print("Fold: {} Validation MAE: {}".format(i,-cross_validate_results['test_score'][i]))
 
 
-# In[24]:
 
 
 #model_CatBoost_new = cross_validate_results['estimator'][9]
 
 
-# In[25]:
 
 
 print(model_CatBoost.best_score_)
@@ -893,7 +868,6 @@ print(model_CatBoost.tree_count_)
 print(model_CatBoost.get_params())
 
 
-# In[26]:
 
 
 import catboost
@@ -908,7 +882,6 @@ plt.show()
 #print(y[np.where(x=="mean_Hdistance_bw_lowerthan_n10_valley_pts")[0][0]])
 
 
-# In[27]:
 
 
 
@@ -916,7 +889,6 @@ y_train_pred_model_CatBoost = model_CatBoost.predict(X_train)
 y_pred_model_CatBoost = model_CatBoost.predict(X_validate)
 
 
-# In[28]:
 
 
 # Plot Actual vs Prediction Graph (Absolute) before fine-tuning
@@ -925,7 +897,6 @@ PlotLinearGraph_Actual_vs_Pred_absolute(y_train.values.flatten(),y_train_pred_mo
 PlotLinearGraph_Actual_vs_Pred_absolute(y_validate.values.flatten(),y_pred_model_CatBoost)
 
 
-# In[29]:
 
 
 # Linear Model's Regression Methods
@@ -936,21 +907,18 @@ model_regressor = linear_model.LassoLarsCV(cv=5)
 model_regressor.fit(X_train, y_train.values.flatten())
 
 
-# In[30]:
 
 
 y_train_pred_model_regressor = model_regressor.predict(X_train)
 y_pred_model_regressor = model_regressor.predict(X_validate)
 
 
-# In[31]:
 
 
 PlotLinearGraph_Actual_vs_Pred_absolute(y_train.values.flatten(),y_train_pred_model_regressor)
 PlotLinearGraph_Actual_vs_Pred_absolute(y_validate.values.flatten(),y_pred_model_regressor)
 
 
-# In[32]:
 
 
 
@@ -963,20 +931,17 @@ model_SVM = NuSVR()
 model_SVM.fit(X_train_scaled, y_train.values.flatten())
 
 
-# In[33]:
 
 
 X_train_scaled
 
 
-# In[34]:
 
 
 y_train_pred_model_SVM = model_SVM.predict(X_train_scaled)
 y_pred_model_SVM = model_SVM.predict(X_validate_scaled)
 
 
-# In[35]:
 
 
 
@@ -984,7 +949,6 @@ PlotLinearGraph_Actual_vs_Pred_absolute(y_train.values.flatten(),y_train_pred_mo
 PlotLinearGraph_Actual_vs_Pred_absolute(y_validate.values.flatten(),y_pred_model_SVM)
 
 
-# In[36]:
 
 
 '''
@@ -1039,7 +1003,6 @@ model_NN.fit(x=X_train, y=y_train.values.flatten(), batch_size=64, epochs=200, v
 '''
 
 
-# In[37]:
 
 
 '''
@@ -1048,7 +1011,6 @@ y_pred_model_NN = model_NN.predict(X_validate, verbose = 2, batch_size = 64)
 '''
 
 
-# In[38]:
 
 
 '''
@@ -1057,7 +1019,6 @@ PlotLinearGraph_Actual_vs_Pred_absolute(y_validate.values.flatten(),y_pred_model
 '''
 
 
-# In[39]:
 
 
 '''
@@ -1079,7 +1040,6 @@ validate_X = format_to_lstm(validate_X)
 '''
 
 
-# In[40]:
 
 
 '''
@@ -1088,7 +1048,6 @@ print(train_X.shape)
 '''
 
 
-# In[41]:
 
 
 '''
@@ -1122,7 +1081,6 @@ my_lstm_fit(train_X,train_y,1000,50,model_LSTM)
 '''
 
 
-# In[42]:
 
 
 '''
@@ -1131,7 +1089,6 @@ y_pred_model_LSTM = model_LSTM.predict(validate_X)
 '''
 
 
-# In[43]:
 
 
 '''
@@ -1140,7 +1097,6 @@ PlotLinearGraph_Actual_vs_Pred_absolute(y_validate.values.flatten(),y_pred_model
 '''
 
 
-# In[44]:
 
 
 '''
@@ -1150,7 +1106,6 @@ y_pred_model_RANDOM1 = np.random.choice(y_train.values.flatten(),len(X_validate)
 '''
 
 
-# In[45]:
 
 
 '''
@@ -1159,7 +1114,6 @@ PlotLinearGraph_Actual_vs_Pred_absolute(y_validate.values.flatten(),y_pred_model
 '''
 
 
-# In[46]:
 
 
 '''
@@ -1191,7 +1145,6 @@ y_pred_blend1 = y_pred_blend1 - np.array([correction]*len(y_pred_blend1))
 '''
 
 
-# In[47]:
 
 
 '''
@@ -1202,7 +1155,6 @@ PlotLinearGraph_Actual_vs_Pred_absolute(y_validate.values.flatten(),y_pred_blend
 '''
 
 
-# In[48]:
 
 
 '''
@@ -1237,19 +1189,16 @@ print('c1_min: '+str(c1_min)+', score_min: '+str(score_min))
 '''
 
 
-# In[49]:
 
 
 submission = pd.read_csv('../input/sample_submission.csv', index_col='seg_id')
 
 
-# In[50]:
 
 
 X_test = pd.DataFrame(dtype=np.float64, index=submission.index) #columns=X_train.columns,)
 
 
-# In[51]:
 
 
 for seg_id in tqdm_notebook(X_test.index):
@@ -1260,13 +1209,11 @@ for seg_id in tqdm_notebook(X_test.index):
 preprocess_function_test(X_test)
 
 
-# In[52]:
 
 
 X_test.head()
 
 
-# In[53]:
 
 
 #X_test_scaled = scaler.transform(X_test)
@@ -1276,7 +1223,6 @@ submission['time_to_failure'] = model_CatBoost.predict(X_test)
 submission.to_csv('submission.csv')
 
 
-# In[54]:
 
 
 # visualise missing values
@@ -1284,7 +1230,6 @@ submission.to_csv('submission.csv')
 #msno.matrix(df_trainset)
 
 
-# In[55]:
 
 
 '''
@@ -1304,7 +1249,6 @@ plt.show()
 '''
 
 
-# In[56]:
 
 
 
@@ -1322,14 +1266,12 @@ plt.show()
 #print('Slope ttf vs S.No.: '+str((y_time_to_failure[-1]-y_time_to_failure[0])/(len(y_time_to_failure))))
 
 
-# In[57]:
 
 
 # Display the list of column names of X_train
 X_train.columns
 
 
-# In[58]:
 
 
 
@@ -1358,7 +1300,6 @@ for i in range(0,len(X_train.columns)):
 #print(round(-np.diff(y_time_to_failure[0:10]).mean(),4))
 
 
-# In[59]:
 
 
 '''
@@ -1392,7 +1333,6 @@ In order of importance:-
 '''
 
 
-# In[60]:
 
 
 
@@ -1417,7 +1357,6 @@ plt.show()
 #print(round(-np.diff(y_time_to_failure[0:10]).mean(),4))
 
 
-# In[61]:
 
 
 ## Important Concepts (ROUGH WORK)
@@ -1591,7 +1530,6 @@ m.predict(np.array([49]).reshape(-1,1))
 '''
 
 
-# In[62]:
 
 
 '''  
@@ -1755,7 +1693,6 @@ for i in tqdm_notebook(range(0,len(columns_initial))):
 #print(kmeans_150000_2.predict(X_validate_150000_2))
 
 
-# In[63]:
 
 
 '''

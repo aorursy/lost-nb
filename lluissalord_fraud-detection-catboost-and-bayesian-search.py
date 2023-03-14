@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import warnings
@@ -39,7 +38,6 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 # Installing the most recent version of skopt directly from Github (from fork which have some bugs fixed)
@@ -55,13 +53,11 @@ LOCAL = False
 fraud_data_dir = '../input/ieee-fraud-detection/'
 
 
-# In[3]:
 
 
 data_dir
 
 
-# In[4]:
 
 
 data_version = 'v5'
@@ -76,14 +72,12 @@ load_data = False
 use_catboost = True
 
 
-# In[5]:
 
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', 250)
 
 
-# In[6]:
 
 
 def load_only_data(data_dir, load_data = False):
@@ -149,19 +143,16 @@ data = load_only_data(data_dir, load_data)
 #submission = load_submission(data_dir, load_data)
 
 
-# In[7]:
 
 
 data.head()
 
 
-# In[8]:
 
 
 print(f"There are {data.isnull().any().sum()} columns with missing values")
 
 
-# In[9]:
 
 
 def remove_unique_and_NaN_columns(df):
@@ -174,19 +165,16 @@ def remove_unique_and_NaN_columns(df):
     return remove_columns
 
 
-# In[10]:
 
 
 data['isFraud'].value_counts(normalize = True)
 
 
-# In[11]:
 
 
 print(f"{data['id_01'].isnull().mean().round(4) * 100}% of transactions does not have associated an identity")
 
 
-# In[12]:
 
 
 if load_data or not os.path.exists(data_dir + 'data.pkl'):
@@ -199,7 +187,6 @@ if load_data or not os.path.exists(data_dir + 'data.pkl'):
     print(f"Shape of data is: {data.shape}")
 
 
-# In[13]:
 
 
 def unique_identifier(df):
@@ -211,7 +198,6 @@ def unique_identifier(df):
     df['uid_5'] = df['uid_3'].astype(str)+'_'+df['uid_4'].astype(str)
 
 
-# In[14]:
 
 
 def transactionDT(df):
@@ -233,7 +219,6 @@ def make_harmonic_features(value, period=24):
     return np.cos(value * 2 * np.pi / period), np.sin(value * 2 * np.pi / period)    
 
 
-# In[15]:
 
 
 def time_from_fraud(df, isSubmission = False, time_from_fraud_dict = {}):
@@ -280,7 +265,6 @@ def time_from_fraud(df, isSubmission = False, time_from_fraud_dict = {}):
             df['median_' + column_to_treat] = df_medians['median_' + column_to_treat].copy()            
 
 
-# In[16]:
 
 
 def add_check_null_columns(df):
@@ -296,7 +280,6 @@ def add_check_null_rows(df):
         df['all_NaN'] = abs(df.isna().sum(axis=1).astype(np.int8))
 
 
-# In[17]:
 
 
 def select_only_top_values(df, col, n_top_values, others_value = 'Others', nan_value = 'NaN'):
@@ -312,7 +295,6 @@ def select_only_top_values(df, col, n_top_values, others_value = 'Others', nan_v
     return col_dict
 
 
-# In[18]:
 
 
 def device_info_featuring(df, device_dict = {}, isSubmission = False, n_top_values = 100):
@@ -362,7 +344,6 @@ def device_info_build_featuring(df):
     df.loc[cond_rest, 'DeviceInfo_4'] = df['DeviceInfo_2'].copy()
 
 
-# In[19]:
 
 
 def emails_domains_featuring(df, n_top_domains = 10, emails_dict = {}, isSubmission = False):
@@ -380,7 +361,6 @@ def emails_domains_featuring(df, n_top_domains = 10, emails_dict = {}, isSubmiss
     return emails_dict
 
 
-# In[20]:
 
 
 def divide_mean_by_grouping(df, column_to_treat, group_by_column, isSubmission = False, group_by_means_dict = {}):
@@ -392,7 +372,6 @@ def divide_mean_by_grouping(df, column_to_treat, group_by_column, isSubmission =
     return group_by_means_dict
 
 
-# In[21]:
 
 
 def clean_inf_nan(df):
@@ -401,7 +380,6 @@ def clean_inf_nan(df):
         df[col] = df[col].replace([np.inf, -np.inf], np.nan)
 
 
-# In[22]:
 
 
 def treat_NaN(df, group_by_columns):
@@ -438,7 +416,6 @@ def treat_NaN_by_groups(df, column_to_treat, group_by_columns):
         df.loc[df[column_to_treat].isnull(), column_to_treat] = df[column_to_treat].median()
 
 
-# In[23]:
 
 
 def skewed_data_transformation(df, columns_to_log):
@@ -470,7 +447,6 @@ def skewed_data_transformation(df, columns_to_log):
     return df
 
 
-# In[24]:
 
 
 def feature_engineering(df, isSubmission = False, emails_dict = {}, n_top_domains = 10, group_by_means_dict = {}, device_dict = {}, n_top_values = 100):
@@ -531,7 +507,6 @@ def feature_engineering(df, isSubmission = False, emails_dict = {}, n_top_domain
     return df, emails_dict, group_by_means_dict, device_dict
 
 
-# In[25]:
 
 
 def get_categorical_columns():
@@ -551,7 +526,6 @@ def get_categorical_columns():
     return categorical_columns
 
 
-# In[26]:
 
 
 def encode_categorical_data(data_df, submission_df):
@@ -567,13 +541,11 @@ def encode_categorical_data(data_df, submission_df):
             submission_df[col] = le.transform(list(submission_df[col].astype(str).str.upper().values))
 
 
-# In[27]:
 
 
 get_ipython().run_cell_magic('time', '', 'if load_data or not data_available:\n    print("Starting data treatments")\n    try:\n        \n        remove_columns = remove_unique_and_NaN_columns(data)\n        data = data.drop(remove_columns, axis = 1)\n\n        n_top_domains = 10\n        n_top_values = 100\n        data, emails_dict, group_by_means_dict, device_dict = feature_engineering(data, n_top_domains  = n_top_domains, n_top_values = n_top_values)\n\n        # Ensure that all columns use the proper data type\n        data = reduce_mem_usage(data)\n        \n        submission = load_submission(data_dir, load_data)\n        submission = submission.drop(remove_columns, axis = 1)\n        submission, _, _, _ = feature_engineering(submission, isSubmission = True, \n                                         emails_dict = emails_dict, n_top_domains = n_top_domains, \n                                         group_by_means_dict = group_by_means_dict,\n                                        device_dict = device_dict, n_top_values = n_top_values)\n\n        categorical_columns = get_categorical_columns()\n        \n        if not use_catboost:\n            %time encode_categorical_data(data, submission)\n\n        # Ensure that all columns use the proper data type\n        submission = reduce_mem_usage(submission)\n        data = reduce_mem_usage(data)\n    finally:\n        if not os.path.exists(data_dir):\n            os.makedirs(data_dir)\n\n        with open(data_dir + \'data.pkl\', \'wb\') as file:\n            print("Saving data in ", data_dir + \'data.pkl\')\n            %time pickle.dump(data, file)\n\n        # Submission saved and then deleted in order to keep memory lower\n        with open(data_dir + \'submission.pkl\', \'wb\') as file:\n            print("Saving data in ", data_dir + \'submission.pkl\')\n            %time pickle.dump(submission, file)\n        del submission\n        gc.collect()')
 
 
-# In[28]:
 
 
 train, test = train_test_split(data.sort_values('TransactionDT'), test_size = 0.1, shuffle = False)
@@ -608,7 +580,6 @@ x_to_remove += ['all_NaN_bins']
 x_columns = [col for col in list(X.columns) if col not in x_to_remove]
 
 
-# In[29]:
 
 
 do_training = True
@@ -633,13 +604,11 @@ for dir_file in os.listdir(data_dir):
 catBoost_models_dirs.reverse()
 
 
-# In[30]:
 
 
 get_ipython().run_cell_magic('time', '', 'if do_training or len(catBoost_models_dirs) == 0:\n    \n    # Create 3 random features which will serve as baseline to reject features\n    baseline_features = [\'random_binary\', \'random_uniform\', \'random_integers\']\n    X = X.drop(baseline_features, axis = 1, errors = \'ignore\')\n    X[\'random_binary\'] = np.random.choice([0, 1], X.shape[0])\n    X[\'random_uniform\'] = np.random.uniform(0, 1, X.shape[0])\n    X[\'random_integers\'] = np.random.randint(0, X.shape[0] / 2, X.shape[0])\n    x_columns = [col for col in list(X.columns) if col not in x_to_remove]\n    \n    # Get the indexes for the categorical columns which CatBoost requires to out-perform other algorithms\n    cat_features_index = [x_columns.index(col) for col in categorical_columns if col in x_columns]\n\n    estimator = cb.CatBoostClassifier(iterations = 100,\n                              eval_metric = "AUC",\n                              cat_features = cat_features_index,\n                              #rsm = 0.3,\n                              scale_pos_weight = y.value_counts()[0] / y.value_counts()[1],\n                              task_type = task_type,\n                              metric_period = 50,\n                              verbose = False\n                           )\n    \n    n_top_features = None\n    \n    catboost_feature_selection, df_catboost_feature_selection = shadow_feature_selection(\n        estimator, y, X[x_columns], \n        baseline_features = baseline_features, n_top_features = n_top_features,\n        collinear_threshold = 0.98, cum_importance_threshold = 0.99,\n        max_loops = 100, n_iterations_mean = 3, times_no_change_features = 3,\n        need_cat_features_index = True, categorical_columns = categorical_columns,\n        plot_correlation = True)\n\n    print("Features selected:")\n    df_catboost_feature_selection')
 
 
-# In[31]:
 
 
 def save_catboost_model(catboost_model, catboost_feature_selection):
@@ -685,7 +654,6 @@ def save_catboost_model(catboost_model, catboost_feature_selection):
         shutil.rmtree(save_folder, ignore_errors=True)
 
 
-# In[32]:
 
 
 def train_catboost(params, X, y, X_valid, y_valid, catboost_feature_selection, cat_features_index = None, save_models = True, task_type = "GPU", verbose = True, plot = True):
@@ -714,13 +682,11 @@ def train_catboost(params, X, y, X_valid, y_valid, catboost_feature_selection, c
     return (catboost_model, catboost_feature_selection, catboost_model.get_best_score()['validation']['AUC'])
 
 
-# In[33]:
 
 
 get_ipython().run_cell_magic('time', '', '\nlist_catboost_models = []\n\n# Kaggle have some restrictions on HDD space and we could have space issues if we save the models\nif LOCAL:\n    save_models = True\nelse:\n    save_models = False\n\nif not do_training and len(catBoost_models_dirs) > 0:\n    \n    for i in tqdm_notebook(range(n_ensemble)):\n        best_model_dir = catBoost_models_dirs[i]\n        if BayesSearchCV_dirs != []:\n            latest_BayesSearchCV_dir = max(BayesSearchCV_dirs, key=os.path.getctime)\n\n        print("Loading model and result_dict from folder: " + best_model_dir)\n\n        with open(best_model_dir + \'/\' + \'model.pkl\', \'rb\') as file:\n            catboost_model = pickle.load(file)\n\n        with open(best_model_dir + \'/\' + \'feature_selection.pkl\', \'rb\') as file:\n            catboost_feature_selection = pickle.load(file)    \n        \n        if os.path.exists(best_model_dir + \'/\' + \'best_score.pkl\'):\n            with open(best_model_dir + \'/\' + \'best_score.pkl\', \'rb\') as file:\n                catboost_best_score = pickle.load(file) \n            list_catboost_models.append((catboost_model, catboost_feature_selection, catboost_best_score[\'validation\'][\'AUC\']))\n        else:\n            start_index = best_model_dir.find(\'CatBoostClassifier\') + len(\'CatBoostClassifier\') + 1\n            score = float(best_model_dir[start_index : start_index + 7])\n            list_catboost_models.append((catboost_model, catboost_feature_selection, score))\n\n        # Stop looking for more models if there is not more\n        if len(catBoost_models_dirs) - 1 == i:\n            break\n    \n    if BayesSearchCV_dirs != []:\n        with open(latest_BayesSearchCV_dir + \'/\' + \'result_dict.pkl\', \'rb\') as file:\n            catboost_result_dict = pickle.load(file)\n            \n    print("Done")\n\nelif use_predifined_params:\n    cat_features_index = [catboost_feature_selection.index(col) for col in categorical_columns if col in catboost_feature_selection]\n\n    list_predefined_params = []\n\n    predefined_params = {\n                        \'learning_rate\' : 0.05,\n                        \'depth\' : 4,\n                        \'l2_leaf_reg\' : 5,\n                        \'random_strength\' : 1,\n                        \'one_hot_max_size\' : 2,\n                        #\'min_data_in_leaf\' : 5,\n                        \'bagging_temperature\' : 0.01\n        }\n    list_predefined_params.append(predefined_params.copy())\n    \n    predefined_params = {\n                        \'learning_rate\' : 0.05,\n                        \'depth\' : 5,\n                        \'l2_leaf_reg\' : 20,\n                        \'random_strength\' : 15,\n                        \'one_hot_max_size\' : 2,\n                        #\'min_data_in_leaf\' : 10,\n                        \'bagging_temperature\' : 0.01\n        }\n    list_predefined_params.append(predefined_params.copy())\n    \n    predefined_params = {\n                        \'learning_rate\' : 0.05,\n                        \'depth\' : 6,\n                        \'l2_leaf_reg\' : 40,\n                        \'random_strength\' : 15,\n                        \'one_hot_max_size\' : 2,\n                        #\'min_data_in_leaf\' : 20,\n                        \'bagging_temperature\' : 0.01\n        }\n    list_predefined_params.append(predefined_params.copy())\n    \n    predefined_params = {\n                        \'learning_rate\' : 0.05,\n                        \'depth\' : 7,\n                        \'l2_leaf_reg\' : 120,\n                        \'random_strength\' : 1,\n                        \'one_hot_max_size\' : 2,\n                        #\'min_data_in_leaf\' : 25,\n                        \'bagging_temperature\' : 0.01\n        }\n    list_predefined_params.append(predefined_params.copy())\n    \n    predefined_params = {\n                        \'learning_rate\' : 0.05,\n                        \'depth\' : 8,\n                        \'l2_leaf_reg\' : 200,\n                        \'random_strength\' : 1,\n                        \'one_hot_max_size\' : 25,\n                        #\'min_data_in_leaf\' : 50,\n                        \'bagging_temperature\' : 0.01\n                        \n        }\n    list_predefined_params.append(predefined_params.copy())\n\n\n    for params in tqdm_notebook(list_predefined_params):\n\n        list_catboost_models.append(\n            train_catboost(params, \n                       X, y, \n                       X_valid, y_valid, \n                       catboost_feature_selection,\n                       cat_features_index,\n                       save_models = save_models,\n                       task_type = task_type)\n        )\nelse:\n    \n    cat_features_index = [catboost_feature_selection.index(col) for col in categorical_columns if col in catboost_feature_selection]\n\n    search_spaces = {\n                    \'learning_rate\' : (0.01, 0.5, \'log-uniform\'),\n                    \'depth\' : (3,16),\n                    \'l2_leaf_reg\' : (20,150),\n                    \'random_strength\' : (1,20),\n                    \'one_hot_max_size\' : (2,25),\n                    \'bagging_temperature\' : (0.0, 1.0)\n    }\n    \n    bayes_search = FixedBayesSearchCV(\n                                estimator = cb.CatBoostClassifier(iterations = 300,\n                                                                  eval_metric = "AUC",\n                                                                  cat_features = cat_features_index,\n                                                                  scale_pos_weight = y.value_counts()[0] / y.value_counts()[1],\n                                                                  task_type="GPU",\n                                                                  metric_period = 40),\n                                search_spaces = search_spaces,\n                                scoring = \'roc_auc\',\n                                cv = KFold(n_splits=3),\n                                return_train_score = True,\n                                n_jobs = 1,\n                                n_iter = 50,   \n                                verbose = 1,\n                                refit = False)\n\n    %time bayes_search.fit(X[catboost_feature_selection], y)\n    \n    catboost_result_dict = bayes_search.cv_results_\n    print(f"Best score {bayes_search.best_score_} with params {bayes_search.best_params_}")\n    \n    search_spaces_folder = data_dir\n    search_spaces_folder += \'BayesSearchCV\'\n    for key in search_spaces.keys():\n        search_spaces_str += \'_\' + key\n        search_spaces_str += \'(\' + str(search_spaces[key][0]) + \'-\' + str(search_spaces[key][1]) + \')\'\n    \n    # Create a folder if it does not exist\n    if not os.path.exists(search_spaces_folder):\n        os.makedirs(search_spaces_folder)\n    \n    with open(search_spaces_folder + \'/\' + \'result_dict.pkl\', \'wb\') as file:\n        pickle.dump(catboost_result_dict, file)\n    \n    list_best_params = np.array(pd.DataFrame(catboost_result_dict).nlargest(n_ensemble, \'mean_test_score\')[\'params\'])\n\n    for i in tqdm_notebook(range(n_ensemble)):\n\n        list_catboost_models.append(\n            train_catboost(list_best_params[i], \n               X, y, \n               X_valid, y_valid, \n               catboost_feature_selection,\n               cat_features_index,\n               save_models = save_models,\n               task_type = task_type)\n        )')
 
 
-# In[34]:
 
 
 if not use_predifined_params:
@@ -738,7 +704,6 @@ if not use_predifined_params:
     plot_list_scatters(result_pd, list_dict_scatters, subplot_cols = 3, subplot_rows = 2)
 
 
-# In[35]:
 
 
 def ensemble_catboosts(X, list_models):
@@ -755,7 +720,6 @@ def ensemble_catboosts(X, list_models):
     return y_ensemble / sum_scores
 
 
-# In[36]:
 
 
 print("Plot Train Ensemble ROC AUC")
@@ -768,7 +732,6 @@ print("Plot Test Ensemble ROC AUC")
 plot_roc_auc(y_test, ensemble_catboosts(X_test[catboost_feature_selection], list_catboost_models))
 
 
-# In[37]:
 
 
 submission = load_submission(data_dir, False)

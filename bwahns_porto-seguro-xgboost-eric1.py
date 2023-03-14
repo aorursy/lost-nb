@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 MAX_ROUNDS = 400
@@ -13,7 +12,6 @@ EARLY_STOPPING_ROUNDS = 50
 #       reduce EARLY_STOPPING_ROUNDS if you want to do actual early stopping.
 
 
-# In[2]:
 
 
 import numpy as np
@@ -27,7 +25,6 @@ import time
 import gc
 
 
-# In[3]:
 
 
 # Compute gini
@@ -50,7 +47,6 @@ def eval_gini(y_true, y_prob):
     return gini
 
 
-# In[4]:
 
 
 # Funcitons from olivier's kernel
@@ -119,7 +115,6 @@ def target_encode(trn_series=None,    # Revised to encode validation series
     return add_noise(ft_trn_series, noise_level), add_noise(ft_val_series, noise_level), add_noise(ft_tst_series, noise_level)
 
 
-# In[5]:
 
 
 # Read data
@@ -127,7 +122,6 @@ train_df = pd.read_csv('../input/train.csv', na_values="-1") # .iloc[0:200,:]
 test_df = pd.read_csv('../input/test.csv', na_values="-1")
 
 
-# In[6]:
 
 
 # from olivier
@@ -174,7 +168,6 @@ combs = [
 ]
 
 
-# In[7]:
 
 
 # Process data
@@ -204,14 +197,12 @@ test_df = test_df[train_features]
 f_cats = [f for f in X.columns if "_cat" in f]
 
 
-# In[8]:
 
 
 y_valid_pred = 0*y
 y_test_pred = 0
 
 
-# In[9]:
 
 
 # Set up folds
@@ -220,7 +211,6 @@ kf = KFold(n_splits = K, random_state = 1, shuffle = True)
 np.random.seed(0)
 
 
-# In[10]:
 
 
 # Set up classifier
@@ -239,7 +229,6 @@ model = XGBClassifier(
                      )
 
 
-# In[11]:
 
 
 # Run CV
@@ -293,7 +282,6 @@ print( "\nGini for full training set:" )
 eval_gini(y, y_valid_pred)
 
 
-# In[12]:
 
 
 # Save validation predictions for stacking/ensembling
@@ -303,7 +291,6 @@ val['target'] = y_valid_pred.values
 val.to_csv('xgb_valid.csv', float_format='%.6f', index=False)
 
 
-# In[13]:
 
 
 # Create submission file
@@ -313,7 +300,6 @@ sub['target'] = y_test_pred
 sub.to_csv('xgb_submit.csv', float_format='%.6f', index=False)
 
 
-# In[ ]:
 
 
 

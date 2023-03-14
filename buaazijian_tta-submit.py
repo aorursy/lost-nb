@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import argparse
@@ -52,7 +51,6 @@ def multi_apply(func, *args, **kwargs):
 import os
 
 
-# In[2]:
 
 
 random.seed(233)
@@ -97,7 +95,6 @@ def transform_test(image):
     return images
 
 
-# In[3]:
 
 
 ON_KAGGLE = True
@@ -105,7 +102,6 @@ N_CLASSES = 1103
 DATA_ROOT = Path('../input/imet-2019-fgvc6')
 
 
-# In[4]:
 
 
 def gmean_df(df: pd.DataFrame) -> pd.DataFrame:
@@ -123,7 +119,6 @@ def load_model(model: nn.Module, path: Path) -> Dict:
     return state
 
 
-# In[5]:
 
 
 
@@ -576,14 +571,12 @@ def se_resnext50_32x4d(num_classes=1000, pretrained='imagenet'):
 #         return self.net(x)
 
 
-# In[6]:
 
 
 import os
 print(os.listdir("../input"))
 
 
-# In[7]:
 
 
 models = []
@@ -596,7 +589,6 @@ models.append(model)
 
 
 
-# In[8]:
 
 
 class Dataset_met(Dataset):
@@ -631,7 +623,6 @@ class Dataset_met(Dataset):
             return image, name
 
 
-# In[9]:
 
 
 NUM_TTA = 2
@@ -647,20 +638,17 @@ def test_collate(batch):
 test_names = os.listdir('../input/imet-2019-fgvc6/test')
 
 
-# In[10]:
 
 
 weights = [1]*1
 
 
-# In[11]:
 
 
 dst_test = Dataset_met(test_names, mode='test', transform=transform_test)
 dataloader_test = DataLoader(dst_test, shuffle=False, batch_size=64, num_workers=2, collate_fn=test_collate)
 
 
-# In[12]:
 
 
 with torch.no_grad():

@@ -1,19 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system(' ls ../input/steelfaultmodels0/')
 
 
-# In[2]:
 
 
 get_ipython().system(' python ../input/mlcomp/mlcomp/mlcomp/setup.py')
 
 
-# In[3]:
 
 
 import warnings
@@ -39,7 +36,6 @@ from mlcomp.contrib.transform.tta import TtaWrap
 import torch.nn.functional as F
 
 
-# In[4]:
 
 
 import torchvision
@@ -1688,7 +1684,6 @@ class Net(nn.Module):
         return logit
 
 
-# In[5]:
 
 
 resnet34_classify = load('/kaggle/input/severstalmodels/resnet34_classify.pth').cuda()
@@ -1713,7 +1708,6 @@ albu_str.eval()
 """
 
 
-# In[6]:
 
 
 def sharpen(p,t=0.5):
@@ -1740,7 +1734,6 @@ models = {unet_mobilenet2 : 0.2, seresnext50: 0.3, ures34:0.2, urese:0.3 }
 model = Model(models)
 
 
-# In[7]:
 
 
 def create_transforms(additional):
@@ -1771,7 +1764,6 @@ datasets = [TtaWrap(ImageDataset(img_folder=img_folder, transforms=t), tfms=t) f
 loaders = [DataLoader(d, num_workers=num_workers, batch_size=batch_size, shuffle=False) for d in datasets]
 
 
-# In[8]:
 
 
 thresholds = [0.5, 0.5, 0.5, 0.5]
@@ -1826,7 +1818,6 @@ df = pd.DataFrame(res)
 df.to_csv('submission.csv', index=False)
 
 
-# In[9]:
 
 
 df = pd.DataFrame(res)
@@ -1834,7 +1825,6 @@ df = df.fillna('')
 df.to_csv('submission.csv', index=False)
 
 
-# In[10]:
 
 
 df['Image'] = df['ImageId_ClassId'].map(lambda x: x.split('_')[0])
@@ -1843,7 +1833,6 @@ df['empty'] = df['EncodedPixels'].map(lambda x: not x)
 df[df['empty'] == False]['Class'].value_counts()
 
 
-# In[11]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')

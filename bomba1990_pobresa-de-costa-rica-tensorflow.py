@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from __future__ import absolute_import, division, print_function, unicode_literals
@@ -29,7 +28,6 @@ pd.set_option('display.width', 1000)
 print(tf.__version__)
 
 
-# In[2]:
 
 
 import sys, os
@@ -286,61 +284,52 @@ def clean(ds, drop_hogares_miss=True):
     return ds
 
 
-# In[3]:
 
 
 df = pd.read_csv('../input/costa-rican-household-poverty-prediction/train.csv')
 
 
-# In[4]:
 
 
 df = clean(df)
 
 
-# In[5]:
 
 
 df_test = pd.read_csv('../input/costa-rican-household-poverty-prediction/test.csv')
 df_test = clean(df_test, False)
 
 
-# In[6]:
 
 
 #df_test.head()
 df_test[df_test.idhogar == "d14b3e03a"]
 
 
-# In[7]:
 
 
 df.drop(columns=["Id","idhogar"], inplace=True)
 df_test.drop(columns=["idhogar"], inplace=True) # "Id"
 
 
-# In[8]:
 
 
 train_dataset = df.sample(frac=0.8,random_state=0)
 test_dataset = df.drop(train_dataset.index)
 
 
-# In[9]:
 
 
 train_labels = tf.keras.utils.to_categorical(train_dataset.pop('Target'))
 test_labels = tf.keras.utils.to_categorical(test_dataset.pop('Target'))
 
 
-# In[10]:
 
 
 train_stats = train_dataset.describe(include="all")
 train_stats = train_stats.transpose()
 
 
-# In[11]:
 
 
 def norm(x):
@@ -350,7 +339,6 @@ normed_test_data = norm(test_dataset)
 normed_submit_data = norm(df_test.drop(columns=["Id"]))
 
 
-# In[12]:
 
 
 def build_model():
@@ -371,20 +359,17 @@ def build_model():
 model = build_model()
 
 
-# In[13]:
 
 
 model.summary()
 
 
-# In[14]:
 
 
 early_stop = tf.keras.callbacks.EarlyStopping(monitor='accuracy', patience=10)
 history = model.fit(normed_train_data, train_labels, shuffle=True, epochs=600, validation_data=(normed_test_data, test_labels), verbose=1, callbacks=[early_stop,])
 
 
-# In[15]:
 
 
 def plot_history(history):
@@ -408,7 +393,6 @@ def plot_history(history):
 plot_history(history)
 
 
-# In[16]:
 
 
 evaluation = model.evaluate(normed_test_data, test_labels, verbose=2)
@@ -416,14 +400,12 @@ evaluation = model.evaluate(normed_test_data, test_labels, verbose=2)
 print(evaluation)
 
 
-# In[17]:
 
 
 test_predictions = model.predict_classes(normed_submit_data).flatten()
 test_predictions
 
 
-# In[18]:
 
 
 predictions = model.predict_classes(normed_submit_data,verbose=0)

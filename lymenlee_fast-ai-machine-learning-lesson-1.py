@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('load_ext', 'autoreload')
@@ -10,7 +9,6 @@ get_ipython().run_line_magic('autoreload', '2')
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 from fastai.imports import *
@@ -23,31 +21,26 @@ from IPython.display import display
 from sklearn import metrics
 
 
-# In[3]:
 
 
 from fastai.tabular import *
 
 
-# In[4]:
 
 
 PATH = "../input/"
 
 
-# In[5]:
 
 
 get_ipython().system('ls {PATH}')
 
 
-# In[6]:
 
 
 df_raw = pd.read_csv(f'{PATH}train/Train.csv', low_memory=False, parse_dates=["saledate"])
 
 
-# In[7]:
 
 
 def display_all(df):
@@ -55,25 +48,21 @@ def display_all(df):
         display(df)
 
 
-# In[8]:
 
 
 display_all(df_raw.tail().T)
 
 
-# In[9]:
 
 
 display_all(df_raw.describe(include='all').T)
 
 
-# In[10]:
 
 
 df_raw.SalePrice = np.log(df_raw.SalePrice)
 
 
-# In[11]:
 
 
 m = RandomForestRegressor(n_jobs=-1)
@@ -81,14 +70,12 @@ m = RandomForestRegressor(n_jobs=-1)
 m.fit(df_raw.drop('SalePrice', axis=1), df_raw.SalePrice)
 
 
-# In[12]:
 
 
 from IPython.display import display
 from fastai.imports import *
 
 
-# In[13]:
 
 
 # from .imports import *
@@ -499,69 +486,58 @@ def get_nn_mappers(df, cat_vars, contin_vars):
     contin_maps = [([o], StandardScaler()) for o in contin_vars]
 
 
-# In[14]:
 
 
 add_datepart(df_raw, 'saledate')
 df_raw.saleYear.head()
 
 
-# In[15]:
 
 
 train_cats(df_raw)
 
 
-# In[16]:
 
 
 df_raw.UsageBand.cat.categories
 
 
-# In[17]:
 
 
 df_raw.UsageBand.cat.set_categories(['High', 'Medium', 'Low'], ordered=True, inplace=True)
 
 
-# In[18]:
 
 
 df_raw.UsageBand = df_raw.UsageBand.cat.codes
 
 
-# In[19]:
 
 
 display_all(df_raw.isnull().sum().sort_index()/len(df_raw))
 
 
-# In[20]:
 
 
 os.makedirs('tmp', exist_ok=True)
 df_raw.to_feather('tmp/bulldozers-raw')
 
 
-# In[21]:
 
 
 df_raw = pd.read_feather('tmp/bulldozers-raw')
 
 
-# In[22]:
 
 
 df, y, nas = proc_df(df_raw, 'SalePrice')
 
 
-# In[23]:
 
 
 get_ipython().run_line_magic('pinfo', 'proc_df')
 
 
-# In[24]:
 
 
 m = RandomForestRegressor(n_jobs=-1)
@@ -569,7 +545,6 @@ m.fit(df, y)
 m.score(df,y)
 
 
-# In[25]:
 
 
 def split_vals(a,n): return a[:n].copy(), a[n:].copy()
@@ -583,7 +558,6 @@ y_train, y_valid = split_vals(y, n_trn)
 X_train.shape, y_train.shape, X_valid.shape
 
 
-# In[26]:
 
 
 def rmse(x,y): return math.sqrt(((x-y)**2).mean())
@@ -595,7 +569,6 @@ def print_score(m):
     print(res)
 
 
-# In[27]:
 
 
 m = RandomForestRegressor(n_jobs=-1)
@@ -603,7 +576,6 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[28]:
 
 
 df_trn, y_trn, nas = proc_df(df_raw, 'SalePrice', subset=30000, na_dict=nas)
@@ -611,7 +583,6 @@ X_train, _ = split_vals(df_trn, 20000)
 y_train, _ = split_vals(y_trn, 20000)
 
 
-# In[29]:
 
 
 m = RandomForestRegressor(n_jobs=-1)
@@ -619,7 +590,6 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[30]:
 
 
 m = RandomForestRegressor(n_estimators=1, max_depth=3, bootstrap=False, n_jobs=-1)
@@ -627,32 +597,26 @@ m.fit(X_train, y_train)
 print_score(m)
 
 
-# In[31]:
 
 
 from fastai.imports import *
 
 
-# In[32]:
 
 
 get_ipython().run_line_magic('pinfo', 'IPython')
 
 
-# In[33]:
 
 
-pip install ipympl
 
 
-# In[34]:
 
 
 from graphviz import Source
 draw_tree(m.estimators_[0], df_trn, precision=3)
 
 
-# In[35]:
 
 
 m = RandomForestRegressor(n_estimators=1, bootstrap=False, n_jobs=-1)
@@ -660,7 +624,6 @@ m.fit(X_train, y_train)
 print_score(m)
 
 
-# In[36]:
 
 
 m = RandomForestRegressor(n_jobs=-1)
@@ -668,26 +631,22 @@ m.fit(X_train, y_train)
 print_score(m)
 
 
-# In[37]:
 
 
 preds = np.stack([t.predict(X_valid) for t in m.estimators_])
 preds[:,0], np.mean(preds[:,0]), y_valid[0]
 
 
-# In[38]:
 
 
 preds.shape
 
 
-# In[39]:
 
 
 plt.plot([metrics.r2_score(y_valid, np.mean(preds[:i+1], axis=0)) for i in range(10)]);
 
 
-# In[40]:
 
 
 m = RandomForestRegressor(n_estimators=20, n_jobs=-1)
@@ -695,7 +654,6 @@ m.fit(X_train, y_train)
 print_score(m)
 
 
-# In[41]:
 
 
 m = RandomForestRegressor(n_estimators=40, n_jobs=-1)
@@ -703,7 +661,6 @@ m.fit(X_train, y_train)
 print_score(m)
 
 
-# In[42]:
 
 
 m = RandomForestRegressor(n_estimators=80, n_jobs=-1)
@@ -711,7 +668,6 @@ m.fit(X_train, y_train)
 print_score(m)
 
 
-# In[43]:
 
 
 m = RandomForestRegressor(n_estimators=40, n_jobs=-1, oob_score=True)
@@ -719,7 +675,6 @@ m.fit(X_train, y_train)
 print_score(m)
 
 
-# In[44]:
 
 
 df_trn, y_trn, nas = proc_df(df_raw, 'SalePrice')
@@ -727,13 +682,11 @@ X_train, X_valid = split_vals(df_trn, n_trn)
 y_train, y_valid = split_vals(y_trn, n_trn)
 
 
-# In[45]:
 
 
 set_rf_samples(20000)
 
 
-# In[46]:
 
 
 m = RandomForestRegressor(n_jobs=-1, oob_score=True)
@@ -741,7 +694,6 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[47]:
 
 
 m = RandomForestRegressor(n_estimators=40, n_jobs=-1, oob_score=True)
@@ -749,13 +701,11 @@ m.fit(X_train, y_train)
 print_score(m)
 
 
-# In[48]:
 
 
 reset_rf_samples()
 
 
-# In[49]:
 
 
 def dectree_max_depth(tree):
@@ -774,7 +724,6 @@ def dectree_max_depth(tree):
     return walk(root_node_id)
 
 
-# In[50]:
 
 
 m = RandomForestRegressor(n_estimators=40, n_jobs=-1, oob_score=True)
@@ -782,19 +731,16 @@ m.fit(X_train, y_train)
 print_score(m)
 
 
-# In[51]:
 
 
 t=m.estimators_[0].tree_
 
 
-# In[52]:
 
 
 dectree_max_depth(t)
 
 
-# In[53]:
 
 
 m = RandomForestRegressor(n_estimators=40, min_samples_leaf=5, n_jobs=-1, oob_score=True)
@@ -802,19 +748,16 @@ m.fit(X_train, y_train)
 print_score(m)
 
 
-# In[54]:
 
 
 t=m.estimators_[0].tree_
 
 
-# In[55]:
 
 
 dectree_max_depth(t)
 
 
-# In[56]:
 
 
 m = RandomForestRegressor(n_estimators=40, min_samples_leaf=3, n_jobs=-1, oob_score=True)
@@ -822,7 +765,6 @@ m.fit(X_train, y_train)
 print_score(m)
 
 
-# In[57]:
 
 
 m = RandomForestRegressor(n_estimators=40, min_samples_leaf=3, max_features=0.5, n_jobs=-1, oob_score=True)

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -19,7 +18,6 @@ import os
 print(os.listdir("../input"))
 
 
-# In[ ]:
 
 
 import matplotlib as mpl
@@ -51,40 +49,34 @@ import shutil  # For Copying files(checkpoints)
 from sklearn.metrics import classification_report  # For getting a report from the net
 
 
-# In[ ]:
 
 
 train_path = "../input/train"
 test_path = "../input/test"
 
 
-# In[ ]:
 
 
 os.listdir(test_path)[:10]
 
 
-# In[ ]:
 
 
 os.listdir(train_path)
 
 
-# In[ ]:
 
 
 driverImgs = pd.read_csv('../input/driver_imgs_list.csv')
 print(driverImgs.head(10))
 
 
-# In[ ]:
 
 
 a = pd.DataFrame({'img':os.listdir(test_path)[:10]})
 a.iloc[1, 0]
 
 
-# In[ ]:
 
 
 # Loading all train image names inside trainImgs list
@@ -99,7 +91,6 @@ for i in range(10):
     trainImgs.append(os.listdir(path))
 
 
-# In[ ]:
 
 
 # Making x, y for plotting
@@ -121,14 +112,12 @@ plt.bar(x, y, color = colors);
 plt.xlabel("number of images in each folder from c0..c9")
 
 
-# In[ ]:
 
 
 print("number of imgaes in driver list file is: %d (unique: %d)" 
       % (driverImgs['img'].count(), driverImgs['img'].nunique()))
 
 
-# In[ ]:
 
 
 # Plotting a 13 x 8 figure
@@ -141,7 +130,6 @@ plt.ylabel("number of existance")
 plt.title(str("Total Number of subjects is:" + str(driverImgs['subject'].nunique())));
 
 
-# In[ ]:
 
 
 # Plotting a 13 x 8 figure
@@ -154,7 +142,6 @@ plt.ylabel("Number")
 plt.title("How many images there are for each class");
 
 
-# In[ ]:
 
 
 class DriverImageDataset(Dataset):
@@ -222,14 +209,12 @@ class DriverImageDataset(Dataset):
             self.driver_imgs_list = self.driver_imgs_list.iloc[limit[0]: limit[1]].                                     reset_index(drop = True)
 
 
-# In[ ]:
 
 
 new_shape = (int(640 / 5), int(480 / 5))  # 1/5th of original shape
 new_shape
 
 
-# In[ ]:
 
 
 trainData = DriverImageDataset(root_dir='../input', train = True, download = False, 
@@ -238,7 +223,6 @@ testData = DriverImageDataset(root_dir='../input', train = False, download = Fal
                                newShape = new_shape)
 
 
-# In[ ]:
 
 
 # Hyperparameters
@@ -247,7 +231,6 @@ LEARNING_RATE = 0.001
 WORKERS       = 0 #10 
 
 
-# In[ ]:
 
 
 def show_batch(images, targets = None, predictions = None):
@@ -271,7 +254,6 @@ def show_batch(images, targets = None, predictions = None):
             plt.xlabel("T:{}".format(targets[i].numpy()))
 
 
-# In[ ]:
 
 
 import random
@@ -288,7 +270,6 @@ for i in rand_list:
 show_batch(plotImgs, plotLables)
 
 
-# In[ ]:
 
 
 # Hyperparameters
@@ -319,7 +300,6 @@ test_loader  = DataLoader(testData, batch_size = BATCH_SIZE,
                           num_workers = WORKERS, shuffle = True)
 
 
-# In[ ]:
 
 
 class MLP(nn.Module):
@@ -349,13 +329,11 @@ class MLP(nn.Module):
         return y  # Will learn to treat 'a' as the natural parameters of a multinomial distr. 
 
 
-# In[ ]:
 
 
 MLPNet = MLP()
 
 
-# In[ ]:
 
 
 print(MLPNet)
@@ -365,14 +343,12 @@ print("----")
 print(MLPNet.parameters)
 
 
-# In[ ]:
 
 
 import torch.cuda
 torch.cuda.is_available()
 
 
-# In[ ]:
 
 
 if torch.cuda.is_available():
@@ -387,20 +363,17 @@ else:
         return x
 
 
-# In[ ]:
 
 
 net = togpu(MLPNet)
 
 
-# In[ ]:
 
 
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(params = net.parameters(), lr = LEARNING_RATE)
 
 
-# In[ ]:
 
 
 def compute_eval_loss(net, criterion, loader):
@@ -418,7 +391,6 @@ def compute_eval_loss(net, criterion, loader):
     return eval_loss
 
 
-# In[ ]:
 
 
 def run_simpleCNN(net, optimizer, criterion, epoch = 2, best_eval_loss = float('inf')):
@@ -466,13 +438,11 @@ def run_simpleCNN(net, optimizer, criterion, epoch = 2, best_eval_loss = float('
                                                           tend-tstart))
 
 
-# In[ ]:
 
 
 get_ipython().system('nvidia-smi ')
 
 
-# In[ ]:
 
 
 import sys, os
@@ -513,7 +483,6 @@ def report(net, evalData):
     print(classification_report(targets, predictions))
 
 
-# In[ ]:
 
 
 b_loss = float('inf')  # Assign infinity
@@ -522,7 +491,6 @@ epoch, b_loss, ehist, thist = resume(net, optimizer, fn = 'simplecnn-best.pth.ta
 report(net, evalData)
 
 
-# In[ ]:
 
 
 run_simpleCNN(net, optimizer, criterion, epoch = 10, best_eval_loss = b_loss)
@@ -530,7 +498,6 @@ epoch, b_loss, ehist, thist = resume(net, optimizer, fn = 'simplecnn-best.pth.ta
 report(net, evalData) 
 
 
-# In[ ]:
 
 
 run_simpleCNN(optimizer, criterion, epoch = 10, best_eval_loss = b_loss)
@@ -538,13 +505,11 @@ optimizer, epoch, b_lost, ehist, thist = resume(net, optimizer, fn = 'simplecnn-
 report(net, evalData)
 
 
-# In[ ]:
 
 
 sample_submission = pd.read_csv('../input/sample_submission.csv') 
 
 
-# In[ ]:
 
 
 submission_01 = pd.DataFrame({'img':testData.driver_imgs_list.iloc[:, 0], 
@@ -568,13 +533,11 @@ for i  in tqdm.tnrange(len(testData)):
 print(submission_01)
 
 
-# In[ ]:
 
 
 submission_01.to_csv('submission_01_last.csv', index = False)
 
 
-# In[ ]:
 
 
 

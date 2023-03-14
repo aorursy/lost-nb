@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -48,33 +47,28 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 df_train = pd.read_csv('../input/labels.csv')
 df_test = pd.read_csv('../input/sample_submission.csv')
 
 
-# In[3]:
 
 
 df_train.head(10)
 
 
-# In[4]:
 
 
 train_files = glob('../input/train/*.jpg')
 test_files = glob('../input/test/*.jpg')
 
 
-# In[5]:
 
 
 plt.imshow(plt.imread(train_files[100]))
 
 
-# In[6]:
 
 
 targets_series = pd.Series(df_train['breed'])
@@ -82,13 +76,11 @@ one_hot = pd.get_dummies(targets_series, sparse = True)
 one_hot_labels = np.asarray(one_hot)
 
 
-# In[7]:
 
 
 im_size = 300
 
 
-# In[8]:
 
 
 ####  storing train data in a bcolz array with image size 300
@@ -97,7 +89,6 @@ x_train_raw = bcolz.zeros((0,im_size,im_size,3),np.float32)
 x_test_raw = bcolz.zeros((0,im_size,im_size,3),np.float32)
 
 
-# In[9]:
 
 
 ####  storing train data in a bcolz array with image size 300
@@ -114,7 +105,6 @@ for f, breed in tqdm(df_train.values):
     i += 1
 
 
-# In[10]:
 
 
 ####  storing test data in a bcolz array with image size 300
@@ -127,14 +117,12 @@ for f, breed in tqdm(df_train.values):
 #     x_test_raw.append(image)
 
 
-# In[11]:
 
 
 print(x_train_raw.shape)
 # print(x_test_raw.shape)
 
 
-# In[12]:
 
 
 ### commentinf since not supported in kernel
@@ -149,13 +137,11 @@ batch_size=2
 resize_factor=0.8
 
 
-# In[13]:
 
 
 
 
 
-# In[13]:
 
 
 def shuffle_dataset_select_indices(x_train_raw,batch_size,im_size):
@@ -185,7 +171,6 @@ def shuffle_dataset_select_indices(x_train_raw,batch_size,im_size):
     return idx
 
 
-# In[14]:
 
 
 def crop_flip_images(idx,x_train_raw,resize_factor,im_size):
@@ -269,7 +254,6 @@ def crop_flip_images(idx,x_train_raw,resize_factor,im_size):
 #         
 
 
-# In[15]:
 
 
 def view_images(temp,batch_size,i,j):
@@ -305,7 +289,6 @@ def view_images(temp,batch_size,i,j):
     plt.tight_layout()
 
 
-# In[16]:
 
 
 # flag=input("press 1 to start:")

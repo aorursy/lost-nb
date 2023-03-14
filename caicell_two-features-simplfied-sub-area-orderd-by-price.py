@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 The difference between train-rmse and eval-rmse was not big. It maybe avoid overfitting. But, of course, I
@@ -20,7 +19,6 @@ train-rmse:0.379885	eval-rmse:0.481801
 train-rmse:0.386476	eval-rmse:0.482583
 
 
-# In[2]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -38,7 +36,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[3]:
 
 
 house_train = pd.read_csv('../input/train.csv', parse_dates = ['timestamp'])
@@ -56,14 +53,12 @@ cat_var = x_full.select_dtypes(include = ['object']).columns.tolist()
 num_var = x_full.select_dtypes(exclude = ['object']).columns.tolist()
 
 
-# In[4]:
 
 
 for var in cat_var:
     x_full[var] = pd.factorize(x_full[var])[0]
 
 
-# In[5]:
 
 
 """
@@ -74,7 +69,6 @@ for num_col in num_var:
 """
 
 
-# In[6]:
 
 
 def divide_function_label(full = None, col_list = None, new_col = None, unit_list = None):
@@ -89,7 +83,6 @@ def divide_function_label(full = None, col_list = None, new_col = None, unit_lis
     return full, new_col_list
 
 
-# In[7]:
 
 
 x_full, new_col_tan = divide_function_label(full = x_full, col_list = ['life_sq', 'full_sq'], new_col = 'tan_sq', unit_list = [0.2])
@@ -106,7 +99,6 @@ x_full['floor_label_0.1'][no_max] = 11
 x_full['floor_label_0.1'][no_floor] = -1
 
 
-# In[8]:
 
 
 def rank_function_part2(train = None, col = None, target = None, rank_unit = None):
@@ -130,21 +122,18 @@ def rank_function_part2(train = None, col = None, target = None, rank_unit = Non
     return sam
 
 
-# In[9]:
 
 
 sam = rank_function_part2(train = house_train, col = 'sub_area', target = target)
 x_full['sub_area_sample'] = x_full.sub_area.map(sam)
 
 
-# In[10]:
 
 
 house_train = x_full[:num]
 house_test =  x_full[num:]
 
 
-# In[11]:
 
 
 import xgboost as xgb
@@ -185,7 +174,6 @@ def learn_xgb(train = None, test = None, target =None):
     return gbm
 
 
-# In[12]:
 
 
 cols = ['full_sq', 'life_sq','tan_sq_0.2', 
@@ -195,7 +183,6 @@ test = house_test[cols]
 gbm = learn_xgb(train = train, test = test, target = target)
 
 
-# In[13]:
 
 
 cols = ['full_sq', 'life_sq','tan_sq_0.2',
@@ -205,7 +192,6 @@ test = house_test[cols]
 gbm = learn_xgb(train = train, test = test, target = target)
 
 
-# In[14]:
 
 
 cols = ['full_sq', 'life_sq','tan_sq',
@@ -215,7 +201,6 @@ test = house_test[cols]
 gbm = learn_xgb(train = train, test = test, target = target)
 
 
-# In[15]:
 
 
 cols = ['full_sq', 'life_sq','tan_sq',
@@ -225,7 +210,6 @@ test = house_test[cols]
 gbm = learn_xgb(train = train, test = test, target = target)
 
 
-# In[16]:
 
 
 

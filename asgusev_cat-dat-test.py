@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,19 +21,16 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 data = pd.read_csv('/kaggle/input/cat-in-the-dat/train.csv')
 
 
-# In[3]:
 
 
 data
 
 
-# In[4]:
 
 
 from sklearn.compose import ColumnTransformer
@@ -44,7 +40,6 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.model_selection import train_test_split
 
 
-# In[5]:
 
 
 class MeanTargetEncoder(BaseEstimator, TransformerMixin):
@@ -78,7 +73,6 @@ class MeanTargetEncoder(BaseEstimator, TransformerMixin):
         return np.vstack(encoding).T
 
 
-# In[6]:
 
 
 from itertools import chain
@@ -96,7 +90,6 @@ class CyclicEncoder(BaseEstimator, TransformerMixin):
         return np.vstack(list(chain((np.sin(i), np.cos(i)) for i in phases.T))).T
 
 
-# In[7]:
 
 
 BIN_FEATURES = ['bin_0', 'bin_1', 'bin_2', 'bin_3', 'bin_4']
@@ -104,7 +97,6 @@ bin_transformer = OneHotEncoder(drop='first')
 # Бинарные факторы кодируются флагами. OneHotEncoder удобно использовать, чтобы выставлять флаги для разных типов входных данных
 
 
-# In[8]:
 
 
 NOM_LOW_CARD_FEATURES = ['nom_0', 'nom_1', 'nom_2', 'nom_3', 'nom_4']
@@ -112,7 +104,6 @@ nom_low_card_transformer = OneHotEncoder(drop='first')
 # Факторы с небольшим множеством значений можно кодировать one-hot
 
 
-# In[9]:
 
 
 NOM_HIGH_CARD_FEATURES = ['nom_5', 'nom_6', 'nom_7', 'nom_8', 'nom_9']
@@ -120,7 +111,6 @@ nom_high_card_transformer = MeanTargetEncoder(smoothing_intencity=20)
 # При большом количестве возможных значений фактора по отдельному значению может не быть достаточно примеров. 
 
 
-# In[10]:
 
 
 # Постараемся сохранить порядок в порядковых факторах
@@ -135,7 +125,6 @@ ordibal_enum_transformer = OrdinalEncoder(categories=[
 ])
 
 
-# In[11]:
 
 
 CYCLIC_FEATURES = ['day', 'month']
@@ -144,14 +133,12 @@ cyclic_transformer = CyclicEncoder([7, 12])
 # но и между первыми и последними.
 
 
-# In[12]:
 
 
 x, y = data.drop('target', axis=1), data['target'].values
 x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=.2)
 
 
-# In[13]:
 
 
 feature_transformer = ColumnTransformer([
@@ -166,14 +153,12 @@ x_train_preproc = feature_transformer.fit_transform(x_train, y_train)
 x_val_preproc = feature_transformer.transform(x_val)
 
 
-# In[14]:
 
 
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.metrics import roc_auc_score
 
 
-# In[15]:
 
 
 lr_model = LogisticRegression(C=.1).fit(x_train_preproc, y_train)
@@ -181,7 +166,6 @@ pred_lr_val = lr_model.predict_proba(x_val_preproc)[:, 1]
 roc_auc_score(y_val, pred_lr_val)
 
 
-# In[16]:
 
 
 from sklearn.svm import SVC
@@ -191,7 +175,6 @@ pred_svm_val = svm_model.predict_proba(x_val_preproc)[:, 1]
 roc_auc_score(y_val, pred_svm_val)
 
 
-# In[17]:
 
 
 from xgboost import XGBClassifier
@@ -201,26 +184,22 @@ pred_xgb_val = xgb_model.predict_proba(x_val_preproc)[:, 1]
 roc_auc_score(y_val, pred_xgb_val)
 
 
-# In[18]:
 
 
 x_test = pd.read_csv('/kaggle/input/cat-in-the-dat/test.csv')
 
 
-# In[19]:
 
 
 x_test_preproc = feature_transformer.transform(x_test)
 pred_xgb_test = xgb_model.predict_proba(x_test_preproc)[:, 1]
 
 
-# In[20]:
 
 
 submission = pd.DataFrame({'id': x_test['id'], 'target': pred_xgb_test})
 
 
-# In[21]:
 
 
 submission.to_csv('submission.csv', index=False)

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -47,7 +46,6 @@ embedding_path_dict= {'googlenews':{
                     }
 
 
-# In[ ]:
 
 
 train=pd.read_csv("../input/train.csv")
@@ -56,38 +54,32 @@ print("Train shape:", train.shape)
 print("Test shape:", test.shape)
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 train = train.loc[train.question_text.str.len()>100]
 
 
-# In[ ]:
 
 
 len(train.loc[train['target']==0])
 
 
-# In[ ]:
 
 
 num_pos= len(train.loc[train['target']==1])
 print(num_pos)
 
 
-# In[ ]:
 
 
 len(train['target'])
 
 
-# In[ ]:
 
 
 # Get word embeddings
@@ -124,7 +116,6 @@ def glove_to_word2vec(embedding_path_dict, emb_name='glove', output_emb='glove_w
     return glove2word2vec(glove_input_file, word2vec_output_file)
 
 
-# In[ ]:
 
 
 # Get stats of a given embeddings index
@@ -144,7 +135,6 @@ def get_emb_stats(embeddings_index):
     return emb_mean,emb_std, num_embs, emb_size 
 
 
-# In[ ]:
 
 
 # Converts sentences into lists of tokens
@@ -186,7 +176,6 @@ def convert_num_to_pound(sentences):
     return sentences.progress_apply(lambda x: re.sub("[1-9][\d]+", repl, x)).values
 
 
-# In[ ]:
 
 
 
@@ -239,7 +228,6 @@ def show_oov_words(oov, vocab,  num_to_show=15):
     return len(sorted_oov);
 
 
-# In[ ]:
 
 
 embedding_name = 'glove'
@@ -247,7 +235,6 @@ embeddings_index= get_embeddings(embedding_path_dict, embedding_name)
 import gc; gc.collect()
 
 
-# In[ ]:
 
 
 # Get embedding stats
@@ -255,7 +242,6 @@ emb_mean,emb_std, num_embs, emb_size = get_emb_stats(embeddings_index)
 print("mean: %5.5f\nstd: %5.5f\nnumber of embeddings: %d\nembedding vector size:%d"       %(emb_mean,emb_std, num_embs, emb_size))
 
 
-# In[ ]:
 
 
 question_text = train["question_text"]
@@ -265,7 +251,6 @@ question_text = train["question_text"]
 sentences = tokenize(question_text)
 
 
-# In[ ]:
 
 
 # Does our tokenization method produce a good match with 
@@ -278,7 +263,6 @@ in_common, oov, in_common_freq, oov_freq, vocab = compare_vocab_and_embeddings(s
 show_oov_words(oov, vocab)
 
 
-# In[ ]:
 
 
 contr_dict={"I\'m": "I am",
@@ -300,7 +284,6 @@ def replace_contractions(sentences, contr_dict=contr_dict):
     return res_sentences
 
 
-# In[ ]:
 
 
 # start by replacing contractions
@@ -311,7 +294,6 @@ sentences = replace_contractions(question_text)
 sentences = tokenize(sentences)
 
 
-# In[ ]:
 
 
 # Does our tokenization method produce a good match with 
@@ -324,14 +306,12 @@ in_common, oov, in_common_freq, oov_freq, vocab = compare_vocab_and_embeddings(s
 show_oov_words(oov, vocab)
 
 
-# In[ ]:
 
 
 print("Is 'Quora' in the wiki embeddings index?",'Quora' in embeddings_index)
 print("Is 'quora' in the wiki embeddings index?",'quora' in embeddings_index)
 
 
-# In[ ]:
 
 
 w_quoran_contr_dict={"I\'m": "I am",
@@ -348,7 +328,6 @@ w_quoran_contr_dict={"I\'m": "I am",
                     }
 
 
-# In[ ]:
 
 
 # replace contractions using a contr dict containing replacement for Quoran
@@ -359,7 +338,6 @@ sentences = replace_contractions(question_text, contr_dict = w_quoran_contr_dict
 sentences = tokenize(sentences)
 
 
-# In[ ]:
 
 
 # Does our tokenization method produce a good match with 
@@ -372,14 +350,12 @@ in_common, oov, in_common_freq, oov_freq, vocab = compare_vocab_and_embeddings(s
 show_oov_words(oov, vocab)
 
 
-# In[ ]:
 
 
 print("0 in embedding index?", ('0' in embeddings_index))
 print("Other digits?", ('1' in embeddings_index) and ('2' in embeddings_index))
 
 
-# In[ ]:
 
 
 import re
@@ -392,7 +368,6 @@ def convert_height(sentences):
     return res_sentences
 
 
-# In[ ]:
 
 
 # start by converting heights such as 5'4 to longer format 5 foot 4
@@ -406,7 +381,6 @@ sentences = replace_contractions(sentences)
 sentences = tokenize(sentences)
 
 
-# In[ ]:
 
 
 # Does our tokenization method produce a good match with 
@@ -419,7 +393,6 @@ in_common, oov, in_common_freq, oov_freq, vocab = compare_vocab_and_embeddings(s
 show_oov_words(oov, vocab)
 
 
-# In[ ]:
 
 
 embedding_name = 'paragram'
@@ -427,7 +400,6 @@ embeddings_index= get_embeddings(embedding_path_dict, embedding_name)
 import gc; gc.collect()
 
 
-# In[ ]:
 
 
 # Get embedding stats
@@ -435,7 +407,6 @@ emb_mean,emb_std, num_embs, emb_size = get_emb_stats(embeddings_index)
 print("mean: %5.5f\nstd: %5.5f\nnumber of embeddings: %d\nembedding vector size:%d"       %(emb_mean,emb_std, num_embs, emb_size))
 
 
-# In[ ]:
 
 
 question_text = train["question_text"]
@@ -445,7 +416,6 @@ question_text = train["question_text"]
 sentences = tokenize(question_text)
 
 
-# In[ ]:
 
 
 # Does our tokenization method produce a good match with 
@@ -458,7 +428,6 @@ in_common, oov, in_common_freq, oov_freq, vocab = compare_vocab_and_embeddings(s
 show_oov_words(oov, vocab)
 
 
-# In[ ]:
 
 
 def convert_to_lower(sentences):
@@ -469,7 +438,6 @@ def convert_to_lower(sentences):
     return res_sentences
 
 
-# In[ ]:
 
 
 # convert capitals to lowercase
@@ -480,7 +448,6 @@ sentences = convert_to_lower(question_text)
 sentences = tokenize(sentences)
 
 
-# In[ ]:
 
 
 # Does our tokenization method produce a good match with 
@@ -493,7 +460,6 @@ in_common, oov, in_common_freq, oov_freq, vocab = compare_vocab_and_embeddings(s
 show_oov_words(oov, vocab)
 
 
-# In[ ]:
 
 
 # start by converting capitals to lowercase
@@ -507,7 +473,6 @@ sentences = replace_contractions(sentences)
 sentences = tokenize(sentences)
 
 
-# In[ ]:
 
 
 # Does our tokenization method produce a good match with 
@@ -520,7 +485,6 @@ in_common, oov, in_common_freq, oov_freq, vocab = compare_vocab_and_embeddings(s
 show_oov_words(oov, vocab)
 
 
-# In[ ]:
 
 
 # start by replacing heights such as 5'4 to a longer format (5 foot 4)
@@ -537,7 +501,6 @@ sentences = replace_contractions(sentences)
 sentences = tokenize(sentences)
 
 
-# In[ ]:
 
 
 # Does our tokenization method produce a good match with 
@@ -550,7 +513,6 @@ in_common, oov, in_common_freq, oov_freq, vocab = compare_vocab_and_embeddings(s
 show_oov_words(oov, vocab)
 
 
-# In[ ]:
 
 
 embedding_name = 'wiki'
@@ -558,7 +520,6 @@ embeddings_index= get_embeddings(embedding_path_dict, embedding_name)
 import gc; gc.collect()
 
 
-# In[ ]:
 
 
 # Get embedding stats
@@ -566,7 +527,6 @@ emb_mean,emb_std, num_embs, emb_size = get_emb_stats(embeddings_index)
 print("mean: %5.5f\nstd: %5.5f\nnumber of embeddings: %d\nembedding vector size:%d"       %(emb_mean,emb_std, num_embs, emb_size))
 
 
-# In[ ]:
 
 
 question_text = train["question_text"]
@@ -576,7 +536,6 @@ question_text = train["question_text"]
 sentences = tokenize(question_text)
 
 
-# In[ ]:
 
 
 # Does our tokenization method produce a good match with 
@@ -589,7 +548,6 @@ in_common, oov, in_common_freq, oov_freq, vocab = compare_vocab_and_embeddings(s
 show_oov_words(oov, vocab)
 
 
-# In[ ]:
 
 
 # start by replacing contractions
@@ -600,7 +558,6 @@ sentences = replace_contractions(question_text)
 sentences = tokenize(sentences)
 
 
-# In[ ]:
 
 
 # Does our tokenization method produce a good match with 
@@ -613,14 +570,12 @@ in_common, oov, in_common_freq, oov_freq, vocab = compare_vocab_and_embeddings(s
 show_oov_words(oov, vocab)
 
 
-# In[ ]:
 
 
 print("Is 'Quora' in the wiki embeddings index?",'Quora' in embeddings_index)
 print("Is 'quora' in the wiki embeddings index?",'quora' in embeddings_index)
 
 
-# In[ ]:
 
 
 # start by replacing contractions using the contractions dict containing replacements for Quoran
@@ -631,7 +586,6 @@ sentences = replace_contractions(question_text, contr_dict = w_quoran_contr_dict
 sentences = tokenize(sentences)
 
 
-# In[ ]:
 
 
 # Does our tokenization method produce a good match with 
@@ -644,14 +598,12 @@ in_common, oov, in_common_freq, oov_freq, vocab = compare_vocab_and_embeddings(s
 show_oov_words(oov, vocab)
 
 
-# In[ ]:
 
 
 print("0 in embedding index?", ('0' in embeddings_index))
 print("Other digits?", ('1' in embeddings_index) and ('2' in embeddings_index))
 
 
-# In[ ]:
 
 
 # start by converting height to longer form
@@ -665,7 +617,6 @@ sentences = replace_contractions(sentences,  contr_dict = w_quoran_contr_dict)
 sentences = tokenize(sentences)
 
 
-# In[ ]:
 
 
 # Does our tokenization method produce a good match with 

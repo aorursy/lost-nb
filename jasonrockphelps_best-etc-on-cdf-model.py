@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from kaggle.competitions import nflrush
@@ -9,7 +8,6 @@ from kaggle.competitions import nflrush
 env = nflrush.make_env()
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -25,26 +23,22 @@ from sklearn.ensemble import ExtraTreesClassifier
 import time
 
 
-# In[3]:
 
 
 # Training data is in the competition dataset as usual
 tracking_df_train = pd.read_csv('/kaggle/input/nfl-big-data-bowl-2020/train.csv', low_memory=False)
 
 
-# In[4]:
 
 
 tracking_df_train
 
 
-# In[5]:
 
 
 Yard_bins=['Yards'+str(i) for i in range(-99,100)]
 
 
-# In[6]:
 
 
 # import pandas as pd
@@ -752,7 +746,6 @@ def preprocess_tracking_data(tracking_df,verbose=0, suppress_warnings=True, for_
     return modeling_df, Yard_bin_target_df, team_off_yard_reference, team_def_yard_reference, rusher_yard_reference, rusher_low_vol_reference
 
 
-# In[7]:
 
 
 must_keep_features=['A','Yards_to_end_zone',
@@ -906,7 +899,6 @@ must_keep_features=['A','Yards_to_end_zone',
                    ]
 
 
-# In[8]:
 
 
 #predictive_df, target_df=preprocess_tracking_data(tracking_df_train, verbose=1)
@@ -914,13 +906,11 @@ get_ipython().run_line_magic('time', 'predictive_df, target_df, team_off_yard_re
 model_features=must_keep_features#predictive_df.columns
 
 
-# In[ ]:
 
 
 
 
 
-# In[9]:
 
 
 model=ExtraTreesClassifier(n_estimators=400,
@@ -933,13 +923,11 @@ model=ExtraTreesClassifier(n_estimators=400,
 model.fit(predictive_df[model_features], pd.get_dummies(target_df).T.cumsum().T)
 
 
-# In[10]:
 
 
 iter_test = env.iter_test()
 
 
-# In[11]:
 
 
 def make_my_predictions_on_cdf_model(test_df, model):
@@ -975,26 +963,22 @@ def make_my_predictions_on_cdf_model(test_df, model):
     return prediction_cdf#, predictive_df, target_df, missing_features
 
 
-# In[12]:
 
 
 #(test_df, _) = next(iter_test)
 
 
-# In[13]:
 
 
 #test_df
 
 
-# In[14]:
 
 
 # test_df['Yards']=0
 # predictive_df_test, target_df_test=preprocess_tracking_data(test_df)
 
 
-# In[15]:
 
 
 # missing_features=list(set(model_features)-set(predictive_df_test.columns))
@@ -1004,37 +988,31 @@ def make_my_predictions_on_cdf_model(test_df, model):
 # predictive_df_test2=pd.concat([predictive_df_test.reset_index(drop=True),pd.DataFrame(missing_features_dict)], axis=1)
 
 
-# In[16]:
 
 
 # list(model_features)
 
 
-# In[17]:
 
 
 # list(predictive_df.columns)
 
 
-# In[18]:
 
 
 #predictions_df = make_my_predictions_on_cdf_model(test_df, model)
 
 
-# In[19]:
 
 
 #predictions_df.columns=list(predictions_df.columns)
 
 
-# In[20]:
 
 
 #env.predict(predictions_df)
 
 
-# In[21]:
 
 
 count=0
@@ -1055,7 +1033,6 @@ for (test_df, _) in iter_test:
     env.predict(predictions_df)
 
 
-# In[22]:
 
 
 env.write_submission_file()

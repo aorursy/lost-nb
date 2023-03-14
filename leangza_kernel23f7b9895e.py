@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -17,89 +16,75 @@ pal = sns.color_palette()
 sns.set_style("whitegrid")
 
 
-# In[2]:
 
 
 #PATH = '../input/'
 PATH = '../input/planet-understanding-the-amazon-from-space'
 
 
-# In[3]:
 
 
 ls {PATH}
 
 
-# In[4]:
 
 
 os.listdir()
 
 
-# In[5]:
 
 
 train_df = pd.read_csv("../input/planet-understanding-the-amazon-from-space/train_v2.csv/train_v2.csv" )
 train_df.head()
 
 
-# In[6]:
 
 
 train_df.describe(include='all')
 
 
-# In[7]:
 
 
 print(train_df.shape)
 
 
-# In[8]:
 
 
 print(train_df.nunique())
 
 
-# In[9]:
 
 
 train_df.isnull().values.any()
 
 
-# In[10]:
 
 
 train_df.isnull().sum()
 
 
-# In[11]:
 
 
 train_df.info()
 
 
-# In[12]:
 
 
 all_tags = [item for sublist in list(train_df['tags'].apply(lambda row: row.split(" ")).values) for item in sublist]
 all_tags
 
 
-# In[13]:
 
 
 tags_counted_and_sorted = pd.DataFrame({'tag': all_tags}).groupby('tag').size().reset_index().sort_values(0, ascending=False)
 tags_counted_and_sorted
 
 
-# In[14]:
 
 
 tags_counted_and_sorted.plot(kind='bar', figsize=(12,8),x='tag',y=0)
 
 
-# In[15]:
 
 
 import cv2
@@ -117,7 +102,6 @@ for f, l in train_df[:9].values:
     
 
 
-# In[16]:
 
 
 
@@ -136,13 +120,11 @@ for f, l in train_df[:9].values:
     ax[2].set_title('Red')
 
 
-# In[17]:
 
 
 df = train_df
 
 
-# In[18]:
 
 
 df['tag_set'] = df['tags'].map(lambda s: set(s.split(' ')))
@@ -159,19 +141,16 @@ for t in tag_list:
     df['tag_' + t] = df['tag_set'].map(lambda x: 1 if t in x else  0)
 
 
-# In[19]:
 
 
 df.head()
 
 
-# In[20]:
 
 
 df.shape
 
 
-# In[21]:
 
 
 from keras.models import Sequential
@@ -187,7 +166,6 @@ from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 
 
-# In[22]:
 
 
 X = df['image_name'].values
@@ -205,14 +183,12 @@ assert(len(y_train) == len(X_train))
 print('We use {} rows for training and {} rows for validation'.format(len(X_train), len(X_valid)))
 
 
-# In[23]:
 
 
 print('Memory usage (train) kB', X_train.nbytes//(1024))
 print('Memory usage (valid) kB', X_valid.nbytes//(1024))
 
 
-# In[24]:
 
 
 def load_image(filename, resize=True, folder='train-jpg'):
@@ -222,7 +198,6 @@ def load_image(filename, resize=True, folder='train-jpg'):
     return np.array(img)
 
 
-# In[25]:
 
 
 samples = df.sample(32)
@@ -231,89 +206,76 @@ INPUT_SHAPE = sample_images[1].shape
 print(INPUT_SHAPE)
 
 
-# In[26]:
 
 
 # Initialising the ANN
 model = Sequential()
 
 
-# In[27]:
 
 
 model.add(Conv2D(48, (8, 8), strides=(2, 2), input_shape=(64,64,4), activation='elu'))
 model.add(BatchNormalization())
 
 
-# In[28]:
 
 
 model.add(Conv2D(64, (8, 8), strides=(2, 2), activation='elu'))
 model.add(BatchNormalization())
 
 
-# In[29]:
 
 
 model.add(Conv2D(96, (5, 5), strides=(2, 2), activation='elu'))
 model.add(BatchNormalization())
 
 
-# In[30]:
 
 
 model.add(Conv2D(96, (3, 3), activation='elu'))
 model.add(BatchNormalization())
 
 
-# In[31]:
 
 
 model.add(Flatten())
 model.add(Dropout(0.3))
 
 
-# In[32]:
 
 
 model.add(Dense(256, activation='elu'))
 model.add(BatchNormalization())
 
 
-# In[33]:
 
 
 model.add(Dense(64, activation='elu'))
 model.add(BatchNormalization())
 
 
-# In[34]:
 
 
 model.add(Dense(n_classes, activation='sigmoid'))
 
 
-# In[35]:
 
 
 # Compiling the ANN
 model.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 
 
-# In[36]:
 
 
 model.summary()
 
 
-# In[37]:
 
 
 def normalize(img):
     return img / 127.5 - 1
 
 
-# In[38]:
 
 
 def preprocess(img):
@@ -321,7 +283,6 @@ def preprocess(img):
     return img
 
 
-# In[39]:
 
 
 def generator(X, y, batch_size=32):
@@ -340,7 +301,6 @@ def generator(X, y, batch_size=32):
         X_copy, y_copy = shuffle(X_copy, y_copy)
 
 
-# In[40]:
 
 
 EPOCHS = 6

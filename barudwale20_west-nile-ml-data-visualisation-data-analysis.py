@@ -1,27 +1,23 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
 
 
 ####################################  WEST NILE VIRUS ######################################
 # BY : SHUBHAM BARUDWALE
 
 
-# In[3]:
 
 
 # IMPORTANT NOTE : PLEASE DO NOT RE RUN THE NOTEBOOK UNTIL YOU HAVE DATA AND ALL REQUIRED LIBRARIES 
 #                  ELSE YOU WILL NOT ABLE TO SEE THE RESULTS
 
 
-# In[4]:
 
 
 # APPLYING NEURAL NETWORKS ON TRAINING DATA
 
 
-# In[5]:
 
 
 import pandas as pd
@@ -30,45 +26,38 @@ from sklearn.cross_validation import train_test_split
 import matplotlib.pyplot as plt
 
 
-# In[ ]:
 
 
 data=pd.read_csv('../input/predict-west-nile-virus/train.csv')
 
 
-# In[ ]:
 
 
 data
 
 
-# In[ ]:
 
 
 ################# MANUAL IMPLEMENTATION OF NEURAL NETWORKS #######################
 
 
-# In[ ]:
 
 
 X = data.values[:,7:11]
 Y = data.values[:,11]
 
 
-# In[ ]:
 
 
 X_train, X_test, y_train, y_test = train_test_split( X, Y, test_size = 0.3, random_state = 100)
 
 
-# In[ ]:
 
 
 print('Rows: %d, columns: %d'% (X_train.shape[0], X_train.shape[1]))
 print('Rows: %d, columns: %d'% (X_test.shape[0], X_test.shape[1]))
 
 
-# In[ ]:
 
 
 from scipy.special import expit
@@ -200,7 +189,6 @@ class NeuralNetMLP(object):
         return self
 
 
-# In[ ]:
 
 
 nn = NeuralNetMLP(n_output=20,
@@ -217,13 +205,11 @@ nn = NeuralNetMLP(n_output=20,
        random_state=1)
 
 
-# In[ ]:
 
 
 nn.fit(X_train, y_train, print_progress=True)
 
 
-# In[ ]:
 
 
 plt.plot(range(len(nn.cost_)), nn.cost_)
@@ -234,7 +220,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[ ]:
 
 
 batches = np.array_split(range(len(nn.cost_)), 1000)
@@ -248,7 +233,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[ ]:
 
 
 y_train_pred = nn.predict(X_train)
@@ -256,7 +240,6 @@ acc = np.sum(y_train == y_train_pred, axis=0) / X_train.shape[0]
 print('Training accuracy: %.2f%%' % (acc * 100))
 
 
-# In[ ]:
 
 
 y_test_pred = nn.predict(X_test)
@@ -264,19 +247,16 @@ acc = np.sum(y_test == y_test_pred, axis=0) / X_test.shape[0]
 print('Test accuracy: %.2f%%' % (acc * 100))
 
 
-# In[ ]:
 
 
 ###### IMPLEMENTATION OF SCIKIT LEARN NEURAL NETWORK ######
 
 
-# In[ ]:
 
 
 from sklearn import neural_network
 
 
-# In[ ]:
 
 
 nns=neural_network.MLPClassifier(hidden_layer_sizes=(100, ), 
@@ -289,7 +269,6 @@ nns=neural_network.MLPClassifier(hidden_layer_sizes=(100, ),
                                  beta_2=0.999, epsilon=1e-08)
 
 
-# In[ ]:
 
 
 X_train=np.array(list(X_train), dtype=np.int)
@@ -298,38 +277,32 @@ X_test=np.array(list(X_test), dtype=np.int)
 y_test=np.array(list(y_test), dtype=np.int)
 
 
-# In[ ]:
 
 
 y_pred=nns.fit(X_train, y_train)
 
 
-# In[ ]:
 
 
 print("Accuracy on training set: {:.3f}".format(nns.score(X_train.astype(int),y_train.astype(int))))
 print("Accuracy on test set: {:.3f}".format(nns.score(X_test.astype(int),y_test.astype(int))))
 
 
-# In[ ]:
 
 
 ############################ DATA VISUALIZATION ############################
 
 
-# In[ ]:
 
 
 data_t=pd.read_csv('../input/predict-west-nile-virus/test.csv')
 
 
-# In[ ]:
 
 
 data_t
 
 
-# In[ ]:
 
 
 from sklearn.neighbors import KernelDensity
@@ -370,7 +343,6 @@ plt.show()
 plt.savefig('heatmap.png')
 
 
-# In[ ]:
 
 
 mapdata = np.loadtxt("../input/predict-west-nile-virus/mapdata_copyright_openstreetmap_contributors.txt")
@@ -412,13 +384,11 @@ plt.show()
 plt.savefig('heatmap.png')
 
 
-# In[ ]:
 
 
 import plotly
 
 
-# In[ ]:
 
 
 import plotly.plotly as py
@@ -460,13 +430,11 @@ fig = Figure(data=data, layout=layout)
 plot_url = plotly.offline.plot(fig)
 
 
-# In[ ]:
 
 
 # TO SEE THE MAP OUTPUT OF ABOVE CELL GO TO OUTPUT SECTION
 
 
-# In[ ]:
 
 
 import itertools
@@ -514,33 +482,28 @@ plt.title('Anti mosquito sprey done at yellow areas')
 plt.show()
 
 
-# In[ ]:
 
 
 ########################### WEATHER DATA VISUALIZATION #######################
 
 
-# In[ ]:
 
 
 data_we=pd.read_csv('../input/predict-west-nile-virus/weather.csv')
 data_we
 
 
-# In[ ]:
 
 
 data_we_st_1 = data_we.loc[data_we["Station"]==1]
 data_we_st_2 = data_we.loc[data_we["Station"]==2]
 
 
-# In[ ]:
 
 
 x=np.arange(0, 1472, 1)
 
 
-# In[ ]:
 
 
 from plotly import tools
@@ -594,7 +557,6 @@ fig['layout'].update(height=600, width=1000, title='Temperature vs Days')
 plotly.offline.iplot(fig, filename='simple-subplot')
 
 
-# In[ ]:
 
 
 
@@ -649,7 +611,6 @@ fig = go.Figure(data=data, layout=layout)
 plotly.offline.iplot(fig, filename='stter-mode')
 
 
-# In[ ]:
 
 
 
@@ -716,38 +677,32 @@ fig = go.Figure(data=data, layout=layout)
 plotly.offline.iplot(fig, filename='stter-mode')
 
 
-# In[ ]:
 
 
 ############### PAIR PLOT ############
 
 
-# In[ ]:
 
 
 data_we=pd.read_csv('../input/weather-modified/weather_m.csv')
 
 
-# In[ ]:
 
 
 import seaborn as sb
 analysis = data_we[['Tmax','Tmin','Tavg','Depart','DewPoint','WetBulb','Heat','Cool','Sunrise','Sunset','SnowFall','PrecipTotal','StnPressure','SeaLevel','ResultSpeed','ResultDir','AvgSpeed','Station']]
 
 
-# In[ ]:
 
 
 sb.pairplot(analysis,hue='Station')
 
 
-# In[ ]:
 
 
 ############### CORELATION MATRIX ###################
 
 
-# In[ ]:
 
 
 
@@ -779,13 +734,11 @@ plt.title('Correlation Heatmap between various factors')
 plt.show()
 
 
-# In[ ]:
 
 
 ####################  MORE VISUALIZATION AND ANALYSIS #########################
 
 
-# In[ ]:
 
 
 import plotly.plotly as py
@@ -915,14 +868,12 @@ fig = go.Figure(data=data,layout=layout)
 plotly.offline.iplot(fig, filename = "Basic analysis")
 
 
-# In[ ]:
 
 
 analysis_st_1 = analysis.loc[analysis["Station"]==1]
 analysis_st_2 = analysis.loc[analysis["Station"]==2]
 
 
-# In[ ]:
 
 
 import plotly.plotly as py
@@ -948,7 +899,6 @@ fig['layout'].update(title='Maximum temperature with normal distribution')
 plotly.offline.iplot(fig, filename='Maximum temperature with normal distribution')
 
 
-# In[ ]:
 
 
 x1 = analysis_st_1['Tmin']  
@@ -966,7 +916,6 @@ fig['layout'].update(title='Minimum temperature with normal distribution')
 plotly.offline.iplot(fig, filename='Minimum temperature with normal distribution')
 
 
-# In[ ]:
 
 
 x1 = analysis_st_1['AvgSpeed'].astype(float)
@@ -988,7 +937,6 @@ fig['layout'].update(title='Average wind speed with normal distribution')
 plotly.offline.iplot(fig, filename='Average wind speed with normal distribution')
 
 
-# In[ ]:
 
 
 x1 = analysis_st_1['Heat'].astype(float) 
@@ -1009,7 +957,6 @@ fig['layout'].update(title='Heat Distribution')
 plotly.offline.iplot(fig, filename='Curve and Rug')
 
 
-# In[ ]:
 
 
 t = np.linspace(-1, 1.2, 2000)
@@ -1029,7 +976,6 @@ fig['layout'].update(title='Average Temperature vs Average Speed Density Map')
 plotly.offline.iplot(fig, filename='histogram_subplots')
 
 
-# In[ ]:
 
 
 data_we=pd.read_csv('../input/weather-modified/weather_m.csv')
@@ -1043,7 +989,6 @@ fig = ff.create_scatterplotmatrix(analysis, diag='box', index='Station',
 plotly.offline.iplot(fig, filename='Box plots along Diagonal Subplots')
 
 
-# In[ ]:
 
 
 

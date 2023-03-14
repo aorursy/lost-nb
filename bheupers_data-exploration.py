@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -21,7 +20,6 @@ print(check_output(["ls ../input/"], shell=True).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import os
@@ -40,7 +38,6 @@ print("Type 2", type_2_ids[:10])
 print("Type 3", type_3_ids[:10])
 
 
-# In[3]:
 
 
 TEST_DATA = "../input/test"
@@ -50,7 +47,6 @@ print(len(test_ids))
 print(test_ids[:10])
 
 
-# In[4]:
 
 
 ADDITIONAL_DATA = "../input/additional"
@@ -67,7 +63,6 @@ print("Type 2", additional_type_2_ids[:10])
 print("Type 3", additional_type_3_ids[:10])
 
 
-# In[5]:
 
 
 def get_filename(image_id, image_type):
@@ -98,7 +93,6 @@ img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 return img
 
 
-# In[6]:
 
 
 import matplotlib.pylab as plt
@@ -107,7 +101,6 @@ def plt_st(l1,l2):
     plt.figure(figsize=(l1,l2))
 
 
-# In[7]:
 
 
 from ipywidgets import widgets
@@ -128,7 +121,6 @@ text.on_submit(handle_submit)
  
 
 
-# In[8]:
 
 
 tile_size = (256, 256)
@@ -159,7 +151,6 @@ for k, type_ids in enumerate([type_1_ids, type_2_ids, type_3_ids]):
     complete_images.append(complete_image)           
 
 
-# In[9]:
 
 
 plt_st(20, 20)
@@ -167,7 +158,6 @@ plt.imshow(complete_images[2])
 plt.title("Training dataset of type %i" % (3))
 
 
-# In[10]:
 
 
 index = 1
@@ -181,7 +171,6 @@ for i in range(n):
     plt.title("Training dataset of type %i, part %i" % (index + 1, i))
 
 
-# In[11]:
 
 
 index = 2
@@ -195,7 +184,6 @@ for i in range(n):
     plt.title("Training dataset of type %i, part %i" % (index + 1, i))
 
 
-# In[12]:
 
 
 tile_size = (256, 256)
@@ -220,7 +208,6 @@ for i in range(m):
         break
 
 
-# In[13]:
 
 
 m = complete_test_image.shape[0] / (tile_size[0] + 2)
@@ -233,7 +220,6 @@ for i in range(n):
     plt.title("Test dataset, part %i" % (i))
 
 
-# In[14]:
 
 
 tile_size = (256, 256)
@@ -263,7 +249,6 @@ for k, type_ids in enumerate([additional_type_1_ids[:ll], additional_type_2_ids[
     complete_images.append(complete_image)       
 
 
-# In[15]:
 
 
 index = 0
@@ -277,7 +262,6 @@ for i in range(n):
     plt.title("Additional Training dataset (500 images) of type %i, part %i" % (index + 1, i))
 
 
-# In[16]:
 
 
 index = 1
@@ -291,7 +275,6 @@ for i in range(n):
     plt.title("Additional Training dataset (500 images) of type %i, part %i" % (index + 1, i))
 
 
-# In[17]:
 
 
 index = 2
@@ -305,7 +288,6 @@ for i in range(n):
     plt.title("Additional Training dataset (500 images) of type %i, part %i" % (index + 1, i))
 
 
-# In[18]:
 
 
 img_1 = get_image_data('1023', 'Type_1')
@@ -315,7 +297,6 @@ img_4 = get_image_data('1061', 'Type_1')
 img_5 = get_image_data('1365', 'Type_2')
 
 
-# In[19]:
 
 
 def sieve(image, size):
@@ -382,7 +363,6 @@ for image in [img_1, img_2, img_3, img_4, img_5]:
     plt.imshow(skin_segm_rgb)
 
 
-# In[20]:
 
 
 tile_size = (256, 256)
@@ -409,7 +389,6 @@ for k, type_ids in enumerate([type_1_ids, ]):
     complete_images.append(complete_image)    
 
 
-# In[21]:
 
 
 plt_st(20, 20)
@@ -417,7 +396,6 @@ plt.imshow(complete_images[0])
 plt.title("Training dataset of type %i" % (0))
 
 
-# In[22]:
 
 
 def compute_histogram(img, hist_size=100):
@@ -441,7 +419,6 @@ def compute_histogram(img, hist_size=100):
 #    plt.plot(hist)
 
 
-# In[23]:
 
 
 train_nb_samples = 100
@@ -458,7 +435,6 @@ while count < train_nb_samples:
     count += 1
 
 
-# In[24]:
 
 
 image_size = (256, 256)
@@ -474,20 +450,17 @@ for i, (image_id, image_type) in enumerate(train_id_type_list):
     Y[i, :] = (hist.mean(), hist.std())
 
 
-# In[25]:
 
 
 plt.title("Image Hue Histogram std vs mean")
 plt.scatter(Y[:, 0], Y[:, 1], s=50, cmap='viridis');
 
 
-# In[26]:
 
 
 np_classes = 5
 
 
-# In[27]:
 
 
 #from sklearn.cluster import KMeans
@@ -497,7 +470,6 @@ np_classes = 5
 #_ = plt.hist(y_kmeans)
 
 
-# In[28]:
 
 
 from sklearn.cluster import SpectralClustering
@@ -506,7 +478,6 @@ y_spectral = model.fit_predict(X)
 _ = plt.hist(y_spectral)
 
 
-# In[29]:
 
 
 image_size = (256, 256)
@@ -539,7 +510,6 @@ for class_index in range(np_classes):
     all_classes_images.append(one_class_image)
 
 
-# In[30]:
 
 
 for class_index in range(np_classes):
@@ -548,13 +518,11 @@ for class_index in range(np_classes):
     plt.title("Class %i" % (class_index)) 
 
 
-# In[31]:
 
 
 
 
 
-# In[31]:
 
 
 from PIL import Image
@@ -578,7 +546,6 @@ def _get_image_data_pil(image_id, image_type, return_exif_md=False):
         return img, img_pil._getexif()
 
 
-# In[32]:
 
 
 exif_stats = pd.DataFrame(columns=['Image_id', 'Image_type', 'Camera_name', 'Camera_type', 'Datetime', 'ISO'])
@@ -606,7 +573,6 @@ for ids, image_type in zip(type_ids, image_types):
         counter+=1
 
 
-# In[33]:
 
 
 exif_stats['Camera_name'] = exif_stats['Camera_name'].str.lower()
@@ -614,44 +580,37 @@ exif_stats['YMD'] = exif_stats['Datetime'].apply(lambda x: x[:10])
 data_mask = exif_stats['Camera_name'] != 'na'
 
 
-# In[34]:
 
 
 exif_stats.head(10)
 
 
-# In[35]:
 
 
 sns.countplot(data=exif_stats, x='Camera_name', hue='Image_type')
 
 
-# In[36]:
 
 
 plt_st(12, 12)
 sns.countplot(data=exif_stats[data_mask].sort_values(['YMD']), y='YMD')
 
 
-# In[37]:
 
 
 
 
 
-# In[37]:
 
 
 
 
 
-# In[37]:
 
 
 
 
 
-# In[37]:
 
 
 

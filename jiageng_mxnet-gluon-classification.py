@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np, pandas as pd, os, gc
@@ -35,7 +34,6 @@ train_df = train2.iloc[train_indexes, :]
 val_df = train2.iloc[val_indexes, :]
 
 
-# In[2]:
 
 
 from albumentations import (
@@ -53,7 +51,6 @@ train_augmentator = Compose([
     ], p=1.0)
 
 
-# In[3]:
 
 
 import mxnet as mx
@@ -148,7 +145,6 @@ class SteelDataset(data.Dataset):
         return image, mask
 
 
-# In[4]:
 
 
 # for test
@@ -166,7 +162,6 @@ plt.imshow(mask[::4, ::4])
 mm.flatten().shape
 
 
-# In[5]:
 
 
 from gluoncv.model_zoo.resnetv1b import resnet50_v1s, resnet101_v1s, resnet152_v1s
@@ -208,7 +203,6 @@ class ResNetBackbone(mx.gluon.HybridBlock):
         return c1, c2, c3, c4
 
 
-# In[6]:
 
 
 import mxnet as mx
@@ -273,7 +267,6 @@ class ConvBlock(HybridBlock):
         return self.body(x)
 
 
-# In[7]:
 
 
 unet = ResNetSteel(num_classes=4)
@@ -284,7 +277,6 @@ logits = unet(a)
 print(logits.shape)
 
 
-# In[8]:
 
 
 import numpy as np
@@ -481,7 +473,6 @@ class SigmoidBinaryCrossEntropyLoss(Loss):
         return F.mean(loss, axis=self._batch_axis, exclude=True)
 
 
-# In[9]:
 
 
 def compute_iou(label, pred):
@@ -509,7 +500,6 @@ def iou_metric(labels, preds):
     return {k:v for k, v in zip(cls, ious)}
 
 
-# In[10]:
 
 
 def training(epoch, data, net, cls_loss, trainer, ctx):
@@ -536,7 +526,6 @@ def training(epoch, data, net, cls_loss, trainer, ctx):
             tbar.set_description(f'Epoch {epoch}, training loss {train_loss/(i+1):.6f}')
 
 
-# In[11]:
 
 
 def evaluation(data, net, ctx):
@@ -558,7 +547,6 @@ def evaluation(data, net, ctx):
     return val_acc * 1.0 /(i+1)
 
 
-# In[12]:
 
 
 import os
@@ -600,7 +588,6 @@ def train_from_manual(train_df, val_df, img_dir, batch_size, epoches, lr=0.001, 
             unet.save_parameters('unet_{}_{}.params'.format(epoch, max_acc))
 
 
-# In[13]:
 
 
 batch_size = 10
@@ -611,7 +598,6 @@ epoches = 20
 train_from_manual(train_df, val_df, img_dir, batch_size, epoches, ctx=mx.gpu())
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install -q pyicu')
@@ -11,7 +10,6 @@ get_ipython().system('pip install -q textstat')
 get_ipython().system('pip install -q googletrans')
 
 
-# In[2]:
 
 
 import warnings
@@ -113,7 +111,6 @@ tokenizer=TweetTokenizer()
 np.random.seed(0)
 
 
-# In[3]:
 
 
 DATA_PATH = "/kaggle/input/jigsaw-multilingual-toxic-comment-classification/"
@@ -127,7 +124,6 @@ test_data = pd.read_csv(TEST_PATH)
 train_data = pd.read_csv(TRAIN_PATH)
 
 
-# In[4]:
 
 
 val = val_data
@@ -146,7 +142,6 @@ test_data["content"] = clean(test_data["content"])
 train["comment_text"] = clean(train["comment_text"])
 
 
-# In[5]:
 
 
 class RocAucEvaluation(Callback):
@@ -163,7 +158,6 @@ class RocAucEvaluation(Callback):
             print("\n ROC-AUC - epoch: {:d} - score: {:.6f}".format(epoch+1, score))
 
 
-# In[6]:
 
 
 def fast_encode(texts, tokenizer, chunk_size=240, maxlen=512):
@@ -179,7 +173,6 @@ def fast_encode(texts, tokenizer, chunk_size=240, maxlen=512):
     return np.array(all_ids)
 
 
-# In[7]:
 
 
 AUTO = tf.data.experimental.AUTOTUNE
@@ -195,7 +188,6 @@ EPOCHS = 2
 BATCH_SIZE = 32 * strategy.num_replicas_in_sync
 
 
-# In[8]:
 
 
 tokenizer = transformers.DistilBertTokenizer.from_pretrained('distilbert-base-multilingual-cased')
@@ -210,7 +202,6 @@ fast_tokenizer = BertWordPieceTokenizer('distilbert_base_uncased/vocab.txt',
 fast_tokenizer
 
 
-# In[9]:
 
 
 x_train = fast_encode(train.comment_text.astype(str), 
@@ -224,25 +215,21 @@ y_valid = val.toxic.values
 y_train = train.toxic.values
 
 
-# In[10]:
 
 
 print(x_train)
 
 
-# In[11]:
 
 
 train.comment_text.astype(str)
 
 
-# In[12]:
 
 
 print(x_train.shape)
 
 
-# In[13]:
 
 
 train_dataset = (
@@ -269,7 +256,6 @@ test_dataset = (
 )
 
 
-# In[14]:
 
 
 def build_distilbert_model(transformer, max_len=512):
@@ -289,7 +275,6 @@ def build_distilbert_model(transformer, max_len=512):
     return model
 
 
-# In[15]:
 
 
 with strategy.scope():
@@ -299,7 +284,6 @@ with strategy.scope():
 model_distilbert.summary()
 
 
-# In[16]:
 
 
 def callback():
@@ -319,7 +303,6 @@ def callback():
     return cb
 
 
-# In[17]:
 
 
 calls = callback()
@@ -333,13 +316,11 @@ train_history = model_distilbert.fit(
 )
 
 
-# In[18]:
 
 
 SVG(tf.keras.utils.model_to_dot(model_distilbert, dpi=70).create(prog='dot', format='svg'))
 
 
-# In[19]:
 
 
 translator = Translator()
@@ -375,13 +356,11 @@ def visualize_model_preds(model, indices=[0, 17, 1, 24]):
         fig.show()
 
 
-# In[20]:
 
 
 visualize_model_preds(model_distilbert)
 
 
-# In[21]:
 
 
 sub = pd.read_csv(DATA_PATH + 'sample_submission.csv')
@@ -389,7 +368,6 @@ sub['toxic'] = model_distilbert.predict(test_dataset, verbose=1)
 sub.to_csv('submission.csv', index=False)
 
 
-# In[22]:
 
 
 model_distilbert.save_weights('model.h5')

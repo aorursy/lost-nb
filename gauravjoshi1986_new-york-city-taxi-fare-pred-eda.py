@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # load some default Python modules
@@ -18,20 +17,17 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 plt.style.use('seaborn-whitegrid')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', "# data path\nTRAIN_PATH = '../input/train.csv'\n\n# Set columns to most suitable type to optimize for memory usage\ndatatypes = {'fare_amount': 'float32',\n              'pickup_datetime': 'str', \n              'pickup_longitude': 'float32',\n              'pickup_latitude': 'float32',\n              'dropoff_longitude': 'float32',\n              'dropoff_latitude': 'float32',\n              'passenger_count': 'uint8'}\n\ncols = list(datatypes.keys())\n\n# read data in pandas dataframe\ndf = pd.read_csv(TRAIN_PATH, usecols=cols, dtype=datatypes, nrows = 2000000)\n\ndf['pickup_datetime'] = df['pickup_datetime'].str.slice(0, 16)\ndf['pickup_datetime'] = pd.to_datetime(df['pickup_datetime'], utc=True, format='%Y-%m-%d %H:%M')")
 
 
-# In[ ]:
 
 
 # list first few rows (datapoints)
 df.tail()
 
 
-# In[ ]:
 
 
 # there are negative values in fare amount which we need to remove
@@ -40,7 +36,6 @@ df = df[df.fare_amount>=0]
 print('New size: %d' % len(df))
 
 
-# In[ ]:
 
 
 # plot histogram of fare - 
@@ -49,14 +44,12 @@ plt.xlabel('fare $USD')
 plt.title('Histogram');
 
 
-# In[ ]:
 
 
 # check if we have missing entries in dataframe
 df.isnull().sum()
 
 
-# In[ ]:
 
 
 # drop observation with missing entries
@@ -65,7 +58,6 @@ df = df.dropna(how = 'any', axis = 'rows')
 print('New size: %d' % len(df))
 
 
-# In[ ]:
 
 
 # plot histogram of pessanger - 
@@ -74,7 +66,6 @@ plt.xlabel('fare $USD')
 plt.title('Histogram');
 
 
-# In[ ]:
 
 
 def distance(lat1, lon1, lat2, lon2):
@@ -103,7 +94,6 @@ df["pickup_minute"] = df["pickup_datetime"].apply(lambda x: x.minute)
 df["pickup_time"] = df["pickup_hour"] + (df["pickup_minute"] / 60)
 
 
-# In[ ]:
 
 
 def plot_bar(df, col):
@@ -112,19 +102,16 @@ def plot_bar(df, col):
     plt.show()
 
 
-# In[ ]:
 
 
 plot_bar(df, "pickup_hour")
 
 
-# In[ ]:
 
 
 plot_bar(df, "pickup_month")
 
 
-# In[ ]:
 
 
 def plot_line(df, col1, col2):
@@ -135,19 +122,16 @@ def plot_line(df, col1, col2):
     plt.show()
 
 
-# In[ ]:
 
 
 plot_line(df, 'pickup_hour', 'distance')
 
 
-# In[ ]:
 
 
 plot_line(df, 'pickup_weekday', 'distance')
 
 
-# In[ ]:
 
 
 df = df[(df['pickup_longitude'] >= -90) & (df['pickup_longitude'] <= 90)]
@@ -157,7 +141,6 @@ df = df[(df['dropoff_longitude'] >= -90) & (df['dropoff_longitude'] <= 90)]
 df = df[(df['dropoff_latitude'] >= -90) & (df['dropoff_latitude'] <= 90)]
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(20,20))

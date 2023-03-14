@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -9,7 +8,6 @@ get_ipython().run_line_magic('load_ext', 'autoreload')
 get_ipython().run_line_magic('autoreload', '2')
 
 
-# In[2]:
 
 
 from google.cloud import storage
@@ -30,7 +28,6 @@ from tqdm.notebook import tqdm
 from tensorflow.keras.backend import dot
 
 
-# In[3]:
 
 
 def porc(c):
@@ -69,7 +66,6 @@ def show_images(imgs, titles=None, hw=(3,3), rc=(4,4)):
     plt.show()
 
 
-# In[4]:
 
 
 output = run_command('pip freeze | grep efficientnet')
@@ -80,7 +76,6 @@ else:
 from efficientnet import tfkeras as efn
 
 
-# In[5]:
 
 
 KAGGLE = os.getenv('KAGGLE_KERNEL_RUN_TYPE') != None
@@ -109,7 +104,6 @@ SIZES = {s: f'{s}x{s}' for s in [192, 224, 331, 512]}
 AUTO = tf.data.experimental.AUTOTUNE
 
 
-# In[6]:
 
 
 try:
@@ -128,7 +122,6 @@ else:
 print("REPLICAS: ", strategy.num_replicas_in_sync)
 
 
-# In[7]:
 
 
 # https://www.kaggle.com/cdeotte/rotation-augmentation-gpu-tpu-0-96
@@ -162,7 +155,6 @@ def get_mat(rotation, shear, height_zoom, width_zoom, height_shift, width_shift)
     return dot(dot(rotation_matrix, shear_matrix), dot(zoom_matrix, shift_matrix))
 
 
-# In[8]:
 
 
 # https://www.kaggle.com/cdeotte/rotation-augmentation-gpu-tpu-0-96
@@ -201,7 +193,6 @@ def transform(image):
     return tf.reshape(d,[DIM,DIM,3])
 
 
-# In[9]:
 
 
 def augment(example):
@@ -360,14 +351,12 @@ def get_file_pat(split, img_size):
     return file_pat
 
 
-# In[10]:
 
 
 ds = get_ds('val').unbatch().batch(16)
 ds_iter = iter(ds)
 
 
-# In[11]:
 
 
 b = next(ds_iter)
@@ -376,7 +365,6 @@ show_images(b['image'].numpy(), b['class'].numpy().tolist(), hw=(2,2), rc=(2,8))
 show_images(b_aug['image'].numpy(), b_aug['class'].numpy().tolist(), hw=(2,2), rc=(2,8))
 
 
-# In[12]:
 
 
 splits = ['train', 'val', 'ox102']
@@ -389,20 +377,17 @@ df_split_stats.columns = splits
 df_split_stats['weight'] = df_split_stats.sum(axis=1).max() / df_split_stats.sum(axis=1)
 
 
-# In[13]:
 
 
 (df_split_stats[splits].apply(lambda s: s/df_split_stats[splits].sum(axis=1))
 .plot(kind='area', figsize=(10,5)));
 
 
-# In[14]:
 
 
 ((df_split_stats.val / df_split_stats.train) / (df_split_stats.val.sum() / df_split_stats.train.sum())).plot();
 
 
-# In[15]:
 
 
 df_split_stats['weight'].plot()
@@ -410,7 +395,6 @@ plt.title('Class Weights')
 plt.show()
 
 
-# In[16]:
 
 
 img_size = 512 
@@ -432,7 +416,6 @@ ds_train_all_fit = ds_train_all.map(preprocess, num_parallel_calls=AUTO)
 ds_valid_fit = ds_valid.map(preprocess, num_parallel_calls=AUTO)
 
 
-# In[17]:
 
 
 # Learning rate schedule for TPU, GPU and CPU.
@@ -461,7 +444,6 @@ plt.plot(rng, y)
 print("Learning rate schedule: {:.3g} to {:.3g} to {:.3g}".format(y[0], max(y), y[-1]))
 
 
-# In[18]:
 
 
 model_prefix = 'model_efnb7_512_08'
@@ -475,7 +457,6 @@ latest_cp = tf.train.latest_checkpoint(checkpoint_dir)
 latest_cp
 
 
-# In[19]:
 
 
 dataset_cp = 'cp-0011.ckpt'
@@ -489,14 +470,12 @@ if False:
         b.download_to_filename(DATASET_DIR/b.name)
 
 
-# In[20]:
 
 
 if False:
     print_output(run_command('rm -rf flowers-caleb/model_efnb7_512_08'))
 
 
-# In[21]:
 
 
 model_desc = {'model_efnb7_512_06': {'model': 'efnb7, concat avg and max pool',
@@ -619,7 +598,6 @@ model_desc = {'model_efnb7_512_06': {'model': 'efnb7, concat avg and max pool',
                      }
 
 
-# In[22]:
 
 
 if True:
@@ -652,7 +630,6 @@ if True:
     model.summary()
 
 
-# In[23]:
 
 
 print('split', '\t', 'items', '\t',  'steps')
@@ -665,7 +642,6 @@ for split in ['train', 'val', 'test', 'ox102']:
     print(split, '\t', items, '\t',  items // batch_size)
 
 
-# In[24]:
 
 
 if False:
@@ -680,7 +656,6 @@ if False:
                        )
 
 
-# In[25]:
 
 
 model0_prefix = 'model_efnb6_512_02'
@@ -692,7 +667,6 @@ model_dir_1 = f'gs://{MODEL_BUCKET}/{model_prefix_1}'
 cp1 = f'{model_dir_1}/checkpoints/cp-0020.ckpt'
 
 
-# In[26]:
 
 
 class EnsembleModels(tf.keras.Model):
@@ -726,7 +700,6 @@ class EnsembleModels(tf.keras.Model):
         return output
 
 
-# In[27]:
 
 
 if False:
@@ -745,7 +718,6 @@ if False:
     model.summary()
 
 
-# In[28]:
 
 
 if False:
@@ -760,7 +732,6 @@ if False:
                        )
 
 
-# In[29]:
 
 
 if False:
@@ -769,7 +740,6 @@ if False:
         model.load_weights(f'{model_dir}/checkpoints/cp-0010.ckpt')
 
 
-# In[30]:
 
 
 split = 'test'
@@ -782,7 +752,6 @@ preprocess = get_preprocess_fn(batch_size=batch_size,
 ds_pred_pp = ds_pred.map(preprocess, num_parallel_calls=AUTO)
 
 
-# In[31]:
 
 
 # make sure example order is deterministic so we can line up training data with predictions
@@ -790,7 +759,6 @@ assert np.array_equal(np.concatenate([b['id'] for b in ds_pred.as_numpy_iterator
                np.concatenate([b['id'] for b in ds_pred.as_numpy_iterator()]))
 
 
-# In[32]:
 
 
 id_list = []
@@ -826,7 +794,6 @@ for b in ds_pred.as_numpy_iterator():
         class_list.extend(b['class'].squeeze())
 
 
-# In[33]:
 
 
 df_pred = pd.DataFrame({'id': [n.decode() for n in id_list]})
@@ -846,7 +813,6 @@ if len(img_list) > 0:
 df_pred[['id', 'label']].to_csv('submission.csv', index=False)
 
 
-# In[34]:
 
 
 error_index = 1 #change this up here to analyze errors by class, starting with classes with
@@ -894,7 +860,6 @@ if split == 'val':
                     hw=(2.5,2.5), rc=(1,show_n))
 
 
-# In[35]:
 
 
 test_index = 1 #change this up here to analyze test classes
@@ -923,7 +888,6 @@ if split == 'test':
                 rc=(1, show_n))
 
 
-# In[36]:
 
 
 if False:
@@ -931,13 +895,11 @@ if False:
         print_output(run_command(f'kaggle d version -r tar -p {DATASET_DIR} -m "add model checkpoint"'))
 
 
-# In[37]:
 
 
 get_ipython().run_cell_magic('javascript', '', 'IPython.notebook.save_notebook()')
 
 
-# In[38]:
 
 
 if True:

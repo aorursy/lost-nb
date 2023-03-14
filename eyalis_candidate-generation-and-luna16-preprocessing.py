@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 MIN_BOUND = -1000.0
@@ -72,26 +71,22 @@ slice = scipy.misc.imresize(slice,(252,252),interp="nearest").astype('int16')
 plt.imshow(normalize_image(slice), cmap=plt.cm.gray)
 
 
-# In[2]:
 
 
 z0 = zero_center(slice)
 plt.imshow(z0, cmap=plt.cm.gray)
 
 
-# In[3]:
 
 
 plt.imshow(normalize(z0), cmap=plt.cm.gray)
 
 
-# In[4]:
 
 
 plt.imshow((slice.astype('int16')), cmap=plt.cm.gray)
 
 
-# In[5]:
 
 
 def resample(slices, spacing, new_spacing=[1,1,1]):
@@ -159,7 +154,6 @@ def read_ct_scan(folder_name):
     
 
 
-# In[6]:
 
 
 ct_scans = []
@@ -167,13 +161,11 @@ for i,p in enumerate(os.listdir('../input/sample_images/')[3:6]):
     ct_scans.append(read_ct_scan('../input/sample_images/{}/'.format(p)))
 
 
-# In[7]:
 
 
 ct_scans[0].shape
 
 
-# In[8]:
 
 
 lung_slice_512 = np.zeros((512,512)) 
@@ -186,31 +178,26 @@ lung_slice_512.shape
         
 
 
-# In[9]:
 
 
 plt.imshow(lung_slice_512, cmap=plt.cm.gray)
 
 
-# In[10]:
 
 
 s252 =scipy.misc.imresize(ct_scan[0],(252,252),interp="nearest")
 
 
-# In[11]:
 
 
 plt.imshow(s252, cmap=plt.cm.gray)
 
 
-# In[12]:
 
 
 
 
 
-# In[12]:
 
 
 def plot_ct_scan(scan):
@@ -220,7 +207,6 @@ def plot_ct_scan(scan):
         plots[int(i / 20), int((i % 20) / 5)].imshow(scan[i], cmap=plt.cm.bone) 
 
 
-# In[13]:
 
 
 def plot_ct_scan(scan):
@@ -238,25 +224,21 @@ def plot_ct_scan(scan):
         plots[int(i / 20), int((i % 20) / 5)].imshow(lung_slice_512, cmap=plt.cm.bone) 
 
 
-# In[14]:
 
 
 plot_ct_scan(ct_scans[1])
 
 
-# In[15]:
 
 
 plot_ct_scan(ct_scans[4])
 
 
-# In[16]:
 
 
 
 
 
-# In[16]:
 
 
 def get_segmented_lungs(im, plot=False):
@@ -339,34 +321,29 @@ def get_segmented_lungs(im, plot=False):
     return im
 
 
-# In[17]:
 
 
 get_segmented_lungs(ct_scan[0,71], True)
 
 
-# In[18]:
 
 
 def segment_lung_from_ct_scan(ct_scan):
     return np.asarray([get_segmented_lungs(slice) for slice in ct_scan])
 
 
-# In[19]:
 
 
 segmented_ct_scan = segment_lung_from_ct_scan(ct_scan)
 plot_ct_scan(segmented_ct_scan)
 
 
-# In[20]:
 
 
 segmented_ct_scan[segmented_ct_scan < 604] = 0
 plot_ct_scan(segmented_ct_scan)
 
 
-# In[21]:
 
 
 selem = ball(2)
@@ -396,7 +373,6 @@ for r in regionprops(label_scan):
         index = (max((max_x - min_x), (max_y - min_y), (max_z - min_z))) / (min((max_x - min_x), (max_y - min_y) , (max_z - min_z)))
 
 
-# In[22]:
 
 
 def plot_3d(image, threshold=-300):
@@ -424,13 +400,11 @@ def plot_3d(image, threshold=-300):
     plt.show()
 
 
-# In[23]:
 
 
 plot_3d(segmented_ct_scan, 604)
 
 
-# In[24]:
 
 
 '''
@@ -471,7 +445,6 @@ def voxel_2_world(voxel_coordinates, origin, spacing):
     return world_coordinates
 
 
-# In[25]:
 
 
 def seq(start, stop, step=1):
@@ -564,7 +537,6 @@ def create_nodule_mask(imagePath, maskPath, cands):
         
 
 
-# In[26]:
 
 
 # change the loss function

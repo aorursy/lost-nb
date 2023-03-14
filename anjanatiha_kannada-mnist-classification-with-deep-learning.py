@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # System
@@ -107,7 +106,6 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 print(os.listdir("../input/"))
 
 
-# In[2]:
 
 
 def date_time(x):
@@ -121,7 +119,6 @@ def date_time(x):
         return 'Date today: %s' % datetime.date.today()  
 
 
-# In[3]:
 
 
 input_directory = r"../input/Kannada-MNIST/"
@@ -151,7 +148,6 @@ file_name_pred_batch = figure_directory+r"/result"
 file_name_pred_sample = figure_directory+r"/sample"
 
 
-# In[4]:
 
 
 train_df = pd.read_csv(input_directory + "train.csv")
@@ -159,7 +155,6 @@ train_df.rename(index=str, columns={"label": "target"}, inplace=True)
 train_df.head()
 
 
-# In[5]:
 
 
 test_df = pd.read_csv(input_directory + "test.csv")
@@ -167,7 +162,6 @@ test_df.rename(index=str, columns={"label": "target"}, inplace=True)
 test_df.head()
 
 
-# In[6]:
 
 
 ticksize = 18
@@ -194,7 +188,6 @@ plt.ylabel(ylabel)
 plt.show()
 
 
-# In[7]:
 
 
 def get_data(train_X=None, train_Y=None, test_X=None, batch_size=32):
@@ -276,7 +269,6 @@ def get_weight(y):
     return class_weight_current
 
 
-# In[8]:
 
 
 def get_model(model_name, input_shape=(96, 96, 3), num_class=2, weights='imagenet', dense_units=1024, internet=False):
@@ -422,7 +414,6 @@ def get_conv_model(num_class=2, input_shape=None, dense_units=256):
     return model
 
 
-# In[9]:
 
 
 def plot_performance(history=None, figure_directory=None):
@@ -488,7 +479,6 @@ def plot_performance(history=None, figure_directory=None):
     plt.show()
 
 
-# In[10]:
 
 
 main_model_dir = output_directory + r"models_output/"
@@ -523,7 +513,6 @@ except:
 model_file = model_dir + "{epoch:02d}-val_acc-{val_acc:.2f}-val_loss-{val_loss:.2f}.hdf5"
 
 
-# In[11]:
 
 
 print("Settting Callbacks")
@@ -567,7 +556,6 @@ callbacks = [reduce_lr, early_stopping]
 print("Set Callbacks at ", date_time(1))
 
 
-# In[12]:
 
 
 print("Getting Base Model", date_time(1))
@@ -598,7 +586,6 @@ model = get_conv_model(num_class=num_class, input_shape=input_shape, dense_units
 print("Loaded Base Model", date_time(1))
 
 
-# In[13]:
 
 
 loss = 'categorical_crossentropy'
@@ -607,7 +594,6 @@ metrics = ['accuracy']
 # metrics = [auroc]
 
 
-# In[14]:
 
 
 # train_X = train_df.drop(columns=["target"]).values
@@ -619,7 +605,6 @@ metrics = ['accuracy']
 # cross_val_score(clf, train_X, train_Y, cv=10, n_jobs=-1, verbose=2)
 
 
-# In[15]:
 
 
 train_X = train_df.drop(columns=["target"]).values
@@ -632,7 +617,6 @@ test_X = test_df.drop(columns=["id"]).values
 test_X = test_X.reshape(test_X.shape[0], dim, dim,1)
 
 
-# In[16]:
 
 
 batch_size = 128
@@ -645,7 +629,6 @@ batch_size = 128
 train_generator, validation_generator, test_generator, class_weights, steps_per_epoch, validation_steps = get_data(train_X=train_X, train_Y=train_Y, test_X=test_X, batch_size=batch_size)
 
 
-# In[17]:
 
 
 print("Starting Trainning ...\n")
@@ -687,34 +670,29 @@ print("\nElapsed Time: " + elapsed_time)
 print("Completed Model Trainning", date_time(1))
 
 
-# In[18]:
 
 
 plot_performance(history=history)
 
 
-# In[19]:
 
 
 ypreds = model.predict_generator(generator=test_generator, steps = len(test_generator),  verbose=1)
 # ypreds
 
 
-# In[20]:
 
 
 # ypred = ypreds[:,1]#
 ypred = np.argmax(ypreds, axis=1)
 
 
-# In[21]:
 
 
 sample_df = pd.read_csv(input_directory+"sample_submission.csv")
 sample_df.head()
 
 
-# In[22]:
 
 
 test_gen_id = test_generator.index_array
@@ -723,7 +701,6 @@ sample_submission_id = sample_df["id"]
 len(test_gen_id), len(sample_submission_id)
 
 
-# In[23]:
 
 
 sample_list = list(sample_df.id)
@@ -737,13 +714,11 @@ test_df = pd.DataFrame({'id': sample_list,'label': pred_list_new})
 test_df.to_csv('submission.csv', header=True, index=False)
 
 
-# In[24]:
 
 
 test_df.head()
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np
@@ -14,7 +13,6 @@ import os
 print(os.listdir("../input"))
 
 
-# In[ ]:
 
 
 df = pd.read_csv(os.path.join('../input', 'train.csv'))
@@ -23,26 +21,22 @@ X_test = df_test['question_text']
 df.head()
 
 
-# In[ ]:
 
 
 df.tail()
 
 
-# In[ ]:
 
 
 df.isna().sum()
 
 
-# In[ ]:
 
 
 df['target'].unique()
 df[df['question_text'] == ''].sum()
 
 
-# In[ ]:
 
 
 sincere_q = (df['target'] == 0).sum()
@@ -51,7 +45,6 @@ insincere_q = (df['target'] == 1).sum()
 sincere_q, insincere_q
 
 
-# In[ ]:
 
 
 rate_sincere_q = (sincere_q/len(df['target']))*100
@@ -60,7 +53,6 @@ rate_sincere_q, rate_insincere_q
 print( '{}% of questions are sincere and {}% are insincere'.format(rate_sincere_q, rate_insincere_q))
 
 
-# In[ ]:
 
 
 index_insincere_q = np.array(df[df['target'] == 1].index) # len = 80810 
@@ -68,7 +60,6 @@ index_sincere_q = np.array(df[df['target'] == 0].index)
 index_sincere_q_reduc = random.sample(list(index_sincere_q), int(1.8*len(index_insincere_q)))
 
 
-# In[ ]:
 
 
 X = pd.concat([df['question_text'][index_insincere_q], df['question_text'][index_sincere_q_reduc]])
@@ -78,7 +69,6 @@ y = pd.concat([df['target'][index_insincere_q], df['target'][index_sincere_q_red
 X.shape, y.shape
 
 
-# In[ ]:
 
 
 from sklearn.model_selection import train_test_split
@@ -86,7 +76,6 @@ X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=.2, random
 X_train.shape, y_train.shape, X_valid.shape, y_valid.shape
 
 
-# In[ ]:
 
 
 import nltk
@@ -97,7 +86,6 @@ from nltk.stem import WordNetLemmatizer
 from nltk.stem import PorterStemmer
 
 
-# In[ ]:
 
 
 def tokenize(data):
@@ -109,7 +97,6 @@ def tokenize(data):
     return X_stem_as_string
 
 
-# In[ ]:
 
 
 X_train_pr = tokenize(X_train)
@@ -117,7 +104,6 @@ X_valid_pr = tokenize(X_valid)
 X_test_pr = tokenize(X_test)
 
 
-# In[ ]:
 
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
@@ -125,7 +111,6 @@ from sklearn.decomposition import TruncatedSVD
 from sklearn.pipeline import Pipeline
 
 
-# In[ ]:
 
 
 vct = CountVectorizer(stop_words='english', ngram_range=(2, 3), lowercase=False)
@@ -133,7 +118,6 @@ svd = TruncatedSVD(n_components=100, random_state=42)
 tfvec = TfidfVectorizer(stop_words='english', lowercase=False)
 
 
-# In[ ]:
 
 
 preprocessing_pipe = Pipeline([
@@ -142,21 +126,18 @@ preprocessing_pipe = Pipeline([
 ])
 
 
-# In[ ]:
 
 
 lsa_train = preprocessing_pipe.fit_transform(X_train_pr)
 lsa_train.shape
 
 
-# In[ ]:
 
 
 components = pd.DataFrame(data=svd.components_, columns=preprocessing_pipe.named_steps['vectorizer'].get_feature_names())
 components
 
 
-# In[ ]:
 
 
 fig, axes = plt.subplots(10, 2, figsize=(18, 30))
@@ -164,7 +145,6 @@ for i, ax in enumerate(axes.flat):
     components.iloc[i].sort_values(ascending=False)[:10].sort_values().plot.barh(ax=ax)
 
 
-# In[ ]:
 
 
 import xgboost as xgb
@@ -173,45 +153,37 @@ from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from sklearn.naive_bayes import MultinomialNB
 
 
-# In[ ]:
 
 
 rf = RandomForestClassifier (class_weight='balanced_subsample')
 xgbc = xgb.XGBClassifier() 
 mb = MultinomialNB()
-pipe = Pipeline([
     ('vectorizer', tfvec),
     ('mb', mb)
 ])
 
 
-# In[ ]:
 
 
 X_train_pr = tokenize(X_train)
 
 
-# In[ ]:
 
 
-pipe.fit(X_train_pr, y_train)
 y_pred = pipe.predict(X_valid_pr)
 
 
-# In[ ]:
 
 
 from sklearn.metrics import confusion_matrix, classification_report
 
 
-# In[ ]:
 
 
 cm = confusion_matrix(y_valid, y_pred)
 cm
 
 
-# In[ ]:
 
 
 labels = ['sincere', 'unsincere']
@@ -219,32 +191,27 @@ df_cm = pd.DataFrame(cm, columns=labels, index=labels)
 df_cm
 
 
-# In[ ]:
 
 
 from sklearn.model_selection import cross_val_score
 
 
-# In[ ]:
 
 
 score = cross_val_score(pipe, X_valid_pr, y=y_valid, cv=5, scoring='f1_macro')
 score
 
 
-# In[ ]:
 
 
 print(classification_report(y_valid, y_pred))
 
 
-# In[ ]:
 
 
 y_test_true = pipe.predict(X_test_pr)
 
 
-# In[ ]:
 
 
 #df_sample_submission = pd.DataFrame({'qid' : df_test['qid'], 'y_pred' : y_test_true})

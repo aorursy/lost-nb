@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import pandas as pd 
@@ -33,38 +32,32 @@ else:
 print(os.listdir(PATH))
 
 
-# In[ ]:
 
 
 train_df = pd.read_csv(PATH+"/train.csv")
 test_df = pd.read_csv(PATH+"/test.csv")
 
 
-# In[ ]:
 
 
 print("Santander Value Prediction Challenge train -  rows:",train_df.shape[0]," columns:", train_df.shape[1])
 
 
-# In[ ]:
 
 
 print("Santander Value Prediction Challenge test -  rows:",test_df.shape[0]," columns:", test_df.shape[1])
 
 
-# In[ ]:
 
 
 train_df.head()
 
 
-# In[ ]:
 
 
 test_df.head()
 
 
-# In[ ]:
 
 
 def check_nulls(df):
@@ -78,13 +71,11 @@ def check_nulls(df):
 check_nulls(train_df)
 
 
-# In[ ]:
 
 
 check_nulls(test_df)
 
 
-# In[ ]:
 
 
 def check_sparsity(df):
@@ -100,13 +91,11 @@ def check_sparsity(df):
 d1 = check_sparsity(train_df)
 
 
-# In[ ]:
 
 
 d2 = check_sparsity(test_df)
 
 
-# In[ ]:
 
 
 dtype_df = train_df.dtypes.reset_index()
@@ -114,7 +103,6 @@ dtype_df.columns = ["Count", "Column Type"]
 dtype_df.groupby("Column Type").aggregate('count').reset_index()
 
 
-# In[ ]:
 
 
 data = []
@@ -155,13 +143,11 @@ metadata.set_index('varname', inplace=True)
 metadata.head(10)
 
 
-# In[ ]:
 
 
 pd.DataFrame({'count' : metadata.groupby(['dtype'])['dtype'].size()}).reset_index()
 
 
-# In[ ]:
 
 
 int_data = []
@@ -169,26 +155,22 @@ var = metadata[(metadata.dtype == 'int64') & (metadata.use == 'input')].index
 d3 = check_sparsity(train_df[var])
 
 
-# In[ ]:
 
 
 d4 = check_sparsity(test_df[var])
 
 
-# In[ ]:
 
 
 var = metadata[(metadata.dtype == 'float64') & (metadata.use == 'input')].index
 d5 = check_sparsity(train_df[var])
 
 
-# In[ ]:
 
 
 d6 = check_sparsity(test_df[var])
 
 
-# In[ ]:
 
 
 data = {'Dataset': ['Train', 'Test'], 'All': [d1, d2], 'Integer': [d3,d4], 'Float': [d5,d6]}
@@ -198,7 +180,6 @@ density_data.set_index('Dataset', inplace=True)
 density_data
 
 
-# In[ ]:
 
 
 # check constant columns
@@ -211,13 +192,11 @@ for col in columnsList:
 print("There are", len(colsConstant), "constant columns in the train set.")
 
 
-# In[ ]:
 
 
 metadata['keep'].loc[colsConstant] = False
 
 
-# In[ ]:
 
 
 # Plot distribution of one feature
@@ -230,7 +209,6 @@ def plot_distribution(df,feature,color):
 plot_distribution(train_df, "target", "blue")
 
 
-# In[ ]:
 
 
 def plot_log_distribution(df,feature,color):
@@ -243,7 +221,6 @@ def plot_log_distribution(df,feature,color):
 plot_log_distribution(train_df, "target", "green")  
 
 
-# In[ ]:
 
 
 non_zeros = (train_df.ne(0).sum(axis=1))
@@ -254,7 +231,6 @@ sns.distplot(np.log1p(non_zeros),color="red", kde=True,bins=100)
 plt.show()
 
 
-# In[ ]:
 
 
 non_zeros = (test_df.ne(0).sum(axis=1))
@@ -265,7 +241,6 @@ sns.distplot(np.log1p(non_zeros),color="magenta", kde=True,bins=100)
 plt.show()
 
 
-# In[ ]:
 
 
 var = metadata[(metadata.dtype == 'float64') & (metadata.use == 'input')].index
@@ -277,7 +252,6 @@ sns.distplot(np.log1p(non_zeros),color="green", kde=True,bins=100)
 plt.show()
 
 
-# In[ ]:
 
 
 non_zeros = (test_df[var].ne(0).sum(axis=1))
@@ -288,7 +262,6 @@ sns.distplot(np.log1p(non_zeros),color="blue", kde=True,bins=100)
 plt.show()
 
 
-# In[ ]:
 
 
 var = metadata[(metadata.dtype == 'int64') & (metadata.use == 'input')].index
@@ -300,7 +273,6 @@ sns.distplot(np.log1p(non_zeros),color="yellow", kde=True,bins=100)
 plt.show()
 
 
-# In[ ]:
 
 
 non_zeros = (test_df[var].ne(0).sum(axis=1))
@@ -311,7 +283,6 @@ sns.distplot(np.log1p(non_zeros),color="cyan", kde=True,bins=100)
 plt.show()
 
 
-# In[ ]:
 
 
 non_zeros = (train_df.ne(0).sum(axis=0))
@@ -322,7 +293,6 @@ sns.distplot(np.log1p(non_zeros),color="darkblue", kde=True,bins=100)
 plt.show()
 
 
-# In[ ]:
 
 
 non_zeros = (test_df.ne(0).sum(axis=0))
@@ -333,7 +303,6 @@ sns.distplot(np.log1p(non_zeros),color="darkgreen", kde=True,bins=100)
 plt.show()
 
 
-# In[ ]:
 
 
 var = metadata[(metadata.dtype == 'float64') & (metadata.use == 'input')].index
@@ -345,7 +314,6 @@ sns.boxplot(val, palette="Greens",  showfliers=True,ax=ax2)
 plt.show();
 
 
-# In[ ]:
 
 
 var = metadata[(metadata.dtype == 'int64') & (metadata.use == 'input')].index
@@ -357,7 +325,6 @@ sns.boxplot(val, palette="Blues",  showfliers=True,ax=ax2)
 plt.show();
 
 
-# In[ ]:
 
 
 labels = []
@@ -381,7 +348,6 @@ ax.set_title("Correlation coefficient of the variables")
 plt.show()
 
 
-# In[ ]:
 
 
 temp_df = train_df[corr_df.columns_labels.tolist()]
@@ -394,13 +360,11 @@ plt.title("Important variables correlation map", fontsize=15)
 plt.show()
 
 
-# In[ ]:
 
 
 corrmat
 
 
-# In[ ]:
 
 
 var = temp_df.columns.values
@@ -421,7 +385,6 @@ for feature in var:
 plt.show();
 
 
-# In[ ]:
 
 
 sns.set_style('whitegrid')
@@ -433,7 +396,6 @@ s = sns.lmplot(x='cbbc9c431', y='51707c671',data=train_df, fit_reg=True,scatter_
 plt.show()
 
 
-# In[ ]:
 
 
 var = metadata[(metadata.keep == False) & (metadata.use == 'input')].index
@@ -441,14 +403,12 @@ train_df.drop(var, axis=1, inplace=True)
 test_df.drop(var, axis=1, inplace=True)  
 
 
-# In[ ]:
 
 
 print("Santander Value Prediction Challenge train -  rows:",train_df.shape[0]," columns:", train_df.shape[1])
 print("Santander Value Prediction Challenge test -  rows:",test_df.shape[0]," columns:", test_df.shape[1])
 
 
-# In[ ]:
 
 
 # Replace 0 with NAs
@@ -456,7 +416,6 @@ train_df.replace(0, np.nan, inplace=True)
 test_df.replace(0, np.nan, inplace=True)
 
 
-# In[ ]:
 
 
 all_features = [f for f in train_df.columns if f not in ['target', 'ID']]
@@ -470,20 +429,17 @@ for df in [train_df, test_df]:
     df['kurtosis'] = df[all_features].kurtosis(axis=1)
 
 
-# In[ ]:
 
 
 features = all_features + ['nans', 'median', 'mean', 'sum', 'std', 'kurtosis']
 
 
-# In[ ]:
 
 
 print("Santander Value Prediction Challenge train -  rows:",train_df.shape[0]," columns:", train_df.shape[1])
 print("Santander Value Prediction Challenge test -  rows:",test_df.shape[0]," columns:", test_df.shape[1])
 
 
-# In[ ]:
 
 
 # Create folds
@@ -499,7 +455,6 @@ sub_preds = np.zeros(test_df.shape[0])
 oof_preds = np.zeros(train_df.shape[0])
 
 
-# In[ ]:
 
 
 lgb_params = {
@@ -516,7 +471,6 @@ lgb_params = {
 }
 
 
-# In[ ]:
 
 
 # Run KFold
@@ -543,7 +497,6 @@ print('Full Out-Of-Fold score : %9.6f'
       % (mean_squared_error(np.log1p(train_df['target']), oof_preds) ** .5))
 
 
-# In[ ]:
 
 
 fig, ax = plt.subplots(figsize=(14,10))
@@ -551,7 +504,6 @@ lgb.plot_importance(clf, max_num_features=50, height=0.8,color="tomato",ax=ax)
 plt.show()
 
 
-# In[ ]:
 
 
 sub = test_df[['ID']].copy()

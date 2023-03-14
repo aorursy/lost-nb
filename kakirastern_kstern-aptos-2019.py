@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -49,7 +48,6 @@ import os
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 # check if CUDA is available
@@ -67,7 +65,6 @@ else:
     print('CUDA is available! Training on GPU ...')
 
 
-# In[3]:
 
 
 # Load data
@@ -82,7 +79,6 @@ sample_submission = pd.read_csv('../input/aptos2019-blindness-detection/sample_s
 train, valid = train_test_split(train, train_size=0.75, test_size=0.25, shuffle=False)
 
 
-# In[4]:
 
 
 print('Number of train samples: ', train.shape[0])
@@ -91,7 +87,6 @@ print('Number of test samples: ', test.shape[0])
 display(train.head(10))
 
 
-# In[5]:
 
 
 df = pd.DataFrame(train)
@@ -103,7 +98,6 @@ ClassCounts.plot.bar(rot=0);
 plt.title('Severity Counts for Training Data');
 
 
-# In[6]:
 
 
 # To display 5 unique retina images from each of the 5 classes
@@ -124,7 +118,6 @@ plt.show()
 plt.savefig("samples_viz.png")
 
 
-# In[7]:
 
 
 import PIL
@@ -172,46 +165,39 @@ class ImageLoader(Dataset):
             return image, label
 
 
-# In[8]:
 
 
 retinaImages = ImageLoader(df=valid, datatype='valid')
 
 
-# In[9]:
 
 
 len(retinaImages)
 
 
-# In[10]:
 
 
 valid['diagnosis'][13+len(train)]
 
 
-# In[11]:
 
 
 type(retinaImages[13][0])
 print(retinaImages[13][0])
 
 
-# In[12]:
 
 
 plt.imshow(retinaImages[13][0].permute(1, 2, 0))
 print("Label: " + str(retinaImages[13][1]))
 
 
-# In[13]:
 
 
 trainloader = torch.utils.data.DataLoader(ImageLoader(df=train, datatype='train'), batch_size=60, shuffle=True)
 testloader = torch.utils.data.DataLoader(ImageLoader(df=valid, datatype='valid'), batch_size=60, shuffle=False)  # serving as validation set...
 
 
-# In[14]:
 
 
 #model = models.densenet121(pretrained=False)
@@ -223,13 +209,11 @@ if train_on_gpu:
 model
 
 
-# In[15]:
 
 
 cuda_output[0]
 
 
-# In[16]:
 
 
 def load_checkpoint(filepath):
@@ -243,7 +227,6 @@ def load_checkpoint(filepath):
     return model
 
 
-# In[17]:
 
 
 # Freeze parameters so we don't backprop through them
@@ -277,7 +260,6 @@ model.fc = fc
 model.to(device)    
 
 
-# In[18]:
 
 
 checkpoint = {'model': fc,
@@ -287,13 +269,11 @@ checkpoint = {'model': fc,
 torch.save(checkpoint, '/kaggle/checkpoint.pth')
 
 
-# In[19]:
 
 
 get_ipython().system('ls /kaggle/working')
 
 
-# In[20]:
 
 
 for i, (inputs, labels) in enumerate(trainloader):
@@ -314,7 +294,6 @@ for i, (inputs, labels) in enumerate(trainloader):
 print(f"Device = {device}; Time per batch: {(time.time() - start)/3:.3f} seconds")
 
 
-# In[21]:
 
 
 epochs = 5
@@ -372,7 +351,6 @@ for epoch in range(epochs):
         model.train()
 
 
-# In[22]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -381,20 +359,17 @@ get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'retina'")
 import matplotlib.pyplot as plt
 
 
-# In[23]:
 
 
 plt.plot(validation_accuracy, label='Validation accuracy')
 plt.legend(frameon=False)
 
 
-# In[24]:
 
 
 print(test['id_code'].values)
 
 
-# In[25]:
 
 
 class SubmissionLoader(Dataset):
@@ -422,19 +397,16 @@ class SubmissionLoader(Dataset):
         return image, id_code
 
 
-# In[26]:
 
 
 submissions = torch.utils.data.DataLoader(SubmissionLoader(df=test), batch_size=1, shuffle=False)
 
 
-# In[27]:
 
 
 len(submissions)
 
 
-# In[28]:
 
 
 preds = []
@@ -454,7 +426,6 @@ with torch.no_grad():
         id_codes.append(id_code)
 
 
-# In[29]:
 
 
 output = pd.read_csv("../input/aptos2019-blindness-detection/sample_submission.csv")
@@ -463,13 +434,11 @@ output.diagnosis = preds
 output.to_csv("submission.csv", index=False)
 
 
-# In[30]:
 
 
 pd.read_csv('/kaggle/working/submission.csv')
 
 
-# In[31]:
 
 
 freq, _ = np.histogram(output.diagnosis, density=True, bins=5)

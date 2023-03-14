@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install ../input/sacremoses > /dev/null')
@@ -10,7 +9,6 @@ import sys
 sys.path.insert(0, "../input/transformers/")
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -31,7 +29,6 @@ np.set_printoptions(suppress=True)
 print(tf.__version__)
 
 
-# In[3]:
 
 
 PATH = '../input/google-quest-challenge/'
@@ -56,7 +53,6 @@ print('\noutput categories:\n\t', output_categories)
 print('\ninput categories:\n\t', input_categories)
 
 
-# In[4]:
 
 
 def _convert_to_transformer_inputs(title, question, answer, tokenizer, max_sequence_length):
@@ -116,7 +112,6 @@ def compute_output_arrays(df, columns):
     return np.asarray(df[columns])
 
 
-# In[5]:
 
 
 def compute_spearmanr_ignore_nan(trues, preds):
@@ -162,7 +157,6 @@ def create_model():
     return model
 
 
-# In[6]:
 
 
 outputs = compute_output_arrays(df_train, output_categories)
@@ -170,19 +164,16 @@ inputs = compute_input_arrays(df_train, input_categories, tokenizer, MAX_SEQUENC
 test_inputs = compute_input_arrays(df_test, input_categories, tokenizer, MAX_SEQUENCE_LENGTH)
 
 
-# In[7]:
 
 
 #model_path = f'../input/berttuned3epochs10folds/'
 
 
-# In[8]:
 
 
 get_ipython().system('ls ../input/')
 
 
-# In[9]:
 
 
 gkf = GroupKFold(n_splits=10).split(X=df_train.question_body, groups=df_train.question_body)
@@ -211,7 +202,6 @@ for fold, (train_idx, valid_idx) in enumerate(gkf):
     print('validation score = ', rho_val)
 
 
-# In[10]:
 
 
 df_sub.iloc[:, 1:] = np.average(test_preds, axis=0) # for weighted average set weights=[...]

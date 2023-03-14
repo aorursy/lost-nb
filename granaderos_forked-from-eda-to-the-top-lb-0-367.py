@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -20,7 +19,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
 
 
 beluga = pd.DataFrame({'since_start_hour': [8.0, 8.0, 20.0, 28.0, 37.0, 45.0, 85.0, 85.0, 100.0, 134.0, 134.0, 143.0, 148.0],
@@ -40,7 +38,6 @@ with plt.xkcd():
     plt.show()
 
 
-# In[3]:
 
 
 np.random.seed(1987)
@@ -51,7 +48,6 @@ test = pd.read_csv('../input/nyc-taxi-trip-duration/test.csv')
 sample_submission = pd.read_csv('../input/nyc-taxi-trip-duration/sample_submission.csv')
 
 
-# In[4]:
 
 
 print('We have {} training rows and {} test rows.'.format(train.shape[0], test.shape[0]))
@@ -59,7 +55,6 @@ print('We have {} training columns and {} test columns.'.format(train.shape[1], 
 train.head(2)
 
 
-# In[5]:
 
 
 print('Id is unique.') if train.id.nunique() == train.shape[0] else print('oops')
@@ -68,7 +63,6 @@ print('We do not need to worry about missing values.') if train.count().min() ==
 print('The store_and_fwd_flag has only two values {}.'.format(str(set(train.store_and_fwd_flag.unique()) | set(test.store_and_fwd_flag.unique()))))
 
 
-# In[6]:
 
 
 train['pickup_datetime'] = pd.to_datetime(train.pickup_datetime)
@@ -83,13 +77,11 @@ duration_difference = train[np.abs(train['check_trip_duration'].values  - train[
 print('Trip_duration and datetimes are ok.') if len(duration_difference[['pickup_datetime', 'dropoff_datetime', 'trip_duration', 'check_trip_duration']]) == 0 else print('Ooops.')
 
 
-# In[7]:
 
 
 train['trip_duration'].max() // 3600
 
 
-# In[8]:
 
 
 train['log_trip_duration'] = np.log(train['trip_duration'].values + 1)
@@ -99,7 +91,6 @@ plt.ylabel('number of train records')
 plt.show()
 
 
-# In[9]:
 
 
 plt.plot(train.groupby('pickup_date').count()[['id']], 'o-', label='train')
@@ -110,7 +101,6 @@ plt.ylabel('number of records')
 plt.show()
 
 
-# In[10]:
 
 
 city_long_border = (-74.03, -73.75)
@@ -131,7 +121,6 @@ plt.xlim(city_long_border)
 plt.show()
 
 
-# In[11]:
 
 
 coords = np.vstack((train[['pickup_latitude', 'pickup_longitude']].values,
@@ -150,7 +139,6 @@ test['dropoff_pca0'] = pca.transform(test[['dropoff_latitude', 'dropoff_longitud
 test['dropoff_pca1'] = pca.transform(test[['dropoff_latitude', 'dropoff_longitude']])[:, 1]
 
 
-# In[12]:
 
 
 fig, ax = plt.subplots(ncols=2)
@@ -169,7 +157,6 @@ ax[1].set_ylim(pca_borders[:, 1].min(), pca_borders[:, 1].max())
 plt.show()
 
 
-# In[13]:
 
 
 def haversine_array(lat1, lng1, lat2, lng2):
@@ -210,7 +197,6 @@ test.loc[:, 'center_latitude'] = (test['pickup_latitude'].values + test['dropoff
 test.loc[:, 'center_longitude'] = (test['pickup_longitude'].values + test['dropoff_longitude'].values) / 2
 
 
-# In[14]:
 
 
 train.loc[:, 'pickup_weekday'] = train['pickup_datetime'].dt.weekday
@@ -228,7 +214,6 @@ test.loc[:, 'pickup_dt'] = (test['pickup_datetime'] - train['pickup_datetime'].m
 test.loc[:, 'pickup_week_hour'] = test['pickup_weekday'] * 24 + test['pickup_hour']
 
 
-# In[15]:
 
 
 train.loc[:, 'avg_speed_h'] = 1000 * train['distance_haversine'] / train['trip_duration']
@@ -245,7 +230,6 @@ fig.suptitle('Rush hour average traffic speed')
 plt.show()
 
 
-# In[16]:
 
 
 train.loc[:, 'pickup_lat_bin'] = np.round(train['pickup_latitude'], 3)
@@ -279,14 +263,12 @@ test.loc[:, 'center_long_bin'] = np.round(test['center_longitude'], 2)
 test.loc[:, 'pickup_dt_bin'] = (test['pickup_dt'] // (3 * 3600))
 
 
-# In[17]:
 
 
 sample_ind = np.random.permutation(len(coords))[:500000]
 kmeans = MiniBatchKMeans(n_clusters=100, batch_size=10000).fit(coords[sample_ind])
 
 
-# In[18]:
 
 
 train.loc[:, 'pickup_cluster'] = kmeans.predict(train[['pickup_latitude', 'pickup_longitude']])
@@ -297,7 +279,6 @@ t1 = dt.datetime.now()
 print('Time till clustering: %i seconds' % (t1 - t0).seconds)
 
 
-# In[19]:
 
 
 fig, ax = plt.subplots(ncols=1, nrows=1)
@@ -310,7 +291,6 @@ ax.set_ylabel('Latitude')
 plt.show()
 
 
-# In[20]:
 
 
 for gby_col in ['pickup_hour', 'pickup_date', 'pickup_dt_bin',
@@ -333,7 +313,6 @@ for gby_cols in [['center_lat_bin', 'center_long_bin'],
     test = pd.merge(test, coord_stats, how='left', on=gby_cols)
 
 
-# In[21]:
 
 
 group_freq = '60min'
@@ -354,7 +333,6 @@ train['dropoff_cluster_count'] = train[['pickup_datetime_group', 'dropoff_cluste
 test['dropoff_cluster_count'] = test[['pickup_datetime_group', 'dropoff_cluster']].merge(dropoff_counts, on=['pickup_datetime_group', 'dropoff_cluster'], how='left')['dropoff_cluster_count'].fillna(0)
 
 
-# In[22]:
 
 
 # Count how many trips are going from each cluster over time
@@ -365,7 +343,6 @@ train['pickup_cluster_count'] = train[['pickup_datetime_group', 'pickup_cluster'
 test['pickup_cluster_count'] = test[['pickup_datetime_group', 'pickup_cluster']].merge(pickup_counts, on=['pickup_datetime_group', 'pickup_cluster'], how='left')['pickup_cluster_count'].fillna(0)
 
 
-# In[23]:
 
 
 fr1 = pd.read_csv('../input/new-york-city-taxi-with-osrm/fastest_routes_train_part_1.csv', usecols=['id', 'total_distance', 'total_travel_time',  'number_of_steps'])
@@ -378,7 +355,6 @@ test = test.merge(test_street_info, how='left', on='id')
 train_street_info.head()
 
 
-# In[24]:
 
 
 feature_names = list(train.columns)
@@ -396,7 +372,6 @@ t1 = dt.datetime.now()
 print('Feature extraction time: %i seconds' % (t1 - t0).seconds)
 
 
-# In[25]:
 
 
 feature_stats = pd.DataFrame({'feature': feature_names})
@@ -412,14 +387,12 @@ feature_stats = feature_stats.sort_values(by='train_test_mean_diff')
 feature_stats[['feature', 'train_test_mean_diff']].tail()
 
 
-# In[26]:
 
 
 feature_stats = feature_stats.sort_values(by='train_test_nan_diff')
 feature_stats[['feature', 'train_nan', 'test_nan', 'train_test_nan_diff']].tail()
 
 
-# In[27]:
 
 
 Xtr, Xv, ytr, yv = train_test_split(train[feature_names].values, y, test_size=0.2, random_state=1987)
@@ -434,7 +407,6 @@ xgb_pars = {'min_child_weight': 50, 'eta': 0.3, 'colsample_bytree': 0.3, 'max_de
             'eval_metric': 'rmse', 'objective': 'reg:linear'}
 
 
-# In[28]:
 
 
 # You could try to train with more epoch
@@ -442,7 +414,6 @@ model = xgb.train(xgb_pars, dtrain, 60, watchlist, early_stopping_rounds=50,
                   maximize=False, verbose_eval=10)
 
 
-# In[29]:
 
 
 print('Modeling RMSLE %.5f' % model.best_score)
@@ -450,7 +421,6 @@ t1 = dt.datetime.now()
 print('Training time: %i seconds' % (t1 - t0).seconds)
 
 
-# In[30]:
 
 
 rmse_wo_feature = [0.39224, 0.38816, 0.38726, 0.38780, 0.38773, 0.38792, 0.38753, 0.38745, 0.38710, 0.38767, 0.38738, 0.38750, 0.38678, 0.39359, 0.38672, 0.38794, 0.38694, 0.38750, 0.38742, 0.38673, 0.38754, 0.38705, 0.38736, 0.38741, 0.38764, 0.38730, 0.38676, 0.38696, 0.38750, 0.38705, 0.38746, 0.38727, 0.38750, 0.38771, 0.38747, 0.38907, 0.38719, 0.38756, 0.38701, 0.38734, 0.38782, 0.38673, 0.38797, 0.38720, 0.38709, 0.38704, 0.38809, 0.38768, 0.38798, 0.38849, 0.38690, 0.38753, 0.38721, 0.38807, 0.38830, 0.38750, np.nan, np.nan, np.nan]
@@ -464,7 +434,6 @@ feature_importance = feature_importance.fillna(0)
 feature_importance[['feature_name', 'importance', 'rmse_wo_feature']].sort_values(by='importance', ascending=False)
 
 
-# In[31]:
 
 
 feature_importance = feature_importance.sort_values(by='rmse_wo_feature', ascending=False)
@@ -482,7 +451,6 @@ with sns.axes_style("whitegrid"):
     plt.show()
 
 
-# In[32]:
 
 
 ypred = model.predict(dvalid)
@@ -496,7 +464,6 @@ ax[1].set_ylabel('ground truth')
 plt.show()
 
 
-# In[33]:
 
 
 ytest = model.predict(dtest)
@@ -518,7 +485,6 @@ t1 = dt.datetime.now()
 print('Total time: %i seconds' % (t1 - t0).seconds)
 
 
-# In[34]:
 
 
 FOREVER_COMPUTING_FLAG = False
@@ -543,7 +509,6 @@ while FOREVER_COMPUTING_FLAG:
     print('Modeling RMSLE %.5f' % model.best_score)
 
 
-# In[35]:
 
 
 paropt = pd.DataFrame({'lambda':[1.5,1.0,1.0,1.5,1.5,1.0,1.5,1.0,1.5,2.0,0.5,1.0,0.5,1.5,1.5,0.5,1.0,1.5,0.5,2.0,1.0,2.0,2.0,1.5,1.5,2.0,1.5,2.0,1.5,0.5,1.0,1.0,2.0,1.5,1.0,1.0,0.5,2.0,1.0,0.5,0.5,2.0,1.0,1.0,0.5,0.5,1.5,0.5,1.5,2.0,2.0,2.0,2.0,0.5,1.5,1.0,1.5,2.0,2.0,0.5,1.5,1.0,0.5,1.0,1.5,2.0,1.0,1.0,2.0,2.0,1.0,0.5,0.5,1.0,1.5,2.0,0.5,1.0,1.5,1.0,1.0,1.5,1.5,1.5,0.5,1.5,1.0,1.5,2.0,2.0,2.0,1.0,2.0,0.5,2.0,0.5,1.5,0.5,2.0,0.5,1.0,1.5,1.5,1.5,2.0,0.5,0.5,1.0,2.0],
@@ -554,7 +519,6 @@ paropt = pd.DataFrame({'lambda':[1.5,1.0,1.0,1.5,1.5,1.0,1.5,1.0,1.5,2.0,0.5,1.0
                        })
 
 
-# In[36]:
 
 
 for i, par in enumerate(['lambda', 'min_child_weight', 'subsample', 'eta']):
@@ -562,7 +526,6 @@ for i, par in enumerate(['lambda', 'min_child_weight', 'subsample', 'eta']):
     ax = sns.boxplot(x=par, y="rmse", data=paropt)
 
 
-# In[37]:
 
 
 with sns.axes_style("whitegrid"):
@@ -576,7 +539,6 @@ with sns.axes_style("whitegrid"):
         axs[i].set_ylim(paropt.rmse.min(), paropt.rmse.max())
 
 
-# In[38]:
 
 
 cv_lb = pd.DataFrame({'cv': [0.3604,0.36056,0.3614,0.3618,0.3623,0.3626,0.3646,0.3696,0.3702,0.3706,0.372,0.3738,0.37477,0.37691,0.3824,0.3868,0.3904],

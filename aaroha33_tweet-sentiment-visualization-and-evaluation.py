@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -17,56 +16,47 @@ from tqdm import tqdm,trange,tqdm_notebook # predict the remaining time and to s
 #from tqdm import tqdm.notebook.tqdm
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/tweet-sentiment-extraction/train.csv')
 test = pd.read_csv('../input/tweet-sentiment-extraction/test.csv')
 
 
-# In[3]:
 
 
 train.head()
 
 
-# In[4]:
 
 
 test.head()
 
 
-# In[5]:
 
 
 train.info()
 
 
-# In[6]:
 
 
 train = train.dropna() # to remove missing values
 
 
-# In[7]:
 
 
 print('The number of training data points are: ',train.shape[0])
 
 
-# In[8]:
 
 
 train.shape
 
 
-# In[9]:
 
 
 print('The number of testing data points are: ',test.shape[0])
 
 
-# In[10]:
 
 
 import seaborn as sns
@@ -75,14 +65,12 @@ plt.figure(figsize=(10,6))
 sns.countplot(train['sentiment'])
 
 
-# In[11]:
 
 
 plt.figure(figsize=(10,6))
 sns.countplot(test['sentiment'])
 
 
-# In[12]:
 
 
 ax = (pd.Series(train['sentiment']).value_counts(normalize=True, sort=False)*100).plot.bar()
@@ -90,14 +78,12 @@ ax.set(ylabel="Percent")
 plt.show()
 
 
-# In[13]:
 
 
 temp = train.groupby('sentiment').count()['text'].reset_index().sort_values(by='text',ascending=False)
 temp.style.background_gradient(cmap='Purples')
 
 
-# In[14]:
 
 
 ax = (pd.Series(test['sentiment']).value_counts(normalize=True, sort=False)*100).plot.bar()
@@ -105,7 +91,6 @@ ax.set(ylabel="Percent")
 plt.show()
 
 
-# In[15]:
 
 
 def plotWordClouds(df_text,sentiment):
@@ -129,35 +114,30 @@ def plotWordClouds(df_text,sentiment):
     plt.show()     
 
 
-# In[16]:
 
 
 from wordcloud import WordCloud, STOPWORDS
 stopwords = set(STOPWORDS)
 
 
-# In[17]:
 
 
 subtext = train[train['sentiment']=='positive']['selected_text']
 plotWordClouds(subtext,'positive')
 
 
-# In[18]:
 
 
 subtext = train[train['sentiment']=='neutral']['selected_text']
 plotWordClouds(subtext,'neutral')
 
 
-# In[19]:
 
 
 subtext = train[train['sentiment']=='negative']['selected_text']
 plotWordClouds(subtext,'negative')
 
 
-# In[20]:
 
 
 def clean_text(text):
@@ -176,13 +156,11 @@ train['text'] = train['text'].apply(lambda x:clean_text(x))
 train['selected_text'] = train['selected_text'].apply(lambda x:clean_text(x))
 
 
-# In[21]:
 
 
 train.head(5)
 
 
-# In[22]:
 
 
 #def remove_stopword(x):
@@ -190,7 +168,6 @@ train.head(5)
 #train['temp_list'] = train['temp_list'].apply(lambda x:remove_stopword(x))
 
 
-# In[23]:
 
 
 from collections import Counter
@@ -201,7 +178,6 @@ temp.columns = ['Common_words','count']
 temp.style.background_gradient(cmap='Blues')
 
 
-# In[24]:
 
 
 from plotly import graph_objs as go
@@ -212,7 +188,6 @@ fig = px.bar(temp, x="count", y="Common_words", title='Commmon Words in Selected
 fig.show()
 
 
-# In[25]:
 
 
 def jaccard(str1, str2): 
@@ -222,7 +197,6 @@ def jaccard(str1, str2):
     return float(len(c)) / (len(a) + len(b) - len(c))
 
 
-# In[26]:
 
 
 import nltk 
@@ -232,13 +206,10 @@ b = set('My girlfriend love me always'.lower().split())
 print ("Jaccard similarity of above two sentences is",1-nltk.jaccard_distance(a, b))
 
 
-# In[27]:
 
 
-pip install utils
 
 
-# In[28]:
 
 
 import os
@@ -259,7 +230,6 @@ from tqdm.autonotebook import tqdm
 import utils
 
 
-# In[29]:
 
 
 import numpy as np
@@ -333,13 +303,11 @@ def jaccard(str1, str2):
     return float(len(c)) / (len(a) + len(b) - len(c))
 
 
-# In[30]:
 
 
 import utils
 
 
-# In[31]:
 
 
 class config:
@@ -355,7 +323,6 @@ class config:
         lowercase=True)
 
 
-# In[32]:
 
 
 def process_data(tweet, selected_text, sentiment, tokenizer, max_len):
@@ -434,7 +401,6 @@ def process_data(tweet, selected_text, sentiment, tokenizer, max_len):
     }
 
 
-# In[33]:
 
 
 class TweetDataset:
@@ -474,7 +440,6 @@ class TweetDataset:
         }
 
 
-# In[34]:
 
 
 class TweetModel(transformers.BertPreTrainedModel):
@@ -521,7 +486,6 @@ class TweetModel(transformers.BertPreTrainedModel):
         return start_logits, end_logits
 
 
-# In[35]:
 
 
 def loss_fn(start_logits, end_logits, start_positions, end_positions):
@@ -535,7 +499,6 @@ def loss_fn(start_logits, end_logits, start_positions, end_positions):
     return total_loss
 
 
-# In[36]:
 
 
 def train_fn(data_loader, model, optimizer, device, scheduler=None):
@@ -618,7 +581,6 @@ def train_fn(data_loader, model, optimizer, device, scheduler=None):
         tk0.set_postfix(loss=losses.avg, jaccard=jaccards.avg)
 
 
-# In[37]:
 
 
 def calculate_jaccard_score(
@@ -729,7 +691,6 @@ def eval_fn(data_loader, model, device):
     return jaccards.avg
 
 
-# In[38]:
 
 
 def run(fold):
@@ -822,49 +783,41 @@ def run(fold):
             break
 
 
-# In[39]:
 
 
 run(fold=0)
 
 
-# In[40]:
 
 
 run(fold=1)
 
 
-# In[41]:
 
 
 run(fold=3)
 
 
-# In[42]:
 
 
 run(fold=4)
 
 
-# In[43]:
 
 
 df_test = test
 
 
-# In[44]:
 
 
 df_test.head()
 
 
-# In[45]:
 
 
 df_test.loc[:, "selected_text"] = df_test.text.values
 
 
-# In[46]:
 
 
 device = torch.device("cuda")
@@ -872,7 +825,6 @@ model_config = transformers.BertConfig.from_pretrained(config.BERT_PATH)
 model_config.output_hidden_states = True
 
 
-# In[47]:
 
 
 # Load each of the five trained models and move to GPU
@@ -902,7 +854,6 @@ model5.load_state_dict(torch.load("model_4.bin"))
 model5.eval()
 
 
-# In[48]:
 
 
 final_output = []
@@ -1010,7 +961,6 @@ with torch.no_grad():
             final_output.append(output_sentence)
 
 
-# In[ ]:
 
 
 

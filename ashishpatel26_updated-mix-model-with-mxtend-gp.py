@@ -1,19 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('html', '', '<h1><b>LIVE EARTHQUACK MAP</b></h1>\n<iframe width="800" height="600" src="https://ds.iris.edu/seismon/" allowfullscreen style="align:center;"></iframe>')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('html', '', '\n<h1> <strong><span style="color:blue;">Can We Predict Earthquakes?</span></strong></h1>\n<iframe width="800" height="400" src="https://www.youtube.com/embed/uUEzGcRJIZE" style="align:center;" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
 
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -36,7 +33,6 @@ pd.options.display.precision = 15
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 import matplotlib.pyplot as plt
@@ -55,13 +51,11 @@ from lightgbm import LGBMRegressor
 from sklearn.metrics import accuracy_score
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', "train = pd.read_csv('../input/train.csv', dtype={'acoustic_data': np.int16, 'time_to_failure': np.float64})\ngc.collect()")
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(20, 5))
@@ -80,7 +74,6 @@ plt.title('Time to failure')
 plt.show()
 
 
-# In[ ]:
 
 
 def add_trend_feature(arr, abs_values=False):
@@ -95,13 +88,11 @@ def rmse(predictions, targets):
     return np.sqrt(((predictions - targets) ** 2).mean())
 
 
-# In[ ]:
 
 
 gc.collect()
 
 
-# In[ ]:
 
 
 # Create a training file with simple derived features
@@ -143,25 +134,21 @@ display(X_train.head())
 gc.collect()
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', "axs = pd.scatter_matrix(X_train[::100], figsize=(20,12), diagonal='kde')\ndisplay(X_train[::100].corr())\ngc.collect()")
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'scaler = StandardScaler()\nscaler.fit(X_train)\nX_train_scaled = scaler.transform(X_train)\ngc.collect()')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', "axs = pd.scatter_matrix(X_train[::100], figsize=(20,12), diagonal='kde')\ndisplay(X_train[::100].corr())\ngc.collect()")
 
 
-# In[ ]:
 
 
 def nusvr_code(NuSVR,X_train_scaled,y_train):
@@ -186,7 +173,6 @@ def nusvr_code(NuSVR,X_train_scaled,y_train):
 y_pred_nusvr, score, svm1 = nusvr_code(NuSVR,X_train_scaled,y_train)
 
 
-# In[ ]:
 
 
 def svr_code(SVR,X_train_scaled,y_train):
@@ -211,7 +197,6 @@ def svr_code(SVR,X_train_scaled,y_train):
 y_pred_SVR, score, svm3 = svr_code(SVR,X_train_scaled,y_train)
 
 
-# In[ ]:
 
 
 def br_code(BayesianRidge,X_train_scaled,y_train):
@@ -236,7 +221,6 @@ def br_code(BayesianRidge,X_train_scaled,y_train):
 y_pred_Bayesian, score, svm2 = br_code(BayesianRidge,X_train_scaled,y_train)
 
 
-# In[ ]:
 
 
 svm5 = LGBMRegressor(num_leaves=31, max_depth=-1, learning_rate=0.01, n_estimators=1000)
@@ -256,7 +240,6 @@ score = r2_score(y_train.values.flatten(), y_pred_lgb)
 print(f'Score: {score:0.3f}')
 
 
-# In[ ]:
 
 
 def cat_code(CatBoostRegressor,X_train_scaled,y_train):
@@ -281,14 +264,12 @@ def cat_code(CatBoostRegressor,X_train_scaled,y_train):
 y_pred_cat, score, svm4 = cat_code(CatBoostRegressor,X_train_scaled,y_train)
 
 
-# In[ ]:
 
 
 submission = pd.read_csv('../input/sample_submission.csv', index_col='seg_id')
 X_test = pd.DataFrame(columns=X_train.columns, dtype=np.float64, index=submission.index)
 
 
-# In[ ]:
 
 
 for seg_id in tqdm(X_test.index):
@@ -312,25 +293,21 @@ for seg_id in tqdm(X_test.index):
     X_test.loc[seg_id, 'abs_trend'] = add_trend_feature(x, abs_values=True)    
 
 
-# In[ ]:
 
 
 f = [y_pred_nusvr,y_pred_SVR,y_pred_cat,y_pred_lgb,y_pred_Bayesian]
 
 
-# In[ ]:
 
 
 f = np.transpose(f)
 
 
-# In[ ]:
 
 
 f.shape
 
 
-# In[ ]:
 
 
 svm6 = LGBMRegressor()
@@ -350,7 +327,6 @@ score = r2_score(y_train.values.flatten(), y_pred_lgb)
 print(f'Score: {score:0.3f}')
 
 
-# In[ ]:
 
 
 d = {'Model': ['nuSVR', 'SVR','Kernel Ridge','Lightgbm','Catboost','Stacking'], 'RMSE': [2.647,2.635,2.653,2.029,2.491,1.20],'F1_Score': [0.48,0.485,0.478,0.695,0.54,0.695]}
@@ -362,7 +338,6 @@ del analysis_df['Model']
 display(analysis_df)
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(20,8))
@@ -374,7 +349,6 @@ plt.title("RMSE by Model")
 plt.show()
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(20,8))
@@ -386,13 +360,11 @@ plt.title("F1_Score by Model")
 plt.show()
 
 
-# In[ ]:
 
 
 svm5
 
 
-# In[ ]:
 
 
 from mlxtend.regressor import StackingRegressor
@@ -402,7 +374,6 @@ sclf = StackingRegressor(regressors=[svm1,svm2,svm3,svm4,svm5,svm6],
 sclf.fit(X_train_scaled, y_train.values.flatten())
 
 
-# In[ ]:
 
 
 y_pred_final = sclf.predict(X_train_scaled)
@@ -420,7 +391,6 @@ score = r2_score(y_train.values.flatten(), y_pred_final)
 print(f'Score: {score:0.3f}')
 
 
-# In[ ]:
 
 
 X_test_scaled = scaler.transform(X_test)
@@ -436,13 +406,11 @@ submission['time_to_failure'] = sclf.predict(X_test_scaled)
 # del submission['time_to_failure1'],submission['time_to_failure2'],submission['time_to_failure3'],submission['time_to_failure4'],submission['time_to_failure5']
 
 
-# In[ ]:
 
 
 submission.to_csv("Advance_stack.csv")
 
 
-# In[ ]:
 
 
 submission1 = pd.read_csv('../input/sample_submission.csv', index_col='seg_id')
@@ -450,7 +418,6 @@ submission1['time_to_failure'] = svm5.predict(X_test_scaled)
 submission1.to_csv("submission_lgbbestmodel.csv")
 
 
-# In[ ]:
 
 
 submission1 = pd.read_csv('../input/sample_submission.csv', index_col='seg_id')
@@ -458,7 +425,6 @@ submission1['time_to_failure'] = svm3.predict(X_test_scaled)
 submission1.to_csv("submission_svrbestmodel.csv")
 
 
-# In[ ]:
 
 
 submission1 = pd.read_csv('../input/sample_submission.csv', index_col='seg_id')

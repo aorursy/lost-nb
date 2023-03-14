@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install -q efficientnet')
 
 
-# In[2]:
 
 
 import math, re, os
@@ -21,7 +19,6 @@ from sklearn.metrics import f1_score, precision_score, recall_score, confusion_m
 print("Tensorflow version " + tf.__version__)
 
 
-# In[3]:
 
 
 AUTO = tf.data.experimental.AUTOTUNE
@@ -41,7 +38,6 @@ EPOCHS = 20
 BATCH_SIZE = 16 * strategy.num_replicas_in_sync
 
 
-# In[4]:
 
 
 GCS_PATH_SELECT = { # available image sizes
@@ -57,7 +53,6 @@ VALIDATION_FILENAMES = tf.io.gfile.glob(GCS_PATH + '/val/*.tfrec')
 TEST_FILENAMES = tf.io.gfile.glob(GCS_PATH + '/test/*.tfrec') # predictions on this dataset should be submitted for the competition
 
 
-# In[5]:
 
 
 CLASSES = ['pink primrose',    'hard-leaved pocket orchid', 'canterbury bells', 'sweet pea',     'wild geranium',     'tiger lily',           'moon orchid',              'bird of paradise', 'monkshood',        'globe thistle',         # 00 - 09
@@ -73,7 +68,6 @@ CLASSES = ['pink primrose',    'hard-leaved pocket orchid', 'canterbury bells', 
            'trumpet creeper',  'blackberry lily',           'common tulip',     'wild rose']                                                                                                                                               # 100 - 102
 
 
-# In[6]:
 
 
 def display_training_curves(training, validation, title, subplot):
@@ -91,7 +85,6 @@ def display_training_curves(training, validation, title, subplot):
     ax.legend(['train', 'valid.'])
 
 
-# In[7]:
 
 
 def int_parameter(level, maxval):
@@ -149,7 +142,6 @@ def blend(image1, image2, factor):
     return tf.cast(tf.clip_by_value(temp, 0.0, 255.0), tf.uint8)
 
 
-# In[8]:
 
 
 def rotate(image, level):
@@ -340,7 +332,6 @@ def contrast(image, level):
     return tf.image.adjust_contrast(image, factor)
 
 
-# In[9]:
 
 
 means = {'R': 0.44892993872313053, 'G': 0.4148519066242368, 'B': 0.301880284715257}
@@ -419,7 +410,6 @@ def augmix(image):
     return tf.clip_by_value(mixed, 0, 1)
 
 
-# In[10]:
 
 
 def decode_image(image_data):
@@ -514,7 +504,6 @@ def count_data_items(filenames):
     return np.sum(n)
 
 
-# In[11]:
 
 
 def build_lrfn(lr_start=0.00001, lr_max=0.00005, 
@@ -533,7 +522,6 @@ def build_lrfn(lr_start=0.00001, lr_max=0.00005,
     return lrfn
 
 
-# In[12]:
 
 
 def freeze(model):
@@ -545,7 +533,6 @@ def unfreeze(model):
         layer.trainable = True
 
 
-# In[13]:
 
 
 NUM_TRAINING_IMAGES = count_data_items(TRAINING_FILENAMES)
@@ -555,7 +542,6 @@ STEPS_PER_EPOCH = NUM_TRAINING_IMAGES // BATCH_SIZE
 print('Dataset: {} training images, {} validation images, {} unlabeled test images'.format(NUM_TRAINING_IMAGES, NUM_VALIDATION_IMAGES, NUM_TEST_IMAGES))
 
 
-# In[14]:
 
 
 # Need this line so Google will recite some incantations
@@ -581,13 +567,11 @@ with strategy.scope():
     model.summary()
 
 
-# In[15]:
 
 
 lrfn = build_lrfn()
 
 
-# In[16]:
 
 
 # scheduler = tf.keras.callbacks.ReduceLROnPlateau(patience=3, verbose=1)
@@ -601,14 +585,12 @@ history = model.fit(
 )
 
 
-# In[17]:
 
 
 display_training_curves(history.history['loss'], history.history['loss'], 'loss', 211)
 display_training_curves(history.history['sparse_categorical_accuracy'], history.history['sparse_categorical_accuracy'], 'accuracy', 212)
 
 
-# In[18]:
 
 
 # Need this line so Google will recite some incantations
@@ -630,7 +612,6 @@ with strategy.scope():
     model2.summary()
 
 
-# In[19]:
 
 
 # scheduler = tf.keras.callbacks.ReduceLROnPlateau(patience=3, verbose=1)
@@ -644,14 +625,12 @@ history = model2.fit(
 )
 
 
-# In[20]:
 
 
 display_training_curves(history.history['loss'], history.history['loss'], 'loss', 211)
 display_training_curves(history.history['sparse_categorical_accuracy'], history.history['sparse_categorical_accuracy'], 'accuracy', 212)
 
 
-# In[21]:
 
 
 test_ds = get_test_dataset(ordered=True) # since we are splitting the dataset and iterating separately on images and ids, order matters.
@@ -668,7 +647,6 @@ test_ids = next(iter(test_ids_ds.batch(NUM_TEST_IMAGES))).numpy().astype('U') # 
 np.savetxt('submission_efnns.csv', np.rec.fromarrays([test_ids, predictions]), fmt=['%s', '%d'], delimiter=',', header='id,label', comments='')
 
 
-# In[22]:
 
 
 test_ds = get_test_dataset(ordered=True) # since we are splitting the dataset and iterating separately on images and ids, order matters.
@@ -685,7 +663,6 @@ test_ids = next(iter(test_ids_ds.batch(NUM_TEST_IMAGES))).numpy().astype('U') # 
 np.savetxt('submission.csv', np.rec.fromarrays([test_ids, predictions2]), fmt=['%s', '%d'], delimiter=',', header='id,label', comments='')
 
 
-# In[ ]:
 
 
 

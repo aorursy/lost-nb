@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,25 +19,21 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 os.listdir('../input/train')
 
 
-# In[3]:
 
 
 import tensorflow as tf
 
 
-# In[ ]:
 
 
 
 
 
-# In[4]:
 
 
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -52,27 +47,23 @@ train_datagen=ImageDataGenerator(rescale=1./255,
       fill_mode='nearest')
 
 
-# In[5]:
 
 
 train_generator=train_datagen.flow_from_directory("../input/train/",batch_size=20,target_size=(256,256),
                                                   class_mode='categorical')
 
 
-# In[6]:
 
 
 from tensorflow.keras import layers
 from tensorflow.keras import Model
 
 
-# In[7]:
 
 
 from tensorflow.keras.applications.inception_v3 import InceptionV3
 
 
-# In[8]:
 
 
 pre_trained_model=InceptionV3(input_shape=(256, 256, 3),
@@ -80,14 +71,12 @@ pre_trained_model=InceptionV3(input_shape=(256, 256, 3),
                              weights= 'imagenet')
 
 
-# In[9]:
 
 
 for layer in pre_trained_model.layers:
     layer.trainable=False
 
 
-# In[10]:
 
 
 last_layer=pre_trained_model.get_layer('mixed7')
@@ -95,7 +84,6 @@ print('last layer output shape: ',last_layer.output_shape)
 last_output=last_layer.output
 
 
-# In[11]:
 
 
 from tensorflow.keras.optimizers import RMSprop
@@ -116,19 +104,16 @@ model.compile(optimizer = RMSprop(lr=0.0001),
               metrics = ['acc'])
 
 
-# In[12]:
 
 
 history=model.fit_generator(train_generator,steps_per_epoch=238,epochs=15)
 
 
-# In[13]:
 
 
 ##model.save('modelp.h5')
 
 
-# In[14]:
 
 
 import matplotlib.pyplot as plt
@@ -141,7 +126,6 @@ plt.legend(loc=0)
 plt.figure()
 
 
-# In[15]:
 
 
 import numpy as np
@@ -157,7 +141,6 @@ import numpy as np
 import os 
 
 
-# In[16]:
 
 
 from PIL import Image
@@ -173,7 +156,6 @@ image = load('../input/test/00d090cde.png')
 label=np.argmax(model.predict(image))
 
 
-# In[17]:
 
 
 if label==0:
@@ -203,7 +185,6 @@ elif label ==11:
      
 
 
-# In[18]:
 
 
 label_name

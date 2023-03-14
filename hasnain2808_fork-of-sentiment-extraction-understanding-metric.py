@@ -1,37 +1,31 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_cell_magic('writefile', 'utils.py', 'import numpy as np\nimport torch\n\n\nclass AverageMeter:\n    """\n    Computes and stores the average and current value\n    """\n    def __init__(self):\n        self.reset()\n\n    def reset(self):\n        self.val = 0\n        self.avg = 0\n        self.sum = 0\n        self.count = 0\n\n    def update(self, val, n=1):\n        self.val = val\n        self.sum += val * n\n        self.count += n\n        self.avg = self.sum / self.count\n\n\nclass EarlyStopping:\n    def __init__(self, patience=7, mode="max", delta=0.001):\n        self.patience = patience\n        self.counter = 0\n        self.mode = mode\n        self.best_score = None\n        self.early_stop = False\n        self.delta = delta\n        if self.mode == "min":\n            self.val_score = np.Inf\n        else:\n            self.val_score = -np.Inf\n\n    def __call__(self, epoch_score, model, model_path):\n\n        if self.mode == "min":\n            score = -1.0 * epoch_score\n        else:\n            score = np.copy(epoch_score)\n\n        if self.best_score is None:\n            self.best_score = score\n            self.save_checkpoint(epoch_score, model, model_path)\n        elif score < self.best_score + self.delta:\n            self.counter += 1\n            print(\'EarlyStopping counter: {} out of {}\'.format(self.counter, self.patience))\n            if self.counter >= self.patience:\n                self.early_stop = True\n        else:\n            self.best_score = score\n            self.save_checkpoint(epoch_score, model, model_path)\n            self.counter = 0\n\n    def save_checkpoint(self, epoch_score, model, model_path):\n        if epoch_score not in [-np.inf, np.inf, -np.nan, np.nan]:\n            print(\'Validation score improved ({} --> {}). Saving model!\'.format(self.val_score, epoch_score))\n            torch.save(model.state_dict(), model_path)\n        self.val_score = epoch_score\n\n\ndef jaccard(str1, str2): \n    a = set(str1.lower().split()) \n    b = set(str2.lower().split())\n    c = a.intersection(b)\n    return float(len(c)) / (len(a) + len(b) - len(c))')
 
 
-# In[2]:
 
 
 import utils
 
 
-# In[3]:
 
 
 # es = utils.EarlyStopping(patience=2, mode="max")
 
 
-# In[4]:
 
 
 import math
 
 
-# In[5]:
 
 
 # math.floor(2.2)
 
 
-# In[6]:
 
 
 # import nltk 
@@ -41,7 +35,6 @@ import math
 # print ("Jaccard similarity of above two sentences is",1-nltk.jaccard_distance(w1, w2))
 
 
-# In[7]:
 
 
 # w1 = set('Kaggle is awesome'.lower().split())
@@ -49,13 +42,11 @@ import math
 # print("The Jaccard similarity is:",1-nltk.jaccard_distance(w1, w2))
 
 
-# In[8]:
 
 
 get_ipython().system('pip install pyspark')
 
 
-# In[9]:
 
 
 get_ipython().system('pip install "/kaggle/input/chart-studio/chart_studio-1.0.0-py3-none-any.whl"')
@@ -103,7 +94,6 @@ def jaccard(str1, str2):
     return float(len(c)) / (len(a) + len(b) - len(c))
 
 
-# In[10]:
 
 
 import os
@@ -124,7 +114,6 @@ from tqdm.autonotebook import tqdm
 import utils
 
 
-# In[11]:
 
 
 # import findspark
@@ -144,7 +133,6 @@ except ValueError:
     warnings.warn("SparkContext already exists in this scope")
 
 
-# In[12]:
 
 
 from pyspark.sql import SparkSession
@@ -154,7 +142,6 @@ spark = SparkSession(sc).builder     .master('local[*]')     .config("spark.driv
 
 
 
-# In[13]:
 
 
 # train = pd.read_csv('/kaggle/input/tweet-sentiment-extraction/train.csv')
@@ -162,13 +149,11 @@ spark = SparkSession(sc).builder     .master('local[*]')     .config("spark.driv
 # sub = pd.read_csv('/kaggle/input/tweet-sentiment-extraction/sample_submission.csv')
 
 
-# In[14]:
 
 
 # sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load('/kaggle/input/tweet-sentiment-extraction/test.csv')
 
 
-# In[15]:
 
 
 sp_train = sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load('/kaggle/input/tweet-sentiment-extraction/train.csv')
@@ -176,7 +161,6 @@ sp_test = sqlContext.read.format('com.databricks.spark.csv').options(header='tru
 sp_sub = sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load('/kaggle/input/tweet-sentiment-extraction/sample_submission.csv')
 
 
-# In[16]:
 
 
 # sp_train = spark.read.format("csv").option("header", "true").load("/kaggle/input/tweet-sentiment-extraction/train.csv") 
@@ -184,7 +168,6 @@ sp_sub = sqlContext.read.format('com.databricks.spark.csv').options(header='true
 # sp_sub = spark.read.format("csv").option("header", "true").load("/kaggle/input/tweet-sentiment-extraction/sample_submission.csv") 
 
 
-# In[17]:
 
 
 def remove_punctuations(text):
@@ -193,14 +176,12 @@ def remove_punctuations(text):
     return text
 
 
-# In[18]:
 
 
 from pyspark.sql.functions import regexp_replace, col
 import re
 
 
-# In[19]:
 
 
 
@@ -214,63 +195,53 @@ sp_test = sp_test.withColumn('text', regexp_replace('text', '[' + punc +']', '')
 # sp_test.take(5)
 
 
-# In[20]:
 
 
 sp_train = sp_train.dropna()
 sp_test = sp_test.dropna()
 
 
-# In[21]:
 
 
 sp_train.take(5)
 
 
-# In[22]:
 
 
 sp_test = sp_test.withColumn('selected_text', sp_test['text'])
 
 
-# In[23]:
 
 
 sp_test.take(5)
 
 
-# In[24]:
 
 
 print('Sentiment of text : {} \nOur training text :\n{}\nSelected text which we need to predict:\n{}'.format(sp_train.take(1)[0][3],sp_train.take(1)[0][2],sp_train.take(1)[0][1]))
 
 
-# In[25]:
 
 
 import itertools
 sp_train = sp_train.rdd.map(lambda x: [item for item in (x.text, x.selected_text, x.sentiment)])
 
 
-# In[26]:
 
 
 sp_test = sp_test.rdd.map(lambda x: [item for item in (x.text, x.selected_text, x.sentiment)])
 
 
-# In[27]:
 
 
 type(sp_train)
 
 
-# In[28]:
 
 
 sp_train.take(5)
 
 
-# In[29]:
 
 
 class config:
@@ -288,7 +259,6 @@ class config:
     EPOCHS = 5
 
 
-# In[30]:
 
 
 MAX_LEN = 128
@@ -304,7 +274,6 @@ TOKENIZER = tokenizers.ByteLevelBPETokenizer(
 )
 
 
-# In[31]:
 
 
 class TweetModel(nn.Module):
@@ -326,7 +295,6 @@ class TweetModel(nn.Module):
         return start_logits, end_logits
 
 
-# In[32]:
 
 
 def loss_fn(start_logits, end_logits, start_positions, end_positions):
@@ -394,7 +362,6 @@ def train_fn(data_loader, model, optimizer, device, scheduler=None):
         tk0.set_postfix(loss=losses.avg, jaccard=jaccards.avg)
 
 
-# In[33]:
 
 
 def calculate_jaccard_score(
@@ -476,7 +443,6 @@ def eval_fn(data_loader, model, device):
     return jaccards.avg
 
 
-# In[34]:
 
 
 device = torch.device("cuda")
@@ -493,7 +459,6 @@ model1.load_state_dict(torch.load("../input/roberta-weights/roberta_model_2.bin"
 model1.eval()
 
 
-# In[35]:
 
 
 class TweetDataset:
@@ -520,31 +485,26 @@ class TweetDataset:
         }
 
 
-# In[ ]:
 
 
 
 
 
-# In[36]:
 
 
 # sp_train = sp_train.rdd.map(lambda x: [item for item in (x.text, x.selected_text, x.sentiment)])
 
 
-# In[37]:
 
 
 # sp_test = sp_test.rdd.map(lambda x: [item for item in (x.text, x.selected_text, x.sentiment)])
 
 
-# In[ ]:
 
 
 
 
 
-# In[38]:
 
 
 
@@ -645,25 +605,21 @@ def process(item):
  }
 
 
-# In[39]:
 
 
 sp_train_processed = sp_train.map(process)
 
 
-# In[ ]:
 
 
 
 
 
-# In[40]:
 
 
 # sp_train_processed.take(5)
 
 
-# In[41]:
 
 
 sp_test_processed = sp_test.map(process)
@@ -671,79 +627,66 @@ sp_test_processed = sp_test.map(process)
 # sp_test_processed.take(5)
 
 
-# In[42]:
 
 
 # sp_test_processed.cache()
 
 
-# In[43]:
 
 
 # sp_train_processed.cache()
 
 
-# In[44]:
 
 
 # sp_test_processed.take(1)
 
 
-# In[45]:
 
 
 # sp_train_processed.take(1)
 
 
-# In[46]:
 
 
 # sp_test_processed.count()
 
 
-# In[47]:
 
 
 # sp_train_processed.count()
 
 
-# In[48]:
 
 
 # test_processed_list  = sp_test_processed.collect()
 
 
-# In[49]:
 
 
 #sp_test_processed.unpersist(True)
 
 
-# In[50]:
 
 
 # train_processed_list  = sp_train_processed.collect()
 
 
-# In[51]:
 
 
 #sp_train_processed.unpersist()
 
 
-# In[52]:
 
 
 import pickle
 
 
-# In[53]:
 
 
 # spark.stop()
 
 
-# In[54]:
 
 
 # dbfile = open('test_processed_list', 'ab') 
@@ -753,7 +696,6 @@ import pickle
 # dbfile.close() 
 
 
-# In[55]:
 
 
 # dbfile = open('train_processed_list', 'ab') 
@@ -763,7 +705,6 @@ import pickle
 # dbfile.close() 
 
 
-# In[56]:
 
 
 def loadData(name): 
@@ -775,32 +716,27 @@ def loadData(name):
     
 
 
-# In[57]:
 
 
 get_ipython().system('ls /kaggle/input/sentiment-extraction-understanding-metric-eda/test_processed_list')
 
 
-# In[58]:
 
 
 train_processed_list = loadData('/kaggle/input/sentiment-extraction-understanding-metric-eda/train_processed_list')
 test_processed_list = loadData('/kaggle/input/sentiment-extraction-understanding-metric-eda/test_processed_list')
 
 
-# In[59]:
 
 
 len(train_processed_list)
 
 
-# In[60]:
 
 
 len(test_processed_list)
 
 
-# In[61]:
 
 
 test_dataset = TweetDataset(
@@ -817,7 +753,6 @@ data_loader = torch.utils.data.DataLoader(
 )
 
 
-# In[62]:
 
 
 def run(fold):
@@ -884,13 +819,11 @@ def run(fold):
             break
 
 
-# In[63]:
 
 
 run(fold=245)
 
 
-# In[64]:
 
 
 device = torch.device("cuda")
@@ -907,7 +840,6 @@ model1.load_state_dict(torch.load("../input/roberta-weights/roberta_model_245.bi
 model1.eval()
 
 
-# In[65]:
 
 
 # for d in data_loader:
@@ -925,7 +857,6 @@ model1.eval()
 #     pass
 
 
-# In[66]:
 
 
 all_outputs = []
@@ -1040,7 +971,6 @@ for j in range(fin_outputs_start.shape[0]):
     all_outputs.append(filtered_output.strip())
 
 
-# In[67]:
 
 
 sample = pd.read_csv("../input/tweet-sentiment-extraction/sample_submission.csv")
@@ -1048,19 +978,16 @@ sample.loc[:, 'selected_text'] = all_outputs
 sample.to_csv("submission.csv", index=False)
 
 
-# In[68]:
 
 
 # sample
 
 
-# In[69]:
 
 
 sample.head()
 
 
-# In[ ]:
 
 
 

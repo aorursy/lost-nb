@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,13 +21,11 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 cd '/kaggle/input/dont-overfit-ii/'
 
 
-# In[3]:
 
 
 df = pd.read_csv('train.csv')
@@ -37,7 +34,6 @@ x = df.drop(['target','id'],axis=1)
 df.head(5)
 
 
-# In[4]:
 
 
 from sklearn.model_selection import train_test_split
@@ -45,7 +41,6 @@ x_train, x_test, y_train, y_test = train_test_split(x,y,test_size=0.1)
 print(x_train.shape,x_test.shape)
 
 
-# In[5]:
 
 
 # Let's first try with a very simple linear model.
@@ -57,7 +52,6 @@ model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['acc'])
 history = model.fit(x_train, y_train, epochs=10,validation_data=(x_test,y_test))
 
 
-# In[6]:
 
 
 # Alright, it seems to work. However, it's overfitting extremely heavily. Let's do some feature analysis to see which
@@ -74,7 +68,6 @@ featureScores.columns = ['Feature','Score']  #naming the dataframe columns
 print(featureScores.nlargest(10,'Score'))  #print 10 best features
 
 
-# In[7]:
 
 
 import matplotlib.pyplot as plt
@@ -82,7 +75,6 @@ top10 = featureScores.nlargest(10,'Score')
 plt.bar(top10['Feature'],top10['Score'])
 
 
-# In[8]:
 
 
 # Seems as if features 33 and 65 are the most important ones. Let's single those out:
@@ -103,7 +95,6 @@ print("Average loss: ",sum(losses)/len(losses))
 # Try playing around with the values a bit - see which combination gives you the lowest loss.
 
 
-# In[9]:
 
 
 # It's pretty clear that only the five most important features help us.
@@ -126,7 +117,6 @@ model.compile(loss='binary_crossentropy',optimizer=opt,metrics=['acc'])
 history = model.fit(x_train, y_train, epochs=20,validation_split=0.1,callbacks=[callback])
 
 
-# In[10]:
 
 
 from keras import optimizers
@@ -144,14 +134,12 @@ model.compile(loss='binary_crossentropy',optimizer=opt,metrics=['acc'])
 history = model.fit(x_train, y_train, epochs=8)
 
 
-# In[11]:
 
 
 x_val = pd.read_csv('test.csv')
 x_val.head()
 
 
-# In[12]:
 
 
 values = (33,65,217,117,91)
@@ -160,7 +148,6 @@ ids = x_val['id']
 predictions = model.predict(x.values[:,tuple(values)])
 
 
-# In[13]:
 
 
 submission = ['id,target\n']
@@ -170,20 +157,17 @@ for index,prediction in enumerate(np.around(predictions)[:,0].astype(np.int)):
     submission.append(txt)
 
 
-# In[14]:
 
 
 cd ../../working
 
 
-# In[15]:
 
 
 with open('submission.csv','w+') as writer:
     writer.writelines(submission)
 
 
-# In[16]:
 
 
 submission = pd.read_csv('submission.csv')

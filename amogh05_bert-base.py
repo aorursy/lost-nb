@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -20,7 +19,6 @@ np.set_printoptions(suppress=True)
 print(tf.__version__)
 
 
-# In[2]:
 
 
 PATH = '../input/google-quest-challenge/'
@@ -42,13 +40,11 @@ print('\ninput categories:\n\t', input_categories)
 print('\noutput categories:\n\t', output_categories)
 
 
-# In[3]:
 
 
 df_sub.head()
 
 
-# In[4]:
 
 
 train0 = df_train.iloc[0]
@@ -58,7 +54,6 @@ print('Question_body : ', train0['question_body'])
 print('Answer        : ', train0['answer'])
 
 
-# In[5]:
 
 
 feature_columns = [col for col in df_train.columns if col not in df_sub.columns]
@@ -66,7 +61,6 @@ print('Feature columns: ', feature_columns)
 df_train[feature_columns].head()
 
 
-# In[6]:
 
 
 train_category = df_train['category'].value_counts()
@@ -79,7 +73,6 @@ axes[1].set_title('Test')
 print('Train/Test category distribution')
 
 
-# In[7]:
 
 
 from wordcloud import WordCloud
@@ -94,7 +87,6 @@ def plot_wordcloud(text, ax, title=None):
     ax.axis("off")
 
 
-# In[8]:
 
 
 print('Training data Word Cloud')
@@ -114,7 +106,6 @@ plt.tight_layout()
 fig.show()
 
 
-# In[9]:
 
 
 print('Test data Word Cloud')
@@ -134,7 +125,6 @@ plt.tight_layout()
 fig.show()
 
 
-# In[10]:
 
 
 train_question_user = df_train['question_user_name'].unique()
@@ -152,7 +142,6 @@ print('Number of unique answer user in test : ', len(test_answer_user))
 print('Number of unique answer user in both train & test : ', len(set(train_answer_user) & set(test_answer_user)))
 
 
-# In[11]:
 
 
 def _convert_to_transformer_inputs(title, question, answer, tokenizer, max_sequence_length):
@@ -212,7 +201,6 @@ def compute_output_arrays(df, columns):
     return np.asarray(df[columns])
 
 
-# In[12]:
 
 
 def compute_spearmanr_ignore_nan(trues, preds):
@@ -258,7 +246,6 @@ def create_model():
     return model
 
 
-# In[13]:
 
 
 outputs = compute_output_arrays(df_train, output_categories)
@@ -266,7 +253,6 @@ inputs = compute_input_arrays(df_train, input_categories, tokenizer, MAX_SEQUENC
 test_inputs = compute_input_arrays(df_test, input_categories, tokenizer, MAX_SEQUENCE_LENGTH)
 
 
-# In[14]:
 
 
 gkf = GroupKFold(n_splits=5).split(X=df_train.question_body, groups=df_train.question_body)
@@ -297,7 +283,6 @@ for fold, (train_idx, valid_idx) in enumerate(gkf):
         print('validation score = ', rho_val)
 
 
-# In[15]:
 
 
 df_sub.iloc[:, 1:] = np.average(test_preds, axis=0) # for weighted average set weights=[...]

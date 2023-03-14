@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -72,7 +71,6 @@ sys.path.insert(0, "../input/transformers/transformers-master/")
 import transformers
 
 
-# In[2]:
 
 
 # added preprocessing from https://www.kaggle.com/wowfattie/3rd-place/data
@@ -192,7 +190,6 @@ def clean_data(df, columns: list):
     return df
 
 
-# In[3]:
 
 
 
@@ -371,7 +368,6 @@ def seed_everything(seed=1234):
     torch.backends.cudnn.deterministic = True
 
 
-# In[4]:
 
 
 def chunks(l, n):
@@ -410,7 +406,6 @@ def fetch_vectors(string_list, batch_size=64, max_len = 512):
     return fin_features
 
 
-# In[5]:
 
 
 def get_embedding_features(train, test, input_columns, only_test = False, batch_size = 4):
@@ -495,7 +490,6 @@ def get_dist_features(embedding_train, embedding_test):
     return dist_features_train, dist_features_test
 
 
-# In[6]:
 
 
 # training the model
@@ -614,7 +608,6 @@ def make_prediction(test_loader: DataLoader = None, model = None):
     return prediction
 
 
-# In[7]:
 
 
 class Attention(nn.Module):
@@ -845,7 +838,6 @@ class NeuralNet5(nn.Module):
         return out
 
 
-# In[8]:
 
 
 class TextDataset(Dataset):
@@ -880,7 +872,6 @@ class TextDataset(Dataset):
         return len(self.question_data)
 
 
-# In[9]:
 
 
 pd.set_option('max_rows', 500)
@@ -891,32 +882,27 @@ test = pd.read_csv(f'{path}/test.csv').fillna(' ')
 train = pd.read_csv(f'{path}/train.csv').fillna(' ')
 
 
-# In[10]:
 
 
 train = clean_data(train, ['answer', 'question_body', 'question_title'])
 test = clean_data(test, ['answer', 'question_body', 'question_title'])
 
 
-# In[11]:
 
 
 seed_everything()
 
 
-# In[12]:
 
 
 get_ipython().run_cell_magic('time', '', "embedding_test = get_embedding_features(train, test, ['answer', 'question_body', 'question_title'], only_test=True)\nembedding_train = {}\nembedding_train['answer_embedding'] = np.load('/kaggle/input/qa-labeling-files-for-inference/embedding_train_answer_embedding.npy', allow_pickle=True)\nembedding_train['question_body_embedding'] = np.load('/kaggle/input/qa-labeling-files-for-inference/embedding_train_question_body_embedding.npy', allow_pickle=True)\nembedding_train['question_title_embedding'] = np.load('/kaggle/input/qa-labeling-files-for-inference/embedding_train_question_title_embedding.npy', allow_pickle=True)")
 
 
-# In[13]:
 
 
 get_ipython().run_cell_magic('time', '', 'dist_features_train, dist_features_test  = get_dist_features(embedding_train, embedding_test)')
 
 
-# In[14]:
 
 
 tokenizer = Tokenizer()
@@ -924,26 +910,22 @@ full_text = list(train['question_body']) +                        list(train['an
 tokenizer.fit_on_texts(full_text)
 
 
-# In[15]:
 
 
 embed_size=300
 embedding_path = "/kaggle/input/pickled-crawl300d2m-for-kernel-competitions/crawl-300d-2M.pkl"
 
 
-# In[16]:
 
 
 get_ipython().run_cell_magic('time', '', 'lemma_dict, word_dict = get_word_lemma_dict(full_text)')
 
 
-# In[17]:
 
 
 get_ipython().run_cell_magic('time', '', "embedding_matrix, nb_words, unknown_words = build_matrix(embedding_path, '/kaggle/input/wikinews300d1mvec/wiki-news-300d-1M.vec', tokenizer.word_index,\n                                              100000, embed_size)\n# embedding_matrix, nb_words, unknown_words = build_matrix_adv(embedding_path, '/kaggle/input/wikinews300d1mvec/wiki-news-300d-1M.vec', word_dict, lemma_dict,\n#                                               100000, embed_size)")
 
 
-# In[18]:
 
 
 # tk.word_index = {k: v for k, v in tk.word_index.items() if k in word_dict.keys()}
@@ -973,13 +955,11 @@ test_host = test['host'].apply(lambda x: host_dict_reverse[x]).values
 test_category = test['category'].apply(lambda x: category_dict_reverse[x]).values
 
 
-# In[19]:
 
 
 y = train[sample_submission.columns[1:]].values
 
 
-# In[20]:
 
 
 num_workers = 0
@@ -990,7 +970,6 @@ n_host = len(host_dict)+1
 host_emb = min(np.ceil((len(host_dict)) / 2), 50)
 
 
-# In[21]:
 
 
 bs_test = 16
@@ -999,7 +978,6 @@ test_loader = DataLoader(TextDataset(test_question_tokenized, test_answer_tokeni
                           batch_size=bs_test, shuffle=False, num_workers=num_workers)
 
 
-# In[22]:
 
 
 folds = KFold(n_splits=5, random_state=42)
@@ -1029,7 +1007,6 @@ for fold_n, (train_index, valid_index) in enumerate(folds.split(train)):
     print()
 
 
-# In[23]:
 
 
 del embedding_train
@@ -1039,19 +1016,16 @@ gc.collect()
 torch.cuda.empty_cache()
 
 
-# In[24]:
 
 
 get_ipython().run_cell_magic('time', '', "# bert_embeddings_train = {}\nbert_embeddings_test = {}\nfor col in ['answer', 'question_body', 'question_title']:\n    # bert_embeddings_train[f'{col}_embedding'] = fetch_vectors(train[col].values, batch_size=4)\n    bert_embeddings_test[f'{col}_embedding'] = fetch_vectors(train[col].values, batch_size=4)")
 
 
-# In[25]:
 
 
 get_ipython().run_cell_magic('time', '', "bert_embeddings_train = {}\nfor col in ['answer', 'question_body', 'question_title']:\n    bert_embeddings_train[f'{col}_embedding'] = np.load(f'/kaggle/input/qa-labeling-files-for-inference/distill_train_{col}.npy')")
 
 
-# In[26]:
 
 
 bs_test = 16
@@ -1060,7 +1034,6 @@ test_loader = DataLoader(TextDataset(test_question_tokenized, test_answer_tokeni
                           batch_size=bs_test, shuffle=False, num_workers=num_workers)
 
 
-# In[27]:
 
 
 folds = KFold(n_splits=5, random_state=42)
@@ -1090,7 +1063,6 @@ for fold_n, (train_index, valid_index) in enumerate(folds.split(train)):
     print()
 
 
-# In[28]:
 
 
 # clipping is necessary or we will get an error
@@ -1098,13 +1070,11 @@ sample_submission.loc[:, 'question_asker_intent_understanding':] = np.clip(preds
 sample_submission.to_csv('submission.csv', index=False)
 
 
-# In[29]:
 
 
 sample_submission.head()
 
 
-# In[30]:
 
 
 a = list(model.children())
@@ -1118,7 +1088,6 @@ for i, txt in enumerate(host_dict.values()):
     ax.annotate(txt, (tsne_results[i, 0], tsne_results[i, 1]))
 
 
-# In[31]:
 
 
 g = a[2].weight.cpu().detach().numpy()

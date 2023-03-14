@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Random Movie Picture function.
@@ -37,7 +36,6 @@ def get_movie_image(row):
     display(HTML(title)), display(HTML(revenue)), display(Image(re.findall("https://m.media.amazon.com/\w+/.+?\.jpg", str(res.content))[0]))
 
 
-# In[2]:
 
 
 # Data
@@ -49,38 +47,32 @@ from matplotlib import pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[3]:
 
 
 # Load the data.
 train, test = pd.read_csv("../input/train.csv"), pd.read_csv("../input/test.csv")
 
 
-# In[4]:
 
 
 train.head(3)
 
 
-# In[5]:
 
 
 train.columns.values
 
 
-# In[6]:
 
 
 get_movie_image(train.sample(1, random_state=24))
 
 
-# In[7]:
 
 
 get_movie_image(train.sample(1, random_state=11233))
 
 
-# In[8]:
 
 
 fig, axes = plt.figure(figsize=(12, 6)), plt.axes()
@@ -92,14 +84,12 @@ axes.set(xlabel="Amount (Millions)")
 plt.show()
 
 
-# In[9]:
 
 
 # Scaled mean by millions.
 train.revenue.mean() / 1000000
 
 
-# In[10]:
 
 
 fig, axes = plt.figure(figsize=(12, 6)), plt.axes()
@@ -111,25 +101,21 @@ axes.set(xlabel="Amount (Log)")
 plt.show()
 
 
-# In[11]:
 
 
 train.sort_values("revenue", ascending=True).head(5)[["title", "revenue", "budget", "popularity", "release_date", "runtime"]]
 
 
-# In[12]:
 
 
 train.sort_values("revenue", ascending=False).head(5)[["title", "revenue", "budget", "popularity", "release_date", "runtime"]]
 
 
-# In[13]:
 
 
 get_movie_image(train.sample(1, random_state=9087))
 
 
-# In[14]:
 
 
 fig, axes = plt.figure(figsize=(12, 6)), plt.axes()
@@ -141,7 +127,6 @@ axes.set(xlabel="Popularity")
 plt.show()
 
 
-# In[15]:
 
 
 fig, axes = plt.figure(figsize=(12, 6)), plt.axes()
@@ -153,19 +138,16 @@ axes.set(xlabel="Popularity")
 plt.show()
 
 
-# In[16]:
 
 
 train.popularity.describe()
 
 
-# In[17]:
 
 
 get_movie_image(train.sample(1, random_state=71515))
 
 
-# In[18]:
 
 
 fig, axes = plt.figure(figsize=(12, 6)), plt.axes()
@@ -177,19 +159,16 @@ axes.set(xlabel="Budget (Millions)")
 plt.show()
 
 
-# In[19]:
 
 
 train.sort_values("budget", ascending=True).head(5)[["title", "revenue", "budget", "popularity", "release_date", "runtime", "status"]]
 
 
-# In[20]:
 
 
 train.sort_values("budget", ascending=False).head(5)[["title", "revenue", "budget", "popularity", "release_date", "runtime", "status"]]
 
 
-# In[21]:
 
 
 fig, axes = plt.figure(figsize=(12, 6)), plt.axes()
@@ -209,7 +188,6 @@ plt.show()
 train["profit"] = (train.revenue - train.budget)
 
 
-# In[22]:
 
 
 print("Movies that made a profit: {}".format(sum((movie_profit >= 0))))
@@ -217,13 +195,11 @@ print("Movies that made a profit: {}".format(sum((movie_profit >= 0))))
 print("Movies that tanked: {}".format(sum((movie_profit < 0))))
 
 
-# In[23]:
 
 
 get_movie_image(train.sample(1, random_state=1960))
 
 
-# In[24]:
 
 
 def parse_date(x):
@@ -242,14 +218,12 @@ def parse_date(x):
     return pd.Timestamp(year=int(year), month=int(month), day=int(day))
 
 
-# In[25]:
 
 
 # Parse the release date.
 train["release_date_parsed"] = train.release_date.apply(parse_date)
 
 
-# In[26]:
 
 
 # Our groupby variable.
@@ -278,14 +252,12 @@ plt.xticks(loc, label, rotation=45)
 plt.show()
 
 
-# In[27]:
 
 
 # Result is .51.
 # "{:.2f} of our movies were made after 2003.".format(sum(by_year > 2003) / len(train))
 
 
-# In[28]:
 
 
 # Our groupby variable.
@@ -317,13 +289,11 @@ plt.xticks(loc, label, rotation=45)
 plt.show()
 
 
-# In[29]:
 
 
 get_movie_image(train.sample(1, random_state=198568))
 
 
-# In[30]:
 
 
 features = ["revenue", "budget", "popularity", "profit", "runtime", "year", "month", "id"]
@@ -340,7 +310,6 @@ plt.xticks(range(0, len(features)), features, rotation=45)
 plt.show()
 
 
-# In[31]:
 
 
 features = ["revenue", "budget", "popularity", "runtime", "year", "month", "id"]
@@ -363,19 +332,16 @@ plt.xticks(range(0, len(features)), features, rotation=45)
 plt.show()
 
 
-# In[32]:
 
 
 get_movie_image(train.sample(1, random_state=1957))
 
 
-# In[33]:
 
 
 train.select_dtypes("object").head(3)
 
 
-# In[34]:
 
 
 def parse_content(x, key):
@@ -400,7 +366,6 @@ def make_column_names(prefix, x):
     return ["{}_{}".format(prefix, i) for i in range(0, len(x))]
 
 
-# In[35]:
 
 
 # Get the name if a movie belongs in a collection.
@@ -413,13 +378,11 @@ print(belongs_to_collection.apply(lambda x: x != []).sum())
 train["movie_in_series"] = belongs_to_collection.apply(lambda x: x != [])
 
 
-# In[36]:
 
 
 get_movie_image(train.sample(1, random_state=9761))
 
 
-# In[37]:
 
 
 def plot_top_n_count(key, identity, n, plot_title):
@@ -438,7 +401,6 @@ def plot_top_n_count(key, identity, n, plot_title):
     plt.show()
 
 
-# In[38]:
 
 
 # Get the names of production companies.
@@ -452,7 +414,6 @@ company_key, company_identity = vectorize_list(production_companies, unique_comp
 plot_top_n_count(company_key, company_identity, 20, "What Companies Create the Most Movies?")
 
 
-# In[39]:
 
 
 # Get Countries.
@@ -466,7 +427,6 @@ country_key, country_identity = vectorize_list(production_countries, unique_coun
 plot_top_n_count(country_key, country_identity, 20, "Where are Movies Made?")
 
 
-# In[40]:
 
 
 cast_name = train.cast.apply(parse_content, key="name")
@@ -477,7 +437,6 @@ cast_key, cast_identity = vectorize_list(cast_name, unique_cast)
 plot_top_n_count(cast_key, cast_identity, 20, "What Actors Participate in the Most Movies?")
 
 
-# In[41]:
 
 
 keywords = train.Keywords.apply(parse_content, key="name")
@@ -488,7 +447,6 @@ keyword_key, keyword_identity = vectorize_list(keywords, unique_keyword)
 plot_top_n_count(keyword_key, keyword_identity, 20, "What top Keywords are used to describe a Movie?")
 
 
-# In[42]:
 
 
 crew_name = train.crew.apply(parse_content, key="name")
@@ -497,7 +455,6 @@ crew_key, crew_identity = vectorize_list(crew_name, unique_crew)
 plot_top_n_count(crew_key, crew_identity, 20, "What Crewmember has Worked on the Most Movies?")
 
 
-# In[43]:
 
 
 genre_name = train.genres.apply(parse_content, key="name")
@@ -506,7 +463,6 @@ genre_key, genre_identity = vectorize_list(genre_name, unique_genre)
 plot_top_n_count(genre_key, genre_identity, 20, "What are the Top Movie Genres?")
 
 
-# In[44]:
 
 
 # Rename Company
@@ -528,7 +484,6 @@ genre_identity = genre_identity.rename({i: "genre_{}".format(i) for i in range(0
 train_categorical = pd.concat([company_identity, country_identity, crew_identity, cast_identity, genre_identity], axis=1)
 
 
-# In[45]:
 
 
 # Production Companies
@@ -564,14 +519,12 @@ genre_identity = genre_identity.rename({i: "genre_{}".format(i) for i in range(0
 test_categorical = pd.concat([company_identity, country_identity, crew_identity, cast_identity, genre_identity], axis=1)
 
 
-# In[46]:
 
 
 train = pd.concat([train, train_categorical], axis=1)
 test = pd.concat([test, train_categorical], axis=1)
 
 
-# In[47]:
 
 
 fig, ax = plt.figure(figsize=(10, 6)), plt.axes()
@@ -583,19 +536,16 @@ plt.title("Movies by Original Language")
 plt.show()
 
 
-# In[48]:
 
 
 from sklearn import linear_model, metrics, model_selection, impute
 
 
-# In[49]:
 
 
 get_movie_image(train.sample(1, random_state= 1256))
 
 
-# In[50]:
 
 
 # Parse the release date.
@@ -608,7 +558,6 @@ test["year"] = test.release_date_parsed.apply(lambda x: x.year)
 test["month"] = test.release_date_parsed.apply(lambda x: x.month)
 
 
-# In[51]:
 
 
 features = ["budget", "popularity", "runtime", "year", "month", "id"]
@@ -619,19 +568,16 @@ imp = impute.SimpleImputer()
 train[features] = imp.fit_transform(train[features])
 
 
-# In[52]:
 
 
 test[features].isna().sum()
 
 
-# In[53]:
 
 
 test[features] = imp.fit_transform(test[features])
 
 
-# In[54]:
 
 
 # Small featureset for a linear model.
@@ -661,13 +607,11 @@ plt.scatter(y_pred, y_train)
 plt.show()
 
 
-# In[55]:
 
 
 import sklearn
 
 
-# In[56]:
 
 
 # Small featureset for a linear model.
@@ -703,19 +647,16 @@ plt.ylim(0, 1e8)
 plt.show()
 
 
-# In[57]:
 
 
 get_movie_image(train.sample(1, random_state=8615))
 
 
-# In[58]:
 
 
 from sklearn import ensemble
 
 
-# In[59]:
 
 
 company_cols = list(company_identity.columns.values)
@@ -747,7 +688,6 @@ plt.scatter(y_pred, y_train)
 plt.show()
 
 
-# In[60]:
 
 
 get_movie_image(train.sample(1, random_state=865241))

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 
@@ -13,7 +12,6 @@ import os
 print(os.listdir("../input"))
 
 
-# In[ ]:
 
 
 train =  pd.read_csv('../input/train.csv', nrows = 100_000)
@@ -21,37 +19,31 @@ test =  pd.read_csv('../input/test.csv')
 test.shape
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 print(train.shape)
 
 
-# In[ ]:
 
 
 train.dtypes
 
 
-# In[ ]:
 
 
 train.describe()
 
 
-# In[ ]:
 
 
 print(train.isnull().sum())
 
 
-# In[ ]:
 
 
 # drop nan
@@ -60,7 +52,6 @@ test = test.dropna()
 print(train.shape)
 
 
-# In[ ]:
 
 
 # drop zero passenger
@@ -69,7 +60,6 @@ test = test[test.passenger_count!=0]
 print(train.shape)
 
 
-# In[ ]:
 
 
 # drop negative fares
@@ -77,7 +67,6 @@ train = train[train.fare_amount>=0]
 print(train.shape)
 
 
-# In[ ]:
 
 
 # calculate distance
@@ -93,7 +82,6 @@ test['dis'] = test.apply(cal_dis, axis='columns')
 train.head()
 
 
-# In[ ]:
 
 
 # extract 'year' and 'hour' 
@@ -114,13 +102,11 @@ test['hour'] = test.apply(get_Hour, axis='columns')
 train.head()
 
 
-# In[ ]:
 
 
 sns.heatmap(train.corr(),annot = True)
 
 
-# In[ ]:
 
 
 plt = sns.boxplot(
@@ -131,14 +117,12 @@ plt = sns.boxplot(
 plt.axes.set_ylim([0, 25])
 
 
-# In[ ]:
 
 
 train.plot(x='dis',y='fare_amount',kind='scatter')
 train.dis.plot.hist()
 
 
-# In[ ]:
 
 
 # divide the distance region
@@ -146,7 +130,6 @@ train = train[train.dis<0.3]
 train.dis.plot.hist()
 
 
-# In[ ]:
 
 
 # drop distance outliers
@@ -156,7 +139,6 @@ print(train.shape)
 train.plot(x='dis',y='fare_amount',kind='scatter')
 
 
-# In[ ]:
 
 
 # drop distance outliers 
@@ -166,7 +148,6 @@ print(train.shape)
 train.plot(x='dis',y='fare_amount',kind='scatter')
 
 
-# In[ ]:
 
 
 plt = sns.boxplot(
@@ -178,7 +159,6 @@ plt = sns.boxplot(
 plt.axes.set_ylim([0, 30])
 
 
-# In[ ]:
 
 
 plt = sns.boxplot(
@@ -190,7 +170,6 @@ plt = sns.boxplot(
 plt.axes.set_ylim([0, 25])
 
 
-# In[ ]:
 
 
 print(train.dtypes)
@@ -200,13 +179,11 @@ train_y = train['fare_amount']
 train_x = train.drop(columns=['fare_amount'])
 
 
-# In[ ]:
 
 
 SaveX = train_x
 
 
-# In[ ]:
 
 
 from sklearn.preprocessing import StandardScaler
@@ -216,7 +193,6 @@ from sklearn.feature_selection import RFECV
 from sklearn.metrics import r2_score
 
 
-# In[ ]:
 
 
 # standarization
@@ -231,13 +207,11 @@ b0 = train_y.mean(axis=0)
 train_y -= b0
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
@@ -251,7 +225,6 @@ print(train_x[['dis','year','hour', 'passenger_count']].columns)
 print(lm.coef_)
 
 
-# In[ ]:
 
 
 print("Ridge regression:")
@@ -265,7 +238,6 @@ Error = pd.DataFrame(np.stack((alpha_list,r2_list)),index = ['alpha','R2']).T
 Error.plot(x='alpha',y='R2',kind='line')
 
 
-# In[ ]:
 
 
 print("Lasso regression:")
@@ -279,7 +251,6 @@ Error = pd.DataFrame(np.stack((alpha_list,r2_list)),index = ['alpha','R2']).T
 Error.plot(x='alpha',y='R2',kind='line')
 
 
-# In[ ]:
 
 
 lm = linear_model.LinearRegression(fit_intercept=False)
@@ -289,7 +260,6 @@ print(selector.support_)
 print(selector.ranking_)
 
 
-# In[ ]:
 
 
 print("Regular linear regression:")
@@ -317,13 +287,11 @@ print("R2: %8.6f"
                                  train_y, cv=10, scoring='r2'))))
 
 
-# In[ ]:
 
 
 lm.coef_
 
 
-# In[ ]:
 
 
 from sklearn.tree import DecisionTreeRegressor
@@ -334,7 +302,6 @@ for i in depth:
     print("max_depth:%d R2: %8.6f" % (i, np.mean(cross_val_score(reg, train_x, train_y, cv=10, scoring='r2'))))
 
 
-# In[ ]:
 
 
 from sklearn.ensemble import RandomForestRegressor
@@ -345,7 +312,6 @@ for i in depth:
     print("max_depth:%d R2: %8.6f" % (i, np.mean(cross_val_score(rf, train_x, train_y, cv=10, scoring='r2'))))
 
 
-# In[ ]:
 
 
 from sklearn.ensemble import GradientBoostingRegressor
@@ -356,37 +322,31 @@ gbr = GradientBoostingRegressor(n_estimators=100, learning_rate=0.1,
 print("R2: %8.6f" % (np.mean(cross_val_score(gbr, train_x, train_y, cv=10, scoring='r2'))))
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

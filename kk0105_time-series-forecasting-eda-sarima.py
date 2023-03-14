@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -31,7 +30,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
 
 
 input_dir = '../input/m5-forecasting-accuracy/'
@@ -41,25 +39,21 @@ calendar = pd.read_csv(input_dir+'calendar.csv')
 sales_prices = pd.read_csv(input_dir+'sell_prices.csv')
 
 
-# In[3]:
 
 
 sales_train_validation.head()
 
 
-# In[4]:
 
 
 calendar.head()
 
 
-# In[5]:
 
 
 sales_prices.head()
 
 
-# In[6]:
 
 
 def reduce_mem_usage(df, verbose=True):
@@ -115,7 +109,6 @@ def reduce_mem_usage(df, verbose=True):
     return df
 
 
-# In[7]:
 
 
 sales_bd = np.round(sales_train_validation.memory_usage().sum()/(1024*1024),1)
@@ -123,7 +116,6 @@ calendar_bd = np.round(calendar.memory_usage().sum()/(1024*1024),1)
 prices_bd = np.round(sales_prices.memory_usage().sum()/(1024*1024),1)
 
 
-# In[8]:
 
 
 sales_train_validation = reduce_mem_usage(sales_train_validation)
@@ -131,7 +123,6 @@ sales_prices = reduce_mem_usage(sales_prices)
 calendar = reduce_mem_usage(calendar)
 
 
-# In[9]:
 
 
 sales_ad = np.round(sales_train_validation.memory_usage().sum()/(1024*1024),1)
@@ -139,19 +130,16 @@ calendar_ad = np.round(calendar.memory_usage().sum()/(1024*1024),1)
 prices_ad = np.round(sales_prices.memory_usage().sum()/(1024*1024),1)
 
 
-# In[10]:
 
 
 # memory   # no melt
 
 
-# In[11]:
 
 
 # memory  # melt
 
 
-# In[12]:
 
 
 memory = pd.DataFrame({
@@ -169,7 +157,6 @@ fig.update_layout(template='seaborn',title='Effect of Downcasting')
 fig.show()
 
 
-# In[13]:
 
 
 ids = sorted(list(sales_train_validation['id']))
@@ -177,7 +164,6 @@ ids = sorted(list(sales_train_validation['id']))
 d_cols = [c for c in sales_train_validation.columns if 'd_' in c ]
 
 
-# In[14]:
 
 
 x_1 = sales_train_validation.loc[sales_train_validation['id'] == ids[2]].set_index('id')[d_cols].values[0] 
@@ -199,7 +185,6 @@ fig.update_layout(height =1200,width=800,title_text='Sample sales')
 fig.show()
 
 
-# In[15]:
 
 
 x_1 = sales_train_validation.loc[sales_train_validation['id'] == ids[2]].set_index('id')[d_cols].values[0][0:90] 
@@ -221,20 +206,17 @@ fig.update_layout(height =1200,width=800,title_text='Sample sales')
 fig.show()
 
 
-# In[16]:
 
 
 # from statsmodels.tsa.seasonal import seasonal_decompose
 
 
-# In[17]:
 
 
 # new_x1=sales_train_validation.loc[sales_train_validation['id'] == ids[2]].set_index('id')[d_cols][0:90]
 # new_x1.T
 
 
-# In[18]:
 
 
 # decomposition = seasonal_decompose(new_x1,freq=12)
@@ -256,7 +238,6 @@ fig.show()
 # plt.tight_layout()
 
 
-# In[19]:
 
 
 def maddest(d, axis=None):
@@ -272,7 +253,6 @@ def denoise_signal(x, wavelet='db4', level=1):
     return pywt.waverec(coeff, wavelet, mode='per')
 
 
-# In[20]:
 
 
 y_w1 = denoise_signal(x_1)
@@ -280,7 +260,6 @@ y_w2 = denoise_signal(x_2)
 y_w3 = denoise_signal(x_3)
 
 
-# In[21]:
 
 
 fig,ax=plt.subplots(nrows=3,ncols=2,figsize=(30,20))
@@ -309,7 +288,6 @@ ax[2,1].set_title('Original Sales',fontsize=24)
 fig.show()
 
 
-# In[22]:
 
 
 def average_smoothing(signal, kernel_size=3, stride=1):
@@ -323,7 +301,6 @@ def average_smoothing(signal, kernel_size=3, stride=1):
     return np.array(sample)
 
 
-# In[23]:
 
 
 y_a1 = average_smoothing(x_1)
@@ -369,7 +346,6 @@ fig.update_layout(height=1200, width=800, title_text="Original (pale) vs. Denois
 fig.show()
 
 
-# In[24]:
 
 
 fig,ax = plt.subplots(nrows=3,ncols=2,figsize=(30,20))
@@ -393,25 +369,21 @@ ax[2,1].set_title('Original Sales',fontsize=24)
 fig.show()
 
 
-# In[25]:
 
 
 sales_train_validation.head()
 
 
-# In[26]:
 
 
 sales_prices.head()
 
 
-# In[27]:
 
 
 calendar.head()
 
 
-# In[28]:
 
 
 past_sales = sales_train_validation.set_index('id')[d_cols]             .T             .merge(calendar.set_index('d')['date'],left_index =True,right_index=True,).set_index('date')
@@ -430,7 +402,6 @@ for s_id in  store_list:
 fig.update_layout(yaxis_title='Sales',xaxis_title='Time',title='Rolling average Sales vs Time (per store)')
 
 
-# In[29]:
 
 
 fig = go.Figure()
@@ -441,7 +412,6 @@ for s_id in  store_list:
 fig.update_layout(yaxis_title='Sales',xaxis_title='Store',title='Rolling average Sales vs Store (per store)')
 
 
-# In[30]:
 
 
 fig = go.Figure()
@@ -457,7 +427,6 @@ px.bar(df, y="Mean sales", x="Store name", color="Store name", title="Mean sales
 # fig.update_layout(yaxis_title="Mean Sales", xaxis_title="Store name", title="Mean Sales vs. Store name")
 
 
-# In[31]:
 
 
 cat_id_list = sales_train_validation['cat_id'].unique()
@@ -471,7 +440,6 @@ for cat_id in  cat_id_list:
 fig.update_layout(xaxis_title='time',yaxis_title='cat_id sales',title='cat_id Sales vs Time (per cat_id)')
 
 
-# In[32]:
 
 
 past_sales_clipped = past_sales.clip(0, 1)
@@ -484,7 +452,6 @@ for cat_id in  cat_id_list:
 fig.update_layout(xaxis_title='time',yaxis_title='% of Inventory with at least 1 sale',title='Inventory Sale Percentage by Date')
 
 
-# In[33]:
 
 
 print('The lowest sale date was:', past_sales.sum(axis=1).sort_values().index[0],
@@ -493,7 +460,6 @@ print('The lowest sale date was:', past_sales.sum(axis=1).sort_values(ascending=
      'with', past_sales.sum(axis=1).sort_values(ascending=False).values[0], 'sales')
 
 
-# In[34]:
 
 
 import statsmodels.api as sm
@@ -506,27 +472,23 @@ import statsmodels
 from tqdm import tqdm
 
 
-# In[35]:
 
 
 store_sum = sales_train_validation.groupby(['store_id']).sum().T.reset_index(drop = True)
 store_sum.head()
 
 
-# In[36]:
 
 
 train_datasets= store_sum.iloc[0:70]
 val_datasets= store_sum.iloc[70:100]
 
 
-# In[37]:
 
 
 from statsmodels.tsa.seasonal import seasonal_decompose
 
 
-# In[38]:
 
 
 weeks_per_year = 365
@@ -538,7 +500,6 @@ sj_sc.plot()
 plt.show()
 
 
-# In[39]:
 
 
 fig = make_subplots(3,1)
@@ -555,13 +516,11 @@ fig.add_trace(go.Scatter(x=np.arange(70,100),y=val_datasets.iloc[:,7],marker=dic
 fig.update_layout(title='Sales volume of a commodity')
 
 
-# In[40]:
 
 
 store_col = [0,4,7]
 
 
-# In[41]:
 
 
 def sarima_train_test(t_series, p = 2, d = 1, r = 2, NUM_TO_FORECAST = 56, do_plot_results = True):
@@ -603,7 +562,6 @@ def sarima_train_test(t_series, p = 2, d = 1, r = 2, NUM_TO_FORECAST = 56, do_pl
     return mean_forecast
 
 
-# In[42]:
 
 
 predictions = []
@@ -614,13 +572,11 @@ for col in store_col:
 predictions = np.array(predictions).reshape((-1, 28))
 
 
-# In[43]:
 
 
 predictions
 
 
-# In[44]:
 
 
 pred_1 = predictions[0]

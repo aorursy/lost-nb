@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -30,7 +28,6 @@ data = pd.read_csv('/kaggle/input/tmdb-box-office-prediction/train.csv')
 data.head()
 
 
-# In[3]:
 
 
 import ast
@@ -46,7 +43,6 @@ for i in range(len(data)):
 print(movie_genres)
 
 
-# In[4]:
 
 
 length = []
@@ -55,7 +51,6 @@ for j in movie_genres:
 pd.Series(length).value_counts()
 
 
-# In[5]:
 
 
 k = []
@@ -65,7 +60,6 @@ genre_list = list(set(k))
 genre_list
 
 
-# In[6]:
 
 
 #sum[1 if 'Action' in j else 0 for j in movie_genres]
@@ -84,21 +78,18 @@ for k in genre_list:
 ct
 
 
-# In[7]:
 
 
 for key, value in sorted(ct.items(), key=lambda kv: kv[1], reverse=True):
     print("%s: %s" % (key, value))
 
 
-# In[8]:
 
 
 for key in sorted(ct.keys()):
     print("%s: %s" % (key, ct[key]))
 
 
-# In[9]:
 
 
 import ast
@@ -114,7 +105,6 @@ for i in range(len(data)):
 print(keywords)
 
 
-# In[10]:
 
 
 k = []
@@ -124,7 +114,6 @@ keywords_list = list(set(k))
 keywords_list
 
 
-# In[11]:
 
 
 ct_k = {}
@@ -141,7 +130,6 @@ for k in keywords_list:
 ct_k
 
 
-# In[12]:
 
 
 length = []
@@ -150,14 +138,12 @@ for j in keywords:
 pd.Series(length).value_counts()
 
 
-# In[13]:
 
 
 for key, value in sorted(ct_k.items(), key=lambda kv: kv[1], reverse=True):
     print("%s: %s" % (key, value))
 
 
-# In[14]:
 
 
 import ast
@@ -173,7 +159,6 @@ for i in range(len(data)):
 print(lans)
 
 
-# In[15]:
 
 
 k = []
@@ -183,7 +168,6 @@ lans_list = list(set(k))
 lans_list
 
 
-# In[16]:
 
 
 ct_l = {}
@@ -200,7 +184,6 @@ for k in lans_list:
 ct_l
 
 
-# In[17]:
 
 
 length = []
@@ -209,7 +192,6 @@ for j in lans:
 #pd.Series(length).value_counts()
 
 
-# In[18]:
 
 
 import matplotlib.pyplot as plt
@@ -224,7 +206,6 @@ plt.axis("off")
 plt.show()
 
 
-# In[19]:
 
 
 plt.figure(figsize = (16, 12))
@@ -237,13 +218,11 @@ plt.axis("off")
 plt.show()
 
 
-# In[20]:
 
 
 [len(j) for j in data['crew']
 
 
-# In[21]:
 
 
 crews = []
@@ -257,7 +236,6 @@ for i in range(len(data)):
 print(movie_genres)
 
 
-# In[22]:
 
 
 k = []
@@ -268,13 +246,11 @@ top_crew = list(a.index)
 top_crew
 
 
-# In[23]:
 
 
 pd.Series([len(j) for j in crews]).value_counts()
 
 
-# In[24]:
 
 
 crews_gender = []
@@ -288,7 +264,6 @@ for i in range(len(data)):
 print(movie_genres)
 
 
-# In[25]:
 
 
 k = []
@@ -297,7 +272,6 @@ for j in crews_gender:
 pd.Series(k).value_counts()
 
 
-# In[26]:
 
 
 male_count = []

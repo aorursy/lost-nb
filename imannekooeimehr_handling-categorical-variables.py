@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 
@@ -33,7 +32,6 @@ class Ctg2Num (object):
     
 
 
-# In[ ]:
 
 
 people_data = pd.read_csv('../input/act_test.csv')

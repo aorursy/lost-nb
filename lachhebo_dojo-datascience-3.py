@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[5]:
 
 
 import numpy as np # linear algebra
@@ -20,7 +19,6 @@ import tensorflow.keras.layers as L
 from tensorflow.keras.applications import DenseNet121
 
 
-# In[85]:
 
 
 ## Global variables
@@ -36,7 +34,6 @@ IMAGE_SIZE = 150
 BATCH_SIZE = 64
 
 
-# In[7]:
 
 
 sub = pd.read_csv(SUB_PATH)
@@ -44,13 +41,11 @@ test_data = pd.read_csv(TEST_PATH)
 train_data = pd.read_csv(TRAIN_PATH)
 
 
-# In[8]:
 
 
 train_data.head()
 
 
-# In[9]:
 
 
 def format_path(st):
@@ -82,7 +77,6 @@ def data_augment(image, label=None):
         return image, label
 
 
-# In[10]:
 
 
 test_paths = test_data.image_id.apply(format_path).values
@@ -91,19 +85,16 @@ train_labels = np.float32(train_data.loc[:, 'healthy':'scab'].values)
 train_paths, valid_paths, train_labels, valid_labels = train_test_split(train_paths, train_labels, test_size=0.15, random_state=2020)
 
 
-# In[86]:
 
 
 train_images = train_data["image_id"][:SAMPLE_LEN].apply(load_image)
 
 
-# In[87]:
 
 
 train_images.shape
 
 
-# In[88]:
 
 
 fig, ax = plt.subplots(nrows=1, ncols=4, figsize=(30, 10))
@@ -114,7 +105,6 @@ ax[2].imshow(cv2.resize(train_images[15][:,:,2], (IMAGE_SIZE, IMAGE_SIZE)), cmap
 ax[3].imshow(cv2.resize(train_images[15], (IMAGE_SIZE, IMAGE_SIZE)))
 
 
-# In[89]:
 
 
 red_values   = [np.mean(train_images[idx][:, :, 0]) for idx in range(len(train_images))]
@@ -122,7 +112,6 @@ green_values = [np.mean(train_images[idx][:, :, 1]) for idx in range(len(train_i
 blue_values  = [np.mean(train_images[idx][:, :, 2]) for idx in range(len(train_images))]
 
 
-# In[90]:
 
 
 red_channel   =    [np.mean(train_images[idx][:, :, 0]) for idx in range(len(train_images))] 
@@ -138,7 +127,6 @@ pylab.xticks([1,2,3], BoxName)
 plt.show()
 
 
-# In[101]:
 
 
 healthy_leaves = train_data["image_id"][train_data['healthy'] == 1][:50].apply(load_image)
@@ -150,7 +138,6 @@ for i in range(0,2):
         image_index = image_index + 1
 
 
-# In[102]:
 
 
 sick_leafs = train_data["image_id"][train_data['healthy'] == 0][:50].apply(load_image)
@@ -162,7 +149,6 @@ for i in range(0,2):
         image_index = image_index + 1
 
 
-# In[103]:
 
 
 rusty_leaves = train_data["image_id"][train_data['rust'] == 1][:50].apply(load_image)
@@ -174,7 +160,6 @@ for i in range(0,2):
         image_index = image_index + 1
 
 
-# In[104]:
 
 
 scaby_leaves = train_data["image_id"][train_data['scab'] == 1][:50].apply(load_image)
@@ -186,7 +171,6 @@ for i in range(0,2):
         image_index = image_index + 1
 
 
-# In[174]:
 
 
 
@@ -236,13 +220,11 @@ plt.ylim(0,200)
 plt.show()
 
 
-# In[130]:
 
 
 train_data.healthy.value_counts()
 
 
-# In[173]:
 
 
 fig = plt.figure()
@@ -278,14 +260,12 @@ series.index = ['no_multiple_d', 'multiple_d']
 series.plot.pie(figsize=(size_figure, size_figure), ax=ax4, colors= ['blue', 'red'], startangle = 280)
 
 
-# In[175]:
 
 
 STEPS_PER_EPOCH = train_labels.shape[0] // BATCH_SIZE 
 STEPS_PER_EPOCH
 
 
-# In[176]:
 
 
 train_dataset = (
@@ -315,13 +295,11 @@ test_dataset = (
 )
 
 
-# In[205]:
 
 
 base_model = tf.keras.applications.DenseNet121(input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3), include_top=False, weights='imagenet', input_tensor=None, pooling=None, classes=4)
 
 
-# In[206]:
 
 
 base_model.compile(optimizer='adam',
@@ -330,19 +308,16 @@ base_model.compile(optimizer='adam',
 base_model.summary()
 
 
-# In[207]:
 
 
 base_model.trainable = False
 
 
-# In[208]:
 
 
 base_model.summary()
 
 
-# In[209]:
 
 
 
@@ -363,13 +338,11 @@ model.compile(optimizer='adam',
 model.summary()
 
 
-# In[210]:
 
 
 EPOCHS = 20
 
 
-# In[211]:
 
 
 history = model.fit(train_dataset,
@@ -378,7 +351,6 @@ history = model.fit(train_dataset,
                     validation_data=valid_dataset)
 
 
-# In[221]:
 
 
 fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(20, 5))
@@ -400,25 +372,21 @@ ax[1].set_ylim(0.0, 1)
 ax[1].legend()
 
 
-# In[222]:
 
 
 get_ipython().system('mkdir -p saved_model')
 
 
-# In[223]:
 
 
 model.save('saved_model/my_model') 
 
 
-# In[224]:
 
 
 new_model = tf.keras.models.load_model('saved_model/my_model')
 
 
-# In[ ]:
 
 
 from IPython.display import FileLink

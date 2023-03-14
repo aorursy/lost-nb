@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -38,7 +37,6 @@ pd.set_option('display.max_columns', 50)
 pd.set_option('display.max_rows', 150)
 
 
-# In[2]:
 
 
 import numpy as np
@@ -77,7 +75,6 @@ pd.set_option('display.max_columns', 50)
 pd.set_option('display.max_rows', 150)
 
 
-# In[3]:
 
 
 import os
@@ -86,7 +83,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
         print(os.path.join(dirname, filename))
 
 
-# In[4]:
 
 
 # train = pd.read_csv('/kaggle/input/nfl-big-data-bowl-2020/train.csv', dtype={'WindSpeed': 'object'})
@@ -97,38 +93,32 @@ else:
     
 
 
-# In[5]:
 
 
 outcomes = train[['GameId','PlayId','Yards']].drop_duplicates()
 
 
-# In[6]:
 
 
 
 train.head()
 
 
-# In[7]:
 
 
 list(train.columns)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[8]:
 
 
 def positional(df):
@@ -283,7 +273,6 @@ def positional(df):
     return df, new_cols
 
 
-# In[9]:
 
 
 """def get_play_control(df):
@@ -314,7 +303,6 @@ def positional(df):
     return df[['GameId','PlayId', "influence", "play_control"]]"""
 
 
-# In[10]:
 
 
 def new_def_feats(df):
@@ -414,19 +402,16 @@ def new_def_feats(df):
     return df
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[11]:
 
 
 def get_play_control(df):
@@ -478,7 +463,6 @@ def get_play_control(df):
     #return df
 
 
-# In[12]:
 
 
 @np.vectorize    
@@ -507,7 +491,6 @@ def influence(RADIUS, S_ratio, theta, RusherX, RusherY, speed, X_std, Y_std ):
     return point_influence / player_influence
 
 
-# In[13]:
 
 
 def radius_calc(dist_to_ball):
@@ -518,7 +501,6 @@ def radius_calc(dist_to_ball):
     return 4 + 6 * (dist_to_ball >= 15) + (dist_to_ball ** 3) / 560 * (dist_to_ball < 15)
 
 
-# In[14]:
 
 
 def strtoseconds(txt):
@@ -658,7 +640,6 @@ def preprocess(train):
     return train
 
 
-# In[15]:
 
 
 def clean_features(train):
@@ -1014,7 +995,6 @@ def clean_features(train):
     return train
 
 
-# In[16]:
 
 
 def remove_NAs(train):
@@ -1066,7 +1046,6 @@ def remove_NAs(train):
     return train
 
 
-# In[17]:
 
 
 
@@ -1133,7 +1112,6 @@ def fix_sides(train):
   return train
 
 
-# In[18]:
 
 
 def voronoi_feats(train):
@@ -1190,19 +1168,16 @@ def voronoi_feats(train):
     return train
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[19]:
 
 
 def feature_engineering(train):
@@ -1335,7 +1310,6 @@ def feature_engineering(train):
     return train
 
 
-# In[20]:
 
 
 def create_features(df, deploy=False):
@@ -1761,19 +1735,16 @@ def create_features(df, deploy=False):
     return basetable
 
 
-# In[21]:
 
 
 get_ipython().run_line_magic('time', 'train_basetable = create_features(train, False)')
 
 
-# In[22]:
 
 
 train_basetable.head()
 
 
-# In[23]:
 
 
 X = train_basetable.copy()
@@ -1786,7 +1757,6 @@ for idx, target in enumerate(list(yards)):
 X.drop(['GameId','PlayId','Yards'], axis=1, inplace=True)
 
 
-# In[24]:
 
 
 sns.set(rc={'figure.figsize':(25, 25)})
@@ -1796,7 +1766,6 @@ ax = sns.heatmap(corr, linewidths=.5, annot=True, cmap="YlGnBu", fmt='.1g')
 plt.show()
 
 
-# In[25]:
 
 
 # Drop highly correlated features (37->28)
@@ -1813,34 +1782,29 @@ print(feature_columns)
 print(drop_columns)
 
 
-# In[26]:
 
 
 scaler = StandardScaler()
 X = scaler.fit_transform(X[feature_columns])
 
 
-# In[27]:
 
 
 """scaler = StandardScaler()
 X = scaler.fit_transform(X)"""
 
 
-# In[28]:
 
 
 X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.15, random_state=12345)
 
 
-# In[29]:
 
 
 print(X_train.shape, X_val.shape)
 print(y_train.shape, y_val.shape)
 
 
-# In[30]:
 
 
 def crps_score(y_prediction, y_valid, shape=X.shape[0]):
@@ -1852,7 +1816,6 @@ def crps_score(y_prediction, y_valid, shape=X.shape[0]):
     return crps
 
 
-# In[31]:
 
 
 from keras.layers import Dense,Input,Flatten,concatenate,Dropout,Lambda, LeakyReLU
@@ -1905,7 +1868,6 @@ class CRPSCallback(Callback):
     
 
 
-# In[32]:
 
 
 def get_model(x_tr,y_tr,x_val,y_val):
@@ -1958,7 +1920,6 @@ def get_model(x_tr,y_tr,x_val,y_val):
     return model,crps
 
 
-# In[33]:
 
 
 """def get_rf(x_tr, y_tr, x_val, y_val, shape):
@@ -1973,7 +1934,6 @@ def get_model(x_tr,y_tr,x_val,y_val):
     return model, crps"""
 
 
-# In[34]:
 
 
 from sklearn.model_selection import train_test_split, KFold
@@ -2016,7 +1976,6 @@ def predict(x_te):
         
 
 
-# In[35]:
 
 
 """loop = 2
@@ -2063,7 +2022,6 @@ for k in range(loop):
         oof_rf[k, val_inds, :] = rf.predict(val_x)"""
 
 
-# In[36]:
 
 
 def get_model(x_tr,y_tr,x_val,y_val):
@@ -2120,7 +2078,6 @@ def get_model(x_tr,y_tr,x_val,y_val):
     return model,crps
 
 
-# In[37]:
 
 
 from sklearn.model_selection import train_test_split, KFold
@@ -2159,7 +2116,6 @@ def predict(x_te):
         
 
 
-# In[38]:
 
 
 def get_model(x_tr,y_tr,x_val,y_val):
@@ -2208,7 +2164,6 @@ def get_model(x_tr,y_tr,x_val,y_val):
     return model,crps
 
 
-# In[39]:
 
 
 from sklearn.model_selection import train_test_split, KFold
@@ -2247,13 +2202,11 @@ def predict(x_te):
         
 
 
-# In[40]:
 
 
 """print("mean crps is %f"%np.mean(crps_csv))"""
 
 
-# In[41]:
 
 
 """crps_oof_nn = []
@@ -2264,7 +2217,6 @@ for k in range(loop):
     crps_oof_rf.append(crps_score(oof_rf[k,...], y))"""
 
 
-# In[42]:
 
 
 """feature_importances = pd.DataFrame(np.mean(feature_importance, axis=0).T, columns=[[f'fold_{fold_n}' for fold_n in range(fold)]])
@@ -2273,7 +2225,6 @@ feature_importances['average'] = feature_importances[[f'fold_{fold_n}' for fold_
 feature_importances.sort_values(by=('average',), ascending=False).head(10)"""
 
 
-# In[43]:
 
 
 """feature_importance_flatten = pd.DataFrame()
@@ -2287,7 +2238,6 @@ plt.title(f'Feature Importances over {loop} loops and {fold} folds')
 plt.show()"""
 
 
-# In[44]:
 
 
 """def weight_opt(oof_nn, oof_rf, y_true):
@@ -2312,13 +2262,11 @@ plt.show()"""
     return weight_nn, round(1-weight_nn, 2)"""
 
 
-# In[45]:
 
 
 """weight_nn, weight_rf = weight_opt(oof_nn, oof_rf, y)"""
 
 
-# In[46]:
 
 
 """def predict(x_te, models_nn, models_rf, weight_nn, weight_rf):
@@ -2338,7 +2286,6 @@ plt.show()"""
     return weight_nn * y_pred_nn + weight_rf * y_pred_rf"""
 
 
-# In[47]:
 
 
 """%%time
@@ -2362,7 +2309,6 @@ if  TRAIN_OFFLINE==False:
     env.write_submission_file()"""
 
 
-# In[48]:
 
 
 get_ipython().run_cell_magic('time', '', "if  TRAIN_OFFLINE==False:\n    from kaggle.competitions import nflrush\n    env = nflrush.make_env()\n    iter_test = env.iter_test()\n\n    for (test_df, sample_prediction_df) in iter_test:\n        basetable = create_features(test_df, deploy=True)\n        basetable.drop(['GameId','PlayId'], axis=1, inplace=True)\n        scaled_basetable = scaler.transform(basetable)\n\n        y_pred = predict(scaled_basetable)\n        y_pred = np.clip(np.cumsum(y_pred, axis=1), 0, 1).tolist()[0]\n\n        preds_df = pd.DataFrame(data=[y_pred], columns=sample_prediction_df.columns)\n        env.predict(preds_df)\n\n    env.write_submission_file()")

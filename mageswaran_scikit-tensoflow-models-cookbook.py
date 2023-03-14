@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -25,7 +24,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 train_df = pd.read_csv("../input/train.csv")
@@ -33,27 +31,23 @@ test_df = pd.read_csv("../input/test.csv")
 train_df.head()
 
 
-# In[3]:
 
 
 category_col = "author"
 
 
-# In[4]:
 
 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import LabelBinarizer
 
 
-# In[5]:
 
 
 le = LabelEncoder().fit(train_df["author"].as_matrix())
 label_binarizer = LabelBinarizer().fit(train_df["author"].as_matrix()) # For TensorFlow
 
 
-# In[6]:
 
 
 def get_one_hot_target_label(df):
@@ -63,20 +57,17 @@ def get_one_hot_target_label(df):
     return label_binarizer.transform(df[category_col].as_matrix())
 
 
-# In[7]:
 
 
 get_one_hot_target_label(train_df)
 
 
-# In[8]:
 
 
 import nltk
 import spacy
 
 
-# In[9]:
 
 
 def extract_lemmas(df: pd.DataFrame, text_col, nlp=spacy.load('en')):
@@ -94,44 +85,37 @@ def extract_lemmas(df: pd.DataFrame, text_col, nlp=spacy.load('en')):
     
 
 
-# In[10]:
 
 
 train_df = extract_lemmas(train_df, "text")
 test_df = extract_lemmas(test_df, "text")
 
 
-# In[11]:
 
 
 text_col = "nlp_processed"
 
 
-# In[12]:
 
 
 train_df = train_df.assign(label = lambda rows : rows.author.map(lambda author: le.transform([author])[0]))
 
 
-# In[13]:
 
 
 train_df = train_df.assign(length = lambda rows: rows.nlp_processed.map(lambda sent: len(sent.split(' '))) )
 
 
-# In[14]:
 
 
 train_df.head()
 
 
-# In[15]:
 
 
 # train_df = train_df[train_df["length"] > 10]
 
 
-# In[16]:
 
 
 def _get_train_val_split(df, category_col='author'):
@@ -168,33 +152,28 @@ def _get_train_val_split(df, category_col='author'):
         return train_df, val_df
 
 
-# In[17]:
 
 
 train_df1, val_df = _get_train_val_split(train_df)
 
 
-# In[18]:
 
 
 from sklearn.model_selection import train_test_split
 train_df1, val_df = train_test_split(train_df,test_size=0.2) 
 
 
-# In[19]:
 
 
 train_df.shape, train_df1.shape, val_df.shape
 #((19579, 6), (15663, 6), (3916, 6))
 
 
-# In[20]:
 
 
 train_df[[text_col, 'author']].groupby('author').count().plot(kind='bar')
 
 
-# In[21]:
 
 
 z = {'EAP': 'Edgar Allen Poe', 'MWS': 'Mary Shelley', 'HPL': 'HP Lovecraft'}
@@ -216,13 +195,11 @@ fig = go.Figure(data=data, layout=layout)
 py.iplot(fig, filename='basic-bar')
 
 
-# In[ ]:
 
 
 
 
 
-# In[22]:
 
 
 from sklearn.pipeline import Pipeline
@@ -243,14 +220,12 @@ def fit_n_evaluate(stages):
     evaluate(pipeline)
 
 
-# In[23]:
 
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-# In[24]:
 
 
 # Define helper function to print top words
@@ -262,7 +237,6 @@ def print_top_words(model, feature_names, n_top_words):
         print("="*70)
 
 
-# In[25]:
 
 
 from sklearn.decomposition import NMF, LatentDirichletAllocation
@@ -279,7 +253,6 @@ lda = LatentDirichletAllocation(n_components=3, max_iter=5,
 lda.fit(tf)
 
 
-# In[26]:
 
 
 n_top_words = 20
@@ -288,7 +261,6 @@ tf_feature_names = tf_vectorizer.get_feature_names()
 print_top_words(lda, tf_feature_names, n_top_words)
 
 
-# In[27]:
 
 
 first_topic = lda.components_[0]
@@ -296,7 +268,6 @@ second_topic = lda.components_[1]
 third_topic = lda.components_[2]
 
 
-# In[28]:
 
 
 first_topic_words = [tf_feature_names[i] for i in first_topic.argsort()[:-50 - 1 :-1]]
@@ -304,13 +275,11 @@ second_topic_words = [tf_feature_names[i] for i in second_topic.argsort()[:-50 -
 third_topic_words = [tf_feature_names[i] for i in third_topic.argsort()[:-50 - 1 :-1]]
 
 
-# In[29]:
 
 
 from wordcloud import WordCloud, STOPWORDS
 
 
-# In[30]:
 
 
 # Generating the wordcloud with the values under the category dataframe
@@ -325,7 +294,6 @@ plt.axis('off')
 plt.show()
 
 
-# In[31]:
 
 
 # Generating the wordcloud with the values under the category dataframe
@@ -340,7 +308,6 @@ plt.axis('off')
 plt.show()
 
 
-# In[32]:
 
 
 # Generating the wordcloud with the values under the category dataframe
@@ -355,13 +322,11 @@ plt.axis('off')
 plt.show()
 
 
-# In[33]:
 
 
 from sklearn.ensemble import RandomForestClassifier
 
 
-# In[34]:
 
 
 rf_stages = [
@@ -378,20 +343,17 @@ rf_stages = [
               ]
 
 
-# In[35]:
 
 
 fit_n_evaluate(rf_stages)
 
 
-# In[36]:
 
 
 from xgboost import XGBClassifier
 from sklearn.feature_selection import SelectKBest
 
 
-# In[37]:
 
 
 xgboost_stages = [
@@ -401,13 +363,11 @@ xgboost_stages = [
 ]
 
 
-# In[38]:
 
 
 fit_n_evaluate(xgboost_stages)
 
 
-# In[39]:
 
 
 from sklearn import svm
@@ -419,7 +379,6 @@ svm_stages = [('vect', CountVectorizer()),
 fit_n_evaluate(svm_stages)
 
 
-# In[40]:
 
 
 from sklearn.naive_bayes import MultinomialNB
@@ -431,19 +390,16 @@ mnb_stages = [('vect', CountVectorizer()),
 fit_n_evaluate(mnb_stages)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[41]:
 
 
 import tensorflow as tf
@@ -452,7 +408,6 @@ from tqdm import tqdm_notebook as tqdm
 import tensorflow.contrib.learn as tflearn
 
 
-# In[42]:
 
 
 # Define data loaders
@@ -536,7 +491,6 @@ def setup_input_graph(features, labels, batch_size, scope='train-data'):
     return inputs, iterator_initializer_hook
 
 
-# In[43]:
 
 
 import tensorflow as tf
@@ -548,7 +502,6 @@ from sklearn.base import BaseEstimator, TransformerMixin, ClassifierMixin
 FLAGS = tf.app.flags.FLAGS
 
 
-# In[44]:
 
 
 
@@ -651,7 +604,6 @@ class TFBaseEstimator(BaseEstimator, TransformerMixin, ClassifierMixin):
         tf.app.run(main=self.run_experiment)
 
 
-# In[45]:
 
 
 def get_sequence_length(sequence):
@@ -666,7 +618,6 @@ def get_sequence_length(sequence):
     return length
 
 
-# In[46]:
 
 
 import tensorflow as tf
@@ -848,7 +799,6 @@ class TextCNNRNN(TFBaseEstimator):
         )
 
 
-# In[47]:
 
 
 # Show debugging output
@@ -871,7 +821,6 @@ BATCH_SIZE = 64
 MAX_DOCUMENT_LENGTH = 350
 
 
-# In[48]:
 
 
 VOCAB_SIZE = save_vocab(train_df1[text_col].as_matrix(), 
@@ -879,7 +828,6 @@ VOCAB_SIZE = save_vocab(train_df1[text_col].as_matrix(),
                        MAX_DOCUMENT_LENGTH=MAX_DOCUMENT_LENGTH)
 
 
-# In[49]:
 
 
 train_input_fn, train_input_hook = setup_input_graph(train_df1[text_col].as_matrix(), 
@@ -888,7 +836,6 @@ train_input_fn, train_input_hook = setup_input_graph(train_df1[text_col].as_matr
                                                      scope='train-data')
 
 
-# In[50]:
 
 
 eval_input_fn, eval_input_hook =  setup_input_graph(val_df[text_col].as_matrix(), 
@@ -897,7 +844,6 @@ eval_input_fn, eval_input_hook =  setup_input_graph(val_df[text_col].as_matrix()
                                                     scope='eval-data')
 
 
-# In[51]:
 
 
 model = TextCNNRNN("horror_vocab.tsv", 
@@ -909,20 +855,17 @@ model = TextCNNRNN("horror_vocab.tsv",
                   max_doc_length=MAX_DOCUMENT_LENGTH)
 
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('time', '')
 model.run()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

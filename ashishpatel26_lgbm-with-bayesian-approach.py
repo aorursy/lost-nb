@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np # linear algebra
@@ -22,7 +21,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[ ]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -49,7 +47,6 @@ def feature_importance(forest, X_train):
     return ranked_list    
 
 
-# In[ ]:
 
 
 def do_features(df):
@@ -97,7 +94,6 @@ def do_features(df):
     return df
 
 
-# In[ ]:
 
 
 # convert one hot encoded fields to label encoding
@@ -134,7 +130,6 @@ def convert_OHE2LE(df):
     return tmp_df
 
 
-# In[ ]:
 
 
 train = pd.read_csv('../input/train.csv')
@@ -143,7 +138,6 @@ test = pd.read_csv('../input/test.csv')
 test_ids = test.Id
 
 
-# In[ ]:
 
 
 def process_df(df_):
@@ -157,7 +151,6 @@ train = process_df(train)
 test = process_df(test)
 
 
-# In[ ]:
 
 
 # some dependencies are Na, fill those with the square root of the square
@@ -218,7 +211,6 @@ test.loc[(test.v14a ==  1) & (test.sanitario1 ==  1) & (test.abastaguano == 0), 
 test.loc[(test.v14a ==  1) & (test.sanitario1 ==  1) & (test.abastaguano == 0), "sanitario1"] = 0
 
 
-# In[ ]:
 
 
 def train_test_apply_func(train_, test_, func_):
@@ -233,14 +225,12 @@ def train_test_apply_func(train_, test_, func_):
     return train_, test_
 
 
-# In[ ]:
 
 
 # convert the one hot fields into label encoded
 train, test = train_test_apply_func(train, test, convert_OHE2LE)
 
 
-# In[ ]:
 
 
 cols_2_ohe = ['eviv_LE', 'etecho_LE', 'epared_LE', 'elimbasu_LE', 
@@ -265,7 +255,6 @@ def convert_geo2aggs(df_):
 train, test = train_test_apply_func(train, test, convert_geo2aggs)
 
 
-# In[ ]:
 
 
 # add the number of people over 18 in each household
@@ -301,7 +290,6 @@ extract_features(train)
 extract_features(test)    
 
 
-# In[ ]:
 
 
 # drop duplicated columns
@@ -316,7 +304,6 @@ train = train.drop(needless_cols, axis=1)
 test = test.drop(needless_cols, axis=1)
 
 
-# In[ ]:
 
 
 def split_data(train, y, households, test_percentage=0.20, seed=None):
@@ -337,7 +324,6 @@ def split_data(train, y, households, test_percentage=0.20, seed=None):
     return X_train, y_train, X_test, y_test
 
 
-# In[ ]:
 
 
 X = train.query('parentesco1==1')
@@ -371,7 +357,6 @@ y_train = y
 train_households = X_train.idhogar
 
 
-# In[ ]:
 
 
 # drop some features which aren't used by the LGBM or have very low importance
@@ -425,7 +410,6 @@ extra_drop_features = ['geo_manual_elec_LE_2',
  'dependency_no'] + ['geo_hogar_nin', 'geo_manual_elec_LE_3']
 
 
-# In[ ]:
 
 
 lgb_drop_cols = extra_drop_features + ["idhogar"]
@@ -436,7 +420,6 @@ except:
     print("Error dropping columns")
 
 
-# In[ ]:
 
 
 # these parameters have not been altered from when they were originally tuned
@@ -476,7 +459,6 @@ fit_params['verbose'] = 200
 fit_params['callbacks'] = [lgb.reset_parameter(learning_rate=learning_rate_power_0997)]
 
 
-# In[ ]:
 
 
 def _parallel_fit_estimator(estimator1, X, y, sample_weight=None, threshold=True, **fit_params):
@@ -576,7 +558,6 @@ class VotingClassifierLGBM(VotingClassifier):
         return self
 
 
-# In[ ]:
 
 
 clfs = []
@@ -597,7 +578,6 @@ _ = vc.fit(X_train, y_train, **fit_params)
 clf_final = vc.estimators_[0]
 
 
-# In[ ]:
 
 
 global_score = f1_score(y_test, clf_final.predict(X_test), average='macro')
@@ -611,7 +591,6 @@ print('Validation score of a VotingClassifier on 3 LGBMs with soft voting strate
 print('Validation score of a VotingClassifier on 3 LGBMs with hard voting strategy: {:.4f}'.format(global_score_hard))
 
 
-# In[ ]:
 
 
 global_score = f1_score(y_test, clf_final.predict(X_test), average='macro')
@@ -625,27 +604,23 @@ print('Validation score of a VotingClassifier on 3 LGBMs with soft voting strate
 print('Validation score of a VotingClassifier on 3 LGBMs with hard voting strategy: {:.4f}'.format(global_score_hard))
 
 
-# In[ ]:
 
 
 ranked_features = feature_importance(clf_final, X_train)
 
 
-# In[ ]:
 
 
 extra_drop_features = ranked_features[116:]
 extra_drop_features
 
 
-# In[ ]:
 
 
 y_subm = pd.DataFrame()
 y_subm['Id'] = test_ids
 
 
-# In[ ]:
 
 
 y_subm['Target'] = clf_final.predict(test[X_train.columns]) + 1
@@ -659,7 +634,6 @@ y_subm_hard = y_subm.copy(deep=True)
 y_subm_hard['Target'] = vc.predict(test[X_train.columns]) + 1
 
 
-# In[ ]:
 
 
 from datetime import datetime
@@ -675,7 +649,6 @@ y_subm_soft.to_csv(sub_file_soft, index=False)
 y_subm_hard.to_csv(sub_file_hard, index=False)
 
 
-# In[ ]:
 
 
 

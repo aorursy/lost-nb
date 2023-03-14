@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -29,7 +28,6 @@ pd.set_option('display.max_columns', 50)
 pd.set_option('display.max_rows', 150)
 
 
-# In[2]:
 
 
 import os
@@ -38,7 +36,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
         print(os.path.join(dirname, filename))
 
 
-# In[3]:
 
 
 # train = pd.read_csv('/kaggle/input/nfl-big-data-bowl-2020/train.csv', dtype={'WindSpeed': 'object'})
@@ -49,19 +46,16 @@ else:
     
 
 
-# In[4]:
 
 
 outcomes = train[['GameId','PlayId','Yards']].drop_duplicates()
 
 
-# In[5]:
 
 
 train.head()
 
 
-# In[6]:
 
 
 def strtoseconds(txt):
@@ -201,7 +195,6 @@ def preprocess(train):
     return train
 
 
-# In[7]:
 
 
 def create_features(df, deploy=False):
@@ -395,13 +388,11 @@ def create_features(df, deploy=False):
     return basetable
 
 
-# In[8]:
 
 
 get_ipython().run_line_magic('time', 'train_basetable = create_features(train, False)')
 
 
-# In[9]:
 
 
 X = train_basetable.copy()
@@ -414,27 +405,23 @@ for idx, target in enumerate(list(yards)):
 X.drop(['GameId','PlayId','Yards'], axis=1, inplace=True)
 
 
-# In[10]:
 
 
 scaler = StandardScaler()
 X = scaler.fit_transform(X)
 
 
-# In[11]:
 
 
 X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.15, random_state=12345)
 
 
-# In[12]:
 
 
 print(X_train.shape, X_val.shape)
 print(y_train.shape, y_val.shape)
 
 
-# In[13]:
 
 
 from keras.layers import Dense,Input,Flatten,concatenate,Dropout,Lambda
@@ -487,7 +474,6 @@ class CRPSCallback(Callback):
     
 
 
-# In[14]:
 
 
 def get_model(x_tr,y_tr,x_val,y_val):
@@ -537,7 +523,6 @@ def get_model(x_tr,y_tr,x_val,y_val):
     return model,crps
 
 
-# In[15]:
 
 
 from sklearn.model_selection import train_test_split, KFold
@@ -580,13 +565,11 @@ def predict(x_te):
         
 
 
-# In[16]:
 
 
 print("mean crps is %f"%np.mean(crps_csv))
 
 
-# In[17]:
 
 
 get_ipython().run_cell_magic('time', '', "if  TRAIN_OFFLINE==False:\n    from kaggle.competitions import nflrush\n    env = nflrush.make_env()\n    iter_test = env.iter_test()\n\n    for (test_df, sample_prediction_df) in iter_test:\n        basetable = create_features(test_df, deploy=True)\n        basetable.drop(['GameId','PlayId'], axis=1, inplace=True)\n        scaled_basetable = scaler.transform(basetable)\n\n        y_pred = predict(scaled_basetable)\n        y_pred = np.clip(np.cumsum(y_pred, axis=1), 0, 1).tolist()[0]\n\n        preds_df = pd.DataFrame(data=[y_pred], columns=sample_prediction_df.columns)\n        env.predict(preds_df)\n\n    env.write_submission_file()")

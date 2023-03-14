@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[5]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -17,7 +16,6 @@ DATA_DIR = '../input/'
 target_col = 'deal_probability'
 
 
-# In[15]:
 
 
 top_cats = ['image_top_1', 'city', 'region', 'param_1']
@@ -26,7 +24,6 @@ test = pd.read_csv(DATA_DIR+'test.csv', usecols=top_cats+['price'])
 y = pd.read_csv(DATA_DIR+'train.csv', usecols=[target_col]).values.ravel()
 
 
-# In[16]:
 
 
 df = pd.concat([train, test], ignore_index=True)
@@ -51,7 +48,6 @@ tr_sp = tr_sp.reset_index(drop=True)
 te_sp = te_sp.reset_index(drop=True)
 
 
-# In[17]:
 
 
 from time import time

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -19,20 +18,17 @@ from pathlib import Path
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 df_train = pd.read_csv('../input/train.csv')
 df_test = pd.read_csv('../input/test.csv')
 
 
-# In[3]:
 
 
 df_train.head()
 
 
-# In[4]:
 
 
 # check data usage
@@ -43,13 +39,11 @@ print('---------------- DataFrame Info -----------------')
 print(df_train.info())
 
 
-# In[5]:
 
 
 print(df_train.isnull().sum())
 
 
-# In[6]:
 
 
 print('----------------distance Outliers-------------------')
@@ -76,13 +70,11 @@ print('Passengers: {} to {}'.format(df_train.passenger_count.min(),
                                         df_train.passenger_count.max()))
 
 
-# In[7]:
 
 
 print('duplicates IDs: {}'.format(len(df_train) - len(df_train.drop_duplicates(subset='id'))))
 
 
-# In[8]:
 
 
 def haversine(lat1, lon1, lat2, lon2):
@@ -96,7 +88,6 @@ def haversine(lat1, lon1, lat2, lon2):
     return 2*R*math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
 
-# In[9]:
 
 
 #trop LONG et peu précis
@@ -106,7 +97,6 @@ def haversine(lat1, lon1, lat2, lon2):
 #df_test['distance'] = df_train[['pickup_longitude', 'pickup_latitude', 'dropoff_longitude', 'dropoff_latitude']].apply(haversine_distance, axis=1)
 
 
-# In[10]:
 
 
 #rapide mais moins performant
@@ -130,27 +120,23 @@ def haversine(lat1, lon1, lat2, lon2):
     #return haversine(x1, y1, x2, y2)
 
 
-# In[11]:
 
 
 df_train['distance'] = df_train.apply(lambda row: haversine(row['pickup_latitude'], row['pickup_longitude'], row['dropoff_latitude'], row['dropoff_longitude']), axis=1)
 df_test['distance']  = df_test.apply(lambda row: haversine(row['pickup_latitude'], row['pickup_longitude'], row['dropoff_latitude'], row['dropoff_longitude']), axis=1)
 
 
-# In[12]:
 
 
 df_train.head()
 
 
-# In[13]:
 
 
 #sns.set(rc={'figure.figsize':(15,10)})
 #sns.distplot(df_train['distance'],hist=False)
 
 
-# In[14]:
 
 
 #RABDOM FOREST REGRESSOR <=> NO CLEAN
@@ -177,7 +163,6 @@ df_train.head()
 #df_train = df_train[df_train['distance']<120000 
 
 
-# In[15]:
 
 
 #delete
@@ -188,7 +173,6 @@ df_train.head()
 #))
 
 
-# In[16]:
 
 
 plt.figure(figsize=(8,5))
@@ -196,26 +180,22 @@ sns.distplot(df_train['trip_duration']).set_title("Distribution of Trip Duration
 plt.xlabel("Trip Duration")
 
 
-# In[17]:
 
 
 df_train['trip_duration'] = np.log(df_train['trip_duration'].values)
 
 
-# In[18]:
 
 
 df_train[pd.isnull(df_train)].sum()
 
 
-# In[19]:
 
 
 df_train['pickup_datetime'] = pd.to_datetime(df_train['pickup_datetime'], format='%Y-%m-%d %H:%M:%S')
 df_test['pickup_datetime'] = pd.to_datetime(df_test['pickup_datetime'], format='%Y-%m-%d %H:%M:%S')
 
 
-# In[20]:
 
 
 df_train['hour'] = df_train.loc[:,'pickup_datetime'].dt.hour;
@@ -231,7 +211,6 @@ df_test['hour'] = df_test.loc[:,'pickup_datetime'].dt.hour;
 df_test['month'] = df_test.loc[:,'pickup_datetime'].dt.month;
 
 
-# In[21]:
 
 
 cat_vars = ['store_and_fwd_flag']
@@ -244,20 +223,17 @@ for col in cat_vars:
 df_test.head()
 
 
-# In[22]:
 
 
 y_train = df_train["trip_duration"]
 X_train = df_train[["vendor_id", "store_and_fwd_flag","passenger_count", "pickup_longitude", "pickup_latitude", "distance", "dropoff_longitude","dropoff_latitude", "hour", "week", "weekday", "month" ]]
 
 
-# In[23]:
 
 
 get_ipython().run_cell_magic('time', '', 'from sklearn.ensemble import RandomForestRegressor\nm = RandomForestRegressor(n_estimators=100,min_samples_leaf=3, min_samples_split=15, n_jobs=-1, max_features="auto")\nm.fit(X_train, y_train)')
 
 
-# In[24]:
 
 
 X_test = df_test[["vendor_id", "store_and_fwd_flag","passenger_count","pickup_longitude", "pickup_latitude", "distance","dropoff_longitude","dropoff_latitude", "hour", "week", "weekday", "month"]]
@@ -265,21 +241,18 @@ prediction = m.predict(X_test)
 prediction
 
 
-# In[25]:
 
 
 submit = pd.read_csv('../input/sample_submission.csv')
 submit.head()
 
 
-# In[26]:
 
 
 my_submission = pd.DataFrame({'id': df_test.id, 'trip_duration': np.exp(prediction)})
 my_submission.head()
 
 
-# In[27]:
 
 
 my_submission.to_csv('submission.csv', index=False)

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -48,20 +47,17 @@ seed = 2077
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 get_ipython().system('unzip /kaggle/input/quora-insincere-questions-classification/embeddings.zip  -d /kaggle/input/embeddings ')
 get_ipython().system('ls -l /kaggle/input/embeddings')
 
 
-# In[3]:
 
 
 get_ipython().system('ls /kaggle/input/embeddings')
 
 
-# In[4]:
 
 
 # Preprocessing
@@ -127,7 +123,6 @@ def get_param_size(model, trainable=True):
     return psize
 
 
-# In[5]:
 
 
 # https://discuss.pytorch.org/t/how-to-apply-exponential-moving-average-decay-for-variables/10856
@@ -171,7 +166,6 @@ class EMA():
             self._update(model)
 
 
-# In[6]:
 
 
 class GlobalMaxPooling1D(nn.Module):
@@ -249,7 +243,6 @@ class GRUModel(nn.Module):
         return torch.sigmoid(self.predict(dataloader)).data.numpy()
 
 
-# In[7]:
 
 
 class TextClassificationDataset(Dataset):
@@ -346,7 +339,6 @@ def run_epoch(model, dataloader, optimizer, callbacks=None,
     return tr_loss / (step + 1)
 
 
-# In[8]:
 
 
 def load_glove(word_index, max_features, unk_uni):
@@ -527,7 +519,6 @@ def setup_emb(tr_X, max_features=50000, clean_num=2, unk_uni=True):
     return tokenizer, embedding_matrix
 
 
-# In[9]:
 
 
 puncts = ',.":)(-!?|;\'$&/[]>%=#*+\\•~@£·_{}©^®`<→°€™›♥←×§″′Â█½à…“★”–●â►−¢²¬░¶↑±¿▾═¦║\
@@ -595,7 +586,6 @@ def prepare_data(train_df, test_df, max_len, max_features, trunc='pre',
     return train_loader, test_loader, embedding_matrix
 
 
-# In[10]:
 
 
 ids_s = [list(range(300)), list(range(300, 600)),
@@ -621,7 +611,6 @@ print('Train : ', train_df.shape)
 print('Test : ', test_df.shape)
 
 
-# In[11]:
 
 
 obj = prepare_data(train_df, test_df, max_len, max_features,
@@ -638,13 +627,11 @@ train_loader, test_loader, embedding_matrix = obj
 '''
 
 
-# In[12]:
 
 
 get_ipython().system('ls /kaggle/input/quora-insincere-questions-classification/embeddings/')
 
 
-# In[13]:
 
 
 ema_n = int(train_df.shape[0] / (updates_per_epoch * batch_size))
@@ -687,7 +674,6 @@ out_df.to_csv("submission.csv", index=False)
 print(f'Done:{time.time() - t0:.1f}s')
 
 
-# In[14]:
 
 
 '''
@@ -702,7 +688,6 @@ print('mu: {}, best threshold: {}, best f1: {}'.format(mu, best_threshold, max_s
 '''
 
 
-# In[ ]:
 
 
 

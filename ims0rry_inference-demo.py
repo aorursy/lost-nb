@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_cell_magic('time', '', '%%capture\n# Install facenet-pytorch (with internet use "pip install facenet-pytorch")\n#!pip install /kaggle/input/facenet-pytorch-vggface2/facenet_pytorch-2.2.7-py3-none-any.whl\n#!cp /kaggle/input/decord/install.sh . && chmod  +x install.sh && ./install.sh \n#!pip install /kaggle/input/dfdcpackages/dlib-19.19.0-cp36-cp36m-linux_x86_64.whl\n#!pip install /kaggle/input/imutils/imutils-0.5.3')
 
 
-# In[2]:
 
 
 import os, sys, time
@@ -49,7 +47,6 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 import matplotlib.pyplot as plt
 
 
-# In[3]:
 
 
 test_dir = "/kaggle/input/deepfake-detection-challenge/test_videos/"
@@ -58,7 +55,6 @@ test_videos = sorted([x for x in os.listdir(test_dir) if x[-4:] == ".mp4"])
 len(test_videos)
 
 
-# In[4]:
 
 
 print("PyTorch version:", torch.__version__)
@@ -66,14 +62,12 @@ print("CUDA version:", torch.version.cuda)
 print("cuDNN version:", torch.backends.cudnn.version())
 
 
-# In[5]:
 
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 #set_bridge('torch')
 
 
-# In[6]:
 
 
 from blazeface import BlazeFace
@@ -83,13 +77,11 @@ facedet.load_anchors("/kaggle/input/blazeface-pytorch/anchors.npy")
 _ = facedet.train(False)
 
 
-# In[7]:
 
 
 input_size = 256
 
 
-# In[8]:
 
 
 from torchvision.transforms import Normalize
@@ -99,7 +91,6 @@ std = [0.229, 0.224, 0.225]
 normalize_transform = Normalize(mean, std)
 
 
-# In[9]:
 
 
 def disable_grad(model):
@@ -161,7 +152,6 @@ def predict_faces(models, x, weigths, n):
         return y_pred
 
 
-# In[10]:
 
 
 from helpers.read_video_1 import VideoReader
@@ -174,7 +164,6 @@ video_read_fn = lambda x: video_reader.read_frames(x, num_frames=frames_per_vide
 face_extractor = FaceExtractor(video_read_fn, facedet)
 
 
-# In[11]:
 
 
 '''import tensorflow as tf
@@ -214,7 +203,6 @@ def crop_image(frame,bbox):
     return frame[top:bottom,left:right]'''
 
 
-# In[12]:
 
 
 class MetaModel(nn.Module):
@@ -246,7 +234,6 @@ class MetaModel(nn.Module):
         return x
 
 
-# In[13]:
 
 
 MODELS_PATH = "/kaggle/input/deepfake-detection-model-20k/"
@@ -329,7 +316,6 @@ _ = disable_grad(meta)
 del checkpoint'''
 
 
-# In[14]:
 
 
 from random import randint
@@ -410,7 +396,6 @@ def predict_on_video(video_path, batch_size):
     return 0.5#predict_mobilenet(video_path, batch_size=50)
 
 
-# In[15]:
 
 
 def predict_on_video_single(video_path, batch_size):
@@ -482,7 +467,6 @@ def predict_on_video_single(video_path, batch_size):
     return 0.5#predict_mobilenet(video_path, batch_size=50)
 
 
-# In[16]:
 
 
 from concurrent.futures import ThreadPoolExecutor
@@ -506,13 +490,11 @@ def predict_on_video_set(videos, num_workers):
     return list(predictions)
 
 
-# In[17]:
 
 
 speed_test = False  # you have to enable this manually
 
 
-# In[18]:
 
 
 # Elapsed 6.873434 min. Average per video: 8.248120 sec.
@@ -524,20 +506,17 @@ if speed_test:
     print("Elapsed %f min. Average per video: %f sec." % (elapsed / 60, elapsed / len(speedtest_videos)))
 
 
-# In[19]:
 
 
 predictions = predict_on_video_set(test_videos, num_workers=4)
 
 
-# In[20]:
 
 
 submission_df = pd.DataFrame({"filename": test_videos, "label": predictions})
 submission_df.to_csv("submission.csv", index=False)
 
 
-# In[21]:
 
 
 get_ipython().system('rm -r reader && rm install.sh')

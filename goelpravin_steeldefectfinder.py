@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ import os
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 get_ipython().system('cp -r /kaggle/input/imageai/imageai/imageai/ imageai')
@@ -61,7 +59,6 @@ img_test_folder = Path('../input/severstal-steel-defect-detection/test_images/')
 numberOfSampleExtractionsShown = 0
 
 
-# In[3]:
 
 
 # reading in the training set
@@ -107,7 +104,6 @@ squashed['Distinct Defect Types'] = squashed.ClassId.apply(lambda x: len(x))
 #squashed.head(10)
 
 
-# In[4]:
 
 
 def build_mask(encodings, labels):
@@ -265,7 +261,6 @@ def rle_decode(mask_rle, shape=(1600,256)):
     return img.reshape(shape).T  # Needed to align to RLE direction
 
 
-# In[5]:
 
 
 """ use a consistent color palette per label throughout the notebook """
@@ -300,7 +295,6 @@ for i, (index, row) in enumerate(sample.iterrows()):
     ax.imshow(image);
 
 
-# In[6]:
 
 
 #now let us train custom ImageAI model on training images provided. ImageAI custom training says "Your 
@@ -371,7 +365,6 @@ for defect3_file_name in os.listdir(defect3_train_folder):
             numberOfSampleExtractions = numberOfSampleExtractions-1
 
 
-# In[7]:
 
 
 #now train the custom model for viewing steel defects

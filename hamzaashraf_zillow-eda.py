@@ -3,7 +3,6 @@
 Here, we will try to explore the givn datasets to know what is inside the data. 
 Objective of this competition is building a model to improve zestimate residual error.
 Import liberaries 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -15,7 +14,6 @@ color = sns.color_palette()
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/train_2016_v2.csv' , parse_dates=["transactiondate"])
@@ -23,31 +21,26 @@ prop = pd.read_csv('../input/properties_2016.csv')
 sample = pd.read_csv('../input/sample_submission.csv')
 
 
-# In[3]:
 
 
 train.shape
 
 
-# In[4]:
 
 
 train.head(3).transpose()
 
 
-# In[5]:
 
 
 prop.shape
 
 
-# In[6]:
 
 
 prop.head(3).transpose()
 
 
-# In[7]:
 
 
 plt.figure(figsize=(10,7.5))
@@ -57,7 +50,6 @@ plt.ylabel('logerror', fontsize=15)
 plt.show()
 
 
-# In[8]:
 
 
 ulimit = np.percentile(train.logerror.values, 99)
@@ -71,25 +63,21 @@ plt.xlabel('logerror', fontsize=20)
 plt.show()
 
 
-# In[9]:
 
 
 merged = pd.merge(train,prop,on="parcelid",how="left")
 
 
-# In[10]:
 
 
 merged.shape
 
 
-# In[11]:
 
 
 merged.head(3).transpose()
 
 
-# In[12]:
 
 
 pd.options.display.max_rows = 65
@@ -99,7 +87,6 @@ dtype_df.columns = ["Count", "Column Type"]
 dtype_df
 
 
-# In[13]:
 
 
 dataTypeDf = pd.DataFrame(merged.dtypes.value_counts()).reset_index().rename(columns={"index":"variableType",0:"count"})
@@ -109,7 +96,6 @@ sns.barplot(data=dataTypeDf,x="variableType",y="count",ax=ax,color="#C28D82")
 ax.set(xlabel='Variable Type', ylabel='Count',title="Variables Count Across Datatype")
 
 
-# In[14]:
 
 
 import missingno as msno
@@ -118,25 +104,21 @@ missingValueColumns = merged.columns[merged.isnull().any()].tolist()
 msno.bar(merged[missingValueColumns],            figsize=(30,8),color="#34495e",fontsize=15,labels=True,)
 
 
-# In[15]:
 
 
 msno.matrix(merged[missingValueColumns],width_ratios=(10,1),            figsize=(40,10),fontsize=12,sparkline=True,labels=True)
 
 
-# In[16]:
 
 
 msno.heatmap(merged[missingValueColumns],figsize=(20,20))
 
 
-# In[17]:
 
 
 msno.dendrogram(merged)
 
 
-# In[18]:
 
 
 missing_df = merged.isnull().sum(axis=0).reset_index()
@@ -145,7 +127,6 @@ missing_df['missing_ratio'] = missing_df['missing_count'] / merged.shape[0]
 missing_df.ix[missing_df['missing_ratio']>0.999]
 
 
-# In[19]:
 
 
 train['transaction_month'] = train['transactiondate'].dt.month
@@ -159,14 +140,12 @@ plt.ylabel('Number of Occurrences', fontsize=15)
 plt.show()
 
 
-# In[20]:
 
 
 for col in merged.columns:
     print(col, len(merged[col].unique()))
 
 
-# In[21]:
 
 
 corr_zero_cols = ['assessmentyear', 'storytypeid', 'pooltypeid2', 'pooltypeid7', 'pooltypeid10', 'poolcnt', 'decktypeid', 'buildingclasstypeid']

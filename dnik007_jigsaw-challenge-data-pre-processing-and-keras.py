@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import gc
@@ -45,7 +44,6 @@ from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint,  Callback, EarlyStopping, ReduceLROnPlateau
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/jigsaw-unintended-bias-in-toxicity-classification/train.csv')
@@ -53,13 +51,11 @@ test = pd.read_csv('../input/jigsaw-unintended-bias-in-toxicity-classification/t
 sub = pd.read_csv('../input/jigsaw-unintended-bias-in-toxicity-classification/sample_submission.csv')
 
 
-# In[3]:
 
 
 train.head()
 
 
-# In[4]:
 
 
 def reduce_mem_usage(df):
@@ -129,7 +125,6 @@ def reduce_mem_usage(df):
     return df, NAlist
 
 
-# In[5]:
 
 
 train, NAlist = reduce_mem_usage(train)
@@ -141,14 +136,12 @@ print("")
 print(NAlist)
 
 
-# In[6]:
 
 
 print("Train shape : ",train.shape)
 print("Test shape : ",test.shape)
 
 
-# In[7]:
 
 
 df = pd.concat([train[['id','comment_text']], test], axis=0)
@@ -156,14 +149,12 @@ del(train, test)
 gc.collect()
 
 
-# In[8]:
 
 
 ft_common_crawl = '../input/fasttext-crawl-300d-2m/crawl-300d-2M.vec'
 embeddings_index = KeyedVectors.load_word2vec_format(ft_common_crawl)
 
 
-# In[9]:
 
 
 def build_vocab(texts):
@@ -178,7 +169,6 @@ def build_vocab(texts):
     return vocab
 
 
-# In[10]:
 
 
 def check_coverage(vocab, embeddings_index):
@@ -202,13 +192,11 @@ def check_coverage(vocab, embeddings_index):
     return unknown_words
 
 
-# In[11]:
 
 
 df['comment_text'] = df['comment_text'].apply(lambda x: x.lower())
 
 
-# In[12]:
 
 
 vocab = build_vocab(df['comment_text'])
@@ -216,7 +204,6 @@ oov = check_coverage(vocab, embeddings_index)
 oov[:15]
 
 
-# In[13]:
 
 
 contraction_mapping = {"ain't": "is not", "aren't": "are not","can't": "cannot", "'cause": "because",
@@ -264,13 +251,11 @@ contraction_mapping = {"ain't": "is not", "aren't": "are not","can't": "cannot",
                        "you'll've": "you will have", "you're": "you are", "you've": "you have" }
 
 
-# In[14]:
 
 
 del(vocab,oov)
 
 
-# In[15]:
 
 
 def clean_contractions(text, mapping):
@@ -281,13 +266,11 @@ def clean_contractions(text, mapping):
     return text
 
 
-# In[16]:
 
 
 df['comment_text'] = df['comment_text'].apply(lambda x: clean_contractions(x, contraction_mapping))
 
 
-# In[17]:
 
 
 vocab = build_vocab(df['comment_text'])
@@ -295,13 +278,11 @@ oov = check_coverage(vocab, embeddings_index)
 oov[:10]
 
 
-# In[18]:
 
 
 punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&'
 
 
-# In[19]:
 
 
 def unknown_punct(embed, punct):
@@ -313,13 +294,11 @@ def unknown_punct(embed, punct):
     return unknown
 
 
-# In[20]:
 
 
 print(unknown_punct(embeddings_index, punct))
 
 
-# In[21]:
 
 
 punct_mapping = {"_":" ", "`":" "}
@@ -332,26 +311,22 @@ def clean_special_chars(text, puncts, mapping):
     return text
 
 
-# In[22]:
 
 
 df['comment_text'] = df['comment_text'].apply(lambda x: clean_special_chars(x, punct, punct_mapping))
 
 
-# In[23]:
 
 
 vocab = build_vocab(df['comment_text'])
 oov = check_coverage(vocab, embeddings_index)
 
 
-# In[24]:
 
 
 oov[:20]
 
 
-# In[25]:
 
 
 def clean_numbers(x):
@@ -360,7 +335,6 @@ df['comment_text'] = df['comment_text'].apply(clean_numbers)
 df['comment_text'] = df['comment_text'].apply(clean_numbers)
 
 
-# In[26]:
 
 
 vocab = build_vocab(df['comment_text'])
@@ -368,14 +342,12 @@ oov = check_coverage(vocab, embeddings_index)
 oov[:20]
 
 
-# In[27]:
 
 
 del(vocab,oov)
 gc.collect()
 
 
-# In[28]:
 
 
 train = df.iloc[:1804874,:]
@@ -384,7 +356,6 @@ test = df.iloc[1804874:,:]
 train.head()
 
 
-# In[29]:
 
 
 from wordcloud import WordCloud, STOPWORDS
@@ -422,7 +393,6 @@ def plot_wordcloud(text, mask=None, max_words=200, max_font_size=100, figure_siz
 plot_wordcloud(train["comment_text"], title="Word Cloud of Comments")
 
 
-# In[30]:
 
 
 train_orig = pd.read_csv("../input/jigsaw-unintended-bias-in-toxicity-classification/train.csv")
@@ -432,26 +402,22 @@ gc.collect()
 train['target'] = np.where(train['target'] >= 0.5, True, False)
 
 
-# In[31]:
 
 
 train.head()
 
 
-# In[32]:
 
 
 train_df, validate_df = model_selection.train_test_split(train, test_size=0.1)
 print('%d train comments, %d validate comments' % (len(train_df), len(validate_df)))
 
 
-# In[33]:
 
 
 del train
 
 
-# In[34]:
 
 
 MAX_NUM_WORDS = 100000
@@ -468,14 +434,12 @@ def pad_text(texts, tokenizer):
     return pad_sequences(tokenizer.texts_to_sequences(texts), maxlen=MAX_SEQUENCE_LENGTH)
 
 
-# In[35]:
 
 
 EMBEDDINGS_DIMENSION = 300
 embedding_matrix = np.zeros((len(tokenizer.word_index) + 1,EMBEDDINGS_DIMENSION))
 
 
-# In[36]:
 
 
 num_words_in_embedding = 0
@@ -487,7 +451,6 @@ for word, i in tokenizer.word_index.items():
         num_words_in_embedding += 1
 
 
-# In[37]:
 
 
 train_text = pad_text(train_df[TEXT_COLUMN], tokenizer)
@@ -496,7 +459,6 @@ validate_text = pad_text(validate_df[TEXT_COLUMN], tokenizer)
 validate_labels = validate_df[TOXICITY_COLUMN]
 
 
-# In[38]:
 
 
 def build_model(lr=0.0, lr_d=0.0, units=64, spatial_dr=0.0, kernel_size1=3, kernel_size2=2, dense_units=0, dr=0.1, conv_size=32, epochs=20):
@@ -536,7 +498,6 @@ def build_model(lr=0.0, lr_d=0.0, units=64, spatial_dr=0.0, kernel_size1=3, kern
     return model
 
 
-# In[39]:
 
 
 #unit_list=[8, 16, 32, 64]
@@ -544,7 +505,6 @@ def build_model(lr=0.0, lr_d=0.0, units=64, spatial_dr=0.0, kernel_size1=3, kern
 #    Model1= build_model(lr = 1e-3, lr_d = 1e-7, units = u, spatial_dr = 0.3, kernel_size1=4, kernel_size2=2, dense_units=32, dr=0.1, conv_size=64, epochs=5)
 
 
-# In[40]:
 
 
 #dense_list=[16, 32, 64]
@@ -552,7 +512,6 @@ def build_model(lr=0.0, lr_d=0.0, units=64, spatial_dr=0.0, kernel_size1=3, kern
 #    Model1= build_model(lr = 1e-3, lr_d = 1e-7, units = 64, spatial_dr = 0.3, kernel_size1=4, kernel_size2=2, dense_units=d, dr=0.1, conv_size=64, epochs=5)
 
 
-# In[41]:
 
 
 #conv_list=[32, 64, 128]
@@ -560,7 +519,6 @@ def build_model(lr=0.0, lr_d=0.0, units=64, spatial_dr=0.0, kernel_size1=3, kern
 #    Model1= build_model(lr = 1e-3, lr_d = 1e-7, units = 64, spatial_dr = 0.3, kernel_size1=4, kernel_size2=2, dense_units=64, dr=0.1, conv_size=c, epochs=5)
 
 
-# In[42]:
 
 
 #spdr_list=[0.2, 0.3, 0.4]
@@ -568,7 +526,6 @@ def build_model(lr=0.0, lr_d=0.0, units=64, spatial_dr=0.0, kernel_size1=3, kern
 #    Model1= build_model(lr = 1e-3, lr_d = 1e-7, units = 64, spatial_dr = s, kernel_size1=4, kernel_size2=2, dense_units=64, dr=0.1, conv_size=128, epochs=5)
 
 
-# In[43]:
 
 
 #dr_list=[0, 0.1, 0.2]
@@ -576,13 +533,11 @@ def build_model(lr=0.0, lr_d=0.0, units=64, spatial_dr=0.0, kernel_size1=3, kern
 #    Model1= build_model(lr = 1e-3, lr_d = 1e-7, units = 64, spatial_dr = 0.3, kernel_size1=4, kernel_size2=2, dense_units=64, dr= i, conv_size=128, epochs=5)
 
 
-# In[44]:
 
 
 Model2= build_model(lr = 1e-3, lr_d = 1e-7, units = 64, spatial_dr = 0.2, kernel_size1=4, kernel_size2=2, dense_units=64, dr=0, conv_size=64, epochs=10)
 
 
-# In[45]:
 
 
 submission2 = pd.read_csv('../input/jigsaw-unintended-bias-in-toxicity-classification/sample_submission.csv', index_col='id')
@@ -592,13 +547,11 @@ submission2.head()
 submission2.to_csv('submission.csv', index=False)
 
 
-# In[46]:
 
 
 
 
 
-# In[46]:
 
 
 

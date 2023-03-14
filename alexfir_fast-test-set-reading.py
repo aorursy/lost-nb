@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np
@@ -89,13 +88,11 @@ def get_chunks(info, chunk_size=1000):
     return chunks
 
 
-# In[ ]:
 
 
 info = init_reading()
 
 
-# In[ ]:
 
 
 # single object read as pandas object, first object
@@ -103,7 +100,6 @@ object_info13 = read_object_info(info, 13)
 object_info13.head()
 
 
-# In[ ]:
 
 
 # last object from test_set
@@ -111,14 +107,12 @@ object_info104853812 = read_object_info(info, 104853812)
 object_info104853812.tail()
 
 
-# In[ ]:
 
 
 object_info104853812 = read_object_info(info, 104853812, as_pandas=False, columns=['flux', 'flux_err'])
 object_info104853812['flux'][-5:]
 
 
-# In[ ]:
 
 
 object_ids = info['object_id_to_range']['object_id'].values.tolist()
@@ -133,7 +127,6 @@ for object_id in object_ids:
 print("Single field reading took {:6.4f} secs, records = {}".format((time.time() - start_time), records_read))
 
 
-# In[ ]:
 
 
 start_time = time.time()

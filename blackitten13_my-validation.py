@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('reload_ext', 'autoreload')
@@ -28,7 +27,6 @@ from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedKFold
 
 
-# In[2]:
 
 
 def is_interactive():
@@ -90,7 +88,6 @@ def reduce_mem_usage(df):
     return df
 
 
-# In[3]:
 
 
 tqdm.pandas()
@@ -98,7 +95,6 @@ tqdm.pandas()
 tokenizer = TreebankWordTokenizer()
 
 
-# In[4]:
 
 
 train_df = reduce_mem_usage(pd.read_csv('../input/train.csv'))
@@ -131,7 +127,6 @@ loss_weight = 1.0 / weights.mean()
 y_train = np.vstack([(train_df['target'].values>=0.5).astype(np.int),weights]).T
 
 
-# In[5]:
 
 
 annot_idx = train_df[train_df['identity_annotator_count'] > 0].sample(n=48660, random_state=13).index
@@ -139,7 +134,6 @@ not_annot_idx = train_df[train_df['identity_annotator_count'] == 0].sample(n=486
 x_val_idx = list(set(annot_idx).union(set(not_annot_idx)))
 
 
-# In[6]:
 
 
 val_df = train_df.loc[x_val_idx]
@@ -147,7 +141,6 @@ print(train_df.shape)
 print(val_df.shape)
 
 
-# In[7]:
 
 
 identity_columns = [
@@ -167,7 +160,6 @@ def convert_dataframe_to_bool(df):
 val_df = convert_dataframe_to_bool(val_df)
 
 
-# In[8]:
 
 
 SUBGROUP_AUC = 'subgroup_auc'
@@ -235,7 +227,6 @@ def get_final_metric(bias_df, overall_auc, POWER=-5, OVERALL_MODEL_WEIGHT=0.25):
     return (OVERALL_MODEL_WEIGHT * overall_auc) + ((1 - OVERALL_MODEL_WEIGHT) * bias_score)
 
 
-# In[9]:
 
 
 skf = StratifiedKFold(n_splits=5, random_state=13)

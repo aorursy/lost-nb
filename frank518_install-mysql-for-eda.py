@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # !apt-cache search libaio
@@ -14,13 +13,11 @@ get_ipython().system('pip install pymysql')
 get_ipython().system('wget http://mysql.mirrors.hoobly.com/Downloads/MySQL-5.6/mysql-5.6.45-linux-glibc2.12-x86_64.tar.gz')
 
 
-# In[2]:
 
 
 get_ipython().run_cell_magic('bash', '', '\ngroupadd mysql\nuseradd -r -g mysql -s /bin/false mysql\ncd /usr/local\ntar zxvf /kaggle/working/mysql-5.6.45-linux-glibc2.12-x86_64.tar.gz > /dev/null\nln -s mysql-5.6.45-linux-glibc2.12-x86_64 mysql\ncd mysql\nmkdir mysql-files\nchown mysql:mysql mysql-files\nchmod 777 mysql-files\n\nchmod -R 777 /tmp\n# official instruction " bin/mysqld --initialize --user=mysql " dosen\'t work, change to "mysql_install_db"\n./scripts/mysql_install_db --user=mysql\n\n# bin/mysqld --initialize --user=mysql \n# bin/mysql_ssl_rsa_setup              \n# bin/mysqld_safe --user=mysql &\n# # Next command is optional\n# cp support-files/mysql.server /etc/init.d/mysql.server')
 
 
-# In[3]:
 
 
 import os
@@ -33,7 +30,6 @@ get_ipython().system('mysql -e "create database fraud"')
 get_ipython().system('mysql -e "show databases"')
 
 
-# In[4]:
 
 
 #!/usr/bin/env python3
@@ -108,7 +104,6 @@ dumper.dump_using_mp('test_transaction')
 dumper.dump_using_mp('sample_submission')
 
 
-# In[5]:
 
 
 # add primary key and index for train_identity.
@@ -166,7 +161,6 @@ ADD PRIMARY KEY (`TransactionID`);
 get_ipython().system('mysql -e "$sql"')
 
 
-# In[6]:
 
 
 get_ipython().system('mysql -e "use fraud; show tables;"')
@@ -182,7 +176,6 @@ get_ipython().system('mysql -e "use fraud; select count(TransactionID) as test_t
 get_ipython().system('mysql -e "use fraud; select count(TransactionID) as sample_submission_size from sample_submission"')
 
 
-# In[7]:
 
 
 def make_sql(where): return f"""

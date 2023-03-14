@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # https://www.kaggle.com/pednoi/training-mask-r-cnn-to-be-a-fashionista-lb-0-07
@@ -25,7 +24,6 @@ import seaborn as sns
 # label_descriptions.json  sample_submission.csv	test  train  train.csv
 
 
-# In[2]:
 
 
 input_dir = "../input/imaterialist-fashion-2019-FGVC6/"
@@ -40,7 +38,6 @@ def print_dict(dictionary, name_dict):
         print("{:<5}{:^8}{:^40}{:>10}{:>10.3%}".format(i+1, key, name_dict[key], val, val/all_num))
 
 
-# In[3]:
 
 
 def print_img_with_labels(img_name, labels, category_name_dict, attribute_name_dict, ax):
@@ -59,7 +56,6 @@ def print_img_with_labels(img_name, labels, category_name_dict, attribute_name_d
             ax.text(x_pos, y_pos, attribute_name_dict[attribute_id], fontsize=12)
 
 
-# In[4]:
 
 
 def print_img(img_name, ax):
@@ -75,21 +71,18 @@ def json2df(data):
     return df
 
 
-# In[5]:
 
 
 train_df = pd.read_csv(input_dir + "train.csv")
 train_df.head()
 
 
-# In[6]:
 
 
 with open(input_dir + "label_descriptions.json") as f:
     label_description = json.load(f)
 
 
-# In[7]:
 
 
 category_df = json2df(label_description["categories"])
@@ -100,34 +93,29 @@ attribute_df["id"] = attribute_df["id"].astype(int)
 attribute_df["level"] = attribute_df["level"].astype(int)
 
 
-# In[8]:
 
 
 print("Category Labels")
 category_df
 
 
-# In[9]:
 
 
 print("Attribute Labels")
 attribute_df
 
 
-# In[10]:
 
 
 print("We have {} categories, and {} attributes.".format(len(label_description['categories']), len(label_description['attributes'])))
 print("Each label　have ID, name, supercategory, and level.")
 
 
-# In[11]:
 
 
 train_df.head(10)
 
 
-# In[12]:
 
 
 image_label_num_df = train_df.groupby("ImageId")["ClassId"].count()
@@ -159,7 +147,6 @@ ax.set_xlabel("the number of labels")
 ax.set_ylabel("amout");
 
 
-# In[13]:
 
 
 counter_category = Counter()
@@ -171,13 +158,11 @@ for class_id in train_df["ClassId"]:
 len(counter_category)
 
 
-# In[14]:
 
 
 len(counter_attribute)
 
 
-# In[15]:
 
 
 category_name_dict = {}
@@ -191,20 +176,17 @@ print("Category label frequency")
 print_dict(counter_category, category_name_dict)
 
 
-# In[16]:
 
 
 print("Attribute label frequency")
 print_dict(counter_attribute, attribute_name_dict)
 
 
-# In[17]:
 
 
 train_df.ClassId.max()
 
 
-# In[18]:
 
 
 attribute_num_dict = {}
@@ -224,7 +206,6 @@ for class_id in train_df["ClassId"].values:
         attribute_num_dict[category][attribute] += 1
 
 
-# In[19]:
 
 
 fig, ax = plt.subplots(math.ceil(len(counter_category)/2), 2,                       figsize=(8*2, 6*math.ceil(len(counter_category)/2)), sharey=True)
@@ -239,7 +220,6 @@ for index, key in enumerate(sorted(map(int, attribute_num_dict.keys()))):
 print("the ratio of attribute per category(x=92 means no attribute)")
 
 
-# In[20]:
 
 
 image_shape_df = train_df.groupby("ImageId")["Height", "Width"].first()
@@ -251,7 +231,6 @@ ax2.hist(image_shape_df.Width, bins=100)
 ax2.set_title("Width distribution");
 
 
-# In[21]:
 
 
 img_name = image_shape_df.Height.idxmin()
@@ -261,7 +240,6 @@ fig, ax = plt.subplots()
 print_img(img_name, ax)
 
 
-# In[22]:
 
 
 img_name = image_shape_df.Height.idxmax()
@@ -271,7 +249,6 @@ fig, ax = plt.subplots()
 print_img(img_name, ax)
 
 
-# In[23]:
 
 
 img_name = image_shape_df.Width.idxmin()
@@ -281,7 +258,6 @@ fig, ax = plt.subplots()
 print_img(img_name, ax)
 
 
-# In[24]:
 
 
 img_name = image_shape_df.Width.idxmax()
@@ -291,7 +267,6 @@ fig, ax = plt.subplots()
 print_img(img_name, ax)
 
 
-# In[25]:
 
 
 pallete =  [
@@ -336,7 +311,6 @@ def train_generator(df, batch_size):
             return trn_images, seg_images
 
 
-# In[26]:
 
 
 def cv2plt(img, isColor=True):
@@ -346,7 +320,6 @@ def cv2plt(img, isColor=True):
     return original_img
 
 
-# In[27]:
 
 
 original, segmented = train_generator(train_df, 6)
@@ -358,13 +331,11 @@ for i, (img, seg) in enumerate(zip(original, segmented)):
     ax[i//2, i%2].set_title("Sample {}".format(i))
 
 
-# In[28]:
 
 
 sample_df = pd.read_csv(input_dir + "sample_submission.csv")
 
 
-# In[29]:
 
 
 sample_df.head(20)

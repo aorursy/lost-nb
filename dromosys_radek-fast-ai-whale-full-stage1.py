@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -17,13 +16,11 @@ import re
 from utils import *
 
 
-# In[ ]:
 
 
 get_ipython().system('git clone https://github.com/radekosmulski/whale')
 
 
-# In[ ]:
 
 
 import sys
@@ -32,13 +29,11 @@ import sys
 sys.path.append('/kaggle/working/whale')
 
 
-# In[ ]:
 
 
 from whale.utils import map5
 
 
-# In[ ]:
 
 
 import fastai
@@ -49,20 +44,17 @@ master_bar, progress_bar = force_console_behavior()
 fastai.basic_train.master_bar, fastai.basic_train.progress_bar = master_bar, progress_bar
 
 
-# In[ ]:
 
 
 from fastai import *
 from fastai.vision import *
 
 
-# In[ ]:
 
 
 ls ../input
 
 
-# In[ ]:
 
 
 path = Path('../input/humpback-whale-identification/')
@@ -70,7 +62,6 @@ path_test = Path('../input/humpback-whale-identification/test')
 path_train = Path('../input/humpback-whale-identification/train')
 
 
-# In[ ]:
 
 
 df = pd.read_csv(path/'train.csv')#.sample(frac=0.05)
@@ -78,20 +69,17 @@ df.head()
 val_fns = {'69823499d.jpg'}
 
 
-# In[ ]:
 
 
 fn2label = {row[1].Image: row[1].Id for row in df.iterrows()}
 path2fn = lambda path: re.search('\w*\.jpg$', path).group(0)
 
 
-# In[ ]:
 
 
 name = f'res50-full-train'
 
 
-# In[ ]:
 
 
 SZ = 224
@@ -100,7 +88,6 @@ NUM_WORKERS = 0
 SEED=0
 
 
-# In[ ]:
 
 
 data = (
@@ -115,32 +102,27 @@ data = (
 )
 
 
-# In[ ]:
 
 
 MODEL_PATH = "/kaggle/working/"
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', '\nlearn = create_cnn(data, models.resnet50, lin_ftrs=[2048], model_dir=MODEL_PATH)\nlearn.clip_grad();')
 
 
-# In[ ]:
 
 
 learn.fit_one_cycle(14, 1e-2)
 learn.save(f'{name}-stage-1')
 
 
-# In[ ]:
 
 
 get_ipython().system('rm -rf /kaggle/working/whale')
 
 
-# In[ ]:
 
 
 

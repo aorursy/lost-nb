@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install facenet_pytorch')
 get_ipython().system('pip install pretrainedmodels')
 
 
-# In[2]:
 
 
 import os
@@ -36,7 +34,6 @@ def copy_weights(model_name):
 copy_weights('xception')
 
 
-# In[3]:
 
 
 import numpy as np # linear algebra
@@ -55,7 +52,6 @@ from time import time
 import shutil
 
 
-# In[4]:
 
 
 list_files = [str(x) for x in Path('/kaggle/input/deepfake-detection-challenge/test_videos').glob('*.mp4')] +              [str(x) for x in Path('/kaggle/input/deepfake-detection-challenge/train_sample_videos').glob('*.mp4')]
@@ -63,7 +59,6 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 mtcnn = MTCNN(keep_all=False, select_largest=False, device=device, min_face_size = 60)
 
 
-# In[5]:
 
 
 def save_frame(file, folder):
@@ -86,7 +81,6 @@ def save_frame(file, folder):
             return
 
 
-# In[6]:
 
 
 folder = '/kaggle/working/faces'
@@ -97,13 +91,11 @@ for file in tqdm(list_files):
 face_files = [str(x) for x in Path(folder).glob('*')]
 
 
-# In[7]:
 
 
 get_ipython().run_cell_magic('time', '', "model = pretrainedmodels.__dict__['xception'](num_classes=1000, pretrained='imagenet')\nmodel.eval();\nnum_ftrs = model.last_linear.in_features\nmodel.last_linear = nn.Linear(num_ftrs, 2)\nmodel = model.to(device)\n\ns = torch.load('/kaggle/input/deepfakemodels/london.pt', map_location=device)\nmodel.load_state_dict(s)\nmodel.eval();\n\ntf_img = utils.TransformImage(model)")
 
 
-# In[8]:
 
 
 def embeddings(model, input):
@@ -114,7 +106,6 @@ def embeddings(model, input):
     return x
 
 
-# In[9]:
 
 
 list_embs = []
@@ -124,7 +115,6 @@ for face in tqdm(face_files):
     list_embs.append(e)
 
 
-# In[10]:
 
 
 df = pd.DataFrame({'faces': face_files, 'embeddings': list_embs})
@@ -133,7 +123,6 @@ df = df[['videos', 'faces', 'embeddings']]
 df.head()
 
 
-# In[11]:
 
 
 from annoy import AnnoyIndex
@@ -147,7 +136,6 @@ for i, vector in enumerate(df['embeddings']):
 _  = t.build(ntree)
 
 
-# In[12]:
 
 
 def get_similar_images_annoy(img_index):
@@ -157,14 +145,12 @@ def get_similar_images_annoy(img_index):
     return v, f, df.iloc[similar_img_ids]
 
 
-# In[13]:
 
 
 sample_idx = np.random.choice(len(df))  # 166, # 302
 v, f, s = get_similar_images_annoy(sample_idx)
 
 
-# In[14]:
 
 
 fig = plt.figure(figsize=(15, 7))
@@ -186,13 +172,11 @@ for i, ax in enumerate(axx):
     ax.yaxis.set_visible(False)
 
 
-# In[15]:
 
 
 shutil.rmtree(Path('/kaggle/working/faces'))
 
 
-# In[ ]:
 
 
 

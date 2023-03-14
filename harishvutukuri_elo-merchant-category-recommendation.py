@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -15,7 +14,6 @@ plt.rcParams['figure.figsize'] = (8,6)
 plt.style.use('fivethirtyeight')
 
 
-# In[2]:
 
 
 def reduce_mem_usage(df, verbose=True):
@@ -47,26 +45,22 @@ def reduce_mem_usage(df, verbose=True):
     return df
 
 
-# In[3]:
 
 
 train = pd.read_csv("../input/train.csv", parse_dates=["first_active_month"])
 test = pd.read_csv("../input/test.csv", parse_dates=["first_active_month"])
 
 
-# In[4]:
 
 
 train.shape, test.shape
 
 
-# In[5]:
 
 
 train.head()
 
 
-# In[6]:
 
 
 target_col = 'target'
@@ -78,7 +72,6 @@ plt.title("Loyalty score on target")
 plt.show()
 
 
-# In[7]:
 
 
 sns.distplot(train[target_col].values, bins=50, kde=False, color="red")
@@ -87,13 +80,11 @@ plt.xlabel('Loyalty score', fontsize=12)
 plt.show()
 
 
-# In[8]:
 
 
 train[train['target']<-30]['target'].count()
 
 
-# In[9]:
 
 
 cnt_srs = train['first_active_month'].dt.date.value_counts()
@@ -118,7 +109,6 @@ plt.title("First active month count in test set")
 plt.show()
 
 
-# In[10]:
 
 
 # feature 1
@@ -149,7 +139,6 @@ plt.title("Feature 3 distribution")
 plt.show()
 
 
-# In[11]:
 
 
 import datetime
@@ -157,7 +146,6 @@ train['elapsed_time'] = (datetime.date(2018, 2, 1) - train['first_active_month']
 test['elapsed_time'] = (datetime.date(2018, 2, 1) - test['first_active_month'].dt.date).dt.days
 
 
-# In[12]:
 
 
 train['month'] = train.first_active_month.dt.month
@@ -166,14 +154,12 @@ test['month'] = test.first_active_month.dt.month
 test['year'] = test.first_active_month.dt.year
 
 
-# In[13]:
 
 
 import gc
 gc.collect()
 
 
-# In[14]:
 
 
 def binarize(df):
@@ -182,7 +168,6 @@ def binarize(df):
     return df
 
 
-# In[15]:
 
 
 holidays = [
@@ -199,7 +184,6 @@ def dist_holiday(df, col_name, date_holiday, date_ref, period=100):
     df[col_name] = np.maximum(np.minimum((pd.to_datetime(date_holiday) - df[date_ref]).dt.days, period), 0)
 
 
-# In[16]:
 
 
 historical = pd.read_csv("../input/historical_transactions.csv", parse_dates=['purchase_date'])
@@ -208,7 +192,6 @@ historical = pd.get_dummies(historical, columns=['category_2', 'category_3'])
 historical = reduce_mem_usage(historical)
 
 
-# In[17]:
 
 
 gdf = historical.groupby("card_id")
@@ -218,7 +201,6 @@ train = pd.merge(train, gdf, on="card_id", how="left")
 test = pd.merge(test, gdf, on="card_id", how="left")
 
 
-# In[18]:
 
 
 cnt_srs = train.groupby("historical_transactions")['target'].mean()
@@ -230,14 +212,12 @@ plt.title('Loyalty score by Number of historical transactions')
 plt.show()
 
 
-# In[19]:
 
 
 for d_name, d_day in holidays:
     dist_holiday(historical, d_name, d_day, 'purchase_date')
 
 
-# In[20]:
 
 
 agg_func = {
@@ -270,7 +250,6 @@ agg_func = {
         }
 
 
-# In[21]:
 
 
 # Adding more features from historical transactions
@@ -284,7 +263,6 @@ train = pd.merge(train, gdf, on="card_id", how="left")
 test = pd.merge(test, gdf, on="card_id", how="left")
 
 
-# In[22]:
 
 
 new= pd.read_csv("../input/new_merchant_transactions.csv", parse_dates=['purchase_date'])
@@ -293,7 +271,6 @@ new = pd.get_dummies(new, columns=['category_2', 'category_3'])
 new = reduce_mem_usage(new)
 
 
-# In[23]:
 
 
 gdf = new.groupby("card_id")
@@ -303,7 +280,6 @@ train = pd.merge(train, gdf, on="card_id", how="left")
 test = pd.merge(test, gdf, on="card_id", how="left")
 
 
-# In[24]:
 
 
 cnt_srs = train.groupby("new_transactions")[target_col].mean()
@@ -314,14 +290,12 @@ plt.title('Loyalty score by Number of new merchant transactions')
 plt.show()
 
 
-# In[25]:
 
 
 for d_name, d_day in holidays:
     dist_holiday(new, d_name, d_day, 'purchase_date')
 
 
-# In[26]:
 
 
 # Adding more features from new transactions
@@ -334,20 +308,17 @@ train = pd.merge(train, gdf, on="card_id", how="left")
 test = pd.merge(test, gdf, on="card_id", how="left")
 
 
-# In[27]:
 
 
 del new, historical
 
 
-# In[28]:
 
 
 import gc
 gc.collect()
 
 
-# In[29]:
 
 
 target = train['target']
@@ -357,7 +328,6 @@ features = [c for c in train.columns if c not in ['card_id', 'first_active_month
 categorical_feats = [c for c in features if 'feature_' in c]
 
 
-# In[30]:
 
 
 xgb_params = {
@@ -385,7 +355,6 @@ xgb_params = {
 }
 
 
-# In[31]:
 
 
 import xgboost as xgb
@@ -408,13 +377,11 @@ for fold_, (trn_idx, val_idx) in enumerate(folds.split(train.values, target.valu
     xgb_predictions += clf.predict(test[features], ntree_limit=clf.best_ntree_limit) / folds.n_splits
 
 
-# In[32]:
 
 
 print("CV score with XGB: {:<8.5f}".format(mean_squared_error(oof, target)**0.5))
 
 
-# In[33]:
 
 
 xgb.plot_importance(clf, height=0.8, grid=False, title='XGBoost - Feature Importance', max_num_features=20)
@@ -422,7 +389,6 @@ plt.figure(figsize=(20,18))
 plt.show()
 
 
-# In[34]:
 
 
 sub_df = pd.DataFrame({"card_id":test["card_id"].values})
@@ -430,7 +396,6 @@ sub_df["target"] = xgb_predictions
 sub_df.to_csv("xgb_preds_updated.csv", index=False)
 
 
-# In[35]:
 
 
 plt.figure(figsize=(20,18))

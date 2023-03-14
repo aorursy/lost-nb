@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -30,7 +29,6 @@ from dsutils.evaluation import permutation_importance_cv
 from dsutils.evaluation import plot_permutation_importance
 
 
-# In[2]:
 
 
 # Cards data
@@ -204,7 +202,6 @@ preprocess_trans_data(hist_trans)
 preprocess_trans_data(new_trans)
 
 
-# In[3]:
 
 
 # Merge transactions with merchants data
@@ -216,7 +213,6 @@ del merchants
 gc.collect()
 
 
-# In[4]:
 
 
 # One-hot encode category 2 and 3
@@ -228,7 +224,6 @@ new_trans = one_hot_encode(new_trans,
 gc.collect()
 
 
-# In[5]:
 
 
 # Time-based features for purchases
@@ -259,14 +254,12 @@ for df in [hist_trans, new_trans]:
     gc.collect()
 
 
-# In[6]:
 
 
 cards['first_active_month'] = (12*(cards['first_active_month'].dt.year-2011) + 
                                cards['first_active_month'].dt.month).astype('float32')
 
 
-# In[7]:
 
 
 # Group transactions by card id
@@ -274,7 +267,6 @@ hist_trans = hist_trans.groupby('card_id', sort=False)
 new_trans = new_trans.groupby('card_id', sort=False)
 
 
-# In[8]:
 
 
 def entropy(series):
@@ -285,7 +277,6 @@ def entropy(series):
     return -np.nansum(probs * np.log2(probs))
 
 
-# In[9]:
 
 
 def mean_diff(series):
@@ -294,7 +285,6 @@ def mean_diff(series):
     return (ss - ss.shift()).mean()
 
 
-# In[10]:
 
 
 def period(series):
@@ -302,7 +292,6 @@ def period(series):
     return series.max() - series.min()
 
 
-# In[11]:
 
 
 def mode(series):
@@ -314,7 +303,6 @@ def mode(series):
         return tmode[0]
 
 
-# In[12]:
 
 
 # Aggregations to perform for each predictor type
@@ -323,7 +311,6 @@ categorical_aggs = ['nunique', entropy, mode]
 continuous_aggs = ['min', 'max', 'sum', 'mean', 'std', 'skew', mean_diff, period]
 
 
-# In[13]:
 
 
 # Aggregations to perform on each column
@@ -374,13 +361,11 @@ aggs = {
 }
 
 
-# In[14]:
 
 
 get_ipython().run_cell_magic('time', '', "\n# Perform each aggregation\nfor col, funcs in aggs.items():\n    for func in funcs:\n        \n        # Get name of aggregation function\n        if isinstance(func, str):\n            func_str = func\n        else:\n            func_str = func.__name__\n            \n        # Name for new column\n        new_col = col + '_' + func_str\n            \n        # Compute this aggregation\n        cards['hist_'+new_col] = hist_trans[col].agg(func).astype('float32')\n        cards['new_'+new_col] = new_trans[col].agg(func).astype('float32')")
 
 
-# In[15]:
 
 
 def remove_noninformative(df):
@@ -397,13 +382,11 @@ remove_noninformative(cards)
 gc.collect()
 
 
-# In[16]:
 
 
 cards.info()
 
 
-# In[17]:
 
 
 # Test data
@@ -425,7 +408,6 @@ del cards
 gc.collect()
 
 
-# In[18]:
 
 
 def mutual_information(xi, yi, res=20):
@@ -445,7 +427,6 @@ def mutual_information(xi, yi, res=20):
     return np.nansum(N * np.log(N / Ni))
 
 
-# In[19]:
 
 
 # Show mutual information vs correlation
@@ -463,7 +444,6 @@ for i in range(3):
     plt.gca().tick_params(labelbottom=False, labelleft=False)
 
 
-# In[20]:
 
 
 def quantile_transform(v, res=101):
@@ -479,7 +459,6 @@ def q_mut_info(x, y):
                               quantile_transform(y))
 
 
-# In[21]:
 
 
 """
@@ -499,7 +478,6 @@ print_table(['Column', 'Mutual_Information'],
 """
 
 
-# In[22]:
 
 
 """
@@ -519,7 +497,6 @@ X_test = X_test[top200]
 """
 
 
-# In[23]:
 
 
 """
@@ -534,7 +511,6 @@ reg_pipeline = Pipeline([
 """
 
 
-# In[24]:
 
 
 """
@@ -546,7 +522,6 @@ imp_df = permutation_importance_cv(
 """
 
 
-# In[25]:
 
 
 """
@@ -557,7 +532,6 @@ plt.show()
 """
 
 
-# In[26]:
 
 
 """
@@ -571,7 +545,6 @@ top100 = dfg['Feature'][:100].tolist()
 """
 
 
-# In[27]:
 
 
 """

@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install --upgrade pip')
 
 
-# In[2]:
 
 
 apex_on = True
@@ -17,14 +15,12 @@ if apex_on:
     from apex import amp
 
 
-# In[3]:
 
 
 get_ipython().system("pip install --no-deps '../input/timm-package/timm-0.1.26-py3-none-any.whl' > /dev/null")
 get_ipython().system("pip install --no-deps '../input/pycocotools/pycocotools-2.0-cp37-cp37m-linux_x86_64.whl' > /dev/null")
 
 
-# In[4]:
 
 
 import sys
@@ -61,7 +57,6 @@ def seed_everything(seed):
 seed_everything(SEED)
 
 
-# In[5]:
 
 
 class TrainGlobalConfig:
@@ -106,7 +101,6 @@ class TrainGlobalConfig:
     )
 
 
-# In[6]:
 
 
 marking = pd.read_csv('../input/global-wheat-detection/train.csv')
@@ -117,7 +111,6 @@ for i, column in enumerate(['x', 'y', 'w', 'h']):
 marking.drop(columns=['bbox'], inplace=True)
 
 
-# In[7]:
 
 
 skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
@@ -136,7 +129,6 @@ for fold_number, (train_index, val_index) in enumerate(skf.split(X=df_folds.inde
     df_folds.loc[df_folds.iloc[val_index].index, 'fold'] = fold_number
 
 
-# In[8]:
 
 
 def get_train_transforms():
@@ -181,7 +173,6 @@ def get_valid_transforms():
     )
 
 
-# In[9]:
 
 
 TRAIN_ROOT_PATH = '../input/global-wheat-detection/train'
@@ -288,7 +279,6 @@ class DatasetRetriever(Dataset):
         return result_image, result_boxes
 
 
-# In[10]:
 
 
 fold_number = 0
@@ -308,7 +298,6 @@ validation_dataset = DatasetRetriever(
 )
 
 
-# In[11]:
 
 
 image, target, image_id = train_dataset[1]
@@ -325,7 +314,6 @@ ax.set_axis_off()
 ax.imshow(numpy_image);
 
 
-# In[12]:
 
 
 class AverageMeter(object):
@@ -346,7 +334,6 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
 
-# In[13]:
 
 
 import warnings
@@ -500,7 +487,6 @@ class Fitter:
             logger.write(f'{message}\n')
 
 
-# In[14]:
 
 
 def collate_fn(batch):
@@ -533,7 +519,6 @@ def run_training():
     fitter.fit(train_loader, val_loader)
 
 
-# In[15]:
 
 
 from effdet import get_efficientdet_config, EfficientDet, DetBenchTrain
@@ -552,13 +537,11 @@ def get_net():
 net = get_net()
 
 
-# In[16]:
 
 
 run_training()
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # -*- coding: utf-8 -*-
@@ -90,7 +89,6 @@ warnings.filterwarnings(action='once')
 device = torch.device('cuda')
 
 
-# In[2]:
 
 
 # Adding progress bars for monitoring
@@ -259,7 +257,6 @@ class NeuralNet(nn.Module):
 
 
 
-# In[3]:
 
 
 symbols_to_isolate = '.,?!-;*"…:—()%#$&_/@＼・ω+=”“[]^–>\\°<~•≠™ˈʊɒ∞§{}·τα❤☺ɡ|¢→̶`❥━┣┫┗Ｏ►★©―ɪ✔®\x96\x92●£♥➤´¹☕≈÷♡◐║▬′ɔː€۩۞†μ✒➥═☆ˌ◄½ʻπδηλσερνʃ✬ＳＵＰＥＲＩＴ☻±♍µº¾✓◾؟．⬅℅»Вав❣⋅¿¬♫ＣＭβ█▓▒░⇒⭐›¡₂₃❧▰▔◞▀▂▃▄▅▆▇↙γ̄″☹➡«φ⅓„✋：¥̲̅́∙‛◇✏▷❓❗¶˚˙）сиʿ✨。ɑ\x80◕！％¯−ﬂﬁ₁²ʌ¼⁴⁄₄⌠♭✘╪▶☭✭♪☔☠♂☃☎✈✌✰❆☙○‣⚓年∎ℒ▪▙☏⅛ｃａｓǀ℮¸ｗ‚∼‖ℳ❄←☼⋆ʒ⊂、⅔¨͡๏⚾⚽Φ×θ￦？（℃⏩☮⚠月✊❌⭕▸■⇌☐☑⚡☄ǫ╭∩╮，例＞ʕɐ̣Δ₀✞┈╱╲▏▕┃╰▊▋╯┳┊≥☒↑☝ɹ✅☛♩☞ＡＪＢ◔◡↓♀⬆̱ℏ\x91⠀ˤ╚↺⇤∏✾◦♬³の｜／∵∴√Ω¤☜▲↳▫‿⬇✧ｏｖｍ－２０８＇‰≤∕ˆ⚜☁'
@@ -306,7 +303,6 @@ def preprocess(data):
     return data
 
 
-# In[4]:
 
 
 CUSTOM_TABLE = str.maketrans(
@@ -454,7 +450,6 @@ def normalize(text: str) -> str:
     return text
 
 
-# In[5]:
 
 
 class XLNetForJigSaw(XLNetPreTrainedModel):
@@ -524,7 +519,6 @@ class BertForJigsaw(BertPreTrainedModel):
         return logits
 
 
-# In[6]:
 
 
 def convert_line(row, max_seq_length, tokenizer, model_name='bert'):
@@ -560,7 +554,6 @@ def convert_line(row, max_seq_length, tokenizer, model_name='bert'):
     return input_ids, input_mask, segment_ids, label
 
 
-# In[7]:
 
 
 def get_input_data(test_data):
@@ -583,7 +576,6 @@ def get_input_data(test_data):
 print('Def functions done! Time past %.2f secs' % (time.time() - start_time))
 
 
-# In[8]:
 
 
 print('Loading data...')
@@ -598,7 +590,6 @@ df['comment_text']= preprocess(df['comment_text'])
 print('Done! Time past %.2f secs' % (time.time() - start_time))
 
 
-# In[9]:
 
 
 #train = pd.read_csv('drive/My Drive/train.csv')
@@ -627,7 +618,6 @@ test = pd.read_csv('../input/jigsaw-unintended-bias-in-toxicity-classification/t
 # max_features
 
 
-# In[10]:
 
 
 PORTER_STEMMER = PorterStemmer()
@@ -644,7 +634,6 @@ def word_forms(word):
     yield SNOWBALL_STEMMER.stem(word)
 
 
-# In[11]:
 
 
 def maybe_get_embedding(word, model):
@@ -660,7 +649,6 @@ def maybe_get_embedding(word, model):
     return None
 
 
-# In[12]:
 
 
 # def gensim_to_embedding_matrix(word2index, path):
@@ -678,7 +666,6 @@ def maybe_get_embedding(word, model):
 #     return embedding_matrix, unknown_words
 
 
-# In[13]:
 
 
 
@@ -688,7 +675,6 @@ def maybe_get_embedding(word, model):
 # print('Done! Time past %.2f secs' % (time.time() - start_time))
 
 
-# In[14]:
 
 
 # crawl_matrix, unknown_words_crawl = gensim_to_embedding_matrix(tokenizer.word_index, CRAWL_EMBEDDING_PATH)
@@ -696,7 +682,6 @@ def maybe_get_embedding(word, model):
 # print('Done! Time past %.2f secs' % (time.time() - start_time))
 
 
-# In[15]:
 
 
 # google_matrix, unknown_words_crawl = gensim_to_embedding_matrix(tokenizer.word_index, GOOGLE_EMBEDDING_PATH)
@@ -708,7 +693,6 @@ def maybe_get_embedding(word, model):
 # print('Done! Time past %.2f secs' % (time.time() - start_time))
 
 
-# In[16]:
 
 
 
@@ -724,7 +708,6 @@ def maybe_get_embedding(word, model):
 
 
 
-# In[17]:
 
 
 try:
@@ -773,7 +756,6 @@ except:
     traceback.print_exc()
 
 
-# In[18]:
 
 
 predictions = np.zeros(df.shape[0])
@@ -785,7 +767,6 @@ try:
 except: pass
 
 
-# In[19]:
 
 
 # x_train_torch = torch.tensor(x_train, dtype=torch.long).cuda()
@@ -799,7 +780,6 @@ except: pass
 # all_test_preds2 = []
 
 
-# In[20]:
 
 
 # for model_idx in range(NUM_MODELS):
@@ -812,7 +792,6 @@ except: pass
 #     all_test_preds2.append(test_preds)
 
 
-# In[21]:
 
 
 submission = pd.DataFrame.from_dict({

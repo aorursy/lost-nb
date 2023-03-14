@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -11,7 +10,6 @@ print('We will submit versions',x[0],'and',x[1])
 np.random.seed(None)
 
 
-# In[2]:
 
 
 import matplotlib.pyplot as plt, numpy as np
@@ -34,7 +32,6 @@ plt.title("Public and private LB scores from 30 runs of this kernel.\n     The g
 plt.show()
 
 
-# In[3]:
 
 
 # IMPORT LIBRARIES
@@ -48,7 +45,6 @@ import matplotlib.pyplot as plt
 from sklearn.datasets import make_classification
 
 
-# In[4]:
 
 
 # LOAD TRAIN AND TEST
@@ -57,7 +53,6 @@ df_test = pd.read_csv('../input/test.csv')
 df_train.head()
 
 
-# In[5]:
 
 
 # IDENTIFY USEFUL FEATURES PER MAGIC SUB-DATASET
@@ -69,7 +64,6 @@ useful = useful > 1.5
 useful = np.sum( useful, axis=0 )
 
 
-# In[6]:
 
 
 # RUN LOCALLY AND VALIDATE
@@ -190,7 +184,6 @@ if RunLocally:
     print('Approx Private LB =',np.round(auc3,5))
 
 
-# In[7]:
 
 
 sub = pd.read_csv('../input/sample_submission.csv')
@@ -202,7 +195,6 @@ plt.title('Model 512 test predictions')
 plt.show()
 
 
-# In[8]:
 
 
 for clusters in range(4):
@@ -220,7 +212,6 @@ for clusters in range(4):
     plt.show()
 
 
-# In[9]:
 
 
 centers = np.array([])

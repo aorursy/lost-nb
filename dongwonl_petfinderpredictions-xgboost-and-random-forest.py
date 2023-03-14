@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -73,7 +72,6 @@ for file in os.listdir(KAGGLE_DIR + 'test/'):
                              str(round(os.path.getsize(KAGGLE_DIR + 'test/' + file) / 1000000, 2))))
 
 
-# In[ ]:
 
 
 #kappa score calculator
@@ -84,7 +82,6 @@ def kappa(y_true, y_pred):
 scorer = make_scorer(kappa)
 
 
-# In[ ]:
 
 
 #load data
@@ -101,7 +98,6 @@ train['dataset_type'] = 'train'
 test['dataset_type'] = 'test'
 
 
-# In[ ]:
 
 
 train.info() #look at basic info
@@ -110,46 +106,39 @@ train.info() #look at basic info
 #photo and video may be used for additional analysis
 
 
-# In[ ]:
 
 
 #look at all data except description
 train.drop('Description', axis=1).head() 
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 train.describe()
 
 
-# In[ ]:
 
 
 train.hist(bins=50, figsize = (20,15))
 plt.show()
 
 
-# In[ ]:
 
 
 corr_matrix = train.corr()
 
 
-# In[ ]:
 
 
 corr_matrix["AdoptionSpeed"].sort_values(ascending=False) #see what is correlated
 #seems that there is very little correlation
 
 
-# In[ ]:
 
 
 # Data clean for initial model
@@ -159,7 +148,6 @@ clean_df = train.drop(columns=['Name', 'RescuerID', 'Description', 'PetID', 'Ado
 clean_test = test.drop(columns=['Name', 'RescuerID', 'Description', 'PetID', 'dataset_type'])
 
 
-# In[ ]:
 
 
 #split training set for training and validation
@@ -175,21 +163,18 @@ d_valid = xgb.DMatrix(x_valid, label=y_valid)
 watchlist = [(d_train, 'train'), (d_valid, 'valid')]
 
 
-# In[ ]:
 
 
 #see if data is clean... seems as if petfinder.my did most of the cleaning for us
 clean_df.isnull().values.any()
 
 
-# In[ ]:
 
 
 #lets see what clean data looks like
 clean_df.head()
 
 
-# In[ ]:
 
 
 #check structure of all data that we cleaned
@@ -197,25 +182,21 @@ clean_df.head()
 x_train.head()
 
 
-# In[ ]:
 
 
 y_train.head()
 
 
-# In[ ]:
 
 
 clean_df.head()
 
 
-# In[ ]:
 
 
 target.head()
 
 
-# In[ ]:
 
 
 # Fit XGBoost - got initial params from another kernel... need to tune this for better 
@@ -278,7 +259,6 @@ print('\nMean Score: {0:10.4f}'.format(np.mean(train_scores)))
 print('\nStandard Deviation of Scores: {0:10.4f}'.format(np.std(train_scores)))
 
 
-# In[ ]:
 
 
 # Utility function to report best scores for gridsearch/randomsearch
@@ -294,7 +274,6 @@ def report(results, n_top=3):
             print("")
 
 
-# In[ ]:
 
 
 #gridsearch / random search for random forest classifier
@@ -320,7 +299,6 @@ print("RandomizedSearchCV took %.2f seconds for %d candidates"
 report(random_search.cv_results_)
 
 
-# In[ ]:
 
 
 #GRID SEARCH for random forest classifier
@@ -341,7 +319,6 @@ print("GridSearchCV took %.2f seconds for %d candidate parameter settings."
 report(grid_search.cv_results_)
 
 
-# In[ ]:
 
 
 #Fit RandomTree with modified Params
@@ -356,13 +333,11 @@ print('{} score: {}'.format("clf_rfc_modparam", round(score, 4)))
 #wow this dropped scores
 
 
-# In[ ]:
 
 
 test.head()
 
 
-# In[ ]:
 
 
 #submitting files

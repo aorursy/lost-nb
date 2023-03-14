@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -33,7 +32,6 @@ from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 
 
-# In[2]:
 
 
 IMAGE_PATH = "../input/plant-pathology-2020-fgvc7/images/"
@@ -46,7 +44,6 @@ df_test= pd.read_csv(TEST_PATH)
 df_train = pd.read_csv(TRAIN_PATH)
 
 
-# In[3]:
 
 
 
@@ -55,7 +52,6 @@ EPOCHS = 12
 BATCH_SIZE = 32
 
 
-# In[4]:
 
 
 def get_class(row):
@@ -77,7 +73,6 @@ df_train['target'] = df_train.apply(get_class, axis=1)
 df_train.head()
 
 
-# In[5]:
 
 
 # Filter out each class
@@ -87,7 +82,6 @@ df_rust = df_train[df_train['target'] == 'rust']
 df_scab = df_train[df_train['target'] == 'scab']
 
 
-# In[6]:
 
 
 def plotclass(cate):
@@ -114,37 +108,31 @@ def plotclass(cate):
          plt.xlabel('{}'.format(cate), fontsize=20)
 
 
-# In[7]:
 
 
 plotclass('healthy')
 
 
-# In[8]:
 
 
 plotclass('scab')
 
 
-# In[9]:
 
 
 plotclass('rust')
 
 
-# In[10]:
 
 
 plotclass('multiple_diseases')
 
 
-# In[11]:
 
 
 df_train['target'].value_counts()
 
 
-# In[12]:
 
 
 y = df_train['target']
@@ -153,7 +141,6 @@ df_train = shuffle(df_train)
 print(df_train.shape)
 
 
-# In[13]:
 
 
 df_1 = df_train[df_train['target'] != 'multiple_diseases']
@@ -169,13 +156,11 @@ print(df_train.shape)
 df_train.head()
 
 
-# In[14]:
 
 
 df_train['target'].value_counts()
 
 
-# In[15]:
 
 
 def edge_and_cut(path):
@@ -210,19 +195,16 @@ def edge_and_cut(path):
     plt.show()
 
 
-# In[16]:
 
 
 edge_and_cut('/kaggle/input/plant-pathology-2020-fgvc7/images/Train_1811.jpg')
 
 
-# In[17]:
 
 
 edge_and_cut('/kaggle/input/plant-pathology-2020-fgvc7/images/Train_665.jpg')
 
 
-# In[18]:
 
 
 GCS_DS_PATH = KaggleDatasets().get_gcs_path()
@@ -237,7 +219,6 @@ train_labels = np.float32(df_train.loc[:, 'healthy':'scab'].values)
 train_paths, valid_paths, train_labels, valid_labels = train_test_split(train_paths, train_labels, test_size=0.15, random_state=2020)
 
 
-# In[19]:
 
 
 def decode_image(filename, label=None, image_size=(224, 224)):
@@ -262,7 +243,6 @@ def data_augment(image, label=None):
         return image, label
 
 
-# In[20]:
 
 
 BATCH_SIZE = 32
@@ -296,7 +276,6 @@ test_dataset = (
 )
 
 
-# In[21]:
 
 
 def build_lrfn(lr_start=0.00001, lr_max=0.00005, 
@@ -315,7 +294,6 @@ def build_lrfn(lr_start=0.00001, lr_max=0.00005,
     return lrfn
 
 
-# In[22]:
 
 
 from tensorflow.keras.models import Model, load_model
@@ -328,7 +306,6 @@ from tensorflow.keras.callbacks import (EarlyStopping, ReduceLROnPlateau,
                                         ModelCheckpoint, CSVLogger, LearningRateScheduler)
 
 
-# In[23]:
 
 
 lrfn = build_lrfn()
@@ -336,7 +313,6 @@ STEPS_PER_EPOCH = train_labels.shape[0] // BATCH_SIZE
 lr_schedule = tf.keras.callbacks.LearningRateScheduler(lrfn, verbose=1)
 
 
-# In[24]:
 
 
 
@@ -353,7 +329,6 @@ model.compile(optimizer='adam',
 model.summary()
 
 
-# In[25]:
 
 
 filepath = 'model_dnn.h5'
@@ -367,7 +342,6 @@ history = model.fit(train_dataset,
                     validation_data=valid_dataset)
 
 
-# In[26]:
 
 
 acc = history.history['categorical_accuracy']
@@ -392,7 +366,6 @@ plt.figure()
 plt.show()
 
 
-# In[27]:
 
 
 probs_dnn = model.predict(test_dataset, verbose=1)

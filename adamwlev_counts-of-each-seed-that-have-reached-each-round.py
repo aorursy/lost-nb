@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -12,13 +11,11 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 tournies = pd.read_csv('../input/TourneyCompactResults.csv')
 
 
-# In[3]:
 
 
 ## read in seeds data, put seeds as columns in tournies frame
@@ -29,7 +26,6 @@ tournies['Wteam_seed'] = [seeds[(year,team)] for year,team in zip(tournies.Seaso
 tournies['Lteam_seed'] = [seeds[(year,team)] for year,team in zip(tournies.Season,tournies.Lteam)]
 
 
-# In[4]:
 
 
 first_round = set([(1,16),(2,15),(3,14),(4,13),
@@ -63,7 +59,6 @@ def get_round_from_seeds(seed1,seed2):
     return 2
 
 
-# In[5]:
 
 
 ## put round and seed numbers in
@@ -72,7 +67,6 @@ tournies['Wteam_seed_num'] = [int(seed[1:3]) for seed in tournies.Wteam_seed]
 tournies['Lteam_seed_num'] = [int(seed[1:3]) for seed in tournies.Lteam_seed]
 
 
-# In[6]:
 
 
 for round_,df in tournies.groupby('Round'):

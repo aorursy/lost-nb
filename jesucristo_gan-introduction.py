@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 from __future__ import print_function
@@ -33,7 +31,6 @@ import matplotlib.image as mpimg
 from tqdm import tqdm_notebook as tqdm
 
 
-# In[3]:
 
 
 PATH = '../input/all-dogs/all-dogs/'
@@ -52,7 +49,6 @@ for indx, axis in enumerate(axes.flatten()):
 plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 
 
-# In[4]:
 
 
 batch_size = 32
@@ -74,7 +70,6 @@ imgs, label = next(iter(train_loader))
 imgs = imgs.numpy().transpose(0, 2, 3, 1)
 
 
-# In[5]:
 
 
 for i in range(5):
@@ -82,7 +77,6 @@ for i in range(5):
     plt.show()
 
 
-# In[6]:
 
 
 def weights_init(m):
@@ -97,7 +91,6 @@ def weights_init(m):
         m.bias.data.fill_(0)
 
 
-# In[7]:
 
 
 class G(nn.Module):
@@ -131,7 +124,6 @@ netG = G()
 netG.apply(weights_init)
 
 
-# In[8]:
 
 
 # Defining the discriminator
@@ -165,7 +157,6 @@ netD = D()
 netD.apply(weights_init)
 
 
-# In[9]:
 
 
 class Generator(nn.Module):
@@ -227,14 +218,12 @@ class Discriminator(nn.Module):
         return out.view(-1, 1)
 
 
-# In[10]:
 
 
 get_ipython().system('mkdir results')
 get_ipython().system('ls')
 
 
-# In[11]:
 
 
 EPOCH = 0 # play with me
@@ -244,7 +233,6 @@ optimizerD = optim.Adam(netD.parameters(), lr=LR, betas=(0.5, 0.999))
 optimizerG = optim.Adam(netG.parameters(), lr=LR, betas=(0.5, 0.999))
 
 
-# In[12]:
 
 
 for epoch in range(EPOCH):
@@ -287,7 +275,6 @@ for epoch in range(EPOCH):
             vutils.save_image(fake.data, '%s/fake_samples_epoch_%03d.png' % ("./results", epoch), normalize=True)
 
 
-# In[13]:
 
 
 batch_size = 32
@@ -304,7 +291,6 @@ nz = 128
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-# In[14]:
 
 
 netG = Generator(nz).to(device)
@@ -322,7 +308,6 @@ D_losses = []
 epoch_time = []
 
 
-# In[15]:
 
 
 def plot_loss (G_losses, D_losses, epoch):
@@ -336,7 +321,6 @@ def plot_loss (G_losses, D_losses, epoch):
     plt.show()
 
 
-# In[16]:
 
 
 def show_generated_img(n_images=5):
@@ -357,7 +341,6 @@ def show_generated_img(n_images=5):
     plt.close()
 
 
-# In[17]:
 
 
 for epoch in range(epochs):
@@ -420,19 +403,16 @@ for epoch in range(epochs):
 #             valid_image = netG(fixed_noise)
 
 
-# In[18]:
 
 
 print (">> average EPOCH duration = ", np.mean(epoch_time))
 
 
-# In[19]:
 
 
 show_generated_img(7)
 
 
-# In[20]:
 
 
 if not os.path.exists('../output_images'):
@@ -450,7 +430,6 @@ for i_batch in tqdm(range(0, n_images, im_batch_size)):
         save_image(gen_images[i_image, :, :, :], os.path.join('../output_images', f'image_{i_batch+i_image:05d}.png'))
 
 
-# In[21]:
 
 
 fig = plt.figure(figsize=(25, 16))
@@ -460,21 +439,18 @@ for i, j in enumerate(images[:32]):
     plt.imshow(j)
 
 
-# In[22]:
 
 
 import shutil
 shutil.make_archive('images', 'zip', '../output_images')
 
 
-# In[23]:
 
 
 torch.save(netG.state_dict(), 'generator.pth')
 torch.save(netD.state_dict(), 'discriminator.pth')
 
 
-# In[24]:
 
 
 from __future__ import absolute_import, division, print_function
@@ -738,13 +714,11 @@ def calculate_kid_given_paths(paths, model_name, model_path, feature_path=None):
         return fid_value, distance
 
 
-# In[25]:
 
 
 get_ipython().system('ls ../output_images')
 
 
-# In[26]:
 
 
 user_images_unzipped_path = '../output_images'
@@ -759,7 +733,6 @@ distance_public = distance_thresholding(distance_public, model_params['Inception
 print("FID_public: ", fid_value_public, "distance_public: ", distance_public, "multiplied_public: ", fid_value_public /(distance_public + fid_epsilon))
 
 
-# In[ ]:
 
 
 

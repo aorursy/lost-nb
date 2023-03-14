@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 
 
 
-# In[1]:
 
 
 import sys
@@ -29,19 +27,16 @@ from IPython.display import display
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 get_ipython().system('ls -lha ../input')
 
 
-# In[3]:
 
 
 get_ipython().system('ls -lha ../input/test-tif | wc -l')
 
 
-# In[4]:
 
 
 PLANET_KAGGLE_ROOT = os.path.abspath("../input/")
@@ -52,20 +47,17 @@ assert os.path.exists(PLANET_KAGGLE_JPEG_DIR)
 assert os.path.exists(PLANET_KAGGLE_LABEL_CSV)
 
 
-# In[5]:
 
 
 get_ipython().system('ls -lha /kaggle/input/train.csv')
 
 
-# In[6]:
 
 
 labels_df = pd.read_csv(PLANET_KAGGLE_LABEL_CSV)
 labels_df.head()
 
 
-# In[7]:
 
 
 # Build list with unique labels
@@ -77,7 +69,6 @@ for tag_str in labels_df.tags.values:
             label_list.append(label)
 
 
-# In[8]:
 
 
 # Add onehot features for every label
@@ -87,14 +78,12 @@ for label in label_list:
 labels_df.head()
 
 
-# In[9]:
 
 
 # Histogram of label instances
 labels_df[label_list].sum().sort_values().plot.bar()
 
 
-# In[10]:
 
 
 def make_cooccurence_matrix(labels):
@@ -107,28 +96,24 @@ def make_cooccurence_matrix(labels):
 make_cooccurence_matrix(label_list)
 
 
-# In[11]:
 
 
 weather_labels = ['clear', 'partly_cloudy', 'haze', 'cloudy']
 make_cooccurence_matrix(weather_labels)
 
 
-# In[12]:
 
 
 land_labels = ['primary', 'agriculture', 'water', 'cultivation', 'habitation']
 make_cooccurence_matrix(land_labels)
 
 
-# In[13]:
 
 
 rare_labels = [l for l in label_list if labels_df[label_list].sum()[l] < 2000]
 make_cooccurence_matrix(rare_labels)
 
 
-# In[14]:
 
 
 def sample_images(tags, n=None):
@@ -144,7 +129,6 @@ def sample_images(tags, n=None):
         return labels_df[condition]
 
 
-# In[15]:
 
 
 def load_image(filename):
@@ -165,7 +149,6 @@ def sample_to_fname(sample_df, row_idx, suffix='tif'):
     return '{}.{}'.format(fname, suffix)
 
 
-# In[16]:
 
 
 def plot_rgbn_histo(r, g, b, n):
@@ -176,7 +159,6 @@ def plot_rgbn_histo(r, g, b, n):
     plt.legend()
 
 
-# In[17]:
 
 
 s = sample_images(['primary', 'water', 'road'], n=1)
@@ -195,7 +177,6 @@ r, g, b, nir = rgbn_image[:, :, 0], rgbn_image[:, :, 1], rgbn_image[:, :, 2], rg
 plot_rgbn_histo(r, g, b, nir)
 
 
-# In[18]:
 
 
 # Plot the bands
@@ -207,13 +188,11 @@ for i, (x, c) in enumerate(((r, 'r'), (g, 'g'), (b, 'b'), (nir, 'near-ir'))):
     plt.imshow(x)
 
 
-# In[19]:
 
 
 plt.imshow(rgb_image)
 
 
-# In[20]:
 
 
 # Pull a list of 20000 image names
@@ -223,13 +202,11 @@ np.random.shuffle(jpg_list)
 jpg_list = jpg_list[:100]
 
 
-# In[21]:
 
 
 print(jpg_list)
 
 
-# In[22]:
 
 
 ref_colors = [[],[],[]]
@@ -245,7 +222,6 @@ for _file in jpg_list:
 ref_colors = np.array(ref_colors)
 
 
-# In[23]:
 
 
 for i,color in enumerate(['r','g','b']):
@@ -254,20 +230,17 @@ plt.legend()
 plt.title('Reference color histograms')
 
 
-# In[24]:
 
 
 ref_means = [np.mean(ref_colors[i]) for i in range(3)]
 ref_stds = [np.std(ref_colors[i]) for i in range(3)]
 
 
-# In[25]:
 
 
 And now, we have a function that can calibrate any raw image reasonably well:
 
 
-# In[26]:
 
 
 def calibrate_image(rgb_image):
@@ -290,7 +263,6 @@ def calibrate_image(rgb_image):
     return calibrated_img.astype('uint8')
 
 
-# In[27]:
 
 
 test_image_calibrated = calibrate_image(rgb_image)
@@ -301,13 +273,11 @@ plt.legend()
 plt.title('Calibrated image color histograms')
 
 
-# In[28]:
 
 
 plt.imshow(test_image_calibrated)
 
 
-# In[29]:
 
 
 sampled_images = sample_images(['clear', 'road', 'water'], n=3)
@@ -331,13 +301,11 @@ for i in range(len(sampled_images)):
         
 
 
-# In[30]:
 
 
 You might want to rotate, flip, or otherwise modify the images for training purposes. Note that the dimensions of the image changes:
 
 
-# In[31]:
 
 
 fig = plt.figure()
@@ -348,7 +316,6 @@ for i, (x, c) in enumerate(((r, 'r'), (g, 'g'), (b, 'b'), (nir, 'near-ir'))):
     plt.imshow(x)
 
 
-# In[32]:
 
 
 rotated = scipy.ndimage.rotate(rgb_image, angle=45)
@@ -357,7 +324,6 @@ plt.imshow(calibrate_image(rotated))
 rotated.shape
 
 
-# In[33]:
 
 
 

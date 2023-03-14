@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -20,33 +19,28 @@ from sklearn.externals import joblib
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/train.csv')
 train.head()
 
 
-# In[3]:
 
 
 round(0)
 
 
-# In[4]:
 
 
 test = pd.read_csv('../input/test.csv')
 test.tail()
 
 
-# In[5]:
 
 
 print(train.shape, test.shape)
 
 
-# In[6]:
 
 
 data = []
@@ -83,14 +77,12 @@ meta = pd.DataFrame(data, columns=['col_name', 'role', 'level', 'keep', 'dtype']
 meta.set_index('col_name', inplace=True)
 
 
-# In[7]:
 
 
 bin_cols = meta[(meta.level=='binary') & meta.keep].index
 train[bin_cols].describe()
 
 
-# In[8]:
 
 
 # from sklearn.utils import shuffle
@@ -113,13 +105,11 @@ train[bin_cols].describe()
 # balanced_train = train.loc[idx_list].reset_index(drop=True)
 
 
-# In[9]:
 
 
 train.isnull().any().any()
 
 
-# In[10]:
 
 
 ms_cols = []
@@ -132,7 +122,6 @@ for col in train_copy.columns:
         print('Column {} has {} records ({:.2%}) with missing values'.format(col, ms_nb, ms_nb/train_copy.shape[0]))
 
 
-# In[11]:
 
 
 # import missingno as msno
@@ -140,7 +129,6 @@ for col in train_copy.columns:
 #             color=(0.42, 0.1, 0.05))
 
 
-# In[12]:
 
 
 from sklearn.preprocessing import Imputer
@@ -166,7 +154,6 @@ real_test['ps_car_12'] = mode_imp.fit_transform(X=real_test[['ps_car_12']]).rave
 real_test['ps_car_14'] = mean_imp.fit_transform(X=real_test[['ps_car_14']]).ravel()
 
 
-# In[13]:
 
 
 # Replace missing values with 999
@@ -174,7 +161,6 @@ real_test['ps_car_14'] = mean_imp.fit_transform(X=real_test[['ps_car_14']]).rave
 # real_test1 = real_test.replace(-1, 999)
 
 
-# In[14]:
 
 
 cat_cols = meta[(meta.level=='nominal') & meta.keep].index
@@ -184,7 +170,6 @@ for col in cat_cols:
     print('Categorical column {} has {} distinct values'.format(col, distinct_values))
 
 
-# In[15]:
 
 
 # Script by https://www.kaggle.com/ogrellier
@@ -237,7 +222,6 @@ def target_encode(trn_series=None,
     return add_noise(ft_trn_series, noise_level), add_noise(ft_tst_series, noise_level)
 
 
-# In[16]:
 
 
 train_encoded, test_encoded = target_encode(train["ps_car_11_cat"], 
@@ -254,7 +238,6 @@ real_test['ps_car_11_cat_te'] = test_encoded
 real_test.drop('ps_car_11_cat', axis=1, inplace=True)
 
 
-# In[17]:
 
 
 # calc_cols = [col for col in train.columns if 'calc' in col]
@@ -285,7 +268,6 @@ real_test.drop('ps_car_11_cat', axis=1, inplace=True)
 # real_train_nocalc.shape
 
 
-# In[18]:
 
 
 calc_cols = [col for col in train.columns if 'calc' in col]
@@ -295,7 +277,6 @@ real_test_nocalc = real_test.drop(calc_cols, axis=1)
 real_train_nocalc.shape
 
 
-# In[19]:
 
 
 def plotTargetDistribution(dataset):
@@ -310,7 +291,6 @@ def plotTargetDistribution(dataset):
 plotTargetDistribution(real_train)
 
 
-# In[20]:
 
 
 # Counter(real_train.dtypes.values)
@@ -318,7 +298,6 @@ plotTargetDistribution(real_train)
 # train_int = real_train.select_dtypes(include=['int64'])
 
 
-# In[21]:
 
 
 float_int_cols = meta[((meta.level == 'interval') | (meta.level == 'ordinal')) & meta.keep].index
@@ -330,13 +309,11 @@ plt.title('Pearson correlation of continuous features', y=1.05, size=15)
 sns.heatmap(float_int_train.corr(),linewidths=0.1,vmax=1.0, square=True, cmap=colormap, linecolor='white', annot=True)
 
 
-# In[22]:
 
 
 # realTrain = realTrain.drop('ps_car_13', axis=1)
 
 
-# In[23]:
 
 
 bin_cols = meta[(meta.level == 'binary') & (meta.role != 'target') & meta.keep].index
@@ -350,7 +327,6 @@ for col in bin_cols:
     print('Binary column {} has {} records ({:.2%}) with value zero'.format(col, zeros_nb, zeros_nb/real_train.shape[0]))
 
 
-# In[24]:
 
 
 trace0 = go.Bar(x=bin_cols, y=zeros_list, name='Zeros count')
@@ -363,7 +339,6 @@ fig = go.Figure(data=data, layout=layout)
 py.iplot(fig, filename='stacked-bar')
 
 
-# In[25]:
 
 
 imbalanced_cols = ['ps_ind_10_bin', 'ps_ind_11_bin', 'ps_ind_13_bin']
@@ -374,14 +349,12 @@ real_train_nocalc = real_train_nocalc.drop(imbalanced_cols, axis=1)
 real_test_nocalc = real_test_nocalc.drop(imbalanced_cols, axis=1)
 
 
-# In[26]:
 
 
 # plotTargetDistribution(train_data)
 # plotTargetDistribution(val_data)
 
 
-# In[27]:
 
 
 cat_cols = meta[(meta.level=='nominal') & meta.keep].index
@@ -399,7 +372,6 @@ real_train_nocalc = pd.get_dummies(data=real_train_nocalc, columns=cat_cols, dro
 real_test_nocalc = pd.get_dummies(data=real_test_nocalc, columns=cat_cols, drop_first=True)
 
 
-# In[28]:
 
 
 from sklearn.preprocessing import PolynomialFeatures
@@ -412,21 +384,18 @@ interacted_train = pd.concat(objs=[real_train, interactions], axis=1)
 interacted_test = pd.concat(objs=[real_test, interactions], axis=1)
 
 
-# In[29]:
 
 
 from sklearn.model_selection import train_test_split
 train_data, val_data = train_test_split(real_train, train_size=0.9, random_state=77)
 
 
-# In[30]:
 
 
 # _, compressed_train = train_test_split(real_train_nocalc, train_size=0.95, random_state=777)
 # train_data, val_data = train_test_split(compressed_train, train_size=0.8, random_state=777)
 
 
-# In[31]:
 
 
 # from sklearn.ensemble import RandomForestClassifier
@@ -436,13 +405,11 @@ train_data, val_data = train_test_split(real_train, train_size=0.9, random_state
 # features = train_data.drop(['id', 'target'], axis=1).columns.values
 
 
-# In[32]:
 
 
 # predVal = rf.predict(X=val_data.drop(['id', 'target'], axis=1))
 
 
-# In[33]:
 
 
 # x, y = (list(x) for x in zip(*sorted(zip(rf.feature_importances_, features), reverse=False)))
@@ -455,7 +422,6 @@ train_data, val_data = train_test_split(real_train, train_size=0.9, random_state
 # py.iplot(figure_or_data=fig, filename='Barplots')
 
 
-# In[34]:
 
 
 # from sklearn.feature_selection import SelectFromModel
@@ -466,7 +432,6 @@ train_data, val_data = train_test_split(real_train, train_size=0.9, random_state
 # val_data = val_data.iloc[:, sfm.get_support(indices=True)]
 
 
-# In[35]:
 
 
 # from sklearn.neural_network import MLPClassifier
@@ -475,7 +440,6 @@ train_data, val_data = train_test_split(real_train, train_size=0.9, random_state
 # nnet.fit(X=train_data.drop(['id', 'target'], axis=1), y=train_data[['target']])
 
 
-# In[36]:
 
 
 # from imblearn.ensemble import BalanceCascade
@@ -484,7 +448,6 @@ train_data, val_data = train_test_split(real_train, train_size=0.9, random_state
 #                                          realTrain[['target']])
 
 
-# In[37]:
 
 
 # Define the gini metric - from https://www.kaggle.com/c/ClaimPredictionChallenge/discussion/703#5897
@@ -508,7 +471,6 @@ def gini_xgb(preds, d_train):
     
 
 
-# In[38]:
 
 
 import xgboost as xgb
@@ -540,7 +502,6 @@ xgbCV = xgboost.cv(params=params, dtrain=d_train, stratified=True, num_boost_rou
                    early_stopping_rounds=100, maximize=True, verbose_eval=5, nfold=3)
 
 
-# In[39]:
 
 
 from xgboost import XGBClassifier
@@ -666,7 +627,6 @@ sub_df["target"] = sub_preds
 sub_df[["target"]].to_csv("submission_20fold.csv", index=True, float_format="%.9f")
 
 
-# In[40]:
 
 
 # from sklearn.model_selection import GridSearchCV, StratifiedKFold
@@ -697,7 +657,6 @@ sub_df[["target"]].to_csv("submission_20fold.csv", index=True, float_format="%.9
 #                            cv=skf.split(X_train, y_train), n_jobs=4, scoring='roc_auc')
 
 
-# In[41]:
 
 
 # grid_search.fit(X_train, y_train)
@@ -706,7 +665,6 @@ sub_df[["target"]].to_csv("submission_20fold.csv", index=True, float_format="%.9
 # print('Best parameters: ', grid_search.best_params_)
 
 
-# In[42]:
 
 
 import xgboost as xgb
@@ -750,27 +708,23 @@ filename = 'xgb_model.joblib.pkl'
 _ = joblib.dump(mdl_xgb, filename, compress=9)
 
 
-# In[43]:
 
 
 
 
 
-# In[43]:
 
 
 # Prediction on test set
 test_pred = mdl_xgb.predict(data=d_test)
 
 
-# In[44]:
 
 
 # val_pred = mdl_xgb.predict(data=d_val)
 # gini_xgb(d_train=d_val, preds=val_pred)
 
 
-# In[45]:
 
 
 # Save prediction results to csv
@@ -780,7 +734,6 @@ submissions['target'] = test_pred
 submissions.to_csv('xgb_model.csv', index=False)
 
 
-# In[46]:
 
 
 # from sklearn.metrics import confusion_matrix
@@ -793,7 +746,6 @@ submissions.to_csv('xgb_model.csv', index=False)
 # f1
 
 
-# In[47]:
 
 
 

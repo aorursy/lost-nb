@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -35,7 +34,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 train_transaction = pd.read_csv('../input/train_transaction.csv', index_col='TransactionID')
@@ -45,7 +43,6 @@ test_identity = pd.read_csv('../input/test_identity.csv', index_col='Transaction
 sample_submission = pd.read_csv('../input/sample_submission.csv', index_col='TransactionID')
 
 
-# In[3]:
 
 
 train_df = train_transaction.merge(train_identity, how='left', left_index=True, right_index=True)
@@ -55,7 +52,6 @@ print("Train shape : "+str(train_df.shape))
 print("Test shape  : "+str(test_df.shape))
 
 
-# In[4]:
 
 
 #drop sequence...
@@ -63,21 +59,18 @@ train_df = train_df.reset_index()
 test_df = test_df.reset_index()
 
 
-# In[5]:
 
 
 train_df['nulls1'] = train_df.isna().sum(axis=1)
 test_df['nulls1'] = test_df.isna().sum(axis=1)
 
 
-# In[6]:
 
 
 train_df = train_df.drop(["TransactionDT"], axis = 1)
 test_df = test_df.drop(["TransactionDT"], axis = 1)
 
 
-# In[7]:
 
 
 # KISS
@@ -85,13 +78,11 @@ train_df = train_df.iloc[:, :53]
 test_df = test_df.iloc[:, :52]
 
 
-# In[8]:
 
 
 del train_transaction, train_identity, test_transaction, test_identity
 
 
-# In[9]:
 
 
 emails = {'gmail': 'google', 'att.net': 'att', 'twc.com': 'spectrum', 'scranton.edu': 'other', 'optonline.net': 'other', 'hotmail.co.uk': 'microsoft', 'comcast.net': 'other', 'yahoo.com.mx': 'yahoo', 'yahoo.fr': 'yahoo', 'yahoo.es': 'yahoo', 'charter.net': 'spectrum', 'live.com': 'microsoft', 'aim.com': 'aol', 'hotmail.de': 'microsoft', 'centurylink.net': 'centurylink', 'gmail.com': 'google', 'me.com': 'apple', 'earthlink.net': 'other', 'gmx.de': 'other', 'web.de': 'other', 'cfl.rr.com': 'other', 'hotmail.com': 'microsoft', 'protonmail.com': 'other', 'hotmail.fr': 'microsoft', 'windstream.net': 'other', 'outlook.es': 'microsoft', 'yahoo.co.jp': 'yahoo', 'yahoo.de': 'yahoo', 'servicios-ta.com': 'other', 'netzero.net': 'other', 'suddenlink.net': 'other', 'roadrunner.com': 'other', 'sc.rr.com': 'other', 'live.fr': 'microsoft', 'verizon.net': 'yahoo', 'msn.com': 'microsoft', 'q.com': 'centurylink', 'prodigy.net.mx': 'att', 'frontier.com': 'yahoo', 'anonymous.com': 'other', 'rocketmail.com': 'yahoo', 'sbcglobal.net': 'att', 'frontiernet.net': 'yahoo', 'ymail.com': 'yahoo', 'outlook.com': 'microsoft', 'mail.com': 'other', 'bellsouth.net': 'other', 'embarqmail.com': 'centurylink', 'cableone.net': 'other', 'hotmail.es': 'microsoft', 'mac.com': 'apple', 'yahoo.co.uk': 'yahoo', 'netzero.com': 'other', 'yahoo.com': 'yahoo', 'live.com.mx': 'microsoft', 'ptd.net': 'other', 'cox.net': 'other', 'aol.com': 'aol', 'juno.com': 'other', 'icloud.com': 'apple'}
@@ -108,7 +99,6 @@ for c in ['P_emaildomain', 'R_emaildomain']:
     test_df[c + '_suffix'] = test_df[c + '_suffix'].map(lambda x: x if str(x) not in us_emails else 'us')
 
 
-# In[10]:
 
 
 for c1, c2 in train_df.dtypes.reset_index().values:
@@ -117,7 +107,6 @@ for c1, c2 in train_df.dtypes.reset_index().values:
         test_df[c1] = test_df[c1].map(lambda x: str(x).lower())
 
 
-# In[11]:
 
 
 numerical = ["TransactionAmt", "nulls1", "dist1", "dist2"] + ["C" + str(i) for i in range(1, 15)] +             ["D" + str(i) for i in range(1, 16)] +             ["V" + str(i) for i in range(1, 340)]
@@ -129,14 +118,12 @@ categorical = ["ProductCD", "card1", "card2", "card3", "card4", "card5", "card6"
                  ["M" + str(i) for i in range(1, 10)]
 
 
-# In[12]:
 
 
 numerical = [col for col in numerical if col in train_df.columns]
 categorical = [col for col in categorical if col in train_df.columns]
 
 
-# In[13]:
 
 
 def nan2mean(df):
@@ -151,7 +138,6 @@ train_df=nan2mean(train_df)
 test_df=nan2mean(test_df)
 
 
-# In[14]:
 
 
 # Label Encoding
@@ -170,7 +156,6 @@ for f in categorical:
 # test_df = test_df.reset_index()
 
 
-# In[15]:
 
 
 from sklearn.preprocessing import StandardScaler
@@ -185,7 +170,6 @@ for column in numerical:
     test_df[column] = scaler.transform(test_df[column].values.reshape(-1,1))
 
 
-# In[16]:
 
 
 from fastai.tabular import *
@@ -216,7 +200,6 @@ class AUROC(Callback):
             return add_metrics(last_metrics, [metric])
 
 
-# In[17]:
 
 
 dep_var='isFraud' 
@@ -229,35 +212,30 @@ data = (TabularList.from_df(train_df, cat_names=categorical, cont_names=numerica
                            .databunch())       
 
 
-# In[18]:
 
 
 learn = tabular_learner(data, layers=[200,100],metrics=accuracy, callback_fns=AUROC)
 #learn = tabular_learner(data, layers=[1000,500,100],emb_drop=0.04,ps=(0.001, 0.01, 0.1),metrics=accuracy, callback_fns=AUROC,wd=1e-2)#.to_fp16()
 
 
-# In[19]:
 
 
 learn.lr_find()
 learn.recorder.plot(suggestion=True)
 
 
-# In[20]:
 
 
 learn.fit(10,lr=1e-2)
 #learn.fit(30,lr=3e-3)
 
 
-# In[21]:
 
 
 learn.lr_find()
 learn.recorder.plot(suggestion=True)
 
 
-# In[22]:
 
 
 learn.unfreeze()
@@ -265,13 +243,11 @@ learn.unfreeze()
 learn.fit_one_cycle(10,max_lr=5e-5)
 
 
-# In[23]:
 
 
 learn.recorder.plot_losses()
 
 
-# In[24]:
 
 
 #learn.freeze()
@@ -279,7 +255,6 @@ learn.lr_find()
 learn.recorder.plot(suggestion=True)
 
 
-# In[25]:
 
 
 learn.unfreeze()
@@ -287,27 +262,23 @@ learn.unfreeze()
 learn.fit_one_cycle(1,max_lr=1e-8)
 
 
-# In[26]:
 
 
 interp = ClassificationInterpretation.from_learner(learn)
 interp.plot_confusion_matrix()
 
 
-# In[27]:
 
 
 test_pred = learn.get_preds(DatasetType.Test)
 
 
-# In[28]:
 
 
 sample_submission.isFraud = test_pred[0][:,1].numpy()
 sample_submission.head()
 
 
-# In[29]:
 
 
 sample_submission.to_csv('simple_fastai_v3.csv')

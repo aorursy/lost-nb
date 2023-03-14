@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -20,14 +19,12 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 df_train = pd.read_csv('/kaggle/input/nfl-big-data-bowl-2020/train.csv')
 df_train.head()
 
 
-# In[3]:
 
 
 outdoor = ['Outdoor', 'Outdoors', 'Cloudy', 'Heinz Field', 'Outdor', 'Ourdoor', 
@@ -41,7 +38,6 @@ dome_closed   = ['Dome', 'Domed, closed', 'Closed Dome', 'Domed', 'Dome, closed'
 dome_open     = ['Domed, Open', 'Domed, open']
 
 
-# In[4]:
 
 
 df_train['StadiumType'] = df_train['StadiumType'].replace(outdoor,'outdoor')
@@ -51,7 +47,6 @@ df_train['StadiumType'] = df_train['StadiumType'].replace(dome_closed,'dome_clos
 df_train['StadiumType'] = df_train['StadiumType'].replace(dome_open,'dome_open')
 
 
-# In[5]:
 
 
 rain = ['Rainy', 'Rain Chance 40%', 'Showers','Cloudy with periods of rain, thunder possible. Winds shifting to WNW, 10-20 mph.',
@@ -76,7 +71,6 @@ snow  = ['Heavy lake effect snow', 'Snow']
 none  = ['N/A Indoor', 'Indoors', 'Indoor', 'N/A (Indoors)', 'Controlled Climate']
 
 
-# In[6]:
 
 
 df_train['GameWeather'] = df_train['GameWeather'].replace(rain,'rain')
@@ -86,7 +80,6 @@ df_train['GameWeather'] = df_train['GameWeather'].replace(snow,'snow')
 df_train['GameWeather'] = df_train['GameWeather'].replace(none,'none')
 
 
-# In[7]:
 
 
 nan = ['nan','E','SE','Calm','SSW']
@@ -101,7 +94,6 @@ df_train['WindSpeed'] = df_train['WindSpeed'].apply(clean_wind_speed)
 df_train['WindSpeed'] = df_train['WindSpeed'].replace(nan,np.nan)
 
 
-# In[8]:
 
 
 north = ['N','From S','North']
@@ -122,7 +114,6 @@ no_wind = ['clear','Calm']
 nan = ['1','8','13']
 
 
-# In[9]:
 
 
 df_train['WindDirection'] = df_train['WindDirection'].replace(north,'north')
@@ -137,7 +128,6 @@ df_train['WindDirection'] = df_train['WindDirection'].replace(no_wind,'no_wind')
 df_train['WindDirection'] = df_train['WindDirection'].replace(nan,np.nan)
 
 
-# In[10]:
 
 
 natural_grass = ['natural grass','Naturall Grass','Natural Grass']
@@ -148,7 +138,6 @@ fieldturf = ['FieldTurf','Field turf','FieldTurf360','Field Turf']
 artificial = ['Artificial','Artifical']
 
 
-# In[11]:
 
 
 df_train['Turf'] = df_train['Turf'].replace(natural_grass,'natural_grass')
@@ -157,7 +146,6 @@ df_train['Turf'] = df_train['Turf'].replace(fieldturf,'fieldturf')
 df_train['Turf'] = df_train['Turf'].replace(artificial,'artificial')
 
 
-# In[12]:
 
 
 df_train.loc[df_train.VisitorTeamAbbr == "ARI",'VisitorTeamAbbr'] = "ARZ"
@@ -173,7 +161,6 @@ df_train.loc[df_train.VisitorTeamAbbr == "HOU",'VisitorTeamAbbr'] = "HST"
 df_train.loc[df_train.HomeTeamAbbr == "HOU",'HomeTeamAbbr'] = "HST"
 
 
-# In[13]:
 
 
 df_train['ToLeft'] = 0
@@ -185,14 +172,12 @@ df_train['TeamOnOffense'] = 'away'
 df_train.loc[df_train.PossessionTeam == df_train.HomeTeamAbbr,             'TeamOnOffense'] = 'home'
 
 
-# In[14]:
 
 
 df_train['IsBallCarrier'] = df_train['NflId'] == df_train['NflIdRusher']
 df_train['IsOnOffense'] = df_train['Team'] == df_train['TeamOnOffense']
 
 
-# In[15]:
 
 
 df_train['YardsFromOwnGoal'] = 50 + (50-df_train['YardLine'])
@@ -206,13 +191,11 @@ df_train.loc[df_train.ToLeft == 1, 'X_std'] = 120 - df_train['X']
 df_train.loc[df_train.ToLeft == 1, 'Y_std'] = 160/3-df_train['Y']
 
 
-# In[16]:
 
 
 df_train['SecondsPassed'] = ((df_train['Quarter'].astype('int')-1)*15 +                              df_train['GameClock'].str.slice(stop=2)                                                   .astype('int'))*60 +                              df_train['GameClock'].str.slice(start=3, stop=5)                                                   .astype('int')
 
 
-# In[17]:
 
 
 # from https://teamcolorcodes.com/category/nfl-team-color-codes/
@@ -252,7 +235,6 @@ nfl_color_dict = {
 }
 
 
-# In[18]:
 
 
 df_train.loc['YardsToTD'] =  df_train['X_std']
@@ -263,13 +245,11 @@ df_train['team_abr'] = df_train['VisitorTeamAbbr']
 df_train.loc[df_train.Team == 'home','team_abr'] = df_train['HomeTeamAbbr']
 
 
-# In[19]:
 
 
 np.cos(10)
 
 
-# In[20]:
 
 
 def plot_motion(row):
@@ -308,7 +288,6 @@ def plot_motion(row):
           head_width=0.2, head_length=0.2,zorder=3,ec='#FFFFF0')
 
 
-# In[21]:
 
 
 # Plot 1 Play
@@ -446,7 +425,6 @@ ax2.grid(False)
 plt.show()
 
 
-# In[22]:
 
 
 runners_pd = df_train[df_train.IsBallCarrier == True]
@@ -461,13 +439,11 @@ plt.show()
 # runners_pd.head()
 
 
-# In[23]:
 
 
 runners_pd.shape[0] == len(df_train.PlayId.unique())
 
 
-# In[24]:
 
 
 run_id = runners_pd.PlayId.unique()
@@ -477,7 +453,6 @@ for i in run_id:
         print(i)
 
 
-# In[25]:
 
 
 
@@ -490,13 +465,11 @@ plt.legend()
 plt.show()
 
 
-# In[26]:
 
 
 df_train.head()
 
 
-# In[27]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -509,7 +482,6 @@ for col in df_labels.columns:
         df_labels[col] = enc.fit_transform(df_labels[col].astype(str))
 
 
-# In[28]:
 
 
 import seaborn as sns
@@ -531,7 +503,6 @@ ax.set_xticklabels(
 );
 
 
-# In[29]:
 
 
 col_names = corr.columns
@@ -551,7 +522,6 @@ def parse_corr_matrix(corr_matrix):
 parse_corr_matrix(corr)
 
 
-# In[30]:
 
 
 # YardsFromOwnGoal, X_std is important features
@@ -570,14 +540,12 @@ for col in cols:
         print(col)
 
 
-# In[31]:
 
 
 from collections import Counter
 Counter(labels)
 
 
-# In[32]:
 
 
 from catboost import CatBoostClassifier
@@ -586,13 +554,11 @@ clf = CatBoostClassifier(iterations=20)
 clf.fit(df_uncorr_train.values, labels.astype('int').values, cat_features, verbose=0)
 
 
-# In[33]:
 
 
 Counter(clf.predict(df_uncorr_train.values))
 
 
-# In[34]:
 
 
 from sklearn import metrics
@@ -603,7 +569,6 @@ fpr, tpr, thresholds = metrics.roc_curve(labels.astype('int').values,
 metrics.auc(fpr, tpr)
 
 
-# In[35]:
 
 
 x_vals = df_uncorr_train.columns
@@ -614,7 +579,6 @@ plt.xticks(rotation=90)
 plt.show()
 
 
-# In[36]:
 
 
 from sklearn.metrics import r2_score
@@ -634,20 +598,17 @@ plt.xlabel('Seconds Passed')
 plt.show()
 
 
-# In[37]:
 
 
 runners_pd.columns
 
 
-# In[38]:
 
 
 dib_mean = runners_pd.loc[runners_pd.DefendersInTheBox > 3]                      .groupby('DefendersInTheBox')['Yards'].mean()
 dib_count = runners_pd.loc[runners_pd.DefendersInTheBox > 3]                     .groupby('DefendersInTheBox')['PlayId'].count()
 
 
-# In[39]:
 
 
 legit = runners_pd.loc[runners_pd.DefendersInTheBox > 3]
@@ -665,7 +626,6 @@ plt.xlabel('# of Defenders in the Box')
 plt.show()
 
 
-# In[40]:
 
 
 # Close vs. Blowouts per quarter
@@ -689,21 +649,18 @@ r2 = reg.score(X_, y)
 # plt.show()
 
 
-# In[41]:
 
 
 score_diff = runners_pd.HomeScoreBeforePlay.values - runners_pd.VisitorScoreBeforePlay.values
 runners_pd.score_diff = score_diff
 
 
-# In[42]:
 
 
 plt.scatter(runners_pd.Dis,runners_pd.Yards, alpha=0.1)
 plt.show()
 
 
-# In[43]:
 
 
 # - Only look at "normal" instances
@@ -713,19 +670,16 @@ plt.show()
 #     - Only look at reasonably close games
 
 
-# In[44]:
 
 
 runners_pd = runners_pd.dropna(subset=['Yards'])
 
 
-# In[45]:
 
 
 runners_pd.columns
 
 
-# In[46]:
 
 
 from scipy.stats import ttest_ind
@@ -744,7 +698,6 @@ plt.title('Is Q4 so different than other times in game? {}'.format(round(p,2)< 0
 plt.show()
 
 
-# In[47]:
 
 
 # Is redzone so different than other times in game?
@@ -761,7 +714,6 @@ plt.title('Is redzone so different than other times in game? {}'.format(round(p,
 plt.show()
 
 
-# In[48]:
 
 
 # Is 2min of Q2 different?
@@ -778,7 +730,6 @@ plt.title('Is 2min OFF so different than other times in game? {}'.format(round(p
 plt.show()
 
 
-# In[49]:
 
 
 # Are bowouts different
@@ -796,7 +747,6 @@ plt.title('Blowout Runs so different than other times in game? {}'.format(round(
 plt.show()
 
 
-# In[50]:
 
 
 t, p = ttest_ind(win_blowout_yards, not_blowout_yards)
@@ -807,7 +757,6 @@ plt.title('Blowout Runs so different than other times in game? Winning:{} Losing
 plt.show()
 
 
-# In[51]:
 
 
 # evaluation metric
@@ -817,7 +766,6 @@ def crps(y_true, y_pred):
     return ((y_true - y_pred) ** 2).sum(axis=1).sum(axis=0) / (199 * y_true.shape[0]) 
 
 
-# In[52]:
 
 
 def generate_cpd(yards):
@@ -828,20 +776,17 @@ def generate_cpd2(yards):
     return(np.append(np.zeros(99+(int(np.floor(yards)))),np.array(yards-np.floor(yards)), np.zeros(199-(99+int(yards)-1))+1).reshape(199,1))
 
 
-# In[53]:
 
 
 generate_cpd(4).shape
 
 
-# In[54]:
 
 
 runners_answers = [generate_cpd(i) for i in runners_pd.Yards.values]
 dummy_answers = [generate_cpd(4) for i in runners_pd.Yards.values]
 
 
-# In[55]:
 
 
 dummy_results = [crps(runners_answers[i],dummy_answers[i]) for i in range(runners_pd.shape[0])]
@@ -850,13 +795,11 @@ print(
 )
 
 
-# In[56]:
 
 
 labels.astype('int').values
 
 
-# In[57]:
 
 
 from catboost import Pool, CatBoostRegressor
@@ -867,20 +810,17 @@ from catboost import Pool, CatBoostRegressor
 # clf.fit(df_uncorr_train.values, runners_pd.Yards.values, cat_features, verbose=0)
 
 
-# In[58]:
 
 
 # preds = clf.predict(df_uncorr_train.values)
 # preds
 
 
-# In[ ]:
 
 
 
 
 
-# In[59]:
 
 
 from collections import namedtuple, defaultdict
@@ -893,14 +833,12 @@ import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader, RandomSampler, Sampler, SequentialSampler
 
 
-# In[60]:
 
 
 # Create the dataset
 df_train = df_train.loc[pd.notnull(df_train.Position)]
 
 
-# In[61]:
 
 
 # create positional dataset
@@ -914,13 +852,11 @@ for k,v in cnt.items():
     print(k,v, '({}%)'.format(round(100*v/play_cnt,2)))
 
 
-# In[62]:
 
 
 play_pd.head()
 
 
-# In[63]:
 
 
 def motion_prepro(row):
@@ -962,7 +898,6 @@ def motion_prepro(row):
     return(dx, dy)
 
 
-# In[64]:
 
 
 dis_list = df_train.apply(motion_prepro, axis=1)
@@ -975,14 +910,12 @@ df_train['dx'] = [i[0] for i in dis_list]
 df_train['dy'] = [i[1] for i in dis_list]
 
 
-# In[65]:
 
 
 df_train['dx'] = [i[0] for i in dis_list]
 df_train['dy'] = [i[1] for i in dis_list]
 
 
-# In[66]:
 
 
 position_dict = {
@@ -1016,7 +949,6 @@ Counter(df_train.loc[df_train.IsBallCarrier == 1].Position.values)
 df_train['adam_encode_pos'] = [position_dict[i] for i in df_train.Position.values]
 
 
-# In[67]:
 
 
 import re
@@ -1024,13 +956,11 @@ rez = [re.split(r'-',i) for i in df_train.PlayerHeight]
 df_train['Height'] = [int(i[0])*12+int(i[1]) for i in rez]
 
 
-# In[68]:
 
 
 df_train.shape
 
 
-# In[69]:
 
 
 def preprocess(df_train, train=True):
@@ -1115,14 +1045,12 @@ def preprocess(df_train, train=True):
     return(torch_data, play_list)
 
 
-# In[70]:
 
 
 # x = df_train[df_train.GameId == 2017090700.0].copy()
 # a, b = preprocess(df_train, train=False)
 
 
-# In[71]:
 
 
 def make_pred(test_data, prediction_df, env, model):
@@ -1136,7 +1064,6 @@ def make_pred(test_data, prediction_df, env, model):
     env.write_submission_file()
 
 
-# In[72]:
 
 
 import time
@@ -1184,7 +1111,6 @@ for play in plays:
 print(round((time.time() - start)/60),'minutes to run')
 
 
-# In[73]:
 
 
 y = [df_train.loc[df_train.PlayId == play].Yards.values[0] for play in plays]
@@ -1192,19 +1118,16 @@ y = np.array([generate_cpd(i) for i in y])
 y = torch.from_numpy(y)
 
 
-# In[74]:
 
 
 np.array(spacial_list).shape
 
 
-# In[75]:
 
 
 np_spacial = np.array(spacial_list)
 
 
-# In[76]:
 
 
 torch_train = torch.from_numpy(np_spacial[101:,:]).float()
@@ -1213,7 +1136,6 @@ torch_test = torch.from_numpy(np_spacial[:101,:]).float()
 y_test = y[:101].view(101,199).float()
 
 
-# In[77]:
 
 
 class Net(nn.Module):
@@ -1247,7 +1169,6 @@ model = Net()
 model.apply(init_weights)
 
 
-# In[78]:
 
 
 # evaluation metric
@@ -1258,7 +1179,6 @@ def crps(y_true, y_pred):
     return(y_loss)
 
 
-# In[79]:
 
 
 optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -1272,7 +1192,6 @@ for epoch in range(50): # 3 full passes over the data
     
 
 
-# In[80]:
 
 
 
@@ -1281,13 +1200,11 @@ loss = crps(y_test,output.float())
 print('Testing Loss:',loss.item())
 
 
-# In[81]:
 
 
 len(plays[:101])
 
 
-# In[82]:
 
 
 col_list = ['Yards{}'.format(i) for i in range(-99,100)]
@@ -1296,7 +1213,6 @@ answer_pd['PlayId'] = plays[:101]
 answer_pd
 
 
-# In[83]:
 
 
 # from kaggle.competitions import nflrush
@@ -1308,14 +1224,12 @@ answer_pd
 # # env.write_submission_file()
 
 
-# In[84]:
 
 
 from kaggle.competitions import nflrush
 env = nflrush.make_env()
 
 
-# In[85]:
 
 
 # dummy = df_train.loc[df_train.PlayId == 20170907000118.0].copy()
@@ -1323,7 +1237,6 @@ env = nflrush.make_env()
 # output = model(data)
 
 
-# In[86]:
 
 
 for test, sample in tqdm.tqdm(env.iter_test()):
@@ -1336,7 +1249,6 @@ for test, sample in tqdm.tqdm(env.iter_test()):
 env.write_submission_file()
 
 
-# In[87]:
 
 
 # output = model(data)

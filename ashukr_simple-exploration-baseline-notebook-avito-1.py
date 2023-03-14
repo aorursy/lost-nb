@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[4]:
 
 
 import numpy as np # linear algebra
@@ -25,20 +24,17 @@ pd.options.mode.chained_assignment = None
 pd.options.display.max_columns = 999
 
 
-# In[5]:
 
 
 from subprocess import check_output
 print(check_output(["ls", "../input/"]).decode("utf8"))
 
 
-# In[6]:
 
 
 get_ipython().system('ls ../input/')
 
 
-# In[7]:
 
 
 train_df = pd.read_csv("../input/train.csv", parse_dates=["activation_date"])
@@ -47,19 +43,16 @@ print("Train file rows and columns are : ", train_df.shape)
 print("Test file rows and columns are : ", test_df.shape)
 
 
-# In[8]:
 
 
 (train_df.image.loc[0])
 
 
-# In[9]:
 
 
 train_df.head()
 
 
-# In[10]:
 
 
 plt.figure(figsize=(12,8))
@@ -76,7 +69,6 @@ plt.title("Deal Probability Distribution", fontsize=14)
 plt.show()
 
 
-# In[11]:
 
 
 from io import StringIO
@@ -117,50 +109,42 @@ region_df = pd.read_csv(temp_data)
 train_df = pd.merge(train_df, region_df, how="left", on="region")
 
 
-# In[12]:
 
 
 region_df.head()
 
 
-# In[13]:
 
 
 train_df.head()
 
 
-# In[14]:
 
 
 temp_series = train_df['region_en'].value_counts()
 (temp_series[:5])
 
 
-# In[15]:
 
 
 temp_series.index
 
 
-# In[16]:
 
 
 sizes = (np.array((temp_series / temp_series.sum())*100))
 
 
-# In[17]:
 
 
 (sizes[:5])
 
 
-# In[18]:
 
 
 get_ipython().run_line_magic('pinfo', 'go')
 
 
-# In[19]:
 
 
 temp_series = train_df['region_en'].value_counts()
@@ -178,7 +162,6 @@ fig = go.Figure(data=data, layout=layout)
 py.iplot(fig, filename="region")
 
 
-# In[20]:
 
 
 plt.figure(figsize=(12,8))
@@ -190,20 +173,17 @@ plt.xticks(rotation='vertical')
 plt.show()
 
 
-# In[21]:
 
 
 cnt_srs = train_df['city'].value_counts().head(20)
 type(cnt_srs)
 
 
-# In[22]:
 
 
 cnt_srs[:5]
 
 
-# In[23]:
 
 
 cnt_srs = train_df['city'].value_counts().head(20)
@@ -226,7 +206,6 @@ fig = go.Figure(data=data, layout=layout)
 py.iplot(fig, filename="CityAds")
 
 
-# In[24]:
 
 
 temp_data = StringIO("""
@@ -246,7 +225,6 @@ temp_df = pd.read_csv(temp_data)
 train_df = pd.merge(train_df, temp_df, on="parent_category_name", how="left")
 
 
-# In[25]:
 
 
 temp_series = train_df['parent_category_name_en'].value_counts()
@@ -264,7 +242,6 @@ fig = go.Figure(data=data, layout=layout)
 py.iplot(fig, filename="parentcategory")
 
 
-# In[26]:
 
 
 plt.figure(figsize=(12,8))
@@ -276,7 +253,6 @@ plt.xticks(rotation='vertical')
 plt.show()
 
 
-# In[27]:
 
 
 temp_data = StringIO("""
@@ -334,19 +310,16 @@ temp_df = pd.read_csv(temp_data)
 train_df = pd.merge(train_df, temp_df, on="category_name", how="left")
 
 
-# In[28]:
 
 
 (cnt_srs.index[::1]).shape
 
 
-# In[29]:
 
 
 (cnt_srs.index[::-1]).shape
 
 
-# In[30]:
 
 
 cnt_srs = train_df['category_name_en'].value_counts()
@@ -370,7 +343,6 @@ fig = go.Figure(data=data, layout=layout)
 py.iplot(fig, filename="category name")
 
 
-# In[31]:
 
 
 temp_series = train_df['user_type'].value_counts()
@@ -388,7 +360,6 @@ fig = go.Figure(data=data, layout=layout)
 py.iplot(fig, filename="usertype")
 
 
-# In[32]:
 
 
 train_df["price_new"] = train_df["price"].values
@@ -401,19 +372,16 @@ plt.title("Log of Price Histogram", fontsize=14)
 plt.show()
 
 
-# In[33]:
 
 
 cnt_srs = train_df['activation_date']
 
 
-# In[34]:
 
 
 (cnt_srs[:5])
 
 
-# In[35]:
 
 
 cnt_srs = train_df['activation_date'].value_counts()
@@ -458,7 +426,6 @@ fig = go.Figure(data=data, layout=layout)
 py.iplot(fig, filename="ActivationDate")
 
 
-# In[36]:
 
 
 from matplotlib_venn import venn2
@@ -469,13 +436,11 @@ plt.title("Number of users in train and test", fontsize=15)
 plt.show()
 
 
-# In[37]:
 
 
 train_df.title[:5]
 
 
-# In[38]:
 
 
 from matplotlib_venn import venn2
@@ -486,20 +451,17 @@ plt.title("Number of titles in train and test", fontsize=15)
 plt.show()
 
 
-# In[39]:
 
 
 train_df["title_nwords"] = train_df["title"].apply(lambda x: len(x.split()))
 test_df["title_nwords"] = test_df["title"].apply(lambda x: len(x.split()))
 
 
-# In[ ]:
 
 
 
 
 
-# In[40]:
 
 
 train_df["title_nwords"] = train_df["title"].apply(lambda x: len(x.split()))
@@ -526,7 +488,6 @@ fig = go.Figure(data=data, layout=layout)
 py.iplot(fig, filename="title_nwords")           
 
 
-# In[41]:
 
 
 tfidf_vec = TfidfVectorizer(ngram_range=(1,1))
@@ -546,7 +507,6 @@ test_tfidf = tfidf_vec.transform(test_df['title'].values.tolist())
 # the features of the input that are not already there in the tfidf_vec.transform()
 
 
-# In[42]:
 
 
 n_comp = 3
@@ -555,58 +515,49 @@ svd_obj = TruncatedSVD(n_components=n_comp, algorithm='arpack')
 #svd acts like the pca for the text features and the N_comp passed as the parameter decides the number of features that each data vector will have
 
 
-# In[43]:
 
 
 train_tfidf.shape
 
 
-# In[44]:
 
 
 svd_obj.fit(full_tfidf)
 train_svd = pd.DataFrame(svd_obj.transform(train_tfidf))
 
 
-# In[45]:
 
 
 svd_obj.transform(train_tfidf)
 
 
-# In[46]:
 
 
 
 test_svd = pd.DataFrame(svd_obj.transform(test_tfidf))
 
 
-# In[47]:
 
 
 train_svd.columns = ['svd_title_'+str(i+1) for i in range(n_comp)]
 test_svd.columns = ['svd_title_'+str(i+1) for i in range(n_comp)]
 
 
-# In[48]:
 
 
 test_svd.columns
 
 
-# In[49]:
 
 
 test_svd.columns
 
 
-# In[50]:
 
 
 train_df.head()
 
 
-# In[51]:
 
 
 
@@ -626,7 +577,6 @@ test_df = pd.concat([test_df, test_svd], axis=1)
 del full_tfidf, train_tfidf, test_tfidf, train_svd, test_svd
 
 
-# In[52]:
 
 
 # 1st svd comp #
@@ -654,26 +604,22 @@ plt.title("Deal Probability distribution for Third SVD component on title", font
 plt.show()
 
 
-# In[53]:
 
 
 train_df["description"].fillna("NA",inplace=True)
 
 
-# In[54]:
 
 
 test_df["description"].fillna("NA", inplace=True)
 
 
-# In[55]:
 
 
 train_df["desc_nwords"] = train_df["description"].apply(lambda x: len(x.split()))
 train_df["desc_nwords"]
 
 
-# In[56]:
 
 
 test_df["desc_nwords"] = test_df["description"].apply(lambda x: len(x.split()))
@@ -682,7 +628,6 @@ cnt_srs = train_df['desc_nwords'].value_counts()
 cnt_srs
 
 
-# In[57]:
 
 
 ## Filling missing values ##
@@ -713,7 +658,6 @@ fig = go.Figure(data=data, layout=layout)
 py.iplot(fig, filename="desc_nwords")  
 
 
-# In[58]:
 
 
 ### TFIDF Vectorizer ###
@@ -735,7 +679,6 @@ test_df = pd.concat([test_df, test_svd], axis=1)
 del full_tfidf, train_tfidf, test_tfidf, train_svd, test_svd
 
 
-# In[59]:
 
 
 # 1st svd comp #
@@ -763,14 +706,12 @@ plt.title("Deal Probability distribution for Third SVD component on Description"
 plt.show()
 
 
-# In[60]:
 
 
 train_y = train_df["deal_probability"].values
 test_id = test_df["item_id"].values
 
 
-# In[61]:
 
 
 train_df["activation_weekday"] = train_df["activation_date"].dt.weekday
@@ -778,19 +719,16 @@ train_df["activation_weekday"] = train_df["activation_date"].dt.weekday
 test_df["activation_weekday"] = test_df["activation_date"].dt.weekday
 
 
-# In[76]:
 
 
 type(train_df[col].values[0])
 
 
-# In[75]:
 
 
 np.unique(train_df[col].values).shape
 
 
-# In[64]:
 
 
 cat_vars = ["region", "city", "parent_category_name", "category_name", "user_type", "param_1", "param_2", "param_3"]
@@ -803,7 +741,6 @@ for col in cat_vars:
     test_df[col] = lbl.transform(list(test_df[col].values.astype('str')))
 
 
-# In[65]:
 
 
 # Target and ID variables #
@@ -827,13 +764,11 @@ train_X = train_df.drop(cols_to_drop + ["region_en", "parent_category_name_en", 
 test_X = test_df.drop(cols_to_drop, axis=1)
 
 
-# In[66]:
 
 
 model.best_iteration
 
 
-# In[70]:
 
 
 def run_lgb(train_X, train_y, val_X, val_y,alpha):
@@ -857,13 +792,11 @@ def run_lgb(train_X, train_y, val_X, val_y,alpha):
     return  model, evals_result
 
 
-# In[68]:
 
 
 train_X.shape
 
 
-# In[85]:
 
 
 import time
@@ -911,13 +844,11 @@ plt.show()
 print("--- %s seconds ---" % (time.time() - start_time))
 
 
-# In[76]:
 
 
 train_error
 
 
-# In[84]:
 
 
 axes = plt.gca()
@@ -928,13 +859,11 @@ plt.plot(learningList,test_error)
 plt.show()
 
 
-# In[83]:
 
 
 type(learningList)
 
 
-# In[82]:
 
 
 fig, ax = plt.subplots(figsize=(12,18))
@@ -944,7 +873,6 @@ plt.title("LightGBM - Feature Importance", fontsize=15)
 plt.show()
 
 
-# In[ ]:
 
 
 

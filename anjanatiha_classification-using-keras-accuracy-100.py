@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import sys
@@ -113,13 +112,11 @@ import matplotlib.image as mpimg
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 print(os.listdir(r"../input"))
 
 
-# In[3]:
 
 
 input_directory = r"../input/"
@@ -128,7 +125,6 @@ training_dir = input_directory + r"train"
 testing_dir = input_directory + r"test"
 
 
-# In[4]:
 
 
 train_files = os.listdir(training_dir)
@@ -144,7 +140,6 @@ df_train = pd.DataFrame({"id": train_files, "label": train_labels})
 df_train.head()
 
 
-# In[5]:
 
 
 df_test = pd.DataFrame({"id": test_files})
@@ -152,7 +147,6 @@ df_test["label"] = ["cat"]*(len(test_files))
 df_test.head()
 
 
-# In[6]:
 
 
 # print date and time for given type of representation
@@ -171,7 +165,6 @@ def debug(x):
     print("-"*40, x, "-"*40)
 
 
-# In[7]:
 
 
 def get_class_files(df, file="id", label = "label", count=5):
@@ -255,7 +248,6 @@ def plot_image(file, directory=None, sub=False, aspect=None):
         plt.show()
 
 
-# In[8]:
 
 
 print("Trainning")
@@ -266,7 +258,6 @@ label_map_select = select_image_by_label(label_map, image_count_per_label)
 plot_sample_image(label_map_select, training_dir+"/", aspect=aspect)
 
 
-# In[9]:
 
 
 print("Testing")
@@ -274,13 +265,11 @@ aspect = None
 plot_sample_test_image(directory=testing_dir+"/", aspect=aspect)
 
 
-# In[10]:
 
 
 sns.countplot(df_train["label"])
 
 
-# In[11]:
 
 
 # reset tensorflow graph tp free up memory and resource allocation 
@@ -309,20 +298,17 @@ def reset_callbacks(checkpoint=None, reduce_lr=None, early_stopping=None, tensor
     
 
 
-# In[12]:
 
 
 # reset_graph()
 # reset_callbacks()
 
 
-# In[13]:
 
 
 classes = ['cat', 'dog']
 
 
-# In[14]:
 
 
 def get_data(batch_size=32, target_size=(96,96), class_mode="categorical", training_dir=training_dir, testing_dir=testing_dir, classes=classes, df_train=df_train, df_test=df_test):
@@ -406,7 +392,6 @@ def get_weight(y):
     return class_weight_current
 
 
-# In[15]:
 
 
 def get_conv_model():
@@ -474,14 +459,12 @@ def get_model(model_name, input_shape=(96, 96, 3)):
     return model
 
 
-# In[16]:
 
 
 def auroc(y_true, y_pred):
     return tf.py_func(roc_auc_score, (y_true, y_pred), tf.double)
 
 
-# In[17]:
 
 
 def plot_performance(history=None, figure_directory=None):
@@ -540,7 +523,6 @@ def plot_performance(history=None, figure_directory=None):
     plt.show()
 
 
-# In[18]:
 
 
 main_model_dir = r"models/"
@@ -561,7 +543,6 @@ os.mkdir(main_log_dir)
 os.listdir()
 
 
-# In[19]:
 
 
 model_dir = main_model_dir + time.strftime('%Y-%m-%d %H-%M-%S') + "/"
@@ -575,14 +556,12 @@ model_file = model_dir + "{epoch:02d}-val_acc-{val_acc:.2f}-val_loss-{val_loss:.
 model_dir, os.listdir(model_dir), log_dir, os.listdir(log_dir)
 
 
-# In[20]:
 
 
 # reset_graph()
 # reset_callbacks()
 
 
-# In[21]:
 
 
 print("Settting Callbacks")
@@ -617,7 +596,6 @@ print("Completed")
 model_dir, os.listdir(model_dir), log_dir, os.listdir(log_dir)
 
 
-# In[22]:
 
 
 # print("Getting Base Model...")
@@ -631,7 +609,6 @@ model_dir, os.listdir(model_dir), log_dir, os.listdir(log_dir)
 # print("complete")
 
 
-# In[23]:
 
 
 print("Starting...\n")
@@ -645,14 +622,12 @@ train_generator, validation_generator, test_generator, class_weights, steps_per_
 print("\n\nCompleted ...\n")
 
 
-# In[24]:
 
 
 loss = 'categorical_crossentropy'
 metrics = ['accuracy']
 
 
-# In[25]:
 
 
 print("Starting...\n")
@@ -710,7 +685,6 @@ print("\nElapsed Time: " + elapsed_time)
 print("\n")
 
 
-# In[26]:
 
 
 # print("Starting...\n")
@@ -757,13 +731,11 @@ print("\n")
 # print("\n")
 
 
-# In[27]:
 
 
 plot_performance(history=history)
 
 
-# In[28]:
 
 
 def generate_result(model, test_generator, nsteps=len(test_generator)):
@@ -771,13 +743,11 @@ def generate_result(model, test_generator, nsteps=len(test_generator)):
     return y_preds, y_preds[:,1]
 
 
-# In[29]:
 
 
 y_preds_all, y_preds = generate_result(model, test_generator)
 
 
-# In[30]:
 
 
 df_test = pd.DataFrame({"id": test_generator.filenames, "label": y_preds})
@@ -789,14 +759,12 @@ df_test.to_csv('submission.csv', index=False)
 df_test.head()
 
 
-# In[31]:
 
 
 df_test2 = pd.read_csv("submission.csv")
 df_test2.head()
 
 
-# In[32]:
 
 
 import random
@@ -824,7 +792,6 @@ plt.show()
     
 
 
-# In[33]:
 
 
 

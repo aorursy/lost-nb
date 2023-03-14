@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import matplotlib.patches as patches
@@ -45,7 +44,6 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 data = pd.read_csv('/kaggle/input/train_labels.csv')
@@ -62,7 +60,6 @@ print(data.head())
 # data = data.sample(10000, random_state = 101)
 
 
-# In[3]:
 
 
 def readImage(path):
@@ -102,7 +99,6 @@ for i, idx in tqdm_notebook(enumerate(shuffled_data['filename']), 'computing sta
     
 
 
-# In[4]:
 
 
 channel_avr = (x_tot/counted_ones)/255
@@ -110,7 +106,6 @@ channel_std = (np.sqrt(x2_tot/counted_ones - channel_avr**2))/255
 print(channel_avr,channel_std)
 
 
-# In[5]:
 
 
 print('有{0}张黑色图片'.format(len(too_dark_idx)))
@@ -121,7 +116,6 @@ print('白色图片:')
 print(too_bright_idx)
 
 
-# In[6]:
 
 
 # from sklearn.model_selection import train_test_split
@@ -145,7 +139,6 @@ print(too_bright_idx)
 # df_train, df_val= train_test_split(train_df, test_size=0.1, stratify=train_labels, random_state=101)
 
 
-# In[7]:
 
 
 from sklearn.model_selection import train_test_split
@@ -172,13 +165,11 @@ train_labels = np.asarray(train_df['label'].values)
 df_train, df_val= train_test_split(train_df, test_size=0.1, stratify=train_labels, random_state=101)
 
 
-# In[8]:
 
 
 df_train.head()
 
 
-# In[9]:
 
 
 num_train_samples = len(df_train)
@@ -240,13 +231,11 @@ test_generator = val_datagen.flow_from_dataframe(
     class_mode='binary')
 
 
-# In[10]:
 
 
 test_generator.class_indices
 
 
-# In[11]:
 
 
 def plot_random_samples(generator):
@@ -267,13 +256,11 @@ def plot_random_samples(generator):
     plt.show()
 
 
-# In[12]:
 
 
 plot_random_samples(val_generator)
 
 
-# In[13]:
 
 
 # kernel_size = (3,3)
@@ -307,13 +294,11 @@ plot_random_samples(val_generator)
 # CNN3_model.summary()
 
 
-# In[14]:
 
 
 
 
 
-# In[14]:
 
 
 from keras import regularizers
@@ -368,19 +353,16 @@ CNN9_model.add(Dense(1, activation = "sigmoid", activity_regularizer=regularizer
 CNN9_model.summary()
 
 
-# In[15]:
 
 
 # os.listdir('/kaggle/working')
 
 
-# In[16]:
 
 
 # os.remove('/kaggle/working/CNN3_model.h5')
 
 
-# In[17]:
 
 
 # filepath = "CNN3_model.h5"
@@ -401,7 +383,6 @@ CNN9_model.summary()
 #                    callbacks=callbacks_list)
 
 
-# In[18]:
 
 
 # CNN3_model.load_weights('CNN3_model.h5')
@@ -414,13 +395,11 @@ CNN9_model.summary()
 # print('val_acc:', val_acc)
 
 
-# In[19]:
 
 
 # os.listdir('/kaggle/working')
 
 
-# In[20]:
 
 
 CNN9_model.compile(Adam(lr=0.0001), loss='binary_crossentropy', 
@@ -430,19 +409,16 @@ CNN9_model.compile(Adam(lr=0.0001), loss='binary_crossentropy',
 # CNN9_model.compile(loss='binary_crossentropy', optimizer=sgd, metrics=['accuracy'])
 
 
-# In[21]:
 
 
 os.listdir('/kaggle/working')
 
 
-# In[22]:
 
 
 os.remove('/kaggle/working/CNN9_model.h5')
 
 
-# In[23]:
 
 
 filepath = "CNN9_model.h5"
@@ -463,13 +439,11 @@ CNN9_history = CNN9_model.fit_generator(train_generator, steps_per_epoch=train_s
                    callbacks=callbacks_list)
 
 
-# In[24]:
 
 
 os.listdir('/kaggle/working')
 
 
-# In[25]:
 
 
 CNN9_model.load_weights('CNN9_model.h5')
@@ -481,7 +455,6 @@ print('val_loss:', val_loss)
 print('val_acc:', val_acc)
 
 
-# In[26]:
 
 
 plt.plot(CNN9_history.history['acc'])
@@ -493,7 +466,6 @@ plt.legend(['Train', 'Validation'], loc='best')
 plt.show()
 
 
-# In[27]:
 
 
 plt.plot(CNN9_history.history['loss'])
@@ -505,47 +477,40 @@ plt.legend(['Train', 'Validation'], loc='best')
 plt.show()
 
 
-# In[28]:
 
 
 
 
 
-# In[28]:
 
 
 predictions = CNN9_model.predict_generator(test_generator, steps=len(df_val), verbose=1)
 predictions.shape
 
 
-# In[29]:
 
 
 # 查看不同类的索引
 test_generator.class_indices
 
 
-# In[30]:
 
 
 df_preds = pd.DataFrame(predictions, columns=['b_has tumor'])
 df_preds.head()
 
 
-# In[31]:
 
 
 test_generator.classes
 
 
-# In[32]:
 
 
 y_true = test_generator.classes
 y_pred = df_preds['b_has tumor']
 
 
-# In[33]:
 
 
 from sklearn.metrics import roc_curve, auc
@@ -559,7 +524,6 @@ roc_auc = auc(fpr, tpr)
 print('ROC area is {0}'.format(roc_auc))
 
 
-# In[34]:
 
 
 # from sklearn.metrics import roc_auc_score
@@ -567,7 +531,6 @@ print('ROC area is {0}'.format(roc_auc))
 # roc_auc_score(y_true, y_pred)
 
 
-# In[35]:
 
 
 plt.figure()
@@ -581,7 +544,6 @@ plt.title('Receiver operating characteristic')
 plt.legend(loc="lower right")
 
 
-# In[36]:
 
 
 def plot_confusion_matrix(cm, classes,
@@ -618,13 +580,11 @@ def plot_confusion_matrix(cm, classes,
     plt.tight_layout()
 
 
-# In[37]:
 
 
 predictions = predictions.flatten()
 
 
-# In[38]:
 
 
 index = 0
@@ -636,37 +596,31 @@ for i in range(len(predictions)):
         predictions[i]=0
 
 
-# In[39]:
 
 
 predictions = predictions.astype(int)
 
 
-# In[40]:
 
 
 test_labels = test_generator.classes
 
 
-# In[41]:
 
 
 test_labels = np.array(test_labels)
 
 
-# In[42]:
 
 
 cm = confusion_matrix(test_labels, predictions)
 
 
-# In[43]:
 
 
 test_generator.class_indices
 
 
-# In[44]:
 
 
 # 定义类别的索引
@@ -675,7 +629,6 @@ cm_plot_labels = ['a_no tumor', 'b_has tumor']
 plot_confusion_matrix(cm, cm_plot_labels, title='Confusion Matrix')
 
 
-# In[45]:
 
 
 from sklearn.metrics import classification_report
@@ -690,13 +643,11 @@ report = classification_report(y_true, y_pred_binary, target_names=cm_plot_label
 print(report)
 
 
-# In[46]:
 
 
 os.listdir('/kaggle')
 
 
-# In[47]:
 
 
 src="../input/test"
@@ -724,13 +675,11 @@ test_generator = test_datagen.flow_from_directory(
 )
 
 
-# In[48]:
 
 
 pred=CNN9_model.predict_generator(test_generator,verbose=1)
 
 
-# In[49]:
 
 
 csv_file = open("sample_submission.csv","w")

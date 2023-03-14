@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -15,7 +14,6 @@ pd.set_option('display.max_columns', 50)
 pd.set_option('display.max_rows', 150)
 
 
-# In[2]:
 
 
 from keras.layers import Dense
@@ -25,7 +23,6 @@ from keras.layers import Dropout, PReLU, BatchNormalization, ELU, GaussianNoise,
 from keras.optimizers import Adam
 
 
-# In[3]:
 
 
 import os
@@ -34,7 +31,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
         print(os.path.join(dirname, filename))
 
 
-# In[4]:
 
 
 train = pd.read_csv('/kaggle/input/nfl-big-data-bowl-2020/train.csv', usecols=['GameId', 'PlayId', 'Team', 'X', 'Y', 'S', 'A', 'Dis',
@@ -46,13 +42,11 @@ train = pd.read_csv('/kaggle/input/nfl-big-data-bowl-2020/train.csv', usecols=['
                                                                               'WindSpeed', 'Temperature', 'Humidity'])
 
 
-# In[5]:
 
 
 outcomes = train[['GameId','PlayId','Yards']].drop_duplicates()
 
 
-# In[6]:
 
 
 def create_features(df, deploy=False):
@@ -202,13 +196,11 @@ def create_features(df, deploy=False):
     return basetable
 
 
-# In[7]:
 
 
 get_ipython().run_line_magic('time', 'train_basetable = create_features(train, False)')
 
 
-# In[8]:
 
 
 X = train_basetable.copy()
@@ -225,7 +217,6 @@ scaler = StandardScaler()
 X = scaler.fit_transform(X)
 
 
-# In[9]:
 
 
 def get_model(size=X.shape[1]):
@@ -259,13 +250,11 @@ def get_model_v2(size=X.shape[1]):
     return model
 
 
-# In[10]:
 
 
 from sklearn.model_selection import KFold, GroupKFold
 
 
-# In[11]:
 
 
 models = []
@@ -294,7 +283,6 @@ for fold_id, (tr_idx, vl_idx) in enumerate(FOLD_LIST):
     
 
 
-# In[12]:
 
 
 plt.figure()
@@ -304,32 +292,27 @@ plt.hist(y, bins=100)
 plt.show()
 
 
-# In[13]:
 
 
 from scipy.stats import spearmanr, pearsonr
 
 
-# In[14]:
 
 
 print(pearsonr(y.reshape(-1), oof_prediction.reshape(-1)),
      spearmanr(y.reshape(-1), oof_prediction.reshape(-1)))
 
 
-# In[15]:
 
 
 _X = np.hstack([X, oof_prediction.reshape(-1,1)])
 
 
-# In[16]:
 
 
 X.shape, oof_prediction.shape, _X.shape
 
 
-# In[17]:
 
 
 class Metric(Callback):
@@ -364,7 +347,6 @@ class Metric(Callback):
             callback.on_epoch_end(batch, logs)
 
 
-# In[18]:
 
 
 _models = []
@@ -394,7 +376,6 @@ for fold_id, (tr_idx, vl_idx) in enumerate(FOLD_LIST):
     _models.append(model)
 
 
-# In[19]:
 
 
 class GP:
@@ -692,7 +673,6 @@ class GP:
                 0.250000*np.tanh(((((((((data[:,18]) + ((((data[:,4]) + (data[:,18]))/2.0)))) / 2.0)) + ((((data[:,18]) + (data[:,4]))/2.0)))) * (data[:,4])))    )
 
 
-# In[20]:
 
 
 import warnings

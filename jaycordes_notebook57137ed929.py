@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -21,7 +20,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 print(check_output(["ls", "../working"]).decode("utf8"))
 
 
-# In[2]:
 
 
 clicks_train = pd.read_csv("../input/clicks_train.csv")
@@ -34,7 +32,6 @@ mini_clicks_train.to_csv("mini_clicks_train.csv")
 #mini_page_views.to_csv("mini_page_views.csv")
 
 
-# In[3]:
 
 
 promoted_content = pd.read_csv("../input/promoted_content.csv")
@@ -42,7 +39,6 @@ mini_promoted = promoted_content[promoted_content["ad_id"].isin(mini_clicks_trai
 mini_promoted.to_csv("mini_promoted.csv")
 
 
-# In[4]:
 
 
 doc_cats = pd.read_csv("../input/documents_categories.csv")
@@ -50,7 +46,6 @@ mini_doc_cats = doc_cats[doc_cats["document_id"].isin(mini_promoted["document_id
 mini_doc_cats.to_csv("mini_doc_cats.csv")
 
 
-# In[5]:
 
 
 doc_ents = pd.read_csv("../input/documents_entities.csv")
@@ -58,7 +53,6 @@ mini_doc_ents = doc_ents[doc_ents["document_id"].isin(mini_promoted["document_id
 mini_doc_ents.to_csv("mini_doc_ents.csv")
 
 
-# In[6]:
 
 
 doc_meta = pd.read_csv("../input/documents_meta.csv")
@@ -66,7 +60,6 @@ mini_doc_meta = doc_meta[doc_meta["document_id"].isin(mini_promoted["document_id
 mini_doc_meta.to_csv("mini_doc_meta.csv")
 
 
-# In[7]:
 
 
 doc_topics = pd.read_csv("../input/documents_topics.csv")
@@ -74,7 +67,6 @@ mini_doc_topics = doc_topics[doc_topics["document_id"].isin(mini_promoted["docum
 mini_doc_topics.to_csv("mini_doc_topics.csv")
 
 
-# In[8]:
 
 
 events = pd.read_csv("../input/events.csv")
@@ -82,7 +74,6 @@ mini_events = events[events["display_id"].isin(mini_clicks_train["display_id"])]
 mini_events.to_csv("mini_events.csv")
 
 
-# In[9]:
 
 
 # Code for full datasets
@@ -97,13 +88,11 @@ mini_events.to_csv("mini_events.csv")
 #doc_topics = pd.read_csv("documents_topics.csv")
 
 
-# In[10]:
 
 
 Note: This is a Python3 script because that is what Kaggle uses. 
 
 
-# In[11]:
 
 
 clicks_train = pd.read_csv("mini_clicks_train.csv")#got
@@ -116,7 +105,6 @@ events = pd.read_csv("mini_events.csv") #got
 promoted = pd.read_csv("mini_promoted.csv")#got
 
 
-# In[12]:
 
 
 #clicks_train and events have a 1:1 relationship
@@ -124,7 +112,6 @@ print(len(events["display_id"].unique()))
 print(len(clicks_train["display_id"].unique()))
 
 
-# In[13]:
 
 
 #the first column seems to be the old index, we don't need this
@@ -133,7 +120,6 @@ del clicks_train["Unnamed: 0"]
 clicks_train.head()
 
 
-# In[14]:
 
 
 del events["Unnamed: 0"]
@@ -141,20 +127,17 @@ events = events.set_index("display_id")
 events.head()
 
 
-# In[15]:
 
 
 data = clicks_train.join(events)
 data.head()
 
 
-# In[16]:
 
 
 len(promoted)
 
 
-# In[17]:
 
 
 #there is not a one-to-one relationship between document_id in promoted and the master data
@@ -163,7 +146,6 @@ print(len(promoted["document_id"].unique()))
 print(len(data["document_id"].unique()))
 
 
-# In[18]:
 
 
 promoted.head()
@@ -172,7 +154,6 @@ del promoted['document_id'] #I think all we want from here is the link between a
 promoted.head()
 
 
-# In[19]:
 
 
 #there is a one-to-one relationship between ad_id in promoted and the master data
@@ -180,20 +161,17 @@ print(len(promoted["ad_id"].unique())) #each add can appear more than once
 print(len(data["ad_id"].unique()))
 
 
-# In[20]:
 
 
 data.head()
 
 
-# In[21]:
 
 
 print(len(data))
 print(len(data["ad_id"].unique())) #adds appear on average slightly more than twice in our minidata set
 
 
-# In[22]:
 
 
 #make dictionaries to look up advertizer id and campaign id for each ad_id
@@ -201,7 +179,6 @@ advertiser_dict = dict(zip(promoted.ad_id, promoted.advertiser_id))
 campaign_dict = dict(zip(promoted.ad_id, promoted.campaign_id))
 
 
-# In[23]:
 
 
 data["campaign_id"] = data["ad_id"].map(campaign_dict)
@@ -209,14 +186,12 @@ data["advertiser_id"] = data["ad_id"].map(advertiser_dict)
 data.head()
 
 
-# In[24]:
 
 
 print(len(data))
 print(len(data["ad_id"].unique())) #adds appear on average slightly more than twice in our minidata set
 
 
-# In[25]:
 
 
 #Why aren't there the same number of unique documents in each of these
@@ -227,7 +202,6 @@ print(len(doc_meta["document_id"].unique()))
 print(len(doc_topics["document_id"].unique()))
 
 
-# In[26]:
 
 
 #each document has multiple possible entities, categories, topics with different confidence level. 
@@ -235,20 +209,17 @@ print(len(doc_topics["document_id"].unique()))
 doc_ents.head()
 
 
-# In[27]:
 
 
 doc_cats.head()
 
 
-# In[28]:
 
 
 # print (clicks_train.head())
 print (clicks_train[0:])
 
 
-# In[29]:
 
 
 
@@ -303,7 +274,6 @@ else:
     subm.to_csv("subm_reg_2.csv", index=False) 
 
 
-# In[30]:
 
 
 print(check_output(["ls", "../working"]).decode("utf8"))

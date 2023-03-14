@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -21,7 +20,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 # Load feature vectors
@@ -30,7 +28,6 @@ df = pd.read_csv("../input/train.csv")
 df
 
 
-# In[3]:
 
 
 from sklearn.decomposition import PCA
@@ -53,7 +50,6 @@ pca_df['pca-two'] = pca_result[:,1]
 print('Explained variation per principal component: {}'.format(pca.explained_variance_ratio_))
 
 
-# In[4]:
 
 
 from ggplot import *
@@ -61,7 +57,6 @@ chart = ggplot( pca_df, aes(x='pca-one', y='pca-two', color='species') )        
 chart
 
 
-# In[5]:
 
 
 import time
@@ -75,7 +70,6 @@ tsne_results = tsne.fit_transform(df[features].values)
 print('t-SNE done! Time elapsed: {} seconds'.format(time.time()-time_start))
 
 
-# In[6]:
 
 
 # Create dataframe for the new representation of the data
@@ -89,7 +83,6 @@ chart = ggplot( df_tsne, aes(x='x-tsne', y='y-tsne', color='species') )         
 chart
 
 
-# In[7]:
 
 
 pca_50 = PCA(n_components=50)
@@ -98,7 +91,6 @@ pca_result_50 = pca_50.fit_transform(df[features].values)
 print('Explained variation per principal component (PCA): {}'.format(np.sum(pca_50.explained_variance_ratio_)))
 
 
-# In[8]:
 
 
 time_start = time.time()
@@ -119,7 +111,6 @@ chart = ggplot( df_tsne, aes(x='x-tsne', y='y-tsne', color='species') )         
 chart
 
 
-# In[9]:
 
 
 # Import libraries
@@ -158,7 +149,6 @@ test_data['samples'] = tmp[:, 1:]
 test_ids = df.pop('id')
 
 
-# In[10]:
 
 
 # One hot encoding map something
@@ -172,7 +162,6 @@ for i in range(n_classes):
     class_encodings[class_names[i]] = sparse2dense[i]
 
 
-# In[11]:
 
 
 # tf Graph input
@@ -189,7 +178,6 @@ biases = [
 ]
 
 
-# In[12]:
 
 
 # Function implementing a fully connected feed forward NN, with relu activations
@@ -212,7 +200,6 @@ def multilayer_perceptron(x, weights, biases):
     return out
 
 
-# In[13]:
 
 
 # Construct model
@@ -231,7 +218,6 @@ correct_prediction = tf.equal(tf.argmax(y_pred, 1), tf.argmax(y, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
 
 
-# In[14]:
 
 
 # Create Validation and Training sets
@@ -247,7 +233,6 @@ val_data['samples'] = tmp[idx[N_train2:], 2:]
 val_data['labels'] = np.array([class_encodings[t] for t in tmp[idx[N_train2:], 1]])
 
 
-# In[15]:
 
 
 # Arrays containing cost for each epoch
@@ -295,13 +280,11 @@ with tf.Session() as sess:
     predictions = sess.run([p_pred], {x: test_data['samples']})
 
 
-# In[16]:
 
 
 val_data['labels'].shape
 
 
-# In[17]:
 
 
 import matplotlib.pyplot as plt
@@ -311,7 +294,6 @@ loss_val_curve, = plt.plot(cost_val, label='Validation Set')
 plt.legend(handles=[loss_train_curve, loss_val_curve])
 
 
-# In[18]:
 
 
 from sklearn.model_selection import KFold, cross_val_score
@@ -321,7 +303,6 @@ n_folds = 4
 k_fold = KFold(n_splits=n_folds, shuffle=True)
 
 
-# In[19]:
 
 
 # Create Validation and Training sets
@@ -332,7 +313,6 @@ train_data['samples'] = tmp[:, 2:]
 train_data['labels'] = np.array([class_encodings[t] for t in tmp[:, 1]])
 
 
-# In[20]:
 
 
 # Arrays containing cost for each epoch
@@ -398,7 +378,6 @@ print("Optimization Finished! Average accuracy:", total_accuracy)
 print("\n------------------------------------------")
 
 
-# In[21]:
 
 
 # Initializing the variables
@@ -434,7 +413,6 @@ with tf.Session() as sess:
     predictions = sess.run([p_pred], {x: test_data['samples']})
 
 
-# In[22]:
 
 
 # prepare csv for submission
@@ -442,7 +420,6 @@ submission = pd.DataFrame(predictions[0], index=test_ids, columns=class_names)
 submission.to_csv('submission.csv')
 
 
-# In[23]:
 
 
 from PIL import Image

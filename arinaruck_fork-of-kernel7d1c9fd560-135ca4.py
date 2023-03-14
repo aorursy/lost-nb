@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -44,7 +42,6 @@ from operator import itemgetter
 from multiprocessing import Pool
 
 
-# In[3]:
 
 
 data = pd.read_csv('../input/quora-insincere-questions-classification/train.csv')
@@ -53,7 +50,6 @@ display(data.head())
 data.target.value_counts
 
 
-# In[4]:
 
 
 stop_words = set(stopwords.words('english'))
@@ -89,7 +85,6 @@ word2vec = models.KeyedVectors.load_word2vec_format(word2vec_path, binary=True)
 words = word2vec.index2word
 
 
-# In[5]:
 
 
 import time
@@ -105,7 +100,6 @@ def process_basic(data):
     return data
 
 
-# In[6]:
 
 
 data = process_basic(data)
@@ -114,19 +108,16 @@ test_data = process_basic(test_data)
 display(test_data.head())
 
 
-# In[7]:
 
 
 lemmatizer.lemmatize('do')
 
 
-# In[8]:
 
 
 display(test_data.head(50))
 
 
-# In[9]:
 
 
 data.to_csv('processed_train_lemmatized.csv')

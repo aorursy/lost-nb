@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -30,7 +29,6 @@ from matplotlib import pyplot as plt
 import keras
 
 
-# In[2]:
 
 
 # Load train data
@@ -54,14 +52,12 @@ train_data['rel_path'] = train_data.apply(lambda x: os.path.join(
 display(train_data.head())
 
 
-# In[3]:
 
 
 IMAGE_SHAPE = (512, 512, 3)
 NUM_CLASSES = 1108
 
 
-# In[4]:
 
 
 val_experiments = ["HEPG2-01", "HUVEC-01", "RPE-01", "U2OS-01"]
@@ -72,7 +68,6 @@ cv_partition['train'].append(np.array(train_data[~train_data.experiment.isin(val
 cv_partition['validate'].append(np.array(train_data[train_data.experiment.isin(val_experiments)].index))
 
 
-# In[5]:
 
 
 class DataGenerator(keras.utils.Sequence):
@@ -151,7 +146,6 @@ val_datagen = DataGenerator(
 #plt.imshow(img)
 
 
-# In[6]:
 
 
 from keras.applications.resnet50 import ResNet50
@@ -174,7 +168,6 @@ model = Model(inputs=base_model.input, outputs=head)
 #model.summary()
 
 
-# In[7]:
 
 
 model.compile(  loss='categorical_crossentropy',
@@ -182,7 +175,6 @@ model.compile(  loss='categorical_crossentropy',
                 metrics=['categorical_accuracy'])
 
 
-# In[8]:
 
 
 import multiprocessing as mp
@@ -197,7 +189,6 @@ model_history = model.fit_generator(generator=train_datagen,
                                    workers=mp.cpu_count())
 
 
-# In[9]:
 
 
 fig, ax = plt.subplots(2, 1, figsize=(10, 20))
@@ -219,13 +210,11 @@ ax[1].set_xlabel('epoch')
 ax[1].legend(['train', 'test'], loc='upper left')
 
 
-# In[10]:
 
 
 get_ipython().system('rm -r rxrx1-utils')
 
 
-# In[ ]:
 
 
 

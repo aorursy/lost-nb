@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 RES_DIR = "../input/"
 
 
-# In[2]:
 
 
 # Load train data (skips the content column)
@@ -37,20 +35,17 @@ def load_train_data():
     return pd.concat(train_data)
 
 
-# In[3]:
 
 
 train_data = load_train_data()
 train_data.head()
 
 
-# In[4]:
 
 
 
 
 
-# In[4]:
 
 
 # Summary about tags
@@ -66,7 +61,6 @@ Average number of tags per question {:.2f} (min={}, max={}, std={:.2f})""".forma
     tag_list_size.std()))
 
 
-# In[5]:
 
 
 # Utility function to return top occuring tags in the passed df
@@ -77,7 +71,6 @@ def get_top_tags(df, n=None):
     return tags, count
 
 
-# In[6]:
 
 
 # Created DataFrame indexed on tags
@@ -93,45 +86,38 @@ tags_df['categories_appears'] = tags_df.apply(lambda x: x.astype(bool).sum(), ax
 tags_df['categories_appears'].value_counts()
 
 
-# In[7]:
 
 
 # List of tags ordered by number of categories in which they appear, with total count for each
 tags_df.sort_values('categories_appears', ascending=False)
 
 
-# In[8]:
 
 
 d = tags_df.unstack().reset_index()
 
 
-# In[9]:
 
 
 d.columns = ['source', 'target', 'weight']
 import networkx as nx
 
 
-# In[10]:
 
 
 d = d[d.weight > 10]
 
 
-# In[11]:
 
 
 g = nx.from_pandas_dataframe(d, 'source', 'target', ['weight'])
 
 
-# In[12]:
 
 
 nx.node_connectivity(g)bnvhn
 
 
-# In[13]:
 
 
 import matplotlib.pyplot as plt
@@ -139,7 +125,6 @@ plt.figure(figsize=[50,50])
 nx.draw_networkx(g,alpha=0.1)
 
 
-# In[14]:
 
 
 

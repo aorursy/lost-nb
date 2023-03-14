@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -39,20 +38,17 @@ import torch.nn.functional as F
 import copy
 
 
-# In[2]:
 
 
 package_path = '../input/efficientnet-pytorch/EfficientNet-PyTorch/EfficientNet-PyTorch-master'
 sys.path.append(package_path)
 
 
-# In[3]:
 
 
 from efficientnet_pytorch import EfficientNet
 
 
-# In[4]:
 
 
 warnings.simplefilter('ignore')
@@ -67,7 +63,6 @@ def seed_everything(seed):
 seed_everything(42)
 
 
-# In[5]:
 
 
 class Config:
@@ -83,28 +78,24 @@ class Config:
 config = Config()
 
 
-# In[6]:
 
 
 path = Path('/kaggle/input/osic-pulmonary-fibrosis-progression/')
 path.ls()
 
 
-# In[7]:
 
 
 train_df = pd.read_csv(path/'train.csv')
 train_df.head()
 
 
-# In[8]:
 
 
 train_df = train_df.drop(np.nonzero(np.array(train_df['Patient'] == 'ID00011637202177653955184',dtype=float))[0], axis=0).reset_index(drop=True)
 train_df = train_df.drop(np.nonzero(np.array(train_df['Patient'] == 'ID00052637202186188008618',dtype=float))[0], axis=0).reset_index(drop=True)
 
 
-# In[9]:
 
 
 def get_tab(df):
@@ -126,7 +117,6 @@ def get_tab(df):
     return np.array(vector) 
 
 
-# In[10]:
 
 
 TAB = {}
@@ -147,7 +137,6 @@ for i, p in tqdm(enumerate(train_df.Patient.unique())):
 Person = np.array(Person)
 
 
-# In[11]:
 
 
 def get_img(path):
@@ -155,7 +144,6 @@ def get_img(path):
     return cv2.resize(d.pixel_array / 2**11, (512, 512))
 
 
-# In[12]:
 
 
 class Dataset:
@@ -195,7 +183,6 @@ class Dataset:
             print(pid, img_id)
 
 
-# In[13]:
 
 
 def collate_fn(b):
@@ -204,7 +191,6 @@ def collate_fn(b):
     return (torch.stack(imgs).float(),torch.stack(tabs).float()),torch.stack(ys).float()
 
 
-# In[14]:
 
 
 pretrained_model = {
@@ -213,7 +199,6 @@ pretrained_model = {
 }
 
 
-# In[15]:
 
 
 class OSIC_Model(nn.Module):
@@ -244,7 +229,6 @@ class OSIC_Model(nn.Module):
         return self.output(x)
 
 
-# In[16]:
 
 
 from sklearn.model_selection import KFold
@@ -258,13 +242,11 @@ def get_split_idxs(n_folds=5):
     return splits
 
 
-# In[17]:
 
 
 splits = get_split_idxs(n_folds=config.FOLDS)
 
 
-# In[18]:
 
 
 def train_loop(model, dl, opt, sched, device, loss_fn):
@@ -301,7 +283,6 @@ def eval_loop(model, dl, device, loss_fn):
     return final_outputs, final_loss
 
 
-# In[19]:
 
 
 from functools import partial
@@ -316,7 +297,6 @@ def set_grad(m,b):
         for p in m.parameters(): p.requires_grad_(b)
 
 
-# In[20]:
 
 
 models = {}
@@ -324,14 +304,12 @@ for i in range(config.FOLDS):
     models[i] = OSIC_Model(config.model_type)
 
 
-# In[21]:
 
 
 for k,v in models.items():
     apply_mod(v.model, partial(set_grad, b=False))
 
 
-# In[22]:
 
 
 train = train_df.loc[train_df['Patient'].isin(Person[:21])].reset_index(drop=True)
@@ -344,7 +322,6 @@ train_dl = torch.utils.data.DataLoader(
 )
 
 
-# In[23]:
 
 
 fig=plt.figure(figsize=(8, 8))
@@ -363,13 +340,11 @@ for i in range(1, columns*rows +1):
 plt.show()
 
 
-# In[24]:
 
 
 history = []
 
 
-# In[25]:
 
 
 for i, (train_idx, valid_idx) in enumerate(splits):
@@ -427,27 +402,23 @@ for i, (train_idx, valid_idx) in enumerate(splits):
         
 
 
-# In[26]:
 
 
 for k, m in models.items():
     torch.save(m.state_dict(), f'fold_{k}.pth')
 
 
-# In[27]:
 
 
 test_df = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/test.csv')
 sub = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/sample_submission.csv')
 
 
-# In[28]:
 
 
 test_df.head()
 
 
-# In[29]:
 
 
 test_data= []
@@ -459,13 +430,11 @@ for i in range(len(test_df)):
 test_data = pd.DataFrame(test_data, columns=['Patient','Weeks','Age','Sex','SmokingStatus','FVC','Percent','Patient_Week'])
 
 
-# In[30]:
 
 
 test_data.head()
 
 
-# In[31]:
 
 
 TAB_test = {}
@@ -484,7 +453,6 @@ for i, p in tqdm(enumerate(test_data.Patient.unique())):
 Person_test = np.array(Person_test)
 
 
-# In[32]:
 
 
 def collate_fn_test(b):
@@ -492,7 +460,6 @@ def collate_fn_test(b):
     return (torch.stack(imgs).float(),torch.stack(tabs).float())
 
 
-# In[33]:
 
 
 TARGET = {}
@@ -506,7 +473,6 @@ test_dl = torch.utils.data.DataLoader(
 )
 
 
-# In[34]:
 
 
 avg_predictions= np.zeros((730,1))
@@ -529,13 +495,11 @@ for i in range(len(models)):
     avg_predictions += predictions
 
 
-# In[35]:
 
 
 predictions = avg_predictions / len(models)
 
 
-# In[36]:
 
 
 fvc = []
@@ -547,21 +511,18 @@ for i in range(len(test_data)):
     conf.append(test_data['Percent'][i] + abs(predictions[i][0]) * abs(test_df.Weeks.values[test_df.Patient == p][0] - test_data['Weeks'][i]))
 
 
-# In[37]:
 
 
 
 submission = test_data[['Patient_Week']]
 
 
-# In[38]:
 
 
 sub = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/sample_submission.csv')
 sub.head()
 
 
-# In[39]:
 
 
 subm ={}
@@ -569,7 +530,6 @@ for i in range(len(submission)):
     subm[submission['Patient_Week'][i]]=[float(fvc[i]),float(conf[i])]
 
 
-# In[40]:
 
 
 sub['FVC'] = sub['FVC'].astype(float)
@@ -580,19 +540,16 @@ for i in range(len(sub)):
     sub['Confidence'][i] = float(subm[id][1])
 
 
-# In[41]:
 
 
 sub.head()
 
 
-# In[42]:
 
 
 sub.to_csv('submission_img.csv', index=False)
 
 
-# In[43]:
 
 
 root_dir = Path('/kaggle/input/osic-pulmonary-fibrosis-progression')
@@ -607,13 +564,11 @@ model_name ='descartes'
 tensorboard_dir = Path('/kaggle/working/runs')
 
 
-# In[44]:
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-# In[45]:
 
 
 class ClinicalDataset(Dataset):
@@ -704,7 +659,6 @@ class ClinicalDataset(Dataset):
         return train, val
 
 
-# In[46]:
 
 
 class QuantModel(nn.Module):
@@ -742,7 +696,6 @@ def metric_loss(pred_fvc,true_fvc):
     return metric
 
 
-# In[47]:
 
 
 models = []
@@ -839,7 +792,6 @@ for fold, (trainset, valset) in enumerate(folds):
 print('Finished Training of BiLSTM Model')
 
 
-# In[48]:
 
 
 data = ClinicalDataset(root_dir, mode='test')
@@ -868,39 +820,33 @@ df['Confidence'] = df[quantiles[2]] - df[quantiles[0]]
 df = df.drop(columns=list(quantiles))
 
 
-# In[49]:
 
 
 print(len(df))
 df.head()
 
 
-# In[50]:
 
 
 df.to_csv('submission_reg.csv', index = False)
 
 
-# In[51]:
 
 
 sub_img = pd.read_csv('./submission_img.csv')
 sub_reg = pd.read_csv('./submission_reg.csv')
 
 
-# In[52]:
 
 
 sub_img.head(2)
 
 
-# In[53]:
 
 
 sub_reg.head(2)
 
 
-# In[54]:
 
 
 for i in range(len(sub_img)):
@@ -908,14 +854,12 @@ for i in range(len(sub_img)):
     sub_img['Confidence'][i] = 0.26*sub_img['Confidence'][i] + 0.74*sub_reg.loc[sub_reg.Patient_Week == sub_img['Patient_Week'][i]]['Confidence']
 
 
-# In[55]:
 
 
 sub = sub_img
 sub.head()
 
 
-# In[56]:
 
 
 sub.to_csv('submission.csv',index= False)

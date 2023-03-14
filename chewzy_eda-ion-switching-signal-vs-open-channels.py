@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -19,7 +18,6 @@ params = {'legend.fontsize': 'large',
 plt.rcParams.update(params)
 
 
-# In[2]:
 
 
 signal_batch_size = 500_000
@@ -30,7 +28,6 @@ df_train = pd.read_csv('../input/liverpool-ion-switching/train.csv')
 df_train['signal_batch'] = np.arange(len(df_train)) // signal_batch_size
 
 
-# In[3]:
 
 
 fig, ax = plt.subplots(1,1,figsize=(12,6))
@@ -57,7 +54,6 @@ for loc in ['right','top']:
     ax.spines[loc].set_visible(False)
 
 
-# In[4]:
 
 
 def plot_signal_and_label(segment_size=200):
@@ -100,14 +96,12 @@ def plot_signal_and_label(segment_size=200):
     
 
 
-# In[5]:
 
 
 for i in range(10):
     plot_signal_and_label(segment_size=200)
 
 
-# In[ ]:
 
 
 

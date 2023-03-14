@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('load_ext', 'tensorboard.notebook')
@@ -29,7 +28,6 @@ import albumentations as albu
 from tqdm import tqdm_notebook as tqdm
 
 
-# In[2]:
 
 
 import matplotlib.pyplot as plt
@@ -75,7 +73,6 @@ from scipy.stats import truncnorm
 import torch as th
 
 
-# In[3]:
 
 
 @dataclass
@@ -180,13 +177,11 @@ class DogDataset(Dataset):
         plt.show()
 
 
-# In[4]:
 
 
 start = time()
 
 
-# In[5]:
 
 
 def seed_everything(seed=42):
@@ -199,25 +194,21 @@ def seed_everything(seed=42):
 seed_everything()
 
 
-# In[6]:
 
 
 import albumentations.pytorch
 
 
-# In[7]:
 
 
 get_ipython().run_cell_magic('time', '', '\ntransform = albu.Compose([\n    albu.CenterCrop(64, 64),\n    albu.HorizontalFlip(p=0.5),\n    albu.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),\n])\n\ndataset = DogDataset(\n    transform=transform,\n)\n\nprint(dataset)\ndataset.show_examples()')
 
 
-# In[8]:
 
 
 ls /opt/conda/lib/python3.6/site-packages/cv2/data/haarcascade_*.xml
 
 
-# In[9]:
 
 
 def crop_with_facebox(img, pos):
@@ -266,20 +257,17 @@ def create_cropped_dataset(dataset):
     return DogDataset(examples=cropped_examples)
 
 
-# In[10]:
 
 
 get_ipython().run_cell_magic('time', '', 'cropped_dataset = create_cropped_dataset(dataset)\nprint(len(cropped_dataset))\ncropped_dataset.show_examples()')
 
 
-# In[11]:
 
 
 batch_size = 32
 train_loader = torch.utils.data.DataLoader(cropped_dataset, shuffle=True,batch_size=batch_size, num_workers = 4)
 
 
-# In[12]:
 
 
 # ----------------------------------------------------------------------------
@@ -302,7 +290,6 @@ class PixelwiseNorm(nn.Module):
         return y
 
 
-# In[13]:
 
 
 def show_generated_img_all():
@@ -317,7 +304,6 @@ def show_generated_img_all():
     #plt.savefig(filename)  
 
 
-# In[14]:
 
 
 ### This is to show one sample image for iteration of chosing
@@ -330,7 +316,6 @@ def show_generated_img():
     plt.show()
 
 
-# In[15]:
 
 
 class MinibatchStdDev(th.nn.Module):
@@ -369,7 +354,6 @@ class MinibatchStdDev(th.nn.Module):
         return y
 
 
-# In[16]:
 
 
 class Generator(nn.Module):
@@ -572,7 +556,6 @@ import shutil
 shutil.make_archive('images', 'zip', '../output_images')
 
 
-# In[ ]:
 
 
 

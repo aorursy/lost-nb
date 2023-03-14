@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import tensorflow as tf
@@ -19,14 +18,12 @@ from tqdm import tqdm
 import datetime
 
 
-# In[2]:
 
 
 def print_time(title):
     print("{0}: {1}".format(title, datetime.datetime.now()))
 
 
-# In[3]:
 
 
 # Detect hardware, return appropriate distribution strategy
@@ -50,7 +47,6 @@ else:
 print("REPLICAS: ", strategy.num_replicas_in_sync)
 
 
-# In[4]:
 
 
 BATCH_SIZE = (4 * strategy.num_replicas_in_sync) if tpu else 8
@@ -63,7 +59,6 @@ BOX_SHAPE_ORG = (120, 5) # The shape of boxes in Tfrecords (116: Num of Boxes, 5
 print("Batch Size: {0}".format(BATCH_SIZE))
 
 
-# In[5]:
 
 
 # Search all Tfrecords
@@ -88,7 +83,6 @@ except:
     print("Failed to load tfrecords")
 
 
-# In[6]:
 
 
 # Load all tfrecords
@@ -176,7 +170,6 @@ except:
     print("Failed to load tfrecords")
 
 
-# In[7]:
 
 
 # Anchor Box
@@ -221,7 +214,6 @@ PRIORS_AREA = PRIORS_AREA_TF.numpy()
 print(PRIORS_TF.shape)
 
 
-# In[8]:
 
 
 @tf.function
@@ -327,7 +319,6 @@ def datasets_aug(x, y, batch_size = BATCH_SIZE, hue_en = True, gaussian_noise_en
     return x, y
 
 
-# In[9]:
 
 
 @tf.function
@@ -413,7 +404,6 @@ def datasets_encode(x, y, batch_size = BATCH_SIZE, overlap_threshold = 0.5, igno
     return x_list, (regression_list, classification_list)
 
 
-# In[10]:
 
 
 def boxes_decode(regression, classification):
@@ -487,7 +477,6 @@ def datasets_decode(regression, classification, iou_threshold = 0.5, score_thres
     return batch_obj_box_list
 
 
-# In[11]:
 
 
 # mAP
@@ -531,7 +520,6 @@ def metric_mAP(obj_info_true, obj_info_pred, iou_thresholds = [0.5, 0.55, 0.6, 0
     return np.mean(precision_list)
 
 
-# In[12]:
 
 
 def visualize_decode(batch_x, batch_obj_info, display_cnt = 4):
@@ -550,7 +538,6 @@ def visualize_decode(batch_x, batch_obj_info, display_cnt = 4):
         plt.imshow(img)
 
 
-# In[13]:
 
 
 train_dataset_encode, valid_dataset_encode = [], []
@@ -565,7 +552,6 @@ else:
     print("Failed to load tfrecors")
 
 
-# In[14]:
 
 
 for batch_x, (batch_regression, batch_classification) in train_dataset_encode:
@@ -575,7 +561,6 @@ for batch_x, (batch_regression, batch_classification) in train_dataset_encode:
     break
 
 
-# In[15]:
 
 
 def EfficientNetBN(n, input_tensor=None, input_shape=None, **kwargs):
@@ -739,7 +724,6 @@ def EfficientNetBN(n, input_tensor=None, input_shape=None, **kwargs):
 #print(EfficientNetBN(7, input_shape=(600, 600, 3)))
 
 
-# In[16]:
 
 
 MOMENTUM = 0.99
@@ -1173,7 +1157,6 @@ def Efficientdet(phi, num_classes=20, num_anchors=9, freeze_bn=False):
 #Efficientdet(0, num_classes=1).summary()
 
 
-# In[17]:
 
 
 # Classification Loss
@@ -1255,7 +1238,6 @@ def smooth_l1(sigma=3.0):
     return _smooth_l1
 
 
-# In[18]:
 
 
 # Load pretrained model
@@ -1282,7 +1264,6 @@ initial_epoch, initial_learning_rate, initial_model = load_model_weights()
 print(initial_epoch, initial_learning_rate, initial_model)
 
 
-# In[19]:
 
 
 # Compile model
@@ -1296,7 +1277,6 @@ with strategy.scope():
         print("Pretrained model not found")
 
 
-# In[20]:
 
 
 # Learning Rate
@@ -1321,7 +1301,6 @@ lr_schedule = tf.keras.callbacks.LearningRateScheduler(cosine_annealing_with_war
 #lr_schedule = callbacks.ReduceLROnPlateau(monitor='loss', factor=0.5, patience=2, verbose=1)
 
 
-# In[21]:
 
 
 class customized_callback(tf.keras.callbacks.Callback):
@@ -1330,7 +1309,6 @@ class customized_callback(tf.keras.callbacks.Callback):
         model.save_weights("model_{:.0f}_{:.4f}_{:.4f}_{:.4f}_{:.5f}.h5".format(float(epoch + 1), loss, loss_classification, loss_regression, self.model.optimizer.learning_rate.numpy()))
 
 
-# In[22]:
 
 
 if (tpu):
@@ -1342,7 +1320,6 @@ else:
     print("Please, use TPU to train and turn on the internet")
 
 
-# In[23]:
 
 
 def datasets_predict(batch_x, thresholds_comb=[[0.5, 0.5]], tta = False): # thresholds_comb => iou_threshold + score_threshold
@@ -1380,7 +1357,6 @@ def datasets_predict(batch_x, thresholds_comb=[[0.5, 0.5]], tta = False): # thre
         return [boxes_ensemble(batch_regression, batch_classification, iou_threshold=iou_thre, score_threshold=score_thre) for iou_thre, score_thre in thresholds_comb]
 
 
-# In[24]:
 
 
 # Search for best mAP
@@ -1407,7 +1383,6 @@ for batch_x, _ in valid_dataset_encode:
     break
 
 
-# In[25]:
 
 
 test_dir = '../input/global-wheat-detection/test/'

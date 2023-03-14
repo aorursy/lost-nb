@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np
@@ -38,21 +37,18 @@ from sklearn.base import clone
 import pickle
 
 
-# In[ ]:
 
 
 import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[ ]:
 
 
 matplotlib.rcParams['figure.figsize'] = (10, 5)
 matplotlib.rcParams['font.size'] = 12
 
 
-# In[ ]:
 
 
 from kaggle.competitions import twosigmanews
@@ -61,13 +57,11 @@ env = twosigmanews.make_env()
 print('Done!')
 
 
-# In[ ]:
 
 
 (market_train_orig, news_train_orig) = env.get_training_data()
 
 
-# In[ ]:
 
 
 market_train_df = market_train_orig.copy()
@@ -76,19 +70,16 @@ print('Market train shape: ',market_train_df.shape)
 print('News train shape: ', news_train_df.shape)
 
 
-# In[ ]:
 
 
 market_train_df.describe()
 
 
-# In[ ]:
 
 
 news_train_df.describe()
 
 
-# In[ ]:
 
 
 # Sort values by time then extract date
@@ -96,7 +87,6 @@ news_train_df = news_train_df.sort_values(by='time')
 news_train_df['date'] = news_train_df['time'].dt.date
 
 
-# In[ ]:
 
 
 # Function to plot time series data
@@ -115,7 +105,6 @@ def plot_vs_time(data_frame, column, calculation='mean', span=10):
     plt.title('%s versus time' %column)
 
 
-# In[ ]:
 
 
 plot_vs_time(news_train_df, 'sourceId', calculation='count', span=10)
@@ -123,7 +112,6 @@ plt.title('News count vs time')
 plt.ylabel('Count')
 
 
-# In[ ]:
 
 
 # Plot time evolution of several parameters
@@ -134,14 +122,12 @@ for column in columns:
     plot_vs_time(news_train_df, column)
 
 
-# In[ ]:
 
 
 time_delay = (pd.to_datetime(news_train_df['time']) - pd.to_datetime(news_train_df['firstCreated']))
 time_delay_log10 = np.log10(time_delay.dt.total_seconds()/60+1)
 
 
-# In[ ]:
 
 
 plt.hist(time_delay_log10, bins=np.arange(0,2.5,0.25), rwidth=0.7)
@@ -150,7 +136,6 @@ plt.ylabel('Counts')
 plt.title('Delay time distribution')
 
 
-# In[ ]:
 
 
 time_delay_min = time_delay.dt.total_seconds()/60
@@ -160,7 +145,6 @@ plot_vs_time(time_delay_df, 'delay')
 plt.ylabel('Delay (minutes)')
 
 
-# In[ ]:
 
 
 urgency_count = news_train_df.groupby('urgency')['sourceId'].count()
@@ -170,13 +154,11 @@ urgency_count.sort_values(ascending=True)
 del urgency_count
 
 
-# In[ ]:
 
 
 take_sequence = news_train_df.groupby('takeSequence')['sourceId'].count()
 
 
-# In[ ]:
 
 
 take_sequence = take_sequence.sort_values(ascending= False)
@@ -188,13 +170,11 @@ plt.gca().invert_yaxis()
 del take_sequence
 
 
-# In[ ]:
 
 
 provider_count = news_train_df.groupby('provider')['sourceId'].count()
 
 
-# In[ ]:
 
 
 provider_sort = provider_count.sort_values(ascending= False)
@@ -206,7 +186,6 @@ plt.gca().invert_yaxis()
 del provider_count
 
 
-# In[ ]:
 
 
 # Extract data from a single cell
@@ -231,14 +210,12 @@ def get_content_dict(content_column):
     return content_dict
 
 
-# In[ ]:
 
 
 subjects = news_train_df.sample(n=10000, random_state=1)['subjects']
 subjects_dict = get_content_dict(subjects)
 
 
-# In[ ]:
 
 
 subjects_df = pd.Series(subjects_dict).sort_values(ascending=False)
@@ -250,14 +227,12 @@ plt.gca().invert_yaxis()
 del subjects_df
 
 
-# In[ ]:
 
 
 audiences = news_train_df.sample(n=10000, random_state=1)['audiences']
 audiences_dict = get_content_dict(audiences)
 
 
-# In[ ]:
 
 
 audiences_df = pd.Series(audiences_dict).sort_values(ascending=False)
@@ -268,7 +243,6 @@ plt.title('Top audiences for 10k data')
 plt.gca().invert_yaxis()
 
 
-# In[ ]:
 
 
 news_train_df['companyCount'].hist(bins=np.arange(0,30,1))
@@ -276,13 +250,11 @@ plt.xlabel('Company count')
 plt.title('Company count distribution')
 
 
-# In[ ]:
 
 
 head_line = news_train_df.groupby('headlineTag')['sourceId'].count()
 
 
-# In[ ]:
 
 
 head_line_sort = head_line.sort_values(ascending= False)
@@ -294,7 +266,6 @@ plt.gca().invert_yaxis()
 del head_line
 
 
-# In[ ]:
 
 
 news_train_df['firstMentionSentence'].hist(bins=np.arange(0,20,1))
@@ -303,7 +274,6 @@ plt.ylabel('Count')
 plt.title('First mention sentence distribution')
 
 
-# In[ ]:
 
 
 sentence_urgency = news_train_df.groupby('firstMentionSentence')['urgency'].mean()
@@ -311,7 +281,6 @@ sentence_urgency.head(5)
 del sentence_urgency
 
 
-# In[ ]:
 
 
 news_train_df['relevance'].hist(bins=np.arange(0,1.01,0.05))
@@ -320,7 +289,6 @@ plt.ylabel('Count')
 plt.title('Relevance distribution')
 
 
-# In[ ]:
 
 
 sentence_relevance = news_train_df.groupby('firstMentionSentence')['relevance'].mean()
@@ -331,7 +299,6 @@ plt.gca().invert_yaxis()
 del sentence_relevance
 
 
-# In[ ]:
 
 
 sentimentWordCount = news_train_df.groupby('sentimentWordCount')['sourceId'].count().reset_index()
@@ -343,7 +310,6 @@ plt.title('Sentiment words count distribution')
 del sentimentWordCount
 
 
-# In[ ]:
 
 
 sentimentWordRatio = news_train_df.groupby('sentimentWordCount')['relevance'].mean()
@@ -355,7 +321,6 @@ plt.title('Sentiment word count and relevance')
 del sentimentWordRatio
 
 
-# In[ ]:
 
 
 news_train_df['sentimentRatio'] = news_train_df['sentimentWordCount']/news_train_df['wordCount']
@@ -365,21 +330,18 @@ plt.ylabel('Count')
 plt.title('Sentiment ratio distribution')
 
 
-# In[ ]:
 
 
 news_train_df.sample(n=10000, random_state=1).plot.scatter('sentimentRatio', 'relevance')
 plt.title('Relevance vs sentiment ratio of 10k samples')
 
 
-# In[ ]:
 
 
 asset_name = news_train_df.groupby('assetName')['sourceId'].count()
 print('Total number of assets: ',news_train_df['assetName'].nunique())
 
 
-# In[ ]:
 
 
 asset_name = asset_name.sort_values(ascending=False)
@@ -389,7 +351,6 @@ plt.xlabel('Count')
 plt.title('Top 10 assets news')
 
 
-# In[ ]:
 
 
 for i, j in zip([-1, 0, 1], ['negative', 'neutral', 'positive']):
@@ -399,7 +360,6 @@ for i, j in zip([-1, 0, 1], ['negative', 'neutral', 'positive']):
     print('')
 
 
-# In[ ]:
 
 
 # Function to remove outliers
@@ -414,7 +374,6 @@ def remove_outliers(data_frame, column_list, low=0.02, high=0.98):
     return temp_frame
 
 
-# In[ ]:
 
 
 # Remove outlier
@@ -422,7 +381,6 @@ columns_outlier = ['takeSequence', 'bodySize', 'sentenceCount', 'wordCount', 'se
 news_rmv_outlier = remove_outliers(news_train_df, columns_outlier)
 
 
-# In[ ]:
 
 
 # Plot correlation
@@ -433,14 +391,12 @@ sns.heatmap(news_rmv_outlier[columns_corr].astype(float).corr(), linewidths=0.1,
 plt.title('Pair-wise correlation')
 
 
-# In[ ]:
 
 
 print('Check null data:')
 market_train_df.isna().sum()
 
 
-# In[ ]:
 
 
 # Sort data
@@ -455,14 +411,12 @@ for i in range(len(column_raw)):
     market_train_fill[column_market[i]] = market_train_fill[column_market[i]].fillna(market_train_fill[column_raw[i]])
 
 
-# In[ ]:
 
 
 plot_vs_time(market_train_fill, 'assetCode', 'count')
 plt.title('Number of asset codes versus time')
 
 
-# In[ ]:
 
 
 # Inspired by https://www.kaggle.com/artgor/eda-feature-engineering-and-everything
@@ -475,7 +429,6 @@ plt.ylabel('Price')
 plt.title('Market close price by quantile')
 
 
-# In[ ]:
 
 
 for i in [0.05, 0.25, 0.5, 0.75, 0.95]:
@@ -487,7 +440,6 @@ plt.ylabel('Value')
 plt.title('returnsClosePrevRaw1 by quantile')
 
 
-# In[ ]:
 
 
 for i in [0.05, 0.25, 0.5, 0.75, 0.95]:
@@ -499,7 +451,6 @@ plt.ylabel('Value')
 plt.title('returnsOpenPrevRaw10 by quantiles')
 
 
-# In[ ]:
 
 
 for i in [0.05, 0.25, 0.5, 0.75, 0.95]:
@@ -511,7 +462,6 @@ plt.ylabel('Value')
 plt.title('returnsOpenPrevMktres10 by quantiles')
 
 
-# In[ ]:
 
 
 for i in [0.05, 0.25, 0.5, 0.75, 0.95]:
@@ -523,7 +473,6 @@ plt.ylabel('Value')
 plt.title('returnsOpenNextMktres10 by quantiles')
 
 
-# In[ ]:
 
 
 for i in [0.05, 0.25, 0.5, 0.75, 0.95]:
@@ -535,7 +484,6 @@ plt.ylabel('Volumes')
 plt.title('Market trade volumes by quantile')
 
 
-# In[ ]:
 
 
 column_mkt_raw_diff = []
@@ -547,33 +495,28 @@ for i in range(len(column_market)):
     market_train_fill[new_column_name] = market_train_fill[this_market] - market_train_fill[this_raw]
 
 
-# In[ ]:
 
 
 market_train_fill[column_mkt_raw_diff].describe()
 
 
-# In[ ]:
 
 
 assetCode_df = market_train_df.groupby('assetCode')['volume'].sum().sort_values(ascending=False)
 print('There are %i unique asset code' %len(assetCode_df))
 
 
-# In[ ]:
 
 
 unknown_name = market_train_fill[market_train_fill['assetName']=='Unknown']
 unknown_count = unknown_name['assetCode'].value_counts().sort_values(ascending=False)
 
 
-# In[ ]:
 
 
 print('There are %i unique asset code with unknown asset name' %len(unknown_count))
 
 
-# In[ ]:
 
 
 unknown_count[:15].plot.barh()
@@ -583,7 +526,6 @@ plt.title('Top 15 asset code with Unknown asset name')
 plt.gca().invert_yaxis()
 
 
-# In[ ]:
 
 
 assetCode_df[:15].plot.barh()
@@ -593,7 +535,6 @@ plt.title('Top 15 asset code by volume')
 plt.gca().invert_yaxis()
 
 
-# In[ ]:
 
 
 assetName_Volume = market_train_df.groupby('assetName')['volume'].sum().sort_values(ascending=False)
@@ -605,13 +546,11 @@ plt.gca().invert_yaxis()
 del assetName_Volume
 
 
-# In[ ]:
 
 
 assetName_code = market_train_df.groupby('assetName')['assetCode'].nunique().reset_index().sort_values(by='assetCode',ascending=False)
 
 
-# In[ ]:
 
 
 assetCodeCount = assetName_code.groupby('assetCode')['assetName'].count().reset_index()
@@ -620,7 +559,6 @@ assetCodeCount.head()
 del assetCodeCount
 
 
-# In[ ]:
 
 
 columns_corr_market = ['volume', 'open', 'close','returnsClosePrevRaw1','returnsOpenPrevRaw1',           'returnsClosePrevMktres1','returnsOpenPrevMktres1','returnsClosePrevMktres10','returnsOpenPrevRaw10',           'returnsClosePrevMktres10', 'returnsOpenPrevMktres10', 'returnsOpenNextMktres10']
@@ -630,7 +568,6 @@ sns.heatmap(market_train_fill[columns_corr_market].astype(float).corr(), linewid
 plt.title('Pair-wise correlation')
 
 
-# In[ ]:
 
 
 assetCode = 'Bank of America Corp'
@@ -648,7 +585,6 @@ thisAssetMark_df.plot(x='date', y=['returnsOpenPrevRaw1', 'returnsOpenPrevRaw10'
 plt.title('Return vs time')
 
 
-# In[ ]:
 
 
 news_volume = thisAssetNews_df.groupby('date')['sourceId'].count().reset_index()
@@ -657,7 +593,6 @@ news_volume.plot(x='date',y='sourceId')
 plt.title('News volume vs time')
 
 
-# In[ ]:
 
 
 news_urgency = thisAssetNews_df.groupby('date')['urgency'].mean().reset_index()
@@ -666,7 +601,6 @@ news_urgency.plot(x='date',y='urgency')
 plt.title('News urgency vs time')
 
 
-# In[ ]:
 
 
 news_relevance = thisAssetNews_df.groupby('date')['relevance'].mean().reset_index()
@@ -675,7 +609,6 @@ news_relevance.plot(x='date',y='relevance')
 plt.title('Relevance vs time')
 
 
-# In[ ]:
 
 
 news_sentiment = thisAssetNews_df.groupby('date')['sentimentClass','sentimentNegative','sentimentNeutral','sentimentPositive'].mean().reset_index()
@@ -684,7 +617,6 @@ news_sentiment.plot(x='date',y=['sentimentClass','sentimentNegative','sentimentN
 plt.title('Sentiment vs time')
 
 
-# In[ ]:
 
 
 # Merge news and market data. Only keep numeric columns
@@ -696,7 +628,6 @@ thisAssetNews_number['news_volume'] = thisAssetNews_df.groupby('date')['sourceId
 thisAssetMerge = pd.merge(thisAssetMark_number, thisAssetNews_number, how='left', on = 'date')
 
 
-# In[ ]:
 
 
 columns_corr_merge = ['volume','open','close','returnsOpenPrevRaw1','returnsOpenPrevMktres1','returnsOpenPrevRaw10','returnsOpenPrevMktres10',                     'returnsOpenNextMktres10','news_volume','urgency','sentenceCount','relevance','sentimentClass',                     'noveltyCount24H','noveltyCount5D','volumeCounts24H','volumeCounts5D']
@@ -706,7 +637,6 @@ sns.heatmap(thisAssetMerge[columns_corr_merge].astype(float).corr(), linewidths=
 plt.title('Pair-wise correlation market and news')
 
 
-# In[ ]:
 
 
 del thisAssetMark_df
@@ -716,7 +646,6 @@ del news_train_df
 del news_rmv_outlier
 
 
-# In[ ]:
 
 
 market_train_orig = market_train_orig.sort_values('time')
@@ -727,14 +656,12 @@ del market_train_orig
 del news_train_orig
 
 
-# In[ ]:
 
 
 market_train_df = market_train_df.loc[market_train_df['time'].dt.date>=datetime.date(2009,1,1)]
 news_train_df = news_train_df.loc[news_train_df['time'].dt.date>=datetime.date(2009,1,1)]
 
 
-# In[ ]:
 
 
 market_train_df['close_open_ratio'] = np.abs(market_train_df['close']/market_train_df['open'])
@@ -743,7 +670,6 @@ print('In %i lines price increases by 50%% or more in a day' %(market_train_df['
 print('In %i lines price decreases by 50%% or more in a day' %(market_train_df['close_open_ratio']<=0.5).sum())
 
 
-# In[ ]:
 
 
 market_train_df = market_train_df.loc[market_train_df['close_open_ratio'] < 1.5]
@@ -751,7 +677,6 @@ market_train_df = market_train_df.loc[market_train_df['close_open_ratio'] > 0.5]
 market_train_df = market_train_df.drop(columns=['close_open_ratio'])
 
 
-# In[ ]:
 
 
 column_market = ['returnsClosePrevMktres1','returnsOpenPrevMktres1','returnsClosePrevMktres10', 'returnsOpenPrevMktres10']
@@ -760,7 +685,6 @@ for i in range(len(column_raw)):
     market_train_df[column_market[i]] = market_train_df[column_market[i]].fillna(market_train_df[column_raw[i]])
 
 
-# In[ ]:
 
 
 print('Removing outliers ...')
@@ -774,7 +698,6 @@ rmv_len = np.abs(orig_len-new_len)
 print('There were %i lines removed' %rmv_len)
 
 
-# In[ ]:
 
 
 print('Removing strange data ...')
@@ -786,7 +709,6 @@ rmv_len = np.abs(orig_len-new_len)
 print('There were %i lines removed' %rmv_len)
 
 
-# In[ ]:
 
 
 # Function to remove outliers
@@ -800,7 +722,6 @@ def remove_outliers(data_frame, column_list, low=0.02, high=0.98):
     return data_frame
 
 
-# In[ ]:
 
 
 # Remove outlier
@@ -809,7 +730,6 @@ print('Clipping news outliers ...')
 news_train_df = remove_outliers(news_train_df, columns_outlier)
 
 
-# In[ ]:
 
 
 asset_code_dict = {k: v for v, k in enumerate(market_train_df['assetCode'].unique())}
@@ -821,7 +741,6 @@ columns_news = ['firstCreated','relevance','sentimentClass','sentimentNegative',
                'sentenceCount', 'firstMentionSentence','time']
 
 
-# In[ ]:
 
 
 # Data processing function
@@ -847,7 +766,6 @@ def data_prep(market_df,news_df):
     return market_df
 
 
-# In[ ]:
 
 
 print('Merging data ...')
@@ -855,13 +773,11 @@ market_train_df = data_prep(market_train_df, news_train_df)
 market_train_df.head()
 
 
-# In[ ]:
 
 
 market_train_df = market_train_df.loc[market_train_df['date']>=datetime.date(2009,1,1)]
 
 
-# In[ ]:
 
 
 num_columns = ['volume', 'close', 'open', 'returnsClosePrevRaw1', 'returnsOpenPrevRaw1', 'returnsClosePrevMktres1', 'returnsOpenPrevMktres1', 'returnsClosePrevRaw10', 'returnsOpenPrevRaw10', 
@@ -872,7 +788,6 @@ cat_columns = ['assetCodeT']
 feature_columns = num_columns+cat_columns
 
 
-# In[ ]:
 
 
 # Scaling of data
@@ -884,7 +799,6 @@ data_scaler = StandardScaler()
 market_train_df[num_columns] = data_scaler.fit_transform(market_train_df[num_columns])
 
 
-# In[ ]:
 
 
 from sklearn.model_selection import train_test_split
@@ -896,7 +810,6 @@ market_train_df = market_train_df.drop(columns='index')
 train_indices, val_indices = train_test_split(market_train_df.index.values,test_size=0.1, random_state=92)
 
 
-# In[ ]:
 
 
 # Extract X and Y
@@ -914,7 +827,6 @@ X_train,y_train,r_train,u_train,d_train = get_input(market_train_df, train_indic
 X_val,y_val,r_val,u_val,d_val = get_input(market_train_df, val_indices)
 
 
-# In[ ]:
 
 
 # Set up decay learning rate
@@ -925,7 +837,6 @@ def learning_rate_power(current_round):
     return max(lr, min_learning_rate)
 
 
-# In[ ]:
 
 
 from scipy.stats import randint as sp_randint
@@ -945,7 +856,6 @@ fit_params = {'early_stopping_rounds':40,
               'callbacks': [lgb.reset_parameter(learning_rate=learning_rate_power)]}
 
 
-# In[ ]:
 
 
 lgb_clf = lgb.LGBMClassifier(n_jobs=4, objective='binary',random_state=1)
@@ -959,7 +869,6 @@ gs = RandomizedSearchCV(estimator=lgb_clf,
                         verbose=True)
 
 
-# In[ ]:
 
 
 lgb_clf = lgb.LGBMClassifier(n_jobs=4,
@@ -975,14 +884,12 @@ lgb_clf.set_params(**opt_params)
 lgb_clf.fit(X_train, y_train,**fit_params)
 
 
-# In[ ]:
 
 
 print('Training accuracy: ', accuracy_score(y_train, lgb_clf.predict(X_train)))
 print('Validation accuracy: ', accuracy_score(y_val, lgb_clf.predict(X_val)))
 
 
-# In[ ]:
 
 
 features_imp = pd.DataFrame()
@@ -999,7 +906,6 @@ plt.title('Features importance')
 plt.tight_layout()
 
 
-# In[ ]:
 
 
 # Rescale confidence
@@ -1012,7 +918,6 @@ def rescale(data_in, data_ref):
     return data_in
 
 
-# In[ ]:
 
 
 def confidence_out(y_pred):
@@ -1023,7 +928,6 @@ def confidence_out(y_pred):
     return confidence
 
 
-# In[ ]:
 
 
 y_pred_proba = lgb_clf.predict_proba(X_val)
@@ -1032,7 +936,6 @@ predicted_return = y_pred_proba[:,1] - y_pred_proba[:,0]
 predicted_return = rescale(predicted_return, r_train)
 
 
-# In[ ]:
 
 
 # distribution of confidence that will be used as submission
@@ -1044,7 +947,6 @@ plt.xlim(-1,1)
 plt.show()
 
 
-# In[ ]:
 
 
 # calculation of actual metric that is used to calculate final score
@@ -1059,7 +961,6 @@ score_valid = mean / std
 print('Validation score', score_valid)
 
 
-# In[ ]:
 
 
 # This code is inspired from this kernel: https://www.kaggle.com/skooch/lgbm-w-random-split-2
@@ -1090,7 +991,6 @@ def _parallel_fit_estimator(estimator, X, y, sample_weight=None, **fit_params):
     return estimator
 
 
-# In[ ]:
 
 
 class VotingClassifierLGBM(VotingClassifier):
@@ -1145,7 +1045,6 @@ class VotingClassifierLGBM(VotingClassifier):
         return self
 
 
-# In[ ]:
 
 
 vc = VotingClassifierLGBM(clfs, voting='soft')
@@ -1154,7 +1053,6 @@ filename = 'VotingClassifierLGBM.sav'
 pickle.dump(vc, open(filename, 'wb'))
 
 
-# In[ ]:
 
 
 vc = pickle.load(open(filename, 'rb'))
@@ -1166,13 +1064,11 @@ predicted_return = vc.predict_proba(X_val)[:,1]*2-1
 predicted_return = rescale(predicted_return, r_train)
 
 
-# In[ ]:
 
 
 plt.hist(predicted_class, bins='auto')
 
 
-# In[ ]:
 
 
 vc.voting = 'soft'
@@ -1182,7 +1078,6 @@ print('Accuracy score clfs: %f' % global_accuracy_soft)
 print('F1 score clfs: %f' % global_f1_soft)
 
 
-# In[ ]:
 
 
 # distribution of confidence that will be used as submission
@@ -1194,7 +1089,6 @@ plt.xlim(-1,1)
 plt.show()
 
 
-# In[ ]:
 
 
 # calculation of actual metric that is used to calculate final score
@@ -1209,7 +1103,6 @@ score_valid = mean / std
 print('Validation score', score_valid)
 
 
-# In[ ]:
 
 
 days = env.get_prediction_days()
@@ -1252,7 +1145,6 @@ for (market_obs_df, news_obs_df, predictions_template_df) in days:
 env.write_submission_file()
 
 
-# In[ ]:
 
 
 plt.hist(confidence, bins='auto')

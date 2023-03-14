@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -201,7 +200,6 @@ df = pd.DataFrame({"ID" : YArray, "Revenue" : pred_list})
 df.to_csv("submission_v2.csv", index=False)
 
 
-# In[2]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -297,7 +295,6 @@ print(1, "                 ", 149,"",244)
 print("accuracy" , (21)
 
 
-# In[3]:
 
 
 import pandas as pd
@@ -311,7 +308,6 @@ print("kendall correlation",df.corr(method='kendall'))
 print("spearman correlation",df.corr(method='spearman'))
 
 
-# In[4]:
 
 
 import numpy as np # linear algebra
@@ -368,13 +364,11 @@ sns.heatmap(corr,
         yticklabels=corr.columns,vmin = -1,vmax =1 ,center = 0,cmap = sns.diverging_palette(-400,220,n=200),square = True)
 
 
-# In[5]:
 
 
 df
 
 
-# In[6]:
 
 
 import numpy as np # linear algebra
@@ -408,13 +402,11 @@ dfx = pd.DataFrame(xset)
 dfx.to_csv("xtest.csv", index=False)
 
 
-# In[7]:
 
 
 dfx
 
 
-# In[ ]:
 
 
 

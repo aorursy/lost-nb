@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 #  importing required libraries
@@ -18,7 +17,6 @@ from scipy.stats import chi2_contingency
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[ ]:
 
 
 # missing data
@@ -41,7 +39,6 @@ def missing_info(data, feature):
             round((data.loc[data.isTest,feature].isnull().sum()*100/data[data.isTest].shape[0]),2)))
 
 
-# In[ ]:
 
 
 # all in one plot
@@ -118,7 +115,6 @@ def plot_stats(df,feature,withTarget = True):
     plt.show();
 
 
-# In[ ]:
 
 
 #chi squared test
@@ -130,7 +126,6 @@ def chisq_of_df_cols(df, feature):
     return(p)
 
 
-# In[ ]:
 
 
 # Outlier remover
@@ -170,7 +165,6 @@ def is_outlier(points, thresh=3.5):
     return modified_z_score > thresh
 
 
-# In[ ]:
 
 
 # combining dataset
@@ -186,7 +180,6 @@ def get_combined_dataset() :
     return (application)
 
 
-# In[ ]:
 
 
 application = get_combined_dataset()
@@ -196,13 +189,11 @@ for p in ax.patches:
     ax.annotate('{:}'.format(p.get_height()), (p.get_x()+0.15, p.get_height()+1))
 
 
-# In[ ]:
 
 
 plot_df(application)
 
 
-# In[ ]:
 
 
 def get_application_dataset():
@@ -243,14 +234,12 @@ def get_application_dataset():
     return(df)
 
 
-# In[ ]:
 
 
 application = get_application_dataset()
 plot_df(application)
 
 
-# In[ ]:
 
 
 def transform_application(df):
@@ -264,21 +253,18 @@ def transform_application(df):
     return(df)
 
 
-# In[ ]:
 
 
 bureau = pd.read_csv('../input/bureau.csv')
 plot_df(bureau,withTarget=False)
 
 
-# In[ ]:
 
 
 bureau_balance = pd.read_csv('../input/bureau_balance.csv')
 plot_df(bureau_balance,withTarget=False)
 
 
-# In[ ]:
 
 
 def bureau_balance():
@@ -299,7 +285,6 @@ def bureau_balance():
     return(df)
 
 
-# In[ ]:
 
 
 def get_bureau_dataset():
@@ -367,7 +352,6 @@ def get_bureau_dataset():
     return(df_final)
 
 
-# In[ ]:
 
 
 bureau = get_bureau_dataset()
@@ -375,13 +359,11 @@ bureau = application.loc[:,['SK_ID_CURR','isTrain','isTest','TARGET']].merge(bur
 plot_df(bureau,withTarget=True)
 
 
-# In[ ]:
 
 
 bureau.head()
 
 
-# In[ ]:
 
 
 def bureau_newFeature(df):
@@ -410,7 +392,6 @@ def transform_bureau(df):
     return(df)
 
 
-# In[ ]:
 
 
 df = get_bureau_dataset()
@@ -418,14 +399,12 @@ df = bureau_newFeature(df)
 df = transform_bureau(df)
 
 
-# In[ ]:
 
 
 previous_application = pd.read_csv('../input/previous_application.csv')
 plot_df(previous_application,False)
 
 
-# In[ ]:
 
 
 def get_previous_application():
@@ -467,7 +446,6 @@ def get_previous_application():
     return(df_final)
 
 
-# In[ ]:
 
 
 previous_application = get_previous_application()
@@ -475,7 +453,6 @@ previous_application = application.loc[:,['SK_ID_CURR','isTrain','isTest','TARGE
 plot_df(previous_application,withTarget=True)
 
 
-# In[ ]:
 
 
 def transform_previous_application(df):
@@ -488,14 +465,12 @@ def transform_previous_application(df):
     return(df)
 
 
-# In[ ]:
 
 
 POS_CASH_balance = pd.read_csv('../input/POS_CASH_balance.csv')
 plot_df(POS_CASH_balance,False)
 
 
-# In[ ]:
 
 
 def get_POS_CASH_balance():
@@ -524,7 +499,6 @@ def get_POS_CASH_balance():
     return(df_final)
 
 
-# In[ ]:
 
 
 POS_CASH_balance = get_POS_CASH_balance()
@@ -532,7 +506,6 @@ POS_CASH_balance = application.loc[:,['SK_ID_CURR','isTrain','isTest','TARGET']]
 plot_df(POS_CASH_balance,withTarget=True)
 
 
-# In[ ]:
 
 
 def transform_POS_CASH_balance(df):
@@ -541,14 +514,12 @@ def transform_POS_CASH_balance(df):
     return(df)
 
 
-# In[ ]:
 
 
 instalment_payments = pd.read_csv('../input/installments_payments.csv')
 plot_df(instalment_payments,withTarget=False)
 
 
-# In[ ]:
 
 
 def get_installment_payments():
@@ -575,7 +546,6 @@ def get_installment_payments():
     return(df_final)
 
 
-# In[ ]:
 
 
 instalment_payments = get_installment_payments()
@@ -583,7 +553,6 @@ instalment_payments = application.loc[:,['SK_ID_CURR','isTrain','isTest','TARGET
 plot_df(instalment_payments)
 
 
-# In[ ]:
 
 
 def transform_installment_payments(df):
@@ -596,14 +565,12 @@ def transform_installment_payments(df):
     return(df)
 
 
-# In[ ]:
 
 
 credit_card_balance = pd.read_csv('../input/credit_card_balance.csv')
 plot_df(credit_card_balance,withTarget=False)
 
 
-# In[ ]:
 
 
 def get_credit_card_balance():
@@ -700,7 +667,6 @@ def get_credit_card_balance():
     return(df_final)
 
 
-# In[ ]:
 
 
 credit_card_balance = get_credit_card_balance()
@@ -708,7 +674,6 @@ credit_card_balance = application.loc[:,['SK_ID_CURR','isTrain','isTest','TARGET
 plot_df(credit_card_balance)
 
 
-# In[ ]:
 
 
 def transform_credit_card_balance(df):
@@ -727,7 +692,6 @@ def transform_credit_card_balance(df):
     return(df)
 
 
-# In[ ]:
 
 
 #def getFinalDataSet():

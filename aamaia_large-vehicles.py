@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -71,7 +70,6 @@ def truth_polys(image_id, class_id):
     
 
 
-# In[2]:
 
 
 
@@ -110,13 +108,11 @@ for image_id in LVEHICLE_IMAGES:
 
 
 
-# In[3]:
 
 
 len(patches)
 
 
-# In[4]:
 
 
 #random = np.arange(len(patches))
@@ -137,7 +133,6 @@ for _ in range(1):
             #ax[i, j].set_title(titles[c])
 
 
-# In[5]:
 
 
 

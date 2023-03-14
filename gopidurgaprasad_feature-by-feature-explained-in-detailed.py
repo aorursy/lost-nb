@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -20,7 +19,6 @@ import datetime
 import re
 
 
-# In[2]:
 
 
 from IPython.display import Image
@@ -28,14 +26,12 @@ import os
 get_ipython().system('ls ../input/')
 
 
-# In[3]:
 
 
 train_df = pd.read_csv("../input/nfl-big-data-bowl-2020/train.csv", low_memory=False)
 train_df.head()
 
 
-# In[4]:
 
 
 # https://www.kaggle.com/kabure/extensive-eda-and-modeling-xgb-hyperopt
@@ -87,26 +83,22 @@ def reduce_mem_usage(df, verbose=True):
     return df
 
 
-# In[5]:
 
 
 resumetable(train_df)[:]
 
 
-# In[6]:
 
 
 ## Reducting memory
 train_df = reduce_mem_usage(train_df)
 
 
-# In[7]:
 
 
 train_df.shape
 
 
-# In[8]:
 
 
 print("Total number of games : ",train_df.GameId.nunique())
@@ -114,7 +106,6 @@ print("Total number of HandOff's : ",train_df.PlayId.nunique())
 print("Total number of uniq players : ", train_df.NflId.nunique())
 
 
-# In[9]:
 
 
 ### Checking Train data sorted by PlayId and Team.
@@ -140,7 +131,6 @@ for i in range(0,509762,11):
 print("train data is sorted by Team." if ok else "train data is not sorted by Team.")
 
 
-# In[10]:
 
 
 print("Total number of games : ",train_df.GameId.nunique())
@@ -149,27 +139,23 @@ print("Max number of HandOff's in one game : ", train_df.GameId.value_counts().m
 print("Min number of HandOff's in one game : ", train_df.GameId.value_counts().min())
 
 
-# In[11]:
 
 
 print("Total number of HandOff's : ",train_df.PlayId.nunique())
 print("Every HandOff have ", int(train_df.PlayId.value_counts().mean()), "Players Data")
 
 
-# In[12]:
 
 
 playId_groupby = train_df.groupby("PlayId")
 
 
-# In[13]:
 
 
 print("Total number of Teams :", train_df.Team.value_counts())
 print("Every PlayId have ", playId_groupby["Team"].value_counts().max() , "players from each category")
 
 
-# In[14]:
 
 
 plt.figure()
@@ -178,7 +164,6 @@ plt.title("Away and Home team countplot")
 plt.show()
 
 
-# In[15]:
 
 
 print("Total number of positions of X : ", train_df.X.shape[0])
@@ -194,7 +179,6 @@ print("mean of X : ", train_df.X.values.mean())
 print("mean of Y : ", train_df.Y.values.mean())
 
 
-# In[16]:
 
 
 plt.figure(figsize=(16,6))
@@ -210,7 +194,6 @@ plt.title("Y axis Distribution")
 plt.text(train_df.Y.values.mean()-8, plt.ylim()[1]-0.003, "Mean of Y", size=15, color='r')
 
 
-# In[17]:
 
 
 plt.figure(figsize=(16,12))
@@ -221,7 +204,6 @@ plt.title("Players positions", fontsize=20)
 plt.show()
 
 
-# In[18]:
 
 
 # https://www.kaggle.com/robikscube/nfl-big-data-bowl-plotting-player-position
@@ -305,7 +287,6 @@ create_football_field()
 plt.show()
 
 
-# In[19]:
 
 
 # https://www.kaggle.com/sudalairajkumar/simple-exploration-notebook-nfl
@@ -337,7 +318,6 @@ plt.legend()
 plt.show()
 
 
-# In[20]:
 
 
 print("Total number of  S : ", train_df.S.shape[0])
@@ -353,7 +333,6 @@ print("mean of S : ", train_df.S.values.mean())
 print("mean of A : ", train_df.A.values.mean())
 
 
-# In[21]:
 
 
 plt.figure(figsize=(16,6))
@@ -370,7 +349,6 @@ plt.title("Acceleration('A') Distribution")
 plt.show()
 
 
-# In[22]:
 
 
 print("Total number of  Dis : ", train_df.Dis.shape[0])
@@ -382,7 +360,6 @@ print("*"*50)
 print("mean of Dis : ", train_df.Dis.values.mean())
 
 
-# In[23]:
 
 
 plt.figure(figsize=(16,6))
@@ -393,7 +370,6 @@ plt.title("Distance(Dis) distribution")
 plt.show()
 
 
-# In[24]:
 
 
 print("Total number of  Orientation : ", train_df.Orientation.shape[0])
@@ -405,13 +381,11 @@ print("*"*50)
 print("Number of missing values : ", train_df.Orientation.isna().sum())
 
 
-# In[25]:
 
 
 drop_na_Orientation = train_df.Orientation.dropna()
 
 
-# In[26]:
 
 
 plt.figure(figsize=(16,6))
@@ -422,7 +396,6 @@ plt.title("Orientation distribution")
 plt.show()
 
 
-# In[27]:
 
 
 print("Total number of  Dir : ", train_df.Dir.shape[0])
@@ -434,13 +407,11 @@ print("*"*50)
 print("Number of missing values : ", train_df.Dir.isna().sum())
 
 
-# In[28]:
 
 
 drop_na_Dir = train_df.Dir.dropna()
 
 
-# In[29]:
 
 
 plt.figure(figsize=(16,6))
@@ -451,7 +422,6 @@ plt.title("Direction(Dir) distribution")
 plt.show()
 
 
-# In[30]:
 
 
 print("Total number unique players : ", train_df.NflId.nunique())
@@ -463,7 +433,6 @@ print("*"*50)
 print("Number of missing values : ", train_df.NflId.isna().sum())
 
 
-# In[31]:
 
 
 print("Total number unique player names : ", train_df.DisplayName.nunique())
@@ -475,7 +444,6 @@ print("*"*50)
 print("Number of missing values : ", train_df.DisplayName.isna().sum())
 
 
-# In[32]:
 
 
 print("Total number unique player numbers : ", train_df.JerseyNumber.nunique())
@@ -487,7 +455,6 @@ print("*"*50)
 print("Number of missing values : ", train_df.JerseyNumber.isna().sum())
 
 
-# In[33]:
 
 
 print("Total number unique seasons : ", train_df.Season.nunique())
@@ -495,7 +462,6 @@ print("Total number unique seasons : ", train_df.Season.nunique())
 print("Those are : \n", train_df.Season.value_counts())
 
 
-# In[34]:
 
 
 train_dff = train_df[::22]
@@ -508,7 +474,6 @@ print("*"*50)
 print("Number of missing values : ", train_dff.YardLine.isna().sum())
 
 
-# In[35]:
 
 
 plt.figure()
@@ -517,31 +482,26 @@ plt.title("Distribution of YardLine")
 plt.show()
 
 
-# In[36]:
 
 
 Quarter = train_df.Quarter[: : 22]
 
 
-# In[37]:
 
 
 sns.countplot(Quarter)
 
 
-# In[38]:
 
 
 GameClock = train_df.GameClock[::22]
 
 
-# In[39]:
 
 
 GameClock.value_counts()[:5]
 
 
-# In[40]:
 
 
 train_df.loc[train_df['PossessionTeam'] == 'ARZ', 'PossessionTeam'] = 'ARI'
@@ -550,13 +510,11 @@ train_df.loc[train_df['PossessionTeam'] == 'CLV', 'PossessionTeam'] = 'CLE'
 train_df.loc[train_df['PossessionTeam'] == 'HST', 'PossessionTeam'] = 'HOU'
 
 
-# In[41]:
 
 
 PossessionTeam = train_df.PossessionTeam[::22]
 
 
-# In[42]:
 
 
 plt.figure(figsize=(15,10))
@@ -565,7 +523,6 @@ plt.title("PossessionTeam countplot")
 plt.show()
 
 
-# In[43]:
 
 
 train_dff = train_df[::22]
@@ -578,7 +535,6 @@ print("*"*50)
 print("Number of missing values : ", train_dff.Down.isna().sum())
 
 
-# In[44]:
 
 
 plt.figure()
@@ -587,7 +543,6 @@ plt.title("Down countplot")
 plt.show()
 
 
-# In[45]:
 
 
 train_dff = train_df[::22]
@@ -600,7 +555,6 @@ print("*"*50)
 print("Number of missing values : ", train_dff.YardLine.isna().sum())
 
 
-# In[46]:
 
 
 plt.figure(figsize=(15,10))
@@ -609,13 +563,11 @@ plt.title("PossessionTeam countplot")
 plt.show()
 
 
-# In[47]:
 
 
 FieldPosition = train_df.FieldPosition[::22]
 
 
-# In[48]:
 
 
 plt.figure(figsize=(15,10))
@@ -624,13 +576,11 @@ plt.title("FieldPosition countplot")
 plt.show()
 
 
-# In[49]:
 
 
 HomeScoreBeforePlay = train_df["HomeScoreBeforePlay"][::22]
 
 
-# In[50]:
 
 
 print("max of HomeScoreBeforePlay : ", HomeScoreBeforePlay.max())
@@ -640,7 +590,6 @@ print("*"*50)
 print("Number of missing values : ", HomeScoreBeforePlay.isna().sum())
 
 
-# In[51]:
 
 
 plt.figure()
@@ -649,7 +598,6 @@ plt.title("Distribution of HomeScoreBeforePlay")
 plt.show()
 
 
-# In[52]:
 
 
 VisitorScoreBeforePlay = train_df["VisitorScoreBeforePlay"][::22]
@@ -661,7 +609,6 @@ print("*"*50)
 print("Number of missing values : ", VisitorScoreBeforePlay.isna().sum())
 
 
-# In[53]:
 
 
 plt.figure()
@@ -670,7 +617,6 @@ plt.title("Distribution of VisitorScoreBeforePlay")
 plt.show()
 
 
-# In[54]:
 
 
 NflIdRusher = train_df.NflIdRusher[::22]
@@ -683,19 +629,16 @@ print("*"*50)
 print("Number of missing values : ", NflIdRusher.isna().sum())
 
 
-# In[55]:
 
 
 OffenseFormation = train_df.OffenseFormation[::22] 
 
 
-# In[56]:
 
 
 print("Number of missing values : ", OffenseFormation.isna().sum())
 
 
-# In[57]:
 
 
 plt.figure()
@@ -704,19 +647,16 @@ plt.title("OffenseFormation countplot")
 plt.show()
 
 
-# In[58]:
 
 
 import tqdm as tqdm
 
 
-# In[59]:
 
 
 OffensePersonnel = train_df.OffensePersonnel[::22]
 
 
-# In[60]:
 
 
 unique_OffensePersonnel = []
@@ -728,13 +668,11 @@ for row in OffensePersonnel:
 unique_OffensePersonnel
 
 
-# In[61]:
 
 
 train_df.OffensePersonnel[:5]
 
 
-# In[62]:
 
 
 OffensePersonnel_df = pd.DataFrame(0 ,columns=unique_OffensePersonnel, index=train_df.index)
@@ -745,25 +683,21 @@ for ind,personnel in enumerate(train_df.OffensePersonnel):
         OffensePersonnel_df.loc[ind][col] = int(i[-4])
 
 
-# In[63]:
 
 
 OffensePersonnel_df = OffensePersonnel_df.add_prefix("offense_")
 
 
-# In[64]:
 
 
 OffensePersonnel_df.head()
 
 
-# In[65]:
 
 
 train_df = pd.merge(train_df , OffensePersonnel_df, how="left", left_index=True, right_index=True)
 
 
-# In[66]:
 
 
 DefendersInTheBox = train_df.DefendersInTheBox[::22]
@@ -777,7 +711,6 @@ print("*"*50)
 print("Number of missing values : ", DefendersInTheBox.isna().sum())
 
 
-# In[67]:
 
 
 plt.figure()
@@ -786,7 +719,6 @@ plt.title("Distribution of DefendersInTheBox")
 plt.show()
 
 
-# In[68]:
 
 
 plt.figure()
@@ -795,13 +727,11 @@ plt.title("DefendersInTheBox countplot")
 plt.show()
 
 
-# In[69]:
 
 
 DefensePersonnel = train_df.DefensePersonnel[::22]
 
 
-# In[70]:
 
 
 unique_DefensePersonnel = []
@@ -813,13 +743,11 @@ for row in DefensePersonnel:
 unique_DefensePersonnel
 
 
-# In[71]:
 
 
 train_df.DefensePersonnel[:5]
 
 
-# In[72]:
 
 
 DefensePersonnel_df = pd.DataFrame(0 ,columns=unique_DefensePersonnel, index=train_df.index)
@@ -830,55 +758,46 @@ for ind,personnel in enumerate(train_df.DefensePersonnel):
         DefensePersonnel_df.loc[ind][col] = int(i[-4])
 
 
-# In[73]:
 
 
 DefensePersonnel_df = DefensePersonnel_df.add_prefix("defense_")
 
 
-# In[74]:
 
 
 train_df = pd.merge(train_df , DefensePersonnel_df, how="left", left_index=True, right_index=True)
 
 
-# In[75]:
 
 
 train_df.PlayDirection.value_counts()
 
 
-# In[76]:
 
 
 train_df["TimeHandoff"] = train_df["TimeHandoff"].apply(lambda x: datetime.datetime.strptime(x, "%Y-%m-%dT%H:%M:%S.%fZ"))
 
 
-# In[77]:
 
 
 train_df.TimeHandoff[::22][:5]
 
 
-# In[78]:
 
 
 train_df['TimeSnap'] = train_df['TimeSnap'].apply(lambda x: datetime.datetime.strptime(x, "%Y-%m-%dT%H:%M:%S.%fZ"))
 
 
-# In[79]:
 
 
 train_df.TimeSnap[::22][:5]
 
 
-# In[80]:
 
 
 Yards = train_df.Yards[::22]
 
 
-# In[81]:
 
 
 print("max Yards : ", Yards.max())
@@ -888,7 +807,6 @@ print("*"*50)
 print("Number of missing values : ", Yards.isna().sum())
 
 
-# In[82]:
 
 
 plt.figure()
@@ -897,13 +815,11 @@ plt.title("Distribution of Yards")
 plt.show()
 
 
-# In[83]:
 
 
 train_df.PlayerHeight[:5]
 
 
-# In[84]:
 
 
 # https://www.kaggle.com/bgmello/neural-networks-feature-engineering-for-the-win
@@ -911,7 +827,6 @@ train_df.PlayerHeight[:5]
 train_df['PlayerHeight'] = train_df['PlayerHeight'].apply(lambda x: 12*int(x.split('-')[0])+int(x.split('-')[1]))
 
 
-# In[85]:
 
 
 print("max PlayerHeight : ", train_df.PlayerHeight.max())
@@ -921,7 +836,6 @@ print("*"*50)
 print("Number of missing values : ", train_df.PlayerHeight.isna().sum())
 
 
-# In[86]:
 
 
 plt.figure()
@@ -930,7 +844,6 @@ plt.title("Distribution of player height")
 plt.show()
 
 
-# In[87]:
 
 
 print("max PlayerWeight : ", train_df.PlayerWeight.max())
@@ -940,7 +853,6 @@ print("*"*50)
 print("Number of missing values : ", train_df.PlayerWeight.isna().sum())
 
 
-# In[88]:
 
 
 plt.figure()
@@ -949,19 +861,16 @@ plt.title("Distribution of player weight")
 plt.show()
 
 
-# In[89]:
 
 
 train_df["PlayerBirthDate"] = train_df["PlayerBirthDate"].apply(lambda x: datetime.datetime.strptime(x, "%m/%d/%Y"))
 
 
-# In[90]:
 
 
 train_df.PlayerBirthDate[:5]
 
 
-# In[91]:
 
 
 print("Total number of unique PlayerCollegeName : ", train_df.PlayerCollegeName.nunique())
@@ -973,7 +882,6 @@ print("*"*50)
 print("Number of missing values : ", train_df.PlayerCollegeName.isna().sum())
 
 
-# In[92]:
 
 
 HomeTeamAbbr = train_df.HomeTeamAbbr[::22]
@@ -983,7 +891,6 @@ plt.title("HomeTeamAbbr countplot")
 plt.show()
 
 
-# In[93]:
 
 
 VisitorTeamAbbr = train_df.VisitorTeamAbbr[::22]
@@ -993,13 +900,11 @@ plt.title("VisitorTeamAbbr countplot")
 plt.show()
 
 
-# In[94]:
 
 
 Week = train_df.Week[::22]
 
 
-# In[95]:
 
 
 plt.figure(figsize=(15,10))
@@ -1008,13 +913,11 @@ plt.title("Week countplot")
 plt.show()
 
 
-# In[96]:
 
 
 Stadium = train_df.Stadium[::22].str.lower()
 
 
-# In[97]:
 
 
 print("Total number of unique Stadiums : ", Stadium.nunique())
@@ -1026,13 +929,11 @@ print("*"*50)
 print("Number of missing values : ", Stadium.isna().sum())
 
 
-# In[98]:
 
 
 Location = train_df.Location[::22].str.lower()
 
 
-# In[99]:
 
 
 print("Total number of unique Location : ", Location.nunique())
@@ -1044,13 +945,11 @@ print("*"*50)
 print("Number of missing values : ", Location.isna().sum())
 
 
-# In[100]:
 
 
 train_df.StadiumType[::22].value_counts()
 
 
-# In[101]:
 
 
 def clean_StadiumType(txt):
@@ -1078,19 +977,16 @@ def clean_StadiumType(txt):
     return txt
 
 
-# In[102]:
 
 
 train_df['StadiumType'] = train_df['StadiumType'].apply(clean_StadiumType)
 
 
-# In[103]:
 
 
 train_df.Turf.value_counts()
 
 
-# In[104]:
 
 
 #from https://www.kaggle.com/c/nfl-big-data-bowl-2020/discussion/112681#latest-649087
@@ -1098,13 +994,11 @@ grass_labels = ['grass', 'natural grass', 'natural', 'naturall grass']
 train_df['Grass'] = np.where(train_df.Turf.str.lower().isin(grass_labels), 1, 0)
 
 
-# In[105]:
 
 
 train_df.GameWeather.unique()
 
 
-# In[106]:
 
 
 train_df['GameWeather'] = train_df['GameWeather'].str.lower()
@@ -1115,13 +1009,11 @@ train_df['GameWeather'] = train_df['GameWeather'].apply(lambda x: x.replace('cle
 train_df['GameWeather'] = train_df['GameWeather'].apply(lambda x: x.replace('skies', '').replace("mostly", "").strip() if not pd.isna(x) else x)
 
 
-# In[107]:
 
 
 train_df['GameWeather'].unique()
 
 
-# In[108]:
 
 
 from collections import Counter
@@ -1135,7 +1027,6 @@ for weather in train_df['GameWeather']:
 weather_count.most_common()[:15]
 
 
-# In[109]:
 
 
 Temperature = train_df.Temperature[::22]
@@ -1147,7 +1038,6 @@ print("*"*50)
 print("Number of missing values : ", Temperature.isna().sum())
 
 
-# In[110]:
 
 
 plt.figure()
@@ -1156,7 +1046,6 @@ plt.title("Distribution of Temperature")
 plt.show()
 
 
-# In[111]:
 
 
 Humidity = train_df.Humidity[::22]
@@ -1168,7 +1057,6 @@ print("*"*50)
 print("Number of missing values : ", Humidity.isna().sum())
 
 
-# In[112]:
 
 
 plt.figure()
@@ -1177,19 +1065,16 @@ plt.title("Distribution of Humidity")
 plt.show()
 
 
-# In[113]:
 
 
 train_df['WindSpeed'].value_counts()
 
 
-# In[114]:
 
 
 train_df['WindSpeed'] = train_df['WindSpeed'].apply(lambda x: x.lower().replace('mph', '').strip() if not pd.isna(x) else x)
 
 
-# In[115]:
 
 
 #let's replace the ones that has x-y by (x+y)/2
@@ -1198,7 +1083,6 @@ train_df['WindSpeed'] = train_df['WindSpeed'].apply(lambda x: (int(x.split('-')[
 train_df['WindSpeed'] = train_df['WindSpeed'].apply(lambda x: (int(x.split()[0])+int(x.split()[-1]))/2 if not pd.isna(x) and type(x)!=float and 'gusts up to' in x else x)
 
 
-# In[116]:
 
 
 def str_to_float(txt):
@@ -1208,25 +1092,21 @@ def str_to_float(txt):
         return -1
 
 
-# In[117]:
 
 
 train_df['WindSpeed'] = train_df['WindSpeed'].apply(str_to_float)
 
 
-# In[118]:
 
 
 train_df.WindSpeed.value_counts()
 
 
-# In[119]:
 
 
 train_df['WindDirection'].value_counts()
 
 
-# In[120]:
 
 
 def clean_WindDirection(txt):
@@ -1243,19 +1123,16 @@ def clean_WindDirection(txt):
     return txt
 
 
-# In[121]:
 
 
 train_df['WindDirection'] = train_df['WindDirection'].apply(clean_WindDirection)
 
 
-# In[122]:
 
 
 train_df['WindDirection'].value_counts()
 
 
-# In[123]:
 
 
 def transform_WindDirection(txt):
@@ -1297,13 +1174,11 @@ def transform_WindDirection(txt):
     return np.nan
 
 
-# In[124]:
 
 
 train_df['WindDirection'] = train_df['WindDirection'].apply(transform_WindDirection)
 
 
-# In[ ]:
 
 
 

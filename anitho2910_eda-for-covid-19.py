@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import matplotlib.pyplot as plt
@@ -34,41 +32,35 @@ py.init_notebook_mode(connected=True)
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[3]:
 
 
 path = '../input/covid19-global-forecasting-week-4/'
 os.listdir(path)
 
 
-# In[4]:
 
 
 data = pd.read_csv(path + "train.csv")
 data.head()
 
 
-# In[5]:
 
 
 data.info()
 
 
-# In[6]:
 
 
 subset_by_max_date = data[data['Date'] == data['Date'].max()]
 subset_by_max_date.head()
 
 
-# In[7]:
 
 
 country_wise_case = subset_by_max_date.groupby(by = 'Country_Region')['ConfirmedCases'].agg([np.sum]).reset_index().rename(columns = {'Country_Region': 'Country', 'sum': 'confirmed'})
 country_wise_case.head()
 
 
-# In[8]:
 
 
 X = country_wise_case['Country'].values
@@ -81,7 +73,6 @@ fig = go.Figure(data=[bar], layout = layout)
 py.iplot(fig)
 
 
-# In[9]:
 
 
 country_wise_case.sort_values('confirmed', ascending = False, inplace = True)
@@ -95,27 +86,23 @@ fig = go.Figure(data = [bar], layout = layout)
 py.iplot(fig)
 
 
-# In[10]:
 
 
 usa = data[data['Country_Region'] == 'US']
 usa.head()
 
 
-# In[11]:
 
 
 # No null column
 usa.info()
 
 
-# In[12]:
 
 
 province_wise_case = usa.groupby(by = 'Province_State')['ConfirmedCases'].agg([np.max]).reset_index()                        .rename(columns = {'Province_State': 'Province', 'amax':'Confirmed'}).sort_values('Confirmed', ascending = False)
 
 
-# In[13]:
 
 
 labels = province_wise_case['Province'].values[:10]
@@ -129,14 +116,12 @@ fig = go.Figure(data = [pie], layout = layout)
 py.iplot(fig)
 
 
-# In[14]:
 
 
 new_york = usa[usa['Province_State'] == 'New York']
 new_york.head()
 
 
-# In[15]:
 
 
 X = new_york['Date']
@@ -155,7 +140,6 @@ fig = go.Figure(data = [line_confirm, line_death], layout = layout)
 py.iplot(fig)
 
 
-# In[16]:
 
 
 X = new_york['Date']
@@ -174,14 +158,12 @@ fig = go.Figure(data = [line_confirm, line_death], layout = layout)
 py.iplot(fig)
 
 
-# In[17]:
 
 
 country_wise_death = subset_by_max_date.groupby(by = 'Country_Region')['Fatalities'].agg([np.sum]).reset_index().rename(columns = {'Country_Region': 'Country', 'sum': 'Deaths'})
 country_wise_death.head()
 
 
-# In[18]:
 
 
 X = country_wise_death['Country'].values
@@ -193,7 +175,6 @@ fig = go.Figure(data=[bar], layout = layout)
 py.iplot(fig)
 
 
-# In[19]:
 
 
 country_wise_death.sort_values('Deaths', ascending = False, inplace = True)
@@ -206,13 +187,11 @@ fig = go.Figure(data = [bar], layout = layout)
 py.iplot(fig)
 
 
-# In[20]:
 
 
 province_wise_case = usa.groupby(by = 'Province_State')['Fatalities'].agg([np.max]).reset_index()                        .rename(columns = {'Province_State': 'Province', 'amax':'Deaths'}).sort_values('Deaths', ascending = False)
 
 
-# In[21]:
 
 
 labels = province_wise_case['Province'].values[:10]
@@ -226,7 +205,6 @@ fig = go.Figure(data = [pie], layout = layout)
 py.iplot(fig)
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -53,7 +52,6 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
 
 
 sns.set(style ='darkgrid')
@@ -62,7 +60,6 @@ col = sns.color_palette()
 sns.palplot(col)
 
 
-# In[3]:
 
 
 def plot_2y(df,x,y1,y2):
@@ -84,7 +81,6 @@ def plot_2y(df,x,y1,y2):
     plt.show()
 
 
-# In[4]:
 
 
 def plot_scatter(df,xdata,ydata1,ydata2=None,ydata3=None):
@@ -103,7 +99,6 @@ def plot_scatter(df,xdata,ydata1,ydata2=None,ydata3=None):
     plt.show()
 
 
-# In[5]:
 
 
 def booleanBoxPlot(df, bool_feature, other_feature, lang):
@@ -120,21 +115,18 @@ def booleanBoxPlot(df, bool_feature, other_feature, lang):
     plt.suptitle(title)
 
 
-# In[6]:
 
 
 def roundup(x):
     return int(math.floor(x/10.0)) * 10
 
 
-# In[7]:
 
 
 def json_to_dict(df, field):
      df.loc[df[field].notnull(), field] = df.loc[df[field].notnull(),field].apply(lambda x: x.lstrip('\"([').rstrip(']\")')).apply(eval) 
 
 
-# In[8]:
 
 
 def get_json_dict(s):
@@ -146,7 +138,6 @@ def get_json_dict(s):
     return d
 
 
-# In[9]:
 
 
 def get_director(df):
@@ -156,7 +147,6 @@ def get_director(df):
         df.loc[index,'Director'] = director
 
 
-# In[10]:
 
 
 def get_cast(df):
@@ -166,7 +156,6 @@ def get_cast(df):
         df.loc[index,'Lead'] = lead
 
 
-# In[11]:
 
 
 def dict_to_list(df, field):
@@ -184,7 +173,6 @@ def dict_to_list(df, field):
             df.at[index,field] = field_list
 
 
-# In[12]:
 
 
 def transform_ridge(df, top_languages = [], top_directors = [], top_cast = [], additional = 0, ohe_director = 0, ohe_cast = 0):
@@ -324,7 +312,6 @@ def transform_ridge(df, top_languages = [], top_directors = [], top_cast = [], a
     return df_out, top_languages, top_directors, top_cast
 
 
-# In[13]:
 
 
 def cross_validation(train_df, k = 1):
@@ -366,7 +353,6 @@ def cross_validation(train_df, k = 1):
    return alpha_best
 
 
-# In[14]:
 
 
 def ridge_regression_model(train_df, test_df , alpha_best, no_models = 2):
@@ -405,7 +391,6 @@ def ridge_regression_model(train_df, test_df , alpha_best, no_models = 2):
     return test_df
 
 
-# In[15]:
 
 
 def file_for_submission(test_df):
@@ -414,14 +399,12 @@ def file_for_submission(test_df):
     test_df[['id','revenue']].to_csv('submission.csv',index = False)
 
 
-# In[16]:
 
 
 train = pd.read_csv('../input/train.csv')
 test  = pd.read_csv('../input/test.csv')
 
 
-# In[17]:
 
 
 def ridge_test(df_train, df_test):
@@ -434,25 +417,21 @@ def ridge_test(df_train, df_test):
     return df_test
 
 
-# In[18]:
 
 
 test_filled_ridge = ridge_test(train,test)
 
 
-# In[19]:
 
 
 test_filled_ridge.head()
 
 
-# In[20]:
 
 
 file_for_submission(test_filled_ridge)
 
 
-# In[21]:
 
 
 def random_forest_test(df_train, df_test):
@@ -467,25 +446,21 @@ def random_forest_test(df_train, df_test):
     return test_copy
 
 
-# In[22]:
 
 
 test_filled_rf = random_forest_test(train, test)
 
 
-# In[23]:
 
 
 file_for_submission(test_filled_rf)
 
 
-# In[24]:
 
 
 test_filled_rf.head()
 
 
-# In[25]:
 
 
 def xgb_test(df_train,df_test):
@@ -500,104 +475,87 @@ def xgb_test(df_train,df_test):
     return test_copy
 
 
-# In[26]:
 
 
 test_filled_xgb  = xgb_test(train, test)
 
 
-# In[27]:
 
 
 file_for_submission(test_filled_xgb)
 
 
-# In[28]:
 
 
 test_filled_xgb.head()
 
 
-# In[29]:
 
 
 test_filled_xgb[['id','revenue']].to_csv('submission.csv',index = False)
 
 
-# In[30]:
 
 
 
 
 
-# In[30]:
 
 
 
 
 
-# In[30]:
 
 
 
 
 
-# In[30]:
 
 
 
 
 
-# In[30]:
 
 
 
 
 
-# In[30]:
 
 
 
 
 
-# In[30]:
 
 
 
 
 
-# In[30]:
 
 
 
 
 
-# In[30]:
 
 
 
 
 
-# In[30]:
 
 
 
 
 
-# In[30]:
 
 
 plot_scatter(train_copy[train_copy['log_budget']!=0],'log_budget','log_revenue')
 
 
-# In[31]:
 
 
 train_yearly = train_copy.groupby(train_copy['year']).aggregate({'log_revenue' : 'mean', 'log_budget':'mean', 'id':'count'}).reset_index()
 train_yearly.rename(columns ={'id':'Number','log_revenue':'mean_log_revenue','log_budget':'mean_log_budget'}, inplace = True)
 
 
-# In[32]:
 
 
 plt.figure()
@@ -606,13 +564,11 @@ plt.tight_layout()
 plt.show()
 
 
-# In[33]:
 
 
 plot_2y(train_yearly,'year','mean_log_revenue','Number')
 
 
-# In[34]:
 
 
 plt.figure()
@@ -621,7 +577,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[35]:
 
 
 train['decade'] = train['year'].apply(roundup)
@@ -629,7 +584,6 @@ train_decade = train.groupby(train['decade']).aggregate({'log_budget':'mean','lo
 train_decade.rename(columns = {'log_budget':'mean_log_budget', 'log_revenue':'mean_log_revenue'}, inplace = True)
 
 
-# In[36]:
 
 
 plt.figure()
@@ -639,27 +593,23 @@ plt.title('Decade-wise mean log budget v mean log revenue',fontsize = 15)
 plt.show()
 
 
-# In[37]:
 
 
 train_lang_table = train['original_language'].value_counts().reset_index()
 train_lang_table.rename(columns={'index':'language', 'original_language':'Number'},inplace= True)
 
 
-# In[38]:
 
 
 train_lang_table.loc[10,'language']='others'
 train_lang_table.loc[10,'Number'] = train_lang_table.loc[10:,'Number'].sum()
 
 
-# In[39]:
 
 
 train_lang_table[0:11]
 
 
-# In[40]:
 
 
 train_lang = {}
@@ -683,19 +633,16 @@ plt.ylabel('Mean log revenue')
 plt.show()
 
 
-# In[41]:
 
 
 booleanBoxPlot(train_copy,'belongs_to_collection','log_revenue', 'en')
 
 
-# In[42]:
 
 
 booleanBoxPlot(train_copy,'homepage','log_revenue','en')
 
 
-# In[43]:
 
 
 plt.figure(figsize=(15,10))
@@ -703,7 +650,6 @@ sns.distplot(train.loc[train['popularity']<=100,'popularity'])
 plt.show()
 
 
-# In[44]:
 
 
 plt.figure(figsize=(15,10))

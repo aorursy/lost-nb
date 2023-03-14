@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
@@ -17,7 +16,6 @@ env = twosigmanews.make_env()
 print('Done!')
 
 
-# In[ ]:
 
 
 if toy:
@@ -28,37 +26,31 @@ else:
     news = news.tail(6_000_000)
 
 
-# In[ ]:
 
 
 print("Marketdata (Rows, Columns): ",marketdata.shape,"News (Rows, Columns): ",news.shape)
 
 
-# In[ ]:
 
 
 marketdata.info()
 
 
-# In[ ]:
 
 
 news.info()
 
 
-# In[ ]:
 
 
 marketdata.head()
 
 
-# In[ ]:
 
 
 news.head()
 
 
-# In[ ]:
 
 
 resumen_marketdata= marketdata.describe()
@@ -66,7 +58,6 @@ resumen_marketdata = resumen_marketdata.transpose()
 resumen_marketdata
 
 
-# In[ ]:
 
 
 resumen_news= news.describe()
@@ -74,7 +65,6 @@ resumen_news = resumen_news.transpose()
 resumen_news
 
 
-# In[ ]:
 
 
 # Load Visualization Libraries
@@ -86,7 +76,6 @@ import plotly.figure_factory as ff
 init_notebook_mode(connected=True) 
 
 
-# In[ ]:
 
 
 # Number of missing in each column
@@ -96,14 +85,12 @@ nulls_news = pd.DataFrame(news.isnull().sum()).rename(columns = {0: 'total'})
 print("Missing Values. Marketdata: ",nulls_marketdata['total'].sum()," News: ",nulls_news['total'].sum())
 
 
-# In[ ]:
 
 
 nulls_marketdata['percentage'] = nulls_marketdata['total'] / len(marketdata)
 columns_marketdata = nulls_marketdata[nulls_marketdata['percentage']>0].sort_values('percentage', ascending = False).head(10).reset_index().rename(index=str, columns={"index": "name"})
 
 
-# In[ ]:
 
 
 labels_marketdata = list(columns_marketdata['name'])
@@ -138,13 +125,11 @@ fig = {'data':
 iplot(fig)
 
 
-# In[ ]:
 
 
 marketdata_AAPL = marketdata[marketdata['assetCode']=='AAPL.O']
 
 
-# In[ ]:
 
 
 trace_high = go.Scatter(
@@ -173,51 +158,43 @@ fig = dict(data=data, layout=layout)
 iplot(fig)
 
 
-# In[ ]:
 
 
 print("Unknown names: ", marketdata[marketdata["assetName"]=='Unknown'].size)
 
 
-# In[ ]:
 
 
 assetCode_Unknown = marketdata[marketdata['assetName'] == 'Unknown'].groupby('assetCode').size().reset_index('assetCode')
 print("Asset Codes without names: ",assetCode_Unknown.shape[0])
 
 
-# In[ ]:
 
 
 assetCode_Unknown.head()
 
 
-# In[ ]:
 
 
 news[['assetCodes','assetName']].head()
 
 
-# In[ ]:
 
 
 marketdata['time'].dt.time.describe()
 
 
-# In[ ]:
 
 
 news['time'].dt.time.describe()
 
 
-# In[ ]:
 
 
 news['time'] = (news['time'] - np.timedelta64(22,'h')).dt.ceil('1D')
 marketdata['time'] = marketdata['time'].dt.floor('1D')
 
 
-# In[ ]:
 
 
 news['assetCodes'] = news['assetCodes'].str.findall(f"'([\w\./]+)'")    
@@ -227,13 +204,11 @@ assert len(assetCodes_index) == len(assetCodes_expanded)
 assetCodes = pd.DataFrame({'level_0': assetCodes_index, 'assetCode': assetCodes_expanded})
 
 
-# In[ ]:
 
 
 assetCodes.head()
 
 
-# In[ ]:
 
 
 news_cols_agg = {
@@ -262,19 +237,16 @@ news_cols_agg = {
 }
 
 
-# In[ ]:
 
 
 news_cols = ['time', 'assetCodes'] + sorted(news_cols_agg.keys())
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 def getx(news, marketdata, le=None)
@@ -328,7 +300,6 @@ def getx(news, marketdata, le=None)
     return (x,le_assetCode,le_assetName)
 
 
-# In[ ]:
 
 
 # Save universe data for latter use
@@ -336,7 +307,6 @@ def getx(news, marketdata, le=None)
   time = marketdata['time']
 
 
-# In[ ]:
 
 
 n_train = int(x.shape[0] * 0.8)
@@ -345,7 +315,6 @@ x_train, y_train = x.iloc[:n_train], y.iloc[:n_train]
 x_valid, y_valid = x.iloc[n_train:], y.iloc[n_train:]
 
 
-# In[ ]:
 
 
 # For valid data, keep only those with universe > 0. This will help calculate the metric
@@ -358,7 +327,6 @@ t_valid = t_valid[u_valid]
 del u_valid
 
 
-# In[ ]:
 
 
 import lightgbm as lgb
@@ -371,7 +339,6 @@ dtrain = lgb.Dataset(x_train.values, y_train, feature_name=train_cols, categoric
 dvalid = lgb.Dataset(x_valid.values, y_valid, feature_name=train_cols, categorical_feature=categorical_cols, free_raw_data=False)
 
 
-# In[ ]:
 
 
 dvalid.params = {
@@ -379,7 +346,6 @@ dvalid.params = {
 }
 
 
-# In[ ]:
 
 
 lgb_params = dict(
@@ -421,7 +387,6 @@ m = lgb.train(lgb_params, dtrain, num_boost_round=1000, valid_sets=(dvalid,), va
 df_result = pd.DataFrame(evals_result['valid'])
 
 
-# In[ ]:
 
 
 num_boost_round, valid_score = df_result['sigma_score'].idxmax()+1, df_result['sigma_score'].max()
@@ -429,7 +394,6 @@ print(lgb_params)
 print(f'Best score was {valid_score:.5f} on round {num_boost_round}')
 
 
-# In[ ]:
 
 
 import matplotlib.pyplot as plt
@@ -440,13 +404,11 @@ lgb.plot_importance(m, ax=ax[1], importance_type='gain')
 fig.tight_layout()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 dtrain_full = lgb.Dataset(x, y, feature_name=train_cols, categorical_feature=categorical_cols)
@@ -454,7 +416,6 @@ dtrain_full = lgb.Dataset(x, y, feature_name=train_cols, categorical_feature=cat
 model = lgb.train(lgb_params, dtrain, num_boost_round=num_boost_round)
 
 
-# In[ ]:
 
 
 def make_predictions(predictions_template_df, market_obs_df, news_obs_df, le):
@@ -462,7 +423,6 @@ def make_predictions(predictions_template_df, market_obs_df, news_obs_df, le):
     predictions_template_df.confidenceValue = np.clip(model.predict(x), -1, 1)
 
 
-# In[ ]:
 
 
 days = env.get_prediction_days()
@@ -473,7 +433,6 @@ for (market_obs_df, news_obs_df, predictions_template_df) in days:
 print('Done!')
 
 
-# In[ ]:
 
 
 env.write_submission_file()

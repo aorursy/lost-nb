@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 EXPORT_PNG = True
@@ -17,7 +16,6 @@ f.write('The image files can be downloaded in the *Output Files* section, clicki
 f.close()
 
 
-# In[2]:
 
 
 if METHOD == 'orca':
@@ -25,7 +23,6 @@ if METHOD == 'orca':
     get_ipython().system('/usr/bin/apt-get --yes install libxss1 libgconf2-4')
 
 
-# In[3]:
 
 
 import numpy as np
@@ -39,7 +36,6 @@ from plotly.offline import iplot
 from tqdm.auto import trange
 
 
-# In[4]:
 
 
 data_path = '../input/ashrae-data-wrangling-csv-to-pickle/'
@@ -53,7 +49,6 @@ with open(data_path + 'weather_train.pickle', 'rb') as f:
     weather_train = pickle.load(f)    
 
 
-# In[5]:
 
 
 def get_data(building_id, meter, xy):

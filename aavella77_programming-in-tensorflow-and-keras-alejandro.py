@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # Intro
@@ -13,14 +12,12 @@ At the end of this lesson, you will be able to write TensorFlow and Keras code t
 # Lesson
 
 
-# In[ ]:
 
 
 from IPython.display import YouTubeVideo
 YouTubeVideo('Epn3ryqr-F8', width=800, height=450)
 
 
-# In[ ]:
 
 
 from os.path import join
@@ -35,7 +32,6 @@ img_paths = [join(image_dir, filename) for filename in
 print("The first image path is: " + img_paths[0])
 
 
-# In[ ]:
 
 
 import numpy as np
@@ -50,7 +46,6 @@ def read_and_prep_images(img_paths, img_height=image_size, img_width=image_size)
     return preprocess_input(img_array)
 
 
-# In[ ]:
 
 
 from tensorflow.python.keras.applications import ResNet50
@@ -60,7 +55,6 @@ test_data = read_and_prep_images(img_paths)
 preds = my_model.predict(test_data)
 
 
-# In[ ]:
 
 
 import sys

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 # libraries
@@ -36,7 +34,6 @@ warnings.filterwarnings("ignore")
 print("Libraries were loaded.")
 
 
-# In[3]:
 
 
 # load data
@@ -53,7 +50,6 @@ test_df = pd.read_csv('../input/test.csv')
 print("All the data were loaded.")
 
 
-# In[4]:
 
 
 # What are inside those files?
@@ -86,7 +82,6 @@ for df, name in zip(dfs, names):
     dispDF(df, name)
 
 
-# In[5]:
 
 
 # colors
@@ -96,14 +91,12 @@ sns.set()
 subsample = 100
 
 
-# In[6]:
 
 
 # display info about the data frame
 dispDF(dipole_moments_df, "dipole moments")
 
 
-# In[7]:
 
 
 fig = plt.figure()
@@ -122,7 +115,6 @@ ax.set_zlabel('Z')
 ax.set_title('Dipole Moment')
 
 
-# In[8]:
 
 
 dipole_moments_df['dm_distance'] = np.asarray([x**2 + y**2 + z**2 for x, y, z in zip(dipole_moments_df['X'],dipole_moments_df['Y'], dipole_moments_df['Z'])])
@@ -140,7 +132,6 @@ sns.distplot(np.log(dipole_moments_df['dm_distance'] + 0.00001), color=colors[0]
 ax[1].set_xlabel('log distance')
 
 
-# In[9]:
 
 
 dipole_moments_df['dm_outliers'] = np.zeros(dipole_moments_df.shape[0]).astype(int)
@@ -149,14 +140,12 @@ print("outliers (dipole moments): " + str(np.sum(dipole_moments_df['dm_outliers'
 dipole_moments_df.head(7)
 
 
-# In[10]:
 
 
 # display info about the data frame
 dispDF(magnetic_shielding_tensors_df, "magnetic shielding tensors")
 
 
-# In[11]:
 
 
 fig = plt.figure()
@@ -177,14 +166,12 @@ ax.set_zlabel('Z')
 ax.set_title('Magnetic shielding tensors')
 
 
-# In[12]:
 
 
 # display info about the data frame
 dispDF(potential_energy_df, "potential energy")
 
 
-# In[13]:
 
 
 # potential energy
@@ -200,7 +187,6 @@ ax.axvline(pe_median, color='r', linestyle='--', lw=4)
 ax.text(pe_median + 30, 15000, 'median = ' + str(pe_median), fontsize=12, color='r') 
 
 
-# In[14]:
 
 
 # median split
@@ -208,21 +194,18 @@ highPE_molecules = potential_energy_df.loc[potential_energy_df['potential_energy
 lowPE_molecules = potential_energy_df.loc[potential_energy_df['potential_energy'] < pe_median]
 
 
-# In[15]:
 
 
 print(str(highPE_molecules.shape[0]) + " high potential energy molecules:")
 highPE_molecules.head(7)
 
 
-# In[16]:
 
 
 print(str(lowPE_molecules.shape[0]) + " low potential energy molecules:")
 lowPE_molecules.head(7)
 
 
-# In[17]:
 
 
 # low (0) and high (0) potential energy
@@ -231,35 +214,30 @@ potential_energy_df.loc[potential_energy_df['potential_energy'] >= pe_median, 'e
 potential_energy_df.head(7)
 
 
-# In[18]:
 
 
 # display info about the data frame
 dispDF(mulliken_charges_df, "mulliken charges")
 
 
-# In[19]:
 
 
 # distribution of mulliken_charge
 mulliken_charges_df["mulliken_charge"].hist()
 
 
-# In[20]:
 
 
 # display info about the data frame
 dispDF(structure_df, "structure")
 
 
-# In[21]:
 
 
 # # Let's visualize one molecule anyway
 # !pip install ase
 
 
-# In[22]:
 
 
 # import ase
@@ -271,7 +249,6 @@ dispDF(structure_df, "structure")
 # ase.visualize.view(Atoms(positions=positions, symbols=symbols), viewer="x3d")
 
 
-# In[23]:
 
 
 # add electronegativity to df
@@ -280,14 +257,12 @@ structure_df['electronegativity'] = structure_df['electronegativity'].map({'H': 
 structure_df.head(12)
 
 
-# In[24]:
 
 
 # display info about the data frame
 dispDF(scalar_coupling_contributions_df, "scalar coupling contributions")
 
 
-# In[25]:
 
 
 fig, ax = plt.subplots(2,1, figsize=(12, 8))
@@ -319,7 +294,6 @@ for i, u in enumerate(scalar_coupling_contributions_df['type'].unique()):
 sns.barplot(x=scalar_coupling_contributions_df['type'].unique(), y=counts, ax=ax[1])
 
 
-# In[26]:
 
 
 # Values of each interaction vs molecular types  
@@ -334,7 +308,6 @@ for i, col in enumerate(columns):
 plt.tight_layout()
 
 
-# In[27]:
 
 
 # combine "dipole_moments_df" and "potential_energy_df" (The both have 85003 rows, information per molecule)
@@ -347,7 +320,6 @@ print("There are {} rows and {} columns in DM_PE_df.".format(DM_PE_df.shape[0], 
 DM_PE_df.head(12)
 
 
-# In[28]:
 
 
 # combine "magnetic_shielding_tensors_df" and "mulliken_charges_df" (The both have 1533537 rows, information per atom in a molecule)
@@ -360,7 +332,6 @@ print("There are {} rows and {} columns in DM_PE_df.".format(MST_MC_df.shape[0],
 MST_MC_df.head(12)
 
 
-# In[29]:
 
 
 # combine these two
@@ -373,7 +344,6 @@ print("There are {} rows and {} columns in DM_PE_df.".format(MST_MC_DM_PE_df.sha
 MST_MC_DM_PE_df.head(12)
 
 
-# In[30]:
 
 
 # lighter structure
@@ -408,14 +378,12 @@ def reduce_mem_usage(df, verbose=True):
     return df
 
 
-# In[31]:
 
 
 MST_MC_DM_PE_df = reduce_mem_usage(MST_MC_DM_PE_df)
 scalar_coupling_contributions_df = reduce_mem_usage(scalar_coupling_contributions_df)
 
 
-# In[32]:
 
 
 # combine it with "scaler_coupling_contributions_df" (information per a pair of atoms in a molecule)
@@ -425,7 +393,6 @@ print("There are {} rows and {} columns in combined_df0.".format(combined_df0.sh
 combined_df0.head(12)
 
 
-# In[33]:
 
 
 # # combine it with "scaler_coupling_contributions_df" (information per a pair of atoms in a molecule)
@@ -439,7 +406,6 @@ combined_df0.head(12)
 # combined_df1.head(12)
 
 
-# In[34]:
 
 
 # # combine these two

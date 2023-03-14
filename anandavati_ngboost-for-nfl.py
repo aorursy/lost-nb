@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -245,7 +244,6 @@ class NGBoost(BaseEstimator):
         return list(dist.loc.flatten())
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -394,13 +392,11 @@ def fparse(fname):
     return np.array(X), Y
 
 
-# In[3]:
 
 
 X, Y = fparse('/kaggle/input/nfl-big-data-bowl-2020/train.csv')
 
 
-# In[4]:
 
 
 from sklearn.model_selection import train_test_split
@@ -421,7 +417,6 @@ test_CRPS = Y_dists.crps(Y_val.flatten()).mean()
 print('Val CRPS', test_CRPS)
 
 
-# In[5]:
 
 
 from kaggle.competitions import nflrush

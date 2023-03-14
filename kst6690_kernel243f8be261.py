@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -37,7 +36,6 @@ from PIL import Image
 from zipfile import ZipFile
 
 
-# In[2]:
 
 
 TRAIN = '../input/prostate-cancer-grade-assessment/train_images/'
@@ -53,7 +51,6 @@ BATCH_SIZE = 64
 EPOCHS_ = 5
 
 
-# In[3]:
 
 
 def tile(img, mask):
@@ -95,7 +92,6 @@ def zipData():
                 mask_out.writestr(f'{name}_{idx}.png', mask)
 
 
-# In[4]:
 
 
 zipData()

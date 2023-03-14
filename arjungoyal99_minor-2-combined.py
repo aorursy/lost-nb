@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 DATASET_DIR = '../input/severstal-steel-defect-detection/'
@@ -13,7 +12,6 @@ NUM_VAL_SAMPLES = 20 # The number of val samples used for visualization
 COLORS = ['b', 'g', 'r', 'm'] # Color of each class
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -35,19 +33,16 @@ from plotly.graph_objs import *
 from plotly.graph_objs.layout import Margin, YAxis, XAxis
 
 
-# In[3]:
 
 
 df = pd.read_csv(os.path.join(DATASET_DIR, 'train.csv'))
 
 
-# In[4]:
 
 
 df.head()
 
 
-# In[5]:
 
 
 legacy_df = pd.DataFrame(columns=['ImageId_ClassId', 'EncodedPixels'])
@@ -67,13 +62,11 @@ for img_id, img_df in tqdm_notebook(df.groupby('ImageId')):
         legacy_df = legacy_df.append(row, ignore_index=True)
 
 
-# In[6]:
 
 
 df = legacy_df
 
 
-# In[7]:
 
 
 df['Image'] = df['ImageId_ClassId'].map(lambda x: x.split('_')[0])
@@ -84,7 +77,6 @@ image_files = image_col[::4]
 all_labels = np.array(df['HavingDefection']).reshape(-1, 4)
 
 
-# In[8]:
 
 
 num_img_class_1 = np.sum(all_labels[:, 0])
@@ -97,7 +89,6 @@ print('Class 3: {} images'.format(num_img_class_3))
 print('Class 4: {} images'.format(num_img_class_4))
 
 
-# In[9]:
 
 
 def plot_figures(
@@ -145,7 +136,6 @@ def plot_figures(
     plt.show()
 
 
-# In[10]:
 
 
 print('[THE WHOLE DATASET]')
@@ -175,13 +165,11 @@ plot_figures(
 )
 
 
-# In[11]:
 
 
 X_train, X_val, y_train, y_val = train_test_split(image_files, all_labels, test_size=TEST_SIZE, random_state=RANDOM_STATE)
 
 
-# In[12]:
 
 
 print('X_train:', X_train.shape)
@@ -190,7 +178,6 @@ print('X_val:', X_val.shape)
 print('y_val:', y_val.shape)
 
 
-# In[13]:
 
 
 print('[TRAINING SET]')
@@ -221,7 +208,6 @@ plot_figures(
 )
 
 
-# In[14]:
 
 
 print('[VALIDATION SET]')
@@ -252,7 +238,6 @@ plot_figures(
 )
 
 
-# In[15]:
 
 
 def rle2mask(mask_rle, shape=(1600,256)):
@@ -272,7 +257,6 @@ def rle2mask(mask_rle, shape=(1600,256)):
     return img.reshape(shape).T
 
 
-# In[16]:
 
 
 def show_samples(samples):
@@ -302,7 +286,6 @@ def show_samples(samples):
         plt.show()
 
 
-# In[17]:
 
 
 train_pairs = np.array(list(zip(X_train, y_train)))
@@ -311,7 +294,6 @@ train_samples = train_pairs[np.random.choice(train_pairs.shape[0], NUM_TRAIN_SAM
 show_samples(train_samples)
 
 
-# In[18]:
 
 
 val_pairs = np.array(list(zip(X_val, y_val)))
@@ -320,7 +302,6 @@ val_samples = val_pairs[np.random.choice(val_pairs.shape[0], NUM_VAL_SAMPLES, re
 show_samples(val_samples)
 
 
-# In[19]:
 
 
 df_train=legacy_df
@@ -347,14 +328,12 @@ def rle_to_mask(rle_string, height, width):
         return img
 
 
-# In[20]:
 
 
 # calculate sum of the pixels for the mask per class id
 train_df['mask_pixel_sum'] = train_df.apply(lambda x: rle_to_mask(x['EncodedPixels'], width=1600, height=256).sum(), axis=1)
 
 
-# In[21]:
 
 
 class_ids = ['1','2','3','4']
@@ -362,7 +341,6 @@ mask_count_per_class = [train_df[(train_df['ClassId']==class_id)&(train_df['mask
 pixel_sum_per_class = [train_df[(train_df['ClassId']==class_id)&(train_df['mask_pixel_sum']!=0)]['mask_pixel_sum'].sum() for class_id in class_ids]
 
 
-# In[22]:
 
 
 # Create subplots: use 'domain' type for Pie subplot
@@ -381,7 +359,6 @@ fig.update_layout(
 fig.show()
 
 
-# In[23]:
 
 
 # plot a histogram and boxplot combined of the mask pixel sum per class Id
@@ -393,7 +370,6 @@ fig['layout'].update(title='Histogram and Boxplot of Sum of Mask Pixels Per Clas
 fig.show()
 
 
-# In[24]:
 
 
 import numpy as np
@@ -412,7 +388,6 @@ from keras import backend as K
 from keras.layers.core import Lambda
 
 
-# In[25]:
 
 
 tr = legacy_df
@@ -420,7 +395,6 @@ print(len(tr))
 tr.head()
 
 
-# In[26]:
 
 
 df_train = tr[tr['EncodedPixels'].notnull()].reset_index(drop=True)
@@ -428,7 +402,6 @@ print(len(df_train))
 df_train.head()
 
 
-# In[27]:
 
 
 def rle2mask(rle, imgshape):
@@ -449,13 +422,11 @@ def rle2mask(rle, imgshape):
     return np.flipud( np.rot90( mask.reshape(height, width), k=1 ) )
 
 
-# In[28]:
 
 
 img_size = 256
 
 
-# In[29]:
 
 
 def keras_generator(batch_size):
@@ -482,7 +453,6 @@ def keras_generator(batch_size):
         yield x_batch, np.expand_dims(y_batch, -1)
 
 
-# In[30]:
 
 
 for x, y in keras_generator(4):
@@ -491,19 +461,16 @@ for x, y in keras_generator(4):
 print(x.shape, y.shape)
 
 
-# In[31]:
 
 
 plt.imshow(x[3])
 
 
-# In[32]:
 
 
 plt.imshow(np.squeeze(y[3]))
 
 
-# In[33]:
 
 
 #Model
@@ -565,19 +532,15 @@ model = Model(inputs=[inputs], outputs=[outputs])
 model.compile(optimizer='adam', loss='binary_crossentropy')
 
 
-# In[34]:
 
 
 get_ipython().run_cell_magic('time', '', '# Fit model\nbatch_size = 16\nresults = model.fit_generator(keras_generator(batch_size), \n                              steps_per_epoch=100,\n                              epochs=10) ')
 
 
-# In[35]:
 
 
-pip install segmentation-models
 
 
-# In[36]:
 
 
 import numpy as np
@@ -600,20 +563,17 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[37]:
 
 
 seed = 2019
 BATCH_SIZE = 8
 
 
-# In[38]:
 
 
 traindf = legacy_df
 
 
-# In[39]:
 
 
 traindf['ImageId'] = traindf['ImageId_ClassId'].apply(lambda x: x.split('_')[0])
@@ -621,38 +581,32 @@ traindf['ClassId'] = traindf['ImageId_ClassId'].apply(lambda x: x.split('_')[1])
 traindf['hasMask'] = ~traindf['EncodedPixels'].isna()
 
 
-# In[40]:
 
 
 traindf.head()
 
 
-# In[41]:
 
 
 mask_counts = traindf.groupby('ImageId')['hasMask'].sum().reset_index()
 mask_counts.sort_values(by = 'hasMask', ascending = False).head()
 
 
-# In[42]:
 
 
 mask_counts['hasMask'].value_counts().plot.bar()
 
 
-# In[43]:
 
 
 mask_counts.shape
 
 
-# In[44]:
 
 
 mask_counts = mask_counts.reset_index(drop = True)
 
 
-# In[45]:
 
 
 def mask2rle(img):
@@ -701,7 +655,6 @@ def build_rles(masks):
     return rles
 
 
-# In[46]:
 
 
 class DataGenerator(keras.utils.Sequence):
@@ -800,14 +753,12 @@ class DataGenerator(keras.utils.Sequence):
         return img
 
 
-# In[47]:
 
 
 all_index = mask_counts.index
 trn_idx, val_idx = train_test_split(all_index, test_size = 0.2, random_state = seed)
 
 
-# In[48]:
 
 
 train_generator = DataGenerator(
@@ -829,7 +780,6 @@ val_generator = DataGenerator(
 )
 
 
-# In[49]:
 
 
 def dice_coef(y_true, y_pred, smooth=1):
@@ -839,25 +789,21 @@ def dice_coef(y_true, y_pred, smooth=1):
     return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
 
 
-# In[50]:
 
 
 model = Unet('resnet18', classes=4, activation='softmax', input_shape = (256,1600,3))
 
 
-# In[51]:
 
 
 model.summary()
 
 
-# In[52]:
 
 
 model.compile(Adam(lr = 0.005), loss=bce_jaccard_loss, metrics=[iou_score, dice_coef])
 
 
-# In[53]:
 
 
 checkpoint = ModelCheckpoint(
@@ -881,7 +827,6 @@ history = model.fit_generator(
 )
 
 
-# In[54]:
 
 
 import os
@@ -907,7 +852,6 @@ from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 
 
-# In[55]:
 
 
 train_df = legacy_df
@@ -919,7 +863,6 @@ print(train_df.shape)
 train_df.head()
 
 
-# In[56]:
 
 
 mask_count_df = train_df.groupby('ImageId').agg(np.sum).reset_index()
@@ -928,7 +871,6 @@ print(mask_count_df.shape)
 mask_count_df.head()
 
 
-# In[57]:
 
 
 sub_df = pd.read_csv('../input/severstal-steel-defect-detection/sample_submission.csv')
@@ -936,14 +878,12 @@ test_imgs = pd.DataFrame(sub_df['ImageId'].unique(), columns=['ImageId'])
 test_imgs.head()
 
 
-# In[58]:
 
 
 non_missing_train_idx = mask_count_df[mask_count_df['hasMask'] > 0]
 non_missing_train_idx.head()
 
 
-# In[59]:
 
 
 def load_img(code, base, resize=True):
@@ -960,7 +900,6 @@ def validate_path(path):
         os.makedirs(path)
 
 
-# In[60]:
 
 
 BATCH_SIZE = 64
@@ -978,14 +917,12 @@ def create_test_gen():
 test_gen = create_test_gen()
 
 
-# In[61]:
 
 
 remove_model = load_model('../input/severstal-predict-missing-masks/model.h5')
 remove_model.summary()
 
 
-# In[62]:
 
 
 test_missing_pred = remove_model.predict_generator(
@@ -998,7 +935,6 @@ test_imgs['allMissing'] = test_missing_pred
 test_imgs.head()
 
 
-# In[63]:
 
 
 filtered_test_imgs = test_imgs[test_imgs['allMissing'] < 0.5]
@@ -1006,7 +942,6 @@ print(filtered_test_imgs.shape)
 filtered_test_imgs.head()
 
 
-# In[64]:
 
 
 filtered_mask = sub_df['ImageId'].isin(filtered_test_imgs["ImageId"].values)
@@ -1024,7 +959,6 @@ print(null_sub_df.shape)
 filtered_sub_df.head()
 
 
-# In[65]:
 
 
 def mask2rle(img):
@@ -1073,7 +1007,6 @@ def build_rles(masks):
     return rles
 
 
-# In[66]:
 
 
 class DataGenerator(keras.utils.Sequence):
@@ -1172,7 +1105,6 @@ class DataGenerator(keras.utils.Sequence):
         return img
 
 
-# In[67]:
 
 
 BATCH_SIZE = 16
@@ -1200,7 +1132,6 @@ val_generator = DataGenerator(
 )
 
 
-# In[68]:
 
 
 def dice_coef(y_true, y_pred, smooth=1):
@@ -1210,7 +1141,6 @@ def dice_coef(y_true, y_pred, smooth=1):
     return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
 
 
-# In[69]:
 
 
 def build_model(input_shape):
@@ -1272,14 +1202,12 @@ def build_model(input_shape):
     return model
 
 
-# In[70]:
 
 
 model = build_model((256, 1600, 1))
 model.summary()
 
 
-# In[71]:
 
 
 checkpoint = ModelCheckpoint(
@@ -1301,7 +1229,6 @@ history = model.fit_generator(
 )
 
 
-# In[72]:
 
 
 with open('history.json', 'w') as f:

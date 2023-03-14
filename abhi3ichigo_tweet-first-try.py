@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from sklearn.metrics import confusion_matrix
@@ -57,7 +56,6 @@ from nltk import WordNetLemmatizer
 from nltk.stem.porter import PorterStemmer
 
 
-# In[2]:
 
 
 #nltk.download('wordnet')
@@ -65,7 +63,6 @@ from nltk.stem.porter import PorterStemmer
 #nltk.download('punkt')
 
 
-# In[3]:
 
 
 def tf_idf_train(df,col_name):
@@ -195,7 +192,6 @@ def select_stop_words(word_list):
     return out 
 
 
-# In[4]:
 
 
 df = pd.read_csv('/kaggle/input/tweet-sentiment-extraction/train.csv')
@@ -203,7 +199,6 @@ df = df.dropna()
 df.head()
 
 
-# In[5]:
 
 
 df2 = df.copy()
@@ -223,44 +218,37 @@ for each in cols:
     df2 = lemma_text(df2,each)
 
 
-# In[6]:
 
 
 df_1 = combine_text_by_sentiment(df2)
 df_1.head()
 
 
-# In[7]:
 
 
 tr_resp, tr_vec = tf_idf_train(df_1,'combined_text')
 
 
-# In[8]:
 
 
 #tr_resp
 
 
-# In[9]:
 
 
 #tr_vec
 
 
-# In[10]:
 
 
 #tr_resp[0,100]
 
 
-# In[11]:
 
 
 #tr_vec.get_feature_names()
 
 
-# In[12]:
 
 
 df_t = pd.read_csv('/kaggle/input/tweet-sentiment-extraction/test.csv')
@@ -268,7 +256,6 @@ df_t = df_t.dropna()
 df_t.head()
 
 
-# In[13]:
 
 
 df2_test = df_t.copy()
@@ -279,7 +266,6 @@ df2_test = remove_html(df2_test,cols[0])
 df2_test = remove_spl_chars(df2_test,cols[0])
 
 
-# In[14]:
 
 
 #tr_vec.get_feature_names().index('is')
@@ -318,21 +304,18 @@ def get_res_test(sample_txt,sentiment_txt):
 #print(sample_txt[sample_txt.find(sample_txt_lst[start]):sample_txt.find(sample_txt_lst[end])])
 
 
-# In[15]:
 
 
 df2_test['selected_text'] = df2_test.apply(lambda x: get_res_test(x.text, x.sentiment), axis=1)
 df2_test.head()
 
 
-# In[16]:
 
 
 df2_test = df2_test.drop(columns=['text', 'sentiment'])
 df2_test.to_csv('/kaggle/working/submission.csv',index=False)
 
 
-# In[ ]:
 
 
 

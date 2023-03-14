@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -26,7 +25,6 @@ df_test = pd.read_csv('../input/cat-in-the-dat/test.csv')
 df_SS = pd.read_csv('../input/cat-in-the-dat/sample_submission.csv')
 
 
-# In[2]:
 
 
 #importing libraries
@@ -53,13 +51,11 @@ from sklearn import svm
 from sklearn.model_selection import GridSearchCV
 
 
-# In[3]:
 
 
 df_train["target"].value_counts()#No missing values
 
 
-# In[4]:
 
 
 #encoding categorical columns
@@ -90,13 +86,11 @@ df_train_nom_cleaned = pd.get_dummies(df_train_nom.iloc[:,[0,1,2,3,4,5,6,7,8,9]]
 df_train_nom_cleaned
 
 
-# In[ ]:
 
 
 
 
 
-# In[5]:
 
 
 #USING CUSTOM MAP LABELS FOR ORDINAL FEATURES
@@ -142,20 +136,17 @@ df_train_all =  pd.concat([df_train_bin_cleaned,df_train_ord_time_cleaned], axis
 df_train_all
 
 
-# In[6]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(df_train_all,df_train.iloc[:,24].values , test_size=0.2, random_state=42)
 
 
-# In[7]:
 
 
 X_train1= X_train.iloc[0:1000,:] # (240000, 13)
 y_train1=y_train[0:1000]
 
 
-# In[8]:
 
 
 clf = DecisionTreeClassifier()
@@ -167,13 +158,11 @@ clf = clf.fit(X_train1,y_train1)
 y_pred = clf.predict(X_test)
 
 
-# In[9]:
 
 
 y_train
 
 
-# In[10]:
 
 
 import graphviz
@@ -185,7 +174,6 @@ graph = graphviz.Source(data)
 graph
 
 
-# In[11]:
 
 
 """#create an instance and fit the model 
@@ -198,13 +186,11 @@ y_pred = logmodel.predict_proba(X_test)
 roc_auc_score(y_test,y_pred[:, 1]) #7830551086693487 ,0.7829327708379799
 
 
-# In[ ]:
 
 
 
 
 
-# In[12]:
 
 
 """ogistic = LogisticRegression()
@@ -223,20 +209,17 @@ clf = GridSearchCV(logistic, hyperparameters, cv=2, verbose=1,scoring='roc_auc')
 best_model = clf.fit(X_train, y_train)
 
 
-# In[13]:
 
 
 """p=best_model.predict_proba(X_test)
 roc_auc_score(y_test,p[:, 1]) #0.7831027261785495
 
 
-# In[ ]:
 
 
 
 
 
-# In[14]:
 
 
 """logit_roc_auc = roc_auc_score(y_test,y_pred )
@@ -254,7 +237,6 @@ plt.savefig('Log_ROC')
 plt.show()"""
 
 
-# In[15]:
 
 
 """
@@ -264,7 +246,6 @@ y_pred_xg = model_xg.predict_proba(X_test)
 roc_auc_score(y_test,y_pred_xg[:, 1])"""
 
 
-# In[16]:
 
 
 """SVC_model = svm.SVC(kernel='linear', C = 1.0)
@@ -274,14 +255,12 @@ y_pred_svc = SVC_model.predict_proba(X_test)
 roc_auc_score(y_test,y_pred_svc[:, 1])"""
 
 
-# In[17]:
 
 
 """from keras import Sequential
 from keras.layers import Dense
 
 
-# In[18]:
 
 
 """classifier = Sequential()
@@ -303,13 +282,11 @@ classifier.add(Dense(1, activation='sigmoid', kernel_initializer='random_normal'
 classifier.compile(optimizer ='adam',loss='binary_crossentropy', metrics =['accuracy'])
 
 
-# In[19]:
 
 
 """classifier.fit(X_train,y_train, batch_size=10, epochs=2) # 0.7261
 
 
-# In[20]:
 
 
 """pred_neural = classifier.predict(X_test)
@@ -317,13 +294,11 @@ classifier.compile(optimizer ='adam',loss='binary_crossentropy', metrics =['accu
 roc_auc_score(y_test,pred_neural) #0.7831027261785495
 
 
-# In[ ]:
 
 
 
 
 
-# In[21]:
 
 
 #Predicting values
@@ -377,14 +352,12 @@ df_test_ord_time_cleaned = df_test_ord_time.iloc[:,[0,6,7,8,9,10,11,12]]
 df_test_all =  pd.concat([df_test_bin_cleaned,df_test_nom_cleaned,df_test_ord_time_cleaned], axis=1) 
 
 
-# In[22]:
 
 
 """y_pred_actual = logmodel.predict_proba(df_test_all)
 y_pred_actual 
 
 
-# In[23]:
 
 
 """Id =  pd.DataFrame(df_test['id'] , columns=['id'])

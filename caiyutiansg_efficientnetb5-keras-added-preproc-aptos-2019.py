@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -11,7 +10,6 @@ sys.path.append(os.path.abspath('../input/efficientnet/efficientnet-master/effic
 from efficientnet import EfficientNetB5
 
 
-# In[2]:
 
 
 # Standard dependencies
@@ -70,7 +68,6 @@ for file in os.listdir(KAGGLE_DIR):
                              str(round(os.path.getsize(KAGGLE_DIR + file) / 1000000, 2))))
 
 
-# In[3]:
 
 
 print("Image IDs and Labels (TRAIN)")
@@ -87,7 +84,6 @@ print(f"Testing Images: {test_df.shape[0]}")
 display(test_df.head())
 
 
-# In[4]:
 
 
 # Specify image size
@@ -97,7 +93,6 @@ IMAGE_SIZE = 456
 CHANNELS = 3
 
 
-# In[5]:
 
 
 def get_preds_and_labels(model, generator):
@@ -114,7 +109,6 @@ def get_preds_and_labels(model, generator):
     return np.concatenate(preds).ravel(), np.concatenate(labels).ravel()
 
 
-# In[6]:
 
 
 class Metrics(Callback):
@@ -146,7 +140,6 @@ class Metrics(Callback):
         return
 
 
-# In[7]:
 
 
 # Label distribution
@@ -162,7 +155,6 @@ plt.xlabel("Label", fontsize=17)
 plt.ylabel("Frequency", fontsize=17);
 
 
-# In[8]:
 
 
 # Example from every label
@@ -179,7 +171,6 @@ for i in range(5):
     ax[i].imshow(X);
 
 
-# In[9]:
 
 
 #Version 1 Preprocessing code (Ben's + Circular Cropping)
@@ -249,7 +240,6 @@ def preprocess_image(image, sigmaX=25):
     return image
 
 
-# In[10]:
 
 
 #Version 2 Preprocessing Code (Image Centre Resizing + Gaussian Background Subtraction)
@@ -343,7 +333,6 @@ def preprocess_imagev2(image, sigmaX=10):
     return image
 
 
-# In[11]:
 
 
 #Version 3 Preprocessing Code (Contrast Limited Adaptive Histogram Equalization)
@@ -396,7 +385,6 @@ def preprocess_imagev3(image, sigmaX=10):
     return image
 
 
-# In[12]:
 
 
 #Version 4 Preprocessing code (V1 + Kirsch Operator + Merging)
@@ -439,7 +427,6 @@ def preprocess_imagev4(image):
     return image_edge
 
 
-# In[13]:
 
 
 #Version 5 Preprocessing Code (V3 + V1)
@@ -500,7 +487,6 @@ def preprocess_imagev5(image, sigmaX=5):
     return image.astype(np.uint8)
 
 
-# In[14]:
 
 
 # Example of preprocessed images from every label, using v1 preprocessing
@@ -515,7 +501,6 @@ for i in range(5):
     ax[i].imshow(X);
 
 
-# In[15]:
 
 
 # Example of preprocessed images from every label, using v2 preprocessing
@@ -530,7 +515,6 @@ for i in range(5):
     ax[i].imshow(X);
 
 
-# In[16]:
 
 
 # Example of preprocessed images from every label, using v3 preprocessing
@@ -545,7 +529,6 @@ for i in range(5):
     ax[i].imshow(X);
 
 
-# In[17]:
 
 
 # Example of preprocessed images from every label, using v4 preprocessing
@@ -560,7 +543,6 @@ for i in range(5):
     ax[i].imshow(X);
 
 
-# In[18]:
 
 
 # Example of preprocessed images from every label, using v5 preprocessing
@@ -575,14 +557,12 @@ for i in range(5):
     ax[i].imshow(X);
 
 
-# In[19]:
 
 
 # Labels for training data
 y_labels = train_df['diagnosis'].values
 
 
-# In[20]:
 
 
 BATCH_SIZE = 4
@@ -616,7 +596,6 @@ val_generator = train_datagen.flow_from_dataframe(train_df,
                                                   subset='validation')
 
 
-# In[21]:
 
 
 # Code Source: https://github.com/CyberZHG/keras-radam/blob/master/keras_radam/optimizers.py
@@ -750,7 +729,6 @@ class RAdam(keras.optimizers.Optimizer):
         return dict(list(base_config.items()) + list(config.items()))
 
 
-# In[22]:
 
 
 class GroupNormalization(Layer):
@@ -924,7 +902,6 @@ class GroupNormalization(Layer):
         return input_shape
 
 
-# In[23]:
 
 
 # Load in EfficientNetB5
@@ -934,7 +911,6 @@ effnet = EfficientNetB5(weights=None,
 effnet.load_weights('../input/efficientnet-keras-weights-b0b5/efficientnet-b5_imagenet_1000_notop.h5')
 
 
-# In[24]:
 
 
 # Replace all Batch Normalization layers by Group Normalization layers
@@ -943,7 +919,6 @@ for i, layer in enumerate(effnet.layers):
         effnet.layers[i] = GroupNormalization(groups=32, axis=-1, epsilon=0.00001)
 
 
-# In[25]:
 
 
 def build_model():
@@ -968,7 +943,6 @@ def build_model():
 model = build_model()
 
 
-# In[26]:
 
 
 #Setting class weights in order to emphasize the minority classes 
@@ -980,7 +954,6 @@ class_weight = {0: 1.,
                 4: 5.}
 
 
-# In[27]:
 
 
 # For tracking Quadratic Weighted Kappa score
@@ -1004,7 +977,6 @@ model.fit_generator(train_generator,
                     callbacks=[kappa_metrics, es, rlr])
 
 
-# In[28]:
 
 
 # Visualize mse
@@ -1019,7 +991,6 @@ plt.xlabel("Epoch")
 plt.ylabel("% Accuracy");
 
 
-# In[29]:
 
 
 # Load best weights according to MSE
@@ -1027,7 +998,6 @@ model.load_weights(SAVED_MODEL_NAME)
 #model.load_weights(WEIGHTS_PATH)
 
 
-# In[30]:
 
 
 # Calculate QWK on train set
@@ -1045,14 +1015,12 @@ y_val_preds = np.rint(y_val_preds).astype(np.uint8).clip(0, 4)
 val_score = cohen_kappa_score(val_labels, y_val_preds, weights="quadratic")
 
 
-# In[31]:
 
 
 print(f"The Training Cohen Kappa Score is: {round(train_score, 5)}")
 print(f"The Validation Cohen Kappa Score is: {round(val_score, 5)}")
 
 
-# In[32]:
 
 
 class OptimizedRounder(object):
@@ -1114,7 +1082,6 @@ class OptimizedRounder(object):
         return self.coef_['x']
 
 
-# In[33]:
 
 
 # Optimize on validation data and evaluate again
@@ -1126,7 +1093,6 @@ opt_val_predictions = optR.predict(y_val_preds, coefficients)
 new_val_score = cohen_kappa_score(val_labels, opt_val_predictions, weights="quadratic")
 
 
-# In[34]:
 
 
 print(f"Optimized Thresholds:\n{coefficients}\n")
@@ -1134,7 +1100,6 @@ print(f"The Validation Quadratic Weighted Kappa (QWK)\nwith optimized rounding t
 print(f"This is an improvement of {round(new_val_score - val_score, 5)}\nover the unoptimized rounding")
 
 
-# In[35]:
 
 
 # Place holder for diagnosis column
@@ -1151,7 +1116,6 @@ test_generator = ImageDataGenerator(preprocessing_function=preprocess_image,
                                                                           shuffle=False)
 
 
-# In[36]:
 
 
 # Make final predictions, round predictions and save to csv
@@ -1163,7 +1127,6 @@ test_df['id_code'] = test_df['id_code'].str.replace(r'.png$', '')
 test_df.to_csv('submission.csv', index=False)
 
 
-# In[37]:
 
 
 # Check submission
@@ -1171,7 +1134,6 @@ print("Submission File")
 display(test_df.head())
 
 
-# In[38]:
 
 
 # Label distribution
@@ -1187,7 +1149,6 @@ plt.xlabel("Label", fontsize=17)
 plt.ylabel("Frequency", fontsize=17);
 
 
-# In[39]:
 
 
 # Distribution of predictions
@@ -1203,7 +1164,6 @@ plt.xlabel("Label", fontsize=17)
 plt.ylabel("Frequency", fontsize=17);
 
 
-# In[40]:
 
 
 # Check kernels run-time. GPU limit for this competition is set to ± 9 hours.

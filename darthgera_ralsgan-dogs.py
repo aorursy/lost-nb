@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 from __future__ import print_function
@@ -43,7 +41,6 @@ from tqdm import tqdm_notebook as tqdm
 from PIL import Image
 
 
-# In[3]:
 
 
 import zipfile
@@ -56,7 +53,6 @@ with zipfile.ZipFile("../input/generative-dog-images/all-dogs.zip","r") as z:
 # !ls ../input/generative-dog-images/
 
 
-# In[4]:
 
 
 images = os.listdir('all-dogs/')
@@ -70,7 +66,6 @@ for indx, axis in enumerate(axes.flatten()):
 plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 
 
-# In[5]:
 
 
 class DogDataset(Dataset):
@@ -102,7 +97,6 @@ class DogDataset(Dataset):
         return len(self.imgs)
 
 
-# In[6]:
 
 
 batch = 32
@@ -122,7 +116,6 @@ train_dataset = DogDataset(img_dir='all-dogs/',
                            transform2=transform2)
 
 
-# In[7]:
 
 
 train_loader = torch.utils.data.DataLoader(train_dataset, shuffle=True,
@@ -131,7 +124,6 @@ imgs = next(iter(train_loader))
 imgs = imgs.numpy().transpose(0,2,3,1)
 
 
-# In[8]:
 
 
 # Images after augmentation and all the changes
@@ -142,7 +134,6 @@ for ii, img in enumerate(imgs):
     plt.imshow((img+1)/2)
 
 
-# In[9]:
 
 
 lr = 2e-4
@@ -156,7 +147,6 @@ fake_label = 0
 nz = 128
 
 
-# In[10]:
 
 
 # Special exception keeping leaky relu as its performing well
@@ -199,7 +189,6 @@ class Generator(nn.Module):
         return z
 
 
-# In[11]:
 
 
 # Typically in DCGAN, the last layer is the FCNN with sigmoid, however in this case its not working
@@ -236,7 +225,6 @@ class Discriminator(nn.Module):
         return logits.view(-1,1)
 
 
-# In[12]:
 
 
 def show_generated_img(title):
@@ -250,7 +238,6 @@ def show_generated_img(title):
     plt.show()
 
 
-# In[13]:
 
 
 def weights_init(m):
@@ -278,7 +265,6 @@ doptim = optim.Adam(netD.parameters(), lr=2*lr, betas=(beta1, 0.999))
 goptim = optim.Adam(netG.parameters(), lr=lr, betas=(beta1, 0.999))
 
 
-# In[14]:
 
 
 for epoch in range(n_epochs):
@@ -317,7 +303,6 @@ for epoch in range(n_epochs):
     show_generated_img('%s_image'%epoch)
 
 
-# In[15]:
 
 
 gen_z = torch.randn(32, nz, 1, 1, device=device)
@@ -325,7 +310,6 @@ gen_images = (netG(gen_z).to("cpu").clone().detach() + 1)/2
 gen_images = gen_images.numpy().transpose(0, 2, 3, 1)
 
 
-# In[16]:
 
 
 fig = plt.figure(figsize=(25, 16))
@@ -334,7 +318,6 @@ for ii, img in enumerate(gen_images):
     plt.imshow(img)
 
 
-# In[17]:
 
 
 if not os.path.exists('../output_images'):
@@ -354,13 +337,11 @@ import shutil
 shutil.make_archive('images', 'zip', '../output_images')
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

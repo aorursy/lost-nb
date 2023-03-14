@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import numpy as np
@@ -28,21 +26,18 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-# In[3]:
 
 
 train=pd.read_csv("../input/aptos2019-blindness-detection/train.csv")
 test=pd.read_csv("../input/aptos2019-blindness-detection/test.csv")
 
 
-# In[4]:
 
 
 train['diagnosis'].hist()
 train['diagnosis'].value_counts()
 
 
-# In[5]:
 
 
 import cv2
@@ -52,7 +47,6 @@ from tqdm import tqdm
 from PIL import Image
 
 
-# In[6]:
 
 
 # Preprocecss data
@@ -62,19 +56,15 @@ train['diagnosis'] = train['diagnosis'].astype('str')
 train.head()
 
 
-# In[7]:
 
 
 from keras.preprocessing.image import ImageDataGenerator
 
 
-# In[8]:
 
 
-pip install keras --upgrade
 
 
-# In[9]:
 
 
 from keras.layers import Dense, Dropout, GlobalAveragePooling2D, Input
@@ -83,7 +73,6 @@ from keras.applications import densenet
 from keras.applications.densenet import preprocess_input
 
 
-# In[10]:
 
 
 from keras import applications
@@ -91,7 +80,6 @@ base_model = applications.DenseNet201(weights=None,include_top=False)
 base_model.load_weights('../input/models-pretrained-weights/densenet201_weights_tf_dim_ordering_tf_kernels_notop.h5')
 
 
-# In[11]:
 
 
 from keras import regularizers
@@ -102,13 +90,11 @@ x=Dropout(0.5)(x)
 preds=Dense(5,activation='softmax')(x)
 
 
-# In[12]:
 
 
 model=Model(input=base_model.input,outputs=preds)
 
 
-# In[13]:
 
 
 from keras.optimizers import Adam
@@ -116,7 +102,6 @@ from keras.optimizers import Adam
 model.compile(loss='categorical_crossentropy',optimizer=Adam(lr=0.0001),metrics=['accuracy'])
 
 
-# In[14]:
 
 
 nb_classes=5
@@ -126,7 +111,6 @@ img_size=224
 nb_epochs=30
 
 
-# In[15]:
 
 
 train_datagen=ImageDataGenerator(rescale=1./255,
@@ -142,7 +126,6 @@ train_datagen=ImageDataGenerator(rescale=1./255,
                                 zoom_range=0.25)
 
 
-# In[16]:
 
 
 train_generator=train_datagen.flow_from_dataframe(dataframe=train,
@@ -169,7 +152,6 @@ valid_generator=train_datagen.flow_from_dataframe(dataframe=train,
                                                  subset='validation')
 
 
-# In[17]:
 
 
 from keras.callbacks import EarlyStopping, ModelCheckpoint
@@ -185,7 +167,6 @@ history=model.fit_generator(generator=train_generator,
                            callbacks=[es,mc])
 
 
-# In[18]:
 
 
 history_df=pd.DataFrame(history.history)
@@ -195,7 +176,6 @@ history_df[['acc','val_acc']].plot()
     
 
 
-# In[19]:
 
 
 complete_datagen = ImageDataGenerator(rescale=1./255)
@@ -213,7 +193,6 @@ train_preds = model.predict_generator(complete_generator, steps=STEP_SIZE_COMPLE
 train_preds = [np.argmax(pred) for pred in train_preds]
 
 
-# In[20]:
 
 
 from sklearn.metrics import classification_report, confusion_matrix
@@ -228,7 +207,6 @@ sns.heatmap(df_cm, annot=True, fmt='.2f', cmap="Blues")
 plt.show()
 
 
-# In[21]:
 
 
 from sklearn.metrics import cohen_kappa_score
@@ -237,7 +215,6 @@ from sklearn.metrics import cohen_kappa_score
 print("Train Cohen Kappa score: %.3f" % cohen_kappa_score(train_preds, train['diagnosis'].astype('int'), weights='quadratic'))
 
 
-# In[22]:
 
 
 test_datagen = ImageDataGenerator(rescale=1./255)
@@ -257,7 +234,6 @@ preds = model.predict_generator(test_datagenerator, steps=STEP_SIZE_TEST)
 predictions = [np.argmax(pred) for pred in preds]
 
 
-# In[23]:
 
 
 filenames = test_datagenerator.filenames
@@ -267,7 +243,6 @@ results.to_csv('submission.csv',index=False)
 results.head(10)
 
 
-# In[24]:
 
 
 f, ax = plt.subplots(figsize=(14, 8.7))

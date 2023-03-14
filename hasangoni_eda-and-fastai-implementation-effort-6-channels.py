@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 from fastai.vision import *
@@ -30,34 +28,29 @@ from pathlib import Path
 import cv2
 
 
-# In[3]:
 
 
 import os
 print(os.listdir("../input/recursion-cellular-image-classification/"))
 
 
-# In[4]:
 
 
 path = Path('../input/recursion-cellular-image-classification/')
 
 
-# In[5]:
 
 
 train = pd.read_csv(f'{path}/train.csv')
 train.head()
 
 
-# In[6]:
 
 
 pixel_stats = pd.read_csv(f'{path}/pixel_stats.csv')
 pixel_stats.head()
 
 
-# In[7]:
 
 
 plt.style.use('ggplot')
@@ -65,7 +58,6 @@ plt.figure(figsize=(15,5))
 train.experiment.value_counts().plot.barh()
 
 
-# In[8]:
 
 
 plt.figure(figsize=(15,5))
@@ -73,32 +65,27 @@ train.sirna.value_counts()
 train.sirna.value_counts().plot.bar()
 
 
-# In[9]:
 
 
 len(train.sirna.unique())
 
 
-# In[10]:
 
 
 train.isnull().sum().sort_index()
 
 
-# In[11]:
 
 
 smpl=1
 train['path'] = train['experiment']+'/Plate'+train['plate'].astype(str)+'/'+train['well'].astype(str)+'_s'+str(smpl)+'_w'
 
 
-# In[12]:
 
 
 train.head()
 
 
-# In[13]:
 
 
 
@@ -106,28 +93,24 @@ img = cv2.imread(f"{path}/train/HUVEC-06/Plate1/B02_s1_w1.png")
 plt.imshow(img)
 
 
-# In[14]:
 
 
 gray_img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 plt.imshow(gray_img)
 
 
-# In[15]:
 
 
 plt.figure(figsize=(10,5))
 [[plt.subplot(1,6,i+1),plt.imshow(cv2.imread(f"{path}/train/{train.path[0]}{str(i+1)}.png")), plt.grid(False), plt.yticks([]),  plt.xticks([])] for i in range(6)];
 
 
-# In[16]:
 
 
 plt.figure(figsize=(10,5))
 [[plt.subplot(1,6,i+1),plt.imshow(cv2.cvtColor(cv2.imread(f"{path}/train/{train.path[0]}{str(i+1)}.png"),cv2.COLOR_RGB2GRAY)), plt.grid(False), plt.yticks([]),  plt.xticks([])] for i in range(6)];
 
 
-# In[17]:
 
 
 source https://www.kaggle.com/tanlikesmath/rcic-fastai-starter
@@ -135,7 +118,6 @@ def opening_file(fn):
     return Image(pil2tensor(np.dstack([cv2.cvtColor(cv2.imread(f"{fn}{str(i+1)}.png"),cv2.COLOR_RGB2GRAY) for i in range(6)]), np.float32).div_(255))
 
 
-# In[18]:
 
 
 class MultiChannelImageList(ImageList):
@@ -143,7 +125,6 @@ class MultiChannelImageList(ImageList):
         return opening_file(fn)
 
 
-# In[19]:
 
 
 image_list_df = train.copy()
@@ -153,13 +134,11 @@ image_list_df.drop(['id_code', 'experiment', 'plate', 'well'], axis=1, inplace =
 image_list_df.head()
 
 
-# In[20]:
 
 
 dat = MultiChannelImageList.from_df(df=image_list_df, path=r'train/',cols='path')
 
 
-# In[21]:
 
 
 #copied from source https://www.kaggle.com/tanlikesmath/rcic-fastai-starter
@@ -176,7 +155,6 @@ def image2np(image:Tensor)->np.ndarray:
 vision.image.image2np = image2np
 
 
-# In[22]:
 
 
 data = (MultiChannelImageList.from_df(df=image_list_df,path=f'{path}/train/', cols = 'path')
@@ -188,19 +166,16 @@ data = (MultiChannelImageList.from_df(df=image_list_df,path=f'{path}/train/', co
        )
 
 
-# In[23]:
 
 
 arch = models.resnet34
 
 
-# In[24]:
 
 
 data
 
 
-# In[ ]:
 
 
 

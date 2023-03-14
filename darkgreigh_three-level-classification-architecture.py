@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as  np
@@ -10,7 +9,6 @@ from sklearn.base import BaseEstimator
 from scipy.optimize import minimize
 
 
-# In[2]:
 
 
 def objf_ens_optA(w, Xs, y, n_class=12):
@@ -102,13 +100,11 @@ class EN_optA(BaseEstimator):
         return y_pred  
 
 
-# In[3]:
 
 
 np.arange(6)%12
 
 
-# In[4]:
 
 
 def objf_ens_optB(w, Xs, y, n_class=12):
@@ -208,7 +204,6 @@ class EN_optB(BaseEstimator):
         return y_pred      
 
 
-# In[5]:
 
 
 from sklearn.datasets import make_classification
@@ -225,7 +220,6 @@ from xgboost.sklearn import XGBClassifier
 random_state=1
 
 
-# In[6]:
 
 
 n_classes = 12  # Same number of classes as in Airbnb competition.
@@ -247,7 +241,6 @@ print('X_train: %s, X_valid: %s, X_test: %s \n' %(X_train.shape, X_valid.shape,
     
 
 
-# In[7]:
 
 
 #Defining the classifiers
@@ -284,13 +277,11 @@ for nm, clf in clfs.items():
 print('')
 
 
-# In[8]:
 
 
 p_valid
 
 
-# In[9]:
 
 
 print('Performance of optimization based ensemblers (2nd layer) on X_test')   
@@ -328,14 +319,12 @@ print('{:20s} {:2s} {:1.7f}'.format('Calibrated_EN_optB:', 'logloss  =>', log_lo
 print('')
 
 
-# In[10]:
 
 
 y_3l = (y_enA * 4./9.) + (y_ccA * 2./9.) + (y_enB * 2./9.) + (y_ccB * 1./9.)
 print('{:20s} {:2s} {:1.7f}'.format('3rd_layer:', 'logloss  =>', log_loss(y_test, y_3l)))
 
 
-# In[11]:
 
 
 from tabulate import tabulate
@@ -351,7 +340,6 @@ wB = np.hstack((np.array(list(clfs.keys()), dtype=str).reshape(-1,1), wB))
 print(tabulate(wB, headers=['y%s'%(i) for i in range(n_classes)], tablefmt="orgtbl"))
 
 
-# In[12]:
 
 
 #By default the best C parameter is obtained with a cross-validation approach, doing grid search with
@@ -368,7 +356,6 @@ y_lr = lr.predict_proba(XT)
 print('{:20s} {:2s} {:1.7f}'.format('Log_Reg:', 'logloss  =>', log_loss(y_test, y_lr)))
 
 
-# In[13]:
 
 
 #For each value in classes, a dataset with that number of classes will be created. 
@@ -482,7 +469,6 @@ ll_lr = np.array(ll_lr)
 ll_gb = np.array(ll_gb)
 
 
-# In[14]:
 
 
 import matplotlib.pylab as plt

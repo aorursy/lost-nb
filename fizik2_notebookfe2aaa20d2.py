@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -141,13 +140,11 @@ y_val_cat = to_categorical(y_val)
 print('Training data loaded!')
 
 
-# In[2]:
 
 
 
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -156,7 +153,6 @@ import scipy as scipy
 import tensorflow as tf
 
 
-# In[3]:
 
 
 def iterate_minibatches(inputs, inputs_img, targets, batchsize, shuffle=False):
@@ -203,19 +199,16 @@ def max_pool_2x2(x):
                         strides=[1, 2, 2, 1], padding='SAME')
 
 
-# In[4]:
 
 
 df = pd.read_csv('../input/train.csv')
 
 
-# In[5]:
 
 
 num_classes = 99
 
 
-# In[6]:
 
 
 train_df = df
@@ -223,76 +216,64 @@ print(train_df.shape)
 train_df.head()
 
 
-# In[7]:
 
 
 print(train_df.species.value_counts(normalize=True))
 
 
-# In[8]:
 
 
 species = train_df['species'].values
 
 
-# In[9]:
 
 
 species.shape
 
 
-# In[10]:
 
 
 species[1]
 
 
-# In[11]:
 
 
 print(Y_train.shape)
 
 
-# In[12]:
 
 
 X_train = train_df.values
 
 
-# In[13]:
 
 
 X_train = scipy.delete(X_train, 0, 1) # Remove first and second columns
 X_train = scipy.delete(X_train, 0, 1) 
 
 
-# In[14]:
 
 
 print(X_train.shape)
 
 
-# In[15]:
 
 
 X_train, X_val = X_train[:-200], X_train[-200:]
 X_train, X_test = X_train[:-100], X_train[-100:]
 
 
-# In[16]:
 
 
 Y_train, Y_val = Y_train[:-200], Y_train[-200:]
 Y_train, Y_test = Y_train[:-100], Y_train[-100:]
 
 
-# In[17]:
 
 
 sess = tf.InteractiveSession()
 
 
-# In[18]:
 
 
 ## Create the model
@@ -314,7 +295,6 @@ net = nn_layer(net, 512, 1024, 'layer5')
 y = nn_layer(net, 1024, num_classes, 'layer6', act=tf.identity)
 
 
-# In[19]:
 
 
 cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
@@ -325,13 +305,11 @@ train_step = tf.train.AdamOptimizer(
 prediction = tf.nn.softmax(y)
 
 
-# In[20]:
 
 
 tf.global_variables_initializer().run()
 
 
-# In[21]:
 
 
 min_loss = 100
@@ -339,7 +317,6 @@ saver = tf.train.Saver()
 save_path = ''
 
 
-# In[22]:
 
 
 #X_num_tr, X_img_tr, y_tr, X_num_val, X_img_val, y_val
@@ -374,7 +351,6 @@ print("val:{}".format(sess.run(accuracy, feed_dict={x_img: X_img_val,
     
 
 
-# In[23]:
 
 
 with tf.Session() as sess2:
@@ -410,7 +386,6 @@ with tf.Session() as sess2:
     yPred.tail()
 
 
-# In[24]:
 
 
 loss = sess.run(cross_entropy, feed_dict={x_img: X_img_val, 
@@ -419,7 +394,6 @@ print("val:{}".format(loss))
     
 
 
-# In[25]:
 
 
 LABELS = sorted(pd.read_csv(os.path.join(root, 'train.csv')).species.unique())
@@ -439,20 +413,17 @@ print('Finished writing submission')
 # Display the submission
 
 
-# In[26]:
 
 
 fp = open('submit.csv', 'w')
 fp.write(yPred.to_csv())
 
 
-# In[27]:
 
 
 yPred.head()
 
 
-# In[28]:
 
 
 

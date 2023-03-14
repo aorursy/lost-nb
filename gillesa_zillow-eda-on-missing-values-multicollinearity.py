@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pylab
@@ -22,33 +21,28 @@ warnings.filterwarnings("ignore")
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/train_2016_v2.csv', parse_dates=["transactiondate"])
 properties = pd.read_csv('../input/properties_2016.csv')
 
 
-# In[3]:
 
 
 print ("Shape Of Train: ",train.shape)
 print ("Shape Of Properties: ",properties.shape)
 
 
-# In[4]:
 
 
 merged = pd.merge(train,properties,on="parcelid",how="left")
 
 
-# In[5]:
 
 
 merged.head(3).transpose()
 
 
-# In[6]:
 
 
 dataTypeDf = pd.DataFrame(merged.dtypes.value_counts()).reset_index().rename(columns={"index":"variableType",0:"count"})
@@ -58,26 +52,22 @@ sn.barplot(data=dataTypeDf,x="variableType",y="count",ax=ax,color="#34495e")
 ax.set(xlabel='Variable Type', ylabel='Count',title="Variables Count Across Datatype")
 
 
-# In[7]:
 
 
 missingValueColumns = merged.columns[merged.isnull().any()].tolist()
 msno.bar(merged[missingValueColumns],            figsize=(20,8),color="#34495e",fontsize=12,labels=True,)
 
 
-# In[8]:
 
 
 msno.matrix(merged[missingValueColumns],width_ratios=(10,1),            figsize=(20,8),color=(0,0, 0),fontsize=12,sparkline=True,labels=True)
 
 
-# In[9]:
 
 
 msno.heatmap(merged[missingValueColumns],figsize=(20,20))
 
 
-# In[10]:
 
 
 from sklearn import model_selection, preprocessing
@@ -108,7 +98,6 @@ dtrain = xgb.DMatrix(train_X, train_y, feature_names=train_X.columns.values)
 model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=100)
 
 
-# In[11]:
 
 
 featureImportance = model.get_fscore()
@@ -122,7 +111,6 @@ plt.xticks(rotation=90)
 sn.barplot(data=features.head(15),x="importance",y="features",ax=ax,orient="h",color="#34495e")
 
 
-# In[12]:
 
 
 topFeatures = features["features"].tolist()[:20]
@@ -134,7 +122,6 @@ fig.set_size_inches(20,10)
 sn.heatmap(corrMatt, mask=mask,vmax=.8, square=True)
 
 
-# In[13]:
 
 
 from statsmodels.stats.outliers_influence import variance_inflation_factor  
@@ -170,7 +157,6 @@ ax1.set(xlabel='VIF Scores', ylabel='Features',title="Valid Variables Without Mu
 ax2.set(xlabel='VIF Scores', ylabel='Features',title="Variables Which Exhibit Multicollinearity")
 
 
-# In[14]:
 
 
 ulimit = np.percentile(merged.logerror.values, 99)
@@ -184,7 +170,6 @@ sn.distplot(merged.logerror.values, bins=50,kde=False,color="#34495e",ax=ax)
 ax.set(xlabel='logerror', ylabel='VIF Score',title="Distribution Of Dependent Variable")
 
 
-# In[15]:
 
 
 train["year"] = train.transactiondate.map(lambda x: str(x).split("-")[0])
@@ -204,7 +189,6 @@ sn.countplot(x=train["month"], data=train,ax=ax2,color="#34495e")
 ax2.set(xlabel='Month Of The Year', ylabel='No Of Occurences',title="No Of Occurunces Across Month In 2016",label='big')
 
 
-# In[16]:
 
 
 fig,(ax1,ax2)= plt.subplots(nrows=2)
@@ -217,7 +201,6 @@ sn.countplot(x=train["day"], data=train,ax=ax2,color="#34495e")
 ax2.set(xlabel='Day Of The Month', ylabel='No Of Occurences',title="No Of Occurences Across Days Of The Month In 2016",label='big')
 
 
-# In[17]:
 
 
 fig,ax1= plt.subplots()
@@ -227,7 +210,6 @@ yearMerged = merged.groupby(['yearbuilt', 'numberofstories'])["parcelid"].count(
 yearMerged.plot(kind='bar', stacked=True,ax=ax1)
 
 
-# In[18]:
 
 
 cols = ["bathroomcnt","bedroomcnt","roomcnt","numberofstories","logerror","calculatedfinishedsquarefeet"]
@@ -239,7 +221,6 @@ for col in cols:
     mergedFiltered[col].ix[mergedFiltered[col]<llimit] = llimit
 
 
-# In[19]:
 
 
 plt.figure(figsize=(8,8))
@@ -249,7 +230,6 @@ plt.xlabel('Calculated Finished Square Feet', fontsize=12)
 plt.show()
 
 
-# In[20]:
 
 
 fig,ax= plt.subplots()
@@ -258,7 +238,6 @@ sn.boxplot(x="bedroomcnt", y="logerror", data=mergedFiltered,ax=ax,color="#34495
 ax.set(ylabel='Log Error',xlabel="Bedroom Count",title="Bedroom Count Vs Log Error")
 
 
-# In[21]:
 
 
 fig,ax= plt.subplots()
@@ -267,7 +246,6 @@ sn.boxplot(x="bathroomcnt", y="logerror", data=mergedFiltered,ax=ax,color="#3449
 ax.set(ylabel='Log Error',xlabel="Bathroom Count",title="Bathroom Count Vs Log Error")
 
 
-# In[22]:
 
 
 fig,ax= plt.subplots()
@@ -276,7 +254,6 @@ sn.boxplot(x="roomcnt", y="logerror", data=mergedFiltered,ax=ax,color="#34495e")
 ax.set(ylabel='Log Error',xlabel="Room Count",title="Room Count Vs Log Error")
 
 
-# In[23]:
 
 
 fig,ax= plt.subplots()
@@ -285,7 +262,6 @@ sn.boxplot(x="numberofstories", y="logerror", data=mergedFiltered,ax=ax,color="#
 ax.set(ylabel='Log Error',xlabel="No Of Storeys",title="No Of Storeys Vs Log Error")
 
 
-# In[24]:
 
 
 from mpl_toolkits.mplot3d import Axes3D
@@ -301,13 +277,11 @@ ax.set_zlabel('Log Error');
 pyplot.show()
 
 
-# In[25]:
 
 
 
 
 
-# In[25]:
 
 
 

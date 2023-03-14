@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -32,7 +31,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 
 
-# In[2]:
 
 
 # constants
@@ -40,7 +38,6 @@ IMG_SIZE = 28
 N_CHANNELS = 1 # because gray scale images
 
 
-# In[3]:
 
 
 train_df = pd.read_csv('/kaggle/input/Kannada-MNIST/train.csv')
@@ -48,13 +45,11 @@ test_df = pd.read_csv('/kaggle/input/Kannada-MNIST/Dig-MNIST.csv')
 pred_df = pd.read_csv('/kaggle/input/Kannada-MNIST/test.csv')
 
 
-# In[4]:
 
 
 train_df = train_df.append(test_df)
 
 
-# In[5]:
 
 
 MNIST like datatset for Kannada handwritten digits
@@ -62,7 +57,6 @@ print (f'Training set: {train_df.shape}')
 print (f'To be Predicted: {pred_df.shape}')
 
 
-# In[6]:
 
 
 X_train = train_df.drop(['label'], axis = 1)
@@ -70,32 +64,27 @@ Y_train = train_df['label']
 X_pred = pred_df.drop(['id'], axis = 1)
 
 
-# In[7]:
 
 
 X_train, X_test, Y_train, Y_test = train_test_split(X_train, Y_train, test_size=0.05)
 
 
-# In[8]:
 
 
 X_train, X_test, X_pred = X_train.apply(lambda x: x/255), X_test.apply(lambda x: x/255), X_pred.apply(lambda x: x/255)
 
 
-# In[9]:
 
 
 Y_train, Y_test = pd.get_dummies(Y_train), pd.get_dummies(Y_test)
 
 
-# In[10]:
 
 
 X_train = X_train.values.reshape(-1, IMG_SIZE, IMG_SIZE, N_CHANNELS)
 X_test = X_test.values.reshape(-1, IMG_SIZE, IMG_SIZE, N_CHANNELS)
 
 
-# In[11]:
 
 
 Y_train = Y_train.to_numpy()
@@ -109,7 +98,6 @@ for row in ax:
 plt.show()
 
 
-# In[12]:
 
 
 datagen = ImageDataGenerator(
@@ -130,7 +118,6 @@ datagen = ImageDataGenerator(
 datagen.fit(X_train)
 
 
-# In[13]:
 
 
 model = Sequential()
@@ -157,13 +144,11 @@ model.add(Dropout(0.40))
 model.add(Dense(10, activation = "softmax"))
 
 
-# In[14]:
 
 
 model.compile(optimizer="adam", loss=['categorical_crossentropy'], metrics=['accuracy'])
 
 
-# In[15]:
 
 
 # Set a learning rate annealer. Learning rate will be half after 3 epochs if accuracy is not increased
@@ -174,14 +159,12 @@ learning_rate_reduction = ReduceLROnPlateau(monitor='val_accuracy',
                                             min_lr=0.00001)
 
 
-# In[16]:
 
 
 batch_size=32
 epochs = 45
 
 
-# In[17]:
 
 
 # Fit the model
@@ -191,7 +174,6 @@ history = model.fit_generator(datagen.flow(X_train, Y_train, batch_size=batch_si
                               callbacks=[learning_rate_reduction])
 
 
-# In[18]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -218,20 +200,17 @@ def PlotAcc(his, epoch):
     plt.show()
 
 
-# In[19]:
 
 
 PlotLoss(history, epochs)
 PlotAcc(history, epochs)
 
 
-# In[20]:
 
 
 preds = model.predict(X_pred.values.reshape(-1, IMG_SIZE, IMG_SIZE, N_CHANNELS))
 
 
-# In[21]:
 
 
 pred_df['label'] = np.argmax(preds, axis=1)
@@ -239,7 +218,6 @@ preds = pred_df[['id', 'label']]
 preds.to_csv('sub.csv', index=False)
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #Libraries
@@ -51,7 +50,6 @@ seed(42)
 random.seed(42)
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/trends-assessment-prediction/train_scores.csv', dtype={'Id':str})            .dropna().reset_index(drop=True) # to make things easy
@@ -62,7 +60,6 @@ fnc = pd.read_csv('../input/trends-assessment-prediction/fnc.csv', dtype={'Id':s
 sample_submission = pd.read_csv('../input/trends-assessment-prediction/sample_submission.csv', dtype={'Id':str})
 
 
-# In[3]:
 
 
 # Config
@@ -72,7 +69,6 @@ TARGET_COLS = ['age', 'domain1_var1', 'domain1_var2', 'domain2_var1', 'domain2_v
 SEED = 42
 
 
-# In[4]:
 
 
 sample_submission['ID_num'] = sample_submission[ID].apply(lambda x: int(x.split('_')[0]))
@@ -80,7 +76,6 @@ test = pd.DataFrame({ID: sample_submission['ID_num'].unique().astype(str)})
 del sample_submission['ID_num']; gc.collect()
 
 
-# In[5]:
 
 
 # merge
@@ -91,25 +86,21 @@ test = test.merge(loading, on=ID, how='left')
 test = test.merge(fnc, on=ID, how='left')
 
 
-# In[6]:
 
 
 len(loading.columns)
 
 
-# In[7]:
 
 
 len(fnc.columns)
 
 
-# In[8]:
 
 
 len(train.columns)
 
 
-# In[9]:
 
 
 def outlier_2s(df):
@@ -151,7 +142,6 @@ def mean_diff2(df):
     return df
 
 
-# In[10]:
 
 
 #diff1 = mean_diff1(train)
@@ -166,7 +156,6 @@ def mean_diff2(df):
 #test = test.merge(diff2, on=ID, how='left')
 
 
-# In[11]:
 
 
 train = outlier_2s(train)
@@ -174,7 +163,6 @@ train = scaler(train)
 train = train.dropna(how='all').dropna(how='all', axis=1)
 
 
-# In[12]:
 
 
 X_train = train.drop('Id', axis=1).drop(TARGET_COLS, axis=1)
@@ -182,7 +170,6 @@ y_train = train.drop('Id', axis=1)[TARGET_COLS]
 X_test = test.drop('Id', axis=1)
 
 
-# In[13]:
 
 
 np.random.seed(1964)
@@ -221,7 +208,6 @@ hist_1 = model_1.fit(X_train, y_train,
                         verbose=verbose, validation_split=validation_split)
 
 
-# In[14]:
 
 
 prediction_dict = model_1.predict(X_test)
@@ -230,7 +216,6 @@ prediction_dict.columns = y_train.columns
 prediction_dict.head(10)
 
 
-# In[15]:
 
 
 pred_df = pd.DataFrame()
@@ -247,21 +232,18 @@ print(sample_submission.shape)
 pred_df.head()
 
 
-# In[16]:
 
 
 submission = pd.merge(sample_submission, pred_df, on = 'Id')
 submission
 
 
-# In[17]:
 
 
 submission = pd.merge(sample_submission, pred_df, on = 'Id')[['Id', 'Predicted_y']]
 submission.columns = ['Id', 'Predicted']
 
 
-# In[18]:
 
 
 submission.to_csv('submission.csv', index=False)

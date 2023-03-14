@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 train = pd.read_csv('/kaggle/input/rossmann-store-sales/train.csv')
@@ -30,7 +28,6 @@ store = pd.read_csv('/kaggle/input/rossmann-store-sales/store.csv')
 test = pd.read_csv('/kaggle/input/rossmann-store-sales/test.csv')
 
 
-# In[3]:
 
 
 print(train.shape)
@@ -38,67 +35,56 @@ print(test.shape)
 print(store.shape)
 
 
-# In[4]:
 
 
 train.head()
 
 
-# In[5]:
 
 
 store.head()
 
 
-# In[6]:
 
 
 test.head()
 
 
-# In[7]:
 
 
 train.dtypes
 
 
-# In[8]:
 
 
 store.dtypes
 
 
-# In[9]:
 
 
 train.describe(include='object')
 
 
-# In[10]:
 
 
 train.describe()[['Sales','Customers']]
 
 
-# In[11]:
 
 
 train.Store.nunique()
 
 
-# In[12]:
 
 
 train.DayOfWeek.value_counts().sort_values()
 
 
-# In[13]:
 
 
 print(train.Open.value_counts() , '\n',train.Promo.value_counts())
 
 
-# In[14]:
 
 
 print(train.isna().sum())
@@ -108,20 +94,17 @@ print('-'*20)
 print(test.isna().sum())
 
 
-# In[15]:
 
 
 store1 = train[train['Store']==1]
 store1.head()
 
 
-# In[16]:
 
 
 print(store1.shape)
 
 
-# In[17]:
 
 
 store1['Date'] = pd.to_datetime(store1['Date'])
@@ -131,14 +114,12 @@ store1['Year'] = store1['Date'].dt.year
 store1['Month'] = store1['Date'].dt.month
 
 
-# In[18]:
 
 
 store1.resample('1D',on='Date')['Sales'].sum().plot.line(figsize=(14,4))
 plt.show()
 
 
-# In[19]:
 
 
 import seaborn as sns
@@ -146,32 +127,27 @@ sns.distplot(store1.Sales , bins=10)
 plt.show()
 
 
-# In[20]:
 
 
 sns.distplot(train.Sales)
 plt.show()
 
 
-# In[21]:
 
 
 store.isna().sum()
 
 
-# In[22]:
 
 
 store[store['Store']==1].T
 
 
-# In[23]:
 
 
 store[~(store['Promo2']==0)].iloc[0]
 
 
-# In[24]:
 
 
 store['Promo2SinceWeek'] = store['Promo2SinceWeek'].fillna(0)
@@ -183,13 +159,11 @@ store['CompetitionOpenSinceMonth'] = store['CompetitionOpenSinceMonth'].fillna(s
 store['CompetitionOpenSinceYear'] = store['CompetitionOpenSinceYear'].fillna(store['CompetitionOpenSinceYear'].mode().iloc[0])
 
 
-# In[25]:
 
 
 store.isna().sum()
 
 
-# In[26]:
 
 
 df = train.merge(store , on='Store' , how='left')
@@ -198,25 +172,21 @@ print(store.shape)
 print(df.shape)
 
 
-# In[27]:
 
 
 df.head(3)
 
 
-# In[28]:
 
 
 df.isna().sum()
 
 
-# In[29]:
 
 
 df['Date'] = pd.to_datetime(df['Date'])
 
 
-# In[30]:
 
 
 df['Day'] = df['Date'].dt.day
@@ -226,13 +196,11 @@ df['Year'] = df['Date'].dt.year
 # df['DayOfWeek'] = df['Date'].dt.strftime(%a)
 
 
-# In[31]:
 
 
 df.dtypes
 
 
-# In[32]:
 
 
 cat_cols = df.select_dtypes(include=['object']).columns
@@ -243,41 +211,35 @@ for i in cat_cols:
     print('-'*20)
 
 
-# In[33]:
 
 
 df['StateHoliday'] = df['StateHoliday'].map({'0':0 , 0:0 , 'a':1 , 'b':2 , 'c':3})
 df['StateHoliday'] = df['StateHoliday'].astype(int)
 
 
-# In[34]:
 
 
 df['StoreType'] = df['StoreType'].map({'a':1 , 'b':2 , 'c':3 , 'd':4})
 df['StoreType'] = df['StoreType'].astype(int)
 
 
-# In[35]:
 
 
 df['Assortment'] = df['Assortment'].map({'a':1 , 'b':2 , 'c':3})
 df['Assortment'] = df['Assortment'].astype(int)
 
 
-# In[36]:
 
 
 df['PromoInterval'] = df['PromoInterval'].map({'Jan,Apr,Jul,Oct':1 , 'Feb,May,Aug,Nov':2 , 'Mar,Jun,Sept,Dec':3})
 df['PromoInterval'] = df['PromoInterval'].astype(int)
 
 
-# In[37]:
 
 
 df.dtypes
 
 
-# In[38]:
 
 
 X = df.drop(['Sales','Date','Customers'],1)
@@ -290,7 +252,6 @@ X_train , X_val , y_train , y_val = train_test_split(X , y , test_size=0.30 , ra
 X_train.shape , X_val.shape , y_train.shape , y_val.shape
 
 
-# In[39]:
 
 
 from sklearn.tree import DecisionTreeRegressor
@@ -300,14 +261,12 @@ dt.fit(X_train , y_train)
 y_pred_dt = dt.predict(X_val)
 
 
-# In[40]:
 
 
 y_pred_dt = np.exp(y_pred_dt)-1
 y_val = np.exp(y_val)-1
 
 
-# In[41]:
 
 
 from sklearn.metrics import r2_score , mean_squared_error
@@ -316,7 +275,6 @@ print(r2_score(y_val , y_pred_dt))
 print(np.sqrt(mean_squared_error(y_val , y_pred_dt)))
 
 
-# In[42]:
 
 
 def ToWeight(y):
@@ -331,13 +289,11 @@ def rmspe(y, yhat):
     return rmspe
 
 
-# In[43]:
 
 
 rmspe(y_val,y_pred_dt)
 
 
-# In[44]:
 
 
 def get_rmspe_score(model, input_values, y_actual):
@@ -348,7 +304,6 @@ def get_rmspe_score(model, input_values, y_actual):
     return score
 
 
-# In[45]:
 
 
 from sklearn.model_selection import RandomizedSearchCV
@@ -362,14 +317,12 @@ base  = DecisionTreeRegressor()
 model_tuned = RandomizedSearchCV(base , params , return_train_score=True).fit(X_train , y_train)
 
 
-# In[46]:
 
 
 model_cv_results = pd.DataFrame(model_tuned.cv_results_).sort_values(by='mean_test_score' , ascending=False)
 model_cv_results
 
 
-# In[47]:
 
 
 model_cv_results.set_index('param_max_depth')['mean_test_score'].plot(color='g',legend=True)
@@ -378,13 +331,11 @@ plt.grid(True)
 plt.show()
 
 
-# In[48]:
 
 
 import xgboost as xgb
 
 
-# In[49]:
 
 
 dtrain = xgb.DMatrix(X_train,y_train)
@@ -406,51 +357,43 @@ y_pred_xg = np.exp(y_pred_xg)-1
 rmspe(y_val , y_pred_xg)
 
 ROOT MEAN SQUARE PERCENTAGE ERROR
-# In[50]:
 
 
 plt.barh(X_train.columns , dt.feature_importances_)
 plt.show()
 
 
-# In[51]:
 
 
 test.shape
 
 
-# In[52]:
 
 
 test.head()
 
 
-# In[53]:
 
 
 test_cust = train.groupby(['Store'])[['Customers']].mean().reset_index().astype(int)
 
 
-# In[54]:
 
 
 test_1 = test.merge(test_cust , on='Store' , how='left')
 test_1.head()
 
 
-# In[55]:
 
 
 test_m = test_1.merge(store , on='Store' , how='left')
 
 
-# In[56]:
 
 
 test_m.shape
 
 
-# In[57]:
 
 
 test_m['Open'].fillna(1,inplace=True)
@@ -464,7 +407,6 @@ test_m['Year'] = test_m['Date'].dt.year
 test_m.drop('Date',1,inplace=True)
 
 
-# In[58]:
 
 
 cat_cols = test_m.select_dtypes(include=['object']).columns
@@ -475,7 +417,6 @@ for i in cat_cols:
     print('-'*20)
 
 
-# In[59]:
 
 
 test_m['StateHoliday'] = test_m['StateHoliday'].map({'0':0 , 'a':1})
@@ -491,38 +432,32 @@ test_m['PromoInterval'] = test_m['PromoInterval'].map({'Jan,Apr,Jul,Oct':1 , 'Fe
 test_m['PromoInterval'] = test_m['PromoInterval'].astype(int)
 
 
-# In[60]:
 
 
 test_m.dtypes
 
 
-# In[61]:
 
 
 X_train.dtypes
 
 
-# In[62]:
 
 
 test_m.isna().sum()
 
 
-# In[63]:
 
 
 test_pred = dt.predict(test_m[X_train.columns])
 test_pred_inv = np.exp(test_pred)-1
 
 
-# In[64]:
 
 
 test_pred_inv
 
 
-# In[65]:
 
 
 submission = pd.DataFrame({'Id' : test_m['Id'] , 'Sales' : test_pred_inv})
@@ -532,19 +467,16 @@ submission['Id'] = submission['Id']+1
 submission.head()
 
 
-# In[66]:
 
 
 submission.shape
 
 
-# In[67]:
 
 
 submission
 
 
-# In[68]:
 
 
 submission.to_csv('sumbission.csv',index=False)

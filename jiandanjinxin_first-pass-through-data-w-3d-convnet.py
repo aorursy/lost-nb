@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import dicom # for reading dicom files
@@ -18,7 +17,6 @@ labels_df = pd.read_csv('../input/stage1_labels.csv', index_col=0)
 labels_df.head()
 
 
-# In[2]:
 
 
 for patient in patients[:1]:
@@ -32,7 +30,6 @@ for patient in patients[:1]:
     print(slices[0])
 
 
-# In[3]:
 
 
 for patient in patients[:3]:
@@ -45,13 +42,11 @@ for patient in patients[:3]:
     print(slices[0].pixel_array.shape, len(slices))
 
 
-# In[4]:
 
 
 len(patients)
 
 
-# In[5]:
 
 
 import matplotlib.pyplot as plt
@@ -67,7 +62,6 @@ for patient in patients[:1]:
     plt.show()
 
 
-# In[6]:
 
 
 import cv2
@@ -88,7 +82,6 @@ for patient in patients[:1]:
     plt.show()
 
 
-# In[7]:
 
 
 import math
@@ -129,7 +122,6 @@ for patient in patients[:10]:
         pass
 
 
-# In[8]:
 
 
 for patient in patients[:10]:
@@ -173,7 +165,6 @@ for patient in patients[:10]:
         print(str(e))
 
 
-# In[9]:
 
 
 for patient in patients[:1]:
@@ -214,7 +205,6 @@ for patient in patients[:1]:
     plt.show()
 
 
-# In[10]:
 
 
 import numpy as np
@@ -317,7 +307,6 @@ for num,patient in enumerate(patients):
 np.save('muchdata-{}-{}-{}.npy'.format(IMG_SIZE_PX,IMG_SIZE_PX,SLICE_COUNT), much_data)
 
 
-# In[11]:
 
 
 import tensorflow as tf
@@ -338,7 +327,6 @@ y = tf.placeholder('float')
 keep_rate = 0.8
 
 
-# In[12]:
 
 
 def conv3d(x, W):
@@ -349,7 +337,6 @@ def maxpool3d(x):
     return tf.nn.max_pool3d(x, ksize=[1,2,2,2,1], strides=[1,2,2,2,1], padding='SAME')
 
 
-# In[13]:
 
 
 def convolutional_neural_network(x):
@@ -385,7 +372,6 @@ def convolutional_neural_network(x):
     return output
 
 
-# In[14]:
 
 
 much_data = np.load('muchdata-50-50-20.npy')
@@ -444,19 +430,16 @@ end = time.clock()
 print("The running time is %g s" %(end-start))
 
 
-# In[15]:
 
 
 labels_df.cancer.value_counts()
 
 
-# In[16]:
 
 
 labels_df.ix[-100:].cancer.value_counts()
 
 
-# In[17]:
 
 
 

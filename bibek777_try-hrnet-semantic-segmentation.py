@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Imports
@@ -17,7 +16,6 @@ import torch._utils
 import torch.nn.functional as F
 
 
-# In[2]:
 
 
 # Model code
@@ -495,7 +493,6 @@ def get_seg_model(cfg, **kwargs):
     return model
 
 
-# In[3]:
 
 
 # dict for model configuration
@@ -535,25 +532,21 @@ config['MODEL'] = {'EXTRA': {'FINAL_CONV_KERNEL': 1,
                  }}}
 
 
-# In[4]:
 
 
 model = get_seg_model(config)
 
 
-# In[5]:
 
 
 dump_input = torch.rand((1, 3, 256, 1600))
 
 
-# In[6]:
 
 
 output = model(dump_input)
 
 
-# In[7]:
 
 
 print(output.shape) # output's height and width should be same as input

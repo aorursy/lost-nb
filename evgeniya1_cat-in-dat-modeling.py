@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -52,7 +51,6 @@ np.random.seed(SEED)
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 #######preprocess data#######
@@ -246,7 +244,6 @@ def plot_target_dist(df, cols, figsize = (16,10), grid_r=3, grid_c=3):
     plt.show()
 
 
-# In[3]:
 
 
 '''Read in train and test data from csv files'''
@@ -279,21 +276,18 @@ display(X_train.head())
 del df; gc.collect()
 
 
-# In[4]:
 
 
 #Logistic regression model
 logit = LogisticRegression(random_state=SEED,class_weight='balanced',solver='liblinear')
 
 
-# In[5]:
 
 
 ##install the package
 get_ipython().system('pip install vtreat')
 
 
-# In[6]:
 
 
 #importing the package
@@ -317,7 +311,6 @@ print(f'There are {len(vtreat_fs)} recommended features.')
 vtreat_fs.head(10)
 
 
-# In[7]:
 
 
 #use all recommended features
@@ -332,14 +325,12 @@ print('\n')
 get_score_cv(logit, X_train_vtreat[used_cols], y_train)
 
 
-# In[8]:
 
 
 #pd.DataFrame(vtreat_fs.orig_variable.value_counts())
 print('Included recommended original features are: ', vtreat_fs.orig_variable.unique())
 
 
-# In[9]:
 
 
 #how many encoded features per original variable?
@@ -347,7 +338,6 @@ print("\nExample for 'day' feature:")
 vtreat_fs[vtreat_fs.orig_variable == 'day']
 
 
-# In[10]:
 
 
 #select only best among recomennded for a given original variable
@@ -361,7 +351,6 @@ print(f'There are {len(select_cols)} selected features out of {len(vtreat_fs)} r
 select_cols
 
 
-# In[11]:
 
 
 #use all recommended features
@@ -376,7 +365,6 @@ print('\n')
 get_score_cv(logit, X_train_vtreat[used_cols], y_train)
 
 
-# In[12]:
 
 
 #define feature sets
@@ -390,7 +378,6 @@ X_train_woe = woe_enc.transform(X_train[used_cols].reset_index(drop=True))
 X_test_woe = woe_enc.transform(X_test[used_cols].reset_index(drop=True))
 
 
-# In[13]:
 
 
 #smoothing function
@@ -403,7 +390,6 @@ sig_params = {'nom_5':[10000,0.0001], 'nom_6':[8000,0.00005],
               'nom_9':[300,0.01]}
 
 
-# In[14]:
 
 
 ### Target smooting
@@ -490,7 +476,6 @@ for col in nom_cols[5:]:
 #     del X_tn, X_ts; gc.collect()
 
 
-# In[15]:
 
 
 #adjusted nominal features with vtreat encoding for the rest
@@ -512,7 +497,6 @@ print('\n')
 get_score_cv(logit, X_tn, y_train)
 
 
-# In[16]:
 
 
 #WoE encoding with high-cardinality data, no smoothing
@@ -528,7 +512,6 @@ print('\n')
 get_score_cv(logit, X_train_woe[used_cols], y_train)
 
 
-# In[17]:
 
 
 #WoE encoding without high-cardinality data
@@ -542,7 +525,6 @@ print('\n')
 get_score_cv(logit, X_train_woe[used_cols], y_train)
 
 
-# In[18]:
 
 
 #WoE encoding with high-cardinality data, with smoothing
@@ -562,7 +544,6 @@ print('\n')
 get_score_cv(logit, X_tn, y_train)
 
 
-# In[19]:
 
 
 #plot the roc_auc curve

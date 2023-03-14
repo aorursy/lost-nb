@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -25,20 +24,17 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 # # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 cd '/kaggle/input/data-science-bowl-2019'
 
 
-# In[3]:
 
 
 # get the data into a pandas dataframe
 train = pd.read_csv('train.csv')
 
 
-# In[4]:
 
 
 no_unique ={}
@@ -63,7 +59,6 @@ df_unique = pd.concat([dataframes[col] for col in train.columns], ignore_index =
 df_unique.sort_values(by = 'no_unique_values').reset_index()
 
 
-# In[5]:
 
 
 g =train.groupby('world')
@@ -71,14 +66,12 @@ x = g['installation_id'].nunique()
 x.reset_index().plot.bar(x ='world' , y = 'installation_id' )
 
 
-# In[6]:
 
 
 # # which world is the played the most 
 g['game_time'].sum().reset_index().plot.bar(x ='world' , y = 'game_time' )
 
 
-# In[7]:
 
 
 # # what is the breakup of game and type 
@@ -116,7 +109,6 @@ plt.plot(worlds, Assessment , label = 'Assessment')
 plt.legend(loc = 'best')
 
 
-# In[8]:
 
 
 # how many game sessions were spent on the different types
@@ -129,7 +121,6 @@ plt.plot(types_ , values)
  
 
 
-# In[9]:
 
 
 # plot the charts

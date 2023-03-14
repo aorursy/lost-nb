@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # For testing, multiprocessing and chaining dictionaries
@@ -11,7 +10,6 @@ from collections import ChainMap
 import matplotlib.pyplot as plt
 
 
-# In[ ]:
 
 
 # Default RLenc
@@ -57,7 +55,6 @@ def rle_encoding(x):
     return run_lengths
 
 
-# In[ ]:
 
 
 class Consumer(multiprocessing.Process):
@@ -174,7 +171,6 @@ class MultiSuggested(object):
         return dict(ChainMap({}, *singles))
 
 
-# In[ ]:
 
 
 example_batch = np.random.uniform(0, 1, size=(100, 101, 101)) > 0.5
@@ -211,7 +207,6 @@ get_ipython().run_line_magic('timeit', '-n1 suggested(example_batch)')
 get_ipython().run_line_magic('timeit', '-n1 multi_suggested(example_batch)')
 
 
-# In[ ]:
 
 
 # Create a loop, collect time info for different methods
@@ -230,7 +225,6 @@ for n_samples in sample_sizes:
     msug.append(result_multi_sug.average)
 
 
-# In[ ]:
 
 
 # Plot the results
@@ -243,7 +237,6 @@ ax.plot(sample_sizes, msug, label='multi-suggested');
 plt.legend()
 
 
-# In[ ]:
 
 
 example_batch = np.random.uniform(0, 1, size=(10, 101, 101)) > 0.5
@@ -261,13 +254,11 @@ for key in a:
         print("Multi processed suggested differs from original!")
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

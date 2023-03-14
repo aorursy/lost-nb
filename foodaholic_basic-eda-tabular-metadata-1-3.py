@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install missingpy')
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -39,32 +37,27 @@ import os
 import scipy
 
 
-# In[3]:
 
 
 train = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/train.csv')
 test = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/test.csv')
 
 
-# In[4]:
 
 
 train
 
 
-# In[5]:
 
 
 train.describe()
 
 
-# In[6]:
 
 
 train[train.duplicated(subset=['Patient','Weeks'], keep=False)]
 
 
-# In[7]:
 
 
 train = train.groupby(['Patient', 'Weeks']).agg({ 
@@ -76,25 +69,21 @@ train = train.groupby(['Patient', 'Weeks']).agg({
 }).reset_index()
 
 
-# In[8]:
 
 
 print('Number of duplicates: %s'%len(train[train.duplicated(subset=['Patient','Weeks'], keep=False)]))
 
 
-# In[9]:
 
 
 train.isna().any()
 
 
-# In[10]:
 
 
 print("Number of unique patients: %s"%(train.Patient.nunique()))
 
 
-# In[11]:
 
 
 num_obs_per_patient = train.groupby('Patient').count()['Weeks'].sort_values()
@@ -108,7 +97,6 @@ bar.axes.get_xaxis().set_visible(False);
 bar.set_ylabel("Oberservations");
 
 
-# In[12]:
 
 
 fig, axs = plt.subplots(2, 2, figsize=(15, 10))
@@ -130,7 +118,6 @@ sns.kdeplot(train.Age, shade=True, ax=axs[1,1])
 axs[1,1].get_legend().remove()
 
 
-# In[13]:
 
 
 def corrfunc(x, y, **kws):
@@ -146,7 +133,6 @@ g.map_lower(sns.kdeplot, cmap="Blues_d")
 g.map_lower(corrfunc)
 
 
-# In[14]:
 
 
 id_patients_most_weeks = train.groupby('Patient').Weeks.count().sort_values(ascending=False).iloc[:5].index
@@ -165,13 +151,11 @@ ax.set_xlabel('Weeks', fontsize=12)
 ax.set_ylabel('FVC', fontsize=12);
 
 
-# In[15]:
 
 
 example_patient_file_path = "../input/osic-pulmonary-fibrosis-progression/train/ID00014637202177757139317/"
 
 
-# In[16]:
 
 
 num_scans = {}
@@ -193,13 +177,11 @@ dense.get_legend().remove()
 dense.set_xlabel('Numober of CT-Scan Files');
 
 
-# In[17]:
 
 
 df_scans.num_scans.describe()
 
 
-# In[18]:
 
 
 #https://github.com/pydicom/pydicom/issues/319
@@ -227,7 +209,6 @@ def dictify(ds):
     return output
 
 
-# In[19]:
 
 
 ds1 = dictify(pydicom.filereader.dcmread(example_patient_file_path+"1.dcm"))
@@ -235,7 +216,6 @@ ds2 = dictify(pydicom.filereader.dcmread(example_patient_file_path+"2.dcm"))
 ds1
 
 
-# In[20]:
 
 
 def get_diff(ds1, ds2):
@@ -249,13 +229,11 @@ changing_keys = get_diff(ds1, ds2)
 stable_keys = ds1.keys()-changing_keys
 
 
-# In[21]:
 
 
 stable_keys
 
 
-# In[22]:
 
 
 additional_metadata = []
@@ -268,7 +246,6 @@ for patient_id in tqdm(train.Patient.unique()):
 df_add_meta = pd.DataFrame(additional_metadata)
 
 
-# In[23]:
 
 
 for column in df_add_meta.columns:
@@ -280,13 +257,11 @@ for column in df_add_meta.columns:
         print("-"*100)
 
 
-# In[24]:
 
 
 df_add_meta['Convolution Kernel'].values
 
 
-# In[25]:
 
 
 column = 'Convolution Kernel'
@@ -294,7 +269,6 @@ column = 'Convolution Kernel'
 df_add_meta[column][(pd.isna(df_add_meta[column].str.contains('I50f'))).values] ='I50f'
 
 
-# In[26]:
 
 
 numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
@@ -303,7 +277,6 @@ columns_to_keep = list(df_add_meta.select_dtypes(include=numerics).columns.value
 df_add_meta = df_add_meta[columns_to_keep]
 
 
-# In[27]:
 
 
 perc_missing_cols = (df_add_meta.isna().sum()/len(df_add_meta)).sort_values(ascending=False)
@@ -312,20 +285,17 @@ print("-"*50)
 print(perc_missing_cols[perc_missing_cols!=0])
 
 
-# In[28]:
 
 
 perc_missing_cols = perc_missing_cols[perc_missing_cols<0.1]
 df_add_meta = df_add_meta[df_add_meta.columns.intersection(list(perc_missing_cols.index))]
 
 
-# In[29]:
 
 
 df_train_join = pd.merge(train, df_add_meta, left_on='Patient', right_on="Patient ID", how='inner')
 
 
-# In[30]:
 
 
 perc_missing_cols = (df_train_join.isna().sum()/len(df_train_join)).sort_values(ascending=False)
@@ -334,7 +304,6 @@ print("-"*50)
 print(perc_missing_cols[perc_missing_cols!=0])
 
 
-# In[31]:
 
 
 imputer = MissForest()
@@ -348,7 +317,6 @@ for column in df_train_join_numeric.columns:
     df_train_join[column] = df_train_join_numeric[column]
 
 
-# In[32]:
 
 
 for column in df_train_join.select_dtypes(include=numerics).columns:
@@ -356,7 +324,6 @@ for column in df_train_join.select_dtypes(include=numerics).columns:
         df_train_join[column] = df_train_join[column].astype(int)
 
 
-# In[33]:
 
 
 def evaluate_features(X_train, y_train, X_test, y_test, params, metrices):
@@ -419,25 +386,21 @@ def get_model_scores(model, x_train, y_train, x_test, y_test, metrices, print_va
     return scores
 
 
-# In[34]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(df_train_join.drop(columns=['FVC']), df_train_join.FVC)
 
 
-# In[35]:
 
 
 evaluate_features(X_train, y_train, X_test, y_test, {}, [mean_squared_error])
 
 
-# In[36]:
 
 
 df_train_join.to_csv('train_merged_and_cleaned.csv', index=False)
 
 
-# In[37]:
 
 
 def center_crop(img, new_width=512, new_height=512):        
@@ -482,7 +445,6 @@ def read_dicoms(file, with_mask=False):
     return img
 
 
-# In[38]:
 
 
 files = glob.glob(example_patient_file_path+"*.dcm")
@@ -499,14 +461,12 @@ for i in range(30):
     plt.grid(b=None)
 
 
-# In[39]:
 
 
 slices = [read_dicoms(file) for file in files]
 show_gif(filename=slices_as_gif(slices), format='png', width=512, height=512)
 
 
-# In[ ]:
 
 
 

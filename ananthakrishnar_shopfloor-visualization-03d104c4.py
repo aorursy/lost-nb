@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 options(warn=-1) #surpress warnings
@@ -159,7 +158,6 @@ network = ggnet2(net,
 print(network)
 
 
-# In[2]:
 
 
 #obtain summary statistic of number of edges on each station pair

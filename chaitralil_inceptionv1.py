@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -15,7 +14,6 @@ from PIL import Image
 import glob
 
 
-# In[2]:
 
 
 trainLabels = pd.read_csv("../input/labels/trainLabels.csv")
@@ -26,7 +24,6 @@ filelist = glob.glob('../input/bloodvessel/bloodvesselextraction/BloodVesselExtr
 np.size(filelist)
 
 
-# In[3]:
 
 
 img_data = []
@@ -45,20 +42,17 @@ for file in filelist:
     img_label.append(trainLabels.loc[trainLabels.image==tmpfn, 'level'].values[0])
 
 
-# In[4]:
 
 
 data = pd.DataFrame({'img_data':img_data,'label':img_label})
 data.sample(3)
 
 
-# In[5]:
 
 
 data[['label']].hist(figsize = (10, 5))
 
 
-# In[6]:
 
 
 from sklearn.model_selection import train_test_split
@@ -77,7 +71,6 @@ print('New Data Size:', train_df.shape[0], 'Old Size:', train_data.shape[0])
 train_df[['label']].hist(figsize = (10, 5))
 
 
-# In[7]:
 
 
 X_train = train_df['data']
@@ -89,7 +82,6 @@ X_test = np.asarray(X_test)
 y_test = np.asarray(y_test)
 
 
-# In[8]:
 
 
 X_train_resh = np.zeros([X_train.shape[0],img_r, img_c, 1])
@@ -102,7 +94,6 @@ for i in range (X_test.shape[0]-1):
 print(X_test_resh.shape)
 
 
-# In[9]:
 
 
 from keras.utils import np_utils
@@ -111,7 +102,6 @@ Y_train = np_utils.to_categorical(y_train, nb_classes)
 Y_test = np_utils.to_categorical(y_test, nb_classes)
 
 
-# In[10]:
 
 
 import matplotlib.pyplot as plt
@@ -122,7 +112,6 @@ plt.imshow(img)
 plt.imshow(img,cmap='gray')
 
 
-# In[11]:
 
 
 import keras
@@ -307,7 +296,6 @@ model = Model(input_layer, [x, x1, x2], name='inception_v1')
 print(model.summary())
 
 
-# In[12]:
 
 
 sgd = SGD(lr = 0.01, momentum=0.9, nesterov=False)
@@ -316,13 +304,11 @@ from keras.callbacks import ReduceLROnPlateau
 reduceLROnPlat = ReduceLROnPlateau(monitor='val_loss', factor=0.8, patience=3, verbose=1, mode='auto', epsilon=0.0001, cooldown=5, min_lr=0.0001)
 
 
-# In[13]:
 
 
 history = model.fit(X_train_resh, [Y_train, Y_train, Y_train], validation_data=(X_test_resh, [Y_test, Y_test, Y_test]), epochs=200, batch_size=32, callbacks=[reduceLROnPlat])
 
 
-# In[14]:
 
 
 import matplotlib.pyplot as pyplot
@@ -340,13 +326,11 @@ pyplot.legend()
 pyplot.show()
 
 
-# In[15]:
 
 
 pyplot.savefig("trainmetrics.png")
 
 
-# In[16]:
 
 
 from sklearn.metrics import accuracy_score, classification_report
@@ -360,7 +344,6 @@ print('Accuracy on Test Data: %2.2f%%' % (accuracy_score(test_Y_cat, pred_Y_cat[
 print(classification_report(test_Y_cat, pred_Y_cat[0]))
 
 
-# In[17]:
 
 
 import seaborn as sns
@@ -369,7 +352,6 @@ sns.heatmap(confusion_matrix(test_Y_cat, pred_Y_cat[0]),
             annot=True, fmt="d", cbar = False, cmap = plt.cm.Blues, vmax = X_test_resh.shape[0]//16)
 
 
-# In[18]:
 
 
 pre = pred_Y[0]
@@ -386,13 +368,11 @@ ax1.set_xlabel('False Positive Rate')
 ax1.set_ylabel('True Positive Rate');
 
 
-# In[19]:
 
 
 fig.savefig("roc.png")
 
 
-# In[20]:
 
 
 from keras.models import model_from_json
@@ -404,20 +384,17 @@ with open("model_project_work.json", "w") as json_file:
 model.save("model_project_work.h5")
 
 
-# In[21]:
 
 
 os.listdir("../working")
 
 
-# In[22]:
 
 
 from keras.models import load_model
 new_model = load_model('model_project_work.h5')
 
 
-# In[23]:
 
 
 pred_Y = new_model.predict(X_test_resh, batch_size = 32, verbose = True)

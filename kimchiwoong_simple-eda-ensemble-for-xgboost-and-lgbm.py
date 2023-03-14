@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -27,52 +26,44 @@ print(os.listdir("../input/ieee-fraud-detection/"))
 import gc
 
 
-# In[2]:
 
 
 get_ipython().system('rm -r /opt/conda/lib/python3.6/site-packages/lightgbm')
 get_ipython().system('git clone --recursive https://github.com/Microsoft/LightGBM')
 
 
-# In[3]:
 
 
 get_ipython().system('apt-get install -y -qq libboost-all-dev')
 
 
-# In[4]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cd LightGBM\nrm -r build\nmkdir build\ncd build\ncmake -DUSE_GPU=1 -DOpenCL_LIBRARY=/usr/local/cuda/lib64/libOpenCL.so -DOpenCL_INCLUDE_DIR=/usr/local/cuda/include/ ..\nmake -j$(nproc)')
 
 
-# In[5]:
 
 
 get_ipython().system('cd LightGBM/python-package/;python3 setup.py install --precompile')
 
 
-# In[6]:
 
 
 get_ipython().system('mkdir -p /etc/OpenCL/vendors && echo "libnvidia-opencl.so.1" > /etc/OpenCL/vendors/nvidia.icd')
 get_ipython().system('rm -r LightGBM')
 
 
-# In[7]:
 
 
 import lightgbm as lgb
 print("LightGBM version:", lgb.__version__)
 
 
-# In[8]:
 
 
 get_ipython().system('nvidia-smi')
 
 
-# In[9]:
 
 
 def reduce_mem_usage(props):
@@ -142,64 +133,54 @@ def reduce_mem_usage(props):
     return props
 
 
-# In[10]:
 
 
 get_ipython().run_cell_magic('time', '', "df_train_tr = pd.read_csv('../input/ieee-fraud-detection/train_transaction.csv')\ndf_train_id = pd.read_csv('../input/ieee-fraud-detection/train_identity.csv')")
 
 
-# In[11]:
 
 
 get_ipython().run_cell_magic('time', '', 'df_train_tr = reduce_mem_usage(df_train_tr)\ndf_train_id = reduce_mem_usage(df_train_id)')
 
 
-# In[12]:
 
 
 get_ipython().run_cell_magic('time', '', "df_test_tr = pd.read_csv('../input/ieee-fraud-detection/test_transaction.csv')\ndf_test_id = pd.read_csv('../input/ieee-fraud-detection/test_identity.csv')")
 
 
-# In[13]:
 
 
 get_ipython().run_cell_magic('time', '', 'df_test_tr = reduce_mem_usage(df_test_tr)\ndf_test_id = reduce_mem_usage(df_test_id)')
 
 
-# In[14]:
 
 
 submission = pd.read_csv('../input/ieee-fraud-detection/sample_submission.csv')
 
 
-# In[15]:
 
 
 get_ipython().run_cell_magic('time', '', "df_train = pd.merge(df_train_tr, df_train_id, on = 'TransactionID', how = 'left')\ndf_test = pd.merge(df_test_tr, df_test_id, on = 'TransactionID', how = 'left')")
 
 
-# In[16]:
 
 
 del df_train_id, df_train_tr, df_test_id, df_test_tr
 gc.collect()
 
 
-# In[17]:
 
 
 df = pd.concat([df_train, df_test], axis=0, sort=False)
 df.reset_index(inplace=True)
 
 
-# In[18]:
 
 
 del df_train, df_test
 gc.collect()
 
 
-# In[19]:
 
 
 def missing_data(df) :
@@ -215,27 +196,23 @@ def missing_data(df) :
     return np.transpose(total)
 
 
-# In[20]:
 
 
 missing_data(df)
 
 
-# In[21]:
 
 
 num_cols = [col for col in df.columns if df[col].dtype not in ['object']]
 df[num_cols].describe()
 
 
-# In[22]:
 
 
 cat_cols = [col for col in df.columns if df[col].dtype in ['object']]
 df[cat_cols].describe()
 
 
-# In[23]:
 
 
 for col in cat_cols :
@@ -247,7 +224,6 @@ for col in cat_cols :
           df[df.index < 590540]['isFraud'].groupby(df[col]).count()) 
 
 
-# In[24]:
 
 
 for col in cat_cols :
@@ -256,7 +232,6 @@ for col in cat_cols :
     print('# col {}, n_uniq {}, uniq {}'.format(col, len(uniq), uniq))
 
 
-# In[25]:
 
 
 """
@@ -271,14 +246,12 @@ for col in cat_cols :
 #cor_columns_over_zero_dot_tree = cor.index.tolist()
 
 
-# In[26]:
 
 
 #del cor
 #gc.collect()
 
 
-# In[27]:
 
 
 #colormap = plt.cm.RdBu
@@ -288,7 +261,6 @@ for col in cat_cols :
 #            cmap = colormap, linecolor = 'white', annot = True)
 
 
-# In[28]:
 
 
 df['V39_V51_V52_cor'] = df['V39'] + df['V51'] + df['V52']
@@ -313,7 +285,6 @@ df['V243_V244_cor'] = df['V243'] + df['V244']
 df['V246_V257_V258_cor'] = df['V246'] + df['V257'] + df['V258']
 
 
-# In[29]:
 
 
 START_DATE = '2019-01-01'
@@ -327,7 +298,6 @@ df['TransactionDT_Hours'] = df['Date'].dt.hour
 df.drop(columns='Date', inplace=True)
 
 
-# In[30]:
 
 
 def change_value_P_emaildomain(x) :
@@ -339,7 +309,6 @@ def change_value_P_emaildomain(x) :
 df.loc[:,'P_emaildomain'] = df['P_emaildomain'].apply(lambda x : change_value_P_emaildomain(x))
 
 
-# In[31]:
 
 
 def change_value_R_emaildomain(x) :
@@ -351,7 +320,6 @@ def change_value_R_emaildomain(x) :
 df.loc[:,'R_emaildomain'] = df['R_emaildomain'].apply(lambda x : change_value_R_emaildomain(x))
 
 
-# In[32]:
 
 
 def change_value_id_30(x) :
@@ -363,7 +331,6 @@ def change_value_id_30(x) :
 df.loc[:,'id_30'] = df['id_30'].apply(lambda x : change_value_id_30(x))
 
 
-# In[33]:
 
 
 def change_value_id_31(x) :
@@ -375,7 +342,6 @@ def change_value_id_31(x) :
 df.loc[:,'id_31'] = df['id_31'].apply(lambda x : change_value_id_31(x))
 
 
-# In[34]:
 
 
 def change_value_id_33(x) :
@@ -387,7 +353,6 @@ def change_value_id_33(x) :
 df.loc[:,'id_33'] = df['id_33'].apply(lambda x : change_value_id_33(x))
 
 
-# In[35]:
 
 
 tmp = 100*df[df.index < 590540]['isFraud'].groupby(df['DeviceInfo']).sum()/df[df.index < 590540]['isFraud'].groupby(df['DeviceInfo']).count()
@@ -407,14 +372,12 @@ def change_value_DeviceInfo(x) :
 df.loc[:,'DeviceInfo'] = df['DeviceInfo'].apply(lambda x : change_value_DeviceInfo(x))
 
 
-# In[36]:
 
 
 df_num = df.select_dtypes(exclude = ['object'])
 df_cat = df.select_dtypes(include = ['object'])
 
 
-# In[37]:
 
 
 pca_temp = df_num.drop(columns = ['isFraud', 'index', 'TransactionID', 'TransactionDT']).fillna(df_num.min()-1)
@@ -425,20 +388,17 @@ for i in range(5) :
     df_num['PCA_' + str(i+1)] = pca_X[:,i]
 
 
-# In[38]:
 
 
 del df, pca_temp
 gc.collect()
 
 
-# In[39]:
 
 
 df_cat_one_hot = pd.get_dummies(df_cat)
 
 
-# In[40]:
 
 
 pca_temp_cat = df_cat_one_hot.fillna(df_cat_one_hot.min()-1)
@@ -449,41 +409,35 @@ for i in range(5) :
     df_cat_one_hot['PCA_cat_' + str(i+1)] = pca_X_cat[:,i]
 
 
-# In[41]:
 
 
 del pca_temp_cat
 gc.collect()
 
 
-# In[42]:
 
 
 df_total = pd.concat([df_num, df_cat_one_hot], axis=1)
 df_total.shape
 
 
-# In[43]:
 
 
 df_total.drop(columns = ['TransactionID', 'index'], inplace=True)
 
 
-# In[44]:
 
 
 del df_num, df_cat
 gc.collect()
 
 
-# In[45]:
 
 
 df_train = df_total[df_total.index < 590540]
 df_test = df_total[df_total.index >= 590540]
 
 
-# In[46]:
 
 
 y = pd.DataFrame(df_train['isFraud'])
@@ -491,26 +445,22 @@ X = df_train.drop(columns=['isFraud'])
 X_test = df_test.drop(columns=['isFraud'])
 
 
-# In[47]:
 
 
 X.shape, y.shape, X_test.shape
 
 
-# In[48]:
 
 
 del df_train, df_test, df_total
 gc.collect()
 
 
-# In[49]:
 
 
 np.unique(y['isFraud'])
 
 
-# In[50]:
 
 
 index_array = np.arange(len(X))
@@ -519,20 +469,17 @@ train_index = np.delete(index_array[:X.shape[0]], val_index, axis=0)
 len(train_index), len(val_index)
 
 
-# In[51]:
 
 
 X_train, X_val = X.iloc[train_index], X.iloc[val_index]
 y_train, y_val = y.iloc[train_index], y.iloc[val_index]
 
 
-# In[52]:
 
 
 get_ipython().run_cell_magic('time', '', 'prediction_test_fold = []\n\nparam = {\'booster\' : \'gbtree\',\n         \'max_depth\' : 14,\n         \'nthread\' : -1,\n         \'num_class\' : 1,\n         \'objective\' : \'binary:logistic\',\n         \'silent\' : 1,\n         \'eval_metric\' : \'auc\',\n         \'eta\' : 0.01,\n         \'tree_method\' : \'gpu_hist\',\n         \'min_child_weight\' : 0,\n         \'colsample_bytree\' : 0.8,\n         \'colsample_bylevel\' : 0.8,\n         \'seed\' : 2019}\n\n\n\n    \nprint("Train Shape :", X_train.shape,\n      "Validation Shape :", X_val.shape,\n      "Test Shape :", X_test.shape)\n    \ndtrn = xgb.DMatrix(X_train, label=y_train, feature_names = X.columns)\ndval = xgb.DMatrix(X_val, label = y_val, feature_names = X.columns)\ndtst = xgb.DMatrix(X_test, feature_names = X.columns)\n    \nxgb1 = xgb.train(param, dtrn, num_boost_round=10000, evals = [(dtrn, \'train\'), (dval, \'eval\')],\n                 early_stopping_rounds = 200, verbose_eval=200)\n                 \nprediction_XGB = xgb1.predict(dtst)\n#prediction_test_fold.append(prediction_XGB)\n\nprediction_val_XGB = xgb1.predict(xgb.DMatrix(X_val, feature_names = X.columns))')
 
 
-# In[53]:
 
 
 for i in range(2):
@@ -553,20 +500,17 @@ for i in range(2):
         plt.show()
 
 
-# In[54]:
 
 
 del dtrn, dval, dtst, xgb1
 gc.collect()
 
 
-# In[55]:
 
 
 get_ipython().run_cell_magic('time', '', '\nparams = {\'num_leaves\': 500,\n          \'min_child_weight\': 0.03,\n          \'feature_fraction\': 0.35,\n          \'bagging_fraction\': 0.35,\n          \'min_data_in_leaf\': 100,\n          \'objective\': \'binary\',\n          \'max_depth\': 14,\n          \'learning_rate\': 0.01,\n          "boosting_type": "gbdt",\n          "bagging_seed": 10,\n          "metric": \'auc\',\n          "verbosity": -1,\n          \'reg_alpha\': 0.2,\n          \'reg_lambda\': 0.6,\n          \'random_state\': 50,\n          \'device\': \'gpu\',\n          \'gpu_platform_id\': 0,\n          \'gpu_device_id\': 0\n         }\n\n\ndtrain = lgb.Dataset(X_train, label=y_train)\ndvalid = lgb.Dataset(X_val, label=y_val)\n\nmodel = lgb.train(params, dtrain, 10000, valid_sets = [dtrain, dvalid], verbose_eval=100, early_stopping_rounds=200)\n    \n\nprediction_LGB = model.predict(X_test)\nprediction_val_LGB = model.predict(X_val)')
 
 
-# In[56]:
 
 
 for i in range(2):
@@ -587,14 +531,12 @@ for i in range(2):
         plt.show()
 
 
-# In[57]:
 
 
 submission['isFraud'] = np.nan
 submission.head()
 
 
-# In[58]:
 
 
 submission['isFraud'] = (0.5 * prediction_XGB) + (0.5 * prediction_LGB)
@@ -602,13 +544,11 @@ submission['isFraud'] = (0.5 * prediction_XGB) + (0.5 * prediction_LGB)
 submission.head()
 
 
-# In[59]:
 
 
 submission[submission['isFraud'] > 0.1]
 
 
-# In[60]:
 
 
 submission.to_csv('sample_submission_after_Feature_Engineering11.csv', index = False)

@@ -1,27 +1,23 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from IPython.core.display import display, HTML
 display(HTML("<style>.container { width:120% !important; }</style>"))
 
 
-# In[2]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[3]:
 
 
 import multiprocessing
 #from util.utils import timer
 
 
-# In[4]:
 
 
 import os
@@ -36,7 +32,6 @@ os.mkdir("../model")
 os.mkdir("../model/final")
 
 
-# In[5]:
 
 
 '''
@@ -98,7 +93,6 @@ from keras.engine.topology import Layer
 from keras import initializers, regularizers, constraints
 
 
-# In[6]:
 
 
 path = '../'
@@ -133,7 +127,6 @@ act = 'relu'
 Trainable=True
 
 
-# In[7]:
 
 
 from contextlib import contextmanager
@@ -155,7 +148,6 @@ def timer(name):
     print(f' Ended : '+datetime.now().strftime("%d-%m-%Y %H:%M"))
 
 
-# In[8]:
 
 
 class Attention(Layer):
@@ -253,7 +245,6 @@ class Attention(Layer):
         return input_shape[0],  self.features_dim
 
 
-# In[9]:
 
 
 def plot_confusion_matrix(cm, classes,
@@ -293,7 +284,6 @@ def plot_confusion_matrix(cm, classes,
     return
 
 
-# In[10]:
 
 
 def multi_roc_auc_score(y_true, y_pred):
@@ -307,7 +297,6 @@ def multi_roc_auc_score(y_true, y_pred):
     return np.array(scores).mean()
 
 
-# In[11]:
 
 
 def multi_confusion(y_true, y_pred):
@@ -324,7 +313,6 @@ def multi_confusion(y_true, y_pred):
     return 
 
 
-# In[12]:
 
 
 import re
@@ -333,7 +321,6 @@ def remove_urls (vTEXT):
     return(vTEXT)
 
 
-# In[13]:
 
 
 def ReplaceThreeOrMore(s):
@@ -343,7 +330,6 @@ def ReplaceThreeOrMore(s):
     return pattern.sub(r"\1", s)
 
 
-# In[14]:
 
 
 def splitstring(s):
@@ -362,7 +348,6 @@ def splitstring(s):
     return proposed_pattern
 
 
-# In[15]:
 
 
 ########################################
@@ -463,7 +448,6 @@ def text_to_wordlist(text,to_lower=False, rem_urls=False, rem_3plus=False,      
 
 
 
-# In[16]:
 
 
 train_df = pd.read_csv(TRAIN_DATA_FILE)
@@ -475,7 +459,6 @@ yaux=train_df["toxic"].values
 list_sentences_test = test_df["comment_text"].fillna("NA").values
 
 
-# In[17]:
 
 
 comments = []
@@ -484,7 +467,6 @@ for text in list_sentences_train:
     
 
 
-# In[18]:
 
 
 
@@ -493,7 +475,6 @@ for text in list_sentences_test:
     test_comments.append(text_to_wordlist(text))
 
 
-# In[19]:
 
 
 tokenizer = Tokenizer(num_words=max_features)
@@ -503,7 +484,6 @@ sequences = tokenizer.texts_to_sequences(comments)
 test_sequences = tokenizer.texts_to_sequences(test_comments)
 
 
-# In[20]:
 
 
 print(len(sequences), 'train sequences')
@@ -512,7 +492,6 @@ print('Average train sequence length: {}'.format(np.mean(list(map(len, sequences
 print('Average test sequence length: {}'.format(np.mean(list(map(len, test_sequences)), dtype=int)))
 
 
-# In[21]:
 
 
 print(len(sequences), 'train sequences')
@@ -521,7 +500,6 @@ print('Max train sequence length: {}'.format(np.max(list(map(len, sequences)))))
 print('Max test sequence length: {}'.format(np.max(list(map(len, test_sequences)))))
 
 
-# In[22]:
 
 
 print(len(sequences), 'train sequences')
@@ -530,7 +508,6 @@ print('Min train sequence length: {}'.format(np.min(list(map(len, sequences)))))
 print('Min test sequence length: {}'.format(np.min(list(map(len, test_sequences)))))
 
 
-# In[23]:
 
 
 word_index = tokenizer.word_index
@@ -544,13 +521,11 @@ test_data = pad_sequences(test_sequences, maxlen=maxlen)
 print('Shape of test_data tensor:', test_data.shape)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
@@ -559,7 +534,6 @@ filext = '_ml_' + str(maxlen) + '_mf_' + str(max_features) + '_eb_' + str(EMBEDD
 np.save(path+'prodata/train_data'+filext, data)
 np.save(path+'prodata/test_data'+filext,test_data)
 
-# In[24]:
 
 
 del comments
@@ -571,7 +545,6 @@ del train_df
 del test_df
 
 
-# In[25]:
 
 
 ########################################
@@ -608,7 +581,6 @@ f.close()
 print('Total %s word vectors.' % len(embeddings_index))
 
 
-# In[26]:
 
 
 #########
@@ -698,7 +670,6 @@ for word, i in word_index.items():
         #print (word)
         nl = nl +1   
 del word_vector
-# In[27]:
 
 
 #print('Null word embeddings: %d' % np.sum(np.sum(embedding_matrix, axis=1) == 0)) 
@@ -784,7 +755,6 @@ def create_model6():
     return model, mdln
 
 
-# In[28]:
 
 
 def create_model0():
@@ -824,7 +794,6 @@ def create_model0():
    return model,mdln
 
 
-# In[29]:
 
 
 # ## Modelo LSTM Base Line 
@@ -866,7 +835,6 @@ def create_model1():
     return model, mdln
 
 
-# In[30]:
 
 
 ########################################
@@ -900,7 +868,6 @@ def create_model2( ):
     return model, mdln
 
 
-# In[31]:
 
 
 ########################################
@@ -937,7 +904,6 @@ def create_model3():
   
 
 
-# In[32]:
 
 
 from keras.models import Sequential
@@ -979,7 +945,6 @@ def create_model4():
     return model, mdln
 
 
-# In[33]:
 
 
 from keras.models import Sequential
@@ -1008,7 +973,6 @@ def create_model5():
     return model, mdln
 
 
-# In[34]:
 
 
 ####
@@ -1045,7 +1009,6 @@ def create_model6( ):
     return model, mdln
 
 
-# In[35]:
 
 
 def create_model7():
@@ -1068,7 +1031,6 @@ def create_model7():
     return model, mdln
 
 
-# In[36]:
 
 
 ####
@@ -1108,7 +1070,6 @@ def create_model8( ):
     return model, mdln
 
 
-# In[37]:
 
 
 def create_model9( ):
@@ -1140,7 +1101,6 @@ def create_model9( ):
         
 
 
-# In[38]:
 
 
 def create_model10( ):
@@ -1177,7 +1137,6 @@ def create_model10( ):
     
 
 
-# In[39]:
 
 
 def create_model11( ):
@@ -1212,7 +1171,6 @@ def create_model11( ):
     
 
 
-# In[40]:
 
 
 def create_model12():
@@ -1252,7 +1210,6 @@ def create_model12():
     
 
 
-# In[41]:
 
 
 # ## Modelo LSTM Base Line 
@@ -1277,7 +1234,6 @@ def create_model13():
         return model, mdln
 
 
-# In[42]:
 
 
 def create_model14():
@@ -1315,7 +1271,6 @@ def create_model14():
         return model, mdln
 
 
-# In[43]:
 
 
 def create_model15():
@@ -1343,7 +1298,6 @@ def create_model15():
         return model, mdln
 
 
-# In[44]:
 
 
 ########################################
@@ -1376,7 +1330,6 @@ def create_model16( ):
 
 
 
-# In[45]:
 
 
 def create_model17( ):
@@ -1407,7 +1360,6 @@ def create_model17( ):
         
 
 
-# In[46]:
 
 
 def create_model18( ):
@@ -1436,7 +1388,6 @@ def create_model18( ):
         return model, mdln  
 
 
-# In[47]:
 
 
 def create_model19( ):
@@ -1475,7 +1426,6 @@ def create_model19( ):
         
 
 
-# In[48]:
 
 
 def dict_to_list(d):
@@ -1499,7 +1449,6 @@ def get_validation_predictions(train_data, predictions_valid):
     return pv
 
 
-# In[49]:
 
 
 from keras import backend as K
@@ -1523,7 +1472,6 @@ def reset_weights(model):
     print ("reinitializing layers...")
 
 
-# In[50]:
 
 
 def evaluate_model ( label, X_train, X_valid, Y_train, Y_valid, STAMP):
@@ -1558,7 +1506,6 @@ def evaluate_model ( label, X_train, X_valid, Y_train, Y_valid, STAMP):
             return bst_model_path
 
 
-# In[51]:
 
 
 def run_cross_validation_create_models(label,nsplits=10,epochs=3,patience=3):
@@ -1647,7 +1594,6 @@ def run_cross_validation_create_models(label,nsplits=10,epochs=3,patience=3):
         
 
 
-# In[52]:
 
 
 def create_model (label):
@@ -1742,7 +1688,6 @@ def create_model (label):
             
 
 
-# In[53]:
 
 
 nsplits = 3

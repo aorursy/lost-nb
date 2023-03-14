@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 get_ipython().system('pip install -q efficientnet')
 get_ipython().system('pip install image-classifiers==1.0.0b1')
 
 
-# In[ ]:
 
 
 import pandas as pd
@@ -45,7 +43,6 @@ import tensorflow_addons as tfa
 import cv2
 
 
-# In[ ]:
 
 
 # for reproducible results :
@@ -60,7 +57,6 @@ def seed_everything(seed=13):
 seed_everything(42)
 
 
-# In[ ]:
 
 
 try :
@@ -79,7 +75,6 @@ else :
 print('Replicas :',strategy.num_replicas_in_sync)    
 
 
-# In[ ]:
 
 
 AUTO  = tf.data.experimental.AUTOTUNE
@@ -93,7 +88,6 @@ SEED =  42
 nb_classes = 1
 
 
-# In[ ]:
 
 
 sub = pd.read_csv('../input/alaska2-image-steganalysis/sample_submission.csv')
@@ -102,7 +96,6 @@ files_name = np.array(os.listdir('../input/alaska2-image-steganalysis/Cover'))
 path = '../input/alaska2-image-steganalysis/'
 
 
-# In[ ]:
 
 
 #function to be able to read images
@@ -110,14 +103,12 @@ def append_path(pre) :
     return np.vectorize(lambda file : os.path.join(GCS_DS_PATH,pre,file))
 
 
-# In[ ]:
 
 
 def append_path2(pre) :
     return np.vectorize(lambda file : os.path.join(path,pre,file))
 
 
-# In[ ]:
 
 
 #reading file names and shuffling them
@@ -128,14 +119,12 @@ np.random.shuffle(positives)
 np.random.shuffle(negatives)
 
 
-# In[ ]:
 
 
 test_paths = append_path('Test')(sub.Id.values)
 test_paths2 = append_path2('Test')(sub.Id.values)
 
 
-# In[ ]:
 
 
 #creating data so that i have 30k pos image (10k of each transformation) and 30k neg image
@@ -152,7 +141,6 @@ neg_paths = append_path('Cover')(negatives[:74999])
 #neg_paths2 = append_path2('Cover')(negatives[:6000])
 
 
-# In[ ]:
 
 
 train_paths = np.concatenate([pos_paths,neg_paths])
@@ -163,14 +151,12 @@ train_paths , train_labels = shuffle(train_paths,train_labels)
 #train_paths2 , train_labels = shuffle(train_paths2,train_labels)
 
 
-# In[ ]:
 
 
 #splitting data into train 85% / validation 15%
 X_train , X_val, y_train , y_val = train_test_split(train_paths, train_labels , random_state=SEED,test_size = 0.15)
 
 
-# In[ ]:
 
 
 bool_random_brightness = False
@@ -183,7 +169,6 @@ mixup_rate = 0
 gridmask_rate = 0
 
 
-# In[ ]:
 
 
 get_ipython().system(' git clone https://github.com/dwgoon/jpegio')
@@ -192,7 +177,6 @@ get_ipython().system('pip install jpegio/.')
 import jpegio as jio
 
 
-# In[ ]:
 
 
 import numpy as np
@@ -201,7 +185,6 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
 
-# In[ ]:
 
 
 #This code extract YCbCr channels from a jpeg object
@@ -237,7 +220,6 @@ def JPEGdecompressYCbCr(jpegStruct):
     return imDecompressYCbCr
 
 
-# In[ ]:
 
 
 for i, img in enumerate(os.listdir('../input/alaska2-image-steganalysis/Cover')[:10]):
@@ -251,7 +233,6 @@ for i, img in enumerate(os.listdir('../input/alaska2-image-steganalysis/Cover')[
     print(imDecompressYCbCr.shape)
 
 
-# In[ ]:
 
 
 '''def decode_image(file,label=None,img_size=(img_size,img_size)) :
@@ -303,7 +284,6 @@ def data_augment(image ,label = None,seed=2020) :
         return image , label
 
 
-# In[ ]:
 
 
 # batch
@@ -358,7 +338,6 @@ def cutmix(image, label, PROBABILITY = cutmix_rate):
     return image2,label2
 
 
-# In[ ]:
 
 
 def mixup(image, label, PROBABILITY = mixup_rate):
@@ -394,7 +373,6 @@ def mixup(image, label, PROBABILITY = mixup_rate):
     return image2,label2
 
 
-# In[ ]:
 
 
 def transform(image, inv_mat, image_shape):
@@ -423,7 +401,6 @@ def transform(image, inv_mat, image_shape):
     return tf.transpose(tf.stack(rotated_image_channel), [1,2,0])
 
 
-# In[ ]:
 
 
 def random_rotate(image, angle, image_shape):
@@ -442,7 +419,6 @@ def random_rotate(image, angle, image_shape):
     return transform(image, rot_mat_inv, image_shape)
 
 
-# In[ ]:
 
 
 def GridMask(image_height, image_width, d1, d2, rotate_angle=1, ratio=0.5):
@@ -492,7 +468,6 @@ def GridMask(image_height, image_width, d1, d2, rotate_angle=1, ratio=0.5):
     return mask
 
 
-# In[ ]:
 
 
 def apply_grid_mask(image, image_shape, PROBABILITY = gridmask_rate):
@@ -518,7 +493,6 @@ def gridmask(img_batch, label_batch):
     return apply_grid_mask(img_batch, (img_size,img_size, 3)), label_batch
 
 
-# In[ ]:
 
 
 def create_train_data(train_paths,train_labels) :
@@ -566,7 +540,6 @@ def create_test_data(test_paths,aug=False):
     return test_data
 
 
-# In[ ]:
 
 
 train_labels = tf.cast(train_labels,tf.float32)
@@ -574,7 +547,6 @@ train_data = create_train_data(train_paths2,train_labels)
 test_data = create_test_data(test_paths2)
 
 
-# In[ ]:
 
 
 train_labels = tf.cast(train_labels,tf.float32)
@@ -582,7 +554,6 @@ train_data = create_train_data(train_paths,train_labels)
 test_data = create_test_data(test_paths)
 
 
-# In[ ]:
 
 
 lr_start = 0.001
@@ -612,25 +583,21 @@ plt.plot(rng,y)
 print("Learning rate schedule: {:.3g} to {:.3g} to {:.3g}".format(y[0], max(y), y[-1]))
 
 
-# In[ ]:
 
 
 lr_scheduler = LearningRateScheduler(lrfn , verbose=True)
 
 
-# In[ ]:
 
 
 mc = ModelCheckpoint('best_model.h5',monitor=tf.keras.metrics.AUC(),mode='max',save_best_only=True,verbose=1)
 
 
-# In[ ]:
 
 
 es = EarlyStopping(monitor=tf.keras.metrics.AUC(),mode='max',verbose=1,patience=5)
 
 
-# In[ ]:
 
 
 # https://www.kaggle.com/anokas/weighted-auc-metric-updated
@@ -668,14 +635,12 @@ def alaska_weighted_auc(y_true, y_valid):
     return competition_metric / normalization
 
 
-# In[ ]:
 
 
 focal_loss = False
 label_smoothing = 0
 
 
-# In[ ]:
 
 
 def get_model_generalized(name,trainable_layers=20):
@@ -738,14 +703,12 @@ def get_model_generalized(name,trainable_layers=20):
     return model
 
 
-# In[ ]:
 
 
 model_effnet = get_model_generalized('EfficientNet')
 model_effnet.summary()
 
 
-# In[ ]:
 
 
 '''model = tf.keras.Sequential([
@@ -758,13 +721,11 @@ model_effnet.summary()
   
 
 
-# In[ ]:
 
 
 steps_per_epoch = len(train_labels) // BATCH_SIZE
 
 
-# In[ ]:
 
 
 with strategy.scope() :
@@ -778,7 +739,6 @@ history = model_effnet.fit(
     )    
 
 
-# In[ ]:
 
 
 predictions = model_effnet.predict(test_data , verbose=1)
@@ -786,7 +746,6 @@ sub['Label'] = predictions
 sub.to_csv('e2_fulldata.csv',index=False)
 
 
-# In[ ]:
 
 
 del model_effnet 
@@ -794,7 +753,6 @@ import gc
 gc.collect()
 
 
-# In[ ]:
 
 
 with strategy.scope() :
@@ -807,7 +765,6 @@ history = model_incepresnet.fit(
     ) 
 
 
-# In[ ]:
 
 
 predictions = model_incepresnet.predict(test_data , verbose=1)
@@ -815,7 +772,6 @@ sub['Label'] = predictions
 sub.to_csv('DenseNetBaseline.csv',index=False)
 
 
-# In[ ]:
 
 
 kfolds = 5
@@ -850,7 +806,6 @@ for i,(train_indices,valid_indices) in enumerate(folds.split(train_paths,train_l
     probs.append(prob)
 
 
-# In[ ]:
 
 
 prob_sum = 0
@@ -863,7 +818,6 @@ sub.to_csv('effnetCV', index=False)
 sub.head()
 
 
-# In[ ]:
 
 
 #model_effnet.load('best_model.h5')
@@ -886,13 +840,11 @@ sub['Label'] = tab
 sub.to_csv('model_name+TTA.csv',index=False)
 
 
-# In[ ]:
 
 
 test_data = create_test_data(test_path)
 
 
-# In[ ]:
 
 
 def binary_model(steg):
@@ -925,7 +877,6 @@ def binary_model(steg):
     return sub
 
 
-# In[ ]:
 
 
 sub_jmipod = binary_model('JMiPOD')

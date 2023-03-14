@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import abc
@@ -42,7 +41,6 @@ import sys
 import pdb
 
 
-# In[2]:
 
 
 def reduce_mem_usage(df, verbose=True):
@@ -74,7 +72,6 @@ def reduce_mem_usage(df, verbose=True):
     return df
 
 
-# In[3]:
 
 
 conf_string = '''
@@ -167,13 +164,11 @@ output_dir: "output"
 '''
 
 
-# In[4]:
 
 
 config = dict(yaml.load(conf_string, Loader=yaml.SafeLoader))
 
 
-# In[5]:
 
 
 def feature_existence_checker(feature_path: Path,
@@ -187,7 +182,6 @@ def feature_existence_checker(feature_path: Path,
     return True
 
 
-# In[6]:
 
 
 class MyEncoder(json.JSONEncoder):
@@ -208,7 +202,6 @@ def save_json(config: dict, save_path: Union[str, Path]):
     f.close()
 
 
-# In[7]:
 
 
 def configure_logger(config_name: str, log_dir: Union[Path, str], debug: bool):
@@ -233,7 +226,6 @@ def configure_logger(config_name: str, log_dir: Union[Path, str], debug: bool):
         datefmt="%m/%d/%Y %I:%M:%S %p")
 
 
-# In[8]:
 
 
 @contextmanager
@@ -253,7 +245,6 @@ def timer(name: str, log: bool = False):
         logging.info(msg)
 
 
-# In[9]:
 
 
 def RandGroupKfold(groups, n_splits, random_state=None, shuffle_groups=False):
@@ -274,7 +265,6 @@ def RandGroupKfold(groups, n_splits, random_state=None, shuffle_groups=False):
     return train_test_indices
 
 
-# In[10]:
 
 
 def group_kfold(df: pd.DataFrame, groups: pd.Series,random_state,
@@ -303,7 +293,6 @@ def get_validation(df: pd.DataFrame,random_state,
         return func(df, config)
 
 
-# In[11]:
 
 
 class OptimizedRounder(object):
@@ -357,7 +346,6 @@ class OptimizedRounder(object):
         return self.coef_['x']
 
 
-# In[12]:
 
 
 @jit
@@ -391,7 +379,6 @@ def calc_metric(y_true: Union[np.ndarray, list],
     return qwk(y_true, y_pred)
 
 
-# In[13]:
 
 
 def eval_qwk_lgb_regr(y_true, y_pred):
@@ -429,7 +416,6 @@ def cohenkappa(ypred, y):
     return "cappa", loss, True
 
 
-# In[14]:
 
 
 from catboost import CatBoostClassifier, CatBoostRegressor
@@ -551,7 +537,6 @@ class BaseModel(object):
         return models, oof_preds,oof_true, test_preds, feature_importance, evals_results
 
 
-# In[15]:
 
 
 class NN(BaseModel):
@@ -610,7 +595,6 @@ class NN(BaseModel):
         return 0
 
 
-# In[16]:
 
 
 CatModel = Union[CatBoostClassifier, CatBoostRegressor]
@@ -653,7 +637,6 @@ class CatBoost(BaseModel):
         return model.feature_importances_
 
 
-# In[17]:
 
 
 LgbmModel = Union[LGBMClassifier, LGBMRegressor]
@@ -692,7 +675,6 @@ class Lgbm(BaseModel):
         return model.feature_importance(importance_type="gain")
 
 
-# In[18]:
 
 
 XgbModel = Union[XGBRegressor,XGBClassifier]
@@ -728,7 +710,6 @@ class Xgb(BaseModel):
         return model.get_fscore()
 
 
-# In[19]:
 
 
 def catboost() -> CatBoost:
@@ -751,7 +732,6 @@ def get_model(config: dict, model:str):
     return func()
 
 
-# In[20]:
 
 
 class Feature(metaclass=abc.ABCMeta):
@@ -845,7 +825,6 @@ def load_features(config: dict) -> Tuple[pd.DataFrame, pd.DataFrame]:
     return x_train, x_test
 
 
-# In[21]:
 
 
 IoF = Union[int, float]
@@ -1290,7 +1269,6 @@ class KernelFeatures(PartialFeature):
         return self.df
 
 
-# In[22]:
 
 
 warnings.filterwarnings("ignore")
@@ -1320,7 +1298,6 @@ logging.info(f"model output dir: {str(output_dir)}")
 config["model_output_dir"] = str(output_dir)
 
 
-# In[23]:
 
 
 input_dir = Path(config["dataset"]["dir"])
@@ -1333,7 +1310,6 @@ test = test.loc[test.installation_id.isin(inst_testid)]
 specs = pd.read_csv(input_dir / "specs.csv")
 
 
-# In[24]:
 
 
 input_dir = Path(config["dataset"]["dir"])
@@ -1375,7 +1351,6 @@ logging.debug(f"number of train samples: {len(x_train)}")
 logging.debug(f"numbber of test samples: {len(x_test)}")
 
 
-# In[25]:
 
 
 def stract_hists(feature, train, test, adjust=False, plot=False):
@@ -1398,7 +1373,6 @@ def stract_hists(feature, train, test, adjust=False, plot=False):
     return msre
 
 
-# In[26]:
 
 
 def remove_correlated_features(reduce_train, features):
@@ -1415,7 +1389,6 @@ def remove_correlated_features(reduce_train, features):
     return to_remove
 
 
-# In[27]:
 
 
 to_remove = remove_correlated_features(x_train, cols)
@@ -1423,7 +1396,6 @@ features = [col for col in x_train.columns if col not in to_remove]
 features = [col for col in features if col not in ['Heavy, Heavier, Heaviest_2000', 'Heavy, Heavier, Heaviest']]
 
 
-# In[28]:
 
 
 to_exclude = [] 
@@ -1447,14 +1419,12 @@ for feature in features:
             print(feature, train_mean, test_mean)
 
 
-# In[29]:
 
 
 to_exclude = list(set(to_exclude).union(['installation_id','accuracy_group','session_id']))
 features = [x for x in features if x not in (to_exclude)]
 
 
-# In[30]:
 
 
 def select_uncorrelated_features(reduce_train, features):
@@ -1477,13 +1447,11 @@ def select_uncorrelated_features(reduce_train, features):
     return to_remove1,to_remove2
 
 
-# In[31]:
 
 
 to_seperate1,to_seperate2 = select_uncorrelated_features(x_train, features)
 
 
-# In[32]:
 
 
 def select_uncorrelated_features(reduce_train, features):
@@ -1506,19 +1474,16 @@ def select_uncorrelated_features(reduce_train, features):
     return to_remove1,to_remove2
 
 
-# In[33]:
 
 
 to_seperate11,to_seperate12 = select_uncorrelated_features(x_train, to_seperate1)
 
 
-# In[34]:
 
 
 to_seperate21,to_seperate22 = select_uncorrelated_features(x_train, to_seperate2)
 
 
-# In[35]:
 
 
 features1 = [feat for feat in features if feat in to_seperate11]
@@ -1527,7 +1492,6 @@ features3 = [feat for feat in features if feat in to_seperate21]
 features4 = [feat for feat in features if feat in to_seperate22]
 
 
-# In[36]:
 
 
 features1 = list(set(features1).union(['session_title']))
@@ -1536,7 +1500,6 @@ features3 = list(set(features3).union(['session_title']))
 features4 = list(set(features4).union(['session_title']))
 
 
-# In[37]:
 
 
 logging.info("Adversarial Validation")
@@ -1595,7 +1558,6 @@ config["av_result"]["feature_importances"] =     feature_imp.set_index("feature"
     ).head(100).to_dict()["value"]
 
 
-# In[38]:
 
 
 logging.info("Adversarial Validation")
@@ -1654,7 +1616,6 @@ config["av_result"]["feature_importances"] =     feature_imp.set_index("feature"
     ).head(100).to_dict()["value"]
 
 
-# In[39]:
 
 
 logging.info("Adversarial Validation")
@@ -1713,7 +1674,6 @@ config["av_result"]["feature_importances"] =     feature_imp.set_index("feature"
     ).head(100).to_dict()["value"]
 
 
-# In[40]:
 
 
 logging.info("Adversarial Validation")
@@ -1772,14 +1732,12 @@ config["av_result"]["feature_importances"] =     feature_imp.set_index("feature"
     ).head(100).to_dict()["value"]
 
 
-# In[41]:
 
 
 import gc
 gc.collect()
 
 
-# In[42]:
 
 
 '''
@@ -1813,7 +1771,6 @@ plt.savefig(output_dir / "feature_importance_model.png")
 '''
 
 
-# In[43]:
 
 
 '''
@@ -1847,7 +1804,6 @@ plt.savefig(output_dir / "feature_importance_model.png")
 '''
 
 
-# In[44]:
 
 
 '''
@@ -1881,7 +1837,6 @@ plt.savefig(output_dir / "feature_importance_model.png")
 '''
 
 
-# In[45]:
 
 
 '''
@@ -1915,20 +1870,17 @@ plt.savefig(output_dir / "feature_importance_model.png")
 '''
 
 
-# In[46]:
 
 
 #gc.collect()
 
 
-# In[47]:
 
 
 x_train['session_title'] = x_train['session_title'].astype('category')
 x_test['session_title'] = x_test['session_title'].astype('category')
 
 
-# In[48]:
 
 
 logging.info("Train model")
@@ -1960,7 +1912,6 @@ plt.tight_layout()
 plt.savefig(output_dir / "feature_importance_model.png")
 
 
-# In[49]:
 
 
 logging.info("Train model")
@@ -1992,7 +1943,6 @@ plt.tight_layout()
 plt.savefig(output_dir / "feature_importance_model.png")
 
 
-# In[50]:
 
 
 logging.info("Train model")
@@ -2024,7 +1974,6 @@ plt.tight_layout()
 plt.savefig(output_dir / "feature_importance_model.png")
 
 
-# In[51]:
 
 
 logging.info("Train model")
@@ -2056,34 +2005,29 @@ plt.tight_layout()
 plt.savefig(output_dir / "feature_importance_model.png")
 
 
-# In[ ]:
 
 
 
 
 
-# In[52]:
 
 
 #np.corrcoef([cat_preds1,cat_preds2,cat_preds3,cat_preds4,lgbm_preds1,lgbm_preds2,lgbm_preds3,lgbm_preds4])
 np.corrcoef([lgbm_preds1,lgbm_preds2,lgbm_preds3,lgbm_preds4])
 
 
-# In[53]:
 
 
 #np.corrcoef([oof_preds1,oof_preds2,oof_preds3,oof_preds4,oof_preds5,oof_preds6,oof_preds7,oof_preds8])
 np.corrcoef([oof_preds5,oof_preds6,oof_preds7,oof_preds8])
 
 
-# In[54]:
 
 
 #np.corrcoef([oof_true1,oof_true2,oof_true3,oof_true4,oof_true5,oof_true6,oof_true7,oof_true8])
 np.corrcoef([oof_true5,oof_true6,oof_true7,oof_true8])
 
 
-# In[55]:
 
 
 '''
@@ -2117,7 +2061,6 @@ plt.savefig(output_dir / "feature_importance_model.png")
 '''
 
 
-# In[56]:
 
 
 save_path = output_dir / "output.json"
@@ -2128,7 +2071,6 @@ with open(output_dir / "model.pkl", "wb") as m:
     pickle.dump(models, m)
 
 
-# In[57]:
 
 
 '''
@@ -2167,14 +2109,12 @@ def train_keras(X, y, run_lr_finder=False, epochs=5):
 '''
 
 
-# In[58]:
 
 
 #model_lists = ['cat1','cat2','cat3','cat4','lgbm1','lgbm2','lgbm3','lgbm4']
 model_lists = ['lgbm1','lgbm2','lgbm3','lgbm4']
 
 
-# In[59]:
 
 
 import seaborn as sns
@@ -2204,14 +2144,12 @@ def ridgecv_predict():
     return reg.coef_
 
 
-# In[60]:
 
 
 from sklearn.linear_model import RidgeCV
 coeff = ridgecv_predict()
 
 
-# In[61]:
 
 
 #final_oof_pred =(coeff[0]*oof_preds1+coeff[1]*oof_preds2+coeff[2]*oof_preds3+coeff[3]*oof_preds4+
@@ -2219,7 +2157,6 @@ coeff = ridgecv_predict()
 final_oof_pred =(coeff[0]*oof_preds5+coeff[1]*oof_preds6+coeff[2]*oof_preds7+coeff[3]*oof_preds8)
 
 
-# In[62]:
 
 
 #final_pred = (coeff[0]*cat_preds1+coeff[1]*cat_preds2+coeff[2]*cat_preds3+coeff[3]*cat_preds4+
@@ -2227,21 +2164,18 @@ final_oof_pred =(coeff[0]*oof_preds5+coeff[1]*oof_preds6+coeff[2]*oof_preds7+coe
 final_pred = (coeff[0]*lgbm_preds1+coeff[1]*lgbm_preds2+coeff[2]*lgbm_preds3+coeff[3]*lgbm_preds4)
 
 
-# In[63]:
 
 
 #np.corrcoef([oof_preds1,oof_preds2,oof_preds3,oof_preds4,oof_preds5,oof_preds6,oof_preds7,oof_preds8,final_oof_pred])
 np.corrcoef([oof_preds5,oof_preds6,oof_preds7,oof_preds8,final_oof_pred])
 
 
-# In[64]:
 
 
 #np.corrcoef([cat_preds1,cat_preds2,cat_preds3,cat_preds4,lgbm_preds1,lgbm_preds2,lgbm_preds3,lgbm_preds4,final_pred])
 np.corrcoef([lgbm_preds1,lgbm_preds2,lgbm_preds3,lgbm_preds4,final_pred])
 
 
-# In[65]:
 
 
 '''
@@ -2257,7 +2191,6 @@ final_pred = optR.predict(final_pred, coefficients)
 '''
 
 
-# In[66]:
 
 
 dist = Counter(y_train)
@@ -2287,13 +2220,11 @@ def classify(x):
 final_pred = np.array(list(map(classify, final_pred)))
 
 
-# In[67]:
 
 
 print(final_pred.shape)
 
 
-# In[68]:
 
 
 sample_submission = pd.read_csv(
@@ -2302,7 +2233,6 @@ sample_submission["accuracy_group"] = final_pred.astype(int)
 sample_submission.to_csv('submission.csv', index=False)
 
 
-# In[69]:
 
 
 sample_submission['accuracy_group'].value_counts(normalize=True)

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 #importing all library needed
@@ -42,7 +40,6 @@ from sklearn.model_selection import StratifiedKFold,GridSearchCV,cross_val_score
 from pandas import Series
 
 
-# In[3]:
 
 
 #import Train data
@@ -50,38 +47,32 @@ dataset = pd.read_csv(r'C:\Users\DELL\Desktop\DSN_BootCamp2019\train.csv')
 dataset.head()
 
 
-# In[4]:
 
 
 dataset.shape
 
 
-# In[5]:
 
 
 dataset.describe()
 
 
-# In[6]:
 
 
 dataset.info()
 
 
-# In[7]:
 
 
 #checking for null values
 dataset.isnull().sum()
 
 
-# In[8]:
 
 
 dataset.Qualification.value_counts()
 
 
-# In[9]:
 
 
 #Getting mode for null column
@@ -90,7 +81,6 @@ mod=dataset.Qualification.mode().iloc[0]
 print (mod)
 
 
-# In[10]:
 
 
 #filling missing data
@@ -98,7 +88,6 @@ dataset['Qualification'].fillna('mod', inplace = True)
 #dataset.isnull().sum()
 
 
-# In[11]:
 
 
 #Getting age from year of birth column
@@ -110,7 +99,6 @@ dataset['Year_of_Experince'] = now.year - dataset['Year_of_recruitment']
 #dataset.head(3)
 
 
-# In[12]:
 
 
 #categorise age into young and old
@@ -119,7 +107,6 @@ dataset['old_age'] = np.where((dataset['age']>40), 1,0)
 #dataset.head()
 
 
-# In[13]:
 
 
 #categorise last performance score into low and high
@@ -129,13 +116,11 @@ dataset['high_perf'] = np.where((dataset['Last_performance_score']>0.5), 1,0)
 #dataset.head()
 
 
-# In[14]:
 
 
 # dataset.age.head()
 
 
-# In[15]:
 
 
 #feature Engineering
@@ -149,7 +134,6 @@ dataset=dataset.drop(columns=['EmployeeNo','Qualification','Last_performance_sco
 dataset.info()
 
 
-# In[16]:
 
 
 #function definition for Evalution
@@ -166,7 +150,6 @@ def evaluate(y_test, pred):
     print(predictions[0].value_counts())
 
 
-# In[17]:
 
 
 # dataset.medium_perf.value_counts()
@@ -174,7 +157,6 @@ def evaluate(y_test, pred):
 # dataset.high_perf.value_counts()
 
 
-# In[18]:
 
 
 #printing features correlation chart
@@ -185,7 +167,6 @@ sns.heatmap(cor, annot=True, cmap=plt.cm.Reds)
 plt.show()
 
 
-# In[19]:
 
 
 #label visualisation
@@ -201,7 +182,6 @@ plt.ylabel("Count")
 plt.title("Class counts");
 
 
-# In[20]:
 
 
 #data spliting
@@ -212,7 +192,6 @@ print (X_train.shape, y_train.shape)
 print(X_test.shape, y_test.shape)
 
 
-# In[21]:
 
 
 #building my model for logistics regression
@@ -228,7 +207,6 @@ model = lm.fit(X_train, y_train)
 evaluate(y_test, predictions)
 
 
-# In[22]:
 
 
 #building my model for XGBOOST
@@ -240,7 +218,6 @@ evaluate(y_test,y_pred)
 #predictions = [round(value) for value in y_pred]
 
 
-# In[23]:
 
 
 #building my model for Random Forest
@@ -251,7 +228,6 @@ pred = rfc.predict(X_test)
 evaluate(y_test,pred)
 
 
-# In[24]:
 
 
 #importing my Test data
@@ -260,14 +236,12 @@ test1.head()
 testy= test1.copy()
 
 
-# In[25]:
 
 
 #checking for null values
 test1.isnull().sum()
 
 
-# In[26]:
 
 
 #Getting mode for null column
@@ -276,21 +250,18 @@ mod=test1.Qualification.mode().iloc[0]
 print (mod)
 
 
-# In[27]:
 
 
 #filling the null values
 test1['Qualification'].fillna('mod', inplace = True)
 
 
-# In[28]:
 
 
 test1.drop(columns=['EmployeeNo'], inplace = True)
 test1.info()
 
 
-# In[29]:
 
 
 #feature engineering
@@ -301,7 +272,6 @@ test1['Year_of_Experince'] = now.year - test1['Year_of_recruitment']
 #test1.head(3)
 
 
-# In[30]:
 
 
 #featuring engineering
@@ -312,7 +282,6 @@ test1=test1.drop(columns=['Gender_Female','Past_Disciplinary_Action_No', 'Foreig
 test1.info()
 
 
-# In[31]:
 
 
 # testy['Promoted_or_Not']= predictions
@@ -321,7 +290,6 @@ test1.info()
 # submission.to_csv('submit.csv', index = False)
 
 
-# In[32]:
 
 
 #Making prediction on the test data
@@ -330,7 +298,6 @@ y_pred = model.predict(test1)
  dataset=dataset.drop(columns=['EmployeeNo','low_perf','high_perf','Previous_IntraDepartmental_Movement_Yes','Past_Disciplinary_Action_Yes','Foreign_schooled_Yes','Training_score_average','Gender_Male','Trainings_Attended','Targets_met','Previous_Award','Qualification','Last_performance_score','Gender_Female','Past_Disciplinary_Action_No', 'Foreign_schooled_No','Division','Channel_of_Recruitment','Marital_Status','Previous_IntraDepartmental_Movement_No','State_Of_Origin','No_of_previous_employers','Year_of_recruitment','Year_of_birth'])
 
 
-# In[33]:
 
 
 #getting prediction result into CSV

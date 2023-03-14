@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -11,7 +10,6 @@ sys.path.append(os.path.abspath('../input/efficientnet/efficientnet-master/effic
 from efficientnet import EfficientNetB6
 
 
-# In[2]:
 
 
 # Standard dependencies
@@ -80,7 +78,6 @@ print(f"Testing Images: {test_df.shape[0]}")
 display(test_df.head())
 
 
-# In[3]:
 
 
 # Label distribution
@@ -96,7 +93,6 @@ plt.xlabel("Label", fontsize=17)
 plt.ylabel("Frequency", fontsize=17);
 
 
-# In[4]:
 
 
 # Specify image size
@@ -105,7 +101,6 @@ IMG_HEIGHT = 528
 CHANNELS = 3
 
 
-# In[5]:
 
 
 def get_preds_and_labels(model, generator):
@@ -177,7 +172,6 @@ def crop_image_from_gray(img, tol=7):
         return img
 
 
-# In[6]:
 
 
 
@@ -209,7 +203,6 @@ def preprocess_image(image, sigmaX=16):
     return image    
 
 
-# In[7]:
 
 
 
@@ -227,7 +220,6 @@ for i in range(5):
     
 
 
-# In[8]:
 
 
 BATCH_SIZE = 4
@@ -267,7 +259,6 @@ val_generator = train_datagen.flow_from_dataframe(train_df,
                                                   subset='validation')
 
 
-# In[9]:
 
 
 #training_set.class_indices
@@ -286,7 +277,6 @@ for i in range(0,4):
     plt.show()
 
 
-# In[10]:
 
 
 # Load in EfficientNetB6
@@ -319,7 +309,6 @@ def build_model():
 model = build_model()
 
 
-# In[11]:
 
 
 # For tracking Quadratic Weighted Kappa score
@@ -343,7 +332,6 @@ model.fit_generator(train_generator,
                     callbacks=[kappa_metrics, es, rlr])
 
 
-# In[12]:
 
 
 # Visualize mse
@@ -358,14 +346,12 @@ plt.xlabel("Epoch")
 plt.ylabel("% Accuracy");
 
 
-# In[13]:
 
 
 # Load best weights according to MSE
 model.load_weights(SAVED_MODEL_NAME)
 
 
-# In[14]:
 
 
 class OptimizedRounder(object):
@@ -427,7 +413,6 @@ class OptimizedRounder(object):
         return self.coef_['x']
 
 
-# In[15]:
 
 
 # Optimize on validation data and evaluate again
@@ -441,7 +426,6 @@ print(f"Optimized Thresholds:\n{coefficients}\n")
 print(f"The Validation Quadratic Weighted Kappa (QWK)\nwith optimized rounding thresholds is: {round(new_val_score, 5)}\n")
 
 
-# In[16]:
 
 
 # Place holder for diagnosis column
@@ -458,7 +442,6 @@ test_generator = ImageDataGenerator(preprocessing_function=preprocess_image,
                                                                           shuffle=False)
 
 
-# In[17]:
 
 
 # Make final predictions, round predictions and save to csv
@@ -470,7 +453,6 @@ test_df['id_code'] = test_df['id_code'].str.replace(r'.png$', '')
 test_df.to_csv('submission.csv', index=False)
 
 
-# In[18]:
 
 
 # Distribution of predictions
@@ -486,13 +468,11 @@ plt.xlabel("Label", fontsize=17)
 plt.ylabel("Frequency", fontsize=17);
 
 
-# In[19]:
 
 
 test_df['diagnosis'].value_counts()
 
 
-# In[20]:
 
 
 # Check kernels run-time. GPU limit for this competition is set to ± 9 hours.

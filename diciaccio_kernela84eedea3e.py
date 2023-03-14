@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from sklearn.model_selection import cross_val_score, cross_val_predict, train_test_split
@@ -16,14 +15,12 @@ import numpy as np
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 import os
 print(os.listdir("../input"))
 
 
-# In[3]:
 
 
 Dtrain = pd.read_csv('../input/train1.csv',header=0, sep=",",index_col=0)
@@ -32,7 +29,6 @@ print(Dtrain.shape,Dtest.shape)
 Dtest.head()
 
 
-# In[4]:
 
 
 DD=Dtrain
@@ -43,14 +39,12 @@ for j in DD.columns:
                           " Range: %12.1f" % (DD[j].max()-DD[j].min())," STD: %12.2f" % DD[j].std())
 
 
-# In[5]:
 
 
 if Dtrain.isnull().values.any():
     print(Dtrain.isnull().sum())
 
 
-# In[6]:
 
 
 # individuiamo la riga in  base al valore di ID
@@ -64,13 +58,11 @@ Dtrain = Dtrain.drop(index=a.index.values)
 print("Are there missing values?",Dtrain.isnull().values.any())
 
 
-# In[7]:
 
 
 Dtest.isnull().values.any()
 
 
-# In[8]:
 
 
 XX = Dtrain.values
@@ -83,13 +75,11 @@ X_test = XT[:,1:]
 print(xtrain.shape,ytrain.shape,X_test.shape)
 
 
-# In[9]:
 
 
 
 
 
-# In[9]:
 
 
 X_train, X_val, y_train, y_val = train_test_split(xtrain,ytrain,test_size=0.25, random_state=33)
@@ -99,7 +89,6 @@ print(X_train.shape, X_val.shape, y_train.shape, y_val.shape)
 
 
 
-# In[10]:
 
 
 clf =  RandomForestClassifier(n_estimators=100, criterion='gini', max_depth=10, min_samples_split=2, 
@@ -110,7 +99,6 @@ clf =  RandomForestClassifier(n_estimators=100, criterion='gini', max_depth=10, 
 clf.fit(X_train,y_train)
 
 
-# In[11]:
 
 
 # calcolo dell'indice AUC e dell'errore di classificazione sul training e sul test
@@ -128,7 +116,6 @@ auc = roc_auc_score(y_val,yprob[:,1])
 print("AUC on validation=",auc)
 
 
-# In[12]:
 
 
 # Calculation of confusion matrix and other validation indexes
@@ -138,7 +125,6 @@ print("TEST: \n Classification report for classifier %s:\n\n%s\n"
 print("Confusion matrix sul Validation:\n%s" % metrics.confusion_matrix(y_val, predicted))
 
 
-# In[13]:
 
 
 # Build the confusion matrix with a threshold different from 0.5
@@ -152,7 +138,6 @@ print("TEST: \n Classification report for classifier %s:\n\n%s\n"
 print("Confusion matrix sul Validation:\n%s" % metrics.confusion_matrix(y_val, yyy))
 
 
-# In[14]:
 
 
 Y_test = clf.predict_proba(X_test)

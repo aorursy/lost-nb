@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -20,7 +19,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[2]:
 
 
 import tensorflow as tf
@@ -31,7 +29,6 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import KFold
 
 
-# In[3]:
 
 
 df = pd.read_csv("/kaggle/input/osic-pulmonary-fibrosis-progression/train.csv")
@@ -39,25 +36,21 @@ test = pd.read_csv("/kaggle/input/osic-pulmonary-fibrosis-progression/test.csv")
 sample = pd.read_csv("/kaggle/input/osic-pulmonary-fibrosis-progression/sample_submission.csv")
 
 
-# In[4]:
 
 
 df.head()
 
 
-# In[5]:
 
 
 df.info()
 
 
-# In[6]:
 
 
 print(f"Out of 1549 entried there were only {df['Patient'].nunique()} unique patients")
 
 
-# In[7]:
 
 
 fig, (ax1,ax2) = plt.subplots(1,2,figsize=(16,7))
@@ -65,7 +58,6 @@ sns.countplot(df['Sex'],ax=ax1).set_title("GENDER COUNT OF GIVEN DATA");
 sns.countplot(df['SmokingStatus'],ax=ax2).set_title("SMOKING STATUS COUNT OF GIVEN DATA");
 
 
-# In[8]:
 
 
 print("Since the data has dupilcated values let's recheck by dropping duplicates")
@@ -79,7 +71,6 @@ print()
 print(df[['Patient','Sex','SmokingStatus']].drop_duplicates()['SmokingStatus'].value_counts())
 
 
-# In[9]:
 
 
 sns.set_style('whitegrid')
@@ -91,7 +82,6 @@ sns.distplot(df['FVC'],ax=ax1,kde=False,bins=40,color='salmon').set_title("FVC D
 sns.distplot(df['Weeks'],ax=ax2,kde=False,bins=40,color='salmon').set_title("WEEKS DISTRIBUTION");
 
 
-# In[10]:
 
 
 fig, (ax1,ax2) = plt.subplots(1,2,figsize=(20,7))
@@ -102,7 +92,6 @@ sns.distplot(df['Age'],ax=ax1,kde=False,bins=40,color='plum').set_title("AGE DIS
 sns.distplot(df['Percent'],ax=ax2,kde=False,bins=40,color='plum').set_title("PERCENT DISTRIBUTION");
 
 
-# In[11]:
 
 
 fig, (ax1,ax2) = plt.subplots(1,2,figsize=(20,4))
@@ -110,7 +99,6 @@ sns.boxplot(df['Percent'],ax=ax1,palette='winter',orient='h').set_title("PERCENT
 sns.boxplot(df['Age'],ax=ax2,palette='winter',orient='h').set_title("AGE DETAILS");
 
 
-# In[12]:
 
 
 fig, (ax1,ax2) = plt.subplots(1,2,figsize=(20,4))
@@ -118,7 +106,6 @@ sns.boxplot(df['FVC'],ax=ax1,palette='winter',orient='h').set_title("FVC DETAILS
 sns.boxplot(df['Weeks'],ax=ax2,palette='winter',orient='h').set_title("WEEKS DETAILS");
 
 
-# In[13]:
 
 
 fig, (ax1,ax2) = plt.subplots(1,2,figsize=(14,7));
@@ -127,7 +114,6 @@ sns.boxplot(df['Sex'],df['FVC'],palette='winter',orient='v',ax=ax1).set_title("G
 sns.boxplot(df['SmokingStatus'],df['FVC'],palette='winter',orient='v',ax=ax2).set_title("SMOKING STAT VS FVC");
 
 
-# In[14]:
 
 
 print("######## FVC #########\n")
@@ -140,13 +126,11 @@ print(f"Mean FVC of Ex-Smoker {df[df['SmokingStatus']=='Ex-smoker']['FVC'].mean(
 print(f"Mean FVC of Never Smoked {df[df['SmokingStatus']=='Never smoked']['FVC'].mean()}")
 
 
-# In[15]:
 
 
 sns.pairplot(hue='Sex',data=df,x_vars=['Weeks','FVC','Percent','Age'],y_vars=['Weeks','FVC','Percent','Age'],height=3);
 
 
-# In[16]:
 
 
 print("FVC decreases over time for most of the cases")
@@ -154,7 +138,6 @@ plt.figure(figsize = (15,10))
 a = sns.lineplot(x = df["Weeks"], y = df["FVC"], hue = df["Patient"], size=1,legend=False)
 
 
-# In[17]:
 
 
 df['Photo count'] = 0
@@ -168,14 +151,12 @@ data = data.sort_values(['Photo count']).reset_index(drop=True)
 data['Photo count'].describe()
 
 
-# In[18]:
 
 
 plt.figure(figsize=(20,5))
 sns.distplot(data['Photo count'],bins=200,kde=False)
 
 
-# In[19]:
 
 
 patient_dir = "../input/osic-pulmonary-fibrosis-progression/train/ID00007637202177411956430"
@@ -204,7 +185,6 @@ for i in range(columns*rows):
     plt.axis('off');
 
 
-# In[20]:
 
 
 def seed_everything(seed=2020):
@@ -216,13 +196,11 @@ def seed_everything(seed=2020):
 seed_everything(42)
 
 
-# In[21]:
 
 
 df.drop_duplicates(keep=False, inplace=True, subset=['Patient','Weeks'])
 
 
-# In[22]:
 
 
 sample['Patient'] = sample['Patient_Week'].apply(lambda x:x.split('_')[0])
@@ -231,7 +209,6 @@ sample =  sample[['Patient','Weeks','Confidence','Patient_Week']]
 sample = sample.merge(test.drop('Weeks', axis=1), on="Patient")
 
 
-# In[23]:
 
 
 df['WHERE'] = 'train'
@@ -240,7 +217,6 @@ sample['WHERE'] = 'test'
 data = df.append([test, sample])
 
 
-# In[24]:
 
 
 data['min_week'] = data['Weeks']
@@ -248,7 +224,6 @@ data.loc[data.WHERE=='test','min_week'] = np.nan
 data['min_week'] = data.groupby('Patient')['min_week'].transform('min')
 
 
-# In[25]:
 
 
 base = data.loc[data.Weeks == data.min_week]
@@ -260,7 +235,6 @@ base = base[base.nb==1]
 base.drop('nb', axis=1, inplace=True)
 
 
-# In[26]:
 
 
 data = data.merge(base, on='Patient', how='left')
@@ -269,7 +243,6 @@ del base
 gc.collect()
 
 
-# In[27]:
 
 
 data[['Sex_Male','SmokingStatus_Ex-smoker','SmokingStatus_Never smoked']] = pd.get_dummies(data[['Sex','SmokingStatus']],drop_first=True)
@@ -277,7 +250,6 @@ data[['Sex_Male','SmokingStatus_Ex-smoker','SmokingStatus_Never smoked']] = pd.g
 features = ['Percent','Age','min_FVC','base_week']
 
 
-# In[28]:
 
 
 from sklearn.preprocessing import MinMaxScaler
@@ -287,7 +259,6 @@ for i in features:
     data[i] = scaler.fit_transform(data[[i]])
 
 
-# In[29]:
 
 
 df = data.loc[data.WHERE=='train'].drop('WHERE',axis=1)
@@ -295,19 +266,16 @@ test = data.loc[data.WHERE=='val'].drop('WHERE',axis=1)
 sample = data.loc[data.WHERE=='test'].drop('WHERE',axis=1)
 
 
-# In[30]:
 
 
 features += ['Sex_Male','SmokingStatus_Ex-smoker','SmokingStatus_Never smoked']
 
 
-# In[31]:
 
 
 df[features].head()
 
 
-# In[32]:
 
 
 X = df[features].values
@@ -319,7 +287,6 @@ test_ = sample[features].values
 y = y.astype('float64') 
 
 
-# In[33]:
 
 
 nh = X.shape[1]
@@ -327,7 +294,6 @@ pe = np.zeros((test_.shape[0], 3))
 pred = np.zeros((X.shape[0], 3))
 
 
-# In[34]:
 
 
 C1, C2 = tf.constant(70, dtype='float32'), tf.constant(1000, dtype="float32")
@@ -372,7 +338,6 @@ def make_model(nh):
     return model
 
 
-# In[35]:
 
 
 kf = KFold(n_splits=5)
@@ -393,7 +358,6 @@ for tr_idx, val_idx in kf.split(X):
     pe += model.predict(test_, batch_size=128, verbose=0) / 5
 
 
-# In[36]:
 
 
 sigma_opt = mean_absolute_error(y, pred[:, 1])
@@ -402,7 +366,6 @@ sigma_mean = np.mean(unc)
 print(sigma_opt, sigma_mean)
 
 
-# In[37]:
 
 
 idxs = np.random.randint(0, y.shape[0], 100)
@@ -414,7 +377,6 @@ plt.legend(loc="best")
 plt.show()
 
 
-# In[38]:
 
 
 plt.hist(unc)
@@ -422,7 +384,6 @@ plt.title("uncertainty in prediction")
 plt.show()
 
 
-# In[39]:
 
 
 sample['FVC1'] = 0.996*pe[:, 1]
@@ -431,7 +392,6 @@ sample['Confidence1'] = pe[:, 2] - pe[:, 0]
 subm = sample[['Patient_Week','FVC','Confidence','FVC1','Confidence1']].copy()
 
 
-# In[40]:
 
 
 subm.loc[~subm.FVC1.isnull(),'FVC'] = subm.loc[~subm.FVC1.isnull(),'FVC1']
@@ -441,7 +401,6 @@ else:
     subm.loc[~subm.FVC1.isnull(),'Confidence'] = subm.loc[~subm.FVC1.isnull(),'Confidence1']
 
 
-# In[41]:
 
 
 otest = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/test.csv')
@@ -450,7 +409,6 @@ for i in range(len(otest)):
     subm.loc[subm['Patient_Week']==otest.Patient[i]+'_'+str(otest.Weeks[i]), 'Confidence'] = 0.1
 
 
-# In[42]:
 
 
 subm[["Patient_Week","FVC","Confidence"]].to_csv("submission.csv", index=False)

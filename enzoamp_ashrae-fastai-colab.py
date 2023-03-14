@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Run this cell and select the kaggle.json file downloaded
@@ -10,28 +9,24 @@ from google.colab import files
 files.upload()
 
 
-# In[2]:
 
 
 # Let's make sure the kaggle.json file is present.
 get_ipython().system('ls -lha kaggle.json')
 
 
-# In[3]:
 
 
 # Next, install the Kaggle API client.
 get_ipython().system('pip install -q kaggle')
 
 
-# In[4]:
 
 
 def submit_kaggle(submission_path, competition, message="submission"):
     get_ipython().system('kaggle competitions submit -c {competition} -f {submission_path} -m "{message}"')
 
 
-# In[5]:
 
 
 # The Kaggle API client expects this file to be in ~/.kaggle,
@@ -43,14 +38,12 @@ get_ipython().system('cp kaggle.json ~/.kaggle/')
 get_ipython().system('chmod 600 ~/.kaggle/kaggle.json')
 
 
-# In[6]:
 
 
 # List available datasets.
 get_ipython().system('kaggle datasets list')
 
 
-# In[7]:
 
 
 # Copy the stackoverflow data set locally.
@@ -58,26 +51,22 @@ get_ipython().system('kaggle datasets list')
 get_ipython().system('kaggle competitions download -c ashrae-energy-prediction -p /content/ashrae-energy-prediction')
 
 
-# In[8]:
 
 
 ls /content/ashrae-energy-prediction
 
 
-# In[9]:
 
 
 DATA = "/content/ashrae-energy-prediction/"
 
 
-# In[10]:
 
 
 #!cd /content/ashrae-energy-prediction
 #!unzip *.zip
 
 
-# In[11]:
 
 
 get_ipython().system('unzip /content/ashrae-energy-prediction/sample_submission.csv.zip -d {DATA}')
@@ -87,13 +76,11 @@ get_ipython().system('unzip /content/ashrae-energy-prediction/weather_test.csv.z
 get_ipython().system('unzip /content/ashrae-energy-prediction/weather_train.csv.zip -d {DATA}')
 
 
-# In[12]:
 
 
 ls /content/ashrae-energy-prediction
 
 
-# In[13]:
 
 
 import numpy as np # linear algebra
@@ -112,68 +99,57 @@ from tqdm import tqdm
 from datetime import datetime
 
 
-# In[14]:
 
 
 sns.set(rc={'figure.figsize':(11,8)})
 sns.set(style="whitegrid")
 
 
-# In[15]:
 
 
 #DATA = "/content/"
 
 
-# In[16]:
 
 
 ls
 
 
-# In[17]:
 
 
 get_ipython().run_cell_magic('time', '', 'metadata_df = pd.read_csv(f"{DATA}building_metadata.csv")\ntrain_df = pd.read_csv(f"{DATA}train.csv", parse_dates=[\'timestamp\'])\ntest_df = pd.read_csv(f\'{DATA}test.csv\', parse_dates=[\'timestamp\'])\nweather_train_df = pd.read_csv(f\'{DATA}weather_train.csv\', parse_dates=[\'timestamp\'])\nweather_test_df = pd.read_csv(f\'{DATA}weather_test.csv\', parse_dates=[\'timestamp\'])')
 
 
-# In[18]:
 
 
 pd.Series(np.log1p(train_df['meter_reading'])).hist()
 
 
-# In[19]:
 
 
 train_df.head()
 
 
-# In[20]:
 
 
 metadata_df.head()
 
 
-# In[21]:
 
 
 weather_train_df.shape
 
 
-# In[22]:
 
 
 weather_train_df.head()
 
 
-# In[23]:
 
 
 test_df.head()
 
 
-# In[24]:
 
 
 weather = pd.concat([weather_train_df,weather_test_df],ignore_index=True)
@@ -199,20 +175,17 @@ def timestamp_align(df):
     return df
 
 
-# In[25]:
 
 
 weather_train_df.tail()
 
 
-# In[26]:
 
 
 weather_train_df = timestamp_align(weather_train_df)
 weather_test_df = timestamp_align(weather_test_df)
 
 
-# In[27]:
 
 
 del weather 
@@ -221,13 +194,11 @@ del temp_skeleton
 del site_ids_offsets
 
 
-# In[28]:
 
 
 weather_train_df.tail()
 
 
-# In[29]:
 
 
 def add_lag_feature(weather_df, window=3):
@@ -240,69 +211,58 @@ def add_lag_feature(weather_df, window=3):
         weather_df[f'{col}_mean_lag{window}'] = lag_mean[col]
 
 
-# In[30]:
 
 
 add_lag_feature(weather_train_df, window=72)
 add_lag_feature(weather_test_df, window=72)
 
 
-# In[31]:
 
 
 weather_train_df.columns
 
 
-# In[32]:
 
 
 weather_train_df.isna().sum()
 
 
-# In[33]:
 
 
 weather_test_df.isna().sum()
 
 
-# In[34]:
 
 
 weather_train_df = weather_train_df.groupby('site_id').apply(lambda group: group.interpolate(limit_direction='both'))
 
 
-# In[35]:
 
 
 weather_test_df = weather_test_df.groupby('site_id').apply(lambda group: group.interpolate(limit_direction='both'))
 
 
-# In[36]:
 
 
 weather_train_df.isna().sum()
 
 
-# In[37]:
 
 
 weather_test_df.isna().sum()
 
 
-# In[38]:
 
 
 # Since loss metric is RMSLE
 train_df['meter_reading'] = np.log1p(train_df['meter_reading'])
 
 
-# In[39]:
 
 
 weather_train_df.head()
 
 
-# In[40]:
 
 
 ## Function to reduce the memory usage
@@ -335,14 +295,12 @@ def reduce_mem_usage(df, verbose=True):
     return df
 
 
-# In[41]:
 
 
 le = LabelEncoder()
 metadata_df['primary_use'] = le.fit_transform(metadata_df['primary_use'])
 
 
-# In[42]:
 
 
 metadata_df = reduce_mem_usage(metadata_df)
@@ -352,7 +310,6 @@ weather_train_df = reduce_mem_usage(weather_train_df)
 weather_test_df = reduce_mem_usage(weather_test_df)
 
 
-# In[43]:
 
 
 print (f'Training data shape: {train_df.shape}')
@@ -362,56 +319,47 @@ print (f'Weather testing shape: {metadata_df.shape}')
 print (f'Test data shape: {test_df.shape}')
 
 
-# In[44]:
 
 
 train_df.head()
 
 
-# In[45]:
 
 
 weather_train_df.head()
 
 
-# In[46]:
 
 
 metadata_df.head()
 
 
-# In[47]:
 
 
 test_df.head()
 
 
-# In[48]:
 
 
 train_df.head()
 
 
-# In[49]:
 
 
 get_ipython().run_cell_magic('time', '', "full_train_df = train_df.merge(metadata_df, on='building_id', how='left')\nfull_train_df = full_train_df.merge(weather_train_df, on=['site_id', 'timestamp'], how='left')")
 
 
-# In[50]:
 
 
 full_train_df = full_train_df.loc[~(full_train_df['air_temperature'].isnull() & full_train_df['cloud_coverage'].isnull() & full_train_df['dew_temperature'].isnull() & full_train_df['precip_depth_1_hr'].isnull() & full_train_df['sea_level_pressure'].isnull() & full_train_df['wind_direction'].isnull() & full_train_df['wind_speed'].isnull() & full_train_df['offset'].isnull())]
 #full_train_df.loc[(full_train_df['air_temperature'].isnull() & full_train_df['cloud_coverage'].isnull() & full_train_df['dew_temperature'].isnull() & full_train_df['precip_depth_1_hr'].isnull() & full_train_df['sea_level_pressure'].isnull() & full_train_df['wind_direction'].isnull() & full_train_df['wind_speed'].isnull() & full_train_df['offset'].isnull())] = -1
 
 
-# In[51]:
 
 
 full_train_df.shape
 
 
-# In[52]:
 
 
 # Delete unnecessary dataframes to decrease memory usage
@@ -420,19 +368,16 @@ del weather_train_df
 gc.collect()
 
 
-# In[53]:
 
 
 get_ipython().run_cell_magic('time', '', "full_test_df = test_df.merge(metadata_df, on='building_id', how='left')\nfull_test_df = full_test_df.merge(weather_test_df, on=['site_id', 'timestamp'], how='left')")
 
 
-# In[54]:
 
 
 full_test_df.shape
 
 
-# In[55]:
 
 
 # Delete unnecessary dataframes to decrease memory usage
@@ -442,7 +387,6 @@ del test_df
 gc.collect()
 
 
-# In[56]:
 
 
 ax = sns.barplot(pd.unique(full_train_df['primary_use']), full_train_df['primary_use'].value_counts())
@@ -451,7 +395,6 @@ ax.set_xticklabels(ax.get_xticklabels(), rotation=50, ha="right")
 plt.show()
 
 
-# In[57]:
 
 
 meter_types = {0: 'electricity', 1: 'chilledwater', 2: 'steam', 3: 'hotwater'}
@@ -460,14 +403,12 @@ ax.set(xlabel='Meter Type', ylabel='# of records', title='Meter type vs. # of re
 plt.show()
 
 
-# In[58]:
 
 
 # Average meter reading
 print (f'Average meter reading: {full_train_df.meter_reading.mean()} kWh')
 
 
-# In[59]:
 
 
 ax = sns.barplot(np.vectorize(meter_types.get)(full_train_df.groupby(['meter'])['meter_reading'].mean().keys()), full_train_df.groupby(['meter'])['meter_reading'].mean())
@@ -475,7 +416,6 @@ ax.set(xlabel='Meter Type', ylabel='Meter reading', title='Meter type vs. Meter 
 plt.show()
 
 
-# In[60]:
 
 
 fig, ax = plt.subplots(1,1,figsize=(14, 6))
@@ -485,7 +425,6 @@ full_test_df['year_built'].value_counts(dropna=False).sort_index().plot(ax=ax)
 ax.legend(['Train', 'Test']);
 
 
-# In[61]:
 
 
 fig, ax = plt.subplots(1,1,figsize=(15, 7))
@@ -494,13 +433,11 @@ ax.set(xlabel='Building ID', ylabel='Area in Square Feet', title='Square Feet ar
 plt.show()
 
 
-# In[62]:
 
 
 pd.DataFrame(full_train_df.isna().sum().sort_values(ascending=False), columns=['NaN Count'])
 
 
-# In[63]:
 
 
 def mean_without_overflow_fast(col):
@@ -508,19 +445,16 @@ def mean_without_overflow_fast(col):
     return col.mean() * len(col)
 
 
-# In[64]:
 
 
 missing_values = (100-full_train_df.count() / len(full_train_df) * 100).sort_values(ascending=False)
 
 
-# In[65]:
 
 
 get_ipython().run_cell_magic('time', '', 'missing_features = full_train_df.loc[:, missing_values > 0.0]\nmissing_features = missing_features.apply(mean_without_overflow_fast)')
 
 
-# In[66]:
 
 
 # Both train and test are interpolated with mean of train
@@ -533,38 +467,32 @@ for key in full_train_df.loc[:, missing_values > 0.0].keys():
         full_test_df[key].fillna(missing_features[key], inplace=True)
 
 
-# In[67]:
 
 
 full_train_df.tail()
 
 
-# In[68]:
 
 
 full_test_df.tail()
 
 
-# In[69]:
 
 
 full_train_df.isna().sum().sum(), full_test_df.isna().sum().sum()
 
 
-# In[70]:
 
 
 full_train_df['timestamp'].dtype
 
 
-# In[71]:
 
 
 full_train_df["timestamp"] = pd.to_datetime(full_train_df["timestamp"])
 full_test_df["timestamp"] = pd.to_datetime(full_test_df["timestamp"])
 
 
-# In[72]:
 
 
 def transform(df):
@@ -579,14 +507,12 @@ def transform(df):
     return df
 
 
-# In[73]:
 
 
 full_train_df = transform(full_train_df)
 full_test_df = transform(full_test_df)
 
 
-# In[74]:
 
 
 dates_range = pd.date_range(start='2015-12-31', end='2019-01-01')
@@ -595,7 +521,6 @@ full_train_df['is_holiday'] = (full_train_df['timestamp'].dt.date.astype('dateti
 full_test_df['is_holiday'] = (full_test_df['timestamp'].dt.date.astype('datetime64').isin(us_holidays)).astype(np.int8)
 
 
-# In[75]:
 
 
 # Assuming 5 days a week for all the given buildings
@@ -603,25 +528,21 @@ full_train_df.loc[(full_train_df['weekday'] == 5) | (full_train_df['weekday'] ==
 full_test_df.loc[(full_test_df['weekday']) == 5 | (full_test_df['weekday'] == 6) , 'is_holiday'] = 1
 
 
-# In[76]:
 
 
 full_train_df.shape
 
 
-# In[77]:
 
 
 full_train_df = full_train_df.query('not (building_id <= 104 & meter == 0 & timestamp <= "2016-05-20")')
 
 
-# In[78]:
 
 
 full_train_df.shape
 
 
-# In[79]:
 
 
 full_test_df = full_test_df.drop(['timestamp'], axis=1)
@@ -630,13 +551,11 @@ print (f'Shape of training dataset: {full_train_df.shape}')
 print (f'Shape of testing dataset: {full_test_df.shape}')
 
 
-# In[80]:
 
 
 full_train_df.tail()
 
 
-# In[81]:
 
 
 ## Reducing memory
@@ -645,7 +564,6 @@ full_test_df = reduce_mem_usage(full_test_df)
 gc.collect()
 
 
-# In[82]:
 
 
 # def degToCompass(num):
@@ -654,13 +572,11 @@ gc.collect()
 #     return arr[(val % 16)]
 
 
-# In[83]:
 
 
 # full_train_df['wind_direction'] = full_train_df['wind_direction'].apply(degToCompass)
 
 
-# In[84]:
 
 
 # beaufort = [(0, 0, 0.3), (1, 0.3, 1.6), (2, 1.6, 3.4), (3, 3.4, 5.5), (4, 5.5, 8), (5, 8, 10.8), (6, 10.8, 13.9), 
@@ -670,7 +586,6 @@ gc.collect()
 #     full_train_df.loc[(full_train_df['wind_speed']>=item[1]) & (full_train_df['wind_speed']<item[2]), 'beaufort_scale'] = item[0]
 
 
-# In[85]:
 
 
 # le = LabelEncoder()
@@ -686,33 +601,28 @@ numericals = ['square_feet', 'year_built', 'air_temperature', 'cloud_coverage',
 feat_cols = categoricals + numericals
 
 
-# In[86]:
 
 
 full_train_df[numericals].describe()
 
 
-# In[87]:
 
 
 full_train_df.tail()
 
 
-# In[88]:
 
 
 full_train_df = reduce_mem_usage(full_train_df)
 gc.collect()
 
 
-# In[89]:
 
 
 cat_card = full_train_df[categoricals].nunique().apply(lambda x: min(x, 50)).to_dict()
 cat_card
 
 
-# In[90]:
 
 
 target = full_train_df["meter_reading"]
@@ -720,14 +630,12 @@ full_train_df.to_pickle('full_train_df.pkl')
 #del full_train_df["meter_reading"]
 
 
-# In[91]:
 
 
 # full_train_df.drop(drop_cols, axis=1)
 # gc.collect()
 
 
-# In[92]:
 
 
 # Save the testing dataset to freeup the RAM. We'll read after training
@@ -736,74 +644,62 @@ del full_test_df
 gc.collect()
 
 
-# In[93]:
 
 
 import pickle
 
 
-# In[94]:
 
 
 with open('full_train_df.pkl', 'rb') as f:
     full_train_df = pickle.load(f)
 
 
-# In[95]:
 
 
 full_train_df.columns
 
 
-# In[96]:
 
 
 from fastai.tabular import *
 
 
-# In[97]:
 
 
 from fastai.basic_train import *
 
 
-# In[98]:
 
 
 ls
 
 
-# In[99]:
 
 
 #learner = learn.load(f'model1.bin')
 
 
-# In[100]:
 
 
 full_train_df_sample = full_train_df.sample(frac=0.1)
 
 
-# In[101]:
 
 
 full_train_df_sample.shape
 
 
-# In[102]:
 
 
 procs = [FillMissing, Categorify] # Took out Normalize to address NaN prob when getting mean
 
 
-# In[103]:
 
 
 valid_idx = range(len(full_train_df_sample)- int(full_train_df_sample.shape[0] * 0.1), len(full_train_df_sample))
 
 
-# In[104]:
 
 
 #folds = 2
@@ -812,13 +708,11 @@ valid_idx = range(len(full_train_df_sample)- int(full_train_df_sample.shape[0] *
 #kf = StratifiedKFold(n_splits=folds, shuffle=False, random_state=seed)
 
 
-# In[105]:
 
 
 #index_splits = next(kf.split(full_train_df, full_train_df['building_id']))
 
 
-# In[106]:
 
 
 dep_var = "meter_reading"
@@ -826,25 +720,21 @@ cat_names = categoricals
 path = DATA
 
 
-# In[107]:
 
 
 #full_train_df[dep_var] = target
 
 
-# In[108]:
 
 
 #del target
 
 
-# In[109]:
 
 
 full_train_df_sample[dep_var]
 
 
-# In[110]:
 
 
 # Not including test set first since takes too much space
@@ -852,103 +742,87 @@ data = TabularDataBunch.from_df(path, full_train_df_sample, dep_var, valid_idx=v
 print(data.train_ds.cont_names)  # `cont_names` defaults to: set(df)-set(cat_names)-{dep_var}
 
 
-# In[111]:
 
 
 (cat_x,cont_x),y = next(iter(data.train_dl))
 for o in (cat_x, cont_x, y): print(to_np(o[:5]))
 
 
-# In[112]:
 
 
 learn = tabular_learner(data, layers=[200,100], emb_szs=cat_card, metrics=rmse)
 
 
-# In[113]:
 
 
 learn.fit_one_cycle(1, 1e-2)
 
 
-# In[114]:
 
 
 pred_batch1 = learn.pred_batch()
 pred_batch1[: 5]
 
 
-# In[115]:
 
 
 learn.save('model_sample')
 
 
-# In[116]:
 
 
 learn.export('model_sample_export')
 
 
-# In[117]:
 
 
 # Checking if predictions will be similar after loading
 learn1 = tabular_learner(data, layers=[200,100], emb_szs=cat_card, metrics=rmse)
 
 
-# In[118]:
 
 
 learn1.load('model_sample')
 
 
-# In[119]:
 
 
 ls /content/ashrae-energy-prediction/
 
 
-# In[120]:
 
 
 pred_batch2 = learn1.pred_batch()
 pred_batch2[: 5]
 
 
-# In[121]:
 
 
 learn2.data.train_ds
 
 
-# In[122]:
 
 
 tabList_sample = TabularList.from_df(full_train_df.head(10), cat_names=cat_names, procs=procs)
 learn2 = load_learner(DATA, 'model_sample_export', test=tabList_sample)
 
 
-# In[123]:
 
 
 pred_batch3 = learn2.pred_batch(ds_type=DatasetType.Test)
 pred_batch3[: 5]
 
 
-# In[124]:
 
 
 full_test_df = pd.read_pickle('full_test_df.pkl')
 
 
-# In[125]:
 
 
 nan_cols = full_test_df.columns.values[full_test_df.isna().sum().nonzero()[0]].tolist()
 
 
-# In[126]:
 
 
 for col_ in nan_cols:
@@ -956,7 +830,6 @@ for col_ in nan_cols:
     full_test_df[col_] = full_test_df[col_].fillna(median)
 
 
-# In[127]:
 
 
 # Need to input data as tabList when learner is loaded
@@ -965,52 +838,44 @@ tabList = TabularList.from_df(full_test_df, cat_names=cat_names, procs=procs)
 learn2 = load_learner(DATA, 'model_sample_export', test=tabList)
 
 
-# In[128]:
 
 
 del tabList
 del full_test_df
 
 
-# In[129]:
 
 
 pred_test = learn2.get_preds(ds_type=DatasetType.Test)
 
 
-# In[130]:
 
 
 len(pred_test[0]), full_test_df.shape
 
 
-# In[131]:
 
 
 pred_test_np = pred_test[0].numpy()
 
 
-# In[132]:
 
 
 from google.colab import drive
 drive.mount('/content/gdrive')
 
 
-# In[133]:
 
 
 res = pred_test_np
 
 
-# In[134]:
 
 
 submission = pd.read_csv(f'{DATA}sample_submission.csv')
 submission.shape
 
 
-# In[135]:
 
 
 submission = pd.read_csv(f'{DATA}sample_submission.csv')
@@ -1021,31 +886,26 @@ submission.to_csv('submission_fastai_20191103.csv', index=False)
 submission
 
 
-# In[136]:
 
 
 submission.head()
 
 
-# In[137]:
 
 
 get_ipython().system("cp submission_fastai_20191103.csv /content/gdrive/'My Drive'/ashrae/submissions/submission_fastai_20191103.csv")
 
 
-# In[138]:
 
 
 ls /content/gdrive/'My Drive'/ashrae/submissions/
 
 
-# In[139]:
 
 
 get_ipython().system('kaggle competitions submit -c ashrae-energy-prediction -f submission_fastai_20191103.csv -m "Hello fastai tabular FCNN (corrected w/ exponential)"')
 
 
-# In[140]:
 
 
 del pred_test
@@ -1053,68 +913,57 @@ del learn2
 del learn
 
 
-# In[141]:
 
 
 from fastai.tabular import *
 
 
-# In[142]:
 
 
 from fastai.basic_train import *
 
 
-# In[143]:
 
 
 ls
 
 
-# In[144]:
 
 
 #learner = learn.load(f'model1.bin')
 
 
-# In[145]:
 
 
 full_train_df_sample = full_train_df.sample(frac=1)
 
 
-# In[146]:
 
 
 full_train_df_sample.shape
 
 
-# In[147]:
 
 
 del full_train_df
 
 
-# In[148]:
 
 
 procs = [FillMissing, Categorify] # Took out Normalize to address NaN prob when getting mean
 
 
-# In[149]:
 
 
 #valid_idx = range(len(full_train_df_sample)- int(full_train_df_sample.shape[0] * 0.1), len(full_train_df_sample))
 valid_idx = np.random.permutation(len(full_train_df_sample))[: int(full_train_df_sample.shape[0] * 0.05)]
 
 
-# In[150]:
 
 
 valid_idx
 
 
-# In[151]:
 
 
 #folds = 2
@@ -1123,13 +972,11 @@ valid_idx
 #kf = StratifiedKFold(n_splits=folds, shuffle=False, random_state=seed)
 
 
-# In[152]:
 
 
 #index_splits = next(kf.split(full_train_df, full_train_df['building_id']))
 
 
-# In[153]:
 
 
 dep_var = "meter_reading"
@@ -1137,25 +984,21 @@ cat_names = categoricals
 path = DATA
 
 
-# In[154]:
 
 
 #full_train_df[dep_var] = target
 
 
-# In[155]:
 
 
 #del target
 
 
-# In[156]:
 
 
 full_train_df_sample[dep_var]
 
 
-# In[157]:
 
 
 # Not including test set first since takes too much space
@@ -1163,103 +1006,87 @@ data = TabularDataBunch.from_df(path, full_train_df_sample, dep_var, valid_idx=v
 print(data.train_ds.cont_names)  # `cont_names` defaults to: set(df)-set(cat_names)-{dep_var}
 
 
-# In[158]:
 
 
 del full_train_df_sample
 
 
-# In[159]:
 
 
 (cat_x,cont_x),y = next(iter(data.train_dl))
 for o in (cat_x, cont_x, y): print(to_np(o[:5]))
 
 
-# In[160]:
 
 
 learn = tabular_learner(data, layers=[200,100], emb_szs=cat_card, metrics=rmse)
 
 
-# In[161]:
 
 
 learn.fit_one_cycle(1, 1e-2)
 
 
-# In[162]:
 
 
 pred_batch1 = learn.pred_batch()
 pred_batch1[: 5]
 
 
-# In[163]:
 
 
 learn.export('model_all_export')
 
 
-# In[164]:
 
 
 # Checking if predictions will be similar after loading
 #learn1 = tabular_learner(data, layers=[200,100], emb_szs=cat_card, metrics=rmse)
 
 
-# In[165]:
 
 
 #learn1.load('model_sample')
 
 
-# In[166]:
 
 
 #ls /content/ashrae-energy-prediction/
 
 
-# In[167]:
 
 
 #pred_batch2 = learn1.pred_batch()
 #pred_batch2[: 5]
 
 
-# In[168]:
 
 
 #learn2.data.train_ds
 
 
-# In[169]:
 
 
 #tabList_sample = TabularList.from_df(full_train_df.head(10), cat_names=cat_names, procs=procs)
 #learn2 = load_learner(DATA, 'model_sample_export', test=tabList_sample)
 
 
-# In[170]:
 
 
 #pred_batch3 = learn2.pred_batch(ds_type=DatasetType.Test)
 #pred_batch3[: 5]
 
 
-# In[171]:
 
 
 full_test_df = pd.read_pickle('full_test_df.pkl')
 
 
-# In[172]:
 
 
 nan_cols = full_test_df.columns.values[full_test_df.isna().sum().nonzero()[0]].tolist()
 
 
-# In[173]:
 
 
 for col_ in nan_cols:
@@ -1267,7 +1094,6 @@ for col_ in nan_cols:
     full_test_df[col_] = full_test_df[col_].fillna(median)
 
 
-# In[174]:
 
 
 ## Need to input data as tabList when learner is loaded
@@ -1276,52 +1102,44 @@ tabList = TabularList.from_df(full_test_df, cat_names=cat_names, procs=procs)
 learn2 = load_learner(DATA, 'model_all_export', test=tabList)
 
 
-# In[175]:
 
 
 del tabList
 del full_test_df
 
 
-# In[176]:
 
 
 pred_test = learn2.get_preds(ds_type=DatasetType.Test)
 
 
-# In[177]:
 
 
 len(pred_test[0])#, full_test_df.shape
 
 
-# In[178]:
 
 
 pred_test_np = pred_test[0].numpy()
 
 
-# In[179]:
 
 
 from google.colab import drive
 drive.mount('/content/gdrive')
 
 
-# In[180]:
 
 
 res = pred_test_np
 
 
-# In[181]:
 
 
 submission = pd.read_csv(f'{DATA}sample_submission.csv')
 submission.shape
 
 
-# In[182]:
 
 
 submission = pd.read_csv(f'{DATA}sample_submission.csv')
@@ -1331,7 +1149,6 @@ submission.to_csv('submission_fastai_full_20191103.csv', index=False)
 submission
 
 
-# In[ ]:
 
 
 

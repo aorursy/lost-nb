@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -35,7 +34,6 @@ from time import time
 import torchvision
 
 
-# In[2]:
 
 
 ROOT = '../input/'
@@ -53,7 +51,6 @@ latent_dim = 128
 random_dim =128
 
 
-# In[3]:
 
 
 def load_images():
@@ -148,13 +145,11 @@ def load_images():
     return all_images,namesIn,index
 
 
-# In[4]:
 
 
 X_train,namesIn,idxIn=load_images()
 
 
-# In[5]:
 
 
 #DISPLAY CROPPED IMAGES
@@ -170,7 +165,6 @@ for k in range(3):
     plt.show()
 
 
-# In[6]:
 
 
 # adapted from keras.optimizers.Adam
@@ -307,14 +301,12 @@ def data_based_init(model, input):
         sess.run(updates, feed_dict)
 
 
-# In[7]:
 
 
 #optimizer = tf.keras.optimizers.Adam(0.001, 0.5)
 adamWithWeightnorm=AdamWithWeightnorm(lr = 0.0002, beta_1 = 0.5)
 
 
-# In[8]:
 
 
 def build_generator():
@@ -358,7 +350,6 @@ def build_generator():
     return model
 
 
-# In[9]:
 
 
 def build_discriminator():
@@ -403,7 +394,6 @@ def build_discriminator():
     return model
 
 
-# In[10]:
 
 
 def show_images( epoch):
@@ -426,7 +416,6 @@ def show_images( epoch):
     plt.close()
 
 
-# In[11]:
 
 
 def train(epochs, batch_size=128, save_interval=50):
@@ -487,7 +476,6 @@ def train(epochs, batch_size=128, save_interval=50):
             #show_images(epoch)
 
 
-# In[12]:
 
 
 # Build and compile the discriminator
@@ -515,13 +503,11 @@ combined = Model(z, valid)
 combined.compile(loss='binary_crossentropy', optimizer=AdamWithWeightnorm(lr = 0.0002, beta_1 = 0.5))
 
 
-# In[13]:
 
 
 get_ipython().run_cell_magic('time', '', 'train(epochs=2000000, batch_size=32, save_interval=10000)')
 
 
-# In[14]:
 
 
 for k in range(5):
@@ -538,7 +524,6 @@ for k in range(5):
     plt.show()
 
 
-# In[15]:
 
 
 z = zipfile.PyZipFile('images.zip', mode='w')

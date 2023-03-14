@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Imports
@@ -25,7 +24,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 
 
-# In[2]:
 
 
 house_df = pd.read_csv("../input/train.csv")
@@ -35,7 +33,6 @@ test_df    = pd.read_csv("../input/test.csv")
 house_df.head()
 
 
-# In[3]:
 
 
 house_df.info()
@@ -43,7 +40,6 @@ print("------------------")
 test_df.info()
 
 
-# In[4]:
 
 
 # fill missing values
@@ -79,7 +75,6 @@ ax[1,1].set(title = "scatter plot below mean", xlabel = "area", ylabel = "price"
 #ax[1].set(title = "scatter plot above mean", xlabel = "area", ylabel = "price", xlim = [0, 300], ylim = [avg_price, max_price + avg_price])
 
 
-# In[5]:
 
 
 # model

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Libraries
@@ -18,7 +17,6 @@ import lightgbm as lgb
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 # Helper functions
@@ -92,7 +90,6 @@ def parse_sentiment(filename):
         return df_sentiment
 
 
-# In[3]:
 
 
 # Tables from csv
@@ -125,7 +122,6 @@ df_train_sentiment = pd.concat([train_sentiment,train_sentiment_parse],axis=1)
 df_test_sentiment = pd.concat([test_sentiment,test_sentiment_parse],axis=1)
 
 
-# In[4]:
 
 
 print(df_train.dtypes)
@@ -133,7 +129,6 @@ print(train_metadata_parse.dtypes)
 print(train_sentiment_parse.dtypes)
 
 
-# In[5]:
 
 
 # Helper functions
@@ -170,7 +165,6 @@ def splitEncodeCol(df,col):
     return pd.concat([df,pd.DataFrame(list(df[col]),columns=col_names)],axis=1)
 
 
-# In[6]:
 
 
 df_train_metadata['annots_top_desc_encode'] = list(encodeText(df_train_metadata['annots_top_desc'].str.split()))
@@ -181,7 +175,6 @@ df_train_metadata = splitEncodeCol(df_train_metadata,'annots_top_desc_encode')
 df_test_metadata = splitEncodeCol(df_test_metadata,'annots_top_desc_encode')
 
 
-# In[7]:
 
 
 sentiment_topics = 5
@@ -193,7 +186,6 @@ df_train_sentiment = splitEncodeCol(df_train_sentiment,'entities_encode')
 df_test_sentiment = splitEncodeCol(df_test_sentiment,'entities_encode')
 
 
-# In[8]:
 
 
 # Check for missing data
@@ -203,7 +195,6 @@ cat_idx = df_train['Type']==1.0
 dog_idx = df_train['Type']==2.0
 
 
-# In[9]:
 
 
 # Helper functions
@@ -229,7 +220,6 @@ def boxCol(col):
     plt.show()
 
 
-# In[10]:
 
 
 # Overall adoption
@@ -237,49 +227,42 @@ pd.DataFrame({'cat': df_train['AdoptionSpeed'][cat_idx].value_counts().sort_inde
 plt.show()
 
 
-# In[11]:
 
 
 # Age
 boxCol('Age')
 
 
-# In[12]:
 
 
 # Breed1 (top adoption)
 getTop('Breed1',10)
 
 
-# In[13]:
 
 
 # Gender
 barCol('Gender',[1,2,3])
 
 
-# In[14]:
 
 
 # Color1
 getTop('Color1',3)
 
 
-# In[15]:
 
 
 # PhotoAmt
 boxCol('PhotoAmt')
 
 
-# In[16]:
 
 
 # PhotoAmt
 boxCol('VideoAmt')
 
 
-# In[17]:
 
 
 # Merge data
@@ -289,7 +272,6 @@ dfTemp_test = df_test.merge(df_test_sentiment,on='PetID',how='left')
 dfTemp_test = dfTemp_test.merge(df_test_metadata,left_on='PetID',right_on='PetID',how='left',suffixes=(False, False))
 
 
-# In[18]:
 
 
 # Remove unnecessary columns
@@ -299,7 +281,6 @@ X_train = dfTemp_train.drop(columns=remove_cols)
 X_test = dfTemp_test.drop(columns=remove_cols)
 
 
-# In[19]:
 
 
 # Convert to lgb dataset
@@ -307,7 +288,6 @@ n=1000
 train_data = lgb.Dataset(data=X_train.iloc[:n].drop(columns=['AdoptionSpeed']),label=X_train['AdoptionSpeed'][:n])
 
 
-# In[20]:
 
 
 # Helper functions
@@ -345,7 +325,6 @@ def getRMSE(max_depth,min_data_in_leaf,mode='cv'):
     
 
 
-# In[21]:
 
 
 # Tuning params with CV
@@ -363,7 +342,6 @@ plt.plot([x[0] for x in rmse_cv])
 plt.show()
 
 
-# In[22]:
 
 
 # Build model
@@ -371,14 +349,12 @@ mdl=getRMSE(rmse_cv[0][1][0],rmse_cv[0][1][1],'train')
 lgb.plot_importance(mdl)
 
 
-# In[23]:
 
 
 # Predict testing data
 Y_test = mdl.predict(X_test, num_iteration=mdl.best_iteration)
 
 
-# In[24]:
 
 
 submission = pd.DataFrame({'PetID': dfTemp_test['PetID'].values, 'AdoptionSpeed': Y_test.astype(np.int32)})

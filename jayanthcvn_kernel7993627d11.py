@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[ ]:
 
 
 from sklearn.model_selection import train_test_split
@@ -33,21 +31,18 @@ lookid_data = pd.read_csv('/kaggle/input/facial-keypoints-detection/IdLookupTabl
 lookid_data
 
 
-# In[ ]:
 
 
 train_columns = train_df.columns[:-1].values
 train_df.head().T
 
 
-# In[ ]:
 
 
 print(train_df.shape)
 train_df.isnull().sum()
 
 
-# In[ ]:
 
 
 whisker_width = 1.5
@@ -65,7 +60,6 @@ for col in train_columns:
 print(f'{missing_col} number of columns have missing values out of {len(train_columns)}')
 
 
-# In[ ]:
 
 
 main_features = ['left_eye_center_x', 'left_eye_center_y',
@@ -79,7 +73,6 @@ train30 = train_df.dropna().reset_index()
 main_features = np.array(main_features)
 
 
-# In[ ]:
 
 
 #training = train_df.dropna()
@@ -99,7 +92,6 @@ testing = (np.vstack(test_df['Image'].apply(lambda i:np.fromstring(i,sep = ' '))
 testing = testing.reshape(-1,96,96,1)
 
 
-# In[ ]:
 
 
 y_train8 = np.delete(y_train8,8,1)
@@ -117,7 +109,6 @@ y_val30 = (y_val30 - 48) / 48
 y_val8 = (y_val8 - 48) /48'''
 
 
-# In[ ]:
 
 
 import tensorflow as tf
@@ -130,7 +121,6 @@ from keras.regularizers import l2,l1
 from keras.layers.advanced_activations import LeakyReLU
 
 
-# In[ ]:
 
 
 def get_model(out)
@@ -177,7 +167,6 @@ def get_model(out)
     return model
 
 
-# In[ ]:
 
 
 from keras import backend
@@ -186,7 +175,6 @@ def rmse(y_true, y_pred):
     return backend.sqrt(backend.mean(backend.square(y_pred - y_true), axis=-1))
 
 
-# In[ ]:
 
 
 model8 = get_model(8)
@@ -202,7 +190,6 @@ model8.compile(loss='mean_squared_error',
 model8.summary()
 
 
-# In[ ]:
 
 
 model30 = get_model(30)
@@ -218,7 +205,6 @@ model30.compile(loss='mean_squared_error',
 model30.summary()
 
 
-# In[ ]:
 
 
 LR_callback_30 = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', patience=4, verbose=10, factor=.4, min_lr=.00001)
@@ -228,7 +214,6 @@ LR_callback_8 = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', patience=4
 EarlyStop_callback_8 = keras.callbacks.EarlyStopping(patience=15, restore_best_weights=True)
 
 
-# In[ ]:
 
 
 hist30 = model30.fit(x_train30, y_train30,
@@ -239,7 +224,6 @@ hist30 = model30.fit(x_train30, y_train30,
                     )
 
 
-# In[ ]:
 
 
 # Plot the loss and accuracy curves for training and validation
@@ -255,13 +239,11 @@ def plot_loss(history):
     legend = ax[1].legend(loc='best', shadow=True)
 
 
-# In[ ]:
 
 
 plot_loss(hist30)
 
 
-# In[ ]:
 
 
 score = model30.evaluate(x_val30, y_val30, verbose=0)
@@ -272,13 +254,11 @@ print('Train loss:', score[0])
 print('Train accuracy:', score[1])
 
 
-# In[ ]:
 
 
 y_predict30 = model30.predict(testing)
 
 
-# In[ ]:
 
 
 hist8 = model8.fit(x_train8, y_train8,
@@ -289,13 +269,11 @@ hist8 = model8.fit(x_train8, y_train8,
             )
 
 
-# In[ ]:
 
 
 plot_loss(hist8)
 
 
-# In[ ]:
 
 
 score = model8.evaluate(x_val8, y_val8, verbose=0)
@@ -306,13 +284,11 @@ print('Train loss:', score[0])
 print('Train accuracy:', score[1])
 
 
-# In[ ]:
 
 
 y_predict8 = model8.predict(testing)
 
 
-# In[ ]:
 
 
 feature_8_ind = [0, 1, 2, 3, 20, 21, 28, 29]
@@ -325,7 +301,6 @@ for i in range(8):
 y_predict8 = (y_predict8 * 48) +48'''
 
 
-# In[ ]:
 
 
 #All required features in order.
@@ -342,7 +317,6 @@ for x,y in zip(imageID,feature_ind):
     required_pred.append(y_predict30[x, y])
 
 
-# In[ ]:
 
 
 feature_names = list(lookid_data['FeatureName'])
@@ -364,7 +338,6 @@ submission_result = pd.concat([row_ids,locations],axis = 1)
 submission_result.to_csv('2Model_raghu_.csv',index = False)
 
 
-# In[ ]:
 
 
 submission_result

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import os
@@ -17,7 +16,6 @@ from skimage import exposure
 import matplotlib.pyplot as plt
 
 
-# In[ ]:
 
 
 def print_progress(it, mIoU,loss):
@@ -152,7 +150,6 @@ def convt_layer(input, filters, kernel_size, strides, k_init, k_reg, activation=
     return d;
 
 
-# In[ ]:
 
 
 class Data():
@@ -325,7 +322,6 @@ class Data():
         return;
 
 
-# In[ ]:
 
 
 batch_size = 100;
@@ -340,7 +336,6 @@ data = Data();
 data.load_train();
 
 
-# In[ ]:
 
 
 tf.reset_default_graph();
@@ -444,7 +439,6 @@ with tf.variable_scope('metrics'):
 optimizer = tf.train.AdamOptimizer(learning_rate=lr, name='op').minimize(loss);
 
 
-# In[ ]:
 
 
 session = tf.Session()
@@ -452,7 +446,6 @@ session.run(tf.global_variables_initializer())
 session.run(tf.local_variables_initializer())
 
 
-# In[ ]:
 
 
 print("Starting training...");
@@ -501,7 +494,6 @@ del data
 gc.collect()
 
 
-# In[ ]:
 
 
 data = Data();

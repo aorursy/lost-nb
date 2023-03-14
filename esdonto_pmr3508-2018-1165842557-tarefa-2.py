@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import pandas as pd
@@ -10,33 +9,28 @@ import matplotlib.pyplot as plt
 plt.rcParams['figure.figsize'] = [20,5]
 
 
-# In[ ]:
 
 
 import os 
 os.listdir('../input/tarefa-2')
 
 
-# In[ ]:
 
 
 dataTrain = pd.read_csv('../input/tarefa-2/train_data.csv')
 dataTrain.head()
 
 
-# In[ ]:
 
 
 dataTrain.shape
 
 
-# In[ ]:
 
 
 list(dataTrain)
 
 
-# In[ ]:
 
 
 XdataTrain = dataTrain.iloc[:,:-2]
@@ -44,45 +38,38 @@ YdataTrain = dataTrain['ham']
 IDdataTrain = dataTrain['Id']
 
 
-# In[ ]:
 
 
 dataTrain.isnull().sum().sum()
 
 
-# In[ ]:
 
 
 dataTrain['ham'].value_counts()
 
 
-# In[ ]:
 
 
 dataSemZeros = dataTrain.copy().iloc[:,:-2]
 
 
-# In[ ]:
 
 
 for v in dataSemZeros:
     dataSemZeros[v] = dataSemZeros.loc[dataSemZeros[v] != 0, v]
 
 
-# In[ ]:
 
 
 dataSemZeros.head()
 
 
-# In[ ]:
 
 
 dataZeros = dataSemZeros.isna().sum()
 dataZeros
 
 
-# In[ ]:
 
 
 plt.rcParams['figure.figsize'] = [20,5]
@@ -91,21 +78,18 @@ for i in range(4):
     plt.legend(loc=6, bbox_to_anchor=(1, 0.5))
 
 
-# In[ ]:
 
 
 dataSemZeros.iloc[:,48:54].plot(kind='hist', bins=1000, legend=True, alpha=0.3, xlim=(-0.2, 1.5))
 plt.legend(loc=6, bbox_to_anchor=(1, 0.5))
 
 
-# In[ ]:
 
 
 dataSemZeros.iloc[:,54:57].plot(kind='hist', bins=4000, legend=True, alpha=0.3, xlim=(-1,50))
 plt.legend(loc=6, bbox_to_anchor=(1, 0.5))
 
 
-# In[ ]:
 
 
 meanComZero = list(dataTrain.mean())[:-5]
@@ -114,7 +98,6 @@ meanSemZero = list(dataSemZeros.mean())[:-3]
 stdSemZero = list(dataSemZeros.std())[:-3]
 
 
-# In[ ]:
 
 
 ind = np.arange(len(meanComZero))  # the x locations for the groups
@@ -140,7 +123,6 @@ ax.legend((bar1[0], bar2[0], bar3[0], bar4[0]), ["Média, com 0's", "Std, com0's
 #plt.show()
 
 
-# In[ ]:
 
 
 A = list(dataTrain[dataTrain['ham']==True].mean())[:-5]
@@ -149,7 +131,6 @@ C = list(dataTrain[dataTrain['ham']==False].mean())[:-5]
 D = list(dataSemZeros[dataTrain['ham']==False].mean())[:-3]
 
 
-# In[ ]:
 
 
 ind = np.arange(len(meanComZero))  # the x locations for the groups
@@ -172,7 +153,6 @@ ax.legend((bar1[0], bar2[0], bar3[0], bar4[0]),
           ["Média do ham, com 0's", "Média do ham, sem 0's", "Média do spam, com 0's", "Média do spam, sem 0's"])
 
 
-# In[ ]:
 
 
 A = list(dataTrain[dataTrain['ham']==True].std())[:-5]
@@ -181,7 +161,6 @@ C = list(dataTrain[dataTrain['ham']==False].std())[:-5]
 D = list(dataSemZeros[dataTrain['ham']==False].std())[:-3]
 
 
-# In[ ]:
 
 
 ind = np.arange(len(meanComZero))  # the x locations for the groups
@@ -204,20 +183,17 @@ ax.legend((bar1[0], bar2[0], bar3[0], bar4[0]),
           ["Std do ham, com 0's", "Std do ham, sem 0's", "Std do spam, com 0's", "Std do spam, sem 0's"])
 
 
-# In[ ]:
 
 
 XdataTrainBin = XdataTrain.astype('bool').astype('int')
 
 
-# In[ ]:
 
 
 A = list(XdataTrainBin[dataTrain['ham']==True].mean())[:-3]
 B = list(XdataTrainBin[dataTrain['ham']==False].mean())[:-3]
 
 
-# In[ ]:
 
 
 ind = np.arange(len(meanComZero))  # the x locations for the groups
@@ -238,7 +214,6 @@ ax.legend((bar1[0], bar2[0]),
           ["Médias do ham", "Médias do Spam"])
 
 
-# In[ ]:
 
 
 meansBin = []
@@ -252,14 +227,12 @@ meansBin = np.array(meansBin[::-1])
 melhores = list(meansBin[:35,1])
 
 
-# In[ ]:
 
 
 dataTest = pd.read_csv('../input/tarefa-2/test_features.csv')
 dataTest.head()
 
 
-# In[ ]:
 
 
 XdataTest = dataTest.iloc[:,:-1]
@@ -267,26 +240,22 @@ IDdataTest = dataTest['Id']
 XdataTestBin = XdataTest.astype('bool').astype('int')
 
 
-# In[ ]:
 
 
 XdataTest.head()
 
 
-# In[ ]:
 
 
 IDdataTest.head()
 
 
-# In[ ]:
 
 
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.model_selection import cross_val_score
 
 
-# In[ ]:
 
 
 from tqdm import tqdm
@@ -300,14 +269,12 @@ temp.sort(key=lambda x: x[0])
 temp[-5:]
 
 
-# In[ ]:
 
 
 clf = BernoulliNB()
 clf.fit(XdataTrainBin, YdataTrain)
 
 
-# In[ ]:
 
 
 scores = cross_val_score(clf, XdataTrainBin,YdataTrain, cv=10)
@@ -315,26 +282,22 @@ print(scores)
 print(scores.mean())
 
 
-# In[ ]:
 
 
 clf = BernoulliNB(alpha=0)
 clf.fit(XdataTrainBin, YdataTrain)
 
 
-# In[ ]:
 
 
 YdataPredBayes = clf.predict(XdataTestBin)
 
 
-# In[ ]:
 
 
 YdataPredBayes.shape
 
 
-# In[ ]:
 
 
 IDdataTest = list(IDdataTest)
@@ -344,7 +307,6 @@ submissionBayes = np.array([IDdataTest, YdataPredBayes])
 submissionBayes
 
 
-# In[ ]:
 
 
 submissionBayes = pd.DataFrame(submissionBayes.T,
@@ -353,19 +315,16 @@ submissionBayes['ham'] = submissionBayes['ham'].astype(bool)
 submissionBayes.head()
 
 
-# In[ ]:
 
 
 submissionBayes.to_csv('resBayes.csv', index=False)
 
 
-# In[ ]:
 
 
 from sklearn.neighbors import KNeighborsClassifier
 
 
-# In[ ]:
 
 
 from tqdm import tqdm
@@ -382,7 +341,6 @@ for k in tqdm(range(1,Ktam+1)):
     accuracies[k] = scores.mean()
 
 
-# In[ ]:
 
 
 accuraciesSorted = list(accuracies.items())
@@ -391,13 +349,11 @@ accuraciesSorted.sort(key=lambda x: x[1])
 accuraciesSorted[-10:]
 
 
-# In[ ]:
 
 
 plt.plot(accuracies.keys(), accuracies.values())
 
 
-# In[ ]:
 
 
 knn = KNeighborsClassifier(n_neighbors=12, p=1)
@@ -405,7 +361,6 @@ knn.fit(XdataTrainBin.iloc[:,melhores],YdataTrain)
 YdataPredKnn = knn.predict(XdataTestBin.iloc[:,melhores])
 
 
-# In[ ]:
 
 
 IDdataTest = list(IDdataTest)
@@ -415,7 +370,6 @@ submissionKnn = np.array([IDdataTest, YdataPredKnn])
 submissionKnn
 
 
-# In[ ]:
 
 
 submissionKnn = pd.DataFrame(submissionKnn.T,
@@ -424,13 +378,11 @@ submissionKnn['ham'] = submissionKnn['ham'].astype(bool)
 submissionKnn.head()
 
 
-# In[ ]:
 
 
 submissionKnn.to_csv('resKnn.csv', index=False)
 
 
-# In[ ]:
 
 
 knn = KNeighborsClassifier(n_neighbors=12, p=1)
@@ -438,14 +390,12 @@ knn.fit(XdataTrainBin.iloc[:,melhores],YdataTrain)
 YdataPredKnn = knn.predict(XdataTrainBin.iloc[:,melhores])
 
 
-# In[ ]:
 
 
 label = np.array(YdataTrain)
 pred = YdataPredKnn
 
 
-# In[ ]:
 
 
 TP = pred[label].sum()
@@ -453,31 +403,26 @@ FP = np.logical_not(label[pred]).sum()
 FN = np.logical_not(pred[label]).sum()
 
 
-# In[ ]:
 
 
 prec = TP / (TP + FP)
 
 
-# In[ ]:
 
 
 rec = TP / (TP + FN)
 
 
-# In[ ]:
 
 
 F3 = ( ((prec**-1) + 9*(rec**-1)) / (1+9))**-1
 
 
-# In[ ]:
 
 
 print(F3)
 
 
-# In[ ]:
 
 
 clf = BernoulliNB(alpha=0)
@@ -485,13 +430,11 @@ clf.fit(XdataTrainBin, YdataTrain)
 pred = clf.predict_proba(XdataTrainBin)
 
 
-# In[ ]:
 
 
 alpha = pred[:,0] / pred[:,1]
 
 
-# In[ ]:
 
 
 TPrate = []
@@ -509,14 +452,12 @@ for i in np.append(np.arange(0,1, 0.00002), [1]):
     FPrate.append(FP / (FP+TN))
 
 
-# In[ ]:
 
 
 pontX = [0,1]
 pontY = [0,1]
 
 
-# In[ ]:
 
 
 plt.rcParams['figure.figsize'] = [10,10]

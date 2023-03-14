@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -27,35 +26,30 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
 
 
 train =  pd.read_csv("../input/train.csv")
 train.head()
 
 
-# In[3]:
 
 
 y = train.target 
 X = train.iloc[:, 2:]
 
 
-# In[4]:
 
 
 scaler = StandardScaler()
 X = scaler.fit_transform(X)
 
 
-# In[5]:
 
 
 my_imputer = Imputer()
 X = my_imputer.fit_transform(X)
 
 
-# In[6]:
 
 
 # Initializing models
@@ -117,7 +111,6 @@ X = my_imputer.fit_transform(X)
 #Accuracy: 0.73
 
 
-# In[7]:
 
 
 # Initializing models
@@ -138,7 +131,6 @@ sclf = StackingClassifier(classifiers=[clf2, clf3, clf4, clf7, clf8, clf9, clf10
 sclf.fit(X, y)
 
 
-# In[8]:
 
 
 for clf, label in zip([clf2, clf3, clf4, clf7, clf8, clf9, clf10, sclf], 
@@ -157,7 +149,6 @@ for clf, label in zip([clf2, clf3, clf4, clf7, clf8, clf9, clf10, sclf],
           % (scores.mean(), scores.std(), label))
 
 
-# In[9]:
 
 
 test = pd.read_csv('../input/test.csv')
@@ -166,7 +157,6 @@ test = my_imputer.transform(test)
 preds = sclf.predict_proba(test)
 
 
-# In[10]:
 
 
 def softmax(X, theta = 1.0, axis = None):
@@ -213,32 +203,27 @@ def softmax(X, theta = 1.0, axis = None):
     return p
 
 
-# In[11]:
 
 
 preds = softmax(preds, axis=1)[:, 1]
 
 
-# In[12]:
 
 
 sub = pd.read_csv("../input/sample_submission.csv")
 
 
-# In[13]:
 
 
 sub.target = preds
 sub.to_csv('sub.csv', index=False)
 
 
-# In[14]:
 
 
 sub.head()
 
 
-# In[15]:
 
 
 

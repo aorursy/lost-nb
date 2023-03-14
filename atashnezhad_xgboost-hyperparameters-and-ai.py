@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -18,7 +17,6 @@ from sklearn.model_selection import cross_val_score
 from sklearn.metrics import roc_auc_score
 
 
-# In[2]:
 
 
 def De_Algorithm(fobj, bounds, mut=0.8, crossp=0.7, popsize=100, its=1000):
@@ -54,7 +52,6 @@ def De_Algorithm(fobj, bounds, mut=0.8, crossp=0.7, popsize=100, its=1000):
         yield best, fitness[best_idx]
 
 
-# In[3]:
 
 
 def xgb2(X_training, y_training, X_valid, y_valid, w):
@@ -103,14 +100,12 @@ def xgb2(X_training, y_training, X_valid, y_valid, w):
     return model, auc
 
 
-# In[4]:
 
 
 #address_train = '../input/talkingdata-adtracking-fraud-detection/train_sample.csv'
 address_train = '../input/talkingdata-adtracking-fraud-detection/train.csv'
 
 
-# In[5]:
 
 
 def Drop_cols(df, x):
@@ -160,14 +155,12 @@ def Merge_data(df1, df2):
     return df
 
 
-# In[6]:
 
 
 df_train = read_train_test_data_balanced(address_train)
 df_train.head(3)
 
 
-# In[7]:
 
 
 # See the output paramters distribution 
@@ -175,14 +168,12 @@ xlist = ['is_attributed']
 Plot_Hist_columns(df_train, xlist)
 
 
-# In[8]:
 
 
 # Lets drop click_time and attributed_time for sack of simplicity 
 df_train.drop(labels = ["click_time", "attributed_time"], axis = 1, inplace = True)
 
 
-# In[9]:
 
 
 # Devide data set to input (X) and output (Y) paramters.
@@ -190,7 +181,6 @@ X, Y = Make_X_Y(df_train);
 X_training, y_training, X_valid, y_valid = Train_Test_training_valid(X, Y, 0.1)
 
 
-# In[10]:
 
 
 # check out the ML algorithm and make sure it works.
@@ -210,7 +200,6 @@ X_training, y_training, X_valid, y_valid = Train_Test_training_valid(X, Y, 0.1)
 Trained_XGBoost_Model, XGBoost_accuracy = Train_XGBoost(X_training, y_training, X_valid, y_valid, w)'''
 
 
-# In[11]:
 
 
 # check out the ML algorithm and make sure it works.
@@ -230,7 +219,6 @@ w = [0.1, 1400, 0, 0.9, 0.7, 0.7, 0, 4, 9, 8, 99]
 model2, accuracy = xgb2(X_training, y_training, X_valid, y_valid, w)
 
 
-# In[12]:
 
 
 '''#Define an objective funtion.
@@ -248,7 +236,6 @@ def Objective_Function2(w):
     return (1-accuracy)
 
 
-# In[13]:
 
 
 '''#Run the DE algorithm on objective function in your favorite range of hyperparameters.
@@ -280,7 +267,6 @@ result = list(De_Algorithm(Objective_Function2,
                   mut=0.4, crossp=0.8, popsize=10, its=40))
 
 
-# In[14]:
 
 
 df = pd.DataFrame(result)
@@ -297,7 +283,6 @@ def Best_coffs(df):
 Best_coffs(df)
 
 
-# In[15]:
 
 
 def Plot_DEA_Evolution(df):
@@ -322,13 +307,11 @@ def Plot_DEA_Evolution(df):
     plt.show()
 
 
-# In[16]:
 
 
 Plot_DEA_Evolution(df)
 
 
-# In[17]:
 
 
 df = pd.DataFrame(result)
@@ -369,7 +352,6 @@ def print_hyper_parameters(df):
 print_hyper_parameters(df)   
 
 
-# In[18]:
 
 
 def xgb2(X_training, y_training, X_valid, y_valid, w):
@@ -417,7 +399,6 @@ def xgb2(X_training, y_training, X_valid, y_valid, w):
     return model, accuracy
 
 
-# In[19]:
 
 
 df = pd.DataFrame(result)
@@ -425,7 +406,6 @@ w = list(Best_coffs(df))
 Trained_Model, accuracy = xgb2(X_training, y_training, X_valid, y_valid, w)
 
 
-# In[20]:
 
 
 address_test = '../input/talkingdata-adtracking-fraud-detection/test.csv'
@@ -433,7 +413,6 @@ df_test = pd.read_csv(address_test, parse_dates=['click_time'])
 df_test.head()
 
 
-# In[21]:
 
 
 # Lets drop click_time and attributed_time for sack of simplicity 
@@ -441,7 +420,6 @@ df_test.drop(labels = ["click_time", "click_id"], axis = 1, inplace = True)
 df_test.head()
 
 
-# In[22]:
 
 
 def predict_And_Submit_using_xgb(df, Trained_Model):
@@ -466,19 +444,16 @@ def predict_And_Submit_using_xgb(df, Trained_Model):
     return data_to_submit
 
 
-# In[23]:
 
 
 data_to_submit = predict_And_Submit_using_xgb(df_test, Trained_Model)
 
 
-# In[24]:
 
 
 data_to_submit.to_csv('Amin_csv_to_submit.csv', index = False)
 
 
-# In[25]:
 
 
 data_to_submit2 = pd.DataFrame()

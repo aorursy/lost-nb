@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import re
@@ -34,7 +33,6 @@ from keras.callbacks import ModelCheckpoint
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 
-# In[ ]:
 
 
 stopwords = set(nltk.corpus.stopwords.words("english"))
@@ -126,7 +124,6 @@ def get_embeddings(model, rev_voc, dim=300):
     return myembeddings
 
 
-# In[ ]:
 
 
 training_data = pd.read_csv("/kaggle/input/train.csv")
@@ -134,40 +131,34 @@ testing_data = pd.read_csv("/kaggle/input/test.csv")
 labels = np.array(list(training_data['is_duplicate']))
 
 
-# In[ ]:
 
 
 tr_q1_preprocessed = [preprocess(t, swords=stopwords) for t in training_data['question1']]
 tr_q2_preprocessed = [preprocess(t, swords=stopwords) for t in training_data['question2']]
 
 
-# In[ ]:
 
 
 ts_q1_preprocessed = [preprocess(t, swords=stopwords) for t in testing_data['question1']]
 ts_q2_preprocessed = [preprocess(t, swords=stopwords) for t in testing_data['question2']]
 
 
-# In[ ]:
 
 
 emb_mod = gensim.models.Word2Vec.load_word2vec_format("./assets/GoogleNews-vectors-negative300.bin", 
                                                       binary=True)
 
 
-# In[ ]:
 
 
 all_texts = tr_q1_preprocessed+tr_q2_preprocessed+ts_q1_preprocessed+ts_q2_preprocessed
 
 
-# In[ ]:
 
 
 emb_mod = gensim.models.Word2Vec(all_texts, min_count=7, size=128)
 
 
-# In[ ]:
 
 
 # You might want to train the model more to get better results
@@ -176,7 +167,6 @@ for i in range(n_epochs)
     emb_mod.train(all_texts)
 
 
-# In[ ]:
 
 
 voc, rev_voc = build_vocab(all_texts, 
@@ -184,27 +174,23 @@ voc, rev_voc = build_vocab(all_texts,
 embs_m = get_embeddings(emb_mod, rev_voc, emb_mod.vector_size)
 
 
-# In[ ]:
 
 
 v_tr_q1 = vectorize(tr_q1_preprocessed, voc, max_len=24)
 v_tr_q2 = vectorize(tr_q2_preprocessed, voc, max_len=24)
 
 
-# In[ ]:
 
 
 v_ts_q1 = vectorize(ts_q1_preprocessed, voc, max_len=24)
 v_ts_q2 = vectorize(ts_q2_preprocessed, voc, max_len=24)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 pickle.dump([v_tr_q1, v_tr_q2], open("vectorized_train", "wb"))
@@ -213,7 +199,6 @@ pickle.dump([voc, rev_voc], open("voc_rvoc", "wb"))
 pickle.dump(embs_m, open("embedding_matrix", "wb"))
 
 
-# In[ ]:
 
 
 v_tr_q1, v_tr_q2 = pickle.load(open("./assets/vectorized_train", "rb"))
@@ -222,13 +207,11 @@ voc, rev_voc = pickle.load(open("./assets/voc_rvoc", "rb"))
 embs_m = pickle.load(open("./assets/embedding_matrix", "rb"))
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 MAXLEN = 24
@@ -237,7 +220,6 @@ LSTM_UNITS = 600
 DENSE_UNITS = 600
 
 
-# In[ ]:
 
 
 def pairwise_dis(vests):
@@ -266,7 +248,6 @@ def contrastive_loss(y_true, y_pred):
     return K.mean((1 - y_true) * K.square(y_pred) + y_true * K.square(K.maximum(margin - y_pred, 0)))
 
 
-# In[ ]:
 
 
 def build_rnn_mk1_encoder(embs_matrix):
@@ -335,19 +316,16 @@ def build_model(embs_matrix):
     return model, feature_model, encoder
 
 
-# In[ ]:
 
 
 mmod, fmod, encmod = build_model(embs_m)
 
 
-# In[ ]:
 
 
 encmod.summary()
 
 
-# In[ ]:
 
 
 idx = list(range(len(v_tr_q1)))
@@ -355,7 +333,6 @@ random.shuffle(idx)
 train_idx, val_idx = train_test_split(idx, train_size=0.9)
 
 
-# In[ ]:
 
 
 train_X = [v_tr_q1[train_idx], v_tr_q2[train_idx]]
@@ -365,14 +342,12 @@ val_X = [v_tr_q1[val_idx], v_tr_q2[val_idx]]
 val_Y = labels[val_idx]
 
 
-# In[ ]:
 
 
 checkpointer = ModelCheckpoint(filepath="quora_bilstm.hdf5",
                                        verbose=0, save_best_only=True)
 
 
-# In[ ]:
 
 
 hist = mmod.fit(train_X, train_Y, validation_data=(val_X, val_Y), 
@@ -380,19 +355,16 @@ hist = mmod.fit(train_X, train_Y, validation_data=(val_X, val_Y),
                 callbacks=[checkpointer])
 
 
-# In[ ]:
 
 
 mmod.load_weights("quora_bilstm.hdf5")
 
 
-# In[ ]:
 
 
 predictions = mmod.predict([v_ts_q1, v_ts_q2]).reshape(-1,)
 
 
-# In[ ]:
 
 
 sub = pd.DataFrame({'test_id': testing_data['test_id'], 'is_duplicate': predictions})
@@ -400,13 +372,11 @@ sub.to_csv('sample_submission.csv', index=False)
 sub.head()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

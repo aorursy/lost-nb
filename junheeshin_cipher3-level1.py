@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import seaborn as sns
@@ -32,7 +30,6 @@ import math
 import time
 
 
-# In[3]:
 
 
 # configure
@@ -40,7 +37,6 @@ inputdir = '../input/ciphertext-challenge-iii/'
 outputdir = '../input/mycipher3/'
 
 
-# In[4]:
 
 
 dftrain = pd.read_csv(inputdir+'train.csv')
@@ -50,21 +46,18 @@ print(dftest.shape)
 # about 100,000 counts (train set, test set) same count.
 
 
-# In[5]:
 
 
 dftrain.head()
 # plaintext_id, text, index
 
 
-# In[6]:
 
 
 dftest.head()
 # ciphertext_id, ciphertext, difficulty
 
 
-# In[7]:
 
 
 # count by difficulty level  (1~4)
@@ -75,7 +68,6 @@ plt.show()
 # Each level's count is almost same.
 
 
-# In[8]:
 
 
 # get text length and space length
@@ -85,19 +77,16 @@ dftrain['space'] = [x.count(' ') for x in dftrain.text]
 dftest['space'] = [x.count(' ') for x in dftest.ciphertext]
 
 
-# In[9]:
 
 
 dftrain.head()
 
 
-# In[10]:
 
 
 dftest.head()
 
 
-# In[11]:
 
 
 # split text data by difficulty level.
@@ -109,7 +98,6 @@ print(len(dftest1))
 dftest1.head()
 
 
-# In[12]:
 
 
 # count records by length (train data) plaintext
@@ -118,14 +106,12 @@ sns.countplot(x="length", data=dftrain)
 # sns.countplot(x="length", data=dftrain, order=dftrain.length.value_counts().sort_values().index)
 
 
-# In[13]:
 
 
 # count records by length (test data) ciphertext
 sns.countplot('length', data=dftest)
 
 
-# In[14]:
 
 
 # count plot by level 
@@ -137,13 +123,11 @@ sns.countplot(x='length', data=dftest4, ax=ax[3])
 fig.show()
 
 
-# In[15]:
 
 
 print(dftest1.length.value_counts())
 
 
-# In[16]:
 
 
 # all letters (train set) plaintext
@@ -151,14 +135,12 @@ alltext = ''.join(dftrain.text)
 len(alltext)  # 4580000 letters
 
 
-# In[17]:
 
 
 # sample plaintext
 alltext[:1000]
 
 
-# In[18]:
 
 
 # count by letter
@@ -171,7 +153,6 @@ plt.title('Plain Text')
 # space is the most frequency.
 
 
-# In[19]:
 
 
 # how is the distribution of the alphabet?
@@ -183,7 +164,6 @@ plt.title('Plain Text Lowercase Alphabet Count')
 # e t o a 
 
 
-# In[20]:
 
 
 # case insensitive.
@@ -194,7 +174,6 @@ plt.title('Plain Text Alphabet Uppercae Count')
 # plaintext에 대문자 'Z'가 없다. 
 
 
-# In[21]:
 
 
 if ( np.sum(alphaCountU.Letter=='Z')==0 ):
@@ -206,14 +185,12 @@ plt.title('Plain Text Alphabet Count (Case insensitive)')
 plt.show()
 
 
-# In[22]:
 
 
 dfAlphaNocase.sort_values('Count', ascending=False).iloc[:5]
 # e >> t o a order!
 
 
-# In[23]:
 
 
 # all cipher text
@@ -225,7 +202,6 @@ print( 'length=' , len(allcipher1) )
 print( 'ciphers=', allcipher1[:1000] )
 
 
-# In[24]:
 
 
 # count letter 
@@ -238,7 +214,6 @@ plt.title('Cipher Level1')
 # 특이하게 level1 ciphertext에도 대문자 'Z'가 없음.
 
 
-# In[25]:
 
 
 # letter count. train data  and level1 ciphertext data
@@ -252,7 +227,6 @@ plt.bar(np.array(range(len(dftestletter1))), dftestletter1['Count'].values , alp
 plt.show()
 
 
-# In[26]:
 
 
 # letter count (all ciphertext)
@@ -263,7 +237,6 @@ sns.barplot(dftestletter['Letter'], dftestletter['Count'])
 plt.title('Cipher All')
 
 
-# In[27]:
 
 
 dftrainletter = dftrainletter.sort_values(by='Count', ascending=False) # 내림차순 정렬
@@ -276,7 +249,6 @@ plt.show()
 # ciphertext letter is more than plaintext
 
 
-# In[28]:
 
 
 tmpa = dftestletter1.Letter.values
@@ -285,7 +257,6 @@ print(np.sort(tmpa))
 # 즉, 'Z'는 사용 안됨? 변환이 어떤 거로든 알 수 없음???.
 
 
-# In[29]:
 
 
 tmpa = dftrainletter.Letter.values
@@ -293,13 +264,11 @@ print(np.sort(tmpa))
 ## plaintext의 도메인은 level 1 cipher text의 문자 셋 도메인과 일치함.
 
 
-# In[30]:
 
 
 dftest1.length.sort_values(ascending=False).head()
 
 
-# In[31]:
 
 
 # the length of index 45272 is 500. (only one.)
@@ -308,7 +277,6 @@ print(dftest1.loc[45272].ciphertext)
 # ciphertext_id=ID_6100247c5, space count is 81.
 
 
-# In[32]:
 
 
 # ciphertext length=50 ==> plaintext length : 401~500
@@ -317,7 +285,6 @@ dftrain.loc[np.bitwise_and(dftrain.length.values<=500,dftrain.length.values>400)
 # first one is the same space 81.
 
 
-# In[33]:
 
 
 ''' compare two string. letter freq
@@ -360,7 +327,6 @@ def compare_letter(t1, t2, l1=None, l2=None):
     plt.show()
 
 
-# In[34]:
 
 
 ''' compare two string. letter freq
@@ -395,20 +361,17 @@ def compare_freq(t1, t2, l1=None, l2=None):
     plt.show()
 
 
-# In[35]:
 
 
 compare_letter(dftest1.loc[45272].ciphertext, dftrain.loc[13862].text, 'cipher', 'plain')
 # some left parts are same. space, .. 
 
 
-# In[36]:
 
 
 compare_freq(dftest1.loc[45272].ciphertext, dftrain.loc[13862].text, 'cipher', 'plain')
 
 
-# In[37]:
 
 
 # how many these letter 
@@ -424,19 +387,16 @@ print(dftest1.loc[45272].ciphertext.count('.'))
 print(dftrain.loc[13862].text.count('.'))
 
 
-# In[38]:
 
 
 compare_letter(dftest1.loc[45272].ciphertext, dftrain.loc[67817].text)
 
 
-# In[39]:
 
 
 compare_letter(dftest1.loc[45272].ciphertext, dftrain.loc[104540].text)
 
 
-# In[40]:
 
 
 plt.figure(figsize=(6*2, 6))
@@ -448,7 +408,6 @@ sns.countplot('space', data=dftest1)
 plt.show()
 
 
-# In[41]:
 
 
 # found one!
@@ -458,7 +417,6 @@ print('cipher level1:\n', dftest1.loc[45272].ciphertext)
 # word length, special characters, space, ... upper/lower case. 
 
 
-# In[42]:
 
 
 # Special characters and space is not changed.
@@ -467,7 +425,6 @@ print('cipher level1:\n', dftest1.loc[45272].ciphertext)
 # word count is same.
 
 
-# In[43]:
 
 
 import re
@@ -483,20 +440,17 @@ def print2(p, c):
     
 
 
-# In[44]:
 
 
 print2(dftrain.loc[13862].text, dftest1.loc[45272].ciphertext )
 
 
-# In[45]:
 
 
 # Get special characters. uppercase to 'A'. lowercase to 'a'
 # try plaintext and cipher level1.
 
 
-# In[46]:
 
 
 def get_plaintext(pid):
@@ -548,7 +502,6 @@ def print_comparet(ptext, ctext):
     print('lpad-white len mod=',(padsizel-wl)%4 , 'kimap(first diff)=', kimap[val])
 
 
-# In[47]:
 
 
 def decrypt_level1(c):
@@ -572,20 +525,17 @@ def decrypt_level1(c):
     return plain  
 
 
-# In[48]:
 
 
 print_comparet(dftrain.loc[13862].text, dftest1.loc[45272].ciphertext )
 print( chr((ord('P')-ord('A')+11)%25+ord('A')) )
 
 
-# In[49]:
 
 
 decrypt_level1(dftest1.loc[45272].ciphertext)
 
 
-# In[50]:
 
 
 cnt_dftest1 = dftest1.shape[0]
@@ -597,13 +547,11 @@ for i in range(cnt_dftest1):
 dftest1["Dec"] = dectext    
 
 
-# In[51]:
 
 
 dftest1.head()
 
 
-# In[52]:
 
 
 dict_train=dict()
@@ -612,7 +560,6 @@ for ind, row in dftrain.iterrows():
     dict_train[text]=row['index']
 
 
-# In[53]:
 
 
 cnt_dftrain = dftrain.shape[0]
@@ -638,57 +585,48 @@ for i in range(cnt_dftest1):
         cid_notfound.append(i)    
 
 
-# In[54]:
 
 
 print( len(pid_list), len(cid_notfound))
 
 
-# In[55]:
 
 
 pid_list = np.asarray(pid_list, dtype=int)
 result=pd.read_csv(inputdir+'sample_submission.csv')
 
 
-# In[56]:
 
 
 result.set_index('ciphertext_id', inplace=True)
 
 
-# In[57]:
 
 
 result.head()
 
 
-# In[58]:
 
 
 for i, cid in enumerate(dftest1.ciphertext_id.values):
     result.loc[cid,"index"] = pid_list[i]
 
 
-# In[59]:
 
 
 result.head()
 
 result.reset_index()
-# In[60]:
 
 
 result.head()
 
 
-# In[61]:
 
 
 result.to_csv('result.csv')
 
 
-# In[62]:
 
 
 
@@ -726,7 +664,6 @@ def get_sp(text):
     return sp 
 
 
-# In[63]:
 
 
 # check to match pattern.
@@ -776,7 +713,6 @@ def isSamePattern(e, p, bdebug=False):
     return sp_e==sp_p
 
 
-# In[64]:
 
 
 # 5 ciphertext_id= ID_ac57b8817
@@ -787,7 +723,6 @@ ret = isSamePattern(c,t,True)
 print('isSamePattern?', ret)
 
 
-# In[65]:
 
 
 # x1=get_sp(dftrain.loc[13862].text)
@@ -798,7 +733,6 @@ print('isSamePattern?', ret)
 print(isSamePattern(dftest1.loc[45272].ciphertext,dftrain.loc[13862].text, True))
 
 
-# In[66]:
 
 
 if False:
@@ -814,7 +748,6 @@ if False:
     dftrain.head()
 
 
-# In[67]:
 
 
 print(dftrain.loc[13862].text)
@@ -834,14 +767,12 @@ for pid, plain in zip(dftrain.loc[dftrainflag]['plaintext_id'],
         
 
 
-# In[68]:
 
 
 # dftrain.head()
 # dftrain.loc[ np.bitwise_and(dftrain['length']>100, dftrain['length']<=200) ] 
 
 
-# In[69]:
 
 
 # search sp pattern
@@ -896,19 +827,16 @@ else:
     dffoundpair1 = pd.read_csv(outputdir+'foundpair1.csv')
 
 
-# In[70]:
 
 
 "123a".isnumeric() , "123a".isdigit() , "111aa".isdecimal()
 
 
-# In[71]:
 
 
 "sdads3f".isalpha(), "12as.dfA".isalnum()
 
 
-# In[72]:
 
 
 def get_plaintext(pid):
@@ -960,7 +888,6 @@ def print_compare(pid, cid):
     print('lpad-white len mod=',(padsizel-wl)%4 , 'kimap(first diff)=', kimap[val])
 
 
-# In[73]:
 
 
 matchcnt=0
@@ -991,7 +918,6 @@ if False:
     print('nomatch cnt=', nomatchcnt)
 
 
-# In[74]:
 
 
 '''
@@ -1013,13 +939,11 @@ print(isSamePattern(c,t,True))
 # 자세히 보니, 패딩의 특징은 실제 문장쪽에 공백이 오지 않는다.
 
 
-# In[75]:
 
 
 dffoundpair1
 
 
-# In[76]:
 
 
 # sns.countplot(x='count', data=dffoundpair1)
@@ -1029,13 +953,11 @@ print(sum(dffoundpair1['count'].values==1))
 dftest1.head()
 
 
-# In[77]:
 
 
 dftrain.head()
 
 
-# In[78]:
 
 
 def plaintext_index(plaintext_id):
@@ -1044,14 +966,12 @@ def plaintext_index(plaintext_id):
 plaintext_index('ID_2058482ae')
 
 
-# In[79]:
 
 
 dffoundpair = dffoundpair1.loc[dffoundpair1['count']==1]
 print(dffoundpair1.shape, dffoundpair.shape)
 
 
-# In[80]:
 
 
 def count_upper(strtemp):
@@ -1128,13 +1048,11 @@ def compare_diff(plaintext, ciphertext_org, debug=False):
     return diffstring
 
 
-# In[81]:
 
 
 dffoundpair1.loc[dffoundpair1["count"]!=1].head(5)
 
 
-# In[82]:
 
 
 c = get_ciphertext('ID_ac57b8817')
@@ -1145,7 +1063,6 @@ diffpat = compare_diff(p2,c, True)
 # not found key pattern.
 
 
-# In[83]:
 
 
 diffpat = set(diffpat)
@@ -1156,13 +1073,11 @@ else:
     print('no pattern!')
 
 
-# In[84]:
 
 
 dffoundpair
 
 
-# In[85]:
 
 
 for i in range(5):
@@ -1173,7 +1088,6 @@ for i in range(5):
 # 
 
 
-# In[86]:
 
 
 # long text를 다시 분석해 보자.
@@ -1183,7 +1097,6 @@ print_compare('ID_f000cad17','ID_6100247c5')
 # 암호 인코딩이 단순치환은 아니다. a만 보면 p, e, y로도 변환된다. 
 
 
-# In[87]:
 
 
 i=2
@@ -1198,7 +1111,6 @@ print(p1)
 print(c1)
 
 
-# In[88]:
 
 
 linenum=0
@@ -1261,13 +1173,11 @@ print(postpadding)
 # 4, 15, 24, 12의 반복으로 보이는데, 가끔씩 +-1 오차가 발생한다????? overflow시 처리?
 
 
-# In[89]:
 
 
 print(dffoundpair.shape)
 
 
-# In[90]:
 
 
 dfguessindex = pd.DataFrame(columns=['startindex', 'plainlen', 'wordcnt', 'white', 'padsizel', 'firstcharp', 
@@ -1321,13 +1231,11 @@ for i in range(7):
     
 
 
-# In[91]:
 
 
 dfguessindex
 
 
-# In[92]:
 
 
 # 패턴은 나왔다. 아직 키 길이가 4인데, rotation 시작인덱스를 찾아야 된다. padding이나 length와 관련성을 찾아보자.
@@ -1341,7 +1249,6 @@ dfguessindex
 # 
 
 
-# In[ ]:
 
 
 

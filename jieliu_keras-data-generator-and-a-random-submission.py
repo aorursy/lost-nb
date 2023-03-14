@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os 
@@ -18,7 +17,6 @@ set_image_dim_ordering('th')
 print("Image dim ordering : ", image_dim_ordering())
 
 
-# In[2]:
 
 
 TRAIN_DATA = "../input/train"
@@ -44,7 +42,6 @@ test_files = glob(os.path.join(TEST_DATA, "*.jpg"))
 test_ids = np.array([s[len(TEST_DATA)+1:-4] for s in test_files])
 
 
-# In[3]:
 
 
 def get_filename(image_id, image_type):
@@ -75,7 +72,6 @@ def get_image_data(image_id, image_type):
     return img
 
 
-# In[4]:
 
 
 type_to_index = {
@@ -126,7 +122,6 @@ def data_iterator(image_id_type_list, batch_size, image_size, verbose=0, test_mo
             break
 
 
-# In[5]:
 
 
 val_split=0.3
@@ -166,7 +161,6 @@ print("Validation dataset contains : ")
 print("-", val_ll, " images of corresponding types")
 
 
-# In[6]:
 
 
 image_size = (224, 224)
@@ -174,7 +168,6 @@ batch_size = 15
 train_iter = data_iterator(train_id_type_list, batch_size=batch_size, image_size=image_size, verbose=1)
 
 
-# In[7]:
 
 
 for X, Y in train_iter:
@@ -191,7 +184,6 @@ for X, Y in train_iter:
     break
 
 
-# In[8]:
 
 
 image_size = (224, 224)
@@ -199,7 +191,6 @@ batch_size = 15
 val_iter = data_iterator(val_id_type_list, batch_size=batch_size, image_size=image_size, verbose=1)
 
 
-# In[9]:
 
 
 for X, Y in val_iter:
@@ -216,13 +207,11 @@ for X, Y in val_iter:
     break
 
 
-# In[10]:
 
 
 
 
 
-# In[10]:
 
 
 from keras.applications.resnet50 import ResNet50
@@ -238,13 +227,11 @@ model = Model(inputs=base_model.input, outputs=output)
 model.summary()
 
 
-# In[11]:
 
 
 model.compile(loss='categorical_crossentropy', optimizer='adadelta', metrics=['accuracy',])
 
 
-# In[12]:
 
 
 def logloss_mc(y_true, y_prob, epsilon=1e-15):
@@ -263,7 +250,6 @@ def logloss_mc(y_true, y_prob, epsilon=1e-15):
     return ll
 
 
-# In[13]:
 
 
 batch_size = 16
@@ -284,7 +270,6 @@ total_loss *= 1.0 / total_counter
 print("Total loss : ", total_loss)
 
 
-# In[14]:
 
 
 df = pd.DataFrame(columns=['image_name','Type_1','Type_2','Type_3'])
@@ -309,14 +294,12 @@ for X, _, image_ids in test_iter:
         df.loc[total_counter + i, :] = (image_ids[i] + '.jpg', ) + tuple(Y_pred[i, :])
 
 
-# In[15]:
 
 
 print(df.shape)
 df.head()
 
 
-# In[16]:
 
 
 import datetime
@@ -326,13 +309,11 @@ sub_file = 'submission_' + info + '_' + str(now.strftime("%Y-%m-%d-%H-%M")) + '.
 df.to_csv(sub_file, index=False)
 
 
-# In[17]:
 
 
 get_ipython().system('ls ')
 
 
-# In[18]:
 
 
 batch_size=16
@@ -354,13 +335,11 @@ val_iter = data_iterator(val_id_type_list, batch_size=batch_size, image_size=ima
 #)
 
 
-# In[19]:
 
 
 type_3_ids
 
 
-# In[20]:
 
 
 

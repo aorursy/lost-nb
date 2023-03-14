@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -21,7 +20,6 @@ from subprocess import check_output
 print(check_output(["ls", "../input"]).decode("utf8"))
 
 
-# In[2]:
 
 
 data_dir = '../input/'
@@ -37,31 +35,26 @@ df_massey = df_massey[df_massey['RankingDayNum'] == 128]
 df_massey = df_massey[df_massey['SystemName'].isin(['POM', 'SAG', 'TRP', 'TRK', 'DOK'])]
 
 
-# In[3]:
 
 
 df_seeds.head()
 
 
-# In[4]:
 
 
 df_tour.head()
 
 
-# In[5]:
 
 
 df_teams.head()
 
 
-# In[6]:
 
 
 df_massey.head()
 
 
-# In[7]:
 
 
 def seed_to_int(seed):
@@ -74,14 +67,12 @@ df_seeds.drop(labels=['Seed'], inplace=True, axis=1)  # This is the string label
 df_seeds.head()
 
 
-# In[8]:
 
 
 df_tour.drop(labels=['DayNum', 'WScore', 'LScore', 'WLoc', 'NumOT'], inplace=True, axis=1)
 df_tour.head()
 
 
-# In[9]:
 
 
 #  summarizes wins & losses along with their corresponding seed differences
@@ -92,26 +83,22 @@ df_winseeds_mass = df_massey.rename(columns={'TeamID': 'WTeamID'})
 df_lossseeds_mass = df_massey.rename(columns={'TeamID': 'LTeamID'})
 
 
-# In[10]:
 
 
 df_lossseeds.head()
 
 
-# In[11]:
 
 
 df_winseeds.head()
 
 
-# In[12]:
 
 
 df_winseeds_mass = df_massey.rename(columns={'TeamID': 'WTeamID'})
 df_lossseeds_mass = df_massey.rename(columns={'TeamID': 'LTeamID'})
 
 
-# In[13]:
 
 
 # Merge POM
@@ -166,7 +153,6 @@ df_concat['SeedDiff'] = df_concat.WSeed - df_concat.LSeed
 df_concat.head(10)
 
 
-# In[14]:
 
 
 df_wins = pd.DataFrame()
@@ -199,19 +185,16 @@ df_losses['Result'] = 0
 df_predictions = pd.concat((df_wins, df_losses))
 
 
-# In[15]:
 
 
 df_predictions.head(10)
 
 
-# In[16]:
 
 
 df_predictions.tail(10)
 
 
-# In[17]:
 
 
 X_train = df_predictions[['POM_W', 'POM_L', 'SAG_W', 'SAG_L', 'TRK_W', 'TRK_L', 'TRP_W', 'TRP_L', 'DOK_W', 'DOK_L']].values.reshape(-1, 10)

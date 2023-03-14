@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -20,7 +19,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
         print(os.path.join(dirname, filename))
 
 
-# In[2]:
 
 
 train = pd.read_csv('/kaggle/input/killer-shrimp-invasion/train.csv')
@@ -31,19 +29,16 @@ print('test: ', test.shape)
 print('submission: ', submission.shape)
 
 
-# In[3]:
 
 
 train.query('Presence==0').sample(5).head()
 
 
-# In[4]:
 
 
 train.query('Presence==1').sample(5).head()
 
 
-# In[5]:
 
 
 train['is_test'] = 0
@@ -57,7 +52,6 @@ feats = ['Salinity_today', 'Temperature_today', 'Substrate', 'Depth', 'Exposure'
 data[feats].head()
 
 
-# In[6]:
 
 
 def post_preparation_importance(feats, model, n_fold):
@@ -78,7 +72,6 @@ def post_display_importances(feature_importance_df_):
     plt.show()
 
 
-# In[7]:
 
 
 lgb_params = {
@@ -89,7 +82,6 @@ lgb_params = {
 }
 
 
-# In[8]:
 
 
 n_split = 5
@@ -129,31 +121,26 @@ for i_fold, (train_idx, valid_idx) in enumerate(kfold.split(data)):
     print('Valid Metric: {:.5f}'.format(valid_metric))
 
 
-# In[9]:
 
 
 post_display_importances(feature_importance_df)
 
 
-# In[10]:
 
 
 data.query('is_test == 0')['Depth'].describe()
 
 
-# In[11]:
 
 
 data.query('is_test == 1')['Depth'].describe()
 
 
-# In[12]:
 
 
 data.query('is_test == 1')['Exposure'].describe()
 
 
-# In[13]:
 
 
 data.query('is_test == 0')['Exposure'].describe()

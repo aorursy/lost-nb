@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 print("A")
 
 
-# In[ ]:
 
 
 import numpy as np # linear algebra
@@ -22,20 +20,17 @@ from sklearn.metrics import confusion_matrix
 import sys
 
 
-# In[ ]:
 
 
 print('Loading Train.')
 train = pd.read_csv("../input/train/train.csv")
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 # load thus indexs
@@ -44,7 +39,6 @@ colors = pd.read_csv("../input/color_labels.csv")
 states = pd.read_csv("../input/state_labels.csv")
 
 
-# In[ ]:
 
 
 for x in np.unique(train[['Breed2','Breed1']].values.reshape(1,-1)):
@@ -54,20 +48,17 @@ for x in np.unique(train[['Breed2','Breed1']].values.reshape(1,-1)):
 breeds = breeds.append({'BreedName' : 'no_other' , 'Type' : -1 , 'BreedID':0} , ignore_index=True)
 
 
-# In[ ]:
 
 
 breeds.head(2)
 
 
-# In[ ]:
 
 
 assert(breeds.groupby('BreedName').apply(lambda x:x.BreedID.nunique()==1.0).all())
 assert(breeds.groupby('BreedID').apply(lambda x:x.BreedName.nunique()==1.0).all())
 
 
-# In[ ]:
 
 
 for x in np.unique(train[['Color1','Color2','Color3']].values.reshape(1,-1)):
@@ -77,26 +68,22 @@ for x in np.unique(train[['Color1','Color2','Color3']].values.reshape(1,-1)):
 colors = colors.append({'ColorName' : 'No_Color', 'ColorID':0} , ignore_index=True)
 
 
-# In[ ]:
 
 
 colors.head()
 
 
-# In[ ]:
 
 
 assert(colors.groupby('ColorName').apply(lambda x:x.ColorID.nunique()==1.0).all())
 assert(colors.groupby('ColorID').apply(lambda x:x.ColorName.nunique()==1.0).all())
 
 
-# In[ ]:
 
 
 states.head()
 
 
-# In[ ]:
 
 
 # let see if there are missing values that may affect the merges with the indexs.
@@ -104,7 +91,6 @@ train.isnull().any()
 # that ok for now, we would merge on it.
 
 
-# In[ ]:
 
 
 # we just seen that the colors,breeds and states indexer are NOT full.
@@ -126,14 +112,12 @@ def mergeNdrop(train,breeds,colors,states):
     return m_train
 
 
-# In[ ]:
 
 
 clean_train=mergeNdrop(train,breeds,colors,states)
 clean_train.head()
 
 
-# In[ ]:
 
 
 # lets make sure we didn't did something wrong.
@@ -142,7 +126,6 @@ print("Before cleaning= "+str(train.shape))
 print("After cleaning= "+str(clean_train.shape))
 
 
-# In[ ]:
 
 
 
@@ -151,39 +134,33 @@ X_train, X_test, _, _ = train_test_split(clean_train, [1]*len(clean_train), test
 #del train,clean_train
 
 
-# In[ ]:
 
 
 print("Train= "+str(X_train.shape))
 print("Test= "+str(X_test.shape))
 
 
-# In[ ]:
 
 
 to_be_droped=['PetID']
 
 
-# In[ ]:
 
 
 sns.catplot(x="Type", y="AdoptionSpeed", data=X_train,
                 height=6, kind="bar", palette="muted")
 
 
-# In[ ]:
 
 
 to_be_droped.append('Name')
 
 
-# In[ ]:
 
 
 sns.heatmap(X_train[["Age","AdoptionSpeed"]].corr(), annot=True, linewidths=.5)
 
 
-# In[ ]:
 
 
 def counter(x):
@@ -194,21 +171,18 @@ def counter(x):
     return result
 
 
-# In[ ]:
 
 
 X_train.groupby("BreedName_x").AdoptionSpeed.agg(['count']).describe()
 #before, let group all breeds that as single sample to 5 , call it 'OTHERS'.
 
 
-# In[ ]:
 
 
 # sc=X_train.groupby("BreedName_y").AdoptionSpeed.agg(['std','mean','median','count']).reset_index()
 # X_train.merge(sc).head()
 
 
-# In[ ]:
 
 
 x=X_train.groupby("BreedName_x").AdoptionSpeed.agg(['count']).reset_index()
@@ -218,7 +192,6 @@ x=X_train.groupby("BreedName_y").AdoptionSpeed.agg(['count']).reset_index()
 breed_y_list=x[x['count']>5].BreedName_y
 
 
-# In[ ]:
 
 
 def replace_breed(_dataset,breed_x_list,breed_y_list):
@@ -228,19 +201,16 @@ def replace_breed(_dataset,breed_x_list,breed_y_list):
     return dataset
 
 
-# In[ ]:
 
 
 X_train=replace_breed(X_train,breed_x_list,breed_y_list)
 
 
-# In[ ]:
 
 
 X_train[X_train.BreedName_y=='OTHERS'].AdoptionSpeed.agg(['count'])
 
 
-# In[ ]:
 
 
 def create_bread_encoding(_dataset):
@@ -258,7 +228,6 @@ breed_y,breed_x=create_bread_encoding(X_train)
 X_train=EcodeBreed(X_train,breed_y,breed_x)
 
 
-# In[ ]:
 
 
 g = sns.FacetGrid(X_train,  col="Gender", margin_titles=True)
@@ -266,7 +235,6 @@ g.map(plt.hist, "AdoptionSpeed", color="steelblue")
 # it's seems not importent. 
 
 
-# In[ ]:
 
 
 def handle_gender(_dataset):
@@ -277,14 +245,12 @@ def handle_gender(_dataset):
 X_train=handle_gender(X_train)
 
 
-# In[ ]:
 
 
 g = sns.FacetGrid(X_train,  col="ColorName",row="ColorName_x", margin_titles=True)
 g.map(plt.hist, "AdoptionSpeed", color="steelblue")
 
 
-# In[ ]:
 
 
 def ColorToOneHot(_dataset):
@@ -304,19 +270,16 @@ def ColorToOneHot(_dataset):
     return dataset
 
 
-# In[ ]:
 
 
 X_train=ColorToOneHot(X_train)
 
 
-# In[ ]:
 
 
 X_train.groupby("MaturitySize").MaturitySize.count().plot(kind='pie')
 
 
-# In[ ]:
 
 
 def test_fix(_dataset,col='MaturitySize',def_map={0:2}):
@@ -325,106 +288,89 @@ def test_fix(_dataset,col='MaturitySize',def_map={0:2}):
     return dataset
 
 
-# In[ ]:
 
 
 X_train=test_fix(X_train)
 
 
-# In[ ]:
 
 
 X_train.groupby("FurLength").FurLength.count().plot(kind='pie')
 
 
-# In[ ]:
 
 
 X_train=test_fix(X_train,col='FurLength',def_map={0:1})
 
 
-# In[ ]:
 
 
 X_train.groupby("Vaccinated").Vaccinated.count().plot(kind='pie')
 
 
-# In[ ]:
 
 
 X_train=test_fix(X_train,col='Vaccinated',def_map={1:1,2:-1,3:0})
 
 
-# In[ ]:
 
 
 X_train.groupby("Dewormed").Dewormed.count().plot(kind='pie') 
 
 
-# In[ ]:
 
 
 X_train=test_fix(X_train,col='Dewormed',def_map={1:1,2:-1,3:0})
 
 
-# In[ ]:
 
 
 X_train.groupby("Sterilized").Sterilized.count().plot(kind='pie') 
 
 
-# In[ ]:
 
 
 X_train=test_fix(X_train,col='Sterilized',def_map={1:1,2:-1,3:-1})
 
 
-# In[ ]:
 
 
 X_train.groupby("Health").Health.count().plot(kind='pie')  
 
 
-# In[ ]:
 
 
 X_train=test_fix(X_train,col='Sterilized',def_map={0:1})
 
 
-# In[ ]:
 
 
 sns.distplot(X_train[X_train.Quantity==1].AdoptionSpeed, hist=True, color="r")
 
 
-# In[ ]:
 
 
 sns.distplot(X_train[X_train.Quantity>1].AdoptionSpeed, hist=True, color="r")
 
 
-# In[ ]:
 
 
 # later add over sampling acording to the confusion matrix
 to_be_droped.append("Quantity")
 
 
-# In[ ]:
 
 
 sns.lineplot(x="Fee", y="AdoptionSpeed",
              data=X_train)
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(15,6))
 sns.violinplot(x='StateName', y='AdoptionSpeed', data=X_train)
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(15,6))
@@ -433,7 +379,6 @@ X_train.groupby("StateName").AdoptionSpeed.count().plot(kind='bar')
 # let validate this.
 
 
-# In[ ]:
 
 
 
@@ -446,7 +391,6 @@ def replace_State(_dataset,state_list):
     return dataset
 
 
-# In[ ]:
 
 
 # that good enough. let's add this feature.
@@ -461,7 +405,6 @@ def state_handle(_dataset,state_stats):
     return dataset.merge(state_stats,on='StateName',suffixes=('_original', '_state')).drop(columns=["StateName"])
 
 
-# In[ ]:
 
 
 X_train=replace_State(X_train,state_list)
@@ -469,21 +412,18 @@ state_stats=create_state(X_train)
 X_train=state_handle(X_train,state_stats)
 
 
-# In[ ]:
 
 
 Preson_candm=X_train.groupby("RescuerID").AdoptionSpeed.agg(['count','mean'])
 Preson_candm=Preson_candm.reset_index()
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(15,6))
 sns.lmplot(x='mean', y='count', data=Preson_candm,fit_reg=False) 
 
 
-# In[ ]:
 
 
 x=X_train.groupby("RescuerID").AdoptionSpeed.agg(['count']).reset_index()
@@ -497,7 +437,6 @@ def replace_Rescuer(_dataset,as_stat):
 X_train=replace_Rescuer(X_train,as_stat)
 
 
-# In[ ]:
 
 
 # it's look like Rescuers that post above about 50 post are not likly sell the pet fast.
@@ -513,38 +452,32 @@ def Rescuers_handle(_dataset,Rescuer_stats):
     return dataset.merge(Rescuer_stats,on='RescuerID',suffixes=('_original', '_Rescue')).drop(columns=["RescuerID"])
 
 
-# In[ ]:
 
 
 Rescuer_stats=create_resuce(X_train)
 X_train=Rescuers_handle(X_train,Rescuer_stats)
 
 
-# In[ ]:
 
 
 to_be_droped.append("Description")
 
 
-# In[ ]:
 
 
 assert(X_train.isna().any().sum()==2)
 
 
-# In[ ]:
 
 
 X_train.head()
 
 
-# In[ ]:
 
 
 X_train=X_train.drop(columns=to_be_droped)
 
 
-# In[ ]:
 
 
 def splitLabelSample(dataset):
@@ -553,26 +486,22 @@ def splitLabelSample(dataset):
     return x,y
 
 
-# In[ ]:
 
 
 x_train,y_train=splitLabelSample(X_train) 
 x_test,y_test=splitLabelSample(X_test)
 
 
-# In[ ]:
 
 
 x_test.head()
 
 
-# In[ ]:
 
 
 print("Train size is="+str(x_train.shape))
 
 
-# In[ ]:
 
 
 def full_pipeline(_dataset,breed_x_list,breed_y_list,to_be_droped,breed_y,breed_x,Rescuer_stats,state_stats,as_stat,state_list):
@@ -597,19 +526,16 @@ def full_pipeline(_dataset,breed_x_list,breed_y_list,to_be_droped,breed_y,breed_
     return dataset
 
 
-# In[ ]:
 
 
 x_test=full_pipeline(x_test,breed_x_list,breed_y_list,to_be_droped,breed_y,breed_x,Rescuer_stats,state_stats,as_stat,state_list)
 
 
-# In[ ]:
 
 
 x_test.head()
 
 
-# In[ ]:
 
 
 from sklearn.preprocessing import MinMaxScaler
@@ -621,7 +547,6 @@ Xn_train=scaler.transform(x_train.values)
 Xn_test=scaler.transform(x_test.values)
 
 
-# In[ ]:
 
 
 from imblearn.over_sampling import SMOTE
@@ -630,25 +555,21 @@ smote = SMOTE(ratio='all')
 Xn_train, y_train = smote.fit_sample(Xn_train, y_train)
 
 
-# In[ ]:
 
 
 assert(Xn_train.shape[1]==Xn_test.shape[1])
 
 
-# In[ ]:
 
 
 np.isnan(y_train).any()
 
 
-# In[ ]:
 
 
 X_train.isna().any().any()
 
 
-# In[ ]:
 
 
 from sklearn.ensemble import GradientBoostingClassifier
@@ -667,13 +588,11 @@ clf = GridSearchCV(GradientBoostingClassifier(), parameters, cv=10, n_jobs=10)
 clf.fit(Xn_train,y_train)
 
 
-# In[ ]:
 
 
 clf.score(Xn_test,y_test)
 
 
-# In[ ]:
 
 
 import pickle
@@ -683,7 +602,6 @@ cm =cm / cm.astype(np.float).sum(axis=1)
 heatmap = sns.heatmap(cm)
 
 
-# In[ ]:
 
 
 
@@ -699,14 +617,12 @@ grid_search = GridSearchCV(estimator = rf, param_grid = param_grid,
 grid_search.fit(Xn_train, y_train)
 
 
-# In[ ]:
 
 
 rnd=grid_search.best_estimator_
 rnd.score(Xn_test,y_test)
 
 
-# In[ ]:
 
 
 import pickle
@@ -715,7 +631,6 @@ cm =cm / cm.astype(np.float).sum(axis=1)
 heatmap = sns.heatmap(cm)
 
 
-# In[ ]:
 
 
 from sklearn.ensemble import VotingClassifier
@@ -723,13 +638,11 @@ eclf1 = VotingClassifier(estimators=[('gb', bost), ('rf', rnd)], voting='hard')
 eclf1 = eclf1.fit(Xn_train, y_train)
 
 
-# In[ ]:
 
 
 eclf1.score(Xn_test,y_test)
 
 
-# In[ ]:
 
 
 cm=confusion_matrix(y_test, eclf1.predict(Xn_test))
@@ -737,7 +650,6 @@ cm =cm / cm.astype(np.float).sum(axis=1)
 heatmap = sns.heatmap(cm)
 
 
-# In[ ]:
 
 
 to_be_droped_copy=to_be_droped.copy()
@@ -745,13 +657,11 @@ to_be_droped_copy=to_be_droped.copy()
 to_be_droped_copy.remove('PetID')
 
 
-# In[ ]:
 
 
 to_be_droped
 
 
-# In[ ]:
 
 
 #  get the test set ready.
@@ -760,7 +670,6 @@ test_df=mergeNdrop(test_df,breeds,colors,states)
 test=full_pipeline(test_df,breed_x_list,breed_y_list,to_be_droped_copy,breed_y,breed_x,Rescuer_stats,state_stats,as_stat,state_list)
 
 
-# In[ ]:
 
 
 pred = eclf1.predict(scaler.transform(test.drop(columns=["PetID"]).values))

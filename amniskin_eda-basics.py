@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -28,7 +27,6 @@ df = pd.read_csv(os.path.join('/kaggle/input', COMPETITION_NAME, 'train.csv'))
 df.head()
 
 
-# In[2]:
 
 
 img_df = df['ImageId_ClassId'].str.split('_', expand=True).rename({0: 'ImageID', 1: 'ClassID'}, axis=1)
@@ -36,7 +34,6 @@ img_df['ClassID'] = img_df['ClassID'].astype(int)
 img_df.head()
 
 
-# In[3]:
 
 
 print(
@@ -45,32 +42,27 @@ print(
 )
 
 
-# In[4]:
 
 
 img_df['ImageID'].unique().shape
 
 
-# In[5]:
 
 
 full_df = pd.concat([df, img_df], axis=1, sort=True)
 full_df.head()
 
 
-# In[6]:
 
 
 full_df.groupby('ClassID')['EncodedPixels'].count()    .plot(kind='bar', title='Number of defects by type', figsize=(13, 8));
 
 
-# In[7]:
 
 
 full_df.groupby('ClassID')['EncodedPixels'].apply(lambda x: x.count() / x.shape[0])    .plot(kind='bar', title='Pct defective by type', figsize=(13, 8));
 
 
-# In[8]:
 
 
 def read_img(name, test=False, base_dir='../input/severstal-steel-defect-detection/'):
@@ -85,7 +77,6 @@ display(img.shape)
 base_img_shape = (img.shape[0], img.shape[1])
 
 
-# In[9]:
 
 
 for i in range(img.shape[-1]):
@@ -94,7 +85,6 @@ for i in range(img.shape[-1]):
     plt.show()
 
 
-# In[10]:
 
 
 def all_eq(img):
@@ -104,7 +94,6 @@ def all_eq(img):
 all_eq(img)
 
 
-# In[11]:
 
 
 for i, f in enumerate(os.listdir('../input/severstal-steel-defect-detection/train_images/')):
@@ -115,7 +104,6 @@ for i, f in enumerate(os.listdir('../input/severstal-steel-defect-detection/trai
 print('ALL DONE')
 
 
-# In[12]:
 
 
 def _get_encoding_mask(encoded_pixels, mask=None, shape=base_img_shape):
@@ -129,7 +117,6 @@ def _get_encoding_mask(encoded_pixels, mask=None, shape=base_img_shape):
 tmp = _get_encoding_mask(full_df.loc[18550]['EncodedPixels'])
 
 
-# In[13]:
 
 
 def get_encoding_mask(img_df, shape=base_img_shape):
@@ -146,7 +133,6 @@ def get_encoding_mask(img_df, shape=base_img_shape):
 mask = get_encoding_mask(full_df.query(f'ImageID == "{IMG_NAME}"'))
 
 
-# In[14]:
 
 
 def plot_img(img, mask=None, mask_index=None, greyscale=False):
@@ -172,7 +158,6 @@ def plot_img(img, mask=None, mask_index=None, greyscale=False):
 plot_img(img, mask, mask_index=2)
 
 
-# In[15]:
 
 
 def load_and_plot(img_name, mask_index=None, test=False, df=full_df,
@@ -185,13 +170,11 @@ def load_and_plot(img_name, mask_index=None, test=False, df=full_df,
 load_and_plot(IMG_NAME, greyscale=True)
 
 
-# In[16]:
 
 
 load_and_plot('18cc39190.jpg')
 
 
-# In[17]:
 
 
 for class_id in full_df['ClassID'].unique():
@@ -201,7 +184,6 @@ for class_id in full_df['ClassID'].unique():
     load_and_plot(img_name)
 
 
-# In[18]:
 
 
 class_id = 1
@@ -212,7 +194,6 @@ for img_name in img_names:
     load_and_plot(img_name, mask_index=class_id - 1)
 
 
-# In[19]:
 
 
 class_id = 2
@@ -223,7 +204,6 @@ for img_name in img_names:
     load_and_plot(img_name, mask_index=class_id - 1)
 
 
-# In[20]:
 
 
 class_id = 3
@@ -234,7 +214,6 @@ for img_name in img_names:
     load_and_plot(img_name, mask_index=class_id - 1)
 
 
-# In[21]:
 
 
 class_id = 4
@@ -245,19 +224,16 @@ for img_name in img_names:
     load_and_plot(img_name, mask_index=class_id - 1)
 
 
-# In[22]:
 
 
 load_and_plot('0025bde0c.jpg')
 
 
-# In[23]:
 
 
 load_and_plot('002af848d.jpg')
 
 
-# In[24]:
 
 
 def num_pix_classes(img_df, shape=base_img_shape):
@@ -276,14 +252,12 @@ mask = num_pix_classes(full_df.query(f'ImageID == "{IMG_NAME}"'))
 mask
 
 
-# In[25]:
 
 
 counts = full_df.groupby('ImageID').apply(num_pix_classes).unstack()
 counts.head()
 
 
-# In[26]:
 
 
 tmp = counts.dropna()
@@ -292,7 +266,6 @@ tmp = counts.dropna()
 del tmp
 
 
-# In[27]:
 
 
 (counts.fillna(0)[1] / (counts.sum(axis=1))).plot(kind='hist', bins=100, figsize=(18,8),

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,19 +21,16 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import zipfile
 
 
-# In[3]:
 
 
 extract_files = ['train', 'test1']
 
 
-# In[4]:
 
 
 for file in extract_files:
@@ -42,14 +38,12 @@ for file in extract_files:
         z.extractall(".")
 
 
-# In[5]:
 
 
 import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[6]:
 
 
 train_directory = "train/"
@@ -57,20 +51,17 @@ test_directory = "test1/"
 validation_directory = "validation/"
 
 
-# In[7]:
 
 
 import os
 import shutil
 
 
-# In[8]:
 
 
 os.mkdir(validation_directory)
 
 
-# In[9]:
 
 
 for dir_name in ['cats','dogs']:
@@ -78,7 +69,6 @@ for dir_name in ['cats','dogs']:
     os.mkdir(validation_directory + dir_name)
 
 
-# In[10]:
 
 
 file_list = os.listdir("train/")
@@ -89,19 +79,16 @@ for file_name in file_list:
         shutil.move("train/"+file_name, "train/dogs")
 
 
-# In[11]:
 
 
 ls train/dogs | wc -l
 
 
-# In[12]:
 
 
 ls train/cats | wc -l
 
 
-# In[13]:
 
 
 for i in range(0,6000):
@@ -109,52 +96,44 @@ for i in range(0,6000):
     shutil.move('train/dogs/dog.' + str(i) + '.jpg', 'validation/dogs')
 
 
-# In[14]:
 
 
 ls validation/cats | wc -l
 
 
-# In[15]:
 
 
 import tensorflow as tf
 
 
-# In[16]:
 
 
 tf.__version__
 
 
-# In[17]:
 
 
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 
-# In[18]:
 
 
 train_generator = ImageDataGenerator(rescale=1./255)
 validation_generator = ImageDataGenerator(rescale=1./255)
 
 
-# In[19]:
 
 
 train_generator_data = train_generator.flow_from_directory(train_directory, target_size=(150,150), batch_size=15, class_mode='categorical')
 validation_generator_data = validation_generator.flow_from_directory(validation_directory, target_size=(150,150), batch_size=15, class_mode='categorical')
 
 
-# In[20]:
 
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, BatchNormalization
 
 
-# In[21]:
 
 
 model = Sequential()
@@ -185,44 +164,37 @@ model.add(Dropout(0.5))
 model.add(Dense(units=2, activation='softmax'))
 
 
-# In[22]:
 
 
 model.summary()
 
 
-# In[23]:
 
 
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 
-# In[24]:
 
 
 from tensorflow.keras.callbacks import EarlyStopping
 
 
-# In[25]:
 
 
 earlystop = EarlyStopping(patience=5)
 
 
-# In[26]:
 
 
 history = model.fit_generator(train_generator_data, epochs=10, validation_data=validation_generator_data, callbacks=[earlystop])
 
 
-# In[ ]:
 
 
 # https://www.kaggle.com/uysimty/keras-cnn-dog-or-cat-classification
 # https://www.kaggle.com/bulentsiyah/dogs-vs-cats-classification-vgg16-fine-tuning
 
 
-# In[ ]:
 
 
 

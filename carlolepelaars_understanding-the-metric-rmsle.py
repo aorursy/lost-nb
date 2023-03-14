@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Standard libraries
@@ -30,7 +29,6 @@ np.random.seed(seed)
 os.environ['PYTHONHASHSEED'] = str(seed)
 
 
-# In[2]:
 
 
 # Read in data
@@ -39,7 +37,6 @@ df = pd.read_csv(TRAIN_PATH)
 df = df[df['meter_reading'] < 250000]
 
 
-# In[3]:
 
 
 def RMSLE(y_true:np.ndarray, y_pred:np.ndarray) -> np.float64:
@@ -53,7 +50,6 @@ def RMSLE(y_true:np.ndarray, y_pred:np.ndarray) -> np.float64:
     return np.sqrt(mean_squared_log_error(y_true, y_pred))
 
 
-# In[4]:
 
 
 def NumPyRMSLE(y_true:list, y_pred:list) -> float:
@@ -70,7 +66,6 @@ def NumPyRMSLE(y_true:list, y_pred:list) -> float:
     return np.sqrt(msle)
 
 
-# In[5]:
 
 
 def RMSLETF(y_pred:tf.Tensor, y_true:tf.Tensor) -> tf.float64:
@@ -87,7 +82,6 @@ def RMSLETF(y_pred:tf.Tensor, y_true:tf.Tensor) -> tf.float64:
     return tf.sqrt(tf.reduce_mean(tf.squared_difference(tf.log1p(y_pred), tf.log1p(y_true))))
 
 
-# In[6]:
 
 
 mean = np.mean(df['meter_reading'])
@@ -98,7 +92,6 @@ print(f"RMSLE for predicting only 50: {round(RMSLE(df['meter_reading'], np.full(
 print(f"RMSLE for predicting the mean ({round(mean, 2)}): {round(RMSLE(df['meter_reading'], np.full(len(df), mean)), 5)}")
 
 
-# In[7]:
 
 
 const_rmsles = dict()
@@ -119,14 +112,12 @@ plt.xlabel("Constant", fontsize=14)
 plt.ylabel("RMSLE", rotation=0, fontsize=14);
 
 
-# In[8]:
 
 
 # Formulate the best constant for this metric
 best_const = np.expm1(np.mean(np.log1p(df['meter_reading'])))
 
 
-# In[9]:
 
 
 print(f"The best constant for our data is: {best_const}...")
@@ -135,7 +126,6 @@ print(f"RMSLE for predicting the best possible constant on our data: {round(RMSL
 print("This is the optimal RMSLE score that we can get with only a constant prediction and using all data available.\nWe therefore call it the best 'Naive baseline'\nA model should at least perform better than this RMSLE score.")
 
 
-# In[10]:
 
 
 # Random predictions
@@ -157,7 +147,6 @@ plt.xlabel("Maximum value", fontsize=14)
 plt.ylabel("RMSLE", rotation=0, fontsize=14);
 
 
-# In[11]:
 
 
 # Read in sample submission and fill all predictions with the best constant
@@ -166,7 +155,6 @@ samp_sub['meter_reading'] = best_const
 samp_sub.to_csv("best_constant_submission.csv", index=False)
 
 
-# In[12]:
 
 
 # Check Final Submission

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -21,13 +20,11 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 pd.set_option('display.max_columns', 500)
 
 
-# In[2]:
 
 
 
 
 
-# In[2]:
 
 
 def reduce_mem_usage(df, verbose=True):
@@ -59,7 +56,6 @@ def reduce_mem_usage(df, verbose=True):
     return df
 
 
-# In[3]:
 
 
 new_transactions = pd.read_csv('../input/new_merchant_transactions.csv',
@@ -77,13 +73,11 @@ historical_transactions = binarize(historical_transactions)
 new_transactions = binarize(new_transactions)
 
 
-# In[4]:
 
 
 new_transactions.head()
 
 
-# In[5]:
 
 
 def read_data(input_file):
@@ -99,7 +93,6 @@ target = train['target']
 del train['target']
 
 
-# In[6]:
 
 
 historical_transactions['month_diff'] = ((datetime.datetime.today() - historical_transactions['purchase_date']).dt.days)//30
@@ -109,13 +102,11 @@ new_transactions['month_diff'] = ((datetime.datetime.today() - new_transactions[
 new_transactions['month_diff'] += new_transactions['month_lag']
 
 
-# In[7]:
 
 
 historical_transactions[:5]
 
 
-# In[8]:
 
 
 historical_transactions = pd.get_dummies(historical_transactions, columns=['category_2', 'category_3'])
@@ -133,7 +124,6 @@ authorized_transactions = historical_transactions[historical_transactions['autho
 historical_transactions = historical_transactions[historical_transactions['authorized_flag'] == 0]
 
 
-# In[9]:
 
 
 historical_transactions['purchase_month'] = historical_transactions['purchase_date'].dt.month
@@ -141,7 +131,6 @@ authorized_transactions['purchase_month'] = authorized_transactions['purchase_da
 new_transactions['purchase_month'] = new_transactions['purchase_date'].dt.month
 
 
-# In[10]:
 
 
 def aggregate_transactions(history):
@@ -184,7 +173,6 @@ def aggregate_transactions(history):
     return agg_history
 
 
-# In[11]:
 
 
 history = aggregate_transactions(historical_transactions)
@@ -192,7 +180,6 @@ history.columns = ['hist_' + c if c != 'card_id' else c for c in history.columns
 history[:5]
 
 
-# In[12]:
 
 
 authorized = aggregate_transactions(authorized_transactions)
@@ -200,7 +187,6 @@ authorized.columns = ['auth_' + c if c != 'card_id' else c for c in authorized.c
 authorized[:5]
 
 
-# In[13]:
 
 
 new = aggregate_transactions(new_transactions)
@@ -208,7 +194,6 @@ new.columns = ['new_' + c if c != 'card_id' else c for c in new.columns]
 new[:5]
 
 
-# In[14]:
 
 
 def aggregate_per_month(history):
@@ -233,7 +218,6 @@ final_group =  aggregate_per_month(authorized_transactions)
 final_group[:10]
 
 
-# In[15]:
 
 
 def successive_aggregates(df, field1, field2):
@@ -244,7 +228,6 @@ def successive_aggregates(df, field1, field2):
     return u
 
 
-# In[16]:
 
 
 additional_fields = successive_aggregates(new_transactions, 'category_1', 'purchase_amount')
@@ -256,7 +239,6 @@ additional_fields = additional_fields.merge(successive_aggregates(new_transactio
                                             on = 'card_id', how='left')
 
 
-# In[17]:
 
 
 train = pd.merge(train, history, on='card_id', how='left')
@@ -278,7 +260,6 @@ train = pd.merge(train, additional_fields, on='card_id', how='left')
 test = pd.merge(test, additional_fields, on='card_id', how='left')
 
 
-# In[18]:
 
 
 # cols = [c for c in train if c.startswith('hist')]
@@ -290,7 +271,6 @@ test = pd.merge(test, additional_fields, on='card_id', how='left')
 # test.loc[test['new_transactions_count'].isnull(), cols] = 0
 
 
-# In[19]:
 
 
 # cols = [c for c in train if c.endswith('std')]
@@ -299,14 +279,12 @@ test = pd.merge(test, additional_fields, on='card_id', how='left')
 #     test.loc[test[c].isnull(), c] = 0
 
 
-# In[20]:
 
 
 # train['transactions_ratio'] = train['new_transactions_count'] / train['hist_transactions_count']
 # test['transactions_ratio'] = test['new_transactions_count'] / test['hist_transactions_count']
 
 
-# In[21]:
 
 
 # hist_columns = [(c, c.replace('new', 'auth')) for c in train.columns if 'hist' in c]
@@ -316,7 +294,6 @@ test = pd.merge(test, additional_fields, on='card_id', how='left')
 #     test[col_name] = test[c[0]] / test[c[1]]
 
 
-# In[22]:
 
 
 test.to_csv('test.csv')
@@ -325,7 +302,6 @@ train.to_csv('train.csv')
 del train['target']
 
 
-# In[23]:
 
 
 # unimportant_features = [
@@ -359,7 +335,6 @@ features = [c for c in train.columns if c not in ['card_id', 'first_active_month
 categorical_feats = ['feature_2', 'feature_3']
 
 
-# In[24]:
 
 
 param = {'num_leaves': 150,
@@ -378,7 +353,6 @@ param = {'num_leaves': 150,
          "verbosity": -1}
 
 
-# In[25]:
 
 
 folds = KFold(n_splits=5, shuffle=True, random_state=15)
@@ -419,7 +393,6 @@ for fold_, (trn_idx, val_idx) in enumerate(folds.split(train.values, target.valu
 print("CV score: {:<8.5f}".format(mean_squared_error(oof, target)**0.5))
 
 
-# In[26]:
 
 
 cols = (feature_importance_df[["feature", "importance"]]
@@ -439,7 +412,6 @@ plt.tight_layout()
 plt.savefig('lgbm_importances.png')
 
 
-# In[27]:
 
 
 sub_df = pd.DataFrame({"card_id":test["card_id"].values})
@@ -447,31 +419,26 @@ sub_df["target"] = predictions
 sub_df.to_csv("submit.csv", index=False)
 
 
-# In[28]:
 
 
 download(submit.csv)
 
 
-# In[29]:
 
 
 
 
 
-# In[29]:
 
 
 get_ipython().system('kaggle competitions submit -c elo-merchant-category-recommendation -f submit.csv -m "Message"')
 
 
-# In[30]:
 
 
 
 
 
-# In[30]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from __future__ import print_function
@@ -25,14 +24,12 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 df = pd.read_csv('../input/train.csv')
 test = pd.read_csv('../input/test.csv')
 
 
-# In[3]:
 
 
 def extract_words(train):
@@ -54,7 +51,6 @@ words = extract_words(df)
 print('Number of words: %d' % len(words))
 
 
-# In[ ]:
 
 
 

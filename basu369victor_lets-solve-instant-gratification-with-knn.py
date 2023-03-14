@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -17,28 +16,24 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 train = pd.read_csv("../input/train.csv")
 train.head()
 
 
-# In[3]:
 
 
 # Check for null values
 train.isnull().sum().sum()
 
 
-# In[4]:
 
 
 train.drop("id", axis=1, inplace=True)
 train.columns
 
 
-# In[5]:
 
 
 f = plt.figure()
@@ -47,7 +42,6 @@ plt.title("Count plot",fontsize=20)
 plt.show()
 
 
-# In[6]:
 
 
 y = train['target']
@@ -55,48 +49,41 @@ train.drop("target", axis=1, inplace=True)
 X = train
 
 
-# In[7]:
 
 
 feature_model = ExtraTreesClassifier(n_estimators=100,verbose=1,n_jobs=-1)
 feature_model.fit(X,y)
 
 
-# In[8]:
 
 
 #feature importance
 print(feature_model.feature_importances_)
 
 
-# In[9]:
 
 
 feature_select = SelectFromModel(feature_model, prefit=True)
 X_new = feature_select.transform(X)
 
 
-# In[10]:
 
 
 feature_select = SelectFromModel(feature_model, prefit=True)
 X_new = feature_select.transform(X)
 
 
-# In[11]:
 
 
 feature_idx = feature_select.get_support()
 feature_name = X.columns[feature_idx]
 
 
-# In[12]:
 
 
 feature_name
 
 
-# In[13]:
 
 
 f,ax = plt.subplots(figsize=(20,15))
@@ -105,7 +92,6 @@ plt.title("Correlation Matrix",fontsize=20)
 plt.show()
 
 
-# In[14]:
 
 
 plt.figure(figsize=(15,15))
@@ -115,7 +101,6 @@ plt.xticks(np.arange(len(train.columns)),train.columns, rotation=90)
 plt.show()
 
 
-# In[15]:
 
 
 from sklearn.model_selection import train_test_split
@@ -124,26 +109,22 @@ from sklearn.preprocessing import MaxAbsScaler
 from sklearn.neighbors import KNeighborsClassifier
 
 
-# In[16]:
 
 
 x_train, x_test, y_train, y_test = train_test_split(X_new, y, random_state=42)
 
 
-# In[17]:
 
 
 model_KNN = KNeighborsClassifier(n_neighbors=5, algorithm='auto', n_jobs=-1,p=2)
 model_KNN.fit(x_train, y_train)
 
 
-# In[18]:
 
 
 y_pred = model_KNN.predict(x_test)
 
 
-# In[19]:
 
 
 print("Accuracy(KNN_Classifier)\t:"+str(accuracy_score(y_test,y_pred)))
@@ -151,14 +132,12 @@ print("Precision(KNN_Classifier)\t:"+str(precision_score(y_test,y_pred)))
 print("Recall(KNN_Classifier)\t:"+str(recall_score(y_test,y_pred)))
 
 
-# In[20]:
 
 
 from sklearn.metrics import classification_report
 print(classification_report(y_test, y_pred))
 
 
-# In[21]:
 
 
 from matplotlib.colors import ListedColormap
@@ -198,14 +177,12 @@ plt.title("2-Class classification (k = %i)"
 plt.show()
 
 
-# In[22]:
 
 
 prob=model_KNN.predict_proba(x_test)
 prob = prob[:,1]
 
 
-# In[23]:
 
 
 fpr,tpr,_ = roc_curve(y_test, prob)
@@ -220,44 +197,37 @@ plt.xlabel('False Positive Rate')
 plt.show()
 
 
-# In[24]:
 
 
 test = pd.read_csv("../input/test.csv")
 test.head()
 
 
-# In[25]:
 
 
 test.shape
 
 
-# In[26]:
 
 
 id_test = test['id']
 
 
-# In[27]:
 
 
 test.drop("id", axis=1, inplace=True)
 
 
-# In[28]:
 
 
 test = test[feature_name]
 
 
-# In[29]:
 
 
 y_pred_test = model_KNN.predict_proba(test)[:,1]
 
 
-# In[30]:
 
 
 my_submission = pd.DataFrame({'id': id_test, 'target': y_pred_test})

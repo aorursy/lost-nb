@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import datetime
@@ -44,13 +42,11 @@ from itertools import combinations
 from h2o.estimators.glm import H2OGeneralizedLinearEstimator
 
 
-# In[3]:
 
 
 env = nflrush.make_env()
 
 
-# In[4]:
 
 
 def reduce_mem_usage(df, verbose=True):
@@ -82,25 +78,21 @@ def reduce_mem_usage(df, verbose=True):
     return df
 
 
-# In[5]:
 
 
 h2o.init()
 
 
-# In[ ]:
 
 
 
 
 
-# In[6]:
 
 
 train_df = pd.read_csv('/kaggle/input/nfl-big-data-bowl-2020/train.csv', low_memory=False)
 
 
-# In[7]:
 
 
 def strtoseconds(txt):
@@ -109,7 +101,6 @@ def strtoseconds(txt):
     return ans
 
 
-# In[8]:
 
 
 train_df["GameClock"]= train_df["GameClock"].apply(strtoseconds)
@@ -118,19 +109,16 @@ train_df = train_df.drop(["TimeHandoff","TimeSnap"], axis=1)
 train_df=train_df.drop(["NflId", "DisplayName","JerseyNumber","Location"],axis=1)
 
 
-# In[9]:
 
 
 train_df= reduce_mem_usage(train_df)
 
 
-# In[10]:
 
 
 arr = [ t.split(", ") for t in train_df["OffensePersonnel"]]
 
 
-# In[11]:
 
 
 for i in arr[1]:
@@ -138,13 +126,11 @@ for i in arr[1]:
         print(int(i[0]))
 
 
-# In[12]:
 
 
 train_df["RB-Defense"] = 0
 
 
-# In[13]:
 
 
 for i in arr[1:10]:
@@ -152,43 +138,36 @@ for i in arr[1:10]:
         print(i)
 
 
-# In[14]:
 
 
 train_df["RB-Defense"] = [[i[0] if "RB" in i else 0 for i in line] for line in arr]
 
 
-# In[15]:
 
 
 train_df["RB-Defense"].sum()
 
 
-# In[16]:
 
 
 train_df["RB-Defense"]
 
 
-# In[17]:
 
 
 train_df["OffensePersonnel"]
 
 
-# In[18]:
 
 
 train_df["OffensePersonnel"].value_counts().index.sort_values()
 
 
-# In[19]:
 
 
 trian_df_h2o= h2o.H2OFrame(train_df)
 
 
-# In[20]:
 
 
 h2o_tree = H2ORandomForestEstimator(ntrees = 50, max_depth = 20, nfolds =10)
@@ -199,13 +178,11 @@ h2o_tree_df = h2o_tree._model_json['output']['variable_importances'].as_data_fra
 #visualize the importance
 
 
-# In[21]:
 
 
 h2o_tree_df
 
 
-# In[22]:
 
 
 '''param = {
@@ -227,49 +204,41 @@ h2o_XGboost_df =XGmodel._model_json['output']['variable_importances'].as_data_fr
 '''
 
 
-# In[23]:
 
 
 lm_model = H2OGeneralizedLinearEstimator(family= "multinomial", lambda_ = 0)
 
 
-# In[24]:
 
 
 trian_df_h2o['Yards'] = trian_df_h2o['Yards'].asfactor()
 
 
-# In[25]:
 
 
 lm_model.train(y = 'Yards', training_frame = trian_df_h2o)
 
 
-# In[ ]:
 
 
 
 
 
-# In[26]:
 
 
 iter_test = env.iter_test()
 
 
-# In[27]:
 
 
 (test_df, sample_prediction_df) = next(iter_test)
 
 
-# In[28]:
 
 
 sample_prediction_df[:20]
 
 
-# In[29]:
 
 
 test_df["GameClock"]= test_df["GameClock"].apply(strtoseconds)
@@ -278,165 +247,138 @@ test_df = test_df.drop(["TimeHandoff","TimeSnap"], axis=1)
 test_df=test_df.drop(["NflId", "DisplayName","JerseyNumber","Location"],axis=1)
 
 
-# In[30]:
 
 
 test_df.shape
 
 
-# In[31]:
 
 
 test_df_h2o= h2o.H2OFrame(test_df)
 
 
-# In[32]:
 
 
 prediction_Df = lm_model.predict(test_df_h2o)
 
 
-# In[33]:
 
 
 prediction_Df1 =prediction_Df.as_data_frame(use_pandas=True, header=True)
 
 
-# In[ ]:
 
 
 
 
 
-# In[34]:
 
 
 colnames = list(map(lambda st: str.replace(st, "p", "Yards"), prediction_Df.columns))
 
 
-# In[35]:
 
 
 prediction_Df1['Yardsredict']
 
 
-# In[36]:
 
 
 prediction_Df1.columns = colnames
 
 
-# In[37]:
 
 
 test = pd.concat([sample_prediction_df,prediction_Df1],axis =0,sort=False)
 
 
-# In[ ]:
 
 
 
 
 
-# In[38]:
 
 
 sample_prediction_df.columns
 
 
-# In[39]:
 
 
 test = test.drop('Yardsredict',axis =1)
 
 
-# In[40]:
 
 
 test = test[1:23]
 
 
-# In[41]:
 
 
 test = test.fillna(0)
 
 
-# In[42]:
 
 
 test = test.drop('PlayId',axis =1)
 
 
-# In[43]:
 
 
 env.predict(test)
 
 
-# In[44]:
 
 
 for (test_df, test) in iter_test:
     env.predict(test)
 
 
-# In[45]:
 
 
 env.write_submission_file()
 
 
-# In[46]:
 
 
 import os
 print([filename for filename in os.listdir('/kaggle/working') if '.csv' in filename])
 
 
-# In[47]:
 
 
 test[1:23]
 
 
-# In[48]:
 
 
 prediction_Df.
 
 
-# In[49]:
 
 
 colnames = []
 
 
-# In[50]:
 
 
 sample_prediction_df.conca
 
 
-# In[51]:
 
 
 h2o_XGboost_df
 
 
-# In[52]:
 
 
 h2o_XGboost_df.to_csv("FeatureImportance.csv")
 
 
-# In[ ]:
 
 
 
 
 
-# In[53]:
 
 
 outdoor = ['Outdoor', 'Outdoors', 'Cloudy', 'Heinz Field', 'Outdor', 'Ourdoor', 
@@ -450,7 +392,6 @@ dome_closed   = ['Dome', 'Domed, closed', 'Closed Dome', 'Domed', 'Dome, closed'
 dome_open     = ['Domed, Open', 'Domed, open']
 
 
-# In[54]:
 
 
 train_df['StadiumType'] = train_df['StadiumType'].replace(outdoor,'outdoor')
@@ -461,7 +402,6 @@ train_df['StadiumType'] = train_df['StadiumType'].replace(dome_open,'dome_open')
 train_df['StadiumType'] = train_df['StadiumType'].replace(np.nan, "Missing")
 
 
-# In[55]:
 
 
 def anova_test_mean(column):
@@ -482,98 +422,82 @@ def Ks_test_Cat(column):
     
 
 
-# In[56]:
 
 
 Ks_test_Cat("JerseyNumber")
 
 
-# In[57]:
 
 
 Ks_test_Cat("WindDirection")
 
 
-# In[58]:
 
 
 ks_2samp(train_df[train_df["WindDirection"]=="S"]["Yards"],train_df[train_df["WindDirection"]=="N"]["Yards"])
 
 
-# In[59]:
 
 
 Ks_test_Cat("OffensePersonnel")
 
 
-# In[60]:
 
 
 ks_2samp(train_df[train_df["JerseyNumber"]==29]["Yards"],train_df[train_df["JerseyNumber"]==23]["Yards"])[1]
 
 
-# In[61]:
 
 
 test_mean('Location')
 
 
-# In[62]:
 
 
 train_df['StadiumType'].value_counts().index.sort_values()
 
 
-# In[63]:
 
 
 train_df[train_df['StadiumType']== 'Cloudy']["Stadium"]
 
 
-# In[64]:
 
 
 train_df['Stadium'].value_counts()
 
 
-# In[65]:
 
 
 train_df[train_df['Stadium']=='Paul Brown Stdium']
 
 
-# In[66]:
 
 
 #Data Preprocessing:
 #Stadium Type 
 
 
-# In[67]:
 
 
 Mean_Std_Count("GameId")
 
 
-# In[68]:
 
 
 Mean_Std_Count("PlayId")
 
 
-# In[69]:
 
 
 train_df=train_df.drop(["NflId", "DisplayName","JerseyNumber","Location"],axis=1)
 
 
-# In[ ]:
 
 
 
 
 
-# In[70]:
 
 
 kf=KFold(n_splits = 5)
@@ -591,45 +515,38 @@ for train_index, test_index in kf.split(X_train, y_train):
     y_test2= y_train.iloc[test_index]
 
 
-# In[71]:
 
 
 train_data = lgb.Dataset(train_df.drop(["Yards"], axis=1))
 
 
-# In[72]:
 
 
 y_train = lgb.Dataset(train_df["Yards"])
 
 
-# In[73]:
 
 
 clf = lgb.LGBMRegressor(n_estimators=10000, random_state=47,learning_rate=0.005,importance_type = 'gain',
                      n_jobs = -1,metric='mae')
 
 
-# In[74]:
 
 
 clf.fit(train_data,y_train)
 
 
-# In[75]:
 
 
 train_df=train_df.dropna(how = "any")
 
 
-# In[76]:
 
 
 train_frame = train_df.sample(frac=0.5, replace=True, random_state=1)
 val_frame = train_df.sample(frac=0.5, replace=True, random_state=1)
 
 
-# In[77]:
 
 
 #prepare H2O Frame 
@@ -637,7 +554,6 @@ train_frame_H2O = h2o.H2OFrame(train_frame)
 val_frame_H2O = h2o.H2OFrame(val_frame)
 
 
-# In[78]:
 
 
 # select parameter
@@ -665,13 +581,11 @@ gb_gridperf = grid.get_grid(sort_by='mse', decreasing=True)
 """
 
 
-# In[79]:
 
 
 #gb_gridperf
 
 
-# In[80]:
 
 
 best_param = {
@@ -692,14 +606,12 @@ best_model = H2OXGBoostEstimator(**best_param)
 best_model.train(y = 'Yards', training_frame = train_frame_H2O)
 
 
-# In[81]:
 
 
 best_metrics = best_model.model_performance(test_data=val_frame_H2O) 
 best_metrics
 
 
-# In[82]:
 
 
 def plot_bar_x(DataSeries, xLabel, yLabel):
@@ -718,20 +630,17 @@ def Draw_Cat_Var(column, dataset,target):
     plot_bar_x(Cat_EDA, column,target)
 
 
-# In[ ]:
 
 
 
 
 
-# In[83]:
 
 
 #exam the missing values
 (train_df.isnull().sum()/len(train_df)).sort_values(ascending = False)
 
 
-# In[84]:
 
 
 def Plot_Team():
@@ -744,19 +653,16 @@ def Plot_Team():
     plt.show()
 
 
-# In[85]:
 
 
 train_df.columns
 
 
-# In[86]:
 
 
 train_df["Yards"].hist()
 
 
-# In[87]:
 
 
 '''
@@ -792,7 +698,6 @@ base_lgb_model = lgb.train(base_params, train_set=X_train_lgbm,
 '''
 
 
-# In[88]:
 
 
 def Mean_Std_Count(Column):
@@ -812,270 +717,229 @@ def Mean_Std_Count(Column):
     plt.xlabel("Count")
 
 
-# In[89]:
 
 
 Mean_Std_Count("NflId")
 
 
-# In[90]:
 
 
 train_df['WindDirection'].value_counts()
 
 
-# In[91]:
 
 
 Mean_Std_Count('WindDirection')
 
 
-# In[92]:
 
 
 Mean_Std_Count('WindSpeed')
 
 
-# In[93]:
 
 
 Mean_Std_Count('Humidity')
 
 
-# In[94]:
 
 
 Mean_Std_Count('Temperature')
 
 
-# In[95]:
 
 
 Mean_Std_Count('GameWeather')
 
 
-# In[96]:
 
 
 Mean_Std_Count('StadiumType')
 
 
-# In[97]:
 
 
 Mean_Std_Count('Location')
 
 
-# In[98]:
 
 
 Mean_Std_Count('Stadium')
 
 
-# In[99]:
 
 
 Mean_Std_Count('PlayerBirthDate')
 
 
-# In[100]:
 
 
 Mean_Std_Count('PlayerWeight')
 
 
-# In[101]:
 
 
 Mean_Std_Count('PlayerHeight')
 
 
-# In[102]:
 
 
 Mean_Std_Count('PlayerCollegeName')
 
 
-# In[103]:
 
 
 Mean_Std_Count("NflId")
 
 
-# In[104]:
 
 
 Mean_Std_Count('JerseyNumber')
 
 
-# In[105]:
 
 
 Mean_Std_Count('DisplayName')
 
 
-# In[106]:
 
 
 Try1 = train_df[['Season', "Yards"]].groupby('Season').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try1, 'Season', "Yards")
 
 
-# In[107]:
 
 
 Try = train_df[['Turf', "Yards"]].groupby('Turf').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'Turf', "Yards")
 
 
-# In[108]:
 
 
 Try = train_df[['Week', "Yards"]].groupby('Week').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'Week', "Yards")
 
 
-# In[109]:
 
 
 Try = train_df[['VisitorTeamAbbr', "Yards"]].groupby('VisitorTeamAbbr').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'VisitorTeamAbbr', "Yards")
 
 
-# In[110]:
 
 
 Try = train_df[['HomeTeamAbbr', "Yards"]].groupby('HomeTeamAbbr').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'HomeTeamAbbr', "Yards")
 
 
-# In[111]:
 
 
 Try = train_df[['Position', "Yards"]].groupby('Position').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'Position', "Yards")
 
 
-# In[112]:
 
 
 Try = train_df[['PlayDirection', "Yards"]].groupby('PlayDirection').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'PlayDirection', "Yards")
 
 
-# In[113]:
 
 
 Try = train_df[['DefensePersonnel', "Yards"]].groupby('DefensePersonnel').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'DefensePersonnel', "Yards")
 
 
-# In[114]:
 
 
 Try = train_df[['DefendersInTheBox', "Yards"]].groupby('DefendersInTheBox').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'DefendersInTheBox', "Yards")
 
 
-# In[115]:
 
 
 Try = train_df[['OffensePersonnel', "Yards"]].groupby('OffensePersonnel').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'OffensePersonnel', "Yards")
 
 
-# In[116]:
 
 
 Try = train_df[['OffenseFormation', "Yards"]].groupby('OffenseFormation').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'OffenseFormation', "Yards")
 
 
-# In[117]:
 
 
 Try = train_df[['NflIdRusher', "Yards"]].groupby('NflIdRusher').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'NflIdRusher', "Yards")
 
 
-# In[118]:
 
 
 Try = train_df[['VisitorScoreBeforePlay', "Yards"]].groupby('VisitorScoreBeforePlay').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'VisitorScoreBeforePlay', "Yards")
 
 
-# In[119]:
 
 
 Try = train_df[['HomeScoreBeforePlay', "Yards"]].groupby('HomeScoreBeforePlay').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'HomeScoreBeforePlay', "Yards")
 
 
-# In[120]:
 
 
 Try = train_df[['FieldPosition', "Yards"]].groupby('FieldPosition').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'FieldPosition', "Yards")
 
 
-# In[121]:
 
 
 Try = train_df[['Distance', "Yards"]].groupby('Distance').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'Distance', "Yards")
 
 
-# In[122]:
 
 
 Try = train_df[['Down', "Yards"]].groupby('Down').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'Down', "Yards")
 
 
-# In[123]:
 
 
 Try = train_df[["PossessionTeam", "Yards"]].groupby("PossessionTeam").mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, "PossessionTeam", "Yards")
 
 
-# In[124]:
 
 
 Try = train_df[["GameClock", "Yards"]].groupby("GameClock").mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, "GameClock", "Yards")
 
 
-# In[125]:
 
 
 Try = train_df[["GameId", "Yards"]].groupby("GameId").mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, "GameId", "Yards")
 
 
-# In[126]:
 
 
 Try = train_df[['FieldPosition', "Yards"]].groupby('FieldPosition').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'FieldPosition', "Yards")
 
 
-# In[127]:
 
 
 Try = train_df[['Season', "Yards"]].groupby('Season').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'Season', "Yards")
 
 
-# In[128]:
 
 
 Try = train_df[['YardLine', "Yards"]].groupby('YardLine').mean().sort_values(by = "Yards").reset_index()
 plot_bar_x(Try, 'YardLine', "Yards")
 
 
-# In[129]:
 
 
 Try = train_df[['Quarter', "Yards"]].groupby('Quarter').mean().sort_values(by = "Yards").reset_index()

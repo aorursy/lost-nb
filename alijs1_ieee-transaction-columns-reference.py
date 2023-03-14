@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -103,7 +102,6 @@ h('Train transactions preview:')
 display(tr.head(10))
 
 
-# In[2]:
 
 
 COL = 'TransactionDT'
@@ -122,7 +120,6 @@ plt.show()
 corr1(COL)
 
 
-# In[3]:
 
 
 COL = 'isFraud'
@@ -134,7 +131,6 @@ display(trx)
 corr1(COL)
 
 
-# In[4]:
 
 
 for col in list(tr.columns.values[:COLS_TO_SHOW]):

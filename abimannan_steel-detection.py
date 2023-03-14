@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # %reload_ext autoreload
@@ -20,7 +19,6 @@
 # fastai.__version__
 
 
-# In[2]:
 
 
 # nfolds = 1#4
@@ -33,7 +31,6 @@
 # torch.backends.cudnn.benchmark = True
 
 
-# In[3]:
 
 
 # #the code below modifies fast.ai functions to incorporate Hcolumns into fast.ai Dynamic Unet
@@ -155,7 +152,6 @@
 #     return cls(x)
 
 
-# In[4]:
 
 
 # # Prediction with flip TTA
@@ -211,7 +207,6 @@
 #     return np.array(dices).mean()
 
 
-# In[5]:
 
 
 # def enc2mask(encs, shape=(1600,512)):
@@ -239,7 +234,6 @@
 #     return encs
 
 
-# In[6]:
 
 
 # stats = ([0.400,0.402,0.404], [0.178,0.181,0.175])
@@ -253,7 +247,6 @@
 #         .normalize(stats))
 
 
-# In[7]:
 
 
 # rles,ids_test = [],[]
@@ -282,7 +275,6 @@
 # sub_df.sort_values(by='ImageId_ClassId').to_csv('submission.csv', index=False)
 
 
-# In[8]:
 
 
 import os
@@ -305,7 +297,6 @@ import torch.nn as nn
 from torch.nn import functional as F
 
 
-# In[9]:
 
 
 class SteelDataset(Dataset):
@@ -327,20 +318,17 @@ class SteelDataset(Dataset):
     
 
 
-# In[10]:
 
 
 get_ipython().system('ls ../input')
 
 
-# In[11]:
 
 
 sample_submission_path = '../input/severstal-steel-defect-detection/sample_submission.csv'
 test_data_folder = "../input/severstal-steel-defect-detection/test_images"
 
 
-# In[12]:
 
 
 def null_collate(batch):
@@ -360,7 +348,6 @@ def null_collate(batch):
     return infor, input
 
 
-# In[13]:
 
 
 df = pd.read_csv(sample_submission_path)
@@ -376,7 +363,6 @@ test_loader = DataLoader(
     )
 
 
-# In[14]:
 
 
 #test time augmentation  -----------------------
@@ -395,7 +381,6 @@ augment = (
     )
 
 
-# In[15]:
 
 
 TEMPERATE=0.5
@@ -425,7 +410,6 @@ def remove_small(predict, min_size):
     return predict
 
 
-# In[16]:
 
 
 def do_evaluate_segmentation(net, test_loader, augment=[]):
@@ -498,40 +482,34 @@ def do_evaluate_segmentation(net, test_loader, augment=[]):
     return test_probability_label, test_probability_mask, test_id
 
 
-# In[17]:
 
 
 get_ipython().system('ls ../input/henge5')
 
 
-# In[18]:
 
 
 ckpt_file = '../input/henge5/trace_model_swa.pth'
 net = torch.jit.load(ckpt_file).cuda()
 
 
-# In[19]:
 
 
 probability_label, probability_mask, image_id = do_evaluate_segmentation(net, test_loader, augment=['null'])
 
 
-# In[20]:
 
 
 del net
 gc.collect()
 
 
-# In[21]:
 
 
 #value = probability_mask*(value==probability_mask)
 probability_mask = probability_mask[:,1:] #remove background class
 
 
-# In[22]:
 
 
 threshold_label      = [ 0.70, 0.8, 0.50, 0.70,]
@@ -539,14 +517,12 @@ threshold_mask_pixel = [ 0.6, 0.8, 0.5, 0.6,]
 threshold_mask_size  = [ 1,  1,  1,  1,]
 
 
-# In[23]:
 
 
 predict_label = probability_label>(np.array(threshold_label)*255).astype(np.uint8).reshape(1,4)
 predict_mask  = probability_mask>(np.array(threshold_mask_pixel)*255).astype(np.uint8).reshape(1,4,1,1)
 
 
-# In[24]:
 
 
 def mask2rle(img):
@@ -561,7 +537,6 @@ def mask2rle(img):
     return ' '.join(str(x) for x in runs)
 
 
-# In[25]:
 
 
 image_id_class_id = []
@@ -577,20 +552,17 @@ for b in range(len(image_id)):
         encoded_pixel.append(rle)
 
 
-# In[26]:
 
 
 df = pd.DataFrame(zip(image_id_class_id, encoded_pixel), columns=['ImageId_ClassId', 'EncodedPixels'])
 df.to_csv('submission.csv', index=False)
 
 
-# In[27]:
 
 
 df.head(50)
 
 
-# In[28]:
 
 
 def summarise_submission_csv(df):
@@ -643,14 +615,12 @@ def summarise_submission_csv(df):
     return text
 
 
-# In[29]:
 
 
 text = summarise_submission_csv(df)
 print(text)
 
 
-# In[30]:
 
 
 def rle2mask(mask_rle, shape=(1600,256)):
@@ -670,7 +640,6 @@ def rle2mask(mask_rle, shape=(1600,256)):
    return img.reshape(shape).T
 
 
-# In[31]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -694,7 +663,6 @@ for row in df.itertuples():
     plt.show()
 
 
-# In[ ]:
 
 
 

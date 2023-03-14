@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 data = pd.read_csv("../input/train.csv", parse_dates=['timestamp'])
@@ -30,13 +28,11 @@ prices = data['price_doc']
 features_raw = data.drop(['price_doc','id'], axis =1)
 
 
-# In[3]:
 
 
 data.info()
 
 
-# In[4]:
 
 
 # Import sklearn.preprocessing.StandardScaler
@@ -51,7 +47,6 @@ features_raw[numerical] = scaler.fit_transform(features_raw[numerical])
 print (features_raw.head(n = 1))
 
 
-# In[5]:
 
 
 #One-hot encode the 'features' data using pandas.get_dummies()
@@ -72,7 +67,6 @@ print ("{} total features after one-hot encoding.".format(len(encoded)))
 print (encoded)
 
 
-# In[6]:
 
 
 #Minimum price of the data
@@ -103,7 +97,6 @@ alfa_c = (std_price/99)*1.96
 print ("critical alfa score for sample size of 100: Rub {:,.2f}".format(alfa_c))
 
 
-# In[7]:
 
 
 from sklearn.metrics import r2_score
@@ -114,13 +107,11 @@ def performance_metric(y_true, y_predict):
     return score
 
 
-# In[8]:
 
 
 
 
 
-# In[8]:
 
 
 from sklearn.model_selection import train_test_split
@@ -129,7 +120,6 @@ X_train, X_test, y_train, y_test = train_test_split(features,prices, test_size =
 print ("Training and testing split was successful.")
 
 
-# In[9]:
 
 
 # Produce learning curves for varying training set sizes and maximum depths
@@ -186,13 +176,11 @@ def ModelLearning(X, y):
     fig.show()
 
 
-# In[10]:
 
 
 ModelLearning(features, prices)
 
 
-# In[11]:
 
 
 from sklearn.model_selection import validation_curve
@@ -231,13 +219,11 @@ def ModelComplexity(X, y):
     pl.show()
 
 
-# In[12]:
 
 
 ModelComplexity(X_train, y_train)
 
 
-# In[13]:
 
 
 xgb_params = {
@@ -252,7 +238,6 @@ xgb_params = {
 dtrain = xgb.DMatrix(features, prices)
 
 
-# In[14]:
 
 
 cv_output = xgb.cv(xgb_params, dtrain, num_boost_round=1000, early_stopping_rounds=20,
@@ -260,21 +245,18 @@ cv_output = xgb.cv(xgb_params, dtrain, num_boost_round=1000, early_stopping_roun
 cv_output[['train-rmse-mean', 'test-rmse-mean']].plot()
 
 
-# In[15]:
 
 
 num_boost_rounds = len(cv_output)
 model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round= num_boost_rounds)
 
 
-# In[16]:
 
 
 fig, ax = pl.subplots(1, 1, figsize=(8, 13))
 xgb.plot_importance(model, max_num_features=50, height=0.5, ax=ax)
 
 
-# In[17]:
 
 
 #prepare test data:
@@ -293,13 +275,11 @@ test_features.drop('timestamp',axis=1,inplace =True)
 Test_matrix = xgb.DMatrix(test_features)
 
 
-# In[18]:
 
 
 test_features.head()
 
 
-# In[19]:
 
 
 y_pred = model.predict(Test_matrix)

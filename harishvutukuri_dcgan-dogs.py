@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os                                   # os package
@@ -37,19 +36,16 @@ def random_seed(seed_value, use_cuda):
         torch.backends.cudnn.benchmark = False
 
 
-# In[2]:
 
 
 random_seed(17, True)
 
 
-# In[3]:
 
 
 get_ipython().system('unzip ../input/generative-dog-images/all-dogs.zip -d /kaggle/working/ > /dev/null')
 
 
-# In[4]:
 
 
 PATH = '/kaggle/working/all-dogs/'
@@ -67,7 +63,6 @@ for indx, axis in enumerate(axes.flatten()):
 plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 
 
-# In[5]:
 
 
 batch_size = 32
@@ -88,7 +83,6 @@ imgs, label = next(iter(train_loader))
 imgs = imgs.numpy().transpose(0, 2, 3, 1)
 
 
-# In[6]:
 
 
 def weights_init(m):
@@ -103,7 +97,6 @@ def weights_init(m):
         m.bias.data.fill_(0)
 
 
-# In[7]:
 
 
 class Generator(nn.Module):
@@ -137,7 +130,6 @@ class Generator(nn.Module):
         return img
 
 
-# In[8]:
 
 
 class Discriminator(nn.Module):
@@ -168,7 +160,6 @@ class Discriminator(nn.Module):
         return out.view(-1, 1)
 
 
-# In[9]:
 
 
 get_ipython().system('mkdir results')
@@ -187,7 +178,6 @@ nz = 128
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-# In[10]:
 
 
 netG = Generator(nz).to(device)
@@ -205,7 +195,6 @@ D_losses = []
 epoch_time = []
 
 
-# In[11]:
 
 
 def plot_loss (G_losses, D_losses, epoch):
@@ -219,7 +208,6 @@ def plot_loss (G_losses, D_losses, epoch):
     plt.show()
 
 
-# In[12]:
 
 
 def show_generated_img(n_images=5):
@@ -240,7 +228,6 @@ def show_generated_img(n_images=5):
     plt.close()
 
 
-# In[13]:
 
 
 for epoch in range(epochs):
@@ -301,13 +288,11 @@ for epoch in range(epochs):
     epoch_time.append(time.time()- start)
 
 
-# In[14]:
 
 
 print (">> average EPOCH duration = ", np.mean(epoch_time))
 
 
-# In[15]:
 
 
 if not os.path.exists('../output_images'):
@@ -325,7 +310,6 @@ for i_batch in tqdm(range(0, n_images, im_batch_size)):
         save_image(gen_images[i_image, :, :, :], os.path.join('../output_images', f'image_{i_batch+i_image:05d}.png'))
 
 
-# In[16]:
 
 
 fig = plt.figure(figsize=(25, 16))
@@ -335,14 +319,12 @@ for i, j in enumerate(images[:32]):
     plt.imshow(j)
 
 
-# In[17]:
 
 
 import shutil
 shutil.make_archive('images', 'zip', '../output_images')
 
 
-# In[18]:
 
 
 torch.save(netG.state_dict(), 'generator.pth')

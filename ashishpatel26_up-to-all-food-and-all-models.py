@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import pandas as pd
@@ -49,14 +48,12 @@ from sklearn.pipeline import Pipeline
 from gensim.models import word2vec
 
 
-# In[ ]:
 
 
 train = pd.read_json('../input/train.json', encoding = 'UTF-8')
 test = pd.read_json('../input/test.json', encoding = 'UTF-8')
 
 
-# In[ ]:
 
 
 df = train.copy()
@@ -65,26 +62,22 @@ print(df.shape)
 df.head(2)
 
 
-# In[ ]:
 
 
 df.count()
 
 
-# In[ ]:
 
 
 df.isnull().sum()
 
 
-# In[ ]:
 
 
 print('Cuisine is {}.'.format(len(df.cuisine.value_counts())))
 df.cuisine.value_counts()
 
 
-# In[ ]:
 
 
 # cuisine type visualization
@@ -99,7 +92,6 @@ plt.ylabel("Number of Recipes", fontsize=12)
 plt.show()
 
 
-# In[ ]:
 
 
 ### Work to count ingredients per recipe per row
@@ -125,13 +117,11 @@ ingredients_df.tail (2)
 print ('Before the preprocessing, the total ingredients are {}.'. format (len (ingredients_df)))
 
 
-# In[ ]:
 
 
 ingredients_df.head(20)
 
 
-# In[ ]:
 
 
 def pre_processing_(recipe):
@@ -211,25 +201,21 @@ def delete_space_(ingredient):
     return ingredient
 
 
-# In[ ]:
 
 
 df['ingredients'] = df['ingredients'].apply(lambda x : pre_processing_(x))
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', "### 각 row 마다의 recipe 별 ingredient를 count하기 위한 작업\n\n# 여기서는 ingredient가 각 1개씩 count 될 것이다.\nbag_of_ingredients = [Counter(ingredient) for ingredient in df.ingredients]\n\n# 각 ingredients의 종류별 개수\nsum_of_ingredients = sum(bag_of_ingredients, Counter())\n\n########################################################################################\n\n### sum_of_ingredients를 dataframe에 넣기 위한 작업\n\n# dict -> list -> dataframe\nsum_of_ingredients_dict = dict(sum_of_ingredients)\nsum_of_ingredients_list = list(sum_of_ingredients_dict.items())\n\ningredients_df = pd.DataFrame(sum_of_ingredients_list)\ningredients_df.columns = ['ingredient', 'count']\ningredients_df.tail(2)\n\nprint('전처리 후 ingredient는 총 {}개 입니다.'.format(len(ingredients_df)))")
 
 
-# In[ ]:
 
 
 df['ingredients_train'] = df['ingredients'].apply(','.join)
 
 
-# In[ ]:
 
 
 """
@@ -242,26 +228,22 @@ X = tfv.fit_transform(df['ingredients_train'].values)
 print(list(tfv.vocabulary_.keys())[:10])
 
 
-# In[ ]:
 
 
 print(X.shape)
 
 
-# In[ ]:
 
 
 print(type(X))
 
 
-# In[ ]:
 
 
 print(X[2999])
 # 구조파악하기
 
 
-# In[ ]:
 
 
 Lec = LabelEncoder()
@@ -270,26 +252,22 @@ train_target_value = Lec.fit_transform(df['cuisine'].values)
 print(train_target_value.shape)
 
 
-# In[ ]:
 
 
 print(train_target_value[:20])
 
 
-# In[ ]:
 
 
 print(Lec.classes_)
 
 
-# In[ ]:
 
 
 X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, train_target_value)
 print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
 
-# In[ ]:
 
 
 """ Random Forest Model """
@@ -406,50 +384,42 @@ def Neural_network_():
     return print("Test score : {}".format(nn.score(X_test, y_test)))
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'rf = RandomForestClassifier_()')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'SVM = SVM_()')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'KNN = KNN_()')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'Xgboost_()')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'DecisionTree_()')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'Neural_network = Neural_network_()')
 
 
-# In[ ]:
 
 
 # Feature importance
 pd.Series(xgbr.feature_importances_).plot(kind='bar')
 
 
-# In[ ]:
 
 
 # 1. all_ingredients set에 ingredients들을 담는다.
@@ -464,13 +434,11 @@ for ingredient in all_ingredients:
 len(df.columns)
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', "\ncolumn_list = []\nfor col in df.columns:\n    column_list.append(col)\n    \ncolumn_list.remove('id')\ncolumn_list.remove('ingredients')\ncolumn_list.remove('cuisine')\n\nlen(column_list)\nprint(column_list[:10])\n\ndf[column_list] = df[column_list].astype(int) # False는 0으로, True는 1로")
 
 
-# In[ ]:
 
 
 # Copy
@@ -487,7 +455,6 @@ del df_features['cuisine']
 df_features.tail(1)
 
 
-# In[ ]:
 
 
 Lec = LabelEncoder()
@@ -496,38 +463,32 @@ train_target_value = Lec.fit_transform(df_dummy['cuisine'].values)
 print(train_target_value.shape)
 
 
-# In[ ]:
 
 
 print(train_target_value[:10])
 
 
-# In[ ]:
 
 
 print(Lec.classes_)
 
 
-# In[ ]:
 
 
 X_train, X_test, y_train, y_test = cross_validation.train_test_split(df_features, train_target_value)
 print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', '# fit method를 호출하여 주성분을 찾는다. 주성분은 200개로 한다.\npca = PCA(n_components=200, whiten=True, random_state=0).fit(X_train)\n# transform method를 호출해 데이터를 회전시키고 차원을 축소\nX_train_pca = pca.transform(X_train)\nX_test_pca = pca.transform(X_test)\n\nprint("X_train_pca.shape: {}".format(X_train_pca.shape))')
 
 
-# In[ ]:
 
 
 pca.components_
 
 
-# In[ ]:
 
 
 def Xgboost_():
@@ -544,13 +505,11 @@ def Xgboost_():
     return print("Test score : {}".format(xgbr.score(X_test_pca, y_test)))
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'Xgboost = Xgboost_()')
 
 
-# In[ ]:
 
 
 def Neural_network_():
@@ -565,13 +524,11 @@ def Neural_network_():
     return print("Test score : {}".format(nn.score(X_test_pca, y_test)))
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'Neural_Network = Neural_network_()')
 
 
-# In[ ]:
 
 
 """ 
@@ -635,14 +592,12 @@ model.init_sims(replace=True)
 model.most_similar('korean')
 
 
-# In[ ]:
 
 
 cuisine_dict = dict(df.cuisine.value_counts().items())
 cuisine_list = list(cuisine_dict.keys())
 
 
-# In[ ]:
 
 
 print("Bot: " 
@@ -700,7 +655,6 @@ while True:
         break
 
 
-# In[ ]:
 
 
 

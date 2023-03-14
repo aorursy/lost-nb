@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # !pip install bayesian-optimization --user
@@ -22,7 +21,6 @@ import pickle
 
 
 
-# In[2]:
 
 
 df = pd.read_csv("../input/train.csv")
@@ -30,7 +28,6 @@ df.shape
 test_df = pd.read_csv("../input/test.csv")
 
 
-# In[3]:
 
 
 test_df = test_df.drop("id", axis = 1)
@@ -38,7 +35,6 @@ label = df["target"]
 Input = df.drop(columns=['id', 'target'])
 
 
-# In[4]:
 
 
 test_df = test_df.values.astype(np.float32)
@@ -53,14 +49,12 @@ for i in range(y_data.shape[0]):
 x_train, x_test, y_train, y_test, y_train_label, y_test_label = train_test_split(x_data, onehot, y_data, test_size = 0.3)
 
 
-# In[5]:
 
 
 print(x_train.shape)
 print(sorted(Counter(y_train_label).items()))
 
 
-# In[6]:
 
 
 def focal_loss_sigmoid(labels,logits,alpha=0.25 , gamma=2):
@@ -102,7 +96,6 @@ def spectral_norm(w, iteration= 2 , name = None):
     return w_norm 
 
 
-# In[7]:
 
 
 l1_regularizer = tf.contrib.layers.l1_regularizer(scale=0.005, scope=None)
@@ -242,7 +235,6 @@ def neural_network(num_hidden, size_layer, learning_rate , dropout_rate , beta ,
     return COST, TEST_COST, ACC, TEST_ACC , test_pred_n
 
 
-# In[8]:
 
 
 def generate_nn(num_hidden, size_layer, learning_rate, dropout_rate, beta, activation , focal_weight , reduction_node ):
@@ -271,7 +263,6 @@ def generate_nn(num_hidden, size_layer, learning_rate, dropout_rate, beta, activ
     return valid_acc
 
 
-# In[9]:
 
 
 log_file = open('nn-bayesian.log', 'a')
@@ -290,19 +281,16 @@ NN_BAYESIAN = BayesianOptimization(generate_nn,
 #NN_BAYESIAN.maximize(init_points = 10 , n_iter = 1 , acq="ucb", kappa= 10.0)
 
 
-# In[10]:
 
 
 
 
 
-# In[10]:
 
 
 
 
 
-# In[10]:
 
 
 

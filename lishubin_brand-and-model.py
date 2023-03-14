@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -18,14 +17,12 @@ from sklearn.metrics import log_loss
 import xgboost as xgb
 
 
-# In[2]:
 
 
 phone = pd.read_csv('../input/phone_brand_device_model.csv',encoding='utf-8')
 phone.head(3)
 
 
-# In[3]:
 
 
 gatrain = pd.read_csv('../input/gender_age_train.csv')
@@ -33,7 +30,6 @@ gatest = pd.read_csv('../input/gender_age_test.csv')
 gatrain.head(3)
 
 
-# In[4]:
 
 
 dup = phone.groupby('device_id').size()
@@ -41,7 +37,6 @@ dup = dup[dup>1]
 dup.shape
 
 
-# In[5]:
 
 
 
@@ -50,13 +45,11 @@ first = dup.groupby('device_id').first()
 last = dup.groupby('device_id').last()
 
 
-# In[6]:
 
 
 phone = phone.drop_duplicates('device_id', keep='first')
 
 
-# In[7]:
 
 
 lebrand = LabelEncoder().fit(phone.phone_brand)
@@ -67,14 +60,12 @@ phone['model'] = lemodel.transform(m)
 phone['old_model'] = LabelEncoder().fit_transform(phone.device_model)
 
 
-# In[8]:
 
 
 train = gatrain.merge(phone)
 train.head()
 
 
-# In[9]:
 
 
 train['y'] = LabelEncoder().fit_transform(train['group'])
@@ -82,7 +73,6 @@ train['gender'] = train['gender'].apply(lambda x: int(x=='M'))
 train.head()
 
 
-# In[10]:
 
 
 
@@ -100,7 +90,6 @@ params = {
 }
 
 
-# In[11]:
 
 
 def encode_cat(Xtrain,Xtest):
@@ -138,7 +127,6 @@ def encode_cat(Xtrain,Xtest):
     return Xtrain[['model_gender_mean','brand_gender_mean','model_age_mean','brand_age_mean']],Xtest[['model_gender_mean','brand_gender_mean','model_age_mean','brand_age_mean']]
 
 
-# In[12]:
 
 
 def encode_cat(Xtrain,Xtest):
@@ -163,45 +151,38 @@ def encode_cat(Xtrain,Xtest):
     return Xtrain[['model']],Xtest[['model']]
 
 
-# In[ ]:
 
 
 brand_unique = train.groupby('brand')['model'].nunique()
 
 
-# In[ ]:
 
 
 train['brand_unique_model'] = train['brand'].map(brand_unique)
 
 
-# In[ ]:
 
 
 model_count = train.groupby('model')['model'].size()
 model_count.head()
 
 
-# In[ ]:
 
 
 train['model_count'] = train['model'].map(model_count)
 train.head()
 
 
-# In[ ]:
 
 
 Xtest.loc[Xtest.iloc[:,10].isnull(),10:] = prior
 
 
-# In[ ]:
 
 
 np.sum(Xtest.iloc[:,10].isnull())
 
 
-# In[ ]:
 
 
 class GenderAgeGroupProb(object):
@@ -236,13 +217,11 @@ def score(ptrain, by, prior_weight=10.):
     return log_loss(y, pred)
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[13]:
 
 
 y = train['y']
@@ -267,44 +246,37 @@ for itrain, itest in kf:
     print(log_loss(ytest, temp_pred))
 
 
-# In[ ]:
 
 
 Xtrain.head()
 
 
-# In[ ]:
 
 
 log_loss(train['y'].values.tolist(),pred)
 
 
-# In[ ]:
 
 
 log_loss(train['y'].values.tolist(),pred)
 
 
-# In[ ]:
 
 
 log_loss(train['y'].values.tolist(),pred)
 
 
-# In[ ]:
 
 
 df = Xtrain
 df.head()
 
 
-# In[ ]:
 
 
 df[['gender']]==0
 
 
-# In[ ]:
 
 
 def fit(self, df, by):

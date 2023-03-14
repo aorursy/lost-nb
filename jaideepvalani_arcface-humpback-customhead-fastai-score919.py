@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_cell_magic('time', '', '! nvidia-smi\n#! rm -rf resnet_324.pth\n#!echo c.ExecutePreprocessor.timeout')
 
 
-# In[2]:
 
 
 from fastai import *
@@ -18,13 +16,11 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[3]:
 
 
 get_ipython().system(' ls -l ../input/')
 
 
-# In[4]:
 
 
 #path = Path('./data/')
@@ -39,7 +35,6 @@ import fastai
 fastai.__version__
 
 
-# In[5]:
 
 
 #df = pd.read_csv(LABELS).set_index('Image')
@@ -94,13 +89,11 @@ trn_imgs.head(1)
 trn_imgs=trn_imgs[~trn_imgs.Image.isin(exclude_list)]
 
 
-# In[6]:
 
 
 
 
 
-# In[6]:
 
 
 def read_img(fname,box_df,img,sz=224):
@@ -128,7 +121,6 @@ def read_img(fname,box_df,img,sz=224):
     return Image(pil2tensor(img.astype(np.float)/255, np.float32).float())
 
 
-# In[7]:
 
 
 def crop_loose_bbox(img,area, val=0.2):
@@ -152,7 +144,6 @@ def crop_loose_bbox(img,area, val=0.2):
     return img[y0n:y1n,x0n:x1n,:] #img.crop(area2)
 
 
-# In[8]:
 
 
 """
@@ -173,13 +164,11 @@ def crop_loose_bbox(img,area, val=0.2):
   """
 
 
-# In[9]:
 
 
 #bbox_df = pd.read_csv(path_b/'cropped-img'/'bounding_boxes.csv').set_index('Image')
 
 
-# In[10]:
 
 
 def open_4_channel2(fname):
@@ -207,14 +196,12 @@ def open_4_channel2(fname):
     return Image(pil2tensor(img/255, np.float32).float())
 
 
-# In[11]:
 
 
 trn_imgs=trn_imgs.append(trn_imgs.loc[trn_imgs.cnt==2],ignore_index=True) 
 trn_imgs=trn_imgs.append(trn_imgs.loc[trn_imgs.cnt==1],ignore_index=True) 
 
 
-# In[12]:
 
 
 
@@ -237,7 +224,6 @@ for i in trn_imgs[(trn_imgs.cnt<5) &( trn_imgs.cnt>2)].Id.unique():
 len(val_idx)
 
 
-# In[13]:
 
 
 #val_idx[0:5]
@@ -245,7 +231,6 @@ len(val_idx)
 #trn_imgs[trn_imgs.Id=='w_f48451c']
 
 
-# In[14]:
 
 
 #bbox_df = pd.read_csv(path/'bounding_boxes.csv').set_index('Image')
@@ -259,7 +244,6 @@ len(trn_imgs.Id.unique())
 #trn_imgs[trn_imgs.cnt<3].Id.unique().shape
 
 
-# In[15]:
 
 
 val_idx=list(trn_imgs.iloc[val_idx].index.values)
@@ -269,7 +253,6 @@ df_i=trn_imgs.iloc[list(trn_idx)].reset_index(drop=True) # this will be used lat
 #path2fn = lambda path: re.search('\w*\.jpg$', path).group(0)
 
 
-# In[16]:
 
 
 #df_i.index.size 0000e88ab.jpg w_f48451c
@@ -279,7 +262,6 @@ df_i=trn_imgs.iloc[list(trn_idx)].reset_index(drop=True) # this will be used lat
 #df_i.head(2)
 
 
-# In[17]:
 
 
 src1= (ImageList.from_df(trn_imgs[['Image','Id']],path_t, folder='train') #ImageList
@@ -287,13 +269,11 @@ src1= (ImageList.from_df(trn_imgs[['Image','Id']],path_t, folder='train') #Image
        .label_from_df( cols=1))
 
 
-# In[18]:
 
 
 #trn_imgs.head(2)
 
 
-# In[19]:
 
 
 """
@@ -313,7 +293,6 @@ np.array(a).reshape(5,-1).shape
 """
 
 
-# In[20]:
 
 
 test_ids = list(sorted({fname for fname in os.listdir(path_t/'test')}))
@@ -325,13 +304,11 @@ test_fnames = [path_t/'test'/test_id for test_id in test_ids]
 test_fnames[:3]
 
 
-# In[21]:
 
 
 #np.where(list(trn_imgs.hot.values)[1]==[1])[1]
 
 
-# In[22]:
 
 
 import cv2
@@ -354,7 +331,6 @@ data2 = (src1.transform((trn_tfms,trn_tfms), size=484,resize_method=ResizeMethod
         .databunch(bs=36,num_workers=0).normalize(imagenet_stats))
 
 
-# In[23]:
 
 
 
@@ -372,7 +348,6 @@ data2 = (src1.transform((trn_tfms,trn_tfms), size=484,resize_method=ResizeMethod
 #plt.imshow(i)
 
 
-# In[24]:
 
 
 #data1.c
@@ -380,13 +355,11 @@ data2 = (src1.transform((trn_tfms,trn_tfms), size=484,resize_method=ResizeMethod
 #!cp *.csv ./data/
 
 
-# In[25]:
 
 
 from fastai.metrics import accuracy
 
 
-# In[26]:
 
 
 from torchvision import models as m
@@ -402,13 +375,11 @@ def dense(pre):
 def _densenet_split(m): return   (m[0][0][6],m[1]) 
 
 
-# In[27]:
 
 
 #dense(True)
 
 
-# In[28]:
 
 
 def acc (input:Tensor, targs:Tensor)->Rank0Tensor:
@@ -420,7 +391,6 @@ def acc (input:Tensor, targs:Tensor)->Rank0Tensor:
     return (input==targs).float().mean()
 
 
-# In[29]:
 
 
 i=torch.rand(3,2)
@@ -433,7 +403,6 @@ print(i)
 #torch.randint(4, (3,), dtype=torch.int64)
 
 
-# In[30]:
 
 
 class ArcMarginProduct(nn.Module):
@@ -513,7 +482,6 @@ class Customhead(nn.Module):
         return cosine
 
 
-# In[31]:
 
 
 #for i in Customhead(1024,5004).parameters():
@@ -564,7 +532,6 @@ class CustomheadRes(nn.Module):
         return cosine
 
 
-# In[32]:
 
 
 #data1.show_batch(2)
@@ -601,7 +568,6 @@ class ArcFaceLoss(nn.modules.Module):
         return loss.mean()
 
 
-# In[33]:
 
 
 
@@ -619,13 +585,11 @@ def resnet501(pre):
 def _resnet_split(m): return (m[0][6],m[1])
 
 
-# In[34]:
 
 
 ar=ArcFaceLoss().cuda() # this may not be needed just try it out
 
 
-# In[35]:
 
 
 
@@ -635,13 +599,11 @@ ar=ArcFaceLoss().cuda() # this may not be needed just try it out
 #custom_head
 
 
-# In[36]:
 
 
 
 
 
-# In[36]:
 
 
 f1_score = partial(fbeta, thresh=0.4, beta=1)
@@ -713,7 +675,6 @@ learn2.callback_fns.append(partial(ReduceLROnPlateauCallback, min_delta=1e-5, pa
 #learn2=learn2.to_fp16()
 
 
-# In[37]:
 
 
 #learn1.model[1]
@@ -737,7 +698,6 @@ get_ipython().system('cp /kaggle/input/arcface-humpback-customhead-fastai-score9
 get_ipython().system(' ls -l   /kaggle/working/models')
 
 
-# In[38]:
 
 
 import gc
@@ -753,7 +713,6 @@ gc.collect()
     #print(i.size())
 
 
-# In[39]:
 
 
 #learn2.recorder.plot()
@@ -761,7 +720,6 @@ gc.collect()
 #learn2.model[1]
 
 
-# In[40]:
 
 
 #x,y=next(iter(learn1.data.train_dl))
@@ -772,7 +730,6 @@ gc.collect()
 #push
 
 
-# In[41]:
 
 
 #learn2.unfreeze()
@@ -780,7 +737,6 @@ gc.collect()
 #learn2.fit_one_cycle(2,3e-2)
 
 
-# In[42]:
 
 
 #!ls -l
@@ -793,7 +749,6 @@ for i in learn1.model[1].parameters():
 learn2.model[1]
 
 
-# In[43]:
 
 
 """
@@ -806,7 +761,6 @@ learn2.save('dense_ar_c324')
 """
 
 
-# In[44]:
 
 
 #learn2.fit_one_cycle(8,slice(2e-4,lr/2)) # run for 30 epochs 
@@ -818,7 +772,6 @@ lr=2e-2 # ran stratified 224,284*2,now ffull
 #learn1.save('resnet_ar_c224')
 
 
-# In[45]:
 
 
 """
@@ -840,7 +793,6 @@ learn1.save('resnet_ar_c424_2')
  
 
 
-# In[46]:
 
 
 """ 
@@ -854,7 +806,6 @@ learn2.save('dense_ar_c424_1')
 """
 
 
-# In[47]:
 
 
 
@@ -865,7 +816,6 @@ print('Accuracy',learn1.recorder.metrics)
  
 
 
-# In[48]:
 
 
 print('Train_loss',learn2.recorder.losses[-1])
@@ -874,13 +824,11 @@ print('Val loss',learn2.recorder.val_losses)
 print('Accuracy',learn2.recorder.metrics)
 
 
-# In[49]:
 
 
 learn1.recorder.plot_losses()
 
 
-# In[50]:
 
 
 #learn2.recorder.plot_losses()
@@ -891,7 +839,6 @@ learn1.recorder.plot_losses()
 #len(set(data2.train_ds.y.items))
 
 
-# In[51]:
 
 
 """ 
@@ -904,7 +851,6 @@ learn1.load('resnet_ar_c424_2')
 preds1,y = learn1.get_preds(ds_type=DatasetType.Test)
 
 
-# In[52]:
 
 
 
@@ -918,7 +864,6 @@ preds1,y1 = learn1.TTA(ds_type=DatasetType.Test,beta=0.30,with_loss=False,scale=
  
 
 
-# In[53]:
 
 
 """ 
@@ -928,7 +873,6 @@ preds1t,y1t = learn1.TTA(ds_type=DatasetType.Train,beta=0.30,with_loss=False,sca
 """ 
 
 
-# In[54]:
 
 
 """ 
@@ -942,13 +886,11 @@ trn_centre.size()
  """
 
 
-# In[55]:
 
 
 preds1.size()
 
 
-# In[56]:
 
 
 """
@@ -965,13 +907,11 @@ with torch.no_grad():
  """
 
 
-# In[57]:
 
 
 #sims[20][sims[20].argsort(descending=True)[:5]]
 
 
-# In[58]:
 
 
 #! cp /kaggle/working/models/resnet_ar_c356.pth /kaggle/working/
@@ -988,7 +928,6 @@ predsv,y_v = learn1.TTA(ds_type=DatasetType.Valid,beta=0.30,with_loss=False,scal
 """
 
 
-# In[59]:
 
 
 def apk(actual, predicted, k=10):
@@ -1017,7 +956,6 @@ def sigmoid_np(x):
 preds_tv = sigmoid_np(predsv )
 
 
-# In[60]:
 
 
 #np.linspace(0.5, 1, 10)
@@ -1029,7 +967,6 @@ labels_list[2]
 #y_v[0]
 
 
-# In[61]:
 
 
 """
@@ -1054,7 +991,6 @@ for thresh in np.linspace(0.5, 1, 20):
 """
 
 
-# In[62]:
 
 
 
@@ -1073,14 +1009,12 @@ preds_t = sigmoid_np(preds1)
 #preds_t[90,i]
 
 
-# In[63]:
 
 
 #((preds1+preds2)/2).shape
 get_ipython().system(' nvidia -smi')
 
 
-# In[64]:
 
 
 #preds1[:,0:10]
@@ -1089,7 +1023,6 @@ probs = preds_t[99,i]
 probs[:5] #0.7307, 0.5002, 0.5001, 0.5000, 0.5000])
 
 
-# In[65]:
 
 
 unique_labels = np.unique(trn_imgs.Id.values)
@@ -1102,14 +1035,12 @@ for i in range(len(unique_labels)):
 labels_list[0]
 
 
-# In[66]:
 
 
 #learn1.data
 #data1.xtra.Id.values
 
 
-# In[67]:
 
 
 
@@ -1130,7 +1061,6 @@ for sim in preds_t:
    top_5s.append(top_5)
 
 
-# In[68]:
 
 
 
@@ -1139,7 +1069,6 @@ for sim in preds_t:
 #top_5s
 
 
-# In[69]:
 
 
 from IPython.display import FileLink
@@ -1157,7 +1086,6 @@ FileLink('pred_res484.csv')
 #!nvdia - smi
 
 
-# In[70]:
 
 
 #sub.to_csv('resnetpred6.csv',index=False)
@@ -1165,7 +1093,6 @@ FileLink('pred_res484.csv')
 #!kaggle competitions submit -c humpback-whale-identification -f 'resnetpred6.csv' -m "bestresnet324_525"
 
 
-# In[71]:
 
 
 #df_i.head(2)
@@ -1177,13 +1104,11 @@ len(trn_imgs)
 #len(learn2.get_layer_group)
 
 
-# In[72]:
 
 
 
 
 
-# In[72]:
 
 
 """ 
@@ -1314,7 +1239,6 @@ for train_index, test_index in mskf.split(X, y):
  """
 
 
-# In[73]:
 
 
 #learn.recorder.losses
@@ -1338,7 +1262,6 @@ learn1.save('resnet_ar_c484_2')
 """
 
 
-# In[74]:
 
 
 #print('Train_loss',learn2.recorder.losses[-1])

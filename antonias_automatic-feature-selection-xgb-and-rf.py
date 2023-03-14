@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd 
@@ -25,79 +24,66 @@ warnings.filterwarnings(action='ignore')
 pd.set_option('display.max_columns',300)
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/train.csv',index_col='ID')
 
 
-# In[3]:
 
 
 test = pd.read_csv('../input/test.csv',index_col='ID')
 
 
-# In[4]:
 
 
 train.head()
 
 
-# In[5]:
 
 
 test.head()
 
 
-# In[6]:
 
 
 train.shape, test.shape
 
 
-# In[7]:
 
 
 test['TARGET']=0
 
 
-# In[8]:
 
 
 test.shape
 
 
-# In[9]:
 
 
 df = train.append(test)
 
 
-# In[10]:
 
 
 df.shape
 
 
-# In[11]:
 
 
 constant_cols=df.nunique()[df.nunique()==1].index
 
 
-# In[12]:
 
 
 df.drop(constant_cols,axis=1,inplace=True)
 
 
-# In[13]:
 
 
 df.shape
 
 
-# In[14]:
 
 
 def getDuplicateColumns(df):
@@ -123,25 +109,21 @@ def getDuplicateColumns(df):
     return list(duplicateColumnNames)
 
 
-# In[15]:
 
 
 duplicated_cols = getDuplicateColumns(df)
 
 
-# In[16]:
 
 
 df.drop(duplicated_cols,axis=1,inplace=True)
 
 
-# In[17]:
 
 
 df.shape
 
 
-# In[18]:
 
 
 df_target = pd.DataFrame(train.TARGET.value_counts())
@@ -149,14 +131,12 @@ df_target['Percentage'] = 100*df_target['TARGET']/train.shape[0]
 df_target
 
 
-# In[19]:
 
 
 fig, ax=plt.subplots(figsize=(8,6))
 sns.countplot('TARGET',data=train);
 
 
-# In[20]:
 
 
 cor_mat = train.corr()
@@ -171,7 +151,6 @@ for i in range(5):
         sns.heatmap(corr,linewidths=.5, ax=ax)
 
 
-# In[21]:
 
 
 X = train.iloc[:,:-1]
@@ -185,7 +164,6 @@ feat_imp.sort_values(inplace=True)
 ax = feat_imp.tail(20).plot(kind='barh', figsize=(10,7), title='Feature importance')
 
 
-# In[22]:
 
 
 fig, axs = plt.subplots(nrows= 3, ncols=3, figsize=(18, 25))
@@ -235,14 +213,12 @@ plt.plot(var_rat);pca_df = pd.DataFrame(
 pcas = pca_df.shape[1]-1 # selectedpca_df['ID'] = df.index
 pca_df.set_index('ID',inplace = True)
 pca_df['TARGET'] = df['TARGET']pca_df.head()
-# In[23]:
 
 
 fig, ax=plt.subplots(figsize=(8,6))
 sns.countplot('TARGET',data=df);
 
 
-# In[24]:
 
 
 train_index_start= train.shape[0] # catching row until test data
@@ -251,14 +227,12 @@ target_index_start= train.shape[1] # catching column until target colum
 print(target_index_start)
 
 
-# In[25]:
 
 
 train = df.iloc[:train_index_start,:]
 test  = df.iloc[train_index_start:,:] 
 
 
-# In[26]:
 
 
 #!pip install imblearn
@@ -270,28 +244,24 @@ y_train = train['TARGET']
 X_resampled, y_resampled = rus.fit_resample(X_train, y_train) 
 
 
-# In[27]:
 
 
 fig, ax=plt.subplots(figsize=(8,6))
 sns.countplot(y_resampled);
 
 
-# In[28]:
 
 
 ros = RandomOverSampler(random_state = 0)
 X_rosampled, y_rosampled = ros.fit_resample(X_train,y_train) 
 
 
-# In[29]:
 
 
 fig, ax = plt.subplots(figsize=(8,6))
 sns.countplot(y_rosampled);
 
 
-# In[30]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(X_resampled,y_resampled , test_size=0.33, random_state=42)
@@ -302,13 +272,11 @@ X_train=pca_df.iloc[:train_index_start, :pcas]
 X_test =pca_df.iloc[train_index_start:, :pcas]
 y_train=pca_df.iloc[:train_index_start, pcas]
 y_test =pca_df.iloc[train_index_start:, pcas]
-# In[31]:
 
 
 clf = ExtraTreesClassifier(random_state=42)
 
 
-# In[32]:
 
 
 selector = clf.fit(X_train, y_train)
@@ -316,7 +284,6 @@ test['TARGET'] = 0
 test.shape
 
 
-# In[33]:
 
 
 feats_sel = SelectFromModel(selector, prefit=True)
@@ -325,13 +292,11 @@ X_test = feats_sel.transform(X_test)
 test = feats_sel.transform(test.drop("TARGET", axis = 1))
 
 
-# In[34]:
 
 
 X_train.shape, X_test.shape
 
 
-# In[35]:
 
 
 clf_xgb = GridSearchCV(
@@ -353,38 +318,32 @@ clf_xgb = GridSearchCV(
 clf_grid_result=clf_xgb.fit(X_train,y_train)
 
 
-# In[36]:
 
 
 clf_grid_result.best_estimator_
 
 
-# In[37]:
 
 
 clf_grid_result.best_score_
 
 
-# In[38]:
 
 
 y_pred = clf_grid_result.predict(X_test)
 
 
-# In[39]:
 
 
 fig, ax = plt.subplots(figsize=(8,6))
 sns.countplot(y_pred);
 
 
-# In[40]:
 
 
 clf_grid_result.scorer_
 
 
-# In[41]:
 
 
 random_seed = 42
@@ -410,32 +369,27 @@ clf_rf = GridSearchCV(
 clf_grid_result_rf=clf_rf.fit(X_train,y_train)
 
 
-# In[42]:
 
 
 clf_grid_result_rf.best_estimator_
 
 
-# In[43]:
 
 
 clf_grid_result_rf.best_score_
 
 
-# In[44]:
 
 
 y_pred = clf_grid_result_rf.predict(X_test)
 
 
-# In[45]:
 
 
 fig, ax = plt.subplots(figsize=(8,6))
 sns.countplot(y_pred);
 
 
-# In[46]:
 
 
 probabilities = clf_grid_result.predict_proba(test)
@@ -444,7 +398,6 @@ submission = pd.DataFrame({"ID":df.iloc[train_index_start:,0].index, "TARGET": p
 submission.to_csv("submission_xgb.csv", index=False)
 
 
-# In[47]:
 
 
 probabilities = clf_grid_result_rf.predict_proba(test)

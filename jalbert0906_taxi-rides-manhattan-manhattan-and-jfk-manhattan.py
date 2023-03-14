@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import os
@@ -30,7 +29,6 @@ from folium.plugins import FastMarkerCluster
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 
 
-# In[ ]:
 
 
 def readData(path, types, chunksize, chunks):
@@ -69,7 +67,6 @@ def readData(path, types, chunksize, chunks):
     return df
 
 
-# In[ ]:
 
 
 # The path where the Training set is
@@ -93,7 +90,6 @@ chunksnumberTrain = 5
 df_train = readData(TRAIN_PATH, traintypes, chunksizeTrain, chunksnumberTrain)
 
 
-# In[ ]:
 
 
 # The path where the Test set is
@@ -117,31 +113,26 @@ chunksnumberTest = 1
 df_test = readData(TEST_PATH, testtypes, chunksizeTest, chunksnumberTest)
 
 
-# In[ ]:
 
 
 df_train.head()
 
 
-# In[ ]:
 
 
 df_train.describe(include='all')
 
 
-# In[ ]:
 
 
 df_test.head()
 
 
-# In[ ]:
 
 
 df_test.describe(include='all')
 
 
-# In[ ]:
 
 
 # Function that cleans data
@@ -183,13 +174,11 @@ def cleanData(df, isTrain):
 df_train = cleanData(df_train, True)
 
 
-# In[ ]:
 
 
 df_train.describe(include='all')
 
 
-# In[ ]:
 
 
 trace = go.Pie(values = [df_train.shape[0],chunksizeTrain*chunksnumberTrain - df_train.shape[0]],
@@ -211,7 +200,6 @@ py.iplot(fig)
 fig = go.Figure(data=[trace],layout=layout)
 
 
-# In[ ]:
 
 
 # Using datashader
@@ -244,7 +232,6 @@ def plot_data_points(longitude,latitude,data_frame) :
 plot_data_points('pickup_longitude', 'pickup_latitude', df_train)
 
 
-# In[ ]:
 
 
 # Let's look at some clusters with Folium (20000 points)
@@ -255,7 +242,6 @@ folium.LayerControl().add_to(m)
 m
 
 
-# In[ ]:
 
 
 # Define how we want to split the data into sections based on 'fare_amount'
@@ -279,7 +265,6 @@ plt.ylabel('Normalized Density')
 sns.distplot(df_train[(df_train['fare_amount']>b)&(df_train['fare_amount']<=c)]['fare_amount'], norm_hist=True, bins=np.arange(b,c));
 
 
-# In[ ]:
 
 
 # Split df_train into a dataset of the rides before the fare rules change and after the fare rules change
@@ -319,7 +304,6 @@ plt.ylabel('Normalized Density')
 sns.distplot(df_after[(df_after['fare_amount']>b)&(df_after['fare_amount']<=c)]['fare_amount'], norm_hist=True, color='green', bins=np.arange(b,c)); 
 
 
-# In[ ]:
 
 
 print('Mean fare BEFORE rate change: ' + str(np.around(df_before[df_before['fare_amount']<=a]['fare_amount'].mean(),2)))
@@ -328,7 +312,6 @@ print('Median fare BEFORE rate change: ' + str(np.around(df_before[df_before['fa
 print('Median fare AFTER rate change: ' + str(np.around(df_after[df_after['fare_amount']<=a]['fare_amount'].median(),2)))
 
 
-# In[ ]:
 
 
 # Using mod function to extract the "cents value" of each ride
@@ -341,7 +324,6 @@ plt.title('New Rate, below ' + str(a) + ' USD, "cents value"',color = "g")
 sns.distplot(np.mod(df_after[df_after['fare_amount']<=a]['fare_amount'],1), color='green'); 
 
 
-# In[ ]:
 
 
 from shapely.geometry import Point
@@ -361,7 +343,6 @@ folium.PolyLine(locations=[[lats_vect[6],lons_vect[6]], [lats_vect[0],lons_vect[
 man_map
 
 
-# In[ ]:
 
 
 # Check for every point on df_train if it belongs to polygon or not
@@ -373,7 +354,6 @@ manhattanRides = df_train[df_train[['pickup_latitude', 'pickup_longitude', 'drop
 plot_data_points('pickup_longitude', 'pickup_latitude', manhattanRides)
 
 
-# In[ ]:
 
 
 # Simple Euclidean Distance calculator 
@@ -404,7 +384,6 @@ def realManDist(lat1, lng1, lat2, lng2):
     return ret
 
 
-# In[ ]:
 
 
 # Calculate distance for every ride on manhattanRides
@@ -414,13 +393,11 @@ manhattanRides['distance'] = manhattanRides.apply(lambda row: realManDist(row['p
                                                                           row['dropoff_longitude']), axis=1)
 
 
-# In[ ]:
 
 
 print('Percentage of trips that happen inside Manhattan: ' + str(np.around(100*(manhattanRides.shape[0])/df_train.shape[0],2)))
 
 
-# In[ ]:
 
 
 # Split train/test
@@ -428,7 +405,6 @@ from sklearn.model_selection import train_test_split
 manhattanRides_train, manhattanRides_test = train_test_split(manhattanRides, test_size=0.2, random_state=42)
 
 
-# In[ ]:
 
 
 # Plot the 'fare_amount' against the distance of the trip
@@ -439,7 +415,6 @@ plt.xlabel('Distance in Km')
 plt.scatter(manhattanRides_train['distance'], manhattanRides_train['fare_amount'], alpha=0.5);
 
 
-# In[ ]:
 
 
 manhattanRides_shortDist = manhattanRides_train[manhattanRides_train['distance']<=0.3];
@@ -466,7 +441,6 @@ plt.xlabel('Distance in Km')
 plt.scatter(manhattanRides_train['distance'], manhattanRides_train['fare_amount'], alpha=0.5);
 
 
-# In[ ]:
 
 
 # Fitting a linear model and measuring the MSE
@@ -487,7 +461,6 @@ print ('Intercept: ' + str(np.around(reg[1],2)))
 print ('MSE: ' + str(np.around(reg[2],4)))
 
 
-# In[ ]:
 
 
 # Split the train set into before the fare rule change and after the fare rule change
@@ -519,7 +492,6 @@ plt.xlabel('Distance in Km')
 plt.scatter(manhattanRidesAfter['distance'], manhattanRidesAfter['fare_amount'], color='green', alpha=0.5);
 
 
-# In[ ]:
 
 
 series1 = manhattanRidesBefore[(manhattanRidesBefore['weekday'] == 3) & (manhattanRidesBefore['hour'] == 20)]
@@ -549,7 +521,6 @@ plt.xlabel('Distance in Km')
 plt.scatter(series2['distance'], series2['fare_amount'], color='green', alpha=0.5);
 
 
-# In[ ]:
 
 
 weekdaysOpt = [0,1,2,3,4,5,6]
@@ -578,7 +549,6 @@ for i in weekdaysOpt:
         mseMatAfter[i,j] = reg[2] 
 
 
-# In[ ]:
 
 
 fig = plt.figure(figsize=(30,13))
@@ -590,7 +560,6 @@ ax2.set_title('MSE by day and hour: After Fare Rule Change')
 sns.heatmap(mseMatAfter, xticklabels = hoursOpt, yticklabels = weekdaysOpt, annot = True, ax=ax2, cmap='YlOrRd');
 
 
-# In[ ]:
 
 
 def predictManhattan(hour, day, new, distance, slopeMatBefore, interMatBefore, slopeMatAfter, interMatAfter):
@@ -607,21 +576,18 @@ def predictManhattan(hour, day, new, distance, slopeMatBefore, interMatBefore, s
     return fare
 
 
-# In[ ]:
 
 
 predictions = manhattanRides_train.apply(lambda row: predictManhattan(row['hour'], row['weekday'], row['newRate'], row['distance'], slopeMatBefore, interMatBefore, slopeMatAfter, interMatAfter), axis=1)
 print('The in-sample Average MSE is: ' + str(np.around(np.sqrt((((manhattanRides_train['fare_amount']-predictions)**2).sum())/manhattanRides_train.shape[0]),3)))
 
 
-# In[ ]:
 
 
 predictions = manhattanRides_test.apply(lambda row: predictManhattan(row['hour'], row['weekday'], row['newRate'], row['distance'], slopeMatBefore, interMatBefore, slopeMatAfter, interMatAfter), axis=1)
 print('The out-of-sample average MSE is: ' + str(np.around(np.sqrt((((manhattanRides_test['fare_amount']-predictions)**2).sum())/manhattanRides_test.shape[0]),3)))
 
 
-# In[ ]:
 
 
 def addMarkerPick(df, color, m1, m2):
@@ -640,19 +606,16 @@ addMarkerPick(manhattanRides_lowValue, 'green', m1, m2)
 addMarkerPick(manhattanRides_straightLines, 'yellow', m1, m2)
 
 
-# In[ ]:
 
 
 m1
 
 
-# In[ ]:
 
 
 m2
 
 
-# In[ ]:
 
 
 # One end has to be JFK
@@ -674,7 +637,6 @@ df_toJFK = df_train[(df_train['dropoff_latitude']<jfk_lat_max)&
                     (df_train['dropoff_longitude']>jfk_lon_min)]
 
 
-# In[ ]:
 
 
 # The other end has to be Manhattan
@@ -682,13 +644,11 @@ df_fromJFK = df_fromJFK[df_fromJFK[['dropoff_latitude', 'dropoff_longitude']].ap
 df_toJFK = df_toJFK[df_toJFK[['pickup_latitude', 'pickup_longitude']].apply(lambda row: polygon.contains(Point(row['pickup_longitude'],row['pickup_latitude'])), axis=1)]
 
 
-# In[ ]:
 
 
 print('Percentage of trips between JFK and Manhattan: ' + str(np.around(100*(df_fromJFK.shape[0] + df_toJFK.shape[0])/df_train.shape[0],2)))
 
 
-# In[ ]:
 
 
 m1 = folium.Map(location=[40.645580, -73.785115], zoom_start=16)
@@ -703,7 +663,6 @@ for lt, ln in zip(samples['dropoff_latitude'], samples['dropoff_longitude']):
 m1
 
 
-# In[ ]:
 
 
 # Plot a histogram of the fares
@@ -722,7 +681,6 @@ plt.title('New rate, from Manhattan to JFK',color = "b")
 sns.distplot(df_toJFK[df_toJFK['newRate']==True]['fare_amount'], norm_hist=True, bins=np.arange(a,b), color='green');
 
 
-# In[ ]:
 
 
 # Add a weekend column
@@ -730,7 +688,6 @@ df_fromJFK['weekend'] = df_fromJFK['weekday'].isin([5,6])==True
 df_toJFK['weekend'] = df_toJFK['weekday'].isin([5,6])==True
 
 
-# In[ ]:
 
 
 def plotBars(df, newRate, weekend):
@@ -765,7 +722,6 @@ plt.title('New rate, from Manhattan to JFK, weekend',color = "b")
 plotBars(df_toJFK, True, True)
 
 
-# In[ ]:
 
 
 # Define options
@@ -795,7 +751,6 @@ for i in weekendOpt:
         newFromMANtoJFK[i,j] = mean
 
 
-# In[ ]:
 
 
 # This are the prediction matrices
@@ -805,7 +760,6 @@ oldFromMANtoJFK;
 newFromMANtoJFK;
 
 
-# In[ ]:
 
 
 # Prediction function
@@ -823,7 +777,6 @@ def predictAirport(isfrom, new, weekend, hour, oldFromJFKtoMAN, newFromJFKtoMAN,
     return fare
 
 
-# In[ ]:
 
 
 # From JFK

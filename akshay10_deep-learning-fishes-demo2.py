@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -39,7 +38,6 @@ from keras.utils import np_utils
 from keras import backend as K
 
 
-# In[2]:
 
 
 folders = check_output(["ls", "../input/train/"]).decode("utf8").strip().split('\n')
@@ -57,7 +55,6 @@ plt.ylabel('Number of Images', fontsize=12)
 plt.show()    
 
 
-# In[3]:
 
 
 def get_image(img):
@@ -101,14 +98,12 @@ def get_test():
     return X_test, X_test_id
 
 
-# In[4]:
 
 
 X_train, y_train, X_train_id = get_train(folders)
 X_test, X_test_id = get_test()
 
 
-# In[5]:
 
 
 def normalize_features(X):
@@ -129,7 +124,6 @@ def normalize_targets(y):
     return y
 
 
-# In[6]:
 
 
 X_train = normalize_features(X_train)
@@ -137,7 +131,6 @@ X_test = normalize_features(X_test)
 y_train = normalize_targets(y_train)
 
 
-# In[7]:
 
 
 print (X_test.shape)
@@ -146,7 +139,6 @@ X_train, X_valid, y_train, y_valid = train_test_split(X_train, y_train,
                                                     stratify=y_train)
 
 
-# In[8]:
 
 
 model = Sequential()
@@ -177,20 +169,17 @@ model.fit(X_train, y_train, batch_size=128, nb_epoch=60,
           validation_split=0.2, verbose=1, shuffle=True)
 
 
-# In[9]:
 
 
 preds = model.predict(X_valid, verbose=1)
 print("Validation Log Loss: {}".format(log_loss(y_valid, preds)))
 
 
-# In[10]:
 
 
 test_preds = model.predict(X_test, verbose=1)
 
 
-# In[11]:
 
 
 #create_submission(test_preds, folders)
@@ -199,14 +188,12 @@ submission.insert(0, 'image', X_test_id)
 submission.head()
 
 
-# In[12]:
 
 
 final = 'final_submissions.csv'
 submission.to_csv(final, index=False)
 
 
-# In[13]:
 
 
 

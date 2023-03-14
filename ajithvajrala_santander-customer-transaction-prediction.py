@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import gc
@@ -23,26 +22,22 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier,
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
 
 
 train_df = pd.read_csv("../input/train.csv")
 test_df = pd.read_csv("../input/test.csv")
 
 
-# In[3]:
 
 
 train_df.shape, test_df.shape
 
 
-# In[4]:
 
 
 train_df.head()
 
 
-# In[5]:
 
 
 x = train_df.drop(['ID_code', 'target'], axis=1)
@@ -50,13 +45,11 @@ y = train_df['target']
 x_test = test_df.drop(['ID_code'], axis =1)
 
 
-# In[6]:
 
 
 x.shape, x_test.shape, y.shape
 
 
-# In[7]:
 
 
 mean_train = x.mean()
@@ -67,13 +60,11 @@ plt.plot(mean_test, color = 'pink')
 plt.show();
 
 
-# In[8]:
 
 
 pd.DataFrame([mean_test, mean_train])
 
 
-# In[9]:
 
 
 std_train = x.std()
@@ -84,13 +75,11 @@ plt.plot(std_test, color = 'pink')
 plt.show();
 
 
-# In[10]:
 
 
 pd.DataFrame([std_test, std_train])
 
 
-# In[11]:
 
 
 #Mean Distribution
@@ -104,7 +93,6 @@ plt.legend()
 plt.show();
 
 
-# In[12]:
 
 
 plt.figure(figsize=(16,6))
@@ -115,7 +103,6 @@ plt.legend()
 plt.show()
 
 
-# In[13]:
 
 
 plt.figure(figsize=(16,6))
@@ -126,7 +113,6 @@ plt.legend();
 plt.show();
 
 
-# In[14]:
 
 
 plt.figure(figsize=(16,6))
@@ -136,25 +122,21 @@ sns.distplot(x_test[features].std(axis=0),color="green", kde=True,bins=120, labe
 plt.legend(); plt.show()
 
 
-# In[15]:
 
 
 get_ipython().run_cell_magic('time', '', 'correlations = x[features].corr().abs().unstack().sort_values(kind="quicksort").reset_index()\ncorrelations = correlations[correlations[\'level_0\'] != correlations[\'level_1\']]')
 
 
-# In[16]:
 
 
 correlations.tail(10)
 
 
-# In[17]:
 
 
 gc.collect()
 
 
-# In[18]:
 
 
 x_test = (x_test - mean_test) + (mean_train)
@@ -162,13 +144,11 @@ x_test = x_test / (std_train)
 x = x / (std_train)
 
 
-# In[19]:
 
 
 #features
 
 
-# In[20]:
 
 
 for df in [x, x_test]:
@@ -187,14 +167,12 @@ for df in [x, x_test]:
 print('Train and test shape:',x.shape, x_test.shape)
 
 
-# In[21]:
 
 
 model = ExtraTreesClassifier()
 model.fit(x,y)
 
 
-# In[22]:
 
 
 impotrant_featues = {}
@@ -202,13 +180,11 @@ for i, j in enumerate(model.feature_importances_):
     impotrant_featues[i] = j
 
 
-# In[23]:
 
 
 variables = [k for k in sorted(impotrant_featues, key=impotrant_featues.get, reverse=True)][:50]
 
 
-# In[24]:
 
 
 imp_features = []
@@ -217,13 +193,11 @@ for var in variables:
         imp_features.append("var_"+str(var))
 
 
-# In[25]:
 
 
 train_df[imp_features].shape
 
 
-# In[26]:
 
 
 def dist(a,b):
@@ -246,13 +220,11 @@ for i in imp_features:
     print("done ",i)
 
 
-# In[27]:
 
 
 x.head()
 
 
-# In[28]:
 
 
 param = {
@@ -277,7 +249,6 @@ param = {
    }
 
 
-# In[29]:
 
 
 param = {'max_depth': 3, 
@@ -306,7 +277,6 @@ param = {'max_depth': 3,
          'tree_learner': 'serial'}
 
 
-# In[30]:
 
 
 param = {
@@ -329,7 +299,6 @@ param = {
 gc.collect()
 
 
-# In[31]:
 
 
 nfold = 5 #5
@@ -359,13 +328,11 @@ for train_idx, val_idx in k.split(x, y.values):
     i+=1
 
 
-# In[32]:
 
 
 print("CV AUC: {:<0.2f}".format(metrics.roc_auc_score(y.values, oof)))
 
 
-# In[33]:
 
 
 sub_df = pd.DataFrame()
@@ -374,7 +341,6 @@ sub_df['target'] = predictions
 sub_df.to_csv("sub1.csv", index = False)
 
 
-# In[34]:
 
 
 

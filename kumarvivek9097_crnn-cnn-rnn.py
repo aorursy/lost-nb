@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,14 +21,12 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 train = pd.read_csv("../input/Kannada-MNIST/train.csv")
 test = pd.read_csv("../input/Kannada-MNIST/test.csv")
 
 
-# In[3]:
 
 
 Y = train["label"]
@@ -38,7 +35,6 @@ Y = train["label"]
 X = train.drop(labels = ["label"],axis = 1) 
 
 
-# In[4]:
 
 
 # Normalize the data
@@ -46,20 +42,17 @@ X = X / 255.0
 test = test / 255.0
 
 
-# In[5]:
 
 
 # Reshape image in 3 dimensions (height = 28px, width = 28px , canal = 1)
 X = X.values.reshape(-1,28,28,1)
 
 
-# In[6]:
 
 
 X.shape
 
 
-# In[7]:
 
 
 #Dropping id column
@@ -68,14 +61,12 @@ x_test = x_test.reshape(x_test.shape[0], 28, 28,1)
 x_test.shape
 
 
-# In[8]:
 
 
 import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[9]:
 
 
 plt.figure(num='digit',figsize=(9,9))
@@ -86,7 +77,6 @@ for i in range(9):
 plt.show()
 
 
-# In[10]:
 
 
 # Converting dependent variables into categorical data
@@ -94,7 +84,6 @@ from keras.utils.np_utils import to_categorical
 Y = to_categorical(Y, num_classes = 10)
 
 
-# In[11]:
 
 
 # Splitting dataset into taining and validation set
@@ -102,7 +91,6 @@ from sklearn.model_selection import train_test_split
 X_train, X_val, Y_train, Y_val = train_test_split(X, Y, test_size = 0.1, random_state=42)
 
 
-# In[12]:
 
 
 from keras.models import Sequential
@@ -145,7 +133,6 @@ model.add(Dropout(0.25))
 model.add(Dense(10, activation = "softmax"))
 
 
-# In[13]:
 
 
 datagen = ImageDataGenerator(  
@@ -158,7 +145,6 @@ datagen = ImageDataGenerator(
 datagen.fit(X_train)
 
 
-# In[14]:
 
 
 optimizer = RMSprop(lr=0.005, rho=0.9, epsilon=1e-08, decay=0.0)
@@ -172,7 +158,6 @@ epochs = 50
 batch_size = 128
 
 
-# In[15]:
 
 
 history = model.fit_generator(datagen.flow(X_train,Y_train, batch_size=batch_size),
@@ -181,7 +166,6 @@ history = model.fit_generator(datagen.flow(X_train,Y_train, batch_size=batch_siz
                               , callbacks=[learning_rate])
 
 
-# In[16]:
 
 
 fig, ax = plt.subplots(2,1)
@@ -194,7 +178,6 @@ ax[1].plot(history.history['val_accuracy'], color='r',label="Validation accuracy
 legend = ax[1].legend(loc='best', shadow=True)
 
 
-# In[17]:
 
 
 from sklearn.metrics import confusion_matrix
@@ -240,7 +223,6 @@ confusion_mtx = confusion_matrix(Y_true, Y_pred_classes)
 plot_confusion_matrix(confusion_mtx, classes = range(10))
 
 
-# In[18]:
 
 
 #Display some error results 
@@ -283,7 +265,6 @@ most_important_errors = sorted_dela_errors[-6:]
 display_errors(most_important_errors, X_val_errors, Y_pred_classes_errors, Y_true_errors)
 
 
-# In[19]:
 
 
 # predict results
@@ -295,20 +276,17 @@ results = np.argmax(results,axis = 1)
 results = pd.Series(results,name="label") 
 
 
-# In[20]:
 
 
 submission = pd.read_csv('../input/Kannada-MNIST/sample_submission.csv')
 submission['label'] = results
 
 
-# In[21]:
 
 
 submission.to_csv("submission.csv",index=False)
 
 
-# In[ ]:
 
 
 

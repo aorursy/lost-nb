@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[261]:
 
 
 #Data
@@ -41,7 +40,6 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 sns.set_style('darkgrid')
 
 
-# In[2]:
 
 
 features_df = pd.read_csv("../input/walmart-recruiting-store-sales-forecasting/features.csv.zip", compression='zip')
@@ -50,7 +48,6 @@ test_df = pd.read_csv("../input/walmart-recruiting-store-sales-forecasting/test.
 train_df = pd.read_csv("../input/walmart-recruiting-store-sales-forecasting/train.csv.zip", compression='zip')
 
 
-# In[3]:
 
 
 modeling_df = pd.merge(train_df, stores_df, on='Store', how='inner')
@@ -60,37 +57,31 @@ modeling_df = pd.merge(modeling_df,
                        how='inner')
 
 
-# In[4]:
 
 
 modeling_df.head()
 
 
-# In[5]:
 
 
 modeling_df.shape
 
 
-# In[6]:
 
 
 modeling_df.describe()
 
 
-# In[7]:
 
 
 pd.DataFrame(100*(modeling_df.isnull().sum()/modeling_df.shape[0])).rename(columns={0:'Percentual of Missing Values (%)'})
 
 
-# In[8]:
 
 
 modeling_df.groupby(['Store','Dept'])['Date'].count().reset_index().set_index(['Store','Dept']).describe()
 
 
-# In[9]:
 
 
 plt.figure(figsize=(30,10));
@@ -118,7 +109,6 @@ plt.ylabel("Average Number of Sales", fontsize=18, fontweight='bold');
 plt.tight_layout()
 
 
-# In[10]:
 
 
 plt.figure(figsize=(30,10));
@@ -134,7 +124,6 @@ plt.xlabel("Date (Week)", fontsize=18, fontweight='bold');
 plt.ylabel("Average Number of Sales", fontsize=18, fontweight='bold');
 
 
-# In[11]:
 
 
 def create_holidays(x):
@@ -178,7 +167,6 @@ def create_holidays(x):
         return 'christmas'
 
 
-# In[12]:
 
 
 def update_isholiday(x):
@@ -198,20 +186,17 @@ def update_isholiday(x):
         return 0
 
 
-# In[13]:
 
 
 modeling_df['holiday'] = modeling_df['Date'].apply(create_holidays)
 modeling_df['IsHoliday'] = modeling_df['holiday'].apply(update_isholiday)
 
 
-# In[14]:
 
 
 modeling_df[modeling_df['IsHoliday']==1].head(2)
 
 
-# In[15]:
 
 
 store_avg_sales_holidays = modeling_df[modeling_df['IsHoliday'] == 1][['Date','Store','Dept','Weekly_Sales']]
@@ -221,7 +206,6 @@ store_avg_sales_holidays = store_avg_sales_holidays.groupby('Store').mean().rese
 store_avg_sales_not_holidays = store_avg_sales_not_holidays.groupby('Store').mean().reset_index()
 
 
-# In[16]:
 
 
 plt.figure(figsize=(20,10));
@@ -250,7 +234,6 @@ plt.xlabel("Average Sales", fontsize=18, fontweight='bold');
 plt.legend(fontsize=16);
 
 
-# In[17]:
 
 
 average_sales_holidays = modeling_df.groupby(['Store','holiday'])['Weekly_Sales'].mean().reset_index()
@@ -269,13 +252,11 @@ plt.xlabel("Average Sales", fontsize=18, fontweight='bold');
 plt.legend(fontsize=16);
 
 
-# In[18]:
 
 
 outliers_df = modeling_df[modeling_df['IsHoliday']==0]
 
 
-# In[19]:
 
 
 plt.figure(figsize=(10,5));
@@ -299,7 +280,6 @@ plt.title("Unemployment");
 plt.tight_layout()
 
 
-# In[20]:
 
 
 def create_cyclical_dates():
@@ -345,19 +325,16 @@ def create_cyclical_dates():
                'sine_week_of_year','sine_month_of_year']]
 
 
-# In[21]:
 
 
 cyclical_df = create_cyclical_dates()
 
 
-# In[22]:
 
 
 cyclical_df.head()
 
 
-# In[23]:
 
 
 plt.figure(figsize=(15,5))
@@ -390,7 +367,6 @@ plt.title("Month of Year");
 plt.tight_layout()
 
 
-# In[24]:
 
 
 modeling_df = pd.merge(modeling_df,
@@ -399,13 +375,11 @@ modeling_df = pd.merge(modeling_df,
                        how='inner')
 
 
-# In[25]:
 
 
 modeling_df.head()
 
 
-# In[384]:
 
 
 def holiday_weights(x):
@@ -429,7 +403,6 @@ def holiday_weights(x):
         return 1
 
 
-# In[387]:
 
 
 def weighted_mean_absolute_error(y_true, y_pred, W):
@@ -445,7 +418,6 @@ def weighted_mean_absolute_error(y_true, y_pred, W):
                                        np.squeeze(y_pred))))/np.sum(W)
 
 
-# In[29]:
 
 
 def plot_diagonal_correlation_matrix(X,y):
@@ -476,13 +448,11 @@ def plot_diagonal_correlation_matrix(X,y):
     plt.show()
 
 
-# In[30]:
 
 
 modeling_df.head()
 
 
-# In[376]:
 
 
 X = modeling_df.drop(columns=['Weekly_Sales',
@@ -494,20 +464,17 @@ X = modeling_df.drop(columns=['Weekly_Sales',
 y = modeling_df[['Weekly_Sales']]
 
 
-# In[236]:
 
 
 encoder = JamesSteinEncoder()
 X_corr = encoder.fit_transform(X,y)
 
 
-# In[237]:
 
 
 plot_diagonal_correlation_matrix(X_corr,y)
 
 
-# In[243]:
 
 
 def compare_encoders(encoder_list, X_train, X_test, y_test):
@@ -542,13 +509,11 @@ def compare_encoders(encoder_list, X_train, X_test, y_test):
         print("{} wmae-score: {}".format(str(encoder).split('(')[0],score))
 
 
-# In[244]:
 
 
 from sklearn.metrics import make_scorer
 
 
-# In[245]:
 
 
 encoder_list = [OrdinalEncoder(),
@@ -559,7 +524,6 @@ encoder_list = [OrdinalEncoder(),
                 CatBoostEncoder()]
 
 
-# In[377]:
 
 
 X['holiday'] = X['holiday'].fillna('not_holiday')
@@ -567,7 +531,6 @@ X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                     test_size=0.33)
 
 
-# In[247]:
 
 
 compare_encoders(encoder_list=encoder_list,
@@ -576,7 +539,6 @@ compare_encoders(encoder_list=encoder_list,
                  y_test=y_test)
 
 
-# In[252]:
 
 
 def plot_feature_importances(model, X , num = 20):
@@ -602,7 +564,6 @@ def plot_feature_importances(model, X , num = 20):
    plt.show()
 
 
-# In[253]:
 
 
 def random_forest_pipeline(encoder,
@@ -647,7 +608,6 @@ def random_forest_pipeline(encoder,
     return rf_pipe, param_grid
 
 
-# In[254]:
 
 
 rf_encoder = MEstimateEncoder()
@@ -671,19 +631,16 @@ rf_gd = RandomizedSearchCV(estimator=rf_pipe,
                            verbose=10)
 
 
-# In[255]:
 
 
 rf_gd.fit(X_train, y_train);
 
 
-# In[256]:
 
 
 rf_gd.best_estimator_
 
 
-# In[258]:
 
 
 rf_pred = rf_gd.predict(X_test)
@@ -693,7 +650,6 @@ score = weighted_mean_absolute_error(y_test,
 print("wmae-score: {}".format(score))
 
 
-# In[259]:
 
 
 plot_feature_importances(model=rf_gd.best_estimator_['clf'],
@@ -701,7 +657,6 @@ plot_feature_importances(model=rf_gd.best_estimator_['clf'],
                          num=20);
 
 
-# In[263]:
 
 
 rf_encoder = MEstimateEncoder()
@@ -728,20 +683,17 @@ rf_gd_2 = RandomizedSearchCV(estimator=rf_pipe_2,
                            verbose=10)
 
 
-# In[264]:
 
 
 rf_gd_2.fit(X_train, np.squeeze(y_train.values));
 rf_pred_2 = rf_gd_2.predict(X_test)
 
 
-# In[265]:
 
 
 rf_gd_2.best_estimator_
 
 
-# In[266]:
 
 
 score = weighted_mean_absolute_error(y_test,
@@ -751,7 +703,6 @@ score = weighted_mean_absolute_error(y_test,
 print("wmae-score: {}".format(score))
 
 
-# In[267]:
 
 
 def non_linear_multiple_regressor_pipeline(encoder,
@@ -806,7 +757,6 @@ def non_linear_multiple_regressor_pipeline(encoder,
     return pipe, param_grid
 
 
-# In[268]:
 
 
 lr_encoder = MEstimateEncoder()
@@ -830,21 +780,18 @@ lr_gd = RandomizedSearchCV(estimator=lr_pipe,
                            verbose=10)
 
 
-# In[269]:
 
 
 lr_gd.fit(X_train, np.squeeze(y_train.values));
 lr_pred = lr_gd.predict(X_test)
 
 
-# In[270]:
 
 
 score = weighted_mean_absolute_error(y_test, lr_pred, W = X_test['Date'].apply(holiday_weights).values)
 print("wmae-score: {}".format(score))
 
 
-# In[296]:
 
 
 def lgbm_pipeline(encoder,
@@ -888,7 +835,6 @@ def lgbm_pipeline(encoder,
     return pipe, param_grid
 
 
-# In[297]:
 
 
 lgbm_encoder = MEstimateEncoder()
@@ -914,27 +860,23 @@ lgbm_gd = RandomizedSearchCV(estimator=lgbm_pipe,
                              verbose=10)
 
 
-# In[298]:
 
 
 lgbm_gd.fit(X_train, np.squeeze(y_train.values));
 lgbm_pred = lgbm_gd.predict(X_test)
 
 
-# In[301]:
 
 
 lgbm_gd.best_estimator_
 
 
-# In[299]:
 
 
 score = weighted_mean_absolute_error(y_test, lgbm_pred, W = X_test['Date'].apply(holiday_weights).values)
 print("wmae-score: {}".format(score))
 
 
-# In[300]:
 
 
 plot_feature_importances(model=lgbm_gd.best_estimator_['clf'],
@@ -942,7 +884,6 @@ plot_feature_importances(model=lgbm_gd.best_estimator_['clf'],
                          num=30);
 
 
-# In[302]:
 
 
 X = modeling_df.drop(columns=['Weekly_Sales'])
@@ -953,7 +894,6 @@ X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                     test_size=0.33)
 
 
-# In[303]:
 
 
 lgbm_encoder = MEstimateEncoder()
@@ -979,27 +919,23 @@ lgbm_gd_2 = RandomizedSearchCV(estimator=lgbm_pipe,
                              verbose=10)
 
 
-# In[304]:
 
 
 lgbm_gd_2.fit(X_train, np.squeeze(y_train.values));
 lgbm_pred_2 = lgbm_gd_2.predict(X_test)
 
 
-# In[307]:
 
 
 lgbm_gd_2.best_estimator_
 
 
-# In[308]:
 
 
 score = weighted_mean_absolute_error(y_test, lgbm_pred_2, W = X_test['Date'].apply(holiday_weights).values)
 print("wmae-score: {}".format(score))
 
 
-# In[309]:
 
 
 plot_feature_importances(model=lgbm_gd_2.best_estimator_['clf'],
@@ -1007,7 +943,6 @@ plot_feature_importances(model=lgbm_gd_2.best_estimator_['clf'],
                          num=30);
 
 
-# In[378]:
 
 
 encoder = MEstimateEncoder()
@@ -1015,38 +950,32 @@ plot_df = encoder.fit_transform(X_test,
                                 y_test)
 
 
-# In[379]:
 
 
 explainer = shap.TreeExplainer(lgbm_gd.best_estimator_['clf'])
 shap_values = explainer.shap_values(plot_df)
 
 
-# In[380]:
 
 
 plot_df.columns = X_test.columns
 
 
-# In[382]:
 
 
 shap.summary_plot(shap_values, plot_df,max_display=20);
 
 
-# In[389]:
 
 
 shap.summary_plot(shap_values, plot_df,max_display=20, plot_type="bar");
 
 
-# In[390]:
 
 
 validation_data = test_df.copy()
 
 
-# In[391]:
 
 
 def make_data_transformations(df):
@@ -1080,19 +1009,16 @@ def make_data_transformations(df):
     return df
 
 
-# In[392]:
 
 
 validation_data = make_data_transformations(validation_data)
 
 
-# In[393]:
 
 
 validation_pred = lgbm_gd.best_estimator_.predict(validation_data)
 
 
-# In[394]:
 
 
 def make_submission_df(validation_data, y_pred):
@@ -1125,20 +1051,17 @@ def make_submission_df(validation_data, y_pred):
     return submission_df
 
 
-# In[395]:
 
 
 submission_df = make_submission_df(validation_data=validation_data,
                                    y_pred=validation_pred)
 
 
-# In[398]:
 
 
 submission_df.head()
 
 
-# In[ ]:
 
 
 submission_df.to_csv('submission.csv')

@@ -1,19 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import keras
 
 
-# In[ ]:
 
 
 from keras.models import Sequential
 
 
-# In[ ]:
 
 
 from keras.layers import Convolution2D
@@ -22,85 +19,71 @@ from keras.layers import Flatten
 from keras.layers import Dense
 
 
-# In[ ]:
 
 
 classifier = Sequential()
 
 
-# In[ ]:
 
 
 classifier.add(Convolution2D(32,3,3, input_shape = (64,64,3),activation = ('relu')))
 
 
-# In[ ]:
 
 
 classifier.add(MaxPooling2D(2,2))
 
 
-# In[ ]:
 
 
 classifier.add(Flatten())
 
 
-# In[ ]:
 
 
 classifier.add(Dense(output_dim = 128,activation='relu'))
 
 
-# In[ ]:
 
 
 classifier.add(Dense(output_dim = 1,activation = 'sigmoid'))
 
 
-# In[ ]:
 
 
 classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 
 
-# In[ ]:
 
 
 from keras.preprocessing.image import ImageDataGenerator
 
 
-# In[ ]:
 
 
 train_datagen=ImageDataGenerator(rescale=1./255,shear_range=0.2,zoom_range=0.2,horizontal_flip=True)
 
 
-# In[ ]:
 
 
 test_datagen=ImageDataGenerator(rescale=1./255)
 
 
-# In[ ]:
 
 
 train=train_datagen.flow_from_directory('Users\sathish gade\Desktop\data\cats and dogs\train',target_size=(64,64),batch_size=32,class_mode='binary')
 
 
-# In[ ]:
 
 
 os.path.abspath("\Users\sathish gade\Desktop\data\catsanddogs\train")
 
 
-# In[ ]:
 
 
 train=train_datagen.flow_from_directory("../input/dogs-vs-cats-redux-kernels-edition/train.zip")
 
 
-# In[ ]:
 
 
 train_datagen = ImageDataGenerator(

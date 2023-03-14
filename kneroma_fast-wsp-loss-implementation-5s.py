@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from pathlib import Path
@@ -9,25 +8,21 @@ import pandas as pd, numpy as np
 np.set_printoptions(suppress=True)
 
 
-# In[2]:
 
 
 get_ipython().system(' ls ../input')
 
 
-# In[3]:
 
 
 DATA_ROOT = Path("../input/m5-forecasting-uncertainty")
 
 
-# In[ ]:
 
 
 
 
 
-# In[4]:
 
 
 class M5Config:
@@ -83,13 +78,11 @@ class M5Config:
         self.weight_days = [f"d_{i}" for i in range(self.end-27, self.end+1)]
 
 
-# In[ ]:
 
 
 
 
 
-# In[5]:
 
 
 class M5Data:
@@ -140,31 +133,26 @@ class M5Data:
         return df
 
 
-# In[6]:
 
 
 get_ipython().run_cell_magic('time', '', '\ndata = M5Data()')
 
 
-# In[7]:
 
 
 data.sales.head()
 
 
-# In[8]:
 
 
 get_ipython().run_cell_magic('time', '', '\ndata._to_42840(("item_id", "store_id")).head()')
 
 
-# In[ ]:
 
 
 
 
 
-# In[9]:
 
 
 class WeightAndScaleComputer:
@@ -253,13 +241,11 @@ class WeightAndScaleComputer:
         return df
 
 
-# In[ ]:
 
 
 
 
 
-# In[10]:
 
 
 class WeightedScaledPinballLoss:
@@ -352,86 +338,72 @@ to accelerate on-the-fly WSPL computation.
             return sales
 
 
-# In[11]:
 
 
 get_ipython().run_cell_magic('time', '', '\nwsc = WeightAndScaleComputer()\nwspl_scales = wsc.get_scales(kind="mae")\nweights = wsc.get_weights()\nwspl_scales.shape, weights.shape')
 
 
-# In[12]:
 
 
 weights[(weights.level1_name=="state_id")&(weights.level2_name=="cat_id")]
 
 
-# In[ ]:
 
 
 
 
 
-# In[13]:
 
 
 WSPL =  WeightedScaledPinballLoss(scales = wspl_scales, weights=weights )
 
 
-# In[14]:
 
 
 get_ipython().system(' ls ../input/m5-uncertainty-best-public-lbs')
 
 
-# In[15]:
 
 
 kkiller_017921 = pd.read_csv("../input/m5-uncertainty-best-public-lbs/Kkiller_FromPointToUncertainty_017921.csv")
 
 
-# In[16]:
 
 
 get_ipython().run_cell_magic('time', '', '\nWSPL.score(kkiller_017921)')
 
 
-# In[ ]:
 
 
 
 
 
-# In[17]:
 
 
 ulrich_012565 = pd.read_csv("../input/m5-uncertainty-best-public-lbs/Ulrich_QuantileRegressionWithKeras_012565.csv")
 
 
-# In[18]:
 
 
 get_ipython().run_cell_magic('time', '', '\nWSPL.score(ulrich_012565)')
 
 
-# In[19]:
 
 
 krisztiansz_015905 = pd.read_csv("../input/m5-uncertainty-best-public-lbs/"+
                                  "KrisztianSz_PointToUncertaintyDifferentRangesPerLevel_015905.csv")
 
 
-# In[20]:
 
 
 get_ipython().run_cell_magic('time', '', '\nWSPL.score(krisztiansz_015905)')
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

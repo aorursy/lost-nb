@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -372,7 +371,6 @@ def model(MAX_CATEGORY, MAX_CATEGORY1, MAX_CATEGORY2, MAX_CATEGORY3, MAX_BRAND, 
     return model
 
 
-# In[2]:
 
 
 path = "../input/"
@@ -400,7 +398,6 @@ test_id["price"] = pred
 test_id.to_csv("ans.csv", index=False)
 
 
-# In[ ]:
 
 
 

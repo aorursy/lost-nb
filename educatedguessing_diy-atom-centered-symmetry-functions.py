@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 # import some stuff
@@ -33,13 +31,11 @@ import dscribe as ds
 from dscribe import descriptors
 
 
-# In[3]:
 
 
 structure = pd.read_csv('../input/champs-scalar-coupling/structures.csv')
 
 
-# In[4]:
 
 
 # using rcut, g2 and g4 params from Boris
@@ -59,7 +55,6 @@ g3_params = None
 g5_params = None
 
 
-# In[5]:
 
 
 # subselect structure
@@ -77,7 +72,6 @@ acsf = ds.descriptors.ACSF(
     )
 
 
-# In[6]:
 
 
 # create ase.Atoms from structure data
@@ -91,7 +85,6 @@ print(molecule_system.get_atomic_numbers())
 print(molecule_system.get_positions())
 
 
-# In[7]:
 
 
 # ok ready to create acsf features
@@ -99,7 +92,6 @@ acsf_features = acsf.create(molecule_system, n_jobs=1) # structure of return is 
 acsf_features[0]
 
 
-# In[8]:
 
 
 # some functions to help out
@@ -266,7 +258,6 @@ def calculate_acsf_single_molecule(df_molecule, acsf):
     return acsf.create(molecule_system, n_jobs=1)
 
 
-# In[9]:
 
 
 # calculate acsf features with Boris parameter
@@ -283,7 +274,6 @@ acsf_structure = calculate_symmetric_functions(structure.loc[structure.molecule_
 acsf_structure.head()
 
 
-# In[10]:
 
 
 # Boris has a better way of doing this, but I'm trying to keep it simple here
@@ -294,7 +284,6 @@ def fc(dist, rcut):
     return  0.5*(np.cos(np.pi * dist / rcut)+1)
 
 
-# In[11]:
 
 
 # my beloved molecule
@@ -326,13 +315,11 @@ for para in g2_params:
     print(f'g2 value is {g2_H}, using eta: {eta}, rs: {rs}')
 
 
-# In[12]:
 
 
 # Compare the values with the labes above - looks good to me
 
 
-# In[13]:
 
 
 # load full dataset
@@ -340,7 +327,6 @@ for para in g2_params:
 structure_acsf = pd.read_csv('../input/molecules-structure-acsf/structure_with_acsf.csv')
 
 
-# In[14]:
 
 
 # Let's compare feature number.
@@ -352,13 +338,11 @@ print(f"Boris announced ~ 250")
 print("Maybe he is using two sets of rcut (?)")
 
 
-# In[15]:
 
 
 structure_acsf.loc[structure_acsf.molecule_name == 'dsgdb9nsd_000001',:]
 
 
-# In[16]:
 
 
 # Let's check the numbers

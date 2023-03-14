@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 train_data = pd.read_csv('/kaggle/input/facial-keypoints-detection/training/training.csv')  
@@ -30,13 +28,11 @@ test_data = pd.read_csv('/kaggle/input/facial-keypoints-detection/test/test.csv'
 lookid_data = pd.read_csv('/kaggle/input/facial-keypoints-detection/IdLookupTable.csv')
 
 
-# In[3]:
 
 
 train_data.head().T
 
 
-# In[4]:
 
 
 import matplotlib.pyplot as plt
@@ -47,7 +43,6 @@ def show_img(image,loc,y_min,y_max):
     plt.show()
 
 
-# In[5]:
 
 
 def data_preprocess(train_data,is_test):
@@ -82,7 +77,6 @@ X_test=data_preprocess(test_data,is_test=True)
 show_img(X_train[1],y_train[1],y_min,y_max)
 
 
-# In[6]:
 
 
 import tensorflow as tf
@@ -256,7 +250,6 @@ def conv_net(input_,W,b,stride,k,dropout,is_training):
     return fc4
 
 
-# In[7]:
 
 
 def generate_batches(X_train,y_train,batch_size):
@@ -272,7 +265,6 @@ def generate_batches(X_train,y_train,batch_size):
            yield X_train[batch*batch_size:,:,:,:],                              y_train[batch*batch_size:,:]  
 
 
-# In[8]:
 
 
 # parameters
@@ -296,7 +288,6 @@ with train_graph.as_default():
      init=tf.global_variables_initializer()
 
 
-# In[9]:
 
 
 with train_graph.as_default():
@@ -346,7 +337,6 @@ with train_graph.as_default():
         save_path = saver.save(sess, "model_")        
 
 
-# In[10]:
 
 
 import matplotlib.pyplot as plt
@@ -368,7 +358,6 @@ plt.ylabel("log loss")
 plt.show()
 
 
-# In[11]:
 
 
 with train_graph.as_default():
@@ -383,7 +372,6 @@ with train_graph.as_default():
        pred=sess.run(logits, feed_dict=dict_)
 
 
-# In[12]:
 
 
 show_img(X_test[0],pred[0],y_min,y_max)
@@ -392,7 +380,6 @@ show_img(X_test[2],pred[2],y_min,y_max)
 show_img(X_test[3],pred[3],y_min,y_max)
 
 
-# In[13]:
 
 
 landmark_dict={}
@@ -402,7 +389,6 @@ for f in list(lookid_data['FeatureName']):
     landmark_dict.update({f:lookid_list.index(f)})
 
 
-# In[14]:
 
 
 ImageId = lookid_data["ImageId"]
@@ -430,7 +416,6 @@ print(submit.shape)
 submit.to_csv("submision1.csv",index=False) 
 
 
-# In[15]:
 
 
 from IPython.display import FileLink

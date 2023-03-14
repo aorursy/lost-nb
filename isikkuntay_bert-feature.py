@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 
 
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -29,7 +27,6 @@ import time
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 from keras import backend as K
@@ -37,7 +34,6 @@ from keras import initializers, regularizers, constraints, optimizers, layers
 from keras.engine.topology import Layer
 
 
-# In[3]:
 
 
 #downloading weights and cofiguration file for the model
@@ -47,7 +43,6 @@ with zipfile.ZipFile("uncased_L-12_H-768_A-12.zip","r") as zip_ref:
 get_ipython().system("ls 'uncased_L-12_H-768_A-12'")
 
 
-# In[4]:
 
 
 #!wget https://raw.githubusercontent.com/google-research/bert/master/modeling.py 
@@ -57,7 +52,6 @@ get_ipython().system('wget https://raw.githubusercontent.com/google-research/ber
 get_ipython().system('wget https://raw.githubusercontent.com/google-research/bert/master/tokenization.py')
 
 
-# In[5]:
 
 
 import modeling
@@ -66,7 +60,6 @@ import tokenization
 import tensorflow as tf
 
 
-# In[6]:
 
 
 get_ipython().system('wget https://raw.githubusercontent.com/google-research-datasets/gap-coreference/master/gap-development.tsv')
@@ -75,7 +68,6 @@ get_ipython().system('wget https://raw.githubusercontent.com/google-research-dat
 get_ipython().system('ls')
 
 
-# In[7]:
 
 
 def compute_offset_no_spaces(text, offset):
@@ -99,7 +91,6 @@ def count_length_no_special(text):
 	return count
 
 
-# In[8]:
 
 
 #Copying Simple NLP notebook over here:
@@ -554,13 +545,11 @@ if 1 == 1:
         return train_vector
 
 
-# In[9]:
 
 
 
 
 
-# In[9]:
 
 
 def run_bert(data):
@@ -663,7 +652,6 @@ def run_bert(data):
 	return emb
 
 
-# In[10]:
 
 
 print("Started at ", time.ctime())
@@ -682,7 +670,6 @@ development_emb.to_json("contextual_embeddings_gap_development.json", orient = '
 print("Finished at ", time.ctime())
 
 
-# In[11]:
 
 
 from keras import backend, models, layers, initializers, regularizers, constraints, optimizers
@@ -705,7 +692,6 @@ patience = 100
 lambd = 0.1 # L2 regularization
 
 
-# In[12]:
 
 
 class IsLayer(Layer):
@@ -735,7 +721,6 @@ class IsLayer(Layer):
         return (input_shape[0], input_shape[-1])
 
 
-# In[13]:
 
 
 def build_mlp_model(input_shape, num_output):
@@ -763,7 +748,6 @@ def build_mlp_model(input_shape, num_output):
 	return model
 
 
-# In[14]:
 
 
 def parse_json(embeddings):
@@ -816,7 +800,6 @@ def parse_json(embeddings):
 	return X, Y
 
 
-# In[15]:
 
 
 # Read development embeddigns from json file - this is the output of Bert
@@ -830,7 +813,6 @@ test = pd.read_json("contextual_embeddings_gap_test.json")
 X_test, Y_test = parse_json(test)
 
 
-# In[16]:
 
 
 # There may be a few NaN values, where the offset of a target word is greater than the max_seq_length of BERT.
@@ -848,7 +830,6 @@ remove_development = [row for row in range(len(X_development)) if np.sum(np.isna
 X_development[remove_development] = np.zeros(2*768+19)
 
 
-# In[17]:
 
 
 # Will train on data from the gap-test and gap-validation files, in total 2454 rows
@@ -861,7 +842,6 @@ X_development[remove_development] = np.zeros(2*768+19)
 val_prediction = np.zeros((len(X_validation),1)) # valid predictions
 
 
-# In[18]:
 
 
 # Training and cross-validation
@@ -895,7 +875,6 @@ print(scores)
 print("Test score:", log_loss(Y_validation,val_prediction))
 
 
-# In[19]:
 
 
 def build_neither_mlp(input_shape, num_output):
@@ -916,7 +895,6 @@ def build_neither_mlp(input_shape, num_output):
 	return model
 
 
-# In[20]:
 
 
 X_val_A = val_prediction[: int(len(val_prediction)/2)]
@@ -928,7 +906,6 @@ Y_val_B = Y_validation[int(len(Y_validation)/2) :]
 Y_train_neither = 1 - Y_val_A - Y_val_B
 
 
-# In[21]:
 
 
 print(X_val_A.shape)
@@ -939,7 +916,6 @@ print(Y_val_B.shape)
 print(Y_train_neither.shape)
 
 
-# In[22]:
 
 
 neither_model = build_neither_mlp([X_train_neither.shape[1]],1)
@@ -949,7 +925,6 @@ neither_model.fit(X_train_neither, y = Y_train_neither, epochs = epochs, batch_s
 dev_prediction = classif_model.predict(x = X_development, verbose = 0)
 
 
-# In[23]:
 
 
 X_dev_A = dev_prediction[: int(len(dev_prediction)/2)]
@@ -957,13 +932,11 @@ X_dev_B = dev_prediction[int(len(dev_prediction)/2) :]
 X_dev_neither = np.concatenate((X_dev_A, X_dev_B), axis=1)
 
 
-# In[24]:
 
 
 dev_neither = neither_model.predict(x = X_dev_neither, verbose = 0)
 
 
-# In[25]:
 
 
 # Write the prediction to file for submission

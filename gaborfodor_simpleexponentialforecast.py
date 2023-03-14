@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -17,7 +16,6 @@ from tqdm import tqdm
 import datetime as dt
 
 
-# In[2]:
 
 
 import matplotlib.pyplot as plt
@@ -27,25 +25,21 @@ import seaborn as sns
 sns.set_palette(sns.color_palette('tab20', 20))
 
 
-# In[3]:
 
 
 DATEFORMAT = '%Y-%m-%d'
 
 
-# In[4]:
 
 
 get_ipython().system('ls ../input')
 
 
-# In[5]:
 
 
 COMP = 'covid19-global-forecasting-week-1'
 
 
-# In[6]:
 
 
 train = pd.read_csv(f'../input/{COMP}/train.csv')
@@ -54,7 +48,6 @@ submission = pd.read_csv(f'../input/{COMP}/submission.csv')
 train.shape, test.shape, submission.shape
 
 
-# In[7]:
 
 
 train.head()
@@ -62,14 +55,12 @@ submission.head()
 test.head()
 
 
-# In[8]:
 
 
 set(test['Country/Region']) - set(train['Country/Region'])
 set(test['Country/Region']) - set(train['Country/Region'])
 
 
-# In[9]:
 
 
 def to_log(x):
@@ -79,14 +70,12 @@ def to_exp(x):
     return np.exp(x) - 1
 
 
-# In[10]:
 
 
 np.arange(10)
 to_exp(to_log(np.arange(10)))
 
 
-# In[11]:
 
 
 train['Location'] = train['Country/Region'] + '-' + train['Province/State'].fillna('')
@@ -101,19 +90,16 @@ train = train.drop(columns=['Province/State', 'Country/Region', 'Lat', 'Long'])
 test = test.drop(columns=['Province/State', 'Country/Region', 'Lat', 'Long'])
 
 
-# In[12]:
 
 
 train.tail()
 
 
-# In[13]:
 
 
 set(test['Location']) - set(train['Location'])
 
 
-# In[14]:
 
 
 dfs = []
@@ -130,14 +116,12 @@ for loc, df in tqdm(train.groupby('Location')):
 dfs = pd.concat(dfs)
 
 
-# In[15]:
 
 
 dfs.shape
 dfs.tail()
 
 
-# In[16]:
 
 
 deltas = dfs[np.logical_and(
@@ -159,14 +143,12 @@ confirmed_deltas
 confirmed_deltas.to_csv('confirmed_deltas.csv')
 
 
-# In[17]:
 
 
 plt.scatter(confirmed_deltas.index, confirmed_deltas.avg, s=confirmed_deltas.cnt)
 plt.grid()
 
 
-# In[18]:
 
 
 daily_confirmed_deltas = pd.concat([
@@ -184,7 +166,6 @@ plt.grid()
 plt.show();
 
 
-# In[19]:
 
 
 deltas = dfs[np.logical_and(
@@ -206,20 +187,17 @@ confirmed_deltas.sort_values(by='avg').tail(10)
 confirmed_deltas.to_csv('confirmed_deltas.csv')
 
 
-# In[ ]:
 
 
 
 
 
-# In[20]:
 
 
 DECAY = 0.93
 DECAY ** 14, DECAY ** 27
 
 
-# In[21]:
 
 
 confirmed_deltas = train.groupby('Location')[['Id']].count()
@@ -241,7 +219,6 @@ confirmed_deltas.loc[confirmed_deltas.index.str.endswith('Princess'), 'DELTA'] =
 confirmed_deltas
 
 
-# In[22]:
 
 
 daily_log_confirmed = dfs.pivot('Location', 'Date', 'LogConfirmed').reset_index()
@@ -258,13 +235,11 @@ for i, d in tqdm(enumerate(pd.date_range('2020-03-25', '2020-04-24'))):
         daily_log_confirmed.loc[daily_log_confirmed.Location == loc, new_day] = daily_log_confirmed.loc[daily_log_confirmed.Location == loc, last_day] +             confirmed_delta * DECAY ** i
 
 
-# In[23]:
 
 
 daily_log_confirmed.head(30)
 
 
-# In[24]:
 
 
 confirmed_deltas = train.groupby('Location')[['Id']].count()
@@ -287,7 +262,6 @@ confirmed_deltas
 confirmed_deltas.describe()
 
 
-# In[25]:
 
 
 daily_log_confirmed[:25].set_index('Location').T.plot()
@@ -295,7 +269,6 @@ plt.grid()
 plt.show();
 
 
-# In[26]:
 
 
 death_deltas = dfs[np.logical_and(
@@ -304,13 +277,11 @@ death_deltas = dfs[np.logical_and(
 )].dropna().sort_values(by='LogFatalitiesDelta', ascending=False)
 
 
-# In[27]:
 
 
 death_deltas
 
 
-# In[28]:
 
 
 daily_confirmed_death_deltas = pd.concat([
@@ -328,7 +299,6 @@ plt.grid()
 plt.show();
 
 
-# In[29]:
 
 
 loc_confirmed_death_deltas = pd.concat([
@@ -345,7 +315,6 @@ loc_confirmed_death_deltas.sort_values(by='avg').tail(10)
 loc_confirmed_death_deltas.to_csv('loc_confirmed_death_deltas.csv')
 
 
-# In[30]:
 
 
 death_deltas = train.groupby('Location')[['Id']].count()
@@ -368,13 +337,11 @@ death_deltas.loc[death_deltas.index.str.endswith('Princess'), 'DELTA'] = 0.01
 death_deltas
 
 
-# In[31]:
 
 
 death_deltas.describe()
 
 
-# In[32]:
 
 
 daily_log_deaths = dfs.pivot('Location', 'Date', 'LogFatalities').reset_index()
@@ -390,7 +357,6 @@ for i, d in tqdm(enumerate(pd.date_range('2020-03-25', '2020-04-24'))):
         daily_log_deaths.loc[daily_log_deaths.Location == loc, new_day] = daily_log_deaths.loc[daily_log_deaths.Location == loc, last_day] +             death_delta * DECAY ** i
 
 
-# In[33]:
 
 
 daily_log_deaths[:25].set_index('Location').T.plot()
@@ -398,13 +364,11 @@ plt.grid()
 plt.show();
 
 
-# In[34]:
 
 
 submission.head()
 
 
-# In[35]:
 
 
 confirmed = []
@@ -417,13 +381,11 @@ for id, d, loc in tqdm(test.values):
     fatalities.append(f)
 
 
-# In[36]:
 
 
 test
 
 
-# In[37]:
 
 
 my_submission = test.copy()
@@ -433,31 +395,26 @@ my_submission.head()
 my_submission.shape
 
 
-# In[38]:
 
 
 my_submission.groupby('Date').sum().tail()
 
 
-# In[39]:
 
 
 my_submission.groupby('Date').sum().plot()
 
 
-# In[40]:
 
 
 plt.semilogy(my_submission.groupby('Date').sum()['ConfirmedCases'].values)
 
 
-# In[41]:
 
 
 plt.semilogy(my_submission.groupby('Date').sum()['Fatalities'].values)
 
 
-# In[42]:
 
 
 my_submission[[
@@ -469,7 +426,6 @@ my_submission.tail()
 my_submission.shape
 
 
-# In[ ]:
 
 
 

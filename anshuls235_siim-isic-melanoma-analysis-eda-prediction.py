@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -28,21 +27,18 @@ import keras.backend as K
 from lightgbm import LGBMClassifier
 
 
-# In[2]:
 
 
 df_train = pd.read_csv('/kaggle/input/siim-isic-melanoma-classification/train.csv')
 df_test = pd.read_csv('/kaggle/input/siim-isic-melanoma-classification/test.csv')
 
 
-# In[3]:
 
 
 display(df_train.info())
 display(df_test.info())
 
 
-# In[4]:
 
 
 print('No of patients in train set(A): {}'.format(len(df_train.patient_id.unique().tolist())))
@@ -56,14 +52,12 @@ print('No of images that are in train set but not test set(C-D): {}'.format(len(
 print('No of images that are in test set but not train set(D-C): {}'.format(len(set(df_test.image_name.unique()) - set(df_train.image_name.unique()))))
 
 
-# In[5]:
 
 
 PAPER_BGCOLOR = '#FFFFFF'
 PLOT_BGCOLOR = '#FFFFFF'
 
 
-# In[6]:
 
 
 group_age_train = df_train.groupby('age_approx')['patient_id','image_name'].nunique()
@@ -93,7 +87,6 @@ fig.update_layout(width=700,paper_bgcolor=PAPER_BGCOLOR,plot_bgcolor=PLOT_BGCOLO
 fig.show()
 
 
-# In[7]:
 
 
 group_sex_train = df_train.groupby('sex')['patient_id','image_name'].nunique()
@@ -123,7 +116,6 @@ fig.update_layout(width=700,height=300,paper_bgcolor=PAPER_BGCOLOR,plot_bgcolor=
 fig.show()
 
 
-# In[8]:
 
 
 group_site_train = df_train.groupby('anatom_site_general_challenge')['patient_id','image_name'].nunique().sort_values(['patient_id','image_name'])
@@ -153,7 +145,6 @@ fig.update_layout(width=700,height=400,paper_bgcolor=PAPER_BGCOLOR,plot_bgcolor=
 fig.show()
 
 
-# In[9]:
 
 
 #Paths to train and test images
@@ -161,7 +152,6 @@ train_img_path = '/kaggle/input/siim-isic-melanoma-classification/jpeg/train/'
 test_img_path = '/kaggle/input/siim-isic-melanoma-classification/jpeg/test/'
 
 
-# In[10]:
 
 
 def get_image(img_name,is_train=True,transform=False):
@@ -178,7 +168,6 @@ def get_image(img_name,is_train=True,transform=False):
     return img
 
 
-# In[11]:
 
 
 def show_data(df,rows,cols,is_train=True,transform=False):
@@ -199,28 +188,24 @@ def show_data(df,rows,cols,is_train=True,transform=False):
     return fig
 
 
-# In[12]:
 
 
 fig = show_data(df_train[df_train['benign_malignant']=='benign'].iloc[:20,:],4,5)
 fig.tight_layout()
 
 
-# In[13]:
 
 
 fig = show_data(df_train[df_train['benign_malignant']=='malignant'].iloc[:20,:],4,5)
 fig.tight_layout()
 
 
-# In[14]:
 
 
 fig = show_data(df_test.iloc[:20,:],4,5,is_train=False)
 fig.tight_layout()
 
 
-# In[15]:
 
 
 fig = make_subplots(rows=1,cols=3,shared_yaxes=True, horizontal_spacing=0.03,
@@ -252,7 +237,6 @@ fig.update_layout(width=700,height=400,paper_bgcolor=PAPER_BGCOLOR,plot_bgcolor=
 fig.show()
 
 
-# In[16]:
 
 
 fig = make_subplots(rows=1,cols=2,shared_yaxes=True, horizontal_spacing=0.03,
@@ -279,7 +263,6 @@ fig.update_layout(width=700,height=300,paper_bgcolor=PAPER_BGCOLOR,plot_bgcolor=
 fig.show()
 
 
-# In[17]:
 
 
 del group
@@ -293,7 +276,6 @@ del group_site_train
 gc.collect();
 
 
-# In[18]:
 
 
 #Size to resize(256,256,3)
@@ -325,28 +307,24 @@ def load_image(path, img_id):
     return new_img
 
 
-# In[19]:
 
 
 fig = show_data(df_train[df_train['benign_malignant']=='benign'].iloc[:20,:],4,5,transform=True)
 fig.tight_layout()
 
 
-# In[20]:
 
 
 fig = show_data(df_train[df_train['benign_malignant']=='malignant'].iloc[:20,:],4,5,transform=True)
 fig.tight_layout()
 
 
-# In[21]:
 
 
 fig = show_data(df_test.iloc[:20,:],4,5,is_train=False,transform=True)
 fig.tight_layout()
 
 
-# In[22]:
 
 
 # img_size = 256
@@ -367,7 +345,6 @@ fig.tight_layout()
 # m = Model(inp,out)
 
 
-# In[23]:
 
 
 # features = {}
@@ -386,7 +363,6 @@ fig.tight_layout()
 #         features[img_id] = batch_preds[i]
 
 
-# In[24]:
 
 
 # train_feats = pd.DataFrame.from_dict(features, orient='index')
@@ -395,14 +371,12 @@ fig.tight_layout()
 # train_feats.head()
 
 
-# In[25]:
 
 
 # test_img_ids = df_test.image_name.values
 # n_batches = len(test_img_ids)//batch_size + 1
 
 
-# In[26]:
 
 
 # features = {}
@@ -421,7 +395,6 @@ fig.tight_layout()
 #         features[img_id] = batch_preds[i]
 
 
-# In[27]:
 
 
 # test_feats = pd.DataFrame.from_dict(features, orient='index')
@@ -429,7 +402,6 @@ fig.tight_layout()
 # test_feats.head()
 
 
-# In[28]:
 
 
 train_feats = pd.read_csv('/kaggle/input/siimisic-extracted-features-from-256x256-image/train_img_features (1).csv')
@@ -438,7 +410,6 @@ train_feats.set_index(train_feats.columns[0],inplace=True)
 test_feats.set_index(test_feats.columns[0],inplace=True)
 
 
-# In[29]:
 
 
 #Combine the image and tabular data
@@ -462,7 +433,6 @@ train.anatom_site_general_challenge = le_site.fit_transform(train.anatom_site_ge
 test.anatom_site_general_challenge = le_site.transform(test.anatom_site_general_challenge)
 
 
-# In[30]:
 
 
 folds = StratifiedKFold(n_splits= 10, shuffle=True)
@@ -499,7 +469,6 @@ for n_fold, (train_idx, valid_idx) in enumerate(folds.split(train[features], tra
     gc.collect()
 
 
-# In[31]:
 
 
 def display_importances(feature_importance_df_):
@@ -514,7 +483,6 @@ def display_importances(feature_importance_df_):
 display_importances(feature_importance_df)
 
 
-# In[32]:
 
 
 submission = pd.DataFrame({

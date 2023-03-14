@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Data manipulation
@@ -59,7 +58,6 @@ scorer = make_scorer(f1_score, greater_is_better=True, average = 'macro')
 from imblearn.over_sampling import SMOTE
 
 
-# In[2]:
 
 
 #Le path vers les fichiers de données en local
@@ -70,13 +68,11 @@ from imblearn.over_sampling import SMOTE
 #filepath_submission = '/Users/moi/Documents/CoursDauphine/Module3/supervised/costa-rican-household-poverty-prediction/sample_submission.csv' 
 
 
-# In[ ]:
 
 
 
 
 
-# In[3]:
 
 
 #df_train = pd.read_csv(filepath_train, sep=',', decimal='.')
@@ -84,7 +80,6 @@ from imblearn.over_sampling import SMOTE
 #df_submit = pd.read_csv(filepath_submission, sep=',', decimal='.')
 
 
-# In[4]:
 
 
 df_train = pd.read_csv('../input/train.csv', sep=',', decimal='.')
@@ -92,49 +87,41 @@ df_test = pd.read_csv('../input/test.csv', sep=',', decimal='.')
 df_submit = pd.read_csv('../input/sample_submission.csv', sep=',', decimal='.')
 
 
-# In[5]:
 
 
 df_train.shape
 
 
-# In[6]:
 
 
 df_test.shape
 
 
-# In[7]:
 
 
 df_submit.shape
 
 
-# In[8]:
 
 
 df_train.head()
 
 
-# In[9]:
 
 
 df_test.head()
 
 
-# In[10]:
 
 
 df_train.info()
 
 
-# In[11]:
 
 
 df_test.info()
 
 
-# In[12]:
 
 
 df_train.select_dtypes(include=['int64']).nunique().value_counts().sort_index().plot.bar(color = 'blue', figsize = (8,6), edgecolor ='k', linewidth = 2)
@@ -143,7 +130,6 @@ plt.xlabel('Nombre de valeurs uniques prise par la variables'); plt.ylabel('Nomb
 plt.title('Nombre de colonnes de type Integer avec ces valeurs uniques');
 
 
-# In[13]:
 
 
 from collections import OrderedDict
@@ -170,19 +156,16 @@ for i,col in enumerate(df_train.select_dtypes(include=['float64'])):
 plt.subplots_adjust(top = 2)
 
 
-# In[ ]:
 
 
 
 
 
-# In[14]:
 
 
 df_train.select_dtypes(include = ['object']).head()
 
 
-# In[15]:
 
 
 # Merge des deux dataframe train et test et ajout de la colonne Target aux données de test
@@ -190,25 +173,21 @@ df_test['Target'] = np.nan
 data = df_train.append(df_test, ignore_index = True)
 
 
-# In[16]:
 
 
 data.shape
 
 
-# In[17]:
 
 
 data['Target'].isnull().sum()
 
 
-# In[ ]:
 
 
 
 
 
-# In[18]:
 
 
 map_dict = {'yes':1,'no':0}
@@ -218,13 +197,11 @@ data["edjefe"] = data["edjefe"].replace(map_dict).astype('float64')
 data["edjefa"] = data["edjefa"].replace(map_dict).astype('float64')
 
 
-# In[ ]:
 
 
 
 
 
-# In[19]:
 
 
 data["dependency"] = data["dependency"].astype('float64')
@@ -232,13 +209,11 @@ data["edjefe"] = data["edjefe"].astype('float64')
 data["edjefa"] = data["edjefa"].astype('float64')
 
 
-# In[20]:
 
 
 data[data["Target"].notnull()].groupby("idhogar")["Target"].nunique().value_counts()
 
 
-# In[21]:
 
 
 # Liste des individus concernés
@@ -247,25 +222,21 @@ data_multi_target = data[data["Target"].notnull()].groupby("idhogar")["Target"].
 data_multi_target = data_multi_target[data_multi_target != True]
 
 
-# In[22]:
 
 
 data_multi_target.shape
 
 
-# In[23]:
 
 
 data_multi_target.index[1]
 
 
-# In[24]:
 
 
 data[data["idhogar"] == data_multi_target.index[0]][['idhogar', 'parentesco1', 'Target']]
 
 
-# In[25]:
 
 
 for id in data_multi_target.index:
@@ -273,13 +244,11 @@ for id in data_multi_target.index:
     data.loc[data['idhogar'] == id, "Target"]  = np.where(True_label.notnull(), True_label, data.loc[data['idhogar'] == id, "Target"])
 
 
-# In[26]:
 
 
 data['Target'].isnull().sum()
 
 
-# In[27]:
 
 
 # Number of missing in each column
@@ -291,7 +260,6 @@ missing['percent'] = missing['total'] / len(data)
 missing.sort_values('percent', ascending = False).head(10).drop('Target')
 
 
-# In[28]:
 
 
 # Distribution des nombres de tablettes dans le foyer
@@ -299,45 +267,38 @@ data[data['parentesco1'] == 1]['v18q1'].value_counts().sort_index().plot.bar( fi
 # Formatting
 
 
-# In[29]:
 
 
 data[data['parentesco1'] == 1]['v18q1'].value_counts()
 
 
-# In[30]:
 
 
 # Répartition de la variable de type individu par rapport à la variable de type foyer
 data[data['parentesco1'] == 1].groupby('v18q1')['v18q'].sum()
 
 
-# In[31]:
 
 
 data['v18q1'] = data['v18q1'].fillna(0)
 
 
-# In[32]:
 
 
 tipovivi = data.columns.str.startswith('tipovivi')
 
 
-# In[33]:
 
 
 col = ["v2a1","tipovivi1","tipovivi2","tipovivi3","tipovivi4","tipovivi5"]
 data.loc[(data["v2a1"].isnull() ) & (data["parentesco1"] ==1),col].sum().plot.bar()
 
 
-# In[34]:
 
 
 data.loc[(data['tipovivi1'] == 1 & data['v2a1'].isnull() ), 'v2a1'] = 0
 
 
-# In[35]:
 
 
 # Pour les autres valeurs manquantes et vu le manque d'informations, on propose d'imputer par la médiane (Voir partie modèle)
@@ -345,21 +306,18 @@ data.loc[(data['tipovivi1'] == 1 & data['v2a1'].isnull() ), 'v2a1'] = 0
 data.loc[data['v2a1'].isnull(), 'v2a1'] = 0
 
 
-# In[36]:
 
 
 # On vérifie s'il n y a pas des incohérences entre l'âge et cette variable.
 data[data['rez_esc'].notnull()]['age'].describe()
 
 
-# In[37]:
 
 
 # Imputation des observation ayant un âge en dehors de l'intervalle 7 à 19 ans
 data.loc[((data['age'] > 19) | (data['age'] < 7)) & (data['rez_esc'].isnull()) ,'rez_esc'] = 0
 
 
-# In[38]:
 
 
 # La valeur ma maximale prise par cette variable est 5. Or certaines obsevations ont des valeurs supérieurs.
@@ -367,7 +325,6 @@ data.loc[((data['age'] > 19) | (data['age'] < 7)) & (data['rez_esc'].isnull()) ,
 data['rez_esc'].unique()
 
 
-# In[39]:
 
 
 # On va donc remplacer toute valeur supérieur à 5 par le max
@@ -375,94 +332,79 @@ data['rez_esc'].unique()
 data.loc[data['rez_esc'] > 5, 'rez_esc']  = 5
 
 
-# In[40]:
 
 
 # Pour les autres valeurs observations et vu le manque d'informations, on propose d'imputer par la médiane (Voir partie modèle)
 data.loc[data['rez_esc'].isnull(),'rez_esc' ] = 0
 
 
-# In[ ]:
 
 
 
 
 
-# In[41]:
 
 
 # Au vu du nombre d'observations concernées, on impute avec 0
 data.loc[data['meaneduc'].isnull(),'meaneduc' ] = 0
 
 
-# In[42]:
 
 
 # Pour être cohérent avec l'imputation ci-dessus, on impute avec 0
 data.loc[data['SQBmeaned'].isnull(), 'SQBmeaned'] = 0
 
 
-# In[ ]:
 
 
 
 
 
-# In[43]:
 
 
 data.isnull().sum()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[44]:
 
 
 head = df_train.loc[(data["parentesco1"] ==1) & (data["Target"].notnull())].copy()
 
 
-# In[45]:
 
 
 distrib_target = head['Target'].value_counts().reset_index().rename(columns = {'index' : 'level' })
 
 
-# In[46]:
 
 
 distrib_target['Household_type'] = distrib_target['level'].map(poverty_mapping)
 
 
-# In[47]:
 
 
 distrib_target.head()
 
 
-# In[48]:
 
 
 sns.set(style = 'whitegrid', font_scale=1.4)
@@ -470,14 +412,12 @@ fig = plt.subplots(figsize=(15, 8))
 ax = sns.barplot(x = 'Household_type', y = 'Target', data = distrib_target, palette='Accent', ci = None).set_title('Distribution de la pauvereté')
 
 
-# In[49]:
 
 
 ids = ['Id', 'idhogar']
 target = ['Target']
 
 
-# In[50]:
 
 
 ind_bool = ['v18q', 'dis', 'male', 'female', 'estadocivil1', 'estadocivil2', 'estadocivil3', 
@@ -491,7 +431,6 @@ ind_bool = ['v18q', 'dis', 'male', 'female', 'estadocivil1', 'estadocivil2', 'es
 ind_ordered = ['rez_esc', 'escolari', 'age']
 
 
-# In[51]:
 
 
 hh_bool = ['hacdor', 'hacapo', 'v14a', 'refrig', 'paredblolad', 'paredzocalo', 
@@ -519,32 +458,27 @@ hh_cont = ['v2a1', 'dependency', 'edjefe', 'edjefa', 'meaneduc', 'overcrowding']
            
 
 
-# In[52]:
 
 
 sqr_ = ['SQBescolari', 'SQBage', 'SQBhogar_total', 'SQBedjefe', 
         'SQBhogar_nin', 'SQBovercrowding', 'SQBdependency', 'SQBmeaned', 'agesq']
 
 
-# In[53]:
 
 
 head = data.loc[(data["parentesco1"] ==1), ids + hh_bool + hh_ordered + hh_cont + target].copy()
 
 
-# In[54]:
 
 
 head.head()
 
 
-# In[55]:
 
 
 head.shape
 
 
-# In[56]:
 
 
 # Matrice de corrélation
@@ -559,14 +493,12 @@ to_drop = [column for column in upper.columns if any(abs(upper[column]) > 0.95)]
 to_drop
 
 
-# In[57]:
 
 
 sns.heatmap(corr_matrix.loc[corr_matrix['tamhog'].abs() > 0.95, corr_matrix['tamhog'].abs() > 0.95],
             annot=True, cmap = plt.cm.autumn_r, fmt='.3f');
 
 
-# In[58]:
 
 
 """
@@ -576,28 +508,24 @@ Nous allons en garder seulement une variable : hhsize.
 head.drop(labels = ['tamhog', 'hogar_total', 'r4t3'], axis = 1, inplace = True)
 
 
-# In[59]:
 
 
 sns.heatmap(corr_matrix.loc[corr_matrix['coopele'].abs() > 0.95, corr_matrix['coopele'].abs() > 0.95],
             annot=True, cmap = plt.cm.autumn_r, fmt='.3f');
 
 
-# In[60]:
 
 
 sns.heatmap(corr_matrix.loc[corr_matrix['area2'].abs() > 0.95, corr_matrix['area2'].abs() > 0.95],
             annot=True, cmap = plt.cm.autumn_r, fmt='.3f');
 
 
-# In[61]:
 
 
 # La variable area1 est très corrélées avec la variable area2
 head.drop(labels = 'area2', axis = 1, inplace = True)
 
 
-# In[62]:
 
 
 # Etat des murs
@@ -605,7 +533,6 @@ head['epared_argmax'] = np.argmax(np.array(head[['epared1', 'epared2', 'epared3'
                            axis = 1)
 
 
-# In[63]:
 
 
 # Etat du toit
@@ -613,7 +540,6 @@ head['etecho_argmax'] = np.argmax(np.array(head[['etecho1', 'etecho2', 'etecho3'
                            axis = 1)
 
 
-# In[64]:
 
 
 # Etat du sol
@@ -621,7 +547,6 @@ head['eviv_argmax'] = np.argmax(np.array(head[['eviv1', 'eviv2', 'eviv3']]),
                            axis = 1)
 
 
-# In[65]:
 
 
 # Disponibilité de l'eau inside/outside/no water
@@ -629,7 +554,6 @@ head['abastagua_argmax'] = np.argmax(np.array(head[[ 'abastaguano',  'abastaguaf
                            axis = 1)
 
 
-# In[66]:
 
 
 # Connexion à un réseau élctriqueno elec/coopérative/public/privé
@@ -637,7 +561,6 @@ head['elec_argmax'] = np.argmax(np.array(head[['noelec','coopele', 'public', 'pl
                            axis = 1)
 
 
-# In[67]:
 
 
 # Propriétaire maison
@@ -645,19 +568,16 @@ head['tipovivi_argmax'] = np.argmax(np.array(head[['tipovivi5','tipovivi4', 'tip
                            axis = 1)
 
 
-# In[68]:
 
 
 head['electro_house'] = head['refrig'] + head['computer'] + head['television'] 
 
 
-# In[69]:
 
 
 head['diff_tamviv_hhsize'] = head['tamviv'] - head['hhsize']
 
 
-# In[70]:
 
 
 # Variables utilisées dans la création de nouvelles variables
@@ -671,13 +591,11 @@ head.drop(labels = [ 'epared1', 'epared2', 'epared3','etecho1', 'etecho2', 'etec
                  , axis = 1, inplace = True)
 
 
-# In[71]:
 
 
 head.head()
 
 
-# In[72]:
 
 
 # On ajoute les deux variables tamviv et hhsize pour calculer des moyennes par foyer
@@ -685,7 +603,6 @@ indiv = data[ids + ind_bool+ ind_ordered + target +['tamviv','hhsize']].copy()
 indiv.shape
 
 
-# In[73]:
 
 
 # Matrice de corrélation
@@ -700,40 +617,34 @@ to_drop = [column for column in upper.columns if any(abs(upper[column]) > 0.95)]
 to_drop
 
 
-# In[74]:
 
 
 sns.heatmap(corr_matrix.loc[corr_matrix['female'].abs() > 0.95, corr_matrix['female'].abs() > 0.95],
             annot=True, cmap = plt.cm.autumn_r, fmt='.3f');
 
 
-# In[75]:
 
 
 # La variable female est très corrélée avec male
 indiv.drop(labels = 'male', axis = 1, inplace = True)
 
 
-# In[76]:
 
 
 indiv['instlevel_argmax'] = np.argmax(np.array(indiv[['instlevel1', 'instlevel2','instlevel3','instlevel4','instlevel5','instlevel6','instlevel7','instlevel8','instlevel9']]),
                            axis = 1)
 
 
-# In[77]:
 
 
 indiv['indiv_digital'] = indiv['mobilephone'] + indiv['v18q']
 
 
-# In[78]:
 
 
 indiv.head()
 
 
-# In[79]:
 
 
 # Variables utilisées dans la création de nouvelles variables
@@ -744,7 +655,6 @@ indiv.drop(labels = ['instlevel1', 'instlevel2','instlevel3','instlevel4','instl
                  , axis = 1, inplace = True)
 
 
-# In[80]:
 
 
 indiv_pivot = pd.pivot_table(indiv,index=["idhogar"],
@@ -774,26 +684,22 @@ indiv_pivot = pd.pivot_table(indiv,index=["idhogar"],
                 fill_value=0)
 
 
-# In[81]:
 
 
 indiv_toframe = pd.DataFrame(indiv_pivot.to_records())
 
 
-# In[82]:
 
 
 indiv_toframe.columns
 
 
-# In[83]:
 
 
 # Renommage des colonnes
 indiv_toframe.columns = [hdr.replace("('", "").replace("', '", "_").replace("')", "")                      for hdr in indiv_toframe.columns]
 
 
-# In[84]:
 
 
 # Age moyen par foyer
@@ -802,7 +708,6 @@ indiv_toframe['mean_age_hhsize'] = indiv_toframe['age_sum'] / indiv_toframe['hhs
 indiv_toframe['mean_age_tamviv'] = indiv_toframe['age_sum'] / indiv_toframe['tamviv_amax']
 
 
-# In[85]:
 
 
 # Nbre d'années d'éducation moyen par foyer
@@ -811,7 +716,6 @@ indiv_toframe['mean_escolari_hhsize'] = indiv_toframe['escolari_sum'] / indiv_to
 indiv_toframe['mean_escolari_tamviv'] = indiv_toframe['escolari_sum'] / indiv_toframe['tamviv_amax']
 
 
-# In[86]:
 
 
 # Nbre d'années d'éducation moyen par foyer
@@ -820,7 +724,6 @@ indiv_toframe['mean_rez_esc_hhsize'] = indiv_toframe['rez_esc_sum'] / indiv_tofr
 indiv_toframe['mean_rez_esc_tamviv'] = indiv_toframe['rez_esc_sum'] / indiv_toframe['tamviv_amax']
 
 
-# In[87]:
 
 
 # Nbre moyen de femmes par foyer
@@ -829,7 +732,6 @@ indiv_toframe['mean_female_hhsize'] = indiv_toframe['female_sum'] / indiv_tofram
 indiv_toframe['mean_female_tamviv'] = indiv_toframe['female_sum'] / indiv_toframe['tamviv_amax']
 
 
-# In[88]:
 
 
 # Nbre moyen de personnes handicapée par foyer
@@ -838,44 +740,37 @@ indiv_toframe['mean_dis_hhsize'] = indiv_toframe['dis_sum'] / indiv_toframe['hhs
 indiv_toframe['mean_dis_tamviv'] = indiv_toframe['dis_sum'] / indiv_toframe['tamviv_amax']
 
 
-# In[89]:
 
 
 indiv_toframe.head()
 
 
-# In[90]:
 
 
 head_agg = head.merge(indiv_toframe, on = 'idhogar',
                              how = 'left')
 
 
-# In[91]:
 
 
 head_agg.head()
 
 
-# In[92]:
 
 
 head_agg[head_agg['Target'].notnull()].shape
 
 
-# In[93]:
 
 
 head_agg[head_agg['Target'].isnull()].shape
 
 
-# In[ ]:
 
 
 
 
 
-# In[94]:
 
 
 # Labels for training
@@ -889,56 +784,47 @@ test_set = head_agg[head_agg['Target'].isnull()].drop(labels = ['Id', 'idhogar',
 submission_base = df_test[['Id', 'idhogar']].copy()
 
 
-# In[95]:
 
 
 sm = SMOTE(random_state = 33)
 
 
-# In[96]:
 
 
 train_set_balanced, train_labels_balanced = sm.fit_sample(train_set, train_labels)
 
 
-# In[97]:
 
 
 train_set.shape
 train_set_balanced.shape
 
 
-# In[98]:
 
 
 train_labels_balanced.shape
 
 
-# In[99]:
 
 
 train_labels.shape
 
 
-# In[100]:
 
 
 test_set.shape
 
 
-# In[101]:
 
 
 submission_base.shape
 
 
-# In[102]:
 
 
 features = list(train_set.columns)
 # Imputation avec la médiane
 
-pipeline = Pipeline([('imputer', Imputer(strategy = 'median')), 
                       ('scaler', MinMaxScaler())])
 
 # Fit and transform training data
@@ -946,14 +832,12 @@ train_set = pipeline.fit_transform(train_set)
 test_set = pipeline.transform(test_set)
 
 
-# In[103]:
 
 
 # Fit and transform training balanced data
 train_set_balanced = pipeline.fit_transform(train_set_balanced)
 
 
-# In[104]:
 
 
 model_no_smote = RandomForestClassifier(n_estimators=100, random_state=10, 
@@ -964,7 +848,6 @@ cv_score_no_smote = cross_val_score(model_no_smote, train_set, train_labels, cv 
 print(f'10 Fold Cross Validation F1 Score = {round(cv_score_no_smote.mean(), 4)} with std = {round(cv_score_no_smote.std(), 4)}')
 
 
-# In[105]:
 
 
 model_smote = RandomForestClassifier(n_estimators=100, random_state=10, 
@@ -975,13 +858,11 @@ cv_score_smote = cross_val_score(model_smote, train_set_balanced, train_labels_b
 print(f'10 Fold Cross Validation F1 Score = {round(cv_score_smote.mean(), 4)} with std = {round(cv_score_smote.std(), 4)}')
 
 
-# In[ ]:
 
 
 
 
 
-# In[106]:
 
 
 model_no_smote.fit(train_set, train_labels)
@@ -991,7 +872,6 @@ feature_importances_no_smote = pd.DataFrame({'feature': features, 'importance': 
 feature_importances_no_smote.head()
 
 
-# In[107]:
 
 
 model_smote.fit(train_set_balanced, train_labels_balanced)
@@ -1001,13 +881,11 @@ feature_importances_smote = pd.DataFrame({'feature': features, 'importance': mod
 feature_importances_smote.head()
 
 
-# In[ ]:
 
 
 
 
 
-# In[108]:
 
 
 def plot_feature_importances(df, n = 10, threshold = None):
@@ -1076,25 +954,21 @@ def plot_feature_importances(df, n = 10, threshold = None):
     return df
 
 
-# In[109]:
 
 
 norm_fi_no_smote  = plot_feature_importances(feature_importances_no_smote, threshold=0.95)
 
 
-# In[110]:
 
 
 norm_fi_smote = plot_feature_importances(feature_importances_smote, threshold=0.95)
 
 
-# In[111]:
 
 
 test_ids = list(head.loc[head['Target'].isnull(), 'idhogar'])
 
 
-# In[112]:
 
 
 def macro_f1_score(labels, predictions):
@@ -1107,7 +981,6 @@ def macro_f1_score(labels, predictions):
     return 'macro_f1', metric_value, True
 
 
-# In[113]:
 
 
 
@@ -1131,13 +1004,11 @@ model = lgb.LGBMClassifier(**params, objective = 'multiclass',
 strkfold = StratifiedKFold(n_splits = 5, shuffle = True)
 
 
-# In[114]:
 
 
 strkfold.get_n_splits(train_set_balanced, train_labels_balanced)
 
 
-# In[115]:
 
 
 for train_index, test_index in strkfold.split(train_set, train_labels):
@@ -1146,7 +1017,6 @@ for train_index, test_index in strkfold.split(train_set, train_labels):
     y_train, y_test = train_labels[train_index], train_labels[test_index]
 
 
-# In[116]:
 
 
 for train_index, test_index in strkfold.split(train_set_balanced, train_labels_balanced):
@@ -1155,7 +1025,6 @@ for train_index, test_index in strkfold.split(train_set_balanced, train_labels_b
     y_train_balanced, y_test_balanced = train_labels_balanced[train_index], train_labels_balanced[test_index]
 
 
-# In[117]:
 
 
 model_lgb = model.fit(X_train, y_train, early_stopping_rounds =20, 
@@ -1165,7 +1034,6 @@ model_lgb = model.fit(X_train, y_train, early_stopping_rounds =20,
                   verbose = 200)
 
 
-# In[118]:
 
 
 predictions = model_lgb.predict(test_set)
@@ -1184,7 +1052,6 @@ lgb_submission = submission['Target'] = submission['Target'].fillna(4).astype(np
 lgb_submission.to_csv('lgb_submission.csv', index = False)
 
 
-# In[119]:
 
 
 model_lgb_balanced = model.fit(X_train_balanced, y_train_balanced, early_stopping_rounds = 20, 
@@ -1194,7 +1061,6 @@ model_lgb_balanced = model.fit(X_train_balanced, y_train_balanced, early_stoppin
                   verbose = 200)
 
 
-# In[120]:
 
 
 predictions = model_lgb_balanced.predict(test_set)
@@ -1213,25 +1079,21 @@ lgb_balanced_submission = submission['Target'] = submission['Target'].fillna(4).
 lgb_balanced_submission.to_csv('lgb_submission.csv', index = False)
 
 
-# In[121]:
 
 
 lgb_balanced_submission.shape
 
 
-# In[122]:
 
 
 test_ids = list(head.loc[head['Target'].isnull(), 'idhogar'])
 
 
-# In[123]:
 
 
 len(test_ids)
 
 
-# In[124]:
 
 
 def submit(model, train, train_labels, test, test_ids):
@@ -1254,7 +1116,6 @@ def submit(model, train, train_labels, test, test_ids):
     return submission
 
 
-# In[125]:
 
 
 rf_submission = submit(RandomForestClassifier(n_estimators = 100, 
@@ -1264,13 +1125,11 @@ rf_submission = submit(RandomForestClassifier(n_estimators = 100,
 rf_submission.to_csv('rf_submission.csv', index = False)
 
 
-# In[126]:
 
 
 rf_submission.shape
 
 
-# In[127]:
 
 
 rf_balanced_submission = submit(RandomForestClassifier(n_estimators = 100, 
@@ -1280,7 +1139,6 @@ rf_balanced_submission = submit(RandomForestClassifier(n_estimators = 100,
 rf_balanced_submission.to_csv('rf_balanced_submission.csv', index = False)
 
 
-# In[128]:
 
 
 rf_balanced_submission.shape

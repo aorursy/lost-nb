@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -26,7 +25,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output
 
 
-# In[2]:
 
 
 # LOad data ###
@@ -39,7 +37,6 @@ sample_submission = pd.read_csv('../input/sample_submission.csv')
 print("| fin")
 
 
-# In[3]:
 
 
 print("Shape of Training set: ",train.shape)
@@ -49,7 +46,6 @@ unique_users = list(set(users))
 print("Number of unique Users: ",len(unique_users))
 
 
-# In[4]:
 
 
 ## Merge in data into the training set 
@@ -62,7 +58,6 @@ train = pd.merge(train,song_info,how="left",on="song_id")
 print("Shape new train: ",train.shape)
 
 
-# In[5]:
 
 
 # Merge test data as well 
@@ -75,7 +70,6 @@ test = pd.merge(test,song_info,how="left",on="song_id")
 print("Shape new test: ",test.shape)
 
 
-# In[6]:
 
 
 ## Missing data analysis curtesy https://www.kaggle.com/pmarcelino/comprehensive-data-exploration-with-python
@@ -93,7 +87,6 @@ print("| Top Missing data in Test data |")
 print(missing_data_test.head(20))
 
 
-# In[7]:
 
 
 train_objects = train.columns.to_series().groupby(train.dtypes).groups
@@ -108,7 +101,6 @@ train_cpy = train
 #    print(train_cpy[col].value_counts())
 
 
-# In[8]:
 
 
 ## Experiment with the regular expressions on the artist name
@@ -123,7 +115,6 @@ print(fit_label.transform(['one','one']))
 '''
 
 
-# In[9]:
 
 
 '''
@@ -151,7 +142,6 @@ train[la.colnames] = la
 ''''''
 
 
-# In[10]:
 
 
 string_objs = ["source_system_tab","source_screen_name",'source_type','gender','artist_name',
@@ -162,7 +152,6 @@ train_objects = train.columns.to_series().groupby(train.dtypes).groups
 print(train_objects)
 
 
-# In[11]:
 
 
 date_objs = ['registration_init_time','expiration_date']
@@ -171,7 +160,6 @@ train['registration_init_time']=pd.to_datetime(train['registration_init_time'], 
 train['expiration_date']=pd.to_datetime(train['expiration_date'], format='%Y%m%d')
 
 
-# In[12]:
 
 
 isrc = ['isrc']
@@ -194,7 +182,6 @@ train['isrc_ud'] =train['isrc_ud'].astype('category').cat.codes
 #print([i[0:2] for i in train[isrc].values])
 
 
-# In[13]:
 
 
 print(train['genre_ids'].value_counts())
@@ -205,21 +192,18 @@ genres_new.columns = ["genre_"+str(c) for c in genres_new.columns]
 train[genres_new.columns] = genres_new.astype("int64")
 
 
-# In[14]:
 
 
 train_objects = train.columns.to_series().groupby(train.dtypes).groups
 print(train_objects)
 
 
-# In[15]:
 
 
 train = train.drop(['genre_ids','isrc'],axis=1)
 print(train.columns.values)
 
 
-# In[16]:
 
 
 ## Feature Engineering ###
@@ -228,21 +212,18 @@ diff_days = (train['expiration_date']-train['registration_init_time']).dt.days
 train['diff_days'] = diff_days
 
 
-# In[17]:
 
 
 # Number of Genres 
 train['num_genres'] = (train[genres_new.columns]!=-1).sum(axis=1)
 
 
-# In[18]:
 
 
 # Split song length
 train['song_length_bins'] = pd.qcut(train['song_length'],10,labels=range(10))
 
 
-# In[19]:
 
 
 # Age bins
@@ -256,7 +237,6 @@ train.loc[train['bd'] <10,'bd']= -1
 #train['bd_age'] = pd.qcut(train['bd'],bins,labels=False)
 
 
-# In[20]:
 
 
 var = 'artist_name'
@@ -282,7 +262,6 @@ print(comp.sort_values(by="absdiff",ascending=False))
 print(train[var].value_counts())
 
 
-# In[21]:
 
 
 '''

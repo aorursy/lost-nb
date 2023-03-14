@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np # linear algebra
@@ -25,7 +24,6 @@ df_test = pd.read_csv('../input/sample_submission.csv')
 print(os.listdir("../input"))
 
 
-# In[ ]:
 
 
 def train_tf(x):
@@ -38,7 +36,6 @@ def train_tf(x):
     return x
 
 
-# In[ ]:
 
 
 train_img = []
@@ -67,7 +64,6 @@ for i in tqdm(df_test.values):
     test_img.append((img, i[1]))
 
 
-# In[ ]:
 
 
 import random
@@ -76,7 +72,6 @@ train_data = list(set(train_img).difference(set(val_data)))
 print(len(train_data), len(val_data), len(train_data)+len(val_data))
 
 
-# In[ ]:
 
 
 model = models.resnet101(pretrained = False)
@@ -88,7 +83,6 @@ optimizer = torch.optim.SGD(model.parameters(), lr = 1e-5, momentum = 0.9)
 loss_func = torch.nn.CrossEntropyLoss()
 
 
-# In[ ]:
 
 
 train_loader = DataLoader(dataset = train_data, batch_size = 256, shuffle = True)
@@ -135,13 +129,11 @@ for epoch in range(2000):
     if (epoch+1) % 400 == 0:torch.save(model.state_dict(), str(epoch)+'v2.pkl')
 
 
-# In[ ]:
 
 
 # torch.save(model.state_dict(), '799v2.pkl')
 
 
-# In[ ]:
 
 
 class MakeSubmission:
@@ -162,19 +154,16 @@ class MakeSubmission:
         submission.to_csv(model_path+"sample_submission.csv", index=False)
 
 
-# In[ ]:
 
 
 MakeSubmission(test_img,  "../input/sample_submission.csv", '799v2.pkl')
 
 
-# In[ ]:
 
 
 # aaa = pd.read_csv('sample_submission.csv')
 
 
-# In[ ]:
 
 
 ls

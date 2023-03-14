@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 # Set your own project id here
@@ -38,7 +36,6 @@ magics.context.credentials = KaggleKernelCredentials()
 magics.context.project = PROJECT_ID
 
 
-# In[3]:
 
 
 from google.cloud.bigquery.magics import _run_query 
@@ -46,7 +43,6 @@ import json
 get_ipython().run_line_magic('load_ext', 'google.cloud.bigquery')
 
 
-# In[4]:
 
 
 with open('../input/bigquery-geotab-intersection-congestion/submission_metric_map.json', 'rt') as myfile:
@@ -54,7 +50,6 @@ with open('../input/bigquery-geotab-intersection-congestion/submission_metric_ma
 labels = {val:key for key, val in sub_lab.items()}
 
 
-# In[5]:
 
 
 # create a reference to our table
@@ -64,7 +59,6 @@ tr_table = client.get_table("kaggle-competition-datasets.geotab_intersection_con
 client.list_rows(tr_table, max_results=5).to_dataframe()
 
 
-# In[6]:
 
 
 # create a reference to our table
@@ -74,26 +68,22 @@ te_table = client.get_table("kaggle-competition-datasets.geotab_intersection_con
 client.list_rows(te_table, max_results=5).to_dataframe()
 
 
-# In[7]:
 
 
 for field in tr_table.schema:
     print(field.name, field.field_type)
 
 
-# In[8]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT\n    COUNT(*) AS totalrowsTrain\nFROM `kaggle-competition-datasets.geotab_intersection_congestion.train`')
 
 
-# In[9]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT\n    *\nFROM `kaggle-competition-datasets.geotab_intersection_congestion.train`\nWHERE RowId = 0')
 
 
-# In[10]:
 
 
 # create a reference to our table
@@ -103,25 +93,21 @@ test = client.get_table("kaggle-competition-datasets.geotab_intersection_congest
 client.list_rows(test, max_results=5).to_dataframe()
 
 
-# In[11]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT COUNT(*) AS totalrowsTest\nFROM  `kaggle-competition-datasets.geotab_intersection_congestion.test`')
 
 
-# In[12]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'SELECT\n    *\nFROM\n  `kaggle-competition-datasets.geotab_intersection_congestion.test`\nWHERE RowId = 0')
 
 
-# In[13]:
 
 
 get_ipython().run_cell_magic('bigquery', 'Avg_time_df', 'SELECT\n    AVG(TotalTimeStopped_p20) As Avg_t_p20,\n    AVG(TotalTimeStopped_p40) As Avg_t_p40,\n    AVG(TotalTimeStopped_p50) As Avg_t_p50,\n    AVG(TotalTimeStopped_p60) As Avg_t_p60,\n    AVG(TotalTimeStopped_p80) As Avg_t_p80,\n    City\nFROM\n  `kaggle-competition-datasets.geotab_intersection_congestion.train`\nGroup By City')
 
 
-# In[14]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -129,13 +115,11 @@ import matplotlib.pyplot as plt
 Avg_time_df.plot(kind = 'bar' , x ='City' , y = ['Avg_t_p20','Avg_t_p40','Avg_t_p50','Avg_t_p60','Avg_t_p80'],figsize =(12,6))
 
 
-# In[15]:
 
 
 get_ipython().run_cell_magic('bigquery', 'sttudf', "SELECT\n    CASE WHEN (EntryHeading = ExitHeading) THEN 'S' ELSE 'T' END AS straightOrTurn,\n    AVG(TotalTimeStopped_p20) As Avg_t_p20,\n    AVG(TotalTimeStopped_p40) As Avg_t_p40,\n    AVG(TotalTimeStopped_p50) As Avg_t_p50,\n    AVG(TotalTimeStopped_p60) As Avg_t_p60,\n    AVG(TotalTimeStopped_p80) As Avg_t_p80,\n    City\nFROM\n  `kaggle-competition-datasets.geotab_intersection_congestion.train`\nGroup By straightOrTurn,City")
 
 
-# In[16]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -145,19 +129,16 @@ sttudf.plot(kind='bar', stacked =True, figsize =(15,6))
 #sttudf.plot(kind = 'barh' , x ='straightOrTurn', y = ['Avg_t_p20','Avg_t_p40','Avg_t_p50','Avg_t_p60','Avg_t_p80'])
 
 
-# In[17]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'CREATE OR REPLACE PROCEDURE bqml_geotab.GetEmpl(r_id INT64, OUT inter_id INT64)\nBEGIN\n  DECLARE cr_rows_id INT64 DEFAULT r_id;\n    SET inter_id = (\n      SELECT IntersectionId FROM `kaggle-competition-datasets.geotab_intersection_congestion.train`\n      WHERE RowId = r_id\n    );\nEND;')
 
 
-# In[18]:
 
 
 get_ipython().run_cell_magic('bigquery', '', 'DECLARE r_id INT64 DEFAULT 2079854;\nDECLARE inter_id INT64;\n-- Call the stored procedure to get the hierarchy for this employee ID.\nCALL bqml_geotab.GetEmpl(r_id, inter_id);\n  -- Show the hierarchy for the employee.\nSELECT inter_id;')
 
 
-# In[19]:
 
 
 def make_query(query_text, job_config=None, **kwargs):
@@ -167,7 +148,6 @@ def make_query(query_text, job_config=None, **kwargs):
     return query.to_dataframe()
 
 
-# In[20]:
 
 
 select_q = """
@@ -201,7 +181,6 @@ select_q = """
     """
 
 
-# In[21]:
 
 
 experimental = False
@@ -224,7 +203,6 @@ WHERE
 """
 
 
-# In[22]:
 
 
 #bigquery.ScalarQueryParameter("reg_value", "INT64", 10),
@@ -232,7 +210,6 @@ WHERE
 #_REG = @rL2eg_value,
 
 
-# In[23]:
 
 
 
@@ -264,7 +241,6 @@ configs= {
 }
 
 
-# In[24]:
 
 
 for key, value in labels.items():
@@ -286,14 +262,12 @@ for key, value in labels.items():
     print(model_name, "is complete")
 
 
-# In[25]:
 
 
 for model in client.list_models('geotabintersection.bqml_geotab'):
     print(model.path)
 
 
-# In[26]:
 
 
 eval_train = """
@@ -317,7 +291,6 @@ WHERE
 """
 
 
-# In[27]:
 
 
 feature2loss = {}
@@ -348,7 +321,6 @@ for key, value in labels.items():
             ['loss', 'eval_loss']])
 
 
-# In[28]:
 
 
 
@@ -367,7 +339,6 @@ FROM
 """
 
 
-# In[29]:
 
 
 def change_columns(df, model_num):
@@ -377,7 +348,6 @@ def change_columns(df, model_num):
               inplace=True)
 
 
-# In[30]:
 
 
 results = []
@@ -400,7 +370,6 @@ for key, value in labels.items():
 #results = make_queries(predict_model)
 
 
-# In[31]:
 
 
 predictions = [vframe.copy(deep=True) for _, vframe in results]
@@ -410,13 +379,11 @@ for k, frame in zip(keys, predictions):
 df = pd.concat(predictions)
 
 
-# In[32]:
 
 
 submission = pd.read_csv('../input/bigquery-geotab-intersection-congestion/sample_submission.csv')
 
 
-# In[33]:
 
 
 df.to_csv('bqml_submission.csv', index=False)

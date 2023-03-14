@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -18,7 +17,6 @@ import IPython.display
 py.init_notebook_mode(connected=True)
 
 
-# In[2]:
 
 
 items = pd.read_csv('../input/favorita-grocery-sales-forecasting/items.csv')
@@ -29,7 +27,6 @@ transaction = pd.read_csv("../input/favorita-grocery-sales-forecasting/transacti
 train = pd.read_csv("../input/favorita-grocery-sales-forecasting/train.csv", nrows=6000000, parse_dates=['date'])
 
 
-# In[3]:
 
 
 # Take a look at the data. 
@@ -37,14 +34,12 @@ train = pd.read_csv("../input/favorita-grocery-sales-forecasting/train.csv", nro
 stores.head(5)
 
 
-# In[4]:
 
 
 stores['city'] = list(map(str.upper, stores['city']))
 stores['state'] = list(map(str.upper, stores['state']))
 
 
-# In[5]:
 
 
 number_of_stores_per_city = {}
@@ -60,7 +55,6 @@ cities = [s.upper() for s in stores.city.unique()]
 states = [s.upper() for s in stores.state.unique()]
 
 
-# In[6]:
 
 
 
@@ -68,7 +62,6 @@ with open("../input/ecuador-geo-info/ecuador.geojson") as json_file:
     json_data = geojson.load(json_file)
 
 
-# In[7]:
 
 
 patches, lons, lats, text = [], [], [], []
@@ -96,7 +89,6 @@ for k, feature in enumerate(json_data['features']):
     patches.append(sub) # patches is a list of dictionary. 
 
 
-# In[8]:
 
 
 # A list of layers, each layer cooresponds to a city. 
@@ -130,7 +122,6 @@ per_city_layout = dict(
     )
 
 
-# In[9]:
 
 
 # Create a list of dict, each dict cooresponds to a relayout button for a type
@@ -175,7 +166,6 @@ for i in range(1, len(types_of_stores)+1):
     )
 
 
-# In[10]:
 
 
 stores_cluster_buttons = []
@@ -218,7 +208,6 @@ for i in cluster_of_stores:
     )
 
 
-# In[11]:
 
 
 stores_trace = go.Data([
@@ -284,13 +273,11 @@ stores_fig = dict(data=stores_trace, layout=stores_layout)
 py.iplot(stores_fig)
 
 
-# In[12]:
 
 
 transaction.head(5)
 
 
-# In[13]:
 
 
 transaction['year'] = pd.DatetimeIndex(transaction['date']).year.astype(np.uint16)
@@ -298,7 +285,6 @@ transaction['month'] = pd.DatetimeIndex(transaction['date']).month.astype(np.uin
 transaction['day'] = pd.DatetimeIndex(transaction['date']).day.astype(np.uint8)
 
 
-# In[14]:
 
 
 which_store_trace = []
@@ -397,13 +383,11 @@ transaction_per_store_fig = dict(data=which_store_trace+transaction_per_month_tr
 py.iplot(transaction_per_store_fig)
 
 
-# In[15]:
 
 
 oil.head(5)
 
 
-# In[16]:
 
 
 trace = go.Scatter(
@@ -419,19 +403,16 @@ layout = dict(title="Crude Oil prices from 2013.1 to 2017.8 at Oklahoma",
 fig = go.Figure(data = data, layout = layout)
 
 
-# In[17]:
 
 
 py.iplot(fig)
 
 
-# In[18]:
 
 
 items.head(10)
 
 
-# In[19]:
 
 
 trace_item = go.Bar(
@@ -455,7 +436,6 @@ fig_item = go.Figure(data=[trace_item], layout=layout_item)
 py.iplot(fig_item)
 
 
-# In[20]:
 
 
 trace_item_perishable = go.Bar(
@@ -486,7 +466,6 @@ fig = go.Figure(data=[trace_item_perishable, trace_item_unperishable], layout=la
 py.iplot(fig)
 
 
-# In[21]:
 
 
 pie_perish_trace = go.Pie(
@@ -518,7 +497,6 @@ pie_perish_fig = go.Figure(data=[pie_perish_trace, pie_class_trace], layout=item
 py.iplot(pie_perish_fig)
 
 
-# In[22]:
 
 
 item_counts_per_family = items['family'].value_counts().values
@@ -533,7 +511,6 @@ normed_family = squarify.normalize_sizes(item_counts_per_family, width, height)
 rects_family = squarify.squarify(normed_family, x, y, width, height)
 
 
-# In[23]:
 
 
 shape_family = []
@@ -572,7 +549,6 @@ for r in rects_family:
     counter+=1
 
 
-# In[24]:
 
 
 treemap_family_item_info = go.Scatter(
@@ -598,14 +574,12 @@ treemap_item_fig = dict(data=[treemap_family_item_info],
 py.iplot(treemap_item_fig)
 
 
-# In[25]:
 
 
 print(holiday.shape)
 holiday.iloc[0:30]
 
 
-# In[26]:
 
 
 holiday_type_trace = go.Pie(
@@ -705,7 +679,6 @@ holiday_type_fig = go.Figure(data=[holiday_type_trace, holiday_locale_trace,
 py.iplot(holiday_type_fig)
 
 
-# In[27]:
 
 
 

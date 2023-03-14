@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system(' ls -all ../input/osic-pulmonary-fibrosis-progression')
 
 
-# In[2]:
 
 
 import numpy as np
@@ -16,7 +14,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-# In[3]:
 
 
 dir = '../input/osic-pulmonary-fibrosis-progression/'
@@ -25,34 +22,29 @@ train_df = pd.read_csv(dir + 'train.csv')
 train_df.head(10)
 
 
-# In[4]:
 
 
 sns.distplot(train_df['Age'])
 
 
-# In[5]:
 
 
 # Plot the distribution of FVC for Male patients.
 sns.distplot(train_df[train_df['Sex'] == 'Male']['FVC'])
 
 
-# In[6]:
 
 
 # Plot the distribution of FVC for Female patients.
 sns.distplot(train_df[train_df['Sex'] == 'Female']['FVC'])
 
 
-# In[7]:
 
 
 # Calculate FVC avg partition by week column.
 train_df['avg_of_week'] = train_df.groupby(['Weeks'])['FVC'].transform(np.mean)
 
 
-# In[8]:
 
 
 # A specific user's avg(FVC) movement compared to avg(FVC) per week.
@@ -75,14 +67,12 @@ def plot_specific_patient(id):
 plot_specific_patient(id_recover)
 
 
-# In[9]:
 
 
 id_notRecover = 'ID00007637202177411956430'
 plot_specific_patient(id_notRecover)
 
 
-# In[10]:
 
 
 def plot_CT(id):
@@ -107,14 +97,12 @@ def plot_CT(id):
 plot_CT(id_recover)
 
 
-# In[11]:
 
 
 # For NOT recovered patient.
 plot_CT(id_notRecover)
 
 
-# In[12]:
 
 
 import logging
@@ -126,7 +114,6 @@ from sklearn.metrics import mean_squared_error
 import lightgbm as lgb
 
 
-# In[13]:
 
 
 """Utils declaration."""
@@ -144,7 +131,6 @@ def get_logger(filename='log'):
 logger = get_logger()
 
 
-# In[14]:
 
 
 """Config for training."""
@@ -154,7 +140,6 @@ TARGET = 'FVC'
 N_Fold = 4
 
 
-# In[15]:
 
 
 """Re-load data for a clean start."""
@@ -164,7 +149,6 @@ print(train.shape)
 train.head()
 
 
-# In[16]:
 
 
 """Construct train dataframe."""
@@ -187,7 +171,6 @@ print(train.shape)
 train.head()
 
 
-# In[17]:
 
 
 """Construct test dataframe."""
@@ -201,7 +184,6 @@ print(test.shape)
 test.head()
 
 
-# In[18]:
 
 
 """Read in submission.csv."""
@@ -210,7 +192,6 @@ print(submission.shape)
 submission.head()
 
 
-# In[19]:
 
 
 folds = train[['Patient_Week', 'Patient', 'FVC']].copy()
@@ -223,7 +204,6 @@ folds['fold'] = folds['fold'].astype(int)
 folds.head()
 
 
-# In[20]:
 
 
 """Model declaration."""
@@ -319,7 +299,6 @@ def show_feature_importance(feature_importance_df, name):
     plt.savefig(OUTPUT_DICT+f'feature_importance_{name}.png')
 
 
-# In[21]:
 
 
 import category_encoders as ce
@@ -355,7 +334,6 @@ feature_importance_df, predictions, oof = run_kfold_lightgbm(lgb_param, train, t
 show_feature_importance(feature_importance_df, TARGET)
 
 
-# In[22]:
 
 
 """Create confidence labels."""
@@ -374,7 +352,6 @@ print(score)
 train.head(10)
 
 
-# In[23]:
 
 
 import scipy as sp
@@ -400,7 +377,6 @@ for _, row in tk0:
     results.append(x[0])
 
 
-# In[24]:
 
 
 # optimized score
@@ -414,7 +390,6 @@ print(score)
 train.head(10)
 
 
-# In[25]:
 
 
 TARGET = 'Confidence'
@@ -444,7 +419,6 @@ feature_importance_df, predictions, oof = run_kfold_lightgbm(lgb_param, train, t
 show_feature_importance(feature_importance_df, TARGET)
 
 
-# In[26]:
 
 
 train['Confidence'] = oof
@@ -456,7 +430,6 @@ score = train['score'].mean()
 print(score)
 
 
-# In[27]:
 
 
 def lb_metric(train):
@@ -469,20 +442,17 @@ def lb_metric(train):
     return score
 
 
-# In[28]:
 
 
 score = lb_metric(train)
 logger.info(f'Local Score: {score}')
 
 
-# In[29]:
 
 
 test['Confidence'] = predictions
 
 
-# In[30]:
 
 
 """Submission."""
@@ -493,7 +463,6 @@ sub.to_csv('submission.csv', index=False)
 sub.head()
 
 
-# In[ ]:
 
 
 

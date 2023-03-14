@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import numpy as np
@@ -145,7 +143,6 @@ def draw_figure(start_date, title, x_real, y_real, x_train, y_train, x_pred, y_p
    
 
 
-# In[3]:
 
 
 train_data = pd.read_csv('/kaggle/input/covid19-global-forecasting-week-2/train.csv')
@@ -155,13 +152,11 @@ train_data = train_data.fillna(value='NULL')
 test_data = test_data.fillna(value='NULL')
 
 
-# In[4]:
 
 
 train_data
 
 
-# In[5]:
 
 
 train_date_list = train_data.iloc[:, 3].unique()
@@ -176,7 +171,6 @@ len(train_data.groupby(['Province_State', 'Country_Region']))
 len(test_data.groupby(['Province_State', 'Country_Region']))
 
 
-# In[6]:
 
 
 start_date = '01/22/2020'
@@ -267,13 +261,11 @@ for idx, (k, v) in enumerate(train_data.groupby(['Province_State', 'Country_Regi
         test_data_filled.loc[index, 'Fatalities'] = pred_f[i]
 
 
-# In[7]:
 
 
 submission = test_data_filled.loc[:,['ForecastId', 'ConfirmedCases', 'Fatalities']]
 
 
-# In[8]:
 
 
 submission.to_csv("submission.csv", index=False)

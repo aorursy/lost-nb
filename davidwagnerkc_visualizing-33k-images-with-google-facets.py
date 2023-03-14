@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from IPython.core.display import display, HTML
@@ -14,7 +13,6 @@ from PIL import Image
 from PIL import ImageDraw
 
 
-# In[2]:
 
 
 # Bounding boxes from this kernel (@suicaokhoailang ran Martin Piotte's model on the current competition dataset)
@@ -22,7 +20,6 @@ from PIL import ImageDraw
 bb_df = pd.read_csv('../input/boundingbox/bounding_boxes.csv')
 
 
-# In[3]:
 
 
 DATA_DIR = Path('/kaggle/input/humpback-whale-identification/')
@@ -33,7 +30,6 @@ train_df = pd.read_csv(DATA_DIR / 'train.csv')
 test_df = pd.read_csv(DATA_DIR / 'sample_submission.csv')
 
 
-# In[4]:
 
 
 w, h = (bb_df.x1 - bb_df.x0), (bb_df.y1 - bb_df.y0)
@@ -41,13 +37,11 @@ bb_df['crop_size'] = w * h
 bb_df['crop_ratio'] = w / h
 
 
-# In[5]:
 
 
 bb_df.head()
 
 
-# In[6]:
 
 
 train_df['freq'] = train_df.groupby('Id')['Id'].transform('count')
@@ -55,7 +49,6 @@ train_df['set'] = 'train'
 train_df = train_df.sort_values('freq', ascending=False)
 
 
-# In[7]:
 
 
 test_df['Id'] = 'unknown'
@@ -63,19 +56,16 @@ test_df['freq'] = 1
 test_df['set'] = 'test'
 
 
-# In[8]:
 
 
 df = pd.concat([train_df, test_df]).reset_index(drop=True)
 
 
-# In[9]:
 
 
 df = pd.merge(df, bb_df, on='Image')
 
 
-# In[10]:
 
 
 # Add image ratio data
@@ -90,7 +80,6 @@ def total_size(row):
     return im.width * im.height
 
 
-# In[11]:
 
 
 def draw_bb(row):
@@ -103,63 +92,53 @@ def draw_bb(row):
     return True
 
 
-# In[12]:
 
 
 p = Pool()
 
 
-# In[13]:
 
 
 get_ipython().run_cell_magic('time', '', "df['ratio'] = p.map(ratio, [x[1] for x in list(df.iterrows())]) #df.apply(ratio, axis=1)\ndf['total_size'] = p.map(ratio, [x[1] for x in list(df.iterrows())]) #df.apply(total_size, axis=1)")
 
 
-# In[14]:
 
 
 df['crop_perc'] = df.crop_size / df.total_size
 
 
-# In[15]:
 
 
 df[::3000]
 
 
-# In[16]:
 
 
 # !mkdir draw_crops
 
 
-# In[17]:
 
 
 # %%time
 # p.map(draw_bb, [x[1] for x in list(df.iterrows())])
 
 
-# In[18]:
 
 
 df = df.drop(['x0', 'x1', 'y0', 'y1'], axis=1)
 
 
-# In[19]:
 
 
 df['x_rand'] = np.random.random(len(df))
 df['y_rand'] = np.random.random(len(df))
 
 
-# In[20]:
 
 
 get_ipython().system('git clone https://github.com/PAIR-code/facets.git')
 
 
-# In[21]:
 
 
 # If anybody is interested in building Facets themselves this might be useful. Turns out I didn't need to build Atlasmaker since it is just three Python modules.
@@ -177,13 +156,11 @@ get_ipython().system('git clone https://github.com/PAIR-code/facets.git')
 # cd /kaggle/working/facets/bazel-bin/facets_atlasmaker/
 
 
-# In[22]:
 
 
 cd /kaggle/working/facets/facets_atlasmaker/
 
 
-# In[23]:
 
 
 # Does anybody use Python 2 anymore?
@@ -192,38 +169,32 @@ get_ipython().system("sed -i 's/from urlparse import urlparse/from urllib.parse 
 get_ipython().system("sed -i 's/import tensorflow as tf/import tensorflop/g' atlasmaker_io.py")
 
 
-# In[24]:
 
 
 #df.apply(lambda x: str(Path('/kaggle/working/draw_crops/') / x.Image), axis=1).to_csv('absolute_paths.csv', index=False)
 df.apply(lambda x: str(TRAIN_DIR / x.Image) if 'train' in x.set else str(TEST_DIR / x.Image), axis=1).to_csv('absolute_paths.csv', index=False)
 
 
-# In[25]:
 
 
 df.ratio.mean()
 
 
-# In[26]:
 
 
 get_ipython().run_cell_magic('time', '', '!python atlasmaker.py --sourcelist=absolute_paths.csv --image_width=58 --image_height=29 --output_dir=/kaggle/working/')
 
 
-# In[27]:
 
 
 #Image.open('/kaggle/working/spriteatlas.png').convert('L').save('/kaggle/working/spriteatlas.png', optimize=True)
 
 
-# In[28]:
 
 
 cd /kaggle/working/
 
 
-# In[29]:
 
 
 sprite_width, sprite_height = 58, 29
@@ -235,7 +206,6 @@ html = f"""<link rel="import" href="https://raw.githubusercontent.com/PAIR-code/
 display(HTML(html))
 
 
-# In[30]:
 
 
 html = f"""<link rel="import" href="https://raw.githubusercontent.com/PAIR-code/facets/master/facets-dist/facets-jupyter.html">
@@ -243,20 +213,17 @@ html = f"""<link rel="import" href="https://raw.githubusercontent.com/PAIR-code/
            <script>document.querySelector("#elem").data = {jsonstr};</script>"""
 
 
-# In[31]:
 
 
 with open('facets_static.html', 'w') as out_file:
     out_file.write(html)
 
 
-# In[32]:
 
 
 get_ipython().system('(jupyter notebook list | grep http | awk \'{printf $1}\'; printf "files/facets_static.html") | sed "s/http:\\/\\/localhost:8888/https:\\/\\/www\\.kaggleusercontent\\.com/"')
 
 
-# In[33]:
 
 
 get_ipython().system('rm -rf facets/')

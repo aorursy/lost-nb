@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 import matplotlib as mpl
@@ -63,7 +61,6 @@ from ipywidgets import interact
 import random
 
 
-# In[ ]:
 
 
 class DriverImageDataset(Dataset):
@@ -152,7 +149,6 @@ class DriverImageDataset(Dataset):
         return im
 
 
-# In[ ]:
 
 
 def show_batch(images, targets = None, predictions = None, numpy = True):
@@ -180,14 +176,12 @@ def show_batch(images, targets = None, predictions = None, numpy = True):
             plt.xlabel("T:{}".format(targets[i].numpy()))
 
 
-# In[ ]:
 
 
 new_shape = (int(640 / 2), int(480 / 2))  # 1/5th of original shape
 new_shape
 
 
-# In[ ]:
 
 
 # Hyperparameters
@@ -220,7 +214,6 @@ trainData = DriverImageDataset(root_dir='../input', train = True, download = Fal
 #                          num_workers = WORKERS, shuffle = True)
 
 
-# In[ ]:
 
 
 trainData = DriverImageDataset(root_dir='../input', train = True, download = False, 
@@ -235,7 +228,6 @@ a = im_origin[:, :, 0][None, :, :]
 a.shape
 
 
-# In[ ]:
 
 
 im = im_origin[:, :, 0]
@@ -254,7 +246,6 @@ show_image(skimage.filters.prewitt_h(im), "Prewitt H", 335);
 show_image(skimage.filters.prewitt_v(im), "Prewitt V", 336);
 
 
-# In[ ]:
 
 
 im = im_origin[:, :, 1]
@@ -273,7 +264,6 @@ show_image(skimage.filters.prewitt_h(im), "Prewitt H", 335);
 show_image(skimage.filters.prewitt_v(im), "Prewitt V", 336);
 
 
-# In[ ]:
 
 
 im = im_origin[:, :, 2]
@@ -292,7 +282,6 @@ show_image(skimage.filters.prewitt_h(im), "Prewitt H", 335);
 show_image(skimage.filters.prewitt_v(im), "Prewitt V", 336);
 
 
-# In[ ]:
 
 
 im, label = trainData[0]
@@ -310,7 +299,6 @@ def plot_img(ax = 1, ay = -0,
     print(Tm)
 
 
-# In[ ]:
 
 
 filter1 = np.array([[1., 0., 48.], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
@@ -320,7 +308,6 @@ show_image(im_origin[:, :, 1], "Origin", 321);
 show_image(warp(im_origin, filter1)[:, :, 1], "Origin", 322);
 
 
-# In[ ]:
 
 
 plot_list = []
@@ -335,7 +322,6 @@ assert len(plot_list) == 15
 show_batch(plot_list)
 
 
-# In[ ]:
 
 
 @interact(y_begin = (0, 255, 1), y_end = (0, 255, 1),  
@@ -378,7 +364,6 @@ def plot_img(y_begin = 55, y_end = 130,
     plt.imshow(im)
 
 
-# In[ ]:
 
 
 def filter_skin(im):
@@ -397,7 +382,6 @@ def filter_skin(im):
     return im
 
 
-# In[ ]:
 
 
 plot_list = []
@@ -411,7 +395,6 @@ for i in rng:
 show_batch(plot_list)
 
 
-# In[ ]:
 
 
 # Hyperparameters
@@ -443,7 +426,6 @@ test_loader  = DataLoader(testData, batch_size = BATCH_SIZE,
                           num_workers = WORKERS, shuffle = True)
 
 
-# In[ ]:
 
 
 class simpleCNN(nn.Module):
@@ -475,7 +457,6 @@ class simpleCNN(nn.Module):
         return y  # Will learn to treat 'a' as the natural parameters of a multinomial distr. 
 
 
-# In[ ]:
 
 
 cNN_net = simpleCNN()
@@ -487,7 +468,6 @@ print("----")
 print(cNN_net.parameters)
 
 
-# In[ ]:
 
 
 import torch.cuda
@@ -505,7 +485,6 @@ else:
         return x
 
 
-# In[ ]:
 
 
 net = togpu(cNN_net)
@@ -514,7 +493,6 @@ criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(params = net.parameters(), lr = LEARNING_RATE)
 
 
-# In[ ]:
 
 
 def compute_eval_loss(net, criterion, loader):
@@ -533,7 +511,6 @@ def compute_eval_loss(net, criterion, loader):
     return eval_loss
 
 
-# In[ ]:
 
 
 def run_simpleCNN(net, optimizer, criterion, epoch = 2, best_eval_loss = float('inf')):
@@ -581,7 +558,6 @@ def run_simpleCNN(net, optimizer, criterion, epoch = 2, best_eval_loss = float('
                                                           tend-tstart))
 
 
-# In[ ]:
 
 
 import sys, os
@@ -622,13 +598,11 @@ def report(net, evalData):
     print(classification_report(targets, predictions))
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', "b_loss = float('inf')  # Assign infinity\nrun_simpleCNN(net, optimizer, criterion, epoch = 1, best_eval_loss = b_loss)\nepoch, b_loss, ehist, thist = resume(net, optimizer, fn = 'simpleCNN-best.pth.tar')\nreport(net, evalData)")
 
 
-# In[ ]:
 
 
 

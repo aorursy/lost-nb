@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import warnings
@@ -17,7 +16,6 @@ from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.linear_model import LinearRegression
 
 
-# In[2]:
 
 
 # Ploting Parameters
@@ -40,7 +38,6 @@ OUTPUT_FILE_B = "molecule_train.csv"
 OUTPUT_FILE_C = "molecule_test.csv"
 
 
-# In[3]:
 
 
 # Input data user functions
@@ -59,14 +56,12 @@ def read_data(dataset='train', data_path=DATA_PATH):
     return pd.read_csv(data_path, index_col=index_col)
 
 
-# In[4]:
 
 
 train = read_data("train")
 test = read_data("test")
 
 
-# In[5]:
 
 
 # One row per molecule
@@ -77,21 +72,18 @@ atom_list_df = structures.groupby('molecule_name')['atom'].apply(list)
 atom_list_df = atom_list_df.to_frame()
 
 
-# In[6]:
 
 
 if FREE_MEMORY:
     del train, test
 
 
-# In[7]:
 
 
 molecule_train = pd.merge(molecule_train, atom_list_df, how='left', on='molecule_name')
 molecule_test = pd.merge(molecule_test, atom_list_df, how='left', on='molecule_name')
 
 
-# In[8]:
 
 
 # Count atoms by type
@@ -103,14 +95,12 @@ for atom in atoms_list:
     molecule_test['atom_' + atom] =         molecule_test['atom'].apply(lambda x: x.count(atom))
 
 
-# In[9]:
 
 
 potential_energy = read_data("potential_energy")
 molecule_train = pd.merge(molecule_train, potential_energy)
 
 
-# In[10]:
 
 
 if FREE_MEMORY:
@@ -118,7 +108,6 @@ if FREE_MEMORY:
     del atom_list_df
 
 
-# In[11]:
 
 
 # 1 atomic mass unit (amu) corresponds to 1.660539040 × 10−24 gram
@@ -137,20 +126,17 @@ def mol_weight(atom_list):
     return sum(map(lambda x: ATOM_MASS[x], atom_list))
 
 
-# In[12]:
 
 
 molecule_train["mol_weight"] = molecule_train.atom.apply(lambda x: mol_weight(x))
 molecule_test["mol_weight"] = molecule_train.atom.apply(lambda x: mol_weight(x))
 
 
-# In[13]:
 
 
 molecule_train.head()
 
 
-# In[14]:
 
 
 id_feature = 'molecule_name'
@@ -163,14 +149,12 @@ print("Target Feature: \t{}".format(target_feature))
 print("Id Feature: \t\t{}".format(id_feature))
 
 
-# In[15]:
 
 
 X = molecule_train[selected_features]
 y = molecule_train[target_feature]
 
 
-# In[16]:
 
 
 kfold = KFold(n_splits=N_SPLITS,
@@ -178,7 +162,6 @@ kfold = KFold(n_splits=N_SPLITS,
               shuffle=SHUFFLE)
 
 
-# In[17]:
 
 
 fold = 0
@@ -205,7 +188,6 @@ print(' * Average Mean squared error (MSE): \t{:.4f}'.format(np.mean(mse_score))
     
 
 
-# In[18]:
 
 
 plt.figure(figsize=FIGSIZE)
@@ -216,7 +198,6 @@ plt.ylabel("Predicted Potential Energy")
 plt.show()
 
 
-# In[19]:
 
 
 lin_reg.fit(X, y)
@@ -226,7 +207,6 @@ if FREE_MEMORY:
     del X, y
 
 
-# In[20]:
 
 
 potential_energy_upd = pd.concat([molecule_train[[id_feature, target_feature]],
@@ -234,7 +214,6 @@ potential_energy_upd = pd.concat([molecule_train[[id_feature, target_feature]],
                                  ignore_index=True)
 
 
-# In[21]:
 
 
 plt.figure(figsize=FIGSIZE)
@@ -245,20 +224,17 @@ plt.xlabel("Potential Energy")
 plt.show()
 
 
-# In[22]:
 
 
 potential_energy_upd = potential_energy_upd.sort_values(id_feature)
 potential_energy_upd.reset_index(drop=True, inplace=True)
 
 
-# In[23]:
 
 
 potential_energy_upd.head()
 
 
-# In[24]:
 
 
 def save_csv(df, file_name):

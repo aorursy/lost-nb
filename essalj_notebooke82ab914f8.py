@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -29,7 +28,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 
 
 
-# In[2]:
 
 
 
@@ -42,7 +40,6 @@ test = pd.read_csv("../input/test.csv") # the train dataset is now a Pandas Data
 train.head()
 
 
-# In[3]:
 
 
 # happy customers have TARGET==0, unhappy custormers have TARGET==1
@@ -52,7 +49,6 @@ df['Percentage'] = 100*df['TARGET']/train.shape[0]
 df
 
 
-# In[4]:
 
 
 #ASSUMING VAR3 = NATIONALITY
@@ -65,7 +61,6 @@ train = train.replace(-999999,2)
 train.loc[train.var3==-999999].shape
 
 
-# In[5]:
 
 
 #Add feature that counts the number of zeros in a row
@@ -76,7 +71,6 @@ X['n0'] = (X==0).sum(axis=1)
 train['n0'] = X['n0']
 
 
-# In[6]:
 
 
 # num_var4 : number of bank products
@@ -89,7 +83,6 @@ plt.title('Most customers have 1 product with the bank')
 plt.show()
 
 
-# In[7]:
 
 
 # Let's look at the density of the of happy/unhappy customers in function of the number of bank products
@@ -98,20 +91,17 @@ plt.title('Unhappy cosutomers have less products')
 plt.show()
 
 
-# In[8]:
 
 
 train[train.TARGET==1].num_var4.hist(bins=6)
 plt.title('Amount of unhappy customers in function of the number of products');
 
 
-# In[9]:
 
 
 
 
 
-# In[9]:
 
 
 print(train.var38.describe())
@@ -130,7 +120,6 @@ train.loc[~np.isclose(train.var38, 117310.979016), 'var38'].map(np.log).hist(bin
 
 
 
-# In[10]:
 
 
 
@@ -139,7 +128,6 @@ sns.pairplot(data=train[['num_var4','TARGET','var38']], hue='TARGET', dropna=Tru
 plt.show()
 
 
-# In[11]:
 
 
 #data suggests splitting up var38 in most_common_value and rest
@@ -153,7 +141,6 @@ print('Number of nan in logvar38',train['logvar38'].isnull().sum())
   
 
 
-# In[12]:
 
 
 
@@ -165,7 +152,6 @@ print(train['var15'].value_counts())
 train['var15'].hist(bins=100);
 
 
-# In[13]:
 
 
 # Let's look at the density of the age of happy/unhappy customers
@@ -173,7 +159,6 @@ sns.FacetGrid(train, hue="TARGET", size=6)    .map(sns.kdeplot, "var15")    .add
 plt.title('Unhappy customers are slightly older');
 
 
-# In[14]:
 
 
 #var_30
@@ -183,7 +168,6 @@ plt.xlim(0, train.saldo_var30.max());
 
 
 
-# In[15]:
 
 
 #improve by log_saldo_var30
@@ -194,14 +178,12 @@ sns.FacetGrid(train, hue="TARGET", size=6)    .map(sns.kdeplot, "log_saldo_var30
 
 
 
-# In[16]:
 
 
 #Explore the interaction between var15 (age) and var38
 sns.FacetGrid(train, hue="TARGET", size=10)    .map(plt.scatter, "var38", "var15")    .add_legend();
 
 
-# In[17]:
 
 
 #seems unhappy are has less variation in var38 and in age
@@ -209,7 +191,6 @@ sns.FacetGrid(train, hue="TARGET", size=10)    .map(plt.scatter, "logvar38", "va
 plt.ylim([0,120]); # Age must be positive ;-)
 
 
-# In[18]:
 
 
 # Exclude most common value for var38 
@@ -217,14 +198,12 @@ sns.FacetGrid(train[~train.var38mc], hue="TARGET", size=10)    .map(plt.scatter,
 plt.ylim([0,120])
 
 
-# In[19]:
 
 
 # What is distribution of the age when var38 has it's most common value ?
 sns.FacetGrid(train[train.var38mc], hue="TARGET", size=6)    .map(sns.kdeplot, "var15")    .add_legend();
 
 
-# In[20]:
 
 
 from sklearn.feature_selection import SelectPercentile
@@ -252,13 +231,11 @@ features = [ f for f,s in zip(X.columns, selected) if s]
 print (features)
 
 
-# In[21]:
 
 
 X_sel = train[features+['TARGET']]
 
 
-# In[22]:
 
 
 #var36
@@ -271,7 +248,6 @@ plt.title('If var36 is 0,1,2 or 3 => less unhappy customers');
 plt.xlim([-50,180])
 
 
-# In[23]:
 
 
 # var36 in function of var38 (most common value excluded) 
@@ -280,39 +256,33 @@ sns.FacetGrid(train[(~train.var38mc) & (train.var36 < 4)], hue="TARGET", size=10
 plt.title('If var36==0, only happy customers');
 
 
-# In[24]:
 
 
 # Let's plot the density in function of the target variabele, when var36 = 99
 sns.FacetGrid(train[(~train.var38mc) & (train.var36 ==99)], hue="TARGET", size=6)    .map(sns.kdeplot, "logvar38")    .add_legend();
 
 
-# In[25]:
 
 
 train.num_var5.value_counts()
 
 
-# In[26]:
 
 
 
 sns.FacetGrid(train, hue="TARGET", size=6)    .map(plt.hist, "num_var5")    .add_legend();
 
 
-# In[27]:
 
 
 sns.pairplot(train[['var15','var36','logvar38','TARGET']], hue="TARGET", size=2, diag_kind="kde");
 
 
-# In[28]:
 
 
 train[['var15','var36','logvar38','TARGET']].boxplot(by="TARGET", figsize=(12, 6));
 
 
-# In[29]:
 
 
 # A final multivariate visualization technique pandas has is radviz
@@ -323,7 +293,6 @@ from pandas.tools.plotting import radviz
 radviz(train[['var15','var36','logvar38','TARGET']], "TARGET");
 
 
-# In[30]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from __future__ import print_function, division
@@ -29,7 +28,6 @@ plt.rcParams['image.interpolation'] = 'nearest'
 multiGPU = False
 
 
-# In[2]:
 
 
 rootpath = "../input/dog-breed-identification/"
@@ -39,7 +37,6 @@ LABELS_CSV_PATH = rootpath + "labels.csv"
 SAMPLE_SUB_PATH = rootpath + "sample_submission.csv"
 
 
-# In[3]:
 
 
 # 重要参数
@@ -62,7 +59,6 @@ device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else 
 print(device)
 
 
-# In[4]:
 
 
 class DogsDataset(Dataset):
@@ -95,7 +91,6 @@ class DogsDataset(Dataset):
         return [image, label]
 
 
-# In[5]:
 
 
 dframe = pd.read_csv(LABELS_CSV_PATH)
@@ -117,7 +112,6 @@ print(code_to_breed[train_ds[idx][1]])
 print("Shape of the image is: ", train_ds[idx][0].size)
 
 
-# In[6]:
 
 
 # change random crop to resize+center crop
@@ -131,7 +125,6 @@ data_transform = transforms.Compose([
     ])
 
 
-# In[7]:
 
 
 train_ds = DogsDataset(TRAIN_IMG_PATH, train, data_transform)
@@ -143,7 +136,6 @@ print(code_to_breed[train_ds[idx][1]])
 print("Shape of the image is: ", train_ds[idx][0].shape)
 
 
-# In[8]:
 
 
 trainloader = DataLoader(train_ds, batch_size=batch_size,
@@ -156,7 +148,6 @@ testloader = DataLoader(test_ds, batch_size=batch_size,
 dataloaders = [trainloader, testloader]
 
 
-# In[9]:
 
 
 # 网络模型参数的初始化
@@ -169,7 +160,6 @@ def weights_init(m):
         nn.init.constant_(m.bias.data, 0)
 
 
-# In[10]:
 
 
 # 生成网络定义
@@ -232,7 +222,6 @@ netG.apply(weights_init)
 print(netG)
 
 
-# In[11]:
 
 
 # 鉴别网络定义
@@ -300,7 +289,6 @@ netD.apply(weights_init)
 print(netD)
 
 
-# In[12]:
 
 
 # Setup Adam optimizers for both G and D  优化器
@@ -308,7 +296,6 @@ optimizerD = optim.Adam(netD.parameters(), lr=lr, betas=(beta1, 0.999))
 optimizerG = optim.Adam(netG.parameters(), lr=lr, betas=(beta1, 0.999))
 
 
-# In[13]:
 
 
 # Loss functions 损失函数
@@ -316,7 +303,6 @@ s_criterion = nn.BCELoss()
 c_criterion = nn.NLLLoss()
 
 
-# In[14]:
 
 
 # 展示生成图像
@@ -338,7 +324,6 @@ def show_generated_img(num_show):
     plt.show()
 
 
-# In[15]:
 
 
 def onehot_encode(label, device, n_class=n_class):  
@@ -356,7 +341,6 @@ def concat_noise_label(noise, label, device):
     return torch.cat((noise, oh_label), dim=1)
 
 
-# In[16]:
 
 
 r_label = 0.7
@@ -370,7 +354,6 @@ fixed_label = torch.randint(0, n_class, (1, ), device=device)
 fixed_noise_label = concat_noise_label(fixed_noise, fixed_label, device)
 
 
-# In[17]:
 
 
 # Training Loop
@@ -464,7 +447,6 @@ for epoch in range(num_epochs):
 #         torch.save(netD.state_dict(), '{}/netD_epoch_{}.pth'.format(outf, epoch + 1))
 
 
-# In[18]:
 
 
 def mse(imageA, imageB):
@@ -493,7 +475,6 @@ def analyse_generated_by_class(n_images):
     return good_breeds
 
 
-# In[19]:
 
 
 def show_generated_img_all():
@@ -524,7 +505,6 @@ def show_loss(ylim):
         ax.set_ylim(0,4)
 
 
-# In[20]:
 
 
 def truncated_normal(size, threshold=1):
@@ -554,7 +534,6 @@ def create_submit(good_breeds):
     shutil.make_archive("images", "zip", "../output_images")
 
 
-# In[21]:
 
 
 # loss curve
@@ -562,7 +541,6 @@ def create_submit(good_breeds):
 show_loss(ylim=False)
 
 
-# In[22]:
 
 
 # loss curve
@@ -570,7 +548,6 @@ show_loss(ylim=False)
 show_loss(ylim=True)
 
 
-# In[23]:
 
 
 # analysis
@@ -578,13 +555,11 @@ good_breeds = analyse_generated_by_class(6)
 #create_submit(good_breeds)
 
 
-# In[24]:
 
 
 show_generated_img_all()
 
 
-# In[25]:
 
 
 # visualization generate image of all breeds 
@@ -606,7 +581,6 @@ plt.tight_layout()
 plt.show() 
 
 
-# In[ ]:
 
 
 

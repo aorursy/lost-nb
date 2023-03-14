@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('reload_ext', 'autoreload')
@@ -24,7 +23,6 @@ warnings.filterwarnings("ignore")
 fastai.__version__
 
 
-# In[2]:
 
 
 # remove this cell if run locally
@@ -35,7 +33,6 @@ get_ipython().system("cp '../input/pytorch-pretrained-models/semi_supervised_res
 torch.hub.DEFAULT_CACHE_DIR = 'cache'
 
 
-# In[3]:
 
 
 sz = 128
@@ -47,7 +44,6 @@ TRAIN = '../input/panda-16x128x128-tiles-data/train/'
 LABELS = '../input/prostate-cancer-grade-assessment/train.csv'
 
 
-# In[4]:
 
 
 def seed_everything(seed):
@@ -62,7 +58,6 @@ def seed_everything(seed):
 seed_everything(SEED)
 
 
-# In[5]:
 
 
 df = pd.read_csv(LABELS).set_index('image_id')
@@ -77,14 +72,12 @@ df['split'] = folds_splits
 df.head()
 
 
-# In[6]:
 
 
 mean = torch.tensor([1.0-0.90949707, 1.0-0.8188697, 1.0-0.87795304])
 std = torch.tensor([0.36357649, 0.49984502, 0.40477625])
 
 
-# In[7]:
 
 
 def open_image(fn:PathOrStr, div:bool=True, convert_mode:str='RGB', cls:type=Image,
@@ -145,7 +138,6 @@ def MImage_collate(batch:ItemsList)->Tensor:
     return result
 
 
-# In[8]:
 
 
 def get_data(fold=0):
@@ -159,7 +151,6 @@ data = get_data(0)
 data.show_batch()
 
 
-# In[9]:
 
 
 class Model(nn.Module):
@@ -187,7 +178,6 @@ class Model(nn.Module):
         return x
 
 
-# In[10]:
 
 
 fname = 'RNXT50'
@@ -215,7 +205,6 @@ for fold in range(nfolds):
             target.append(y.cpu())
 
 
-# In[11]:
 
 
 p = torch.argmax(torch.cat(pred,0),1)
@@ -224,13 +213,11 @@ print(cohen_kappa_score(t,p,weights='quadratic'))
 print(confusion_matrix(t,p))
 
 
-# In[12]:
 
 
 get_ipython().system("rm -r 'cache'")
 
 
-# In[ ]:
 
 
 

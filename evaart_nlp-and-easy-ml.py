@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -24,7 +23,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 df_train = pd.read_csv(os.path.join('../input/train', 'train.csv'))
@@ -33,31 +31,26 @@ df_breed_labels = pd.read_csv(os.path.join('../input', 'breed_labels.csv'))
 df_color_labels = pd.read_csv(os.path.join('../input', 'color_labels.csv'))
 
 
-# In[ ]:
 
 
 df_train.shape, df_test.shape
 
 
-# In[ ]:
 
 
 df_breed_labels.head()
 
 
-# In[ ]:
 
 
 df_train.isnull().sum()
 
 
-# In[ ]:
 
 
 df_train.head()
 
 
-# In[ ]:
 
 
 adoption_0 = (df_train['AdoptionSpeed'] == 0).sum()
@@ -68,34 +61,29 @@ adoption_4 = (df_train['AdoptionSpeed'] == 4).sum()
 adoption_0, adoption_1, adoption_2, adoption_3, adoption_4
 
 
-# In[ ]:
 
 
 df_nlp = df_train[['Description', 'AdoptionSpeed']]
 df_nlp.shape
 
 
-# In[ ]:
 
 
 df_nlp.head()
 
 
-# In[ ]:
 
 
 index_delete = np.array(df_nlp[df_nlp['Description'].isnull() == True].index)
 index_delete
 
 
-# In[ ]:
 
 
 df_nlp = df_nlp.drop(index_delete)
 df_nlp.shape
 
 
-# In[ ]:
 
 
 import random
@@ -110,7 +98,6 @@ index_adoption_3_reduc = [index_adoption_3[i] for i in range(int(len(index_adopt
 index_adoption_4_reduc = [index_adoption_4[i] for i in range(int(len(index_adoption_0)))]
 
 
-# In[ ]:
 
 
 X = pd.concat([df_nlp['Description'].reindex(index_adoption_0), df_nlp['Description'].reindex(index_adoption_1_reduc),
@@ -123,7 +110,6 @@ y = pd.concat([df_nlp['AdoptionSpeed'].reindex(index_adoption_0), df_nlp['Adopti
 X.shape, y.shape
 
 
-# In[ ]:
 
 
 from sklearn.model_selection import train_test_split
@@ -131,7 +117,6 @@ X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=.2, random
 X_train.shape, y_train.shape, X_valid.shape, y_valid.shape
 
 
-# In[ ]:
 
 
 import nltk
@@ -140,7 +125,6 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer, PorterStemmer
 
 
-# In[ ]:
 
 
 def tokenize(data):
@@ -152,14 +136,12 @@ def tokenize(data):
     return X_stem_as_string
 
 
-# In[ ]:
 
 
 X_train_tk = tokenize(X_train)
 X_valid_tk = tokenize(X_valid)
 
 
-# In[ ]:
 
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
@@ -167,7 +149,6 @@ from sklearn.decomposition import TruncatedSVD
 from sklearn.pipeline import Pipeline
 
 
-# In[ ]:
 
 
 vct = CountVectorizer(stop_words='english', lowercase=False)
@@ -180,26 +161,22 @@ preprocessing_pipe = Pipeline([
 ])
 
 
-# In[ ]:
 
 
 lsa_train = preprocessing_pipe.fit_transform(X_train_tk)
 lsa_train.shape
 
 
-# In[ ]:
 
 
 sns.scatterplot(lsa_train[:, 0], lsa_train[:, 1], hue=y_train);
 
 
-# In[ ]:
 
 
 components = pd.DataFrame(data=svd.components_, columns=preprocessing_pipe.named_steps['vectorizer'].get_feature_names())
 
 
-# In[ ]:
 
 
 fig, axes = plt.subplots(10, 2, figsize=(18, 30))
@@ -207,7 +184,6 @@ for i, ax in enumerate(axes.flat):
     components.iloc[i].sort_values(ascending=False)[:10].sort_values().plot.barh(ax=ax)
 
 
-# In[ ]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -216,31 +192,25 @@ from sklearn.metrics import classification_report
 from sklearn.naive_bayes import MultinomialNB
 
 
-# In[ ]:
 
 
 rf = RandomForestClassifier()
 mb = MultinomialNB()
-pipe = Pipeline([
     ('vectorizer', tfvec),
     ('rf', mb)
 ])
 
 
-# In[ ]:
 
 
-pipe.fit(X_train_tk, y_train)
 y_pred = pipe.predict(X_valid_tk)
 
 
-# In[ ]:
 
 
 print(classification_report(y_valid, y_pred))
 
 
-# In[ ]:
 
 
 df_train = df_train.drop(['Name', 'Description', 'RescuerID', 'PetID'], axis=1)
@@ -248,7 +218,6 @@ df_test = df_test.drop(['Name', 'Description'], axis=1)
 X_test = df_test.drop(['RescuerID', 'PetID'], axis=1)
 
 
-# In[ ]:
 
 
 cor_mat = df_train[:].corr()
@@ -259,7 +228,6 @@ fig.set_size_inches(80,15)
 sns.heatmap(data=cor_mat, mask=mask, square=True, annot=True, cbar=True);
 
 
-# In[ ]:
 
 
 var = 'Type'
@@ -269,21 +237,18 @@ plt.ylabel('AdoptionSpeed')
 sns.boxplot(x=var, y="AdoptionSpeed", data=data);
 
 
-# In[ ]:
 
 
 X = df_train.drop('AdoptionSpeed', axis=1)
 y = df_train['AdoptionSpeed']
 
 
-# In[ ]:
 
 
 from sklearn.preprocessing import RobustScaler
 from sklearn.model_selection import train_test_split
 
 
-# In[ ]:
 
 
 ## Data spliting 
@@ -291,7 +256,6 @@ X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.25, shuf
 (X_train.shape, y_train.shape), (X_valid.shape, y_valid.shape)
 
 
-# In[ ]:
 
 
 ## Data well-balanced
@@ -301,7 +265,6 @@ X_train_sm, y_train_sm = smote.fit_sample(X_train, y_train)
 X_valid_sm, y_valid_sm = smote.fit_sample(X_valid, y_valid)
 
 
-# In[ ]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -310,7 +273,6 @@ from xgboost.sklearn import XGBClassifier
 from sklearn.metrics import accuracy_score
 
 
-# In[ ]:
 
 
 rf = RandomForestClassifier(max_depth=6, n_estimators=24, max_features=19, random_state=1)
@@ -321,7 +283,6 @@ acc_score_valid = accuracy_score(y_valid_sm, rf.predict(X_valid_sm))
 acc_score, acc_score_valid
 
 
-# In[ ]:
 
 
 xgb = XGBClassifier(max_depth=3, n_estimators=200, learning_rate=0.19, random_state=42)
@@ -332,13 +293,11 @@ acc_score_valid = accuracy_score(y_valid_sm, xgb.predict(X_valid_sm))
 acc_score, acc_score_valid
 
 
-# In[ ]:
 
 
 y_pred_true = xgb.predict(X_test.as_matrix())
 
 
-# In[ ]:
 
 
 model_submission  = pd.DataFrame(y_pred_true).apply(np.round)
@@ -348,19 +307,16 @@ submission.AdoptionSpeed = submission.AdoptionSpeed.astype(int)
 submission.to_csv("submission.csv", index=False)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

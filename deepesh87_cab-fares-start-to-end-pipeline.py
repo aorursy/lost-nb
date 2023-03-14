@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -11,70 +10,59 @@ import seaborn as sns
 from sklearn.linear_model import LinearRegression
 
 
-# In[2]:
 
 
 train_original=pd.read_csv('/kaggle/input/new-york-city-taxi-fare-prediction/train.csv',nrows=1000000,parse_dates=['pickup_datetime'])
 test_original=pd.read_csv('/kaggle/input/new-york-city-taxi-fare-prediction/test.csv')
 
 
-# In[3]:
 
 
 train=train_original.copy()
 test=test_original.copy()
 
 
-# In[4]:
 
 
 test.head()
 
 
-# In[5]:
 
 
 train.dtypes
 
 
-# In[6]:
 
 
 train['pickup_datetime']=pd.to_datetime(train['pickup_datetime'])
 test['pickup_datetime']=pd.to_datetime(test['pickup_datetime'])
 
 
-# In[7]:
 
 
 train_original.shape,test_original.shape
 
 
-# In[8]:
 
 
 train.isnull().sum()#Very few Missing value, so will delete the rows that have it
 
 
-# In[9]:
 
 
 test.isnull().sum() #good , No missing in test
 
 
-# In[10]:
 
 
 train.dropna(axis=0,inplace=True)
 
 
-# In[11]:
 
 
 train.shape## only 10 were deleted. the same rows had NAs
 
 
-# In[12]:
 
 
 train.describe() #Negative fare,Latitudes range from -90 to 90, and longitudes range from -180 to 80.
@@ -82,13 +70,11 @@ train.describe() #Negative fare,Latitudes range from -90 to 90, and longitudes r
 # A lot of cleaning will be needed here
 
 
-# In[13]:
 
 
 test.describe()#data looks good for the test data
 
 
-# In[14]:
 
 
 print(sum(train['fare_amount']<0)) #only a few values are negative, Will delete them
@@ -97,27 +83,23 @@ print(sum(train['fare_amount']<0)) #only a few values are negative, Will delete 
 print(sum(train.fare_amount<2)) #very few records, so wouldnt matter anyways
 
 
-# In[15]:
 
 
 train=train[(train['fare_amount']>=2)]
 train.shape
 
 
-# In[16]:
 
 
 train['passenger_count'].value_counts()#passenger count 208?? Passenger count 0, lets see the fares for these.
 
 
-# In[17]:
 
 
 #delete passenger count 208 will be deleted. passenger count 0 will also be deleted as  it doesnot make sense + test doesnot have this
 train=train[(train['passenger_count']<7)&(train['passenger_count']>0)]
 
 
-# In[18]:
 
 
 plt.figure(figsize=(16, 5))
@@ -125,7 +107,6 @@ plt.hist(train['fare_amount'],bins=100);
 plt.title("Fare Amount");
 
 
-# In[19]:
 
 
 #lets Zoom into the above figure. Be mindful of the Y axis
@@ -139,14 +120,12 @@ plt.hist(train[train['fare_amount']>=100]['fare_amount'],bins=100);
 #looks like there are many rides having fixed charge of 350,400,450 and 500. But these are very few in numbers <100 total
 
 
-# In[20]:
 
 
 sns.catplot(x='passenger_count', y='fare_amount', data=train);
 plt.title('Fare wrt Total Passengers');#so fare not very much dependent on the # of Passenegrs
 
 
-# In[21]:
 
 
 #Create Day of Week, Month, Year, Time of Day etc variables from the pickup_datetime variable
@@ -162,47 +141,40 @@ train = process_date(train,'pickup_datetime')
 test = process_date(test,'pickup_datetime')
 
 
-# In[22]:
 
 
 train.head()
 
 
-# In[23]:
 
 
 sns.catplot(x='pickup_year', y='fare_amount', data=train);
 plt.title('Fare wrt pickup_year');#definitely see some outliers in each year
 
 
-# In[24]:
 
 
 sns.boxplot(x='pickup_year', y='fare_amount', data=train);
 
 
-# In[25]:
 
 
 sns.catplot(x='pickup_weekday', y='fare_amount', data=train);
 plt.title('Fare wrt pickup_dayofweek');#not much of a difference except  afew outliers
 
 
-# In[26]:
 
 
 sns.catplot(x='pickup_month', y='fare_amount', data=train);
 plt.title('Fare wrt pickup_month');#not much of a difference except  afew outliers but in Summer months
 
 
-# In[27]:
 
 
 sns.catplot(x='pickup_hour', y='fare_amount', data=train);
 plt.title('Fare wrt pickup_day');
 
 
-# In[28]:
 
 
 #Find min/max longitude and latitude in the data
@@ -213,7 +185,6 @@ print('Min Pickup Latitude: {}, Max Pickup Latitude {}'.format(max(train['pickup
 print('Min Drop Off Latitude: {}, Max Drop Off Latitude {}'.format(max(train['dropoff_latitude']),min(train['dropoff_latitude'])))
 
 
-# In[29]:
 
 
 #lets correct the lat/long values. Note 1degree is approx 100 kms for both Lat & long (at this place on earth)
@@ -222,7 +193,6 @@ print(np.quantile(train['dropoff_latitude'],[0.025,0.05,0.95,0.975]))
 #Analysing these results, lets say we will take threshold as 40.50 and 40.90( after rounding off in decimal places)
 
 
-# In[30]:
 
 
 print(np.quantile(train['pickup_longitude'],[0.025,0.05,0.95,0.975]))
@@ -231,7 +201,6 @@ print(np.quantile(train['dropoff_longitude'],[0.025,0.05,0.95,0.975]))
 #Note we may be tempted to use the limits from test data but that is IMHO cheating
 
 
-# In[31]:
 
 
 print('Test data')
@@ -241,13 +210,11 @@ print('Min Pickup Latitude: {}, Max Pickup Latitude {}'.format(max(test['pickup_
 print('Min Drop Off Latitude: {}, Max Drop Off Latitude {}'.format(max(test['dropoff_latitude']),min(test['dropoff_latitude'])))
 
 
-# In[32]:
 
 
 train.shape
 
 
-# In[33]:
 
 
 #we see a huge difference between train & test. The extreme co-ordinates of train are not even present in the US not even feasible
@@ -259,13 +226,11 @@ train=train[(train['pickup_longitude']>boundary[0])&(train['pickup_longitude']<b
 train=train[(train['dropoff_longitude']>boundary[0])&(train['dropoff_longitude']<boundary[1])&            (train['dropoff_latitude']>boundary[2])&(train['dropoff_latitude']<boundary[3])]
 
 
-# In[34]:
 
 
 train.shape
 
 
-# In[35]:
 
 
 #https://en.wikipedia.org/wiki/Haversine_formula
@@ -275,28 +240,24 @@ def distance(lat1, lon1, lat2, lon2):
     return 12742 * np.arcsin(np.sqrt(a)) # 2*R*asin... #multiply this by 0.62137 for miles
 
 
-# In[36]:
 
 
 train['Haversine_distance']=distance(train['pickup_latitude'],train['pickup_longitude'],                                     train['dropoff_latitude'],train['dropoff_longitude'])
 test['Haversine_distance']=distance(test['pickup_latitude'],test['pickup_longitude'],                                     test['dropoff_latitude'],test['dropoff_longitude'])
 
 
-# In[37]:
 
 
 #lest see the distance 
 train['Haversine_distance'].describe()#max distance is 35kms
 
 
-# In[38]:
 
 
 np.quantile(test['Haversine_distance'],[0.95,0.99,1])#for test the max is 100 kms but i believe that such high values are outliers
 #So, though the train seems a bit different from test, it okay i guess as test has a few outliers.
 
 
-# In[39]:
 
 
 print(train[train['Haversine_distance']==0]['fare_amount'].describe())
@@ -305,13 +266,11 @@ print(train[train['Haversine_distance']==0].shape)
 #May be a genuine ride as we have a few of these in test too
 
 
-# In[40]:
 
 
 print(test[test['Haversine_distance']==0].shape)
 
 
-# In[41]:
 
 
 plt.figure(figsize=(15, 5))
@@ -323,7 +282,6 @@ plt.title("High distance")
 plt.hist(train[train['Haversine_distance']>=20]['Haversine_distance'],bins=100);
 
 
-# In[42]:
 
 
 #plot Fare vs ditance.
@@ -342,14 +300,12 @@ plt.title('Zoom in on Fare<100 and Distance<25 kms');
 #we can see that as the distance increases Fare amount increases
 
 
-# In[43]:
 
 
 test['Haversine_distance'].describe(),train['Haversine_distance'].describe()
 #we can see there are a lot of outliers in the training data. 
 
 
-# In[44]:
 
 
 # What have we done so far?
@@ -360,21 +316,18 @@ test['Haversine_distance'].describe(),train['Haversine_distance'].describe()
 # 5) the test max HD is actually an outlier (just one/2 record with 99kms), all other are in fact below 25 kms
 
 
-# In[45]:
 
 
 print('Count of train rows with 0 haversine distance is {}'.format(sum(train['Haversine_distance']==0)))
 #lets get drop these rows where distance is 0
 
 
-# In[46]:
 
 
 print('Count of test rows with 0 haversine distance is {}'.format(sum(test['Haversine_distance']==0)))
 #since test also has a few HD==0, i will not delete these observations from train data
 
 
-# In[47]:
 
 
 #Latitude: 1 deg = 110.574 km
@@ -388,7 +341,6 @@ print('Count of test rows with 0 haversine distance is {}'.format(sum(test['Have
 #distance(lat1, lon1, lat2, lon2)
 
 
-# In[48]:
 
 
 #Some trips, like to/from an airport, are fixed fee. To prce this see the plot below
@@ -410,13 +362,11 @@ def plot_location_fare(loc, name, range=2): #within range kms of the location
     axs[1].set_title('Histogram dropoff location within {} KMS of {}'.format(range, name));
 
 
-# In[49]:
 
 
 plot_location_fare(jfk,'JFK airport',3)#looks like it is true. Fare is the same for most rides within 5kms from jfk airport
 
 
-# In[50]:
 
 
 ewr = (-74.175, 40.69) # Newark Liberty International Airport, see https://www.travelmath.com/airport/EWR
@@ -425,7 +375,6 @@ plot_location_fare(ewr, 'Newark Airport',3)
 plot_location_fare(lgr, 'LaGuardia Airport',3)
 
 
-# In[51]:
 
 
 #So,lets add a binary variable which is 1 if the pick up is from JFK and another if the drop is at JFk
@@ -472,13 +421,11 @@ plot_location_fare(lgr, 'LaGuardia Airport',3)
 #                                                             test.dropoff_longitude, lgr[1], lgr[0])<3,1,0)
 
 
-# In[52]:
 
 
 train.sample(5)
 
 
-# In[53]:
 
 
 # display pivot table
@@ -487,7 +434,6 @@ plt.ylabel('Fare $USD');
 #we can see that the average Fare vs time of day has been increasing with year. #Inflation
 
 
-# In[54]:
 
 
 def select_within_boundingbox(df, BB):
@@ -497,7 +443,6 @@ def select_within_boundingbox(df, BB):
     return (df.pickup_longitude >= BB[0]) & (df.pickup_longitude <= BB[1]) &            (df.pickup_latitude >= BB[2]) & (df.pickup_latitude <= BB[3]) &            (df.dropoff_longitude >= BB[0]) & (df.dropoff_longitude <= BB[1]) &            (df.dropoff_latitude >= BB[2]) & (df.dropoff_latitude <= BB[3])
 
 
-# In[55]:
 
 
 #Relevance of direction for fare amount
@@ -524,7 +469,6 @@ plt.title('log1p(fare_amount)');
 #Fare seems to be lesser in the center and more around perimeter nad i can see a star here.(slightly tilted). 
 
 
-# In[56]:
 
 
 print('total {} records out of {} are in manhattan. So {}'.format(sum(within_manhattan_train),train.shape[0],                                                                 sum(within_manhattan_train)*100/train.shape[0]))
@@ -532,14 +476,12 @@ print('total {} records out of {} are in manhattan. So {}'.format(sum(within_man
 #performance will be quite good
 
 
-# In[57]:
 
 
 from IPython.display import Image
 Image(filename = "../input/manhattan/manhattan.JPG", width = 400, height = 350)
 
 
-# In[58]:
 
 
 #if you see the map of Manhattan, the streets are at 60 degrees and -30 degrees with horizontal. 
@@ -548,13 +490,11 @@ Image(filename = "../input/manhattan/manhattan.JPG", width = 400, height = 350)
 #whatever model we build later
 
 
-# In[59]:
 
 
 Image(filename = "../input/astc-picjpg/astc.JPG", width = 150, height = 120)
 
 
-# In[60]:
 
 
 #From the triangle that is formed above for a given street, we know the base ( delta long), perpen(delta lat)
@@ -575,7 +515,6 @@ def calculate_direction(d_lon, d_lat):
     return result
 
 
-# In[61]:
 
 
 #I am calculatig this for all records but this will be applicate to only the records in Manhattan
@@ -584,7 +523,6 @@ train['direction'] = calculate_direction(train['delta_long'],train['delta_lat'])
 train['direction'].describe()
 
 
-# In[62]:
 
 
 #prepare the Delta variables for test data
@@ -594,7 +532,6 @@ test['direction'] = calculate_direction(test['delta_long'],test['delta_lat'])
 test['direction'].describe()
 
 
-# In[63]:
 
 
 # plot direction vs average fare amount
@@ -609,7 +546,6 @@ plt.ylabel('average fare amount $USD');
 #also avg fare is lowest in -20degree as there is hardly any land in this direction. Mostly water. So the distances along this must be less
 
 
-# In[64]:
 
 
 #but for the same Haversine distance, the total actual distance and hence FARE along 60& 120 degrees must be lesser than at other angles
@@ -624,7 +560,6 @@ plt.xticks(range(36), np.arange(-170, 190, 10))
 plt.ylabel('average fare amount $USD');
 
 
-# In[65]:
 
 
 #The above should be observed at any particular total Haversine distance
@@ -639,7 +574,6 @@ plt.xticks(range(36), np.arange(-170, 190, 10))
 plt.ylabel('average fare amount $USD');
 
 
-# In[66]:
 
 
 ## add the binary column for Manhatttan or not
@@ -650,13 +584,11 @@ within_manhattan_test=select_within_boundingbox(test,BB_manhattan)
 test['manhattan']=within_manhattan_test.map(lambda x: int(x))
 
 
-# In[67]:
 
 
 train.head()
 
 
-# In[68]:
 
 
 #Empirical Cumulative Distribution Function Plot for fare_amount
@@ -677,13 +609,11 @@ plt.plot(xs, ys, '.')
 plt.ylabel('Percentile'); plt.title('ECDF of Fare Amount'); plt.xlabel('Fare Amount ($)');
 
 
-# In[69]:
 
 
 np.corrcoef(train['Haversine_distance'],train['fare_amount'])#there is a good co-relation
 
 
-# In[70]:
 
 
 ## Add a column that gives the pickup and dropoff distance from the 3 airports and NYC centre. Thsi may help us capture the fixed charge 
@@ -720,19 +650,16 @@ test['dis_pickup_from_nyc']=distance(test['pickup_latitude'],test['pickup_longit
 test['dis_dropoff_from_nyc']=distance(test['dropoff_latitude'],test['dropoff_longitude'],nyc[1],nyc[0])
 
 
-# In[71]:
 
 
 train.sample(3)
 
 
-# In[72]:
 
 
 train.columns
 
 
-# In[73]:
 
 
 #COlumns that i plan to use for modelling
@@ -745,7 +672,6 @@ model_cols=['pickup_longitude',
        'dis_dropoff_from_jfk', 'dis_pickup_from_nyc', 'dis_dropoff_from_nyc']
 
 
-# In[74]:
 
 
 from sklearn.metrics import mean_squared_error,make_scorer
@@ -756,7 +682,6 @@ def rmse(y_true, y_pred):
 my_scorer = make_scorer(rmse,greater_is_better=False)
 
 
-# In[75]:
 
 
 #for Linear regression since they do not have High variance, i will simply divide Train into train & valdation
@@ -784,7 +709,6 @@ print('RMSE on the Validation data is {} and on train is {}'.format(rmse(y_valid
 #This scores 5.4 on Kaggle LB. So we have overfit the data
 
 
-# In[76]:
 
 
 #Check if there is Variance in Linear Regression
@@ -812,7 +736,6 @@ def variance_linreg(train,n=50):#will try 50 different splits
 variance_linreg(train,n=20)#Not much deviation from mean. So No Variance
 
 
-# In[77]:
 
 
 class Hyper_param_tuning():
@@ -848,7 +771,6 @@ class Hyper_param_tuning():
         print('\n Best Score for {}-fold search is {}'.format(self.folds,search_obj.best_score_))
 
 
-# In[78]:
 
 
 from sklearn.model_selection import KFold
@@ -863,7 +785,6 @@ X_test=test[model_cols]
 tune=Hyper_param_tuning(X_train,y_train,folds=5)
 
 
-# In[79]:
 
 
 from sklearn.ensemble import RandomForestClassifier,RandomForestRegressor
@@ -873,25 +794,21 @@ import lightgbm as lgb
 import xgboost as xgb
 
 
-# In[80]:
 
 
 get_ipython().run_cell_magic('time', '', "#RF\n#parameter grid for RF\nparams = {'n_estimators': [100],\n              'max_features': ['sqrt'], #, 'sqrt','auto'\n             # 'criterion':  ['gini'], #'entropy',#gini is for clssification\n              'max_depth': [30,40,50,80],\n              'min_samples_leaf': [40,15,50]\n            # 'min_samples_split':5,\n            }\n#xgb=tune.Tree_Model(params=params,model_name='rf')\n\n#10 trees, 160 fits, 1 hour, -2.821685185125628,{'max_depth': 30, 'max_features': 'auto', 'min_samples_leaf': 15, 'n_estimators': 10}\n# 30 trees,60 fits, 28 minutes,-2.808, {'max_depth': 40, 'max_features': 'sqrt', 'min_samples_leaf': 15, 'n_estimators': 30}\n# 60 trees,60 fits,55min, -2.801,{'max_depth': 40, 'max_features': 'sqrt', 'min_samples_leaf': 15, 'n_estimators': 60}\n# 100 trees,60 fits,90 min,-2.798,{'max_depth': 40, 'max_features': 'sqrt', 'min_samples_leaf': 15, 'n_estimators': 100}\n# I notice hardly  any change in the metric with increasing number of trees. So, lets keep it at 60\n#Good thing is 'max_depth': 40, 'min_samples_leaf': 15 for all values of n_estimators")
 
 
-# In[81]:
 
 
 get_ipython().run_cell_magic('time', '', "## XGB\nparams = {\n        'min_child_weight': [ 5], #[ 5, 10]\n        'gamma': [1.5], #[1.5, 5]\n        'subsample': [0.6, 1.0],\n        'colsample_bytree': [0.6], #[0.6, 1.0]\n        'max_depth': [3, 10],\n        'alpha': [1],#[5,1]\n        'lambda': [5] #[5,15]\n            }\n#xgb=tune.Tree_Model(params=params,model_name='xgb')\n#1h 25min\n#-2.6689, {'alpha': 1, 'colsample_bytree': 0.6, 'gamma': 1.5, 'lambda': 5, 'max_depth': 10, 'min_child_weight': 5, 'subsample': 1.0}")
 
 
-# In[82]:
 
 
 get_ipython().run_cell_magic('time', '', '## LGBM\nlgbm_params= {#"max_depth": 5,          #max depth for tree model\n              #"num_leaves": 25,        #max number of leaves in one tree\n              # \'feature_fraction\':0.6,  #LightGBM will randomly select part of features on each tree node\n               \'bagging_fraction\':[0.8],    #randomly select part of data without resampling\n              # \'max_drop\': 5,         #used only in dart,max number of dropped trees during one boosting iteration\n              \'lambda_l1\': [5],#[1,5]\n              \'lambda_l2\':[ 0.01,0.5], #[ 0.01,0.5,10]\n              \'min_child_samples\':[400,600],  #minimal number of data in one leaf\n                \'max_bin\':[15,20], #max number of bins that feature values will be bucketed in. Higher value--> Overfitting\n               # \'subsample\':[0.6,0.8],  #randomly select part of data without resampling\n                \'colsample_bytree\':[0.8], #same as feature_fraction\n               \'boosting_type\': [\'dart\']   #options are gbdt(gradientboosting decision trees), rf,dart,goss\n                }  #weight of labels with positive class\n\n#lgbm=tune.Tree_Model(params=lgbm_params,model_name=\'lgbm\')\n\n#-3.291, {\'bagging_fraction\': 0.8, \'boosting_type\': \'dart\', \'colsample_bytree\': 0.8, \'lambda_l1\': 5,\n#\'lambda_l2\': 0.5, \'max_bin\': 20, \'min_child_samples\': 400}, 2 hours')
 
 
-# In[83]:
 
 
 from bayes_opt import BayesianOptimization
@@ -924,7 +841,6 @@ dtrain = xgb.DMatrix(X_train, label=y_train)
 dtest = xgb.DMatrix(X_valid)
 
 
-# In[84]:
 
 
 xgb_bo = BayesianOptimization(xgb_evaluate, {'max_depth': (3, 10), 
@@ -935,7 +851,6 @@ xgb_bo = BayesianOptimization(xgb_evaluate, {'max_depth': (3, 10),
 #xgb_bo.maximize(init_points=3, n_iter=5, acq='ei') #commenting for now
 
 
-# In[85]:
 
 
 #Extract the parameters of the best model.
@@ -943,7 +858,6 @@ xgb_bo = BayesianOptimization(xgb_evaluate, {'max_depth': (3, 10),
 # params['max_depth'] = int(xgb_bo.max['params']['max_depth'])
 
 
-# In[86]:
 
 
 #Provide a K-fold function that generate out-of-fold predictions for train data.
@@ -1102,7 +1016,6 @@ class Modelling():
         return stacker_test,stacker_train
 
 
-# In[87]:
 
 
 from sklearn.model_selection import KFold
@@ -1117,13 +1030,11 @@ X_test=test[model_cols]
 modelling_object = Modelling(X=X_train.values, y=y_train.values, test_X=X_test.values, folds=folds, N=Number_of_folds)
 
 
-# In[88]:
 
 
 get_ipython().run_cell_magic('time', '', "rf_params = {'n_estimators': 200,\n              'max_features': 'sqrt', #, 'sqrt','auto'\n              #'criterion':  'gini', #'entropy',\n              'max_depth': 40,\n              'min_samples_leaf': 15,\n            # 'min_samples_split':5,\n            # 'class_weight':'balanced',\n             'random_state':0,\n             'n_jobs': -1,\n             'oob_score': True\n            }\n\ntest_pred_stacked_rf,stacker_train_rf=modelling_object.SingleRF_oof(params=rf_params)\n#All validation scores (for each folds) come 3.34-3.92\n#TRAIN (OOF) is RMSE: 3.61\n#LB score 3.46\n#Wall time: 39min 21s")
 
 
-# In[89]:
 
 
 results=pd.DataFrame({'key':test['key'],'fare_amount':test_pred_stacked_rf})
@@ -1133,13 +1044,11 @@ results_train=pd.DataFrame({'Model_fare_amount':stacker_train_rf[:,0]})
 results_train.to_csv('/kaggle/working/stacker_train_rf.csv',index=False)
 
 
-# In[90]:
 
 
 get_ipython().run_cell_magic('time', '', "#Call XGB\nparams_for_xgb = {\n    'objective': 'reg:squarederror',  #the learning task and the corresponding learning objective\n    'eval_metric': 'rmse',            #Evaluation metrics for validation data\n    'eta': 0.04,          #learning_rate          \n    'max_depth': 10,       #Maximum depth of a tree. High will make the model more complex and more likely to overfit.\n    'min_child_weight': 5, #[0,inf] Higher the value,lesser the number of splits\n    'gamma': 0.0,       #Minimum loss reduction required to make a further partition on a leaf node of the tree    \n    'colsample_bytree': 0.6,  #subsample ratio of columns when constructing each tree\n    'alpha': 1,  #L1 regularization term on weights\n    'lambda': 5,  \n    'subsample':1.0, #'subsample': 0.8,    #Subsample ratio of the training instances\n    'seed': 2017}\n\ntest_pred_stacked_xgb,stacker_train_xgb=modelling_object.SingleXGB_oof(params=params_for_xgb,num_boost_round=1000)\n\n#All validation scores (for each folds) come between 3.18-3.80 \n#OOF score on train is 3.48\n#LB score 3.93\n#1h 35min 58s")
 
 
-# In[91]:
 
 
 results=pd.DataFrame({'key':test['key'],'fare_amount':test_pred_stacked_xgb})
@@ -1149,13 +1058,11 @@ results_train=pd.DataFrame({'Model_fare_amount':stacker_train_xgb[:,0]})
 results_train.to_csv('/kaggle/working/stacker_train_xgb.csv',index=False)
 
 
-# In[92]:
 
 
 get_ipython().run_cell_magic('time', '', 'lgbm_params= {#"max_depth": 5,          #max depth for tree model\n              "learning_rate" : 0.02,\n    \'eval_metric\': \'rmse\', \n    \'objective\': \'regression\',\n              #"num_leaves": 25,        #max number of leaves in one tree\n              # \'feature_fraction\':0.6,  #LightGBM will randomly select part of features on each tree node\n               \'bagging_fraction\':0.8,    #randomly select part of data without resampling\n              # \'max_drop\': 5,         #used only in dart,max number of dropped trees during one boosting iteration\n               \'lambda_l1\': 5,\n               \'lambda_l2\': 0.5,\n              \'min_child_samples\':400,  #minimal number of data in one leaf\n                \'max_bin\':20, #max number of bins that feature values will be bucketed in. Higher value--> Overfitting\n                \'subsample\':0.6,  #randomly select part of data without resampling\n                \'colsample_bytree\':0.8, #same as feature_fraction\n               \'boosting_type\': \'gbdt\',   #options are dart,gbdt(gradientboosting decision trees), rf,dart,goss\n               \'task\': \'train\'}  #weight of labels with positive class\n\ntest_pred_stacked_lgbm,stacker_train_lgbm=\\\nmodelling_object.SingleLGBM_oof(params=lgbm_params,num_boost_round=1000,colnames=X_train.columns,importance_plot=True)\n#All validation scores (for each folds) come between 3.40-3.97\n#LB score around 3.35\n# time 4 minutes')
 
 
-# In[93]:
 
 
 results=pd.DataFrame({'key':test['key'],'fare_amount':test_pred_stacked_lgbm})
@@ -1165,13 +1072,11 @@ results_train=pd.DataFrame({'Model_fare_amount':stacker_train_lgbm[:,0]})
 results_train.to_csv('/kaggle/working/stacker_train_lgbm.csv',index=False)
 
 
-# In[94]:
 
 
 get_ipython().run_cell_magic('time', '', "#Catboost\nimport catboost\nfrom catboost import CatBoostRegressor\ncat_params= {\n    'iterations':1000,\n    'learning_rate':0.004,\n   'depth':5,\n    'eval_metric':'RMSE',\n    'colsample_bylevel':0.8,\n    'random_seed' : 2017,\n    'bagging_temperature' : 0.2,\n    'early_stopping_rounds':200\n} \ntest_pred_stacked_cat,stacker_train_cat=\\\nmodelling_object.SingleCatBoost_oof(params=cat_params)\n#All validation scores (for each folds) come around 3.72-4.24\n#LB score 3.72\n#Wall time: 10min 29s")
 
 
-# In[95]:
 
 
 results=pd.DataFrame({'key':test['key'],'fare_amount':test_pred_stacked_cat})
@@ -1181,7 +1086,6 @@ results_train=pd.DataFrame({'Model_fare_amount':stacker_train_cat[:,0]})
 results_train.to_csv('/kaggle/working/stacker_train_cat.csv',index=False)
 
 
-# In[96]:
 
 
 columns=['catboost','xgb','lgbm','rf']
@@ -1196,19 +1100,16 @@ for i in range(len(columns)):
 lv1_train_df['Y']=y_train.values #add the dependendt variable to training
 
 
-# In[97]:
 
 
 lv1_train_df.describe()
 
 
-# In[98]:
 
 
 lv1_train_df.isnull().sum()
 
 
-# In[99]:
 
 
 #LGBM Level 2
@@ -1217,21 +1118,18 @@ l2_modelling_object = Modelling(X=lv1_train_df.drop('Y',axis=1).values, y=lv1_tr
 test_pred_stacked_lgbm_L2,stacker_train_lgbm_L2=l2_modelling_object.SingleLGBM_oof(params=lgbm_params,num_boost_round=10000,colnames=columns,importance_plot=True)
 
 
-# In[100]:
 
 
 results=pd.DataFrame({'key':test['key'],'fare_amount':test_pred_stacked_lgbm_L2})
 results.to_csv('/kaggle/working/test_pred_stacked_lgbm_L2.csv',index=False)
 
 
-# In[101]:
 
 
 #XGB L2
 test_pred_stacked_xgb_L2,stacker_train_xgb_L2=l2_modelling_object.SingleXGB_oof(params_for_xgb,1000)
 
 
-# In[102]:
 
 
 results=pd.DataFrame({'key':test['key'],'fare_amount':test_pred_stacked_xgb_L2})

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Python ≥3.5 is required
@@ -64,7 +63,6 @@ randomseed = 42
 # Any results you write to the current directory are saved as output. Kaggle message :D
 
 
-# In[2]:
 
 
 train = pd.read_table('../input/train.tsv',low_memory=True)
@@ -74,7 +72,6 @@ print('Testing set shape: {}'.format(test.shape))
 train.head()
 
 
-# In[3]:
 
 
 fig = plt.figure(figsize=(16,5))
@@ -84,7 +81,6 @@ plt.subplot(2,1,2)
 sns.distplot(np.log1p(train['price']))
 
 
-# In[4]:
 
 
 fig = plt.figure(figsize=(16,10))
@@ -94,19 +90,16 @@ plt.subplot(2,1,2)
 sns.countplot(train['item_condition_id'])
 
 
-# In[5]:
 
 
 train.isnull().sum()
 
 
-# In[6]:
 
 
 train.nunique()
 
 
-# In[7]:
 
 
 # reference: BuryBuryZymon at https://www.kaggle.com/maheshdadhich/i-will-sell-everything-for-free-0-55
@@ -123,7 +116,6 @@ print('Testing set shape: {}'.format(test.shape))
 train.head()
 
 
-# In[8]:
 
 
 def imputing_nan_values(X):
@@ -138,7 +130,6 @@ test = imputing_nan_values(test)
 train.isnull().sum()
 
 
-# In[9]:
 
 
 fig = plt.figure(figsize=(16,5))
@@ -149,13 +140,11 @@ plt.xticks(rotation=45)
 plt.title('General Category/Count',fontsize = 20,color='blue')
 
 
-# In[10]:
 
 
 train['brand_name'].value_counts()
 
 
-# In[11]:
 
 
 train['has_brand'] = 1 #setting all the values to true as default
@@ -169,7 +158,6 @@ train.loc[train['brand_name'] == 'missing', 'has_brand'] = 0
 train.loc[train['brand_name'] == 'missing', 'has_brand'] = 0
 
 
-# In[12]:
 
 
 sns.catplot(x='has_brand', y='price', data=train, aspect=1.5,alpha=0.8)
@@ -178,7 +166,6 @@ plt.ylabel('Price',fontsize = 15,color='blue')
 plt.title('Has Brand X Price',fontsize = 20,color='blue')
 
 
-# In[13]:
 
 
 sns.catplot(x='has_description', y='price', data=train, aspect=1.5,alpha=0.8)
@@ -187,7 +174,6 @@ plt.ylabel('Price',fontsize = 15,color='blue')
 plt.title('HAS DESCRIPTION X Price',fontsize = 20,color='blue')
 
 
-# In[14]:
 
 
 # description related tf-idf features 
@@ -220,7 +206,6 @@ gc.collect()
 train.head()
 
 
-# In[15]:
 
 
 lb = LabelEncoder()
@@ -230,13 +215,11 @@ for name in label_encoder_columns:
     test[name] = lb.fit_transform(test[name])
 
 
-# In[16]:
 
 
 train.head()
 
 
-# In[17]:
 
 
 train = pd.get_dummies(train, columns=['general_cat','item_condition_id'])
@@ -247,7 +230,6 @@ print('Testing set shape: {}'.format(test.shape))
 train.head()
 
 
-# In[18]:
 
 
 drop_columns = ['general_cat','item_description','category_name','item_condition_id','name',
@@ -259,7 +241,6 @@ train = train.loc[:,features_to_be_used]
 test = test.loc[:,features_to_be_used]
 
 
-# In[19]:
 
 
 print('Training set shape: {}'.format(train.shape))
@@ -267,7 +248,6 @@ print('Testing set shape: {}'.format(test.shape))
 train.head()
 
 
-# In[20]:
 
 
 from sklearn.model_selection import train_test_split
@@ -275,13 +255,11 @@ from sklearn.model_selection import train_test_split
 train_final,train_validation, train_y, train_val_y  = train_test_split(train, train_labels,test_size=0.2, shuffle = True, random_state=randomseed)
 
 
-# In[21]:
 
 
 print(train_final.shape, train_y.shape)
 
 
-# In[22]:
 
 
 #let's create this function to make it easier and clean to fit the model and use the cross_val_score and obtain results
@@ -370,7 +348,6 @@ def train_model(X_train, x_val, y, y_val, params=None, model_type='lgb', plot_fe
     gc.collect()
 
 
-# In[23]:
 
 
 params_cat = {
@@ -387,7 +364,6 @@ params_cat = {
                         #model_type='cat',plot_feature_importance=True)
 
 
-# In[24]:
 
 
 params_lgb = {
@@ -408,7 +384,6 @@ lgb_model = train_model(train_final,train_validation,train_y,train_val_y,params_
 preds_lgb = lgb_model.predict(test)
 
 
-# In[25]:
 
 
 submission = pd.read_csv('../input/sample_submission_stg2.csv')

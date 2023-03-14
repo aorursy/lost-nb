@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -16,13 +15,11 @@ sns.set_style("whitegrid")
 my_pal = sns.color_palette(n_colors=10)
 
 
-# In[2]:
 
 
 get_ipython().system('ls -GFlash ../input/data-science-bowl-2019/')
 
 
-# In[3]:
 
 
 # Read in the data CSV files
@@ -33,46 +30,39 @@ specs = pd.read_csv('../input/data-science-bowl-2019/specs.csv')
 ss = pd.read_csv('../input/data-science-bowl-2019/sample_submission.csv')
 
 
-# In[4]:
 
 
 train_ = train.sample(1000000) #sample 1M observations
 
 
-# In[5]:
 
 
 train_labels.head()
 
 
-# In[6]:
 
 
 train_labels.groupby('accuracy_group')['game_session'].count()     .plot(kind='barh', figsize=(15, 5), title='Target (accuracy group)')
 plt.show()
 
 
-# In[7]:
 
 
 sns.pairplot(train_labels, hue='accuracy_group')
 plt.show()
 
 
-# In[8]:
 
 
 train.head()
 
 
-# In[9]:
 
 
 train['event_id_as_int'] = train['event_id'].apply(lambda x: int(x, 16))
 train['game_session_as_int'] = train['game_session'].apply(lambda x: int(x, 16))
 
 
-# In[10]:
 
 
 #code by Isaac & Jack
@@ -91,14 +81,12 @@ def extract_time_features(df):
     return df
 
 
-# In[11]:
 
 
 print(f'Train data has shape: {train.shape}')
 print(f'Test data has shape: {test.shape}')
 
 
-# In[12]:
 
 
 train.groupby('date')['event_id']     .agg('count')     .plot(figsize=(15, 3),
@@ -117,20 +105,17 @@ train.groupby('weekday_name')['event_id']     .agg('count').T[['Monday','Tuesday
 plt.show()
 
 
-# In[13]:
 
 
 print(train['event_data'][4])
 print(train['event_data'][5])
 
 
-# In[14]:
 
 
 train['installation_id'].nunique()
 
 
-# In[15]:
 
 
 train.groupby('installation_id')     .count()['event_id']     .plot(kind='hist',
@@ -141,7 +126,6 @@ train.groupby('installation_id')     .count()['event_id']     .plot(kind='hist',
 plt.show()
 
 
-# In[16]:
 
 
 train.groupby('installation_id')     .count()['event_id']     .apply(np.log1p)     .plot(kind='hist',
@@ -152,13 +136,11 @@ train.groupby('installation_id')     .count()['event_id']     .apply(np.log1p)  
 plt.show()
 
 
-# In[17]:
 
 
 train.groupby('installation_id')     .count()['event_id'].sort_values(ascending=False).head(5)
 
 
-# In[18]:
 
 
 train.query('installation_id == "f1c21eda"')     .set_index('timestamp')['event_code']     .plot(figsize=(15, 5),
@@ -168,7 +150,6 @@ train.query('installation_id == "f1c21eda"')     .set_index('timestamp')['event_
 plt.show()
 
 
-# In[19]:
 
 
 train.groupby('event_code')     .count()['event_id']     .sort_values()     .plot(kind='bar',
@@ -177,7 +158,6 @@ train.groupby('event_code')     .count()['event_id']     .sort_values()     .plo
 plt.show()
 
 
-# In[20]:
 
 
 train['game_time'].apply(np.log1p)     .plot(kind='hist',
@@ -188,7 +168,6 @@ train['game_time'].apply(np.log1p)     .plot(kind='hist',
 plt.show()
 
 
-# In[21]:
 
 
 train.groupby('title')['event_id']     .count()     .sort_values()     .plot(kind='barh',
@@ -197,21 +176,18 @@ train.groupby('title')['event_id']     .count()     .sort_values()     .plot(kin
 plt.show()
 
 
-# In[22]:
 
 
 # Chow Time Video
 HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/tvRtFqOqa-Y" frameborder="0" allow="accelerometer;         autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
 
 
-# In[23]:
 
 
 # Scrub-a-Dub
 HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/kkNzO2QzWaQ" frameborder="0" allow="accelerometer;     autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
 
 
-# In[24]:
 
 
 train.groupby('type')['event_id']     .count()     .sort_values()     .plot(kind='bar',
@@ -221,7 +197,6 @@ train.groupby('type')['event_id']     .count()     .sort_values()     .plot(kind
 plt.show()
 
 
-# In[25]:
 
 
 train.groupby('world')['event_id']     .count()     .sort_values()     .plot(kind='bar',
@@ -231,13 +206,11 @@ train.groupby('world')['event_id']     .count()     .sort_values()     .plot(kin
 plt.show()
 
 
-# In[26]:
 
 
 train['log1p_game_time'] = train['game_time'].apply(np.log1p)
 
 
-# In[27]:
 
 
 fig, ax = plt.subplots(figsize=(15, 5))
@@ -254,19 +227,16 @@ plt.close()
 plt.show()
 
 
-# In[28]:
 
 
 specs.head()
 
 
-# In[29]:
 
 
 specs.describe()
 
 
-# In[30]:
 
 
 # First Attempt... still working to fully understand the problem
@@ -292,7 +262,6 @@ test_aggs.columns = ['_'.join(col).strip() for col in test_aggs.columns.values]
 train_aggs = train_aggs.rename(columns={'installation_id_' : 'installation_id'})
 
 
-# In[31]:
 
 
 # Hmmm... not 1:1
@@ -300,7 +269,6 @@ train_aggs.merge(train_labels[['installation_id','accuracy_group']],
                  how='left')
 
 
-# In[32]:
 
 
 import numpy as np
@@ -313,7 +281,6 @@ from collections import Counter
 from scipy import stats
 
 
-# In[33]:
 
 
 from sklearn.metrics import confusion_matrix
@@ -350,7 +317,6 @@ def qwk(act,pred,n=4,hist_range=(0,3)):
     
 
 
-# In[34]:
 
 
 train = pd.read_csv('/kaggle/input/data-science-bowl-2019/train.csv')
@@ -360,7 +326,6 @@ test = pd.read_csv('/kaggle/input/data-science-bowl-2019/test.csv')
 submission = pd.read_csv('/kaggle/input/data-science-bowl-2019/sample_submission.csv')
 
 
-# In[35]:
 
 
 
@@ -378,7 +343,6 @@ test['title'] = test['title'].map(activities_map)
 train_labels['title'] = train_labels['title'].map(activities_map)
 
 
-# In[36]:
 
 
 # I didnt undestud why, but this one makes a dict where the value of each element is 4100 
@@ -387,7 +351,6 @@ win_code = dict(zip(activities_map.values(), (4100*np.ones(len(activities_map)))
 win_code[activities_map['Bird Measurer (Assessment)']] = 4110
 
 
-# In[37]:
 
 
 # convert text into datetime
@@ -395,13 +358,11 @@ train['timestamp'] = pd.to_datetime(train['timestamp'])
 test['timestamp'] = pd.to_datetime(test['timestamp'])
 
 
-# In[38]:
 
 
 train.head()
 
 
-# In[39]:
 
 
 
@@ -524,7 +485,6 @@ def get_data(user_sample, test_set=False):
     return all_assessments
 
 
-# In[40]:
 
 
 # here the get_data function is applyed to each installation_id and added to the compile_data list
@@ -535,7 +495,6 @@ for i, (ins_id, user_sample) in tqdm(enumerate(train.groupby('installation_id', 
     compiled_data += get_data(user_sample)
 
 
-# In[41]:
 
 
 # the compiled_data is converted to DataFrame and deleted to save memmory
@@ -544,14 +503,12 @@ del compiled_data
 new_train.shape
 
 
-# In[42]:
 
 
 pd.set_option('display.max_columns', None)
 new_train[:10]
 
 
-# In[43]:
 
 
 # this list comprehension create the list of features that will be used on the input dataset X
@@ -565,7 +522,6 @@ del train
 X.shape
 
 
-# In[44]:
 
 
 
@@ -591,7 +547,6 @@ def make_classifier(iterations=6000):
     return clf
 
 
-# In[45]:
 
 
 
@@ -628,7 +583,6 @@ print('OOF QWK:', qwk(y, oof))
 print('-' * 30)
 
 
-# In[46]:
 
 
 # train model on all data once
@@ -638,7 +592,6 @@ print('-' * 30)
 del X, y
 
 
-# In[47]:
 
 
 # process test set, the same that was done with the train set
@@ -651,7 +604,6 @@ X_test = pd.DataFrame(new_test)
 del test
 
 
-# In[48]:
 
 
 # make predictions on test set once
@@ -665,7 +617,6 @@ print(predictions.shape)
 #del X_test
 
 
-# In[49]:
 
 
 submission['accuracy_group'] = np.round(predictions).astype('int')
@@ -673,19 +624,16 @@ submission.to_csv('submission.csv', index=None)
 submission.head()
 
 
-# In[50]:
 
 
 submission['accuracy_group'].plot(kind='hist')
 
 
-# In[51]:
 
 
 train_labels['accuracy_group'].plot(kind='hist')
 
 
-# In[52]:
 
 
 pd.Series(oof).plot(kind='hist')

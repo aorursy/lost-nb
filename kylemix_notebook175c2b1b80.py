@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import s2sphere as s2
@@ -29,13 +27,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import log_loss
 
 
-# In[3]:
 
 
 df = pd.read_json(open("../input/train.json", "r"))
 
 
-# In[4]:
 
 
 def convertHour(hour, am=False, pm=False):
@@ -67,7 +63,6 @@ def countCaps(desc):
                 counter +=1
 
 
-# In[5]:
 
 
 df['created'] = pd.to_datetime(df.created)
@@ -81,13 +76,11 @@ df['third_tri'] = df.day.map(lambda x: convertDay(x,thrd=True))
 df["photo_count"] = df["photos"].apply(len)
 
 
-# In[6]:
 
 
 df.created[10].hour
 
 
-# In[7]:
 
 
 num_featuresA = ['bathrooms', 'bedrooms','price','day','hour',"photo_count",
@@ -97,7 +90,6 @@ num_featuresB = ['bathrooms', 'bedrooms','price','first_tri', 'second_tri', 'thi
                 'description_wrdlen','description_len','latitude','longitude']
 
 
-# In[8]:
 
 
 df = df[['bathrooms', 'bedrooms', 'building_id', 'created', 'description',
@@ -108,7 +100,6 @@ df = df[['bathrooms', 'bedrooms', 'building_id', 'created', 'description',
        'pm', 'first_tri', 'second_tri', 'third_tri', 'high', 'low', 'medium']]
 
 
-# In[9]:
 
 
 X = df[num_featuresB]
@@ -116,7 +107,6 @@ y = df["interest_level"]
 X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.33)
 
 
-# In[10]:
 
 
 clf = RandomForestClassifier(n_estimators=1000)
@@ -125,44 +115,37 @@ y_val_pred = clf.predict_proba(X_val)
 log_loss(y_val, y_val_pred)
 
 
-# In[11]:
 
 
 df['description_wrdlen'] = df.description.map(lambda x: len(x.split()))
 df['feature_len'] = df.features.map(len)
 
 
-# In[12]:
 
 
 int_dummies = pd.get_dummies(data=df.interest_level)
 
 
-# In[13]:
 
 
 df = pd.concat([df,int_dummies],axis=1)
 
 
-# In[14]:
 
 
 type(df.created[10])
 
 
-# In[15]:
 
 
 df.apply(lambda r: s2.CellId.from_lat_lng(s2.LatLng(r.latitude,r.longitude)).parent(15).to_token(), axis=1)
 
 
-# In[16]:
 
 
 df.building_id.value_counts()[df.building_id.value_counts()>50].shape
 
 
-# In[17]:
 
 
 

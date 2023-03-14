@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -13,7 +12,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import log_loss
 
 
-# In[2]:
 
 
 get_ipython().system('wget -q https://raw.githubusercontent.com/google-research-datasets/gap-coreference/master/gap-development.tsv')
@@ -24,7 +22,6 @@ get_ipython().system('wget -q https://raw.githubusercontent.com/google-research/
 get_ipython().system('wget -q https://raw.githubusercontent.com/google-research/bert/master/tokenization.py')
 
 
-# In[3]:
 
 
 import modeling
@@ -32,7 +29,6 @@ import extract_features
 import tokenization
 
 
-# In[4]:
 
 
 val_df = pd.read_table('gap-validation.tsv', index_col='ID').reset_index(drop=True)
@@ -40,14 +36,12 @@ test_df  = pd.read_table('gap-validation.tsv', index_col='ID').reset_index(drop=
 dev_df  = pd.read_table('gap-development.tsv', index_col='ID').reset_index(drop=True)
 
 
-# In[5]:
 
 
 get_ipython().system('wget -q https://storage.googleapis.com/bert_models/2018_10_18/uncased_L-12_H-768_A-12.zip ')
 get_ipython().system('unzip uncased_L-12_H-768_A-12.zip')
 
 
-# In[6]:
 
 
 def count_char(text, offset):   
@@ -128,19 +122,16 @@ def embed_by_bert(df, path_to_bert='uncased_L-12_H-768_A-12', embed_size=768, ba
     return emb    
 
 
-# In[7]:
 
 
 get_ipython().run_cell_magic('time', '', 'val_bert_emb = embed_by_bert(val_df)\ntest_bert_emb = embed_by_bert(test_df)\ndev_bert_emb = embed_by_bert(dev_df)')
 
 
-# In[8]:
 
 
 val_bert_emb["emb_A"].head().map(np.asarray).values[0].astype('float').shape
 
 
-# In[9]:
 
 
 def featurize(embedding_df):
@@ -164,19 +155,16 @@ def featurize(embedding_df):
     return np.concatenate([a_embs, b_embs, pronoun_embs], axis=1), np.asarray(labels)
 
 
-# In[10]:
 
 
 X_train, y_train = featurize(pd.concat([val_bert_emb, dev_bert_emb]).sort_index().reset_index())
 
 
-# In[11]:
 
 
 X_train.shape, y_train.shape
 
 
-# In[12]:
 
 
 logit = LogisticRegression(C=1e-2, random_state=17, solver='lbfgs', 
@@ -184,44 +172,37 @@ logit = LogisticRegression(C=1e-2, random_state=17, solver='lbfgs',
                           n_jobs=4)
 
 
-# In[13]:
 
 
 get_ipython().run_cell_magic('time', '', 'logit.fit(X_train, y_train)')
 
 
-# In[14]:
 
 
 get_ipython().system('cp gap-development.tsv stage1_test.tsv')
 
 
-# In[15]:
 
 
 stage1_test_df  = pd.read_table('stage1_test.tsv', index_col='ID').reset_index(drop=True)
 
 
-# In[16]:
 
 
 get_ipython().run_cell_magic('time', '', 'stage1_test_bert_emb = embed_by_bert(stage1_test_df)')
 
 
-# In[17]:
 
 
 X_test, y_test = featurize(stage1_test_bert_emb)
 
 
-# In[18]:
 
 
 logit_test_pred = logit.predict_proba(X_test)
 log_loss(y_test, logit_test_pred)
 
 
-# In[19]:
 
 
 # Write the prediction to file for submission
@@ -232,7 +213,6 @@ submission["NEITHER"] = logit_test_pred[:, 2]
 submission.to_csv("submission.csv")
 
 
-# In[20]:
 
 
 

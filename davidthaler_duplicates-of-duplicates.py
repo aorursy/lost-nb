@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -15,7 +14,6 @@ tr = pd.read_csv(TRAIN_PATH)
 pos = tr[tr.is_duplicate==1]
 
 
-# In[2]:
 
 
 g = nx.Graph()
@@ -25,26 +23,22 @@ edges = list(pos[['question1', 'question2']].to_records(index=False))
 g.add_edges_from(edges)
 
 
-# In[3]:
 
 
 len(set(pos.question1) | set(pos.question2)), g.number_of_nodes()
 
 
-# In[4]:
 
 
 len(pos), g.number_of_edges()
 
 
-# In[5]:
 
 
 d = g.degree()
 np.mean([d[k] for k in d])
 
 
-# In[6]:
 
 
 cc = filter(lambda x : (len(x) > 3) and (len(x) < 10), 
@@ -53,7 +47,6 @@ g1 = next(cc)
 g1.nodes()
 
 
-# In[7]:
 
 
 # with block handles a deprecation warning that occurs inside nx.draw_networkx
@@ -63,14 +56,12 @@ with warnings.catch_warnings():
     plt.show()
 
 
-# In[8]:
 
 
 g1 = next(cc)
 g1.nodes()
 
 
-# In[9]:
 
 
 with warnings.catch_warnings():
@@ -79,14 +70,12 @@ with warnings.catch_warnings():
     plt.show()
 
 
-# In[10]:
 
 
 g1 = next(cc)
 g1.nodes()
 
 
-# In[11]:
 
 
 with warnings.catch_warnings():
@@ -95,7 +84,6 @@ with warnings.catch_warnings():
     plt.show()
 
 
-# In[12]:
 
 
 cc = nx.connected_component_subgraphs(g)
@@ -107,27 +95,23 @@ cts['mean_deg'] = 2 * cts.edges / cts.nodes
 cts.nodes.clip_upper(10).value_counts().sort_index()
 
 
-# In[13]:
 
 
 Most of the components have just 2 questions, the minimum possible. But there are also several thousand larger components.
 
 
-# In[14]:
 
 
 cts.plot.scatter('nodes', 'edges')
 plt.show()
 
 
-# In[15]:
 
 
 cts.plot.scatter('nodes', 'mean_deg')
 plt.show()
 
 
-# In[16]:
 
 
 cts[cts.nodes >= 5].edges.sum()

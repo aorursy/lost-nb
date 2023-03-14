@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('reload_ext', 'autoreload')
@@ -9,7 +8,6 @@ get_ipython().run_line_magic('autoreload', '2')
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 import fastai
@@ -22,7 +20,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-# In[3]:
 
 
 # Making pretrained weights work without needing to find the default filename
@@ -33,20 +30,17 @@ get_ipython().system("cp '../input/resnet152/resnet152.pth' '/tmp/.cache/torch/c
 #!cp '../input/densenet161/densenet161-8d451a50.pth' '/tmp/.cache/torch/checkpoints/densenet161-8d451a50.pth'
 
 
-# In[4]:
 
 
 import os
 os.listdir('../input')
 
 
-# In[5]:
 
 
 #print('Make sure cudnn is enabled:', torch.backends.cudnn.enabled)
 
 
-# In[6]:
 
 
 def seed_everything(seed):
@@ -61,7 +55,6 @@ SEED = 1667
 seed_everything(SEED)
 
 
-# In[7]:
 
 
 base_image_dir = os.path.join('..', 'input/aptos2019-blindness-detection/')
@@ -73,20 +66,17 @@ df = df.sample(frac=1).reset_index(drop=True) #shuffle dataframe
 df.head(10)
 
 
-# In[8]:
 
 
 len_df = len(df)
 print(f"There are {len_df} images")
 
 
-# In[9]:
 
 
 df['diagnosis'].hist(figsize = (10, 5))
 
 
-# In[10]:
 
 
 IMG_SIZE = 256
@@ -138,7 +128,6 @@ def _load_format(path, convert_mode, after_open)->Image:
 vision.data.open_image = _load_format
 
 
-# In[11]:
 
 
 bs=32  
@@ -149,7 +138,6 @@ src = (ImageList.from_df(df=df,path='./',cols='path') #get dataset from dataset
 src
 
 
-# In[12]:
 
 
 tfms = get_transforms(do_flip=True, flip_vert=True, max_rotate=0.10, max_zoom=1.3, max_warp=0.0, max_lighting=0.2)
@@ -161,7 +149,6 @@ data = (
 data
 
 
-# In[13]:
 
 
 from sklearn.metrics import cohen_kappa_score
@@ -169,40 +156,34 @@ def quadratic_kappa(y_hat, y):
     return torch.tensor(cohen_kappa_score(torch.round(y_hat), y, weights='quadratic'),device='cuda:0')
 
 
-# In[14]:
 
 
 learn = cnn_learner(data, base_arch=models.resnet50 ,metrics=[quadratic_kappa],model_dir='/kaggle',pretrained=True,
 callback_fns=[partial(EarlyStoppingCallback, monitor='quadratic_kappa', min_delta=0.01, patience=3)])
 
 
-# In[15]:
 
 
 learn.lr_find()
 learn.recorder.plot(suggestion=True)
 
 
-# In[16]:
 
 
 learn.fit_one_cycle(4, 1e-2)
 
 
-# In[17]:
 
 
 learn.save('stage1')
 
 
-# In[18]:
 
 
 learn.recorder.plot_losses()
 learn.recorder.plot_metrics()
 
 
-# In[19]:
 
 
 data = (
@@ -213,27 +194,23 @@ data = (
 data
 
 
-# In[20]:
 
 
 learn.lr_find()
 learn.recorder.plot(suggestion=True)
 
 
-# In[21]:
 
 
 learn.fit_one_cycle(4, 1e-2)
 
 
-# In[22]:
 
 
 learn.recorder.plot_losses()
 learn.recorder.plot_metrics()
 
 
-# In[23]:
 
 
 learn.unfreeze()
@@ -241,39 +218,33 @@ learn.lr_find()
 learn.recorder.plot(suggestion=True)
 
 
-# In[24]:
 
 
 learn.fit_one_cycle(10, max_lr=slice(1e-6,1e-3))  #wd=1e-3
 
 
-# In[25]:
 
 
 learn.recorder.plot_losses()
 learn.recorder.plot_metrics()
 
 
-# In[26]:
 
 
 learn.export()
 learn.save('stage2')
 
 
-# In[27]:
 
 
 learn.show_results(ds_type=DatasetType.Train, rows=4, figsize=(8,10))
 
 
-# In[28]:
 
 
 valid_preds = learn.get_preds(ds_type=DatasetType.Valid)
 
 
-# In[29]:
 
 
 import numpy as np
@@ -286,7 +257,6 @@ from collections import Counter
 import json
 
 
-# In[30]:
 
 
 class OptimizedRounder(object):
@@ -335,21 +305,18 @@ class OptimizedRounder(object):
         return self.coef_['x']
 
 
-# In[31]:
 
 
 optR = OptimizedRounder()
 optR.fit(valid_preds[0],valid_preds[1])
 
 
-# In[32]:
 
 
 coefficients = optR.coefficients()
 print(coefficients)
 
 
-# In[33]:
 
 
 from fastai.core import *
@@ -387,14 +354,12 @@ def _TTA(learn:Learner, beta:float=0, ds_type:DatasetType=DatasetType.Valid, num
 Learner.TTA = _TTA
 
 
-# In[34]:
 
 
 sample_df = pd.read_csv('../input/aptos2019-blindness-detection/sample_submission.csv')
 sample_df.head()
 
 
-# In[35]:
 
 
 learn.data.add_test(ImageList.from_df(sample_df,'../input/aptos2019-blindness-detection',folder='test_images',suffix='.png'))

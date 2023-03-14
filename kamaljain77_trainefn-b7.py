@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 Dropout_model = 0.385
@@ -30,7 +29,6 @@ import seaborn as sns
 from PIL import Image
 
 
-# In[2]:
 
 
 def seed_everything(seed):
@@ -46,7 +44,6 @@ session = tf.compat.v1.Session(config=config)
 train = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/train.csv') 
 
 
-# In[3]:
 
 
 tr_age_max = train.Age.values.max()
@@ -54,7 +51,6 @@ tr_age_min = train.Age.values.min()
 tr_age_mean = train.Age.values.mean()
 
 
-# In[4]:
 
 
 def expandFVC_Percent(DS):
@@ -63,7 +59,6 @@ def expandFVC_Percent(DS):
     return DS
 
 
-# In[5]:
 
 
 def expandMinFVC(data_set):
@@ -84,7 +79,6 @@ def expandMinFVC(data_set):
     return data_set
 
 
-# In[6]:
 
 
 train = expandMinFVC(train)
@@ -94,7 +88,6 @@ print(train.head())
 print(train.sample(5))
 
 
-# In[7]:
 
 
 
@@ -121,7 +114,6 @@ def get_tab(df):
     return np.array(vector) 
 
 
-# In[8]:
 
 
 # s = f'../input/osic-pulmonary-fibrosis-progression/train/{k}/{i}'
@@ -136,7 +128,6 @@ print(d.pixel_array/(2**11))
 print(d)
 
 
-# In[9]:
 
 
 
@@ -159,7 +150,6 @@ def get_img(path):
     return cv2.resize(d.pixel_array / 2**11, (512, 512))
 
 
-# In[10]:
 
 
 from tensorflow.keras.utils import Sequence
@@ -205,7 +195,6 @@ class IGenerator(Sequence):
         return [x, tab] , a
 
 
-# In[11]:
 
 
 from tensorflow.keras.layers import (
@@ -309,7 +298,6 @@ def get_model(shape=(512, 512, 1)):
     return Model([inp, inp2] , x)
 
 
-# In[12]:
 
 
 
@@ -339,7 +327,6 @@ er = tf.keras.callbacks.EarlyStopping(
 
 
 
-# In[13]:
 
 
 model.fit_generator(IGenerator(keys=tr_p, 
@@ -356,7 +343,6 @@ model.fit_generator(IGenerator(keys=tr_p,
 # model.fit(Xtrain, Ytrain, batch_size = 32, epochs = 100)
 
 
-# In[14]:
 
 
 weights_path = "./efn.ckpt"
@@ -367,7 +353,6 @@ model.save_weights(weights_path)
 
 
 
-# In[15]:
 
 
 
@@ -381,7 +366,6 @@ def score(fvc_true, fvc_pred, sigma):
 subs = []
 
 
-# In[16]:
 
 
 from sklearn.model_selection import train_test_split 
@@ -424,7 +408,6 @@ for q in tqdm(range(1, 10)):
 q = (np.argmin(metric) + 1)/ 10
 
 
-# In[17]:
 
 
 print(q)
@@ -432,26 +415,22 @@ with open('q.txt', 'w') as f:
     f.write(str(q)+'\n')
 
 
-# In[18]:
 
 
 # !ls
 # !rm -r checkpoint
 
 
-# In[ ]:
 
 
 
 
 
-# In[19]:
 
 
 # model = build_model(shape=(512, 512, 1), model_class='b0')
 
 
-# In[20]:
 
 
 # mode.load_weights(weigths_path)

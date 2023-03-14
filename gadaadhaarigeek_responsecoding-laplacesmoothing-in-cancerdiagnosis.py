@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -10,7 +9,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[2]:
 
 
 import zipfile
@@ -22,7 +20,6 @@ print('Features : ', data.columns.values)
 data.head()
 
 
-# In[3]:
 
 
 # note the seprator in this file
@@ -37,7 +34,6 @@ print('Features : ', data_text.columns.values)
 data_text.head()
 
 
-# In[4]:
 
 
 # loading stop words from nltk library
@@ -63,7 +59,6 @@ def nlp_preprocessing(total_text, index, column_name):
         return string
 
 
-# In[5]:
 
 
 def nlp_preprocessing_wrapper(data_text, column_name):
@@ -76,7 +71,6 @@ def nlp_preprocessing_wrapper(data_text, column_name):
     print('Time took for preprocessing the text :',time.clock() - start_time, "seconds")    
 
 
-# In[6]:
 
 
 #text processing stage.
@@ -86,7 +80,6 @@ import re
 nlp_preprocessing_wrapper(data_text, column_name="TEXT")
 
 
-# In[7]:
 
 
 # merging both gene_variations and text data based on ID
@@ -94,25 +87,21 @@ result = pd.merge(data, data_text,on='ID', how='left')
 result.head()
 
 
-# In[8]:
 
 
 result[result.isnull().any(axis=1)]
 
 
-# In[9]:
 
 
 result.loc[result['TEXT'].isnull(),'TEXT'] = result['Gene'] +' '+result['Variation']
 
 
-# In[10]:
 
 
 result[result['ID']==1109]
 
 
-# In[11]:
 
 
 from sklearn.model_selection import train_test_split
@@ -128,7 +117,6 @@ X_train, test_df, y_train, y_test = train_test_split(result, y_true, stratify=y_
 train_df, cv_df, y_train, y_cv = train_test_split(X_train, y_train, stratify=y_train, test_size=0.2)
 
 
-# In[12]:
 
 
 print('Number of data points in train data:', train_df.shape[0])
@@ -136,7 +124,6 @@ print('Number of data points in test data:', test_df.shape[0])
 print('Number of data points in cross validation data:', cv_df.shape[0])
 
 
-# In[13]:
 
 
 import matplotlib.pyplot as plt
@@ -193,7 +180,6 @@ for i in sorted_yi:
     print('Number of data points in class', i+1, ':',cv_class_distribution.values[i], '(', np.round((cv_class_distribution.values[i]/cv_df.shape[0]*100), 3), '%)')
 
 
-# In[14]:
 
 
 # This function plots the confusion matrices given y_i, y_i_hat.
@@ -255,7 +241,6 @@ def plot_confusion_matrix(test_y, predict_y):
     plt.show()
 
 
-# In[15]:
 
 
 rand_probs = np.random.rand(1, 9)
@@ -265,7 +250,6 @@ rand_probs = np.random.rand(1, 9)
 (rand_probs/sum(sum(rand_probs)))[0]
 
 
-# In[16]:
 
 
 # we need to generate 9 numbers and the sum of numbers should be 1
@@ -301,7 +285,6 @@ predicted_y =np.argmax(test_predicted_y, axis=1)
 plot_confusion_matrix(y_test, predicted_y+1)
 
 
-# In[17]:
 
 
 # code for response coding with Laplace smoothing.
@@ -415,7 +398,6 @@ def get_gv_feature(alpha, feature, df):
     return gv_fea
 
 
-# In[18]:
 
 
 unique_genes = train_df['Gene'].value_counts()
@@ -424,7 +406,6 @@ print('Number of Unique Genes :', unique_genes.shape[0])
 print(unique_genes.head(10))
 
 
-# In[19]:
 
 
 print("Ans: There are", unique_genes.shape[0] ,"different categories of genes in the train data, andthey are distibuted as follows")
@@ -439,7 +420,6 @@ plt.grid()
 plt.show()
 
 
-# In[20]:
 
 
 c = np.cumsum(h)
@@ -449,13 +429,11 @@ plt.legend()
 plt.show()
 
 
-# In[21]:
 
 
 train_df.head()
 
 
-# In[22]:
 
 
 # response-coding of the Gene feature
@@ -469,14 +447,12 @@ test_gene_feature_responseCoding = np.array(get_gv_feature(alpha, "Gene", test_d
 cv_gene_feature_responseCoding = np.array(get_gv_feature(alpha, "Gene", cv_df))
 
 
-# In[23]:
 
 
 print("train_gene_feature_responseCoding is converted feature using respone coding method")
 print("The shape of gene feature: ", train_gene_feature_responseCoding.shape)
 
 
-# In[24]:
 
 
 # from sklearn.feature_extraction.text import CountVectorizer
@@ -484,7 +460,6 @@ print("The shape of gene feature: ", train_gene_feature_responseCoding.shape)
 # train_gene_feature_onehotCoding = gene_vectorizer.fit_transform(train_df['Gene'])
 
 
-# In[25]:
 
 
 # one-hot encoding of Gene feature.
@@ -495,26 +470,22 @@ test_gene_feature_onehotCoding = gene_vectorizer.transform(test_df['Gene'])
 cv_gene_feature_onehotCoding = gene_vectorizer.transform(cv_df['Gene'])
 
 
-# In[26]:
 
 
 train_gene_feature_onehotCoding.shape, test_gene_feature_onehotCoding.shape, cv_gene_feature_onehotCoding.shape
 
 
-# In[27]:
 
 
 # gene_vectorizer.get_feature_names()
 
 
-# In[28]:
 
 
 print("train_gene_feature_onehotCoding is converted feature using one-hot encoding method.") 
 print("The shape of gene feature:", train_gene_feature_onehotCoding.shape)
 
 
-# In[29]:
 
 
 alpha = [10 ** x for x in range(-5, 1)] # hyperparam for SGD classifier.
@@ -565,7 +536,6 @@ predict_y = sig_clf.predict_proba(test_gene_feature_onehotCoding)
 print('For values of best alpha = ', alpha[best_alpha], "The test log loss is:",log_loss(y_test, predict_y, labels=clf.classes_, eps=1e-15))
 
 
-# In[30]:
 
 
 print("Q6. How many data points in Test and CV datasets are covered by the ", unique_genes.shape[0], " genes in train dataset?")
@@ -577,7 +547,6 @@ print('Ans\n1. In test data',test_coverage, 'out of',test_df.shape[0], ":",(test
 print('2. In cross validation data',cv_coverage, 'out of ',cv_df.shape[0],":" ,(cv_coverage/cv_df.shape[0])*100)
 
 
-# In[31]:
 
 
 unique_variations = train_df['Variation'].value_counts()
@@ -586,7 +555,6 @@ print('Number of Unique Variations :', unique_variations.shape[0])
 print(unique_variations.head(10))
 
 
-# In[32]:
 
 
 print("There are", unique_variations.shape[0] ,"different categories of variations in the train data,and they are distibuted as follows: ")
@@ -601,7 +569,6 @@ plt.grid()
 plt.show()
 
 
-# In[33]:
 
 
 c = np.cumsum(h)
@@ -612,7 +579,6 @@ plt.legend()
 plt.show()
 
 
-# In[34]:
 
 
 # alpha is used for laplace smoothing
@@ -628,14 +594,12 @@ print("cv...")
 cv_variation_feature_responseCoding = np.array(get_gv_feature(alpha, "Variation", cv_df))
 
 
-# In[35]:
 
 
 print("train_variation_feature_responseCoding is a converted feature using the response coding method.") 
 print("The shape of Variation feature:", train_variation_feature_responseCoding.shape)
 
 
-# In[36]:
 
 
 # one-hot encoding of variation feature.
@@ -645,14 +609,12 @@ test_variation_feature_onehotCoding = variation_vectorizer.transform(test_df['Va
 cv_variation_feature_onehotCoding = variation_vectorizer.transform(cv_df['Variation'])
 
 
-# In[37]:
 
 
 print("train_variation_feature_onehotEncoded is converted feature using the onne-hot encoding method.") 
 print("The shape of Variation feature: ", train_variation_feature_onehotCoding.shape)
 
 
-# In[38]:
 
 
 alpha = [10 ** x for x in range(-5, 1)]
@@ -693,7 +655,6 @@ predict_y = sig_clf.predict_proba(test_variation_feature_onehotCoding)
 print('For values of best alpha = ', alpha[best_alpha], "The test log loss is:",log_loss(y_test, predict_y, labels=clf.classes_, eps=1e-15))
 
 
-# In[39]:
 
 
 print("Q12. How many data points are covered by total", unique_variations.shape[0], "genes in test and cross validation data sets?")
@@ -703,14 +664,12 @@ print('Ans\n1. In test data',test_coverage, 'out of',test_df.shape[0], ":",(test
 print('2. In cross validation data',cv_coverage, 'out of ',cv_df.shape[0],":" ,(cv_coverage/cv_df.shape[0])*100)
 
 
-# In[40]:
 
 
 # As we can see, in test and cv, different values of genes have come, which our model doesm't even know of.
 # That's why there is a difference in the values of log-loss in train and (test, cv) data.
 
 
-# In[41]:
 
 
 # cls_text is a dataframe
@@ -728,7 +687,6 @@ def extract_dictionary_paddle(cls_text_df):
     return dictionary
 
 
-# In[42]:
 
 
 def make_class_wise_and_total_text_dict(train_df):
@@ -746,7 +704,6 @@ def make_class_wise_and_total_text_dict(train_df):
     return word_count_class_wise_dict, word_count_total_text_dict
 
 
-# In[43]:
 
 
 import math
@@ -765,7 +722,6 @@ def get_text_responsecoding(df, word_count_class_wise_dict, word_count_total_tex
     return text_feature_responseCoding
 
 
-# In[44]:
 
 
 def make_confuse_array(train_text_feature_names, word_count_class_wise_dict, word_count_total_text_dict):
@@ -779,14 +735,12 @@ def make_confuse_array(train_text_feature_names, word_count_class_wise_dict, wor
     return confuse_array
 
 
-# In[45]:
 
 
 #response coding of text features
 word_count_class_wise_dict, word_count_total_text_dict = make_class_wise_and_total_text_dict(train_df)
 
 
-# In[46]:
 
 
 # Dimension of below matrices (#rows, classes)
@@ -795,7 +749,6 @@ test_text_feature_responseCoding  = get_text_responsecoding(test_df, word_count_
 cv_text_feature_responseCoding  = get_text_responsecoding(cv_df, word_count_class_wise_dict, word_count_total_text_dict)
 
 
-# In[47]:
 
 
 # https://stackoverflow.com/a/16202486
@@ -806,13 +759,11 @@ test_text_feature_responseCoding = (test_text_feature_responseCoding.T/test_text
 cv_text_feature_responseCoding = (cv_text_feature_responseCoding.T/cv_text_feature_responseCoding.sum(axis=1)).T
 
 
-# In[48]:
 
 
 train_text_feature_responseCoding.shape
 
 
-# In[49]:
 
 
 # building a CountVectorizer with all the words that occured minimum 3 times in train data
@@ -829,7 +780,6 @@ train_text_feature_names = text_vectorizer.get_feature_names()
 train_text_feature_counts = train_text_feature_onehotCoding.sum(axis=0).A1
 
 
-# In[50]:
 
 
 # zip(list(text_features),text_fea_counts) will zip a word with its number of times it occured
@@ -837,7 +787,6 @@ text_feature_dict = dict(zip(list(train_text_feature_names),train_text_feature_c
 print("Total number of unique words in train data :", len(train_text_feature_names))
 
 
-# In[51]:
 
 
 from sklearn.preprocessing import normalize
@@ -857,7 +806,6 @@ cv_text_feature_onehotCoding = text_vectorizer.transform(cv_df['TEXT'])
 cv_text_feature_onehotCoding = normalize(cv_text_feature_onehotCoding, axis=0)
 
 
-# In[52]:
 
 
 #https://stackoverflow.com/a/2258273/4084039
@@ -865,13 +813,11 @@ sorted_text_feature_dict = dict(sorted(text_feature_dict.items(), key=lambda x: 
 sorted_text_occur = np.array(list(sorted_text_feature_dict.values()))
 
 
-# In[53]:
 
 
 # sorted_text_occur.shape[0] - len(set(sorted_text_occur))
 
 
-# In[54]:
 
 
 from collections import Counter
@@ -879,7 +825,6 @@ from collections import Counter
 # print(Counter(sorted_text_occur))
 
 
-# In[55]:
 
 
 # Train a Logistic regression+Calibration model using text features whicha re on-hot encoded
@@ -924,7 +869,6 @@ predict_y = sig_clf.predict_proba(test_text_feature_onehotCoding)
 print('For values of best alpha = ', alpha[best_alpha], "The test log loss is:",log_loss(y_test, predict_y, labels=clf.classes_, eps=1e-15))
 
 
-# In[56]:
 
 
 def get_intersec_text(df, train_text_feature_names):
@@ -939,7 +883,6 @@ def get_intersec_text(df, train_text_feature_names):
     return len1,len2
 
 
-# In[57]:
 
 
 len1,len2 = get_intersec_text(test_df, train_text_feature_names)
@@ -948,7 +891,6 @@ len1,len2 = get_intersec_text(cv_df, train_text_feature_names)
 print(np.round((len2/len1)*100, 3), "% of word of Cross Validation appeared in train data")
 
 
-# In[58]:
 
 
 #Data preparation for ML models.
@@ -969,7 +911,6 @@ def predict_and_plot_confusion_matrix(train_x, train_y,test_x, test_y, clf):
     plot_confusion_matrix(test_y, pred_y)
 
 
-# In[59]:
 
 
 def report_log_loss(train_x, train_y, test_x, test_y,  clf):
@@ -980,7 +921,6 @@ def report_log_loss(train_x, train_y, test_x, test_y,  clf):
     return log_loss(test_y, sig_clf_probs, eps=1e-15)
 
 
-# In[60]:
 
 
 # this function will be used just for naive bayes
@@ -1022,7 +962,6 @@ def get_impfeature_names(indices, text, gene, var, no_features):
     print("Out of the top ",no_features," features ", word_present, "are present in query point")
 
 
-# In[61]:
 
 
 # merging gene, variance and text features
@@ -1059,7 +998,6 @@ test_x_responseCoding = np.hstack((test_gene_var_responseCoding, test_text_featu
 cv_x_responseCoding = np.hstack((cv_gene_var_responseCoding, cv_text_feature_responseCoding))
 
 
-# In[62]:
 
 
 print("One hot encoding features :")
@@ -1068,7 +1006,6 @@ print("(number of data points * number of features) in test data = ", test_x_one
 print("(number of data points * number of features) in cross validation data =", cv_x_onehotCoding.shape)
 
 
-# In[63]:
 
 
 print(" Response encoding features :")
@@ -1077,7 +1014,6 @@ print("(number of data points * number of features) in test data = ", test_x_res
 print("(number of data points * number of features) in cross validation data =", cv_x_responseCoding.shape)
 
 
-# In[64]:
 
 
 from sklearn.naive_bayes import MultinomialNB
@@ -1121,7 +1057,6 @@ predict_y = sig_clf.predict_proba(test_x_onehotCoding)
 print('For values of best alpha = ', alpha[best_alpha], "The test log loss is:",log_loss(y_test, predict_y, labels=clf.classes_, eps=1e-15))
 
 
-# In[65]:
 
 
 clf = MultinomialNB(alpha=alpha[best_alpha])
@@ -1135,7 +1070,6 @@ print("Number of missclassified point :", np.count_nonzero((sig_clf.predict(cv_x
 plot_confusion_matrix(cv_y, sig_clf.predict(cv_x_onehotCoding.toarray()))
 
 
-# In[66]:
 
 
 test_point_index = 1
@@ -1149,7 +1083,6 @@ print("-"*50)
 get_impfeature_names(indices[0], test_df['TEXT'].iloc[test_point_index],test_df['Gene'].iloc[test_point_index],test_df['Variation'].iloc[test_point_index], no_feature)
 
 
-# In[67]:
 
 
 test_point_index = 5
@@ -1163,7 +1096,6 @@ print("-"*50)
 get_impfeature_names(indices[0], test_df['TEXT'].iloc[test_point_index],test_df['Gene'].iloc[test_point_index],test_df['Variation'].iloc[test_point_index], no_feature)
 
 
-# In[68]:
 
 
 from sklearn.neighbors import KNeighborsClassifier
@@ -1205,14 +1137,12 @@ predict_y = sig_clf.predict_proba(test_x_responseCoding)
 print('For values of best alpha = ', alpha[best_alpha], "The test log loss is:",log_loss(y_test, predict_y, labels=clf.classes_, eps=1e-15))
 
 
-# In[69]:
 
 
 clf = KNeighborsClassifier(n_neighbors=alpha[best_alpha])
 predict_and_plot_confusion_matrix(train_x_responseCoding, train_y, cv_x_responseCoding, cv_y, clf)
 
 
-# In[70]:
 
 
 clf = KNeighborsClassifier(n_neighbors=alpha[best_alpha])
@@ -1229,7 +1159,6 @@ print("The ",alpha[best_alpha]," nearest neighbours of the test points belongs t
 print("Fequency of nearest points :",Counter(train_y[neighbors[1][0]]))
 
 
-# In[71]:
 
 
 clf = KNeighborsClassifier(n_neighbors=alpha[best_alpha])
@@ -1247,7 +1176,6 @@ print("the k value for knn is",alpha[best_alpha],"and the nearest neighbours of 
 print("Fequency of nearest points :",Counter(train_y[neighbors[1][0]]))
 
 
-# In[72]:
 
 
 alpha = [10 ** x for x in range(-6, 3)]
@@ -1288,14 +1216,12 @@ predict_y = sig_clf.predict_proba(test_x_onehotCoding)
 print('For values of best alpha = ', alpha[best_alpha], "The test log loss is:",log_loss(y_test, predict_y, labels=clf.classes_, eps=1e-15))
 
 
-# In[73]:
 
 
 clf = SGDClassifier(class_weight='balanced', alpha=alpha[best_alpha], penalty='l2', loss='log', random_state=42)
 predict_and_plot_confusion_matrix(train_x_onehotCoding, train_y, cv_x_onehotCoding, cv_y, clf)
 
 
-# In[74]:
 
 
 def get_imp_feature_names(text, indices, removed_ind = []):
@@ -1320,7 +1246,6 @@ def get_imp_feature_names(text, indices, removed_ind = []):
     print (tabulate(tabulte_list, headers=["Index",'Feature name', 'Present or Not']))
 
 
-# In[75]:
 
 
 clf = SGDClassifier(class_weight='balanced', alpha=alpha[best_alpha], penalty='l2', loss='log', random_state=42)
@@ -1336,7 +1261,6 @@ print("-"*50)
 get_impfeature_names(indices[0], test_df['TEXT'].iloc[test_point_index],test_df['Gene'].iloc[test_point_index],test_df['Variation'].iloc[test_point_index], no_feature)
 
 
-# In[76]:
 
 
 test_point_index = 9
@@ -1350,7 +1274,6 @@ print("-"*50)
 get_impfeature_names(indices[0], test_df['TEXT'].iloc[test_point_index],test_df['Gene'].iloc[test_point_index],test_df['Variation'].iloc[test_point_index], no_feature)
 
 
-# In[77]:
 
 
 alpha = [10 ** x for x in range(-6, 1)]
@@ -1390,14 +1313,12 @@ predict_y = sig_clf.predict_proba(test_x_onehotCoding)
 print('For values of best alpha = ', alpha[best_alpha], "The test log loss is:",log_loss(y_test, predict_y, labels=clf.classes_, eps=1e-15))
 
 
-# In[78]:
 
 
 clf = SGDClassifier(alpha=alpha[best_alpha], penalty='l2', loss='log', random_state=42)
 predict_and_plot_confusion_matrix(train_x_onehotCoding, train_y, cv_x_onehotCoding, cv_y, clf)
 
 
-# In[79]:
 
 
 clf = SGDClassifier(alpha=alpha[best_alpha], penalty='l2', loss='log', random_state=42)
@@ -1413,7 +1334,6 @@ print("-"*50)
 get_impfeature_names(indices[0], test_df['TEXT'].iloc[test_point_index],test_df['Gene'].iloc[test_point_index],test_df['Variation'].iloc[test_point_index], no_feature)
 
 
-# In[80]:
 
 
 test_point_index = 34
@@ -1427,7 +1347,6 @@ print("-"*50)
 get_impfeature_names(indices[0], test_df['TEXT'].iloc[test_point_index],test_df['Gene'].iloc[test_point_index],test_df['Variation'].iloc[test_point_index], no_feature)
 
 
-# In[81]:
 
 
 # read more about support vector machines with linear kernals here 
@@ -1471,14 +1390,12 @@ predict_y = sig_clf.predict_proba(test_x_onehotCoding)
 print('For values of best alpha = ', alpha[best_alpha], "The test log loss is:",log_loss(y_test, predict_y, labels=clf.classes_, eps=1e-15))
 
 
-# In[82]:
 
 
 clf = SGDClassifier(alpha=alpha[best_alpha], penalty='l2', loss='hinge', random_state=42, class_weight='balanced')
 predict_and_plot_confusion_matrix(train_x_onehotCoding, train_y,cv_x_onehotCoding,cv_y, clf)
 
 
-# In[83]:
 
 
 clf = SGDClassifier(alpha=alpha[best_alpha], penalty='l2', loss='hinge', random_state=42)
@@ -1494,7 +1411,6 @@ print("-"*50)
 get_impfeature_names(indices[0], test_df['TEXT'].iloc[test_point_index],test_df['Gene'].iloc[test_point_index],test_df['Variation'].iloc[test_point_index], no_feature)
 
 
-# In[84]:
 
 
 test_point_index = 13
@@ -1508,7 +1424,6 @@ print("-"*50)
 get_impfeature_names(indices[0], test_df['TEXT'].iloc[test_point_index],test_df['Gene'].iloc[test_point_index],test_df['Variation'].iloc[test_point_index], no_feature)
 
 
-# In[85]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -1552,14 +1467,12 @@ predict_y = sig_clf.predict_proba(test_x_onehotCoding)
 print('For values of best estimator = ', alpha[int(best_alpha/2)], "The test log loss is:",log_loss(y_test, predict_y, labels=clf.classes_, eps=1e-15))
 
 
-# In[86]:
 
 
 clf = RandomForestClassifier(n_estimators=alpha[int(best_alpha/2)], criterion='gini', max_depth=max_depth[int(best_alpha%2)], random_state=42, n_jobs=-1)
 predict_and_plot_confusion_matrix(train_x_onehotCoding, train_y, cv_x_onehotCoding, cv_y, clf)
 
 
-# In[87]:
 
 
 clf = RandomForestClassifier(n_estimators=alpha[int(best_alpha/2)], criterion='gini', max_depth=max_depth[int(best_alpha%2)], random_state=42, n_jobs=-1)
@@ -1578,7 +1491,6 @@ print("-"*50)
 get_impfeature_names(indices[:no_feature], test_df['TEXT'].iloc[test_point_index],test_df['Gene'].iloc[test_point_index],test_df['Variation'].iloc[test_point_index], no_feature)
 
 
-# In[88]:
 
 
 test_point_index = 19
@@ -1592,7 +1504,6 @@ print("-"*50)
 get_impfeature_names(indices[:no_feature], test_df['TEXT'].iloc[test_point_index],test_df['Gene'].iloc[test_point_index],test_df['Variation'].iloc[test_point_index], no_feature)
 
 
-# In[89]:
 
 
 alpha = [10,50,100,200,500,1000]
@@ -1635,14 +1546,12 @@ predict_y = sig_clf.predict_proba(test_x_responseCoding)
 print('For values of best alpha = ', alpha[int(best_alpha/4)], "The test log loss is:",log_loss(y_test, predict_y, labels=clf.classes_, eps=1e-15))
 
 
-# In[90]:
 
 
 clf = RandomForestClassifier(max_depth=max_depth[int(best_alpha%4)], n_estimators=alpha[int(best_alpha/4)], criterion='gini', max_features='auto',random_state=42)
 predict_and_plot_confusion_matrix(train_x_responseCoding, train_y,cv_x_responseCoding,cv_y, clf)
 
 
-# In[91]:
 
 
 clf = RandomForestClassifier(n_estimators=alpha[int(best_alpha/4)], criterion='gini', max_depth=max_depth[int(best_alpha%4)], random_state=42, n_jobs=-1)
@@ -1668,7 +1577,6 @@ for i in indices:
         print("Text is important feature")
 
 
-# In[92]:
 
 
 test_point_index = 23
@@ -1687,7 +1595,6 @@ for i in indices:
         print("Text is important feature")
 
 
-# In[93]:
 
 
 from sklearn.linear_model import LogisticRegression
@@ -1725,7 +1632,6 @@ for i in alpha:
         best_alpha = log_error
 
 
-# In[94]:
 
 
 lr = LogisticRegression(C=0.1)
@@ -1745,7 +1651,6 @@ print("Number of missclassified point :", np.count_nonzero((sclf.predict(test_x_
 plot_confusion_matrix(test_y=test_y, predict_y=sclf.predict(test_x_onehotCoding))
 
 
-# In[95]:
 
 
 #Refer:http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.VotingClassifier.html

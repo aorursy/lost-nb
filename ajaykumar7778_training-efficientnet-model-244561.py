@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_cell_magic('bash', '', 'pip install ../input/pytorch-pfn-extras/pytorch-pfn-extras-0.2.1/')
 
 
-# In[2]:
 
 
 import os
@@ -52,19 +50,16 @@ pd.options.display.max_rows = 500
 pd.options.display.max_columns = 500
 
 
-# In[3]:
 
 
 Path("/root/.cache/torch/checkpoints").mkdir(parents=True)
 
 
-# In[4]:
 
 
 get_ipython().system('cp ../input/efficientnet-pytorch/efficientnet-b4-e116e8b3.pth /root/.cache/torch/checkpoints/')
 
 
-# In[5]:
 
 
 def set_seed(seed: int = 42):
@@ -86,7 +81,6 @@ def timer(name: str) -> None:
     print("[{}] done in {:.0f} s".format(name, time.time() - t0))
 
 
-# In[6]:
 
 
 ROOT = Path.cwd().parent
@@ -99,20 +93,17 @@ TRAIN_RESAMPLED_AUDIO_DIRS = [
 TEST_AUDIO_DIR = RAW_DATA / "test_audio"
 
 
-# In[7]:
 
 
 
 train = pd.read_csv(TRAIN_RESAMPLED_AUDIO_DIRS[0] / "train_mod.csv")
 
 
-# In[8]:
 
 
 train.head().T
 
 
-# In[9]:
 
 
 if not TEST_AUDIO_DIR.exists():
@@ -122,13 +113,11 @@ else:
     test = pd.read_csv(RAW_DATA / "test.csv")
 
 
-# In[10]:
 
 
 test.head().T
 
 
-# In[11]:
 
 
 settings_str = """
@@ -192,20 +181,17 @@ scheduler:
 """
 
 
-# In[12]:
 
 
 settings = yaml.safe_load(settings_str)
 
 
-# In[13]:
 
 
 # if not torch.cuda.is_available():
 #     settings["globals"]["device"] = "cpu"
 
 
-# In[14]:
 
 
 for k, v in settings.items():
@@ -213,7 +199,6 @@ for k, v in settings.items():
     print(v)
 
 
-# In[15]:
 
 
 def resample(ebird_code: str,filename: str, target_sr: int):    
@@ -235,7 +220,6 @@ def resample(ebird_code: str,filename: str, target_sr: int):
             f.write(file_path + "\n")
 
 
-# In[16]:
 
 
 # train_org = train.copy()
@@ -257,7 +241,6 @@ def resample(ebird_code: str,filename: str, target_sr: int):
 # train["resampled_channels"] = "1 (mono)"
 
 
-# In[17]:
 
 
 BIRD_CODE = {
@@ -319,7 +302,6 @@ BIRD_CODE = {
 INV_BIRD_CODE = {v: k for k, v in BIRD_CODE.items()}
 
 
-# In[18]:
 
 
 PERIOD = 5
@@ -408,7 +390,6 @@ class SpectrogramDataset(data.Dataset):
         return image, labels
 
 
-# In[19]:
 
 
 def get_loaders_for_training(
@@ -425,7 +406,6 @@ def get_loaders_for_training(
     return train_loader, val_loader
 
 
-# In[20]:
 
 
 from efficientnet_pytorch import model as enet
@@ -438,7 +418,6 @@ enet_type = 'efficientnet-b2'
 device = torch.device('cuda')
 
 
-# In[21]:
 
 
 class enetv2(nn.Module):
@@ -466,7 +445,6 @@ class enetv2(nn.Module):
         return x
 
 
-# In[22]:
 
 
 def get_model(args: tp.Dict):
@@ -476,13 +454,11 @@ def get_model(args: tp.Dict):
     return model
 
 
-# In[23]:
 
 
 #model = get_model(settings["model"])
 
 
-# In[24]:
 
 
 def train_loop(
@@ -524,7 +500,6 @@ def eval_for_batch(
         ppe.reporting.report({"val/{}".format(eval_aame): eval_value})
 
 
-# In[25]:
 
 
 def set_extensions(
@@ -572,7 +547,6 @@ def set_extensions(
     return manager
 
 
-# In[26]:
 
 
 tmp_list = []
@@ -598,13 +572,11 @@ print(train_wav_path_exist.shape)
 print(train_all.shape)
 
 
-# In[27]:
 
 
 train_all.head()
 
 
-# In[28]:
 
 
 # # for test run
@@ -614,7 +586,6 @@ train_all.head()
 # settings["scheduler"]["params"]["T_max"] = 4
 
 
-# In[29]:
 
 
 skf = StratifiedKFold(**settings["split"]["params"])
@@ -628,13 +599,11 @@ fold_proportion = pd.pivot_table(train_all, index="ebird_code", columns="fold", 
 print(fold_proportion.shape)
 
 
-# In[30]:
 
 
 fold_proportion
 
 
-# In[31]:
 
 
 use_fold = settings["globals"]["use_fold"]
@@ -644,7 +613,6 @@ val_file_list = train_all.query("fold == @use_fold")[["file_path", "ebird_code"]
 print("[fold {}] train: {}, val: {}".format(use_fold, len(train_file_list), len(val_file_list)))
 
 
-# In[32]:
 
 
 set_seed(settings["globals"]["seed"])
@@ -689,7 +657,6 @@ manager = set_extensions(
 )
 
 
-# In[33]:
 
 
 # # runtraining
@@ -698,7 +665,6 @@ train_loop(
     train_loader, optimizer, scheduler, loss_func)
 
 
-# In[34]:
 
 
 del train_loader
@@ -712,20 +678,17 @@ del manager
 gc.collect()
 
 
-# In[35]:
 
 
 get_ipython().run_cell_magic('bash', '', 'ls /kaggle/training_output')
 
 
-# In[36]:
 
 
 for f_name in ["log","loss.png", "lr.png"]:
     shutil.copy(output_dir / f_name, f_name)
 
 
-# In[37]:
 
 
 log = pd.read_json("log")
@@ -733,13 +696,11 @@ best_epoch = log["val/loss"].idxmin() + 1
 log.iloc[[best_epoch - 1],]
 
 
-# In[38]:
 
 
 shutil.copy(output_dir / "snapshot_epoch_{}.pth".format(best_epoch), "best_model.pth")
 
 
-# In[39]:
 
 
 m = get_model({
@@ -749,7 +710,6 @@ state_dict = torch.load('best_model.pth')
 m.load_state_dict(state_dict)
 
 
-# In[ ]:
 
 
 

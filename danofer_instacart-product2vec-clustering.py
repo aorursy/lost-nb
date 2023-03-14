@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system(' pip install gensim')
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -36,13 +34,11 @@ def toReadable(v):
     return value
 
 
-# In[3]:
 
 
 IDIR = '../input/'
 
 
-# In[4]:
 
 
 raw_order_ds = pd.read_csv(IDIR + 'orders.csv', dtype={
@@ -72,7 +68,6 @@ order_product_cnt_ds.columns = ['product_cnt']
 order_ds = raw_order_ds.merge(order_product_cnt_ds, left_on='order_id', right_index=True)
 
 
-# In[5]:
 
 
 total_user = len(order_ds.user_id.unique())
@@ -87,13 +82,11 @@ print("total ordered product  = {} ({} orders per a product )".format(
     toReadable(total_ordered_product), toReadable(total_ordered_product/unique_products) ))
 
 
-# In[6]:
 
 
 merge_order_product_ds = order_product_ds.merge(order_ds, on='order_id' )
 
 
-# In[7]:
 
 
 order_product_list = merge_order_product_ds    .sort_values(['user_id','order_id','add_to_cart_order'])[['order_id','product_id']]    .values.tolist()
@@ -109,7 +102,6 @@ for (order_id, product_id) in order_product_list:
     sentence.append(str(product_id))
 
 
-# In[8]:
 
 
 model = Word2Vec(product_corpus, window=9, size=100, workers=4, min_count=50)
@@ -117,7 +109,6 @@ model = Word2Vec(product_corpus, window=9, size=100, workers=4, min_count=50)
 # model = Word2Vec.load('./resource/prod2vec.100d.model')
 
 
-# In[9]:
 
 
 def toProductName(id):
@@ -125,7 +116,6 @@ def toProductName(id):
 toProductName(24852)
 
 
-# In[10]:
 
 
 def most_similar_readable(model, product_id):
@@ -134,31 +124,26 @@ def most_similar_readable(model, product_id):
     return [( toProductName(int(id)), similarity ) for (id,similarity) in similar_list]
 
 
-# In[11]:
 
 
 pd.DataFrame(most_similar_readable(model, 24852), columns=['product','similarity'])
 
 
-# In[12]:
 
 
 pd.DataFrame(most_similar_readable(model, 27845), columns=['product','similarity'])
 
 
-# In[13]:
 
 
 pd.DataFrame(most_similar_readable(model, 40939), columns=['product','similarity'])
 
 
-# In[14]:
 
 
 pd.DataFrame(most_similar_readable(model, 48697), columns=['product','similarity'])
 
 
-# In[15]:
 
 
 from __future__ import division
@@ -315,7 +300,6 @@ class Kmeans:
             yield jc, (self.Xtocentre == jc)
 
 
-# In[16]:
 
 
 def clustering(model, k=500, delta=0.00000001, maxiter=200):
@@ -332,19 +316,16 @@ def clustering(model, k=500, delta=0.00000001, maxiter=200):
     return (centres, index2cid, dist, clustered_ds, prod2cid)
 
 
-# In[17]:
 
 
 (centres, index2cid, dist, clustered_ds, prod2cid) = clustering(model)
 
 
-# In[18]:
 
 
 clustered_ds.product_id = clustered_ds.product_id.apply(pd.to_numeric)
 
 
-# In[19]:
 
 
 def idToProductDesc(id):
@@ -362,43 +343,36 @@ def printClusterMembers(cluster_id, topn=10):
         )
 
 
-# In[20]:
 
 
 printClusterMembers(1, topn=10)
 
 
-# In[21]:
 
 
 printClusterMembers(100, topn=10)
 
 
-# In[22]:
 
 
 printClusterMembers(200, topn=10)
 
 
-# In[23]:
 
 
 printClusterMembers(300, topn=10)
 
 
-# In[24]:
 
 
 printClusterMembers(400, topn=10)
 
 
-# In[25]:
 
 
 printClusterMembers(499, topn=10)
 
 
-# In[26]:
 
 
 # product_reorder_ds.groupby('aisle_id').agg({'product_name':                                           lambda x: })
@@ -416,13 +390,11 @@ def popularWords(names, topn=2):
     return " ".join([n[0] for n in tops])
 
 
-# In[27]:
 
 
 clusterIdToKeywords = { cid: popularWords(sub_ds.product_name,3) for cid, sub_ds in clustered_ds.merge(product_ds, on='product_id').groupby('cid')}
 
 
-# In[28]:
 
 
 product_hod_ds = merge_order_product_ds.pivot_table(index='product_id', columns='order_hour_of_day', values='order_id', aggfunc=len, fill_value=0)
@@ -430,7 +402,6 @@ product_hod_ds = merge_order_product_ds.pivot_table(index='product_id', columns=
 orderByHotHour = clustered_ds.merge(product_hod_ds, left_on='product_id', right_index=True)    .groupby('cid').sum()[np.arange(0,24)].idxmax(axis=1).sort_values().index
 
 
-# In[29]:
 
 
 sns.set(style="whitegrid", palette="colorblind", font_scale=1, rc={'font.family':'NanumGothic'} )
@@ -456,7 +427,6 @@ def drawHODCluster(ncols, nrows, startClusterNumber, step):
     fig.tight_layout()
 
 
-# In[30]:
 
 
 ncols, nrows=(6,4)
@@ -465,7 +435,6 @@ for n in np.arange(0,500,ncols*nrows*step):
     drawHODCluster(ncols, nrows, n, step)
 
 
-# In[31]:
 
 
 product_dow_ds = merge_order_product_ds.pivot_table(index='product_id', columns='order_dow', values='order_id', aggfunc=len, fill_value=0)
@@ -473,7 +442,6 @@ product_dow_ds = merge_order_product_ds.pivot_table(index='product_id', columns=
 orderByHotDay = clustered_ds.merge(product_dow_ds, left_on='product_id', right_index=True)    .groupby('cid').sum()[np.arange(0,6)].idxmax(axis=1).sort_values().index
 
 
-# In[32]:
 
 
 def drawDOWCluster(ncols, nrows, startClusterNumber, step):
@@ -499,7 +467,6 @@ def drawDOWCluster(ncols, nrows, startClusterNumber, step):
     fig.tight_layout()
 
 
-# In[33]:
 
 
 ncols, nrows=(6,4)
@@ -508,13 +475,11 @@ for n in np.arange(0,500,ncols*nrows*step):
     drawDOWCluster(ncols, nrows, n, step)
 
 
-# In[34]:
 
 
 
 
 
-# In[34]:
 
 
 

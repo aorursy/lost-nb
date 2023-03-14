@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from fastai.vision import *
@@ -79,7 +78,6 @@ pd.read_csv(f'subs/{name}.csv.gz').head()
 get_ipython().system('kaggle competitions submit -c humpback-whale-identification -f subs/{name}.csv.gz -m "{name}"')
 
 
-# In[2]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -93,20 +91,17 @@ import re
 from utils import *
 
 
-# In[3]:
 
 
 df = pd.read_csv('data/train.csv')
 df.head()
 
 
-# In[4]:
 
 
 (df.Id != 'new_whale').mean()
 
 
-# In[5]:
 
 
 im_count = df[df.Id != 'new_whale'].Id.value_counts()
@@ -114,37 +109,31 @@ im_count.name = 'sighting_count'
 df = df.join(im_count, on='Id'); df.head()
 
 
-# In[6]:
 
 
 val_fns = set(df.sample(frac=1)[(df.Id != 'new_whale') & (df.sighting_count > 1)].groupby('Id').first().Image)
 
 
-# In[7]:
 
 
 len(val_fns)
 
 
-# In[8]:
 
 
 val_fns = val_fns.union(set(df[df.Id == 'new_whale'].sample(frac=1).Image.values[:1000]))
 
 
-# In[9]:
 
 
 len(val_fns)
 
 
-# In[10]:
 
 
 fn2label = {row[1].Image: 'new_whale' if row[1].Id == 'new_whale' else 'known_whale' for row in df.iterrows()}
 
 
-# In[11]:
 
 
 SZ = 224
@@ -153,13 +142,11 @@ NUM_WORKERS = 12
 SEED=0
 
 
-# In[12]:
 
 
 path2fn = lambda path: re.search('\w*\.jpg$', path).group(0)
 
 
-# In[13]:
 
 
 data = (
@@ -174,97 +161,81 @@ data = (
 )
 
 
-# In[14]:
 
 
 data
 
 
-# In[15]:
 
 
 data.show_batch(rows=3)
 
 
-# In[16]:
 
 
 name = f'res50-{SZ}'
 
 
-# In[17]:
 
 
 learn = create_cnn(data, models.resnet50, metrics=[accuracy])
 
 
-# In[18]:
 
 
 learn.lr_find()
 
 
-# In[19]:
 
 
 learn.recorder.plot()
 
 
-# In[20]:
 
 
 learn.fit_one_cycle(4, 1e-2)
 
 
-# In[21]:
 
 
 learn.save(f'{name}-stage-1')
 
 
-# In[22]:
 
 
 learn.unfreeze()
 
 
-# In[23]:
 
 
 learn.lr_find()
 
 
-# In[24]:
 
 
 learn.recorder.plot()
 
 
-# In[25]:
 
 
 learn.fit_one_cycle(4, [1e-6, 1e-5, 1e-4])
 
 
-# In[26]:
 
 
 learn.save(f'{name}-stage-2')
 
 
-# In[27]:
 
 
 preds, targs = learn.get_preds()
 
 
-# In[28]:
 
 
 learn.data.classes
 
 
-# In[29]:
 
 
 # https://en.wikipedia.org/wiki/Precision_and_recall
@@ -274,28 +245,24 @@ fn = ((preds.argmax(1) == 0).long() * targs).sum()
 fp = ((preds.argmax(1) == 1).long() * (targs==0).long()).sum()
 
 
-# In[30]:
 
 
 # recall of new_whale
 tp/(tp+fn).float()
 
 
-# In[31]:
 
 
 # precision
 tp/(tp+fp).float()
 
 
-# In[32]:
 
 
 # accuracy
 (tp+tn)/(tp+tn+fp+fn).float()
 
 
-# In[33]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -388,7 +355,6 @@ data = (
 data
 
 
-# In[34]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -530,7 +496,6 @@ pd.read_csv(f'subs/{name}.csv.gz').Id.str.split().apply(lambda x: x[0] == 'new_w
 get_ipython().system('kaggle competitions submit -c humpback-whale-identification -f subs/{name}.csv.gz -m "{name}"')
 
 
-# In[35]:
 
 
 

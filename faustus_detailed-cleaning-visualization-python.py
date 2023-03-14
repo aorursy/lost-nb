@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -12,7 +11,6 @@ get_ipython().run_line_magic('pylab', 'inline')
 pylab.rcParams['figure.figsize'] = (10, 6)
 
 
-# In[2]:
 
 
 limit_rows   = 7000000
@@ -27,7 +25,6 @@ df           = df[df.ncodpers.isin(unique_id)]
 df.describe()
 
 
-# In[3]:
 
 
 df["fecha_dato"] = pd.to_datetime(df["fecha_dato"],format="%Y-%m-%d")
@@ -35,20 +32,17 @@ df["fecha_alta"] = pd.to_datetime(df["fecha_alta"],format="%Y-%m-%d")
 df["fecha_dato"].unique()
 
 
-# In[4]:
 
 
 df["month"] = pd.DatetimeIndex(df["fecha_dato"]).month
 df["age"]   = pd.to_numeric(df["age"], errors="coerce")
 
 
-# In[5]:
 
 
 df.isnull().any()
 
 
-# In[6]:
 
 
 with sns.plotting_context("notebook",font_scale=1.5):
@@ -61,7 +55,6 @@ with sns.plotting_context("notebook",font_scale=1.5):
     plt.ylabel("Count")
 
 
-# In[7]:
 
 
 df.loc[df.age < 18,"age"]  = df.loc[(df.age >= 18) & (df.age <= 30),"age"].mean(skipna=True)
@@ -70,7 +63,6 @@ df["age"].fillna(df["age"].mean(),inplace=True)
 df["age"]                  = df["age"].astype(int)
 
 
-# In[8]:
 
 
 with sns.plotting_context("notebook",font_scale=1.5):
@@ -84,46 +76,39 @@ with sns.plotting_context("notebook",font_scale=1.5):
     plt.xlim((15,100))
 
 
-# In[9]:
 
 
 df["ind_nuevo"].isnull().sum()
 
 
-# In[10]:
 
 
 months_active = df.loc[df["ind_nuevo"].isnull(),:].groupby("ncodpers", sort=False).size()
 months_active.max()
 
 
-# In[11]:
 
 
 df.loc[df["ind_nuevo"].isnull(),"ind_nuevo"] = 1
 
 
-# In[12]:
 
 
 df.antiguedad = pd.to_numeric(df.antiguedad,errors="coerce")
 np.sum(df["antiguedad"].isnull())
 
 
-# In[13]:
 
 
 df.loc[df["antiguedad"].isnull(),"ind_nuevo"].describe()
 
 
-# In[14]:
 
 
 df.loc[df.antiguedad.isnull(),"antiguedad"] = df.antiguedad.min()
 df.loc[df.antiguedad <0]                    = 0
 
 
-# In[15]:
 
 
 dates=df.loc[:,"fecha_alta"].sort_values().reset_index()
@@ -132,67 +117,56 @@ df.loc[df.fecha_alta.isnull(),"fecha_alta"] = dates.loc[median_date,"fecha_alta"
 df["fecha_alta"].describe()
 
 
-# In[16]:
 
 
 pd.Series([i for i in df.indrel]).value_counts()
 
 
-# In[17]:
 
 
 df.loc[df.indrel.isnull(),"indrel"] = 1
 
 
-# In[18]:
 
 
 df.drop(["tipodom","cod_prov"],axis=1,inplace=True)
 
 
-# In[19]:
 
 
 df.isnull().any()
 
 
-# In[20]:
 
 
 np.sum(df["ind_actividad_cliente"].isnull())
 
 
-# In[21]:
 
 
 df.loc[df.ind_actividad_cliente.isnull(),"ind_actividad_cliente"] = df["ind_actividad_cliente"].median()
 
 
-# In[22]:
 
 
 df.nomprov.unique()
 
 
-# In[23]:
 
 
 df.loc[df.nomprov=="CORU\xc3\x91A, A","nomprov"] = "CORUNA, A"
 
 
-# In[24]:
 
 
 df.loc[df.nomprov.isnull(),"nomprov"] = "UNKNOWN"
 
 
-# In[25]:
 
 
 df.renta.isnull().sum()
 
 
-# In[26]:
 
 
 #df.loc[df.renta.notnull(),:].groupby("nomprov").agg([{"Sum":sum},{"Mean":mean}])
@@ -203,7 +177,6 @@ incomes.nomprov = incomes.nomprov.astype("category", categories=[i for i in df.n
 incomes.head()
 
 
-# In[27]:
 
 
 with sns.axes_style({
@@ -228,7 +201,6 @@ plt.ylim(0,180000)
 plt.yticks(range(0,180000,40000))
 
 
-# In[28]:
 
 
 grouped        = df.groupby("nomprov").agg({"renta":lambda x: x.median(skipna=True)}).reset_index()
@@ -239,27 +211,23 @@ df             = df.reset_index()
 new_incomes    = new_incomes.reset_index()
 
 
-# In[29]:
 
 
 df.loc[df.renta.isnull(),"renta"] = new_incomes.loc[df.renta.isnull(),"renta"].reset_index()
 df.loc[df.renta.isnull(),"renta"] = df.loc[df.renta.notnull(),"renta"].median()
 
 
-# In[30]:
 
 
 df.ind_nomina_ult1.isnull().sum()
 
 
-# In[31]:
 
 
 df.loc[df.ind_nomina_ult1.isnull(), "ind_nomina_ult1"] = 0
 df.loc[df.ind_nom_pens_ult1.isnull(), "ind_nom_pens_ult1"] = 0
 
 
-# In[32]:
 
 
 string_data = df.select_dtypes(include=["object"])
@@ -269,7 +237,6 @@ for col in missing_columns:
 del string_data
 
 
-# In[33]:
 
 
 df.loc[df.indfall.isnull(),"indfall"] = "N"
@@ -282,13 +249,11 @@ for col in unknown_cols:
     df.loc[df[col].isnull(),col] = "UNKNOWN"
 
 
-# In[34]:
 
 
 df.isnull().any()
 
 
-# In[35]:
 
 
 feature_cols = df.iloc[:1,].filter(regex="ind_+.*ult.*").columns.values
@@ -296,7 +261,6 @@ for col in feature_cols:
     df[col] = df[col].astype(int)
 
 
-# In[36]:
 
 
 unique_months = pd.DataFrame(pd.Series(df.fecha_dato.unique()).sort_values()).reset_index(drop=True)
@@ -306,7 +270,6 @@ unique_months.rename(columns={0:"fecha_dato"},inplace=True)
 df = pd.merge(df,unique_months,on="fecha_dato")
 
 
-# In[37]:
 
 
 def status_change(x):
@@ -319,14 +282,12 @@ def status_change(x):
     return label
 
 
-# In[38]:
 
 
 # df.loc[:, feature_cols] = df..groupby("ncodpers").apply(status_change)
 df.loc[:, feature_cols] = df.loc[:, [i for i in feature_cols]+["ncodpers"]].groupby("ncodpers").transform(status_change)
 
 
-# In[39]:
 
 
 df = pd.melt(df, id_vars   = [col for col in df.columns if col not in feature_cols],
@@ -335,7 +296,6 @@ df = df.loc[df.value!="Maintained",:]
 df.shape
 
 
-# In[40]:
 
 
 # For thumbnail
@@ -362,7 +322,6 @@ plt.ylim(0,180000)
 plt.yticks(range(0,180000,40000))
 
 
-# In[41]:
 
 
 

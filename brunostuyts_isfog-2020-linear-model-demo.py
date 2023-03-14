@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -10,26 +9,22 @@ import matplotlib.pyplot as plt
 import sklearn
 
 
-# In[2]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[3]:
 
 
 data = pd.read_csv("/kaggle/input/training_data.csv")  # Store the contents of the csv file in the variable 'data'
 data.head()
 
 
-# In[4]:
 
 
 data.describe()
 
 
-# In[5]:
 
 
 fig, ((ax1, ax2, ax3)) = plt.subplots(1, 3, sharey=True, figsize=(16,9))
@@ -53,14 +48,12 @@ ax1.set_ylabel(r"Depth below mudline, $z$ (m)")
 plt.show()
 
 
-# In[6]:
 
 
 # Select the data where the column 'Location ID' is equal to the location name
 location_data = data[data["Location ID"] == "EK"]
 
 
-# In[7]:
 
 
 fig, ((ax1, ax2, ax3)) = plt.subplots(1, 3, sharey=True, figsize=(16,9))
@@ -87,7 +80,6 @@ ax1.set_ylabel(r"Depth below mudline (m)")
 plt.show()
 
 
-# In[8]:
 
 
 fig, ((ax1, ax2, ax3)) = plt.subplots(1, 3, figsize=(15,6))
@@ -112,7 +104,6 @@ ax3.set_xlim(0, 50)
 plt.show()
 
 
-# In[9]:
 
 
 validation_ids = ['EL', 'CB', 'AV', 'BV', 'EF', 'DL', 'BM']
@@ -122,7 +113,6 @@ training_data = data[~data['Location ID'].isin(validation_ids)]
 validation_data = data[data['Location ID'].isin(validation_ids)]
 
 
-# In[10]:
 
 
 features = ['Normalised ENTRHU [-]']
@@ -131,20 +121,17 @@ X = cleaned_training_data[features]
 y = cleaned_training_data["Blowcount [Blows/m]"]
 
 
-# In[11]:
 
 
 from sklearn.linear_model import LinearRegression
 model_1 = LinearRegression().fit(X,y)
 
 
-# In[12]:
 
 
 model_1.coef_, model_1.intercept_
 
 
-# In[13]:
 
 
 plt.scatter(X, y)
@@ -155,13 +142,11 @@ plt.ylabel("Blowcount (Blows/m)")
 plt.show()
 
 
-# In[14]:
 
 
 model_1.score(X,y)
 
 
-# In[15]:
 
 
 plt.scatter(training_data["Normalised ENTRHU [-]"], training_data["Blowcount [Blows/m]"])
@@ -173,13 +158,11 @@ plt.ylim([0.0, 175.0])
 plt.show()
 
 
-# In[16]:
 
 
 Xlin = np.tanh(5 * cleaned_training_data[["Normalised ENTRHU [-]"]] - 0.5)
 
 
-# In[17]:
 
 
 plt.scatter(Xlin, y)
@@ -189,19 +172,16 @@ plt.ylim([0.0, 175.0])
 plt.show()
 
 
-# In[18]:
 
 
 model_2 = LinearRegression().fit(Xlin, y)
 
 
-# In[19]:
 
 
 model_2.coef_, model_2.intercept_
 
 
-# In[20]:
 
 
 plt.scatter(X, y)
@@ -213,13 +193,11 @@ plt.ylim([0.0, 175])
 plt.show()
 
 
-# In[21]:
 
 
 model_2.score(Xlin, y)
 
 
-# In[22]:
 
 
 enhanced_data = pd.DataFrame() # Create a dataframe for the data enhanced with the shaft friction feature
@@ -230,7 +208,6 @@ for location in training_data['Location ID'].unique(): # Loop over all unique lo
     enhanced_data = pd.concat([enhanced_data, locationdata]) # Combine data for the different locations in 1 dataframe
 
 
-# In[23]:
 
 
 fig, ((ax1, ax2)) = plt.subplots(1, 2, sharey=True, figsize=(12,6))
@@ -246,7 +223,6 @@ ax1.set_ylim([0.0, 175])
 plt.show()
 
 
-# In[24]:
 
 
 features = ["Rs [kN]"]
@@ -255,19 +231,16 @@ y = enhanced_data.dropna()["Blowcount [Blows/m]"]
 Xlin = np.tanh((0.001 * X) - 1)
 
 
-# In[25]:
 
 
 model_3 = LinearRegression().fit(Xlin, y)
 
 
-# In[26]:
 
 
 model_3.intercept_, model_3.coef_
 
 
-# In[27]:
 
 
 plt.scatter(X, y)
@@ -279,13 +252,11 @@ plt.ylim([0.0, 175])
 plt.show()
 
 
-# In[28]:
 
 
 model_3.score(Xlin, y)
 
 
-# In[29]:
 
 
 plt.scatter(data["z [m]"], data["Blowcount [Blows/m]"])
@@ -297,7 +268,6 @@ plt.ylabel("Blowcount (Blows/m)")
 plt.show()
 
 
-# In[30]:
 
 
 enhanced_data["linearized ENTHRU"] = np.tanh(5 * enhanced_data["Normalised ENTRHU [-]"] - 0.5)
@@ -306,7 +276,6 @@ enhanced_data["linearized z"] = np.tanh(0.1 * enhanced_data["z [m]"] - 0.5)
 linearized_features = ["linearized ENTHRU", "linearized Rs", "linearized z"]
 
 
-# In[31]:
 
 
 X = enhanced_data.dropna()[linearized_features]
@@ -314,26 +283,22 @@ y = enhanced_data.dropna()["Blowcount [Blows/m]"]
 model_4 = LinearRegression().fit(X,y)
 
 
-# In[32]:
 
 
 model_4.score(X, y)
 
 
-# In[33]:
 
 
 model_4.intercept_, model_4.coef_
 
 
-# In[34]:
 
 
 predictions = model_4.predict(X)
 predictions
 
 
-# In[35]:
 
 
 fig, ((ax1, ax2, ax3)) = plt.subplots(1, 3, figsize=(15,6))
@@ -358,21 +323,18 @@ ax3.set_xlim(0, 50)
 plt.show()
 
 
-# In[36]:
 
 
 # Create a copy of the dataframe with location-specific data
 validation_data_CB = validation_data[validation_data["Location ID"] == "CB"].copy()
 
 
-# In[37]:
 
 
 # Calculate the shaft resistance feature and put it in the column 'Rs [kN]'
 validation_data_CB["Rs [kN]"] =     (np.pi * validation_data_CB["Diameter [m]"] *      validation_data_CB["z [m]"].diff() * validation_data_CB["qc [MPa]"]).cumsum()
 
 
-# In[38]:
 
 
 # Calculate linearized ENTHRU, Rs and z
@@ -381,7 +343,6 @@ validation_data_CB["linearized Rs"] = np.tanh(0.001 * validation_data_CB["Rs [kN
 validation_data_CB["linearized z"] = np.tanh(0.1 * validation_data_CB["z [m]"] - 0.5)
 
 
-# In[39]:
 
 
 # Create the matrix with n samples and 3 features
@@ -390,20 +351,17 @@ X_validation = validation_data_CB.dropna()[linearized_features]
 y_validation = validation_data_CB.dropna()["Blowcount [Blows/m]"]
 
 
-# In[40]:
 
 
 # Calculate the R2 score for the validation data
 model_4.score(X_validation, y_validation)
 
 
-# In[41]:
 
 
 validation_predictions = model_4.predict(X_validation)
 
 
-# In[42]:
 
 
 fig, ((ax1, ax2, ax3)) = plt.subplots(1, 3, figsize=(15,6))
@@ -428,14 +386,12 @@ ax3.set_xlim(0, 175)
 plt.show()
 
 
-# In[43]:
 
 
 final_data = pd.read_csv("/kaggle/input/validation_data.csv")
 final_data.head()
 
 
-# In[44]:
 
 
 enhanced_final_data = pd.DataFrame() # Create a dataframe for the final data enhanced with the shaft friction feature
@@ -447,13 +403,11 @@ for location in final_data['Location ID'].unique(): # Loop over all unique locat
         [enhanced_final_data, locationdata]) # Combine data for the different locations in 1 dataframe
 
 
-# In[45]:
 
 
 enhanced_final_data.dropna(inplace=True) # Drop the rows containing NaN values and overwrite the dataframe
 
 
-# In[46]:
 
 
 enhanced_final_data["linearized ENTHRU"] = np.tanh(5 * enhanced_final_data["Normalised ENTRHU [-]"] - 0.5)
@@ -461,26 +415,22 @@ enhanced_final_data["linearized Rs"] = np.tanh(0.001 * enhanced_final_data["Rs [
 enhanced_final_data["linearized z"] = np.tanh(0.1 * enhanced_final_data["z [m]"] - 0.5)
 
 
-# In[47]:
 
 
 # Create the matrix with n samples and 3 features
 X = enhanced_final_data[linearized_features]
 
 
-# In[48]:
 
 
 final_predictions = model_4.predict(X)
 
 
-# In[49]:
 
 
 enhanced_final_data["Blowcount [Blows/m]"] = final_predictions
 
 
-# In[50]:
 
 
 enhanced_final_data[["ID", "Blowcount [Blows/m]"]].to_csv("sample_submission_linearmodel.csv", index=False)

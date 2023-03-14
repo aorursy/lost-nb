@@ -1,21 +1,18 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # we will install efficientnet as this notebooki heavily depends on this network
 get_ipython().system('pip install -q efficientnet')
 
 
-# In[2]:
 
 
 # we will install tensorflow_addons to utilise the metrics F1-score to monitor training
 get_ipython().system('pip install tensorflow_addons')
 
 
-# In[3]:
 
 
 # Let's import essentials
@@ -36,7 +33,6 @@ import gc
 import tensorflow_addons as tfa
 
 
-# In[4]:
 
 
 # Detect hardware, return appropriate distribution strategy
@@ -56,7 +52,6 @@ else:
 print("REPLICAS: ", strategy.num_replicas_in_sync)
 
 
-# In[5]:
 
 
 # Data access ...
@@ -83,7 +78,6 @@ VALIDATION_FILENAMES = tf.io.gfile.glob(GCS_PATH + '/val/*.tfrec')
 TEST_FILENAMES = tf.io.gfile.glob(GCS_PATH + '/test/*.tfrec') # predictions on this dataset should be submitted for the competition
 
 
-# In[6]:
 
 
 # Here we determine the validation data ...
@@ -98,7 +92,6 @@ else:
     VALIDATION_FILENAMES = VALIDATION_FILENAMES[len(VALIDATION_FILENAMES)//2:]
 
 
-# In[7]:
 
 
 # Define the classes corresponding to 104 labels that we aim at classification
@@ -116,7 +109,6 @@ CLASSES = ['pink primrose',    'hard-leaved pocket orchid', 'canterbury bells', 
            'trumpet creeper',  'blackberry lily',           'common tulip',     'wild rose']                                                                                                                                               # 100 - 102
 
 
-# In[8]:
 
 
 # numpy and matplotlib defaults
@@ -224,7 +216,6 @@ def display_training_curves(training, validation, title, subplot):
     ax.legend(['train', 'valid.'])
 
 
-# In[9]:
 
 
 def decode_image(image_data):
@@ -310,13 +301,11 @@ STEPS_PER_EPOCH = NUM_TRAINING_IMAGES // BATCH_SIZE
 print('Dataset: {} training images, {} validation images, {} unlabeled test images'.format(NUM_TRAINING_IMAGES, NUM_VALIDATION_IMAGES, NUM_TEST_IMAGES))
 
 
-# In[10]:
 
 
 AUTO = tf.data.experimental.AUTOTUNE
 
 
-# In[11]:
 
 
 # data dump
@@ -334,7 +323,6 @@ for image, idnum in get_test_dataset().take(3):
 print("Test data IDs:", idnum.numpy().astype('U')) # U=unicode string
 
 
-# In[12]:
 
 
 # Peek at training data
@@ -343,14 +331,12 @@ training_dataset = training_dataset.unbatch().batch(40) # let's visualise sample
 train_batch = iter(training_dataset)
 
 
-# In[13]:
 
 
 # run this cell again for next set of images
 display_batch_of_images(next(train_batch))
 
 
-# In[14]:
 
 
 # Peek at test data
@@ -359,14 +345,12 @@ test_dataset = test_dataset.unbatch().batch(40) # let's visualise sample 40 imag
 test_batch = iter(test_dataset)
 
 
-# In[15]:
 
 
 # run this cell again for next set of images
 display_batch_of_images(next(test_batch))
 
 
-# In[16]:
 
 
 # let's define helpers again tu suit one_hot encoded labels
@@ -478,7 +462,6 @@ STEPS_PER_EPOCH = NUM_TRAINING_IMAGES // BATCH_SIZE
 print('Dataset: {} training images, {} validation images, {} unlabeled test images'.format(NUM_TRAINING_IMAGES, NUM_VALIDATION_IMAGES, NUM_TEST_IMAGES))
 
 
-# In[17]:
 
 
 def get_mat(rotation, shear, height_zoom, width_zoom, height_shift, width_shift):
@@ -509,7 +492,6 @@ def get_mat(rotation, shear, height_zoom, width_zoom, height_shift, width_shift)
     return K.dot(K.dot(rotation_matrix, shear_matrix), K.dot(zoom_matrix, shift_matrix))
 
 
-# In[18]:
 
 
 def transform(image,label):
@@ -546,7 +528,6 @@ def transform(image,label):
     return tf.reshape(d,[DIM,DIM,3]),label
 
 
-# In[19]:
 
 
 def decode_image(image_data):
@@ -664,7 +645,6 @@ STEPS_PER_EPOCH = NUM_TRAINING_IMAGES // BATCH_SIZE
 print('Dataset: {} training images, {} validation images, {} unlabeled test images'.format(NUM_TRAINING_IMAGES, NUM_VALIDATION_IMAGES, NUM_TEST_IMAGES))
 
 
-# In[20]:
 
 
 from tensorflow.keras import backend as K
@@ -746,7 +726,6 @@ def categorical_focal_loss(gamma=2., alpha=.25):
     return categorical_focal_loss_fixed
 
 
-# In[21]:
 
 
 # Learning rate schedule for TPU, GPU and CPU.
@@ -772,7 +751,6 @@ def lrfn(epoch):
 lr_callback = tf.keras.callbacks.LearningRateScheduler(lrfn, verbose = True)
 
 
-# In[22]:
 
 
 with strategy.scope():
@@ -796,7 +774,6 @@ model1.summary()
 model1.load_weights('../input/mytopmodel/weights_dense_22.h5')
 
 
-# In[23]:
 
 
 with strategy.scope():
@@ -821,7 +798,6 @@ model2.summary()
 model2.load_weights('../input/mytopmodel/weights_efficient_20.h5')
 
 
-# In[24]:
 
 
 with strategy.scope():
@@ -846,7 +822,6 @@ model3.summary()
 model3.load_weights('../input/mytopmodel/weights_efficient_24(1).h5')
 
 
-# In[25]:
 
 
 with strategy.scope():
@@ -871,7 +846,6 @@ model4.summary()
 model4.load_weights('../input/mytopmodel/weights_efficient_23.h5')
 
 
-# In[26]:
 
 
 model11 = tf.keras.Sequential()
@@ -896,7 +870,6 @@ for layer in model44.layers:
     layer.trainable = False
 
 
-# In[27]:
 
 
 with strategy.scope():
@@ -920,7 +893,6 @@ out.compile(
 out.summary()
 
 
-# In[28]:
 
 
 # history = out.fit(
@@ -933,7 +905,6 @@ out.summary()
 # )
 
 
-# In[29]:
 
 
 out.load_weights('../input/mytopmodel/weights_ensemble_12.h5')

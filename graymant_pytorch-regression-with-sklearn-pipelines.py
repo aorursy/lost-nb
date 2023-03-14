@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import torch
@@ -32,7 +31,6 @@ import zlib
 import zipfile
 
 
-# In[2]:
 
 
 class PytorchRegressor(BaseEstimator, RegressorMixin):
@@ -169,7 +167,6 @@ class PytorchRegressor(BaseEstimator, RegressorMixin):
         return mean_absolute_error(y, y_pred) * -1
 
 
-# In[3]:
 
 
 class OutlierRemover(BaseEstimator, TransformerMixin):
@@ -295,7 +292,6 @@ class ColumnOrderer(BaseEstimator, TransformerMixin):
         return data.sort_index(axis=1)
 
 
-# In[4]:
 
 
 prop = pd.read_csv('../input/properties_2016.csv')
@@ -304,7 +300,6 @@ train = pd.read_csv("../input/train_2016_v2.csv", parse_dates=["transactiondate"
 df_train = train.merge(prop, how='left', on='parcelid')
 
 
-# In[5]:
 
 
 def make_train_set():
@@ -314,14 +309,12 @@ def make_train_set():
     return (x_train, y_train)
 
 
-# In[6]:
 
 
 cachedir = mkdtemp()
 memory = Memory(cachedir=cachedir, verbose=0)
 
 
-# In[7]:
 
 
 drop_cols = ['finishedsquarefeet6', 'finishedsquarefeet12', 'finishedsquarefeet13',
@@ -331,7 +324,6 @@ id_cols = ['heatingorsystemtypeid', 'propertylandusetypeid', 'storytypeid',
            'buildingqualitytypeid', 'typeconstructiontypeid']
 
 
-# In[8]:
 
 
 dp = make_pipeline(Cloner(), DateEncoder(), ColumnDropper(cols=drop_cols),
@@ -342,7 +334,6 @@ x_train_df, y_train = make_train_set()
 x_train = dp.fit_transform(x_train_df)
 
 
-# In[9]:
 
 
 num_features = 54
@@ -361,7 +352,6 @@ clf4 = PytorchRegressor(input_dim=num_features, hidden_layer_dims=[1000, 800, 50
 estimators = [clf1, clf2, clf3, clf4]
 
 
-# In[10]:
 
 
 for idx, estimator in enumerate(estimators):
@@ -369,7 +359,6 @@ for idx, estimator in enumerate(estimators):
     estimator.fit(x_train, y_train.as_matrix())
 
 
-# In[11]:
 
 
 print("Classifier 1")
@@ -382,7 +371,6 @@ print("Classifier 4")
 print(clf4.predict(x_train))
 
 
-# In[ ]:
 
 
 def encode_date(date):
@@ -393,7 +381,6 @@ full_predict = prop
 full_predict["transactiondate"] = encode_date("2016-10-1")
 
 
-# In[ ]:
 
 
 predict_dates= ["2016-10-1", "2016-11-1", "2016-12-1", "2017-10-1", "2017-11-1", "2017-12-1"]
@@ -423,7 +410,6 @@ submission.insert(0, 'ParcelId', pid)
 submission
 
 
-# In[ ]:
 
 
 sub_file_name = 'pytorch_predictions.csv'
@@ -436,7 +422,6 @@ zf.write(sub_file_name, compress_type=zipfile.ZIP_DEFLATED)
 zf.close()
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -30,7 +29,6 @@ from dsutils.evaluation import permutation_importance_cv
 from dsutils.evaluation import plot_permutation_importance
 
 
-# In[2]:
 
 
 # Load data containing all the features
@@ -53,7 +51,6 @@ del cards
 gc.collect()
 
 
-# In[3]:
 
 
 def mutual_information(xi, yi, res=20):
@@ -73,7 +70,6 @@ def mutual_information(xi, yi, res=20):
     return np.nansum(N * np.log(N / Ni))
 
 
-# In[4]:
 
 
 # Show mutual information vs correlation
@@ -91,7 +87,6 @@ for i in range(3):
     plt.gca().tick_params(labelbottom=False, labelleft=False)
 
 
-# In[5]:
 
 
 def quantile_transform(v, res=101):
@@ -107,13 +102,11 @@ def q_mut_info(x, y):
                               quantile_transform(y))
 
 
-# In[6]:
 
 
 get_ipython().run_cell_magic('time', '', "\n# Compute the mutual information\ncols = []\nmis = []\nfor col in X_train:\n    mi = q_mut_info(X_train[col], y_train)\n    cols.append(col)\n    mis.append(mi)\n    \n# Print mut info of each feature\nprint_table(['Column', 'Mutual_Information'],\n            [cols, mis])")
 
 
-# In[7]:
 
 
 # Create DataFrame with scores
@@ -131,7 +124,6 @@ X_train = X_train[top200]
 X_test = X_test[top200]
 
 
-# In[8]:
 
 
 # Regression pipeline
@@ -145,13 +137,11 @@ reg_pipeline = Pipeline([
 ])
 
 
-# In[9]:
 
 
 get_ipython().run_cell_magic('time', '', "\n# Compute the cross-validated feature importance\nimp_df = permutation_importance_cv(\n    X_train, y_train, reg_pipeline, 'rmse', n_splits=2)")
 
 
-# In[10]:
 
 
 # Plot the feature importances
@@ -160,7 +150,6 @@ plot_permutation_importance(imp_df)
 plt.show()
 
 
-# In[11]:
 
 
 # Get top 100 most important features
@@ -172,7 +161,6 @@ dfg = (df.groupby(['Feature'])['Importance']
 top100 = dfg['Feature'][:100].tolist()
 
 
-# In[12]:
 
 
 # Save file w/ 100 most important features

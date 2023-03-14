@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import glob
@@ -9,25 +8,21 @@ import glob
 import pandas as pd
 
 
-# In[2]:
 
 
 categories = [cat.split('/')[-1] for cat in glob.glob('../input/train/*')]
 
 
-# In[3]:
 
 
 categories
 
 
-# In[4]:
 
 
 df = pd.DataFrame()
 
 
-# In[5]:
 
 
 for cat in categories:
@@ -39,37 +34,31 @@ for cat in categories:
     df = df.append(cat_df)
 
 
-# In[6]:
 
 
 df['label'].value_counts()
 
 
-# In[7]:
 
 
 df[df['feature'].str.contains('png')]
 
 
-# In[8]:
 
 
 df[df['feature'].str.contains('jpg')]
 
 
-# In[9]:
 
 
 from sklearn.model_selection import train_test_split
 
 
-# In[10]:
 
 
 X_train, X_test, y_train, y_test= pd.Series(), pd.Series(), pd.Series(), pd.Series()
 
 
-# In[11]:
 
 
 for cat in categories:
@@ -87,19 +76,16 @@ for cat in categories:
     y_test = y_test.append(y_test_t)
 
 
-# In[12]:
 
 
 len(y_test)
 
 
-# In[13]:
 
 
 len(X_train)
 
 
-# In[14]:
 
 
 from sklearn.neural_network import MLPClassifier

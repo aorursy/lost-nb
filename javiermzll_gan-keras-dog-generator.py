@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import shutil
@@ -22,7 +21,6 @@ INPUT_SIZE = 100
 PLOT_FRECUENCY = 50
 
 
-# In[2]:
 
 
 def read_image(file, bounds):
@@ -78,7 +76,6 @@ def load_images():
 x_train = load_images()
 
 
-# In[3]:
 
 
 def create_generator():
@@ -117,7 +114,6 @@ generator = create_generator()
 generator.summary()
 
 
-# In[4]:
 
 
 def create_discriminator():
@@ -150,7 +146,6 @@ discriminator = create_discriminator()
 discriminator.summary()
 
 
-# In[5]:
 
 
 def create_gan(generator, discriminator):
@@ -170,7 +165,6 @@ gan = create_gan(generator, discriminator)
 gan.summary()
 
 
-# In[6]:
 
 
 def plot_images(generator, size=25, dim=(5,5), figsize=(10,10)):
@@ -198,7 +192,6 @@ def plot_loss(epoch, g_losses, d_losses):
     plt.show()
 
 
-# In[7]:
 
 
 def generate_noise(size):
@@ -249,7 +242,6 @@ def training(epochs=1, batch_size=32):
 training(epochs=200)
 
 
-# In[8]:
 
 
 def save_images(generator):

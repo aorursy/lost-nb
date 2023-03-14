@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Import packages
@@ -55,13 +54,11 @@ train_labels = pd.read_csv("../input/data-science-bowl-2019/train_labels.csv")
 pd.set_option('display.max_columns', 1000)
 
 
-# In[2]:
 
 
 os.listdir('../input/data-science-bowl-2019')
 
 
-# In[3]:
 
 
 # Display our hero, Peggy Peg, and her cat
@@ -69,7 +66,6 @@ os.listdir('../input/data-science-bowl-2019')
 Image("../input/peggypeg/peggypeg.jpeg")
 
 
-# In[4]:
 
 
 df_train=pd.read_csv('/kaggle/input/data-science-bowl-2019/train.csv')
@@ -77,7 +73,6 @@ df_test=pd.read_csv('/kaggle/input/data-science-bowl-2019/test.csv')
 spec=pd.read_csv('/kaggle/input/data-science-bowl-2019/specs.csv')
 
 
-# In[5]:
 
 
 #In the Spec file there are 387 unique event_ids but unique info is only 167
@@ -101,7 +96,6 @@ df_event_id_train=df_event_id_train.fillna(0)
 df_event_id_test=df_event_id_test.fillna(0)
 
 
-# In[6]:
 
 
 def create_features(df):
@@ -140,7 +134,6 @@ def create_features(df):
     return(df_final)
 
 
-# In[7]:
 
 
 #Event Code 4020 Feature
@@ -148,13 +141,11 @@ def create_features(df):
 train[(train.type=="Assessment") & (train.event_code==4020) ]
 
 
-# In[8]:
 
 
 specs[specs.event_id=="5f0eb72c"]
 
 
-# In[9]:
 
 
 def get_4020_acc(df):
@@ -176,7 +167,6 @@ def get_4020_acc(df):
     return counter_dict
 
 
-# In[10]:
 
 
 # Event_code 4025 Feature at Cauldron Filler Assesment
@@ -184,13 +174,11 @@ def get_4020_acc(df):
 train[ (train.event_code==4025) & (train.title == 'Cauldron Filler (Assessment)')]
 
 
-# In[11]:
 
 
 specs[specs.event_id=="91561152"]
 
 
-# In[12]:
 
 
 def calculate_accuracy(session):
@@ -201,7 +189,6 @@ def calculate_accuracy(session):
     accuracy_ = true_attempts_/(true_attempts_+false_attempts_) if (true_attempts_+false_attempts_) != 0 else 0
 
 
-# In[ ]:
 
 
 

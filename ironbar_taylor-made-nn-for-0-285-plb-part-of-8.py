@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -34,14 +33,12 @@ from porto.metrics import gini_normalized
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 df_train = pd.read_csv(TRAIN_SET_PATH)
 df_test = pd.read_csv(TEST_SET_PATH)
 
 
-# In[3]:
 
 
 dataset_cleaner = DatasetCleaner(min_category_samples=50)
@@ -50,7 +47,6 @@ dataset_cleaner.transform(df_train)
 dataset_cleaner.transform(df_test)
 
 
-# In[4]:
 
 
 unwanted = df_train.columns[df_train.columns.str.startswith('ps_calc_')]
@@ -59,7 +55,6 @@ df_test.drop(unwanted, axis=1, inplace=True)
 print df_train.shape
 
 
-# In[5]:
 
 
 categorical_columns = df_train.columns[df_train.columns.str.endswith('_cat')]
@@ -68,13 +63,11 @@ df_test = pd.concat([pd.get_dummies(df_test, columns=categorical_columns), df_te
 print df_train.shape, df_test.shape
 
 
-# In[6]:
 
 
 df_train[df_train.columns[df_train.columns.str.startswith(categorical_columns[7])]].head(15)
 
 
-# In[7]:
 
 
 numerical_discrete_features = ['ps_ind_01', 'ps_ind_03', 'ps_ind_14', 'ps_ind_15', 
@@ -82,7 +75,6 @@ numerical_discrete_features = ['ps_ind_01', 'ps_ind_03', 'ps_ind_14', 'ps_ind_15
                                'ps_car_15', 'ps_car_11']
 
 
-# In[8]:
 
 
 def apply_custom_binary_encoding(column):
@@ -94,7 +86,6 @@ def apply_custom_binary_encoding(column):
         df_test[new_column_name] = (df_test[column] > value).astype(np.int)
 
 
-# In[9]:
 
 
 for column in numerical_discrete_features:
@@ -102,13 +93,11 @@ for column in numerical_discrete_features:
 print df_train.shape, df_test.shape
 
 
-# In[10]:
 
 
 df_train[df_train.columns[df_train.columns.str.startswith('ps_ind_01')]].head(15)
 
 
-# In[11]:
 
 
 def add_noise(series, noise_level):
@@ -160,7 +149,6 @@ def target_encode(trn_series=None,
     return add_noise(ft_trn_series, noise_level), add_noise(ft_tst_series, noise_level)
 
 
-# In[12]:
 
 
 target_encoding_columns = list(numerical_discrete_features) + list(categorical_columns)
@@ -174,13 +162,11 @@ for f in target_encoding_columns:
 print df_train.shape, df_test.shape
 
 
-# In[13]:
 
 
 df_train.head()
 
 
-# In[14]:
 
 
 numerical_columns = [column for column in df_train.columns if not 'bin' in column and not 'cat' in column]
@@ -191,7 +177,6 @@ tfe_columns = [column for column in df_train.columns if 'tef' in column]
 normalize_columns = numerical_columns + tfe_columns
 
 
-# In[15]:
 
 
 for column in normalize_columns:
@@ -208,7 +193,6 @@ for column in normalize_columns:
         df_test[column] *= scale
 
 
-# In[16]:
 
 
 df_train.drop(categorical_columns, axis=1, inplace=True)
@@ -216,13 +200,11 @@ df_test.drop(categorical_columns, axis=1, inplace=True)
 print df_train.shape, df_test.shape
 
 
-# In[17]:
 
 
 df_train.columns
 
 
-# In[18]:
 
 
 column_dict = {}
@@ -235,7 +217,6 @@ for key in column_dict:
     print key, len(column_dict[key])
 
 
-# In[19]:
 
 
 for key in column_dict:
@@ -244,32 +225,27 @@ for key in column_dict:
     print
 
 
-# In[20]:
 
 
 x = {key: df_train[column_dict[key]].values for key in column_dict}
 
 
-# In[21]:
 
 
 x_test = {key: df_test[column_dict[key]].values for key in column_dict}
 
 
-# In[22]:
 
 
 y = df_train.target.values
 ids = df_train.id.values
 
 
-# In[23]:
 
 
 column_dict[key]
 
 
-# In[24]:
 
 
 def load_save_dict(filename):
@@ -280,26 +256,22 @@ keras_save_dict = load_save_dict('/media/guillermo/Data/Kaggle/Porto_Safe_Driver
 best_test_pred= keras_save_dict['test_pred'][:, 0]
 
 
-# In[25]:
 
 
 keras_save_dict = load_save_dict('/media/guillermo/Data/Kaggle/Porto_Safe_Driver/experiments/keras_log_20_5folds/2017_11_05_07_51_47.pkl')
 
 
-# In[26]:
 
 
 best_test_pred= keras_save_dict['test_pred'][:, 0]
 
 
-# In[27]:
 
 
 val_pred = keras_save_dict['val_pred'][:, 0]
 sampling_probabilities = np.abs(df_train.target.values - val_pred)
 
 
-# In[28]:
 
 
 def save_log(filepath, params, time_stamp, gini_val_list, 
@@ -319,7 +291,6 @@ def save_log(filepath, params, time_stamp, gini_val_list,
         f.write(text)
 
 
-# In[29]:
 
 
 def get_keras_model(encoding_conf, layers, dropout_rates, l1=0, l2=0, encoding_activation='relu'):
@@ -359,7 +330,6 @@ def get_keras_model(encoding_conf, layers, dropout_rates, l1=0, l2=0, encoding_a
     return model
 
 
-# In[30]:
 
 
 def get_upsampled_index(y, train_index, n_upsampling):
@@ -369,7 +339,6 @@ def get_upsampled_index(y, train_index, n_upsampling):
     return upsampled_index
 
 
-# In[31]:
 
 
 def get_noisy_target(y, prob):
@@ -381,7 +350,6 @@ def get_noisy_target(y, prob):
     return noisy_target
 
 
-# In[32]:
 
 
 def plot_train_evolution(val_score):
@@ -394,7 +362,6 @@ def plot_train_evolution(val_score):
     plt.show()
 
 
-# In[33]:
 
 
 def get_score(params):
@@ -527,19 +494,16 @@ def get_score(params):
     return optimizer_score
 
 
-# In[34]:
 
 
 sampling_probabilities[:] = 1
 
 
-# In[35]:
 
 
 raise
 
 
-# In[36]:
 
 
 params = {
@@ -571,7 +535,6 @@ params = {
 get_score(params)
 
 
-# In[37]:
 
 
 params = {
@@ -603,7 +566,6 @@ params = {
 get_score(params)
 
 
-# In[38]:
 
 
 params = {
@@ -635,7 +597,6 @@ params = {
 get_score(params)
 
 
-# In[ ]:
 
 
 

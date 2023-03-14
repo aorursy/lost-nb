@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -42,13 +41,11 @@ PIPELINE_PICKLE = "pipeline.pkl"
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 n_rows = 5000
 
 
-# In[3]:
 
 
 train = pd.read_csv("../input/training_text", sep = '\|\|'
@@ -61,25 +58,21 @@ hold_out = pd.read_csv("../input/test_text", sep = '\|\|', skiprows = 1,
                       engine = 'python')
 
 
-# In[4]:
 
 
 train.head()
 
 
-# In[5]:
 
 
 test.head()
 
 
-# In[6]:
 
 
 
 
 
-# In[6]:
 
 
 X_train,X_test,Y_train, Y_test = train_test_split(train['Text'], pd.get_dummies(test,prefix_sep="")
@@ -87,44 +80,37 @@ X_train,X_test,Y_train, Y_test = train_test_split(train['Text'], pd.get_dummies(
                                                   ,test_size = .3)
 
 
-# In[7]:
 
 
 aa = Y_train.agg
 
 
-# In[8]:
 
 
 factors = list(X_test)
 factors
 
 
-# In[9]:
 
 
 factors
 
 
-# In[10]:
 
 
 output_notebook()
 
 
-# In[11]:
 
 
 Y_train.shape
 
 
-# In[12]:
 
 
 Y_test.head()
 
 
-# In[13]:
 
 
 from nltk import word_tokenize          
@@ -138,7 +124,6 @@ class LemmaTokenizer(object):
 vect = CountVectorizer(tokenizer=LemmaTokenizer())  
 
 
-# In[14]:
 
 
 pre_process_pl = Pipeline([
@@ -147,86 +132,72 @@ pre_process_pl = Pipeline([
 ])
 
 
-# In[15]:
 
 
 joblib.load(pre_process_pl,PIPELINE_PICKLE)
 
 
-# In[16]:
 
 
 param_grid = {'clf__estimator__C':[ 1,2 , 4 ,7, 10,12,20]}
 
 
-# In[17]:
 
 
 X_train.shape
 
 
-# In[18]:
 
 
 gv_search = GridSearchCV(pre_process_pl, param_grid = param_grid, n_jobs=-1, scoring="neg_log_loss")
 
 
-# In[19]:
 
 
 get_ipython().run_cell_magic('time', '', 'pre_process_pl.fit(X_train, Y_train)')
 
 
-# In[20]:
 
 
 pl_clf_train = Pipeline([('pre',pre_process_pl)
                          , ('clf',OneVsRestClassifier(LogisticRegression()))])
 
 
-# In[21]:
 
 
 get_ipython().run_cell_magic('time', '', 'pl_clf_train.fit(X_train,Y_train)')
 
 
-# In[22]:
 
 
 gv_search.cv_results_
 
 
-# In[23]:
 
 
 gv_search.score(X_test, Y_test)
 
 
-# In[24]:
 
 
 gv_search.predict_proba(X_test)[1]
 
 
-# In[25]:
 
 
 hold_out_data = gv_search.predict_proba(hold_out)
 
 
-# In[26]:
 
 
 estimator_dataframe = pd.DataFrame(gv_search.cv_results_)
 
 
-# In[27]:
 
 
 row_column = np.arange(0,hold_out.shape[1])
 
 
-# In[28]:
 
 
 p = figure(x_axis_label = 'C', y_axis_label = 'Log Loss',plot_width = 300, plot_height = 300)
@@ -239,25 +210,21 @@ p.circle(estimator_dataframe.param_clf__estimator__C, estimator_dataframe.mean_t
 show(p)
 
 
-# In[29]:
 
 
 joblib.dump(pre_process_pl,PIPELINE_PICKLE)
 
 
-# In[30]:
 
 
 
 
 
-# In[30]:
 
 
 
 
 
-# In[30]:
 
 
 

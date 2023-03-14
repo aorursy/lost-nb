@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -25,13 +24,11 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 get_ipython().system('pip install distance')
 
 
-# In[3]:
 
 
 import zipfile
@@ -40,13 +37,11 @@ data = pd.read_csv(zipfile.ZipFile("/kaggle/input/quora-question-pairs/train.csv
 data.head()
 
 
-# In[4]:
 
 
 data = data.astype({"question1": str, "question2":str})
 
 
-# In[5]:
 
 
 # Intial level preprocessing
@@ -86,14 +81,12 @@ data['freq_q1+q2'] = data['freq_qid1'] + data['freq_qid2']
 data['freq_q1-q2'] = abs(data['freq_qid1'] - data['freq_qid2'])
 
 
-# In[6]:
 
 
 # Feature Engineered dataframe 
 data.head(2)
 
 
-# In[7]:
 
 
 # To see the words with special chars
@@ -109,7 +102,6 @@ data.head(2)
 # x.apply(get_special_words, axis=1)
 
 
-# In[8]:
 
 
 from nltk.corpus import stopwords
@@ -136,7 +128,6 @@ def preprocess(x):
     return x
 
 
-# In[9]:
 
 
 def get_token_features(q1, q2):
@@ -243,7 +234,6 @@ def extract_features(df):
     return df
 
 
-# In[10]:
 
 
 import re
@@ -258,13 +248,11 @@ stop = timeit.default_timer()
 print("Time elapsed: ", stop-start)
 
 
-# In[11]:
 
 
 data.head(2)
 
 
-# In[12]:
 
 
 data_duplicate = data[data["is_duplicate"] == 1]
@@ -278,7 +266,6 @@ print ("Number of data points in class 1 (duplicate pairs) :",len(p)//2)
 print ("Number of data points in class 0 (non duplicate pairs) :",len(n)//2)
 
 
-# In[13]:
 
 
 from wordcloud import WordCloud, STOPWORDS
@@ -302,7 +289,6 @@ print ("Total number of words in duplicate pair questions :", len(textp_w.split(
 print ("Total number of words in non duplicate pair questions :", len(textn_w.split()))
 
 
-# In[14]:
 
 
 # word cloiud for duplicate pair question's text
@@ -316,7 +302,6 @@ plt.axis("off")
 plt.show()
 
 
-# In[15]:
 
 
 # Wordcloud for non duplicate pairs of question text
@@ -330,7 +315,6 @@ plt.axis("off")
 plt.show()
 
 
-# In[16]:
 
 
 # Pair plot of features ['ctc_min', 'cwc_min', 'csc_min', 'token_sort_ratio']
@@ -341,7 +325,6 @@ sns.pairplot(data[['ctc_min', 'cwc_min', 'csc_min', 'token_sort_ratio', 'is_dupl
 plt.show()
 
 
-# In[17]:
 
 
 # Distribution of the token_sort_ratio
@@ -356,7 +339,6 @@ sns.distplot(data[data['is_duplicate'] == 0.0]['token_sort_ratio'][0:] , label =
 plt.show()
 
 
-# In[18]:
 
 
 plt.figure(figsize=(10, 8))
@@ -370,7 +352,6 @@ sns.distplot(data[data['is_duplicate'] == 0.0]['fuzz_ratio'][0:] , label = "0" ,
 plt.show()
 
 
-# In[19]:
 
 
 plt.figure(figsize=(10, 8))
@@ -384,13 +365,11 @@ sns.distplot(data[data['is_duplicate'] == 0.0]['fuzz_partial_ratio'][0:] , label
 plt.show()
 
 
-# In[20]:
 
 
 # All the three fuzzy features seem to have similar distribution amongst two classes
 
 
-# In[21]:
 
 
 # VISUALIZATION
@@ -402,7 +381,6 @@ X = MinMaxScaler().fit_transform(data[['cwc_min', 'cwc_max', 'csc_min', 'csc_max
 y = data['is_duplicate'].values
 
 
-# In[22]:
 
 
 from sklearn.manifold import TSNE
@@ -419,7 +397,6 @@ tsne2d = TSNE(
 ).fit_transform(X)
 
 
-# In[23]:
 
 
 df = pd.DataFrame({'x':tsne2d[:,0], 'y':tsne2d[:,1] ,'label':y})
@@ -430,7 +407,6 @@ plt.title("perplexity : {} and max_iter : {}".format(30, 1000))
 plt.show()
 
 
-# In[24]:
 
 
 from sklearn.manifold import TSNE
@@ -447,7 +423,6 @@ tsne3d = TSNE(
 ).fit_transform(X)
 
 
-# In[25]:
 
 
 import plotly.offline as py
@@ -475,13 +450,11 @@ fig=dict(data=trace_data, layout=layout)
 py.iplot(fig, filename='3DBubble')
 
 
-# In[26]:
 
 
 questions = list(data["question1"]) + list(data["question2"])
 
 
-# In[27]:
 
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -491,7 +464,6 @@ tfidf.fit_transform(questions)
 word2tfidf = dict(zip(tfidf.get_feature_names(), tfidf.idf_))
 
 
-# In[28]:
 
 
 import spacy 
@@ -521,7 +493,6 @@ for qu1 in tqdm(list(data["question1"])):
 data["q1_feats_tfidf_avg_w2v"] = list(vecs1)
 
 
-# In[29]:
 
 
 vecs2 = []
@@ -550,13 +521,11 @@ for qu2 in tqdm(list(data['question2'])):
 data['q2_feats_tfidf_avg_w2v'] = list(vecs2)
 
 
-# In[30]:
 
 
 # We can make BoW based average Word2Vec also
 
 
-# In[31]:
 
 
 labels1 = ['freq_qid1', 'freq_qid2', 'q1len', 'q2len', 'q1_n_words', 'q2_n_words', 'word_common', 'word_total', 
@@ -564,7 +533,6 @@ labels1 = ['freq_qid1', 'freq_qid2', 'q1len', 'q2len', 'q1_n_words', 'q2_n_words
 without_preprocess_fe_df = data[labels1]
 
 
-# In[32]:
 
 
 labels2 = ['cwc_min', 'cwc_max', 'csc_min', 'csc_max', 'ctc_min', 'ctc_max', 'last_word_eq', 'first_word_eq', 
@@ -573,47 +541,40 @@ labels2 = ['cwc_min', 'cwc_max', 'csc_min', 'csc_max', 'ctc_min', 'ctc_max', 'la
 nlp_fuzzy_fe_df = data[labels2]
 
 
-# In[33]:
 
 
 labels3 = ['q1_feats_tfidf_avg_w2v', 'q2_feats_tfidf_avg_w2v']
 avg_w2v_fe_df = data[labels3]
 
 
-# In[34]:
 
 
 df3_q1 = pd.DataFrame(avg_w2v_fe_df["q1_feats_tfidf_avg_w2v"].values.tolist(), index= avg_w2v_fe_df.index)
 df3_q2 = pd.DataFrame(avg_w2v_fe_df["q2_feats_tfidf_avg_w2v"].values.tolist(), index= avg_w2v_fe_df.index)
 
 
-# In[35]:
 
 
 without_preprocess_fe_df.head()
 
 
-# In[36]:
 
 
 nlp_fuzzy_fe_df.head()
 
 
-# In[37]:
 
 
 # Questions 1 tfidf weighted word2vec
 df3_q1.head()
 
 
-# In[38]:
 
 
 # Questions 2 tfidf weighted word2vec
 df3_q2.head()
 
 
-# In[39]:
 
 
 print("Number of features in without preprocess dataframe :", without_preprocess_fe_df.shape[1])

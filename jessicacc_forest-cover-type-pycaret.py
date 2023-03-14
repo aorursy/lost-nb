@@ -1,21 +1,18 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[14]:
 
 
 # Install PyCaret
 get_ipython().system('pip install pycaret')
 
 
-# In[15]:
 
 
 # install watermark
 get_ipython().system('pip install watermark')
 
 
-# In[16]:
 
 
 import pandas as pd
@@ -57,7 +54,6 @@ m.rcParams['text.color'] = 'k'
 sns.set(rc={'figure.figsize':(15,5)})
 
 
-# In[17]:
 
 
 # Versões dos pacotes usados neste jupyter notebook
@@ -66,7 +62,6 @@ get_ipython().run_line_magic('watermark', '-a "Forest Cover Type Prediction -- J
 get_ipython().run_line_magic('watermark', '-n -t -z')
 
 
-# In[18]:
 
 
 np.random.seed(42)
@@ -74,7 +69,6 @@ random.seed(42)
 random_seed = 42
 
 
-# In[19]:
 
 
 train = pd.read_csv('../input/forest-cover-type-prediction/train.csv')
@@ -87,7 +81,6 @@ print('test: {}'.format(test.shape))
 print('sample_submission: {}'.format(sample_submission.shape))
 
 
-# In[20]:
 
 
 display(train.head(), test.head())
@@ -95,7 +88,6 @@ display(train.head(), test.head())
 train.shape, test.shape
 
 
-# In[21]:
 
 
 # remove de ID column
@@ -106,7 +98,6 @@ test = test.drop(columns=['Id'], axis=1)
 train.shape, test.shape
 
 
-# In[22]:
 
 
 # separate training and test dataset
@@ -116,7 +107,6 @@ train, validation = train_test_split(train, test_size=0.33, random_state=random_
 train.shape, validation.shape
 
 
-# In[23]:
 
 
 exp_clf = setup(data = train,           # train data
@@ -124,20 +114,17 @@ exp_clf = setup(data = train,           # train data
               train_size = 0.7)     # proportion of training data
 
 
-# In[24]:
 
 
 get_ipython().run_cell_magic('time', '', '\n# Train the modelos using default params\nbest_model = compare_models()\nprint(best_model)')
 
 
-# In[25]:
 
 
 tuned_catboost = tune_model(best_model)
 print(tuned_catboost)
 
 
-# In[26]:
 
 
 # Increse the number of iterations (n_iter) to 35. 
@@ -150,13 +137,11 @@ print(tuned_catboost_v1)
 # you can try differents values for n_iter param
 
 
-# In[27]:
 
 
 tuned_catboost_v1.get_params()
 
 
-# In[28]:
 
 
 # Let's try a custom grid
@@ -175,27 +160,23 @@ print(tuned_catboost_v2)
 # you can try differents values for n_iter param
 
 
-# In[29]:
 
 
 tuned_catboost_v2.get_params()
 
 
-# In[32]:
 
 
 #evaluate a model
 evaluate_model(tuned_catboost_v1)
 
 
-# In[33]:
 
 
 # Compare test data predictions and results
 plot_model(tuned_catboost_v1, plot='confusion_matrix')
 
 
-# In[34]:
 
 
 # predict in train dataframe
@@ -205,28 +186,24 @@ y_train_pred = predict_model(tuned_catboost_v1)
 y_pred = predict_model(tuned_catboost_v1, data = test)
 
 
-# In[35]:
 
 
 # view the predictions
 display(y_train_pred[['Cover_Type', 'Label']], y_pred['Label'])
 
 
-# In[36]:
 
 
 # Finalize model
 final_tuned_catboost_v1 = finalize_model(tuned_catboost_v1)
 
 
-# In[ ]:
 
 
 # Save model
 save_model(final_tuned_catboost_v1, 'final_tuned_catboost_v1_30082020'
 
 
-# In[37]:
 
 
 #sample_submission

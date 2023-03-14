@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -11,13 +10,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns 
 
 
-# In[2]:
 
 
 pd.options.display.max_columns  = None # 모든 column 확인
 
 
-# In[3]:
 
 
 train = pd.read_csv('../input/train.csv')
@@ -26,20 +23,17 @@ test = pd.read_csv('../input/test.csv')
 train.head()
 
 
-# In[4]:
 
 
 #train.info()
 train.info(verbose = 1, null_counts = True)
 
 
-# In[5]:
 
 
 test.info(verbose = 1, null_counts = True)
 
 
-# In[6]:
 
 
 train.select_dtypes(np.int64).nunique().value_counts().sort_index().plot.bar(color = 'blue', 
@@ -49,7 +43,6 @@ plt.xlabel('Number of Unique Values'); plt.ylabel('Count');
 plt.title('Count of Unique Values in Integer Columns');
 
 
-# In[7]:
 
 
 from collections import OrderedDict
@@ -75,7 +68,6 @@ for i, col in enumerate(train.select_dtypes('float')):
 plt.subplots_adjust(top = 2)
 
 
-# In[8]:
 
 
 # v2a1, Monthly rent payment
@@ -88,13 +80,11 @@ plt.subplots_adjust(top = 2)
 # SQBmeaned, square of the mean years of education of adults (>=18) in the household
 
 
-# In[9]:
 
 
 train.select_dtypes('object').head() #dtype이 섞여 있음 
 
 
-# In[10]:
 
 
 mapping = {"yes": 1, "no": 0}
@@ -109,7 +99,6 @@ for df in [train, test]:
 train[['dependency', 'edjefa', 'edjefe']].describe()
 
 
-# In[11]:
 
 
 plt.figure(figsize = (16, 12))
@@ -128,7 +117,6 @@ for i, col in enumerate(['dependency', 'edjefa', 'edjefe']):
 plt.subplots_adjust(top = 2)
 
 
-# In[12]:
 
 
 # Add null Target column to test
@@ -136,7 +124,6 @@ test['Target'] = np.nan
 data = train.append(test, ignore_index = True)
 
 
-# In[13]:
 
 
 # Heads of household
@@ -161,7 +148,6 @@ plt.title('Poverty Level Breakdown');
 label_counts
 
 
-# In[14]:
 
 
 # Groupby the household and figure out the number of unique values
@@ -172,13 +158,11 @@ not_equal = all_equal[all_equal != True]
 print('There are {} households where the family members do not all have the same target.'.format(len(not_equal)))
 
 
-# In[15]:
 
 
 train[train['idhogar'] == not_equal.index[0]][['idhogar', 'parentesco1', 'Target']]
 
 
-# In[16]:
 
 
 households_leader = train.groupby('idhogar')['parentesco1'].sum()
@@ -189,7 +173,6 @@ households_no_head = train.loc[train['idhogar'].isin(households_leader[household
 print('There are {} households without a head.'.format(households_no_head['idhogar'].nunique()))
 
 
-# In[17]:
 
 
 # Find households without a head and where labels are different
@@ -197,7 +180,6 @@ households_no_head_equal = households_no_head.groupby('idhogar')['Target'].apply
 print('{} Households with no head have different labels.'.format(sum(households_no_head_equal == False)))
 
 
-# In[18]:
 
 
 # Iterate through each household
@@ -217,7 +199,6 @@ not_equal = all_equal[all_equal != True]
 print('There are {} households where the family members do not all have the same target.'.format(len(not_equal)))
 
 
-# In[19]:
 
 
 # Number of missing in each column
@@ -229,7 +210,6 @@ missing['percent'] = missing['total'] / len(data)
 missing.sort_values('percent', ascending = False).head(10).drop('Target')
 
 
-# In[20]:
 
 
 def plot_value_counts(df, col, heads_only = False):
@@ -248,25 +228,21 @@ def plot_value_counts(df, col, heads_only = False):
     plt.show()
 
 
-# In[21]:
 
 
 plot_value_counts(heads, 'v18q1')
 
 
-# In[22]:
 
 
 heads.groupby('v18q')['v18q1'].apply(lambda x: x.isnull().sum())
 
 
-# In[23]:
 
 
 data['v18q1'] = data['v18q1'].fillna(0)
 
 
-# In[24]:
 
 
 # Variables indicating home ownership
@@ -283,7 +259,6 @@ plt.xticks([0, 1, 2, 3, 4],
 plt.title('Home Ownership Status for Households Missing Rent Payments', size = 18)
 
 
-# In[25]:
 
 
 # Fill in households that own the house with 0 rent payment
@@ -295,19 +270,16 @@ data['v2a1-missing'] = data['v2a1'].isnull()
 data['v2a1-missing'].value_counts()
 
 
-# In[26]:
 
 
 data.loc[data['rez_esc'].notnull()]['age'].describe()
 
 
-# In[27]:
 
 
 data.loc[data['rez_esc'].isnull()]['age'].describe()
 
 
-# In[28]:
 
 
 # If individual is over 19 or younger than 7 and missing years behind, set it to 0
@@ -317,13 +289,11 @@ data.loc[((data['age'] > 19) | (data['age'] < 7)) & (data['rez_esc'].isnull()), 
 data['rez_esc-missing'] = data['rez_esc'].isnull()
 
 
-# In[29]:
 
 
 data.loc[data['rez_esc'] > 5, 'rez_esc'] = 5
 
 
-# In[30]:
 
 
 def plot_categoricals(x, y, data, annotate = True):
@@ -401,33 +371,28 @@ def plot_categoricals(x, y, data, annotate = True):
     plt.title(f"{y} vs {x}")
 
 
-# In[31]:
 
 
 plot_categoricals('rez_esc', 'Target', data)
 
 
-# In[32]:
 
 
 plot_categoricals('escolari', 'Target', data, annotate = False)
 
 
-# In[33]:
 
 
 plot_value_counts(data[(data['rez_esc-missing'] == 1)], 
                   'Target')
 
 
-# In[34]:
 
 
 plot_value_counts(data[(data['v2a1-missing'] == 1)], 
                   'Target')
 
 
-# In[35]:
 
 
 # training 시키지 않을 변수들입니다. idhogar를 기준으로 데이터들을 묶어서 볼 것입니다. 
@@ -436,7 +401,6 @@ plot_value_counts(data[(data['v2a1-missing'] == 1)],
 id_ = ['Id', 'idhogar', 'Target']
 
 
-# In[36]:
 
 
 ind_bool = ['v18q', 'dis', 'male', 'female', 'estadocivil1', 'estadocivil2', 'estadocivil3', 
@@ -450,7 +414,6 @@ ind_bool = ['v18q', 'dis', 'male', 'female', 'estadocivil1', 'estadocivil2', 'es
 ind_ordered = ['rez_esc', 'escolari', 'age']
 
 
-# In[37]:
 
 
 hh_bool = ['hacdor', 'hacapo', 'v14a', 'refrig', 'paredblolad', 'paredzocalo', 
@@ -476,14 +439,12 @@ hh_ordered = [ 'rooms', 'r4h1', 'r4h2', 'r4h3', 'r4m1','r4m2','r4m3', 'r4t1',  '
 hh_cont = ['v2a1', 'dependency', 'edjefe', 'edjefa', 'meaneduc', 'overcrowding']
 
 
-# In[38]:
 
 
 sqr_ = ['SQBescolari', 'SQBage', 'SQBhogar_total', 'SQBedjefe', 
         'SQBhogar_nin', 'SQBovercrowding', 'SQBdependency', 'SQBmeaned', 'agesq']
 
 
-# In[39]:
 
 
 x = ind_bool + ind_ordered + id_ + hh_bool + hh_ordered + hh_cont + sqr_
@@ -494,14 +455,12 @@ print('There are no repeats: ', np.all(np.array(list(Counter(x).values())) == 1)
 print('We covered every variable: ', len(x) == data.shape[1])
 
 
-# In[40]:
 
 
 sns.lmplot('age', 'SQBage', data = data, fit_reg=False); 
 plt.title('Squared Age versus Age'); # ; 를 붙여주면 깔끔하게 그래프만 보여주네요
 
 
-# In[41]:
 
 
 # Remove squared variables
@@ -509,7 +468,6 @@ data = data.drop(columns = sqr_)
 data.shape
 
 
-# In[42]:
 
 
 heads = data.loc[data['parentesco1'] == 1, :]
@@ -518,7 +476,6 @@ print(heads.shape)
 heads.head()
 
 
-# In[43]:
 
 
 # Create correlation matrix
@@ -533,40 +490,34 @@ to_drop = [column for column in upper.columns if any(abs(upper[column]) > 0.95)]
 to_drop
 
 
-# In[44]:
 
 
 corr_matrix.loc[corr_matrix['tamhog'].abs() > 0.9, corr_matrix['tamhog'].abs() > 0.9]
 
 
-# In[45]:
 
 
 sns.heatmap(corr_matrix.loc[corr_matrix['tamhog'].abs() > 0.9, corr_matrix['tamhog'].abs() > 0.9],
             annot=True, cmap = plt.cm.autumn_r, fmt='.3f');
 
 
-# In[46]:
 
 
 heads = heads.drop(columns = ['tamhog', 'hogar_total', 'r4t3'])
 
 
-# In[47]:
 
 
 sns.lmplot('tamviv', 'hhsize', data, fit_reg=False, size = 8);
 plt.title('Household size vs number of persons living in the household');
 
 
-# In[48]:
 
 
 heads['hhsize-diff'] = heads['tamviv'] - heads['hhsize']
 plot_categoricals('hhsize-diff', 'Target', heads)
 
 
-# In[49]:
 
 
 elec = []
@@ -592,13 +543,11 @@ heads['elec-missing'] = heads['elec'].isnull()
 # heads = heads.drop(columns = ['noelec', 'coopele', 'public', 'planpri'])
 
 
-# In[50]:
 
 
 plot_categoricals('elec', 'Target', heads)
 
 
-# In[51]:
 
 
 heads = heads.drop(columns = 'area2')
@@ -607,7 +556,6 @@ heads.groupby('area1')['Target'].value_counts(normalize = True)
 # area1과 Target의 비율입니다. 
 
 
-# In[52]:
 
 
 # Wall ordinal variable
@@ -617,7 +565,6 @@ heads['walls'] = np.argmax(np.array(heads[['epared1', 'epared2', 'epared3']]),ax
 plot_categoricals('walls', 'Target', heads)
 
 
-# In[53]:
 
 
 # Roof ordinal variable
@@ -633,7 +580,6 @@ heads['floor'] = np.argmax(np.array(heads[['eviv1', 'eviv2', 'eviv3']]),
 heads = heads.drop(columns = ['eviv1', 'eviv2', 'eviv3'])
 
 
-# In[54]:
 
 
 # Create new feature
@@ -642,7 +588,6 @@ heads['walls+roof+floor'] = heads['walls'] + heads['roof'] + heads['floor']
 plot_categoricals('walls+roof+floor', 'Target', heads, annotate=False)
 
 
-# In[55]:
 
 
 # No toilet, no electricity, no floor, no water service, no ceiling
@@ -653,13 +598,11 @@ heads['warning'] = 1 * (heads['sanitario1'] +
                          (heads['cielorazo'] == 0))
 
 
-# In[56]:
 
 
 plot_categoricals('warning', 'Target', data = heads)
 
 
-# In[57]:
 
 
 # Owns a refrigerator, computer, tablet, and television
@@ -673,7 +616,6 @@ sns.violinplot('bonus', 'Target', data = heads,
 plt.title('Target vs Bonus Variable');
 
 
-# In[58]:
 
 
 heads['phones-per-capita'] = heads['qmobilephone'] / heads['tamviv']
@@ -682,7 +624,6 @@ heads['rooms-per-capita'] = heads['rooms'] / heads['tamviv']
 heads['rent-per-capita'] = heads['v2a1'] / heads['tamviv']
 
 
-# In[59]:
 
 
 # Use only training data
@@ -698,7 +639,6 @@ print('\nMost positively correlated variables:')
 print(pcorrs.dropna().tail())
 
 
-# In[60]:
 
 
 variables = ['Target', 'dependency', 'warning', 'walls+roof+floor', 'meaneduc',
@@ -714,14 +654,12 @@ sns.heatmap(corr_mat, vmin = -0.5, vmax = 0.8, center = 0,
             cmap = plt.cm.RdYlGn_r, annot = True);
 
 
-# In[61]:
 
 
 ind = data[id_ + ind_bool + ind_ordered]
 ind.shape
 
 
-# In[62]:
 
 
 # Create correlation matrix
@@ -736,19 +674,16 @@ to_drop = [column for column in upper.columns if any(abs(upper[column]) > 0.95)]
 to_drop
 
 
-# In[63]:
 
 
 ind = ind.drop(columns = 'male')
 
 
-# In[64]:
 
 
 ind[[c for c in ind if c.startswith('instl')]].head()
 
 
-# In[65]:
 
 
 ind['inst'] = np.argmax(np.array(ind[[c for c in ind if c.startswith('instl')]]), axis = 1)
@@ -756,7 +691,6 @@ ind['inst'] = np.argmax(np.array(ind[[c for c in ind if c.startswith('instl')]])
 plot_categoricals('inst', 'Target', ind, annotate = False);
 
 
-# In[66]:
 
 
 plt.figure(figsize = (10, 8))
@@ -764,7 +698,6 @@ sns.violinplot(x = 'Target', y = 'inst', data = ind);
 plt.title('Education Distribution by Target');
 
 
-# In[67]:
 
 
 # Drop the education columns
@@ -772,7 +705,6 @@ plt.title('Education Distribution by Target');
 ind.shape
 
 
-# In[68]:
 
 
 # Define custom function
@@ -784,7 +716,6 @@ ind_agg = ind.drop(columns = 'Target').groupby('idhogar').agg(['min', 'max', 'su
 ind_agg.head()
 
 
-# In[69]:
 
 
 # Rename the columns
@@ -797,7 +728,6 @@ ind_agg.columns = new_col
 ind_agg.head()
 
 
-# In[70]:
 
 
 # Create correlation matrix
@@ -812,7 +742,6 @@ to_drop = [column for column in upper.columns if any(abs(upper[column]) > 0.95)]
 print(f'There are {len(to_drop)} correlated columns to remove.')
 
 
-# In[71]:
 
 
 ind_agg = ind_agg.drop(columns = to_drop)
@@ -824,13 +753,11 @@ final = heads.merge(ind_agg, on = 'idhogar', how = 'left')
 print('Final features shape: ', final.shape)
 
 
-# In[72]:
 
 
 final.head()
 
 
-# In[73]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -844,7 +771,6 @@ from sklearn.pipeline import Pipeline
 scorer = make_scorer(f1_score, greater_is_better=True, average = 'macro')
 
 
-# In[74]:
 
 
 # Labels for training
@@ -858,12 +784,10 @@ test_set = final[final['Target'].isnull()].drop(columns = ['Id', 'idhogar', 'Tar
 submission_base = test[['Id', 'idhogar']].copy()
 
 
-# In[75]:
 
 
 features = list(train_set.columns)
 
-pipeline = Pipeline([('imputer', Imputer(strategy = 'median')), 
                       ('scaler', MinMaxScaler())])
 
 # Fit and transform training data
@@ -871,7 +795,6 @@ train_set = pipeline.fit_transform(train_set)
 test_set = pipeline.transform(test_set)
 
 
-# In[76]:
 
 
 model = RandomForestClassifier(n_estimators=100, random_state=10, 
@@ -882,7 +805,6 @@ cv_score = cross_val_score(model, train_set, train_labels, cv = 10, scoring = sc
 print(f'10 Fold Cross Validation F1 Score = {round(cv_score.mean(), 4)} with std = {round(cv_score.std(), 4)}')
 
 
-# In[77]:
 
 
 model.fit(train_set, train_labels)
@@ -892,7 +814,6 @@ feature_importances = pd.DataFrame({'feature': features, 'importance': model.fea
 feature_importances.head()
 
 
-# In[78]:
 
 
 def plot_feature_importances(df, n = 10, threshold = None):
@@ -961,13 +882,11 @@ def plot_feature_importances(df, n = 10, threshold = None):
     return df
 
 
-# In[79]:
 
 
 norm_fi = plot_feature_importances(feature_importances, threshold=0.95)
 
 
-# In[80]:
 
 
 # Model imports
@@ -979,7 +898,6 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.neighbors import KNeighborsClassifier
 
 
-# In[81]:
 
 
 import warnings 
@@ -1009,21 +927,18 @@ def cv_model(train, train_labels, model, name, model_results=None):
         return model_results
 
 
-# In[82]:
 
 
 model_results = cv_model(train_set, train_labels, LinearSVC(), 
                          'LSVC', model_results)
 
 
-# In[83]:
 
 
 model_results = cv_model(train_set, train_labels, 
                          GaussianNB(), 'GNB', model_results)
 
 
-# In[84]:
 
 
 model_results = cv_model(train_set, train_labels, 
@@ -1031,7 +946,6 @@ model_results = cv_model(train_set, train_labels,
                          'MLP', model_results)
 
 
-# In[85]:
 
 
 model_results = cv_model(train_set, train_labels, 
@@ -1039,14 +953,12 @@ model_results = cv_model(train_set, train_labels,
                           'LDA', model_results)
 
 
-# In[86]:
 
 
 model_results = cv_model(train_set, train_labels, 
                          RidgeClassifierCV(), 'RIDGE', model_results)
 
 
-# In[87]:
 
 
 for n in [5, 10, 20]:
@@ -1056,7 +968,6 @@ for n in [5, 10, 20]:
                              f'knn-{n}', model_results)
 
 
-# In[88]:
 
 
 from sklearn.ensemble import ExtraTreesClassifier
@@ -1066,7 +977,6 @@ model_results = cv_model(train_set, train_labels,
                          'EXT', model_results)
 
 
-# In[89]:
 
 
 model_results = cv_model(train_set, train_labels,
@@ -1074,7 +984,6 @@ model_results = cv_model(train_set, train_labels,
                               'RF', model_results)
 
 
-# In[90]:
 
 
 model_results.set_index('model', inplace = True)
@@ -1086,7 +995,6 @@ plt.ylabel('Mean F1 Score (with error bar)');
 model_results.reset_index(inplace = True)
 
 
-# In[91]:
 
 
 def submit(model):
@@ -1106,7 +1014,6 @@ def submit(model):
     return submission 
 
 
-# In[92]:
 
 
 from sklearn.model_selection import train_test_split
@@ -1115,14 +1022,12 @@ X_train, X_test, y_train, y_test = train_test_split(train_set, train_labels, tes
                                                     random_state =42)
 
 
-# In[93]:
 
 
 print('train shape', X_train.shape, y_train.shape)
 print('test shape', X_test.shape, y_test.shape)
 
 
-# In[94]:
 
 
 import xgboost 
@@ -1130,7 +1035,6 @@ from xgboost import XGBClassifier
 from sklearn.metrics import f1_score
 
 
-# In[95]:
 
 
 xgb_model  = XGBClassifier(objective = 'multi:softmax', random_state = 42)
@@ -1139,26 +1043,22 @@ y_pred = xgb_model.predict(X_test)
 f1_score(y_test, y_pred, average = 'macro')
 
 
-# In[96]:
 
 
 test_ids = list(final.loc[final['Target'].isnull(), 'idhogar'])
 
 
-# In[97]:
 
 
 xgb_submission = submit(xgb_model)
 
 
-# In[98]:
 
 
 import lightgbm
 from lightgbm import LGBMClassifier
 
 
-# In[99]:
 
 
 lgb_model  = LGBMClassifier(objective = 'multiclass', random_state = 42)
@@ -1168,26 +1068,22 @@ print(y_pred)
 f1_score(y_test, y_pred, average = 'macro')
 
 
-# In[100]:
 
 
 lgb_submission = submit(lgb_model)
 
 
-# In[101]:
 
 
 xgb_submission.to_csv('xgb.csv', index = False)
 lgb_submission.to_csv('lgb.csv', index = False)
 
 
-# In[ ]:
 
 
 
 
 
-# In[102]:
 
 
 import lightgbm as lgb 
@@ -1205,7 +1101,6 @@ params = {"objective" : "multiclass",
           "verbosity" : -1 }
 
 
-# In[103]:
 
 
 # lgbDataset에서는 label은 0부터 시작해야함 0, 1, 2, 3 
@@ -1214,7 +1109,6 @@ y_tra = y_train - 1
 y_tes = y_test -1
 
 
-# In[104]:
 
 
 lgtrain, lgval = lgb.Dataset(data = X_train, label = y_tra), lgb.Dataset(data = X_test, label = y_tes)
@@ -1223,13 +1117,11 @@ lgb_ad_model = lgb.train(params, lgtrain, num_boost_round = 2000, valid_sets=[lg
                   early_stopping_rounds=100, verbose_eval=100)
 
 
-# In[105]:
 
 
 predictions = lgb_ad_model.predict(test_set)
 
 
-# In[106]:
 
 
 predict_df_1 = []
@@ -1238,7 +1130,6 @@ predict_df_3 = []
 predict_df_4 = []
 
 
-# In[107]:
 
 
 for i in range(len(predictions)):
@@ -1248,13 +1139,11 @@ for i in range(len(predictions)):
     predict_df_4.append(predictions[i][3])    
 
 
-# In[108]:
 
 
 df_pred = pd.DataFrame(predict_df_1, columns = ['1'])
 
 
-# In[109]:
 
 
 df_pred['2'] = predict_df_2
@@ -1263,79 +1152,66 @@ df_pred['4'] = predict_df_4
 df_pred.head()
 
 
-# In[110]:
 
 
 df_pred['Target'] = df_pred[['1', '2', '3', '4']].idxmax(axis = 1)
 
 
-# In[111]:
 
 
 df_pred
 
 
-# In[112]:
 
 
 df_pred.to_csv('result.csv', index = False)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

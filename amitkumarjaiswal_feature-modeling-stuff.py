@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -31,7 +30,6 @@ from os import listdir
 print(listdir("../input"))
 
 
-# In[2]:
 
 
 train_nrows = get_ipython().getoutput('wc -l ../input/train.csv')
@@ -39,13 +37,11 @@ train_nrows_val = int(train_nrows[0].split()[0])
 print('train.csv contains {:,} rows'.format(train_nrows_val))
 
 
-# In[3]:
 
 
 get_ipython().system('head ../input/train.csv')
 
 
-# In[4]:
 
 
 start_time = timeit.default_timer()
@@ -73,21 +69,18 @@ print (max_precision)
 print('elapsed time: {:.2f} sec'.format(timeit.default_timer()-start_time))
 
 
-# In[5]:
 
 
 column_names = get_ipython().getoutput('head -n1 ../input/train.csv')
 print(column_names[0].split(','))
 
 
-# In[6]:
 
 
 df_train_sample = pd.read_csv('../input/train.csv', skiprows = 0, nrows=100,
                        dtype={'acoustic_data': np.int16, 'time_to_failure': np.float64}) 
 
 
-# In[7]:
 
 
 def display_df_with_preset_precision(df, precision):
@@ -99,7 +92,6 @@ def display_df_with_preset_precision(df, precision):
 display_df_with_preset_precision(df_train_sample.head(9), max_precision)
 
 
-# In[8]:
 
 
 try:
@@ -108,7 +100,6 @@ except NameError:
     pass
 
 
-# In[9]:
 
 
 start_time = timeit.default_timer()
@@ -136,38 +127,32 @@ for df in df_train_iter:
 print('elapsed time: {:.2f} sec'.format(timeit.default_timer()-start_time))
 
 
-# In[10]:
 
 
 len(list(diff_ttf_2_counter_dict.keys()))
 
 
-# In[11]:
 
 
 diff_ttf_2_counter_dict
 
 
-# In[12]:
 
 
 # positive jumps
 {k: v for k, v in diff_ttf_2_counter_dict.items() if k>0}
 
 
-# In[13]:
 
 
 10.**max_precision
 
 
-# In[14]:
 
 
 negative_diff_tff_2_counter_dict = Counter()
 
 
-# In[15]:
 
 
 for k, v in diff_ttf_2_counter_dict.items():
@@ -176,7 +161,6 @@ for k, v in diff_ttf_2_counter_dict.items():
 negative_diff_tff_2_counter_dict
 
 
-# In[16]:
 
 
 #time diff within sampling frames
@@ -184,7 +168,6 @@ time_diff_within_sampling_frames_2_count_dict = {k: v for k, v in negative_diff_
 time_diff_within_sampling_frames_2_count_dict
 
 
-# In[17]:
 
 
 #time diff between sampling frames
@@ -192,62 +175,52 @@ time_diff_between_sampling_frames_2_count_dict = {round(k/(10.**max_precision),6
 time_diff_between_sampling_frames_2_count_dict
 
 
-# In[18]:
 
 
 print(df_after_jumping_up_points.shape)
 display_df_with_preset_precision(df_after_jumping_up_points, max_precision)
 
 
-# In[19]:
 
 
 display_df_with_preset_precision(df_after_long_jumps_down_points.head(),max_precision)
 
 
-# In[20]:
 
 
 np.unique(np.diff(df_after_long_jumps_down_points.index))
 
 
-# In[21]:
 
 
 len(np.where(np.diff(df_after_long_jumps_down_points.index)==8192)[0])
 
 
-# In[22]:
 
 
 len(np.where(np.diff(df_after_long_jumps_down_points.index)==4095)[0])
 
 
-# In[23]:
 
 
 len(np.where(np.diff(df_after_long_jumps_down_points.index)==4096)[0])
 
 
-# In[24]:
 
 
 max(time_diff_within_sampling_frames_2_count_dict.keys())/(10.**max_precision)*8192
 
 
-# In[25]:
 
 
 np.mean(list(time_diff_between_sampling_frames_2_count_dict.keys()))
 
 
-# In[26]:
 
 
 (max(time_diff_within_sampling_frames_2_count_dict.keys())/(10.**max_precision)*8192)/np.mean(list(time_diff_between_sampling_frames_2_count_dict.keys()))
 
 
-# In[27]:
 
 
 start_time = timeit.default_timer()
@@ -269,14 +242,12 @@ for df in df_train_iter:
 print('elapsed time: {:.2f} sec'.format(timeit.default_timer()-start_time))
 
 
-# In[28]:
 
 
 print(df_before_jumping_up_points.shape)
 df_before_jumping_up_points
 
 
-# In[29]:
 
 
 start_time = timeit.default_timer()
@@ -291,20 +262,17 @@ df_train_tail['time_to_failure'] = df_train_tail['time_to_failure'].astype(np.fl
 print('elapsed time: {:.2f} sec'.format(timeit.default_timer()-start_time))
 
 
-# In[30]:
 
 
 df_train_tail.tail()
 
 
-# In[31]:
 
 
 # TTF steps
 df_train_tail.tail(20000)['time_to_failure'].plot();
 
 
-# In[32]:
 
 
 start_time = timeit.default_timer()
@@ -318,47 +286,40 @@ df_train_head = pd.read_csv('../input/train.csv', skiprows = 0, nrows = 100000, 
 print('elapsed time: {:.2f} sec'.format(timeit.default_timer()-start_time))
 
 
-# In[33]:
 
 
 # TTF step in the first section
 df_train_head.head(20000)[8192:8192+4096]['time_to_failure'].plot();
 
 
-# In[34]:
 
 
 set(df_train_head.head(20000)[8192:8192+4095]['time_to_failure'].diff())
 
 
-# In[35]:
 
 
 n=0
 set(df_train_head.head(2000000)['time_to_failure'].diff())
 
 
-# In[36]:
 
 
 index_ranges = [(ent[0],ent[1]) for ent in zip([0]+list(df_after_jumping_up_points.index)[:-1],list(df_before_jumping_up_points.index))]
 index_ranges
 
 
-# In[37]:
 
 
 train_set_lengths =np.array([ent[1]-ent[0] for ent in zip([0]+list(df_before_jumping_up_points.index)[:-1],list(df_before_jumping_up_points.index))])
 train_set_lengths
 
 
-# In[38]:
 
 
 train_set_lengths.mean(), train_set_lengths.std()
 
 
-# In[39]:
 
 
 range_index = 3
@@ -383,20 +344,17 @@ plt.show()
 print('elapsed time: {:.2f} sec'.format(timeit.default_timer()-start_time))
 
 
-# In[40]:
 
 
 max_time_to_failure_points = pd.read_csv('../input/train.csv', skiprows = 0, nrows= 1, dtype={'acoustic_data': np.int16, 'time_to_failure': np.float64})['time_to_failure'].append(df_after_jumping_up_points['time_to_failure'])
 max_time_to_failure_points
 
 
-# In[41]:
 
 
 max_time_to_failure_points.values[:-1]
 
 
-# In[42]:
 
 
 decline_angle_tangents = np.array([ent[0]/ent[1] for ent in zip(max_time_to_failure_points.values[:-1], max_time_to_failure_points.index[1:])])
@@ -404,7 +362,6 @@ print(decline_angle_tangents.mean())
 print(decline_angle_tangents.std())
 
 
-# In[43]:
 
 
 try:
@@ -413,38 +370,32 @@ except NameError:
     pass
 
 
-# In[44]:
 
 
 test_seg_files = listdir("../input/test")
 test_seg_files[:5]
 
 
-# In[45]:
 
 
 len(test_seg_files)
 
 
-# In[46]:
 
 
 os.path.join("../input/test",test_seg_files[0])
 
 
-# In[47]:
 
 
 get_ipython().system('wc -l {os.path.join("../input/test",test_seg_files[0])}')
 
 
-# In[48]:
 
 
 get_ipython().system('head {os.path.join("../input/test",test_seg_files[0])}')
 
 
-# In[49]:
 
 
 
@@ -453,13 +404,11 @@ def plot_test_seg_by_index(idx):
     (df_test_seg['acoustic_data']-df_test_seg['acoustic_data'].mean()).plot();
 
 
-# In[50]:
 
 
 interact(plot_test_seg_by_index, idx=widgets.IntSlider(min=0,max=len(test_seg_files)-1,step=1,value=0));
 
 
-# In[51]:
 
 
 # make sure that all seg files have the same length: 150,000 samples:
@@ -467,19 +416,16 @@ seg_files_lengths = get_ipython().getoutput('for filename in ../input/test/*; do
 {ent.split(' ')[0] for ent in seg_files_lengths}
 
 
-# In[52]:
 
 
 (max(time_diff_within_sampling_frames_2_count_dict.keys())/(10.**max_precision)*150000)
 
 
-# In[53]:
 
 
 np.mean(list(time_diff_between_sampling_frames_2_count_dict.keys()))*(150000/4096)
 
 
-# In[54]:
 
 
 start_time = timeit.default_timer()
@@ -503,82 +449,69 @@ plt.show()
 print('elapsed time: {:.2f} sec'.format(timeit.default_timer()-start_time))
 
 
-# In[55]:
 
 
 df_sample['time_to_failure'][0]/df_sample['time_to_failure'].shape[0]
 
 
-# In[56]:
 
 
 df_sample['time_to_failure'].shape[0]
 
 
-# In[57]:
 
 
 df_sample['acoustic_data'].head()
 
 
-# In[58]:
 
 
 df_sample['acoustic_data'].mean()
 
 
-# In[59]:
 
 
 train_values = (df_sample['acoustic_data']-df_sample['acoustic_data'].mean()).values
 train_values
 
 
-# In[60]:
 
 
 df_test_seg = pd.read_csv(os.path.join("../input/test",test_seg_files[0]), dtype={'acoustic_data': np.int16})
 df_test_seg.head()
 
 
-# In[61]:
 
 
 df_test_seg['acoustic_data'].mean()
 
 
-# In[62]:
 
 
 test_values = (df_test_seg['acoustic_data']-df_test_seg['acoustic_data'].mean()).values
 
 
-# In[63]:
 
 
 print(train_values.shape, test_values.shape)
 
 
-# In[64]:
 
 
 from scipy import signal
 signal_corr = signal.correlate(np.square(train_values), np.square(test_values),mode='valid', method='fft')
 
 
-# In[65]:
 
 
 signal_corr.shape
 
 
-# In[66]:
 
 
 pd.DataFrame(signal_corr).plot()
 
 
-# In[67]:
 
 
 def correlation_with_test_seg_idx(idx):
@@ -588,13 +521,11 @@ def correlation_with_test_seg_idx(idx):
     pd.DataFrame(signal_corr).plot();
 
 
-# In[68]:
 
 
 interact(correlation_with_test_seg_idx, idx=widgets.IntSlider(min=0,max=len(test_seg_files)-1,step=1,value=0));
 
 
-# In[69]:
 
 
 from scipy.signal import spectrogram
@@ -611,7 +542,6 @@ ax.set_ylabel('Frequency [kHz]')
 ax.set_xlabel('Time [s]');
 
 
-# In[70]:
 
 
 f, t, Sxx = spectrogram(df_test_seg['acoustic_data'].values)
@@ -623,7 +553,6 @@ plt.xlabel('Time [sec]')
 plt.show()
 
 
-# In[71]:
 
 
 from skimage import util
@@ -634,7 +563,6 @@ slices = util.view_as_windows(df_test_seg['acoustic_data'].values, window_shape=
 print(f'data shape: {df_test_seg["acoustic_data"].values.shape}, Sliced data shape: {slices.shape}')
 
 
-# In[72]:
 
 
 win = np.hanning(M + 1)[:-1]
@@ -645,13 +573,11 @@ spectrum = np.fft.fft(slices, axis=0)[:M // 2 + 1:-1]
 spectrum = np.abs(spectrum)
 
 
-# In[73]:
 
 
 L=df_test_seg['acoustic_data'].values.shape[0]
 
 
-# In[74]:
 
 
 rate = 10
@@ -667,7 +593,6 @@ ax.set_ylabel('Frequency [kHz]')
 ax.set_xlabel('Time [s]');
 
 
-# In[75]:
 
 
 yf = fftpack.fft(df_test_seg['acoustic_data'].values)
@@ -676,13 +601,11 @@ plt.grid()
 plt.show()
 
 
-# In[76]:
 
 
 display_df_with_preset_precision(df_after_long_jumps_down_points.head(),max_precision)
 
 
-# In[77]:
 
 
 range_index=15 #first training sequence is the shortest one
@@ -697,7 +620,6 @@ df_sample.columns=['acoustic_data','time_to_failure']
 print('elapsed time: {:.2f} sec'.format(timeit.default_timer()-start_time))
 
 
-# In[78]:
 
 
 df_sample.index
@@ -708,37 +630,31 @@ ixs_of_indexes1 = np.where(np.logical_and(df_after_long_jumps_down_points.index 
 ixs_of_indexes,ixs_of_indexes1
 
 
-# In[79]:
 
 
 np.array_equal(ixs_of_indexes1,ixs_of_indexes)
 
 
-# In[80]:
 
 
 indexes = df_after_long_jumps_down_points.index[ixs_of_indexes].union(index_ranges[range_index])
 
 
-# In[81]:
 
 
 np.unique(np.diff(indexes))
 
 
-# In[82]:
 
 
 frame_indexes = list(zip(indexes[:-1],indexes[1:]))
 
 
-# In[83]:
 
 
 len(list(frame_indexes))
 
 
-# In[84]:
 
 
 #MEAN (Bias) is removed 
@@ -781,14 +697,12 @@ def show_frame_and_fft(sequence_idx):
                             'freqs':freqs[len(freqs)//2:]}).set_index('freqs').plot(ax=axs[2])
 
 
-# In[85]:
 
 
 print('range_index = {}'.format(range_index))
 interact(show_frame_and_fft, sequence_idx=widgets.IntSlider(min=0,max=len(list(frame_indexes))-1,step=1,value=0));
 
 
-# In[86]:
 
 
 def calc_fft_amp_per_sequence_index(sequence_idx):
@@ -818,13 +732,11 @@ def calc_fft_amp_per_sequence_index(sequence_idx):
                                    'rfreqs':unique_rfreqs[:low_path_filter_n_freqs]}).set_index('rfreqs')
 
 
-# In[87]:
 
 
 (calc_fft_amp_per_sequence_index(0)['acustic_data_rft_amp']).values[:low_path_filter_n_freqs]
 
 
-# In[88]:
 
 
 def features_row_per_sequence_index(sequence_idx):
@@ -849,7 +761,6 @@ def features_row_per_sequence_index(sequence_idx):
     return [acustic_data_series.mean()]+[the_dict[ent] for ent in unique_rfreqs][:low_path_filter_n_freqs][1:]+[the_df['time_to_failure'].mean()]
 
 
-# In[89]:
 
 
 start_time = timeit.default_timer()
@@ -857,7 +768,6 @@ pd.DataFrame(np.array([features_row_per_sequence_index(idx) for idx in range(len
 print('elapsed time: {:.2f} sec'.format(timeit.default_timer()-start_time))
 
 
-# In[90]:
 
 
 def plot_test_seg_by_index(idx):
@@ -865,7 +775,6 @@ def plot_test_seg_by_index(idx):
     (df_test_seg['acoustic_data']-df_test_seg['acoustic_data'].mean()).plot();
 
 
-# In[91]:
 
 
 #MEAN (Bias) is removed 
@@ -909,13 +818,11 @@ def show_test_frame_and_fft_by_idx(idx):
                             'freqs':freqs[len(freqs)//2:]}).set_index('freqs').plot(ax=axs[2])
 
 
-# In[92]:
 
 
 interact(show_test_frame_and_fft_by_idx, idx=widgets.IntSlider(min=0,max=len(test_seg_files)-1,step=1,value=0));
 
 
-# In[93]:
 
 
 def test_features_row_per_sequence_index(idx):
@@ -938,13 +845,11 @@ def test_features_row_per_sequence_index(idx):
     return [acustic_data_series.mean()]+[the_dict[ent] for ent in unique_rfreqs][:low_path_filter_n_freqs][1:]#+[the_df['time_to_failure'].mean()
 
 
-# In[94]:
 
 
 len(test_features_row_per_sequence_index(0))
 
 
-# In[95]:
 
 
 start_time = timeit.default_timer()
@@ -952,7 +857,6 @@ pd.DataFrame(np.array([test_features_row_per_sequence_index(idx) for idx in rang
 print('elapsed time: {:.2f} sec'.format(timeit.default_timer()-start_time))
 
 
-# In[96]:
 
 
 range_index=12 
@@ -969,7 +873,6 @@ print(df_sample.shape[0]/sequence_length)
 print('elapsed time: {:.2f} sec'.format(timeit.default_timer()-start_time))
 
 
-# In[97]:
 
 
 #MEAN (Bias) is removed 
@@ -993,13 +896,11 @@ def show_frame_and_cwt(sequence_idx):
     print(acustic_data_cwt.shape)
 
 
-# In[98]:
 
 
 interact(show_frame_and_cwt, sequence_idx=widgets.IntSlider(min=0,max=df_sample.shape[0]/sequence_length,step=1,value=0));
 
 
-# In[99]:
 
 
 import pywt 
@@ -1025,7 +926,6 @@ def show_frame_and_dwt(sequence_idx):
     print(acustic_data_dwt_coeffs)
 
 
-# In[100]:
 
 
 interact(show_frame_and_dwt, sequence_idx=widgets.IntSlider(min=0,max=df_sample.shape[0]/sequence_length,step=1,value=0));

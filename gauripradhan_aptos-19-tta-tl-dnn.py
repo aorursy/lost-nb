@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Standard dependencies
@@ -37,7 +36,6 @@ from sklearn.metrics import cohen_kappa_score
 from keras.applications.resnet50 import ResNet50 
 
 
-# In[2]:
 
 
 # GPU Setup
@@ -46,7 +44,6 @@ config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 
 
-# In[3]:
 
 
 SEED = 7
@@ -64,7 +61,6 @@ NUM_CLASSES = len(CLASS.keys())
 SAVED_MODEL_NAME = 'model.h5'
 
 
-# In[4]:
 
 
 # Import the datasets
@@ -72,7 +68,6 @@ train = pd.read_csv(INPUT_PATH + 'train.csv')
 test = pd.read_csv(INPUT_PATH + 'test.csv')
 
 
-# In[5]:
 
 
 ### Transforming ids to file addresses to the images
@@ -83,7 +78,6 @@ train.drop(['id_code'],axis = 1, inplace =True)
 train = train[['images','diagnosis']]
 
 
-# In[6]:
 
 
 labels = 'Train', 'Test'
@@ -96,7 +90,6 @@ plt.axis('equal')
 plt.show()
 
 
-# In[7]:
 
 
 def sample_display(paths, rows = 5,columns = 5):
@@ -117,7 +110,6 @@ def sample_display(paths, rows = 5,columns = 5):
     plt.tight_layout()
 
 
-# In[8]:
 
 
 sample_df = train.sample(10)
@@ -125,7 +117,6 @@ sample_images = list(sample_df['images'])
 sample_display(sample_images)
 
 
-# In[9]:
 
 
 sample_df = test.sample(10)
@@ -133,7 +124,6 @@ sample_images = list(sample_df['images'])
 sample_display(sample_images)
 
 
-# In[10]:
 
 
 data = train.diagnosis.value_counts()
@@ -145,7 +135,6 @@ plt.title('Per class sample Percentage');
 plt.show()
 
 
-# In[11]:
 
 
 def get_preds_and_labels(model, generator):
@@ -162,7 +151,6 @@ def get_preds_and_labels(model, generator):
     return np.concatenate(preds).ravel(), np.concatenate(labels).ravel()
 
 
-# In[12]:
 
 
 class Metrics(Callback):
@@ -194,7 +182,6 @@ class Metrics(Callback):
         return
 
 
-# In[13]:
 
 
 def crop_image_from_gray(img, tol=7):
@@ -237,7 +224,6 @@ def preprocess_image(image, sigmaX=10):
     return image
 
 
-# In[14]:
 
 
 # Add Image augmentation to our generator
@@ -266,7 +252,6 @@ val_generator = train_datagen.flow_from_dataframe(train,
                                                   subset='validation')
 
 
-# In[15]:
 
 
 # Code Source: https://github.com/CyberZHG/keras-radam/blob/master/keras_radam/optimizers.py
@@ -400,7 +385,6 @@ class RAdam(keras.optimizers.Optimizer):
         return dict(list(base_config.items()) + list(config.items()))
 
 
-# In[16]:
 
 
 class GroupNormalization(Layer):
@@ -574,7 +558,6 @@ class GroupNormalization(Layer):
         return input_shape
 
 
-# In[17]:
 
 
 # Load the base model
@@ -584,7 +567,6 @@ resnet = ResNet50(weights=None,
 resnet.load_weights('../input/resnet50-weights-file/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5')
 
 
-# In[18]:
 
 
 # Replace all Batch Normalization layers by Group Normalization layers
@@ -593,7 +575,6 @@ for i, layer in enumerate(resnet.layers):
         effnet.layers[i] = GroupNormalization(groups=32, axis=-1, epsilon=0.00001)
 
 
-# In[19]:
 
 
 def build_model():
@@ -618,7 +599,6 @@ def build_model():
 model = build_model()
 
 
-# In[20]:
 
 
 # For tracking Quadratic Weighted Kappa score
@@ -643,7 +623,6 @@ with tf.device('/gpu:0'):
                         verbose = 1)
 
 
-# In[21]:
 
 
 # Visualize mse
@@ -658,14 +637,12 @@ plt.xlabel("Epoch")
 plt.ylabel("% Accuracy");
 
 
-# In[22]:
 
 
 # Load best weights according to MSE
 model.load_weights(SAVED_MODEL_NAME)
 
 
-# In[23]:
 
 
 # Calculate QWK on train set
@@ -683,14 +660,12 @@ y_val_preds = np.rint(y_val_preds).astype(np.uint8).clip(0, 4)
 val_score = cohen_kappa_score(val_labels, y_val_preds, weights="quadratic")
 
 
-# In[24]:
 
 
 print(f"The Training Cohen Kappa Score is: {round(train_score, 5)}")
 print(f"The Validation Cohen Kappa Score is: {round(val_score, 5)}")
 
 
-# In[25]:
 
 
 class OptimizedRounder(object):
@@ -752,7 +727,6 @@ class OptimizedRounder(object):
         return self.coef_['x']
 
 
-# In[26]:
 
 
 # Optimize on validation data and evaluate again
@@ -764,7 +738,6 @@ opt_val_predictions = optR.predict(y_val_preds, coefficients)
 new_val_score = cohen_kappa_score(val_labels, opt_val_predictions, weights="quadratic")
 
 
-# In[27]:
 
 
 print(f"Optimized Thresholds:\n{coefficients}\n")
@@ -772,7 +745,6 @@ print(f"The Validation Quadratic Weighted Kappa (QWK)\nwith optimized rounding t
 print(f"This is an improvement of {round(new_val_score - val_score, 5)}\nover the unoptimized rounding")
 
 
-# In[28]:
 
 
 # Place holder for diagnosis column
@@ -788,7 +760,6 @@ test_generator = ImageDataGenerator(preprocessing_function=preprocess_image,
                                                                           shuffle=False)
 
 
-# In[29]:
 
 
 # Make final predictions, round predictions and save to csv
@@ -801,7 +772,6 @@ test.drop(['images'], axis = 1, inplace = True)
 test.to_csv('submission.csv', index=False)
 
 
-# In[30]:
 
 
 # Check submission
@@ -809,7 +779,6 @@ print("Submission File")
 display(test.head())
 
 
-# In[31]:
 
 
 # Label distribution
@@ -823,7 +792,6 @@ plt.xlabel("Label")
 plt.ylabel("Frequency")
 
 
-# In[32]:
 
 
 # Distribution of predictions
@@ -837,7 +805,6 @@ plt.xlabel("Label")
 plt.ylabel("Frequency")
 
 
-# In[ ]:
 
 
 

@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('html', '', "<style>\n@import url('https://fonts.googleapis.com/css?family=Ewert|Roboto&effect=3d|ice|');\nbody {background-color: gainsboro;} \na {color: #37c9e1; font-family: 'Roboto';} \nh1 {color: #37c9e1; font-family: 'Orbitron'; text-shadow: 4px 4px 4px #aaa;} \nh2, h3 {color: slategray; font-family: 'Orbitron'; text-shadow: 4px 4px 4px #aaa;}\nh4 {color: #818286; font-family: 'Roboto';}\nspan {font-family:'Roboto'; color:black; text-shadow: 5px 5px 5px #aaa;}  \ndiv.output_area pre{font-family:'Roboto'; font-size:110%; color:lightblue;}      \n</style>")
 
 
-# In[ ]:
 
 
 import numpy as np
@@ -39,7 +37,6 @@ import requests # Makes HTTP requests
 from io import BytesIO # Use When expecting bytes-like objects
 
 
-# In[ ]:
 
 
 # Classes we will load
@@ -51,7 +48,6 @@ for category in categories:
     URL_DATA[category] = 'https://storage.googleapis.com/quickdraw_dataset/full/numpy_bitmap/' + category +'.npy'
 
 
-# In[ ]:
 
 
 classes_dict = {}
@@ -60,7 +56,6 @@ for key, value in URL_DATA.items():
     classes_dict[key] = np.load(BytesIO(response.content))
 
 
-# In[ ]:
 
 
 for i, (key, value) in enumerate(classes_dict.items()):
@@ -75,7 +70,6 @@ label_dict = {0:'cannon',1:'eye', 2:'face', 3:'nail', 4:'pear',
               5:'piana',6:'radio', 7:'spider', 8:'star', 9:'sword'}
 
 
-# In[ ]:
 
 
 lst = []
@@ -84,7 +78,6 @@ for key, value in classes_dict.items():
 doodles = np.concatenate(lst)
 
 
-# In[ ]:
 
 
 # Split the data into features and class labels (X & y respectively)
@@ -95,7 +88,6 @@ X = doodles[:,:784]
 X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.3,random_state=1)
 
 
-# In[ ]:
 
 
 # Save X_train dataset as a pickle file

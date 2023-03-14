@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install -q efficientnet')
@@ -27,7 +26,6 @@ import efficientnet.tfkeras as efn
 from kaggle_datasets import KaggleDatasets
 
 
-# In[2]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -84,13 +82,11 @@ import os
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 
 
 
-# In[3]:
 
 
 try:
@@ -112,7 +108,6 @@ else:
 print("REPLICAS: ", strategy.num_replicas_in_sync)
 
 
-# In[ ]:
 
 
 data_dir = '/kaggle/input/siim-isic-melanoma-classification/jpeg/'
@@ -120,25 +115,21 @@ train_path = data_dir + '/train/'
 test_path = data_dir + '/test/'
 
 
-# In[ ]:
 
 
 from matplotlib.image import imread
 
 
-# In[ ]:
 
 
 train = pd.read_csv('/kaggle/input/siim-isic-melanoma-classification/train.csv')
 
 
-# In[ ]:
 
 
 train.sample(10)
 
 
-# In[ ]:
 
 
 def append_ext(fn):
@@ -146,49 +137,41 @@ def append_ext(fn):
 train["image_name"]=train["image_name"].apply(append_ext)
 
 
-# In[ ]:
 
 
 print(f"Count of null values in train :\n{train.isnull().sum()}")
 
 
-# In[ ]:
 
 
 sns.heatmap(train.isnull(), yticklabels=False, cbar=False, cmap='viridis')
 
 
-# In[ ]:
 
 
 sns.countplot(x='sex', data=train)
 
 
-# In[ ]:
 
 
 sns.countplot(x='benign_malignant', data=train)
 
 
-# In[ ]:
 
 
 sns.countplot(x='target', data=train)
 
 
-# In[ ]:
 
 
 train['age_approx']= train['age_approx'].fillna(0)
 
 
-# In[ ]:
 
 
 mean = train['age_approx'].mean()
 
 
-# In[ ]:
 
 
 def impute_age(cols):
@@ -199,74 +182,62 @@ def impute_age(cols):
         return x
 
 
-# In[ ]:
 
 
 train['age_approx'] = train[['age_approx']].apply(impute_age, axis=1)
 
 
-# In[ ]:
 
 
 train['anatom_site_general_challenge'].unique()
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(10,6))
 sns.countplot(x='anatom_site_general_challenge', data=train)
 
 
-# In[ ]:
 
 
 train['anatom_site_general_challenge']= train['anatom_site_general_challenge'].fillna('torso')
 
 
-# In[ ]:
 
 
 train['sex']= train['sex'].fillna('male')
 
 
-# In[ ]:
 
 
 a = os.listdir(train_path)[0]
 
 
-# In[ ]:
 
 
 sam_image = train_path+a
 
 
-# In[ ]:
 
 
 sam_img_tensor = imread(sam_image)
 
 
-# In[ ]:
 
 
 sam_img_tensor.shape
 
 
-# In[ ]:
 
 
 plt.imshow(sam_img_tensor)
 
 
-# In[ ]:
 
 
 len(os.listdir(train_path))
 
 
-# In[ ]:
 
 
 fig, ax = plt.subplots(4, 2, figsize=(20, 20))
@@ -287,7 +258,6 @@ fig.suptitle('Label Malignant', size=16)
 plt.show()
 
 
-# In[ ]:
 
 
 fig, ax = plt.subplots(4, 2, figsize=(20, 20))
@@ -308,68 +278,57 @@ fig.suptitle('Label Benign', size=16)
 plt.show()
 
 
-# In[ ]:
 
 
 train['diagnosis'].unique()
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(15,6))
 sns.countplot(x='diagnosis', data=train)
 
 
-# In[ ]:
 
 
 train.drop('sex', axis=1, inplace=True)
 
 
-# In[ ]:
 
 
 train.drop('patient_id', axis=1, inplace=True)
 
 
-# In[ ]:
 
 
 train.drop('anatom_site_general_challenge', axis=1, inplace=True)
 
 
-# In[ ]:
 
 
 train.drop('diagnosis', axis=1, inplace=True)
 
 
-# In[ ]:
 
 
 train.drop('age_approx', axis=1, inplace=True)
 
 
-# In[ ]:
 
 
 train.drop('target', axis=1, inplace=True)
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 
 
 
-# In[4]:
 
 
 AUTO = tf.data.experimental.AUTOTUNE
@@ -384,14 +343,12 @@ IMAGE_SIZE = [1024, 1024]
 imSize = 512
 
 
-# In[5]:
 
 
 def append_path(pre):
     return np.vectorize(lambda file: os.path.join(GCS_DS_PATH, pre, file))
 
 
-# In[6]:
 
 
 sub = pd.read_csv('/kaggle/input/siim-isic-melanoma-classification/sample_submission.csv')
@@ -399,14 +356,12 @@ TRAINING_FILENAMES = tf.io.gfile.glob(GCS_PATH + '/tfrecords/train*.tfrec')
 TEST_FILENAMES = tf.io.gfile.glob(GCS_PATH + '/tfrecords/test*.tfrec')
 
 
-# In[7]:
 
 
 train = pd.read_csv('/kaggle/input/siim-isic-melanoma-classification/train.csv')
 train.head(1)
 
 
-# In[8]:
 
 
 def decode_image(image_data):
@@ -496,13 +451,11 @@ STEPS_PER_EPOCH = NUM_TRAINING_IMAGES // BATCH_SIZE
 print('Dataset: {} training images, {} unlabeled test images'.format(NUM_TRAINING_IMAGES, NUM_TEST_IMAGES))
 
 
-# In[9]:
 
 
 from tensorflow.keras.applications import ResNet152V2
 
 
-# In[10]:
 
 
 METRICS = [
@@ -511,7 +464,6 @@ METRICS = [
 ]
 
 
-# In[11]:
 
 
 with strategy.scope():
@@ -540,7 +492,6 @@ with strategy.scope():
     )
 
 
-# In[12]:
 
 
 def build_lrfn(lr_start=0.00001, lr_max=0.0001, 
@@ -560,14 +511,12 @@ def build_lrfn(lr_start=0.00001, lr_max=0.0001,
     return lrfn
 
 
-# In[13]:
 
 
 lrfn = build_lrfn()
 lr_schedule = tf.keras.callbacks.LearningRateScheduler(lrfn, verbose=1)
 
 
-# In[14]:
 
 
 test_ds = get_test_dataset(ordered=True)
@@ -575,7 +524,6 @@ test_ds = get_test_dataset(ordered=True)
 train_dataset = get_training_dataset() 
 
 
-# In[15]:
 
 
 STEPS_PER_EPOCH = NUM_TRAINING_IMAGES // BATCH_SIZE
@@ -586,39 +534,33 @@ model.fit(
     callbacks=[lr_schedule])
 
 
-# In[16]:
 
 
 model.save_weights('final_model_weights.h5')
 model.save('final_model.h5')
 
 
-# In[ ]:
 
 
 lossess = pd.DataFrame(model.history.history)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 lossess.head(7)
 
 
-# In[17]:
 
 
 test_images_ds = test_ds.map(lambda image, idnum: image)
 probabilities = model.predict(test_images_ds,verbose = 1)
 
 
-# In[18]:
 
 
 print('Generating submission.csv file...')
@@ -626,14 +568,12 @@ test_ids_ds = test_ds.map(lambda image, idnum: idnum).unbatch()
 test_ids = next(iter(test_ids_ds.batch(NUM_TEST_IMAGES))).numpy().astype('U')
 
 
-# In[19]:
 
 
 pred_df = pd.DataFrame({'image_name': test_ids, 'target': np.concatenate(probabilities)})
 pred_df.head(5)
 
 
-# In[20]:
 
 
 del sub['target']
@@ -642,7 +582,6 @@ sub.to_csv('submission.csv', index=False)
 sub.head(5)
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 ## This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 def reduce_mem_usage(df):
@@ -69,7 +67,6 @@ def import_data(file):
     return df
 
 
-# In[ ]:
 
 
 print('train')
@@ -78,7 +75,6 @@ print('test')
 test = import_data('../input/test.csv')
 
 
-# In[ ]:
 
 
 # Data manipulation
@@ -107,49 +103,41 @@ import lightgbm as lgb
 from IPython.display import display
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 test.head()
 
 
-# In[ ]:
 
 
 train.info()
 
 
-# In[ ]:
 
 
 train.isnull().sum().sum()
 
 
-# In[ ]:
 
 
 test.isnull().sum()
 
 
-# In[ ]:
 
 
 final=pd.concat([train,test],keys=['Train','Test'])
 
 
-# In[ ]:
 
 
 final.loc['Train'].winPlacePerc.describe()
 
 
-# In[ ]:
 
 
 def find_bucket(x):
@@ -178,26 +166,22 @@ def find_bucket(x):
     
 
 
-# In[ ]:
 
 
 seri=final.loc['Train'].winPlacePerc.apply(lambda x:find_bucket(x))
 
 
-# In[ ]:
 
 
 final.loc[:,'Buckets']=seri 
 final.loc['Train'].loc[:,'Buckets']=seri
 
 
-# In[ ]:
 
 
 final.head()
 
 
-# In[ ]:
 
 
 cols=[i for i in range(0,11)]
@@ -213,14 +197,12 @@ plt.xlabel("Bucket category")
 plt.title("Number of people V/S Percentile they are in")
 
 
-# In[ ]:
 
 
 final_2=final.copy()
 final_2.head()
 
 
-# In[ ]:
 
 
 '''
@@ -241,7 +223,6 @@ print("Number matches with more than 100 players : {}".format(c))
         
 
 
-# In[ ]:
 
 
 #17
@@ -260,7 +241,6 @@ for i in range(0,5):
 plt.subplots_adjust(top=2)'''
 
 
-# In[ ]:
 
 
 #adding new feature
@@ -298,7 +278,6 @@ final_2['perc_dist_walk']=pd.Series()
 final_2['perc_dist_walk']=final['walkDistance']/(final['swimDistance']+final['rideDistance']+final['walkDistance'])
 
 
-# In[ ]:
 
 
 
@@ -329,14 +308,12 @@ train=final_2.loc['Train']
 test=final_2.loc['Test']
 
 
-# In[ ]:
 
 
 train=train.fillna(0)
 train.head()
 
 
-# In[ ]:
 
 
 index1=[]
@@ -353,20 +330,17 @@ for i in dict_means.keys():
     
 
 
-# In[ ]:
 
 
 test=test.fillna(0)
 final_2=pd.concat([train,test],keys=['Train','Test'])
 
 
-# In[ ]:
 
 
 sns.scatterplot(y='winPlacePerc',x="perc_dist_swim",data=final_2.loc['Train'])
 
 
-# In[ ]:
 
 
 #checking correlation heat map for co related features
@@ -375,7 +349,6 @@ plt.figure(figsize=(30,37))
 sns.heatmap(corr_matrix,annot=True, cmap = plt.cm.autumn_r, fmt='.3f');
 
 
-# In[ ]:
 
 
 upper=corr_matrix.where(np.triu(np.ones(corr_matrix.shape),k=1).astype(np.bool))
@@ -383,19 +356,16 @@ to_drop=[column for column in upper.columns if any(upper[column]>0.95)]
 to_drop
 
 
-# In[ ]:
 
 
 final_2=final_2.drop(to_drop,axis=1)
 
 
-# In[ ]:
 
 
 final_2.loc['Test'].isnull().sum()
 
 
-# In[ ]:
 
 
 
@@ -410,7 +380,6 @@ test_data=final_2.loc["Test"][feats]
 #test_set_d=pipeline.transform(test_data)
 
 
-# In[ ]:
 
 
 train_set_d=train_X.copy()
@@ -426,7 +395,6 @@ test_set_d.matchId=final.loc['Test'].matchId
 test_set_d.groupId=final.loc['Test'].groupId
 
 
-# In[ ]:
 
 
 train_copy_1=train_set_d.copy()
@@ -435,14 +403,12 @@ test_copy_1=test_set_d.copy()
 test_copy_2=test_set_d.copy()
 
 
-# In[ ]:
 
 
 
 scorer=make_scorer(f1_score,greater_is_better=True,average='macro')
 
 
-# In[ ]:
 
 
 from sklearn.model_selection import StratifiedKFold
@@ -559,7 +525,6 @@ def model_gbm(features, labels, test_features, test_ids,
     
 
 
-# In[ ]:
 
 
 test_ids=test_data.Id
@@ -567,13 +532,11 @@ train_set_d=train_set_d.drop(["Id",'groupId','matchId'],axis=1)
 test_set_d=test_set_d.drop(["Id",'groupId','matchId'],axis=1)
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('capture', '--no-display', '%%capture --no-display\n#predictions, gbm_fi = model_gbm(train_set_d, train_y, test_set_d, test_ids, return_preds=True)')
 
 
-# In[ ]:
 
 
 params = {'boosting_type': 'gbdt', 
@@ -590,33 +553,28 @@ model = lgb.LGBMRegressor(**params,n_jobs = -1, n_estimators = 10000,random_stat
 # Using stratified kfold cross validation
 
 
-# In[ ]:
 
 
 train_copy_1=train_copy_1.drop(['Buckets'],axis=1)
 train_copy_1=train_copy_1.drop(['Id','matchId','groupId'],axis=1)
 
 
-# In[ ]:
 
 
 model.fit(train_copy_1,train_y)
 
 
-# In[ ]:
 
 
 test_set_d=test_set_d.drop(["Buckets"],axis=1)
 predictions=model.predict(test_set_d)
 
 
-# In[ ]:
 
 
 test_set
 
 
-# In[ ]:
 
 
 submission = import_data('../input/sample_submission.csv')
@@ -624,13 +582,11 @@ submission.Id=final.loc['Test'].Id
 submission.winPlacePerc=predictions
 
 
-# In[ ]:
 
 
 submission.to_csv('submission_2.csv', index=False)
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -45,13 +44,11 @@ from keras.utils import conv_utils
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 tf.enable_eager_execution()
 
 
-# In[3]:
 
 
 image_width = 64
@@ -63,7 +60,6 @@ image_input_dir = '../input/all-dogs/all-dogs/'
 image_ann_dir = "../input/annotation/Annotation/"
 
 
-# In[4]:
 
 
 dog_breed_dict = {}
@@ -72,7 +68,6 @@ for annotation in os.listdir(image_ann_dir):
     dog_breed_dict[annotations[0]] = annotations[1]
 
 
-# In[5]:
 
 
 def read_image(src):
@@ -83,7 +78,6 @@ def read_image(src):
     return img
 
 
-# In[6]:
 
 
 def load_cropped_images(dog_breed_dict=dog_breed_dict, image_ann_dir=image_ann_dir, sample_size=25000, 
@@ -146,7 +140,6 @@ def load_cropped_images(dog_breed_dict=dog_breed_dict, image_ann_dir=image_ann_d
     return dog_images_np, breeds
 
 
-# In[7]:
 
 
 start_time = time.time()
@@ -155,14 +148,12 @@ est_time = round(time.time() - start_time)
 print("Feature loading time: {}.".format(str(datetime.timedelta(seconds=est_time))))
 
 
-# In[8]:
 
 
 print('Loaded features shape: ', dog_images_np.shape)
 print('Loaded labels: ', len(breeds))
 
 
-# In[9]:
 
 
 def plot_features(features, labels, image_width=image_width, image_height=image_height, 
@@ -191,51 +182,43 @@ def plot_features(features, labels, image_width=image_width, image_height=image_
         ax.imshow(imgs[i])
 
 
-# In[10]:
 
 
 print('Plotting cropped images by their specified coordinates..')
 plot_features(dog_images_np / 255., breeds, examples=25, disp_labels=True)
 
 
-# In[11]:
 
 
 dog_images_np = (dog_images_np - 127.5) / 127.5  # normalize the pixel range to [-1, 1] ((image - 127.5) / 127.5) or [0, 1] (image / 255.) alternatively
 
 
-# In[12]:
 
 
 print('Plotting cropped images by their specified coordinates..')
 plot_features(dog_images_np, breeds, examples=25, disp_labels=True)
 
 
-# In[13]:
 
 
 print(np.max(dog_images_np[3,:,:,:]), np.min(dog_images_np[3,:,:,:]))
 
 
-# In[14]:
 
 
 plot_features((dog_images_np * 127.5 + 127.5) / 255., breeds, examples=25, disp_labels=True)
 
 
-# In[15]:
 
 
 print("Dog features shape:", dog_images_np.shape)
 
 
-# In[16]:
 
 
 dog_features_tf = tf.cast(dog_images_np, 'float32')
 
 
-# In[17]:
 
 
 sample_size = 22125
@@ -250,25 +233,21 @@ BN_MOMENTUM = 0.1
 BN_EPSILON  = 0.00002
 
 
-# In[18]:
 
 
 dog_features_data = tf.data.Dataset.from_tensor_slices(dog_features_tf).shuffle(sample_size).batch(batch_size)
 
 
-# In[19]:
 
 
 print(dog_features_data)
 
 
-# In[20]:
 
 
 weight_initializer = tf.keras.initializers.RandomNormal(mean=weight_init_mean, stddev=weight_init_std)
 
 
-# In[21]:
 
 
 class DenseSN(Dense):
@@ -405,7 +384,6 @@ class ConvSN2D(Conv2D):
         return outputs
 
 
-# In[22]:
 
 
 def transposed_conv(model, out_channels):
@@ -433,13 +411,11 @@ def conv(model, out_channels, ksize, stride_size):
     return model
 
 
-# In[23]:
 
 
 print(image_height // scale_factor, image_width // scale_factor, 512)
 
 
-# In[24]:
 
 
 def DogGenerator():
@@ -458,14 +434,12 @@ def DogGenerator():
     return model
 
 
-# In[25]:
 
 
 dog_generator = DogGenerator()
 print(dog_generator.summary())
 
 
-# In[26]:
 
 
 # generate points in latent space as input for the generator
@@ -477,7 +451,6 @@ def generate_latent_points(latent_dim, n_samples):
     return x_input
 
 
-# In[27]:
 
 
 # random noise vector
@@ -492,7 +465,6 @@ print(generated_image.shape)
 print(noise.shape, tf.math.reduce_mean(noise).numpy(), tf.math.reduce_std(noise).numpy())
 
 
-# In[28]:
 
 
 def DogDiscriminator(spectral_normalization=True):
@@ -534,21 +506,18 @@ def DogDiscriminator(spectral_normalization=True):
     return model
 
 
-# In[29]:
 
 
 dog_discriminator = DogDiscriminator(spectral_normalization=True)
 print(dog_discriminator.summary())
 
 
-# In[30]:
 
 
 decision = dog_discriminator(generated_image)
 print(decision)
 
 
-# In[31]:
 
 
 # Label smoothing -- technique from GAN hacks, instead of assigning 1/0 as class labels, we assign a random integer in range [0.7, 1.0] for positive class
@@ -561,7 +530,6 @@ def smooth_negative_labels(y):
     return y + np.random.random(y.shape) * 0.3
 
 
-# In[32]:
 
 
 # randomly flip some labels
@@ -584,7 +552,6 @@ def noisy_labels(y, p_flip):
     return outputs
 
 
-# In[33]:
 
 
 '''
@@ -605,7 +572,6 @@ print(y.sum())
 '''
 
 
-# In[34]:
 
 
 generator_optimizer = Adam(lr=0.0002, beta_1=0.5)
@@ -614,7 +580,6 @@ discriminator_optimizer = Adam(lr=0.0002, beta_1=0.5)
 cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=False)
 
 
-# In[35]:
 
 
 def discriminator_loss(real_output, fake_output, apply_label_smoothing=True, label_noise=True):
@@ -642,7 +607,6 @@ def discriminator_loss(real_output, fake_output, apply_label_smoothing=True, lab
     return total_loss
 
 
-# In[36]:
 
 
 def generator_loss(fake_output, apply_label_smoothing=True):
@@ -652,7 +616,6 @@ def generator_loss(fake_output, apply_label_smoothing=True):
     return cross_entropy(tf.ones_like(fake_output), fake_output)
 
 
-# In[37]:
 
 
 checkpoint_dir = '/training_checkpoints'
@@ -663,7 +626,6 @@ checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  discriminator=dog_discriminator)
 
 
-# In[38]:
 
 
 EPOCHS = 250
@@ -672,7 +634,6 @@ num_examples_to_generate = 8
 seed = tf.random.normal([num_examples_to_generate, noise_dim])
 
 
-# In[39]:
 
 
 def train_step(images, G_loss, D_loss):
@@ -697,7 +658,6 @@ def train_step(images, G_loss, D_loss):
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, dog_discriminator.trainable_variables))
 
 
-# In[40]:
 
 
 # function by Nanashi
@@ -712,7 +672,6 @@ def plot_loss(G_losses, D_losses, epoch):
     plt.show()
 
 
-# In[41]:
 
 
 def generate_and_save_images(model, epoch, test_input):
@@ -728,7 +687,6 @@ def generate_and_save_images(model, epoch, test_input):
     plt.show()
 
 
-# In[42]:
 
 
 def generate_test_image(model, noise_dim=100):
@@ -742,7 +700,6 @@ def generate_test_image(model, noise_dim=100):
     plt.show()
 
 
-# In[43]:
 
 
 def train(dataset, epochs):
@@ -771,26 +728,22 @@ def train(dataset, epochs):
     print('Final epoch.')
 
 
-# In[44]:
 
 
 #%%time
 train(dog_features_data, EPOCHS)
 
 
-# In[45]:
 
 
 checkpoint.restore(tf.train.latest_checkpoint(checkpoint_dir))
 
 
-# In[46]:
 
 
 generate_test_image(dog_generator)
 
 
-# In[47]:
 
 
 # SAVE TO ZIP FILE NAMED IMAGES.ZIP

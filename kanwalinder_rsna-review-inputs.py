@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # basic imports
@@ -14,14 +13,12 @@ import pandas as pd
 import numpy as np
 
 
-# In[ ]:
 
 
 # what do we have here?
 print (os.listdir("../input"))
 
 
-# In[ ]:
 
 
 # global variables
@@ -59,49 +56,42 @@ TEST_PROCESSED_CSV_FILE="../input/rsna-preprocessed-nonimage-inputs/stage_1_test
 TEST_PROCESSED_CSV_COLUMN_NAMES=['patientId', 'sex', 'age', 'viewPosition']
 
 
-# In[ ]:
 
 
 # how many unique records does TRAIN_BOUNDINGBOX_CSV_FILE contain?
 get_ipython().system('printf "Number of bounding box data records (not unique) stored: "; grep -v "patientId,boundingbox" ../input/rsna-preprocessed-nonimage-inputs/stage_1_train_boundingboxes.csv | sort | uniq| wc -l')
 
 
-# In[ ]:
 
 
 # what does the stage_1_train_boundingboxes.csv file look like?
 get_ipython().system('printf "First 10 rows, including header, in stage_1_train_boundingboxes.csv:\\n\\n";          head -10 ../input/rsna-preprocessed-nonimage-inputs/stage_1_train_boundingboxes.csv')
 
 
-# In[ ]:
 
 
 # how many unique records does TRAIN_PROCESSED_CSV_FILE contain?
 get_ipython().system('printf "Number of unique train processed data records stored: "; grep -v "patientId,label,class,sex,age,viewPosition" ../input/rsna-preprocessed-nonimage-inputs/stage_1_train_processed.csv | sort | uniq| wc -l')
 
 
-# In[ ]:
 
 
 # what does the stage_1_train_processed.csv file look like?
 get_ipython().system('printf "First 10 rows, including header, in stage_1_train_processed.csv:\\n\\n";          head -10 ../input/rsna-preprocessed-nonimage-inputs/stage_1_train_processed.csv')
 
 
-# In[ ]:
 
 
 # how many unique records does TEST_PROCESSED_CSV_FILE contain?
 get_ipython().system('printf "Number of unique train processed data records stored: "; grep -v "patientId,sex,age,viewPosition" ../input/rsna-preprocessed-nonimage-inputs/stage_1_test_processed.csv | sort | uniq| wc -l')
 
 
-# In[ ]:
 
 
 # what does the stage_1_test_processed.csv file look like?
 get_ipython().system('printf "First 10 rows, including header, in stage_1_test_processed.csv:\\n\\n";          head -10 ../input/rsna-preprocessed-nonimage-inputs/stage_1_test_processed.csv')
 
 
-# In[ ]:
 
 
 # read TRAIN_PROCESSED_CSV_FILE into a pandas dataframe
@@ -138,7 +128,6 @@ print (testdf.shape)
 print (testdf.head(n=10))
 
 
-# In[ ]:
 
 
 # combine bounding boxes by unique patientId (multiple bounding boxes put in a list)
@@ -146,7 +135,6 @@ bboxes=boundingboxesdf.copy().groupby(['patientId'])['boundingbox'].apply(list)
 print (bboxes.head(n=10))
 
 
-# In[ ]:
 
 
 # save keys (unique patientIds) for 'Normal' 'Lung Opacity,' and 'No Lung Opacity / Not Normal' examples
@@ -160,7 +148,6 @@ print (">{} X-rays are labeled as having '{}'".format(len(lungopacitykeys), np.s
 print (">{} X-rays are labeled as having '{}'".format(len(otherabnormalkeys), np.squeeze(CLASSES)[2].decode("utf-8")))
 
 
-# In[ ]:
 
 
 # extract test keys while we are at it
@@ -168,7 +155,6 @@ testkeys=testdf.index.tolist()
 print ("There are a total of {} test X-rays".format(len(testkeys)))
 
 
-# In[ ]:
 
 
 # utility to extract bounding boxes for a given patientId
@@ -177,7 +163,6 @@ def getBoundingBoxes (bboxes, key):
     return bboxlist
 
 
-# In[ ]:
 
 
 # utility to extract x, y, width, and height for a single bounding box
@@ -191,7 +176,6 @@ def getBoundingBoxParameters (bbox):
         return x, y, width, height
 
 
-# In[ ]:
 
 
 # make sure we can extract bounding box details from lungopacitykeys
@@ -205,7 +189,6 @@ for i, key in enumerate(lungopacitykeys):
         print("x= {}, y= {}, width={}, height={}".format(x, y, width, height))
 
 
-# In[ ]:
 
 
 # extract and check counts for boundingboxes
@@ -232,13 +215,11 @@ print (">>{} have 2 bounding boxes".format(twoboundingboxcount))
 print (">>{} have 3 bounding boxes".format(threeboundingboxcount))
 
 
-# In[ ]:
 
 
 # analyze train and test data
 
 
-# In[ ]:
 
 
 # double-check train and test samples
@@ -246,122 +227,104 @@ print ("Total train examples are: {}".format(traindf.shape[0]))
 print ("Total test examples are: {}".format(testdf.shape[0]))
 
 
-# In[ ]:
 
 
 # what does the gender mix look like for train data?
 traindf.groupby(['sex']).size().reset_index(name='Count')
 
 
-# In[ ]:
 
 
 # visually
 traindf.groupby(['sex']).size().plot.bar()
 
 
-# In[ ]:
 
 
 # what does the gender mix look like for test data?
 testdf.groupby(['sex']).size().reset_index(name='Count')
 
 
-# In[ ]:
 
 
 # visually
 testdf.groupby(['sex']).size().plot.bar()
 
 
-# In[ ]:
 
 
 # 56.1% Male in train data and 57.1% in test data is pretty similar mix
 
 
-# In[ ]:
 
 
 # what does the viewPosition mix look like for train data?
 traindf.groupby(['viewPosition']).size().reset_index(name='Count')
 
 
-# In[ ]:
 
 
 # what does the viewPosition mix look like for test data?
 testdf.groupby(['viewPosition']).size().reset_index(name='Count')
 
 
-# In[ ]:
 
 
 # 45.6% AP in train data and 46.8% in test data is similar mix
 
 
-# In[ ]:
 
 
 # what does the viewPosition mix look like by sex for train data?
 traindf.groupby(['sex','viewPosition']).size().reset_index(name='Count')
 
 
-# In[ ]:
 
 
 # visually
 traindf.groupby(['sex','viewPosition']).size().plot.bar()
 
 
-# In[ ]:
 
 
 # what does the viewPosition mix look like by sex for test data?
 testdf.groupby(['sex','viewPosition']).size().reset_index(name='Count')
 
 
-# In[ ]:
 
 
 # visually
 testdf.groupby(['sex','viewPosition']).size().plot.bar()
 
 
-# In[ ]:
 
 
 # not quite similar, especially for female examples
 
 
-# In[ ]:
 
 
 # what does the age distribution look like for train data?
 traindf.groupby(['age']).size().plot.bar(figsize=(10,10))
 
 
-# In[ ]:
 
 
 # by the numbers
 traindf['age'].describe()
 
 
-# In[ ]:
 
 
 testdf.groupby(['age']).size().plot.bar(figsize=(10,10))
 
 
-# In[ ]:
 
 
 # by the numbers
 testdf['age'].describe()
 
 
-# In[ ]:
 
 
 # that is pretty darn close, except for minimum and maximum age examples
@@ -369,13 +332,11 @@ testdf['age'].describe()
 # SUMMARY: as has been noted by others, there does not appear to be any meaningful classification information in the meta-data
 
 
-# In[ ]:
 
 
 # review images
 
 
-# In[ ]:
 
 
 # utility to load a dicom image and/or key attributes
@@ -398,7 +359,6 @@ def loadImage (directory, filename, mode="metadata"):
     return patientid, attributes, imagearray
 
 
-# In[ ]:
 
 
 # review training images (rerun to see different images)
@@ -449,7 +409,6 @@ plt.show()
 plt.close()
 
 
-# In[ ]:
 
 
 # review test images (rerun to see different images)

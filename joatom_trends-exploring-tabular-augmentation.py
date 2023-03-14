@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -16,7 +15,6 @@ import os, shutil
 import sys
 
 
-# In[2]:
 
 
 # Notebook Settings
@@ -24,7 +22,6 @@ import sys
 # np.set_printoptions(threshold=sys.maxsize)
 
 
-# In[3]:
 
 
 kaggle_path = Path('.')
@@ -34,7 +31,6 @@ kaggle_input_path = Path('/kaggle/input/trends-assessment-prediction')
 #    print(dirname, filenames)
 
 
-# In[4]:
 
 
 INCLUDE_FNC_DATA = False
@@ -44,7 +40,6 @@ LOSS_WEIGHTS = [0.4, 0.15, 0.15, 0.15, 0.15]
 BS = 128
 
 
-# In[5]:
 
 
 l_data = pd.read_csv(kaggle_input_path/'loading.csv')
@@ -59,7 +54,6 @@ idx_site2 = pd.read_csv(kaggle_input_path/'reveal_ID_site2.csv')
 #submission = pd.read_csv(kaggle_input_path/'sample_submission.csv')
 
 
-# In[6]:
 
 
 display(y_data.head())
@@ -67,7 +61,6 @@ display(y_data.describe())
 y_data.shape
 
 
-# In[7]:
 
 
 display(l_data.tail())
@@ -75,7 +68,6 @@ display(l_data.describe()),
 l_data.shape
 
 
-# In[8]:
 
 
 if IMPUTATION_STRAT == 'IGNORE_ON_TRAIN':
@@ -87,7 +79,6 @@ else: #'MEAN'
 y_data
 
 
-# In[9]:
 
 
 train = l_data.merge(y_data, on='Id', how='inner').sort_values(by='Id').reset_index(drop = True)
@@ -95,7 +86,6 @@ idx_train = train.pop('Id')
 train
 
 
-# In[10]:
 
 
 test = l_data.merge(y_data, on='Id', how='outer', indicator = True)
@@ -109,7 +99,6 @@ idx_test = test.pop('Id')
 test
 
 
-# In[11]:
 
 
 # variation of https://github.com/fastai/fastai/blob/master/fastai/metrics.py#L85
@@ -126,7 +115,6 @@ def weighted_nae(preds, targs):
     return 0.3 * norm_absolute_error(preds[:,0],targs[:,0]) +            0.175 * norm_absolute_error(preds[:,1],targs[:,1]) +            0.175 * norm_absolute_error(preds[:,2],targs[:,2]) +            0.175 * norm_absolute_error(preds[:,3],targs[:,3]) +            0.175 * norm_absolute_error(preds[:,4],targs[:,4])
 
 
-# In[12]:
 
 
 # variation of https://www.kaggle.com/iafoss/grapheme-fast-ai-starter-lb-0-964
@@ -194,7 +182,6 @@ class Metric_total(Callback):
                           )
 
 
-# In[13]:
 
 
 # variation of https://www.kaggle.com/iafoss/grapheme-fast-ai-starter-lb-0-964
@@ -232,7 +219,6 @@ class Loss_combine(nn.Module):
             return self.fw[0]*loss_func(x0,y[:,0],reduction=reduction) +                self.fw[1]*loss_func(x1,y[:,1],reduction=reduction) +                self.fw[2]*loss_func(x2,y[:,2],reduction=reduction) +                self.fw[3]*loss_func(x3,y[:,3],reduction=reduction) +                self.fw[4]*loss_func(x4,y[:,4],reduction=reduction)
 
 
-# In[14]:
 
 
 # Vartiation https://github.com/fastai/fastai/blob/master/fastai/callbacks/mixup.py#L8
@@ -316,7 +302,6 @@ class MixUpCallback(LearnerCallback):
             
 
 
-# In[15]:
 
 
 bs = 128
@@ -370,21 +355,18 @@ def prep_learn(data):
     
 
 
-# In[16]:
 
 
 data = prep_data(bs, valid_idx)
 learn = prep_learn(data)
 
 
-# In[17]:
 
 
 learn.lr_find()
 learn.recorder.plot(suggestion=True)
 
 
-# In[18]:
 
 
 lr = 2e-2
@@ -392,7 +374,6 @@ reduceLR = callbacks.ReduceLROnPlateauCallback(learn=learn, monitor = 'valid_los
 learn.fit_one_cycle(10, lr, callbacks=[reduceLR])
 
 
-# In[19]:
 
 
 yv, yv_truth= learn.get_preds(ds_type=DatasetType.Valid)
@@ -403,7 +384,6 @@ print(f'Weighted normalized absolute error (Valid): {weighted_nae(yv,yv_truth)}'
 print(f'Weighted normalized absolute error (Train): {weighted_nae(yt,yt_truth)}')
 
 
-# In[20]:
 
 
 data = prep_data(bs, valid_idx)
@@ -414,7 +394,6 @@ reduceLR = callbacks.ReduceLROnPlateauCallback(learn=learn, monitor = 'valid_los
 learn.fit_one_cycle(10, lr, callbacks=[MixUpCallback(learn, alpha=0.4),reduceLR])
 
 
-# In[21]:
 
 
 yv, yv_truth= learn.get_preds(ds_type=DatasetType.Valid)
@@ -425,7 +404,6 @@ print(f'Weighted normalized absolute error (Valid): {weighted_nae(yv,yv_truth)}'
 print(f'Weighted normalized absolute error (Train): {weighted_nae(yt,yt_truth)}')
 
 
-# In[22]:
 
 
 def make_submission(learn, postfix = ''):
@@ -452,7 +430,6 @@ def make_submission(learn, postfix = ''):
     submission.to_csv('submission'+postfix+'.csv', index=False)
 
 
-# In[23]:
 
 
 data = prep_data(bs, valid_idx = None)
@@ -462,13 +439,11 @@ lr = 2e-2
 learn.fit_one_cycle(10, lr)
 
 
-# In[24]:
 
 
 make_submission(learn, postfix = '_wo_aug')
 
 
-# In[25]:
 
 
 data = prep_data(bs, valid_idx = None)
@@ -478,13 +453,11 @@ lr = 2e-2
 learn.fit_one_cycle(10, lr, callbacks=[MixUpCallback(learn, alpha=0.4)])
 
 
-# In[26]:
 
 
 make_submission(learn, postfix = '_with_aug')
 
 
-# In[ ]:
 
 
 

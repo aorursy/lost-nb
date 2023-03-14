@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[6]:
 
 
 # This tells matplotlib not to try opening a new window for each plot.
@@ -43,13 +42,11 @@ import seaborn as sns
 from scipy import stats
 
 
-# In[ ]:
 
 
 Next we load the training and test data sets.
 
 
-# In[7]:
 
 
 ff = "../input/train.csv"
@@ -75,13 +72,11 @@ print('The training dataset contains {0} observations with the same {1} features
 print('For this training set we know the corresponding category (forest cover type) of the '       '{0} observations.'.format(y.shape[0]))
 
 
-# In[ ]:
 
 
 Let's take a look at the distribution of values, for the continuous features.
 
 
-# In[8]:
 
 
 Train_panda = pd.read_csv('../input/train.csv')
@@ -89,7 +84,6 @@ Train_panda.ix[:,1:11].hist(figsize=(16,12),bins=50)
 plt.show()
 
 
-# In[9]:
 
 
 Test_panda = pd.read_csv('../input/test.csv')
@@ -97,14 +91,12 @@ Test_panda.ix[:,1:11].hist(figsize=(16,12),bins=50)
 plt.show()
 
 
-# In[10]:
 
 
 # X[:,9] = np.where(X[:,9]==0, np.median(X[X[:,9]!=0,9]), X[:,9])
 # X_test[:,9] = np.where(X_test[:,9]==0, np.median(X_test[X_test[:,9]!=0,9]), X_test[:,9])
 
 
-# In[11]:
 
 
 # Shuffle the data, but make sure that the features and accompanying labels stay in sync.
@@ -121,13 +113,11 @@ X_test = X_test[:, 1:]
 print(X_dev.shape, X_train.shape)
 
 
-# In[ ]:
 
 
 As previously mentioned, the first 10 features of each observation (Elevation to Horizontal_Distance_To_Fire_Points) are continuous, with different ranges, while the remaining 44 are all binary. 4 of those 44 binary features correspond to Wilderness Area (i.e., there are 4 possible types), so any observation will have one 1 and three 0's in those columns. The last 40 features correspond to Soil Type (i.e., there are 40 possible types), so any observation will have one 1 and thirty-nine 0's in those columns.
 
 
-# In[12]:
 
 
 prop_wilderness = 100*X_train[:,10:14].sum(axis=0)/X_train[:,10:14].sum()
@@ -146,7 +136,6 @@ plt.xticks(np.arange(40), np.array([str(i) for i in np.arange(1,41)]))
 plt.show()
 
 
-# In[13]:
 
 
 prop_wilderness = 100*X_test[:,10:14].sum(axis=0)/X_test[:,10:14].sum()
@@ -165,7 +154,6 @@ plt.xticks(np.arange(40), np.array([str(i) for i in np.arange(1,41)]))
 plt.show()
 
 
-# In[14]:
 
 
 # Scale to range [0,1]
@@ -192,7 +180,6 @@ X_dev_std[:, :10] = std_scaler.transform(X_dev[:, :10])
 X_test_std[:, :10] = std_scaler.transform(X_test[:, :10])
 
 
-# In[15]:
 
 
 # Create a mixed distance metric that accounts for the different characteristic of the features
@@ -228,7 +215,6 @@ kNN.fit(X_train[:,:10], y_train)
 print(kNN.score(X_dev[:,:10], y_dev))
 
 
-# In[16]:
 
 
 # Estimate by cross-validation the optimal number of neighbors (k)
@@ -255,7 +241,6 @@ plt.ylim([0, (np.ceil(best_param_kNN.best_score_*20)+1)/20])
 plt.xlim([0, len(k['n_neighbors'])+1])
 
 
-# In[17]:
 
 
 kNN = KNeighborsClassifier(n_neighbors=optimal_k)
@@ -270,14 +255,12 @@ kNN.fit(X_train_minmax, y_train)
 print('Accuracy using scaled-to-range data: {0:.4f}'.    format(kNN.score(X_dev_minmax, y_dev)))
 
 
-# In[ ]:
 
 
 The model performs better with non-scaled data (it could be argued that we searched for the optimal value for k using those data, but we did the same -out of this notebook- with standardized and scaled-to-range data).
 get_ipython().set_next_input('Which are the cover types most commonly misclassified');get_ipython().run_line_magic('pinfo', 'misclassified')
 
 
-# In[18]:
 
 
 kNN = KNeighborsClassifier(n_neighbors=optimal_k)
@@ -311,7 +294,6 @@ for i in table:
     print("|{:4}|{:5.1f}|{:5.1f}|{:5.1f}|{:5.1f}|{:5.1f}|{:5.1f}|{:5.1f}|".format(*i))
 
 
-# In[ ]:
 
 
 The cover types most typically misclassified are 1 and 2 (confused with each other).
@@ -319,7 +301,6 @@ The cover types most typically misclassified are 1 and 2 (confused with each oth
 Keep record of the predictions in the dev set, as well as the accuracy, to ensemble all the models in a later step:
 
 
-# In[19]:
 
 
 kNN = KNeighborsClassifier(n_neighbors=optimal_k)
@@ -334,25 +315,21 @@ acc_kNN_perType = np.diag(acc)
 print(acc_kNN_perType)
 
 
-# In[ ]:
 
 
 Predict the test set:
 
 
-# In[20]:
 
 
 pred_y_test_kNN = kNN.predict(X_test)
 
 
-# In[ ]:
 
 
 ## Naive Bayes (NB)
 
 
-# In[21]:
 
 
 NB_model = GaussianNB()
@@ -362,13 +339,11 @@ print(metrics.accuracy_score(y_true=y_dev, y_pred=dev_predicted_labels))
 print(metrics.classification_report(y_dev, dev_predicted_labels))
 
 
-# In[ ]:
 
 
 Keep record of the predictions in the dev set, as well as the accuracy, to ensemble all the models in a later step:
 
 
-# In[22]:
 
 
 NB = GaussianNB()
@@ -383,19 +358,16 @@ acc_NB_perType = np.diag(acc)
 print(acc_NB_perType)
 
 
-# In[ ]:
 
 
 Predict the test set:
 
 
-# In[23]:
 
 
 pred_y_test_NB = NB.predict(X_test_std[:,:10])
 
 
-# In[24]:
 
 
 param_grid = {'criterion': ['gini', 'entropy'], 'max_features': [2, 5, 10, 20, 54], 
@@ -418,7 +390,6 @@ print(metrics.classification_report(y_dev, y_dev_dec))
 print(metrics.accuracy_score(y_dev, y_dev_dec))
 
 
-# In[25]:
 
 
 DT = DecisionTreeClassifier(criterion='entropy', max_features=54, 
@@ -434,13 +405,11 @@ acc_DT_perType = np.diag(acc)
 print(acc_DT_perType)
 
 
-# In[26]:
 
 
 pred_y_test_DT = DT.predict(X_test)
 
 
-# In[27]:
 
 
 # Train and predict with the random forest classifier
@@ -471,7 +440,6 @@ print(metrics.classification_report(y_dev, y_dev_RF))
 print(metrics.accuracy_score(y_dev, y_dev_RF))
 
 
-# In[28]:
 
 
 RF = ensemble.RandomForestClassifier(criterion='entropy', n_estimators=150, 
@@ -488,19 +456,16 @@ acc_RF_perType = np.diag(acc)
 print(acc_RF_perType)
 
 
-# In[ ]:
 
 
 Predict the test set:
 
 
-# In[29]:
 
 
 pred_y_test_RF = RF.predict(X_test)
 
 
-# In[29]:
 
 
 

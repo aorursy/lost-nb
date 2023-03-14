@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -22,20 +21,17 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 train_data = pd.read_json('../input/two-sigma-connect-rental-listing-inquiries/train.json.zip', convert_dates=['created'])
 test_data = pd.read_json('../input/two-sigma-connect-rental-listing-inquiries/test.json.zip', convert_dates=['created'])
 
 
-# In[3]:
 
 
 train_size = train_data.shape[0]
 
 
-# In[4]:
 
 
 train_data['target'] = train_data['interest_level'].apply(lambda x: 0 if x=='low' else 1 if x=='medium' else 2)
@@ -44,13 +40,11 @@ train_data['medium'] = train_data['interest_level'].apply(lambda x: 1 if x=='med
 train_data['high'] = train_data['interest_level'].apply(lambda x: 1 if x=='high' else 0)
 
 
-# In[5]:
 
 
 full_data=pd.concat([train_data,test_data])
 
 
-# In[6]:
 
 
 num_vars = ['bathrooms','bedrooms','latitude','longitude','price']
@@ -61,7 +55,6 @@ image_var = 'photos'
 id_var = 'listing_id'
 
 
-# In[7]:
 
 
 full_data['created_datetime'] = pd.to_datetime(full_data['created'], format="%Y-%m-%d %H:%M:%S")
@@ -79,7 +72,6 @@ date_num_vars = ['created_month','created_dayofweek','created_dayofyear'
                  ,'created_weekofyear','created_hour','created_epoch']
 
 
-# In[8]:
 
 
 full_data["geo_area_50"] =     full_data[['latitude', 'longitude']]    .apply(lambda x:(int(x[0]*50)%50)*50+(int(-x[1]*50)%50),axis=1)                                         
@@ -108,7 +100,6 @@ geo_cat_vars = ['geo_area_50', 'geo_area_100', 'geo_area_200']
 geo_num_vars = ['distance_to_fi', 'distance_to_cp']
 
 
-# In[9]:
 
 
 full_data['rooms'] = full_data['bedrooms'] + full_data['bathrooms'] 
@@ -129,7 +120,6 @@ additional_num_vars = ['rooms','num_of_photos','num_of_features','len_of_desc',
                     'words_of_desc','has_phone','has_email','building_id_is_zero']
 
 
-# In[10]:
 
 
 full_data['avg_word_len'] = full_data[['len_of_desc','words_of_desc']]                                    .apply(lambda x: x[0]/x[1] if x[1]!=0 else 0, axis=1)
@@ -169,13 +159,11 @@ interactive_num_vars = ['avg_word_len','price_per_room','price_per_bedroom','pri
                         'features_per_photo','features_per_word','features_by_desc_len']
 
 
-# In[11]:
 
 
 get_ipython().run_cell_magic('time', '', 'display=full_data["display_address"].value_counts()\nmanager_id=full_data["manager_id"].value_counts()\nbuilding_id=full_data["building_id"].value_counts()\nstreet=full_data["street_address"].value_counts()\nbedrooms=full_data["bedrooms"].value_counts()\nbathrooms=full_data["bathrooms"].value_counts()\ncreated_dayofyear=full_data["created_dayofyear"].value_counts()\ncreated_weekofyear=full_data["created_weekofyear"].value_counts()\n\nfull_data["display_count"]=full_data["display_address"].apply(lambda x:display[x])\nfull_data["manager_count"]=full_data["manager_id"].apply(lambda x:manager_id[x])  \nfull_data["building_count"]=full_data["building_id"].apply(lambda x:building_id[x])\nfull_data["street_count"]=full_data["street_address"].apply(lambda x:street[x])\nfull_data["bedrooms_count"]=full_data["bedrooms"].apply(lambda x:bedrooms[x])\nfull_data["bathrooms_count"]=full_data["bathrooms"].apply(lambda x:bathrooms[x])\nfull_data["created_dayofyear_count"]=full_data["created_dayofyear"].\\\n    apply(lambda x:created_dayofyear[x])\nfull_data["created_weekofyear_count"]=full_data["created_weekofyear"].\\\n    apply(lambda x:created_weekofyear[x])\n\ncount_vars = [\'manager_count\', \'building_count\', \'street_count\', \'bedrooms_count\',\n       \'bathrooms_count\', \'created_dayofyear_count\', \'created_weekofyear_count\']')
 
 
-# In[12]:
 
 
 num_cat_vars =[]
@@ -202,7 +190,6 @@ num_cat_vars.append('price_percentile_by_building')
 print (num_cat_vars)
 
 
-# In[13]:
 
 
 for comb in itertools.combinations(cat_vars, 2):
@@ -213,7 +200,6 @@ for comb in itertools.combinations(cat_vars, 2):
 cat_vars    
 
 
-# In[14]:
 
 
 full_data["features"].apply(lambda x: " ".join(["_".join(i.split(" ")) for i in x]))
@@ -232,7 +218,6 @@ st_addr_sparse = cntvec.fit_transform(full_data["street_address"])
 st_addr_vars = ['desc_' + v for v in cntvec.vocabulary_]
 
 
-# In[15]:
 
 
 LBL = preprocessing.LabelEncoder()
@@ -249,7 +234,6 @@ for cat_var in cat_vars:
 print ("Label-encoded feaures: %s" % (LE_vars))
 
 
-# In[16]:
 
 
 OHE = preprocessing.OneHotEncoder(sparse=True)
@@ -266,7 +250,6 @@ print ("OHE_sparse size :" ,OHE_sparse.shape)
 print ("One-hot encoded catgorical feature samples : %s" % (OHE_vars[:100]))
 
 
-# In[17]:
 
 
 import numpy as np
@@ -394,7 +377,6 @@ class MeanEncoder:
         return X_new
 
 
-# In[18]:
 
 
 mean_encoder = MeanEncoder(categorical_features=['manager_id','building_id'])
@@ -410,7 +392,6 @@ full_data = pd.merge(full_data,
                     )
 
 
-# In[19]:
 
 
 full_vars = num_vars + date_num_vars + additional_num_vars + interactive_num_vars+ geo_cat_vars +geo_num_vars+ count_vars + LE_vars + mean_coded_vars
@@ -430,31 +411,26 @@ full_vars = full_vars + feature_vars + desc_vars + st_addr_vars
 print ("training data size: ", train_x.shape,"testing data size: ", test_x.shape)
 
 
-# In[20]:
 
 
 set(['bathrooms', 'bedrooms', 'latitude', 'longitude', 'price', 'created_month', 'created_dayofweek', 'created_dayofyear', 'created_weekofyear', 'created_hour', 'created_epoch', 'rooms', 'num_of_photos', 'num_of_features', 'len_of_desc', 'words_of_desc', 'has_phone', 'has_email', 'building_id_is_zero', 'avg_word_len', 'price_per_room', 'price_per_bedroom', 'price_per_bathroom', 'price_per_feature', 'price_per_photo', 'price_per_word', 'price_by_desc_len', 'photos_per_room', 'photos_per_bedroom', 'photos_per_bathroom', 'desc_len_per_room', 'desc_len_per_bedroom', 'desc_len_per_bathroom', 'desc_len_per_word', 'desc_len_per_numeric', 'features_per_room', 'features_per_bedroom', 'features_per_bathroom', 'features_per_photo', 'features_per_word', 'features_by_desc_len', 'geo_area_50', 'geo_area_100', 'geo_area_200', 'manager_count', 'building_count', 'street_count', 'bedrooms_count', 'bathrooms_count', 'created_dayofyear_count', 'created_weekofyear_count', 'building_id_le', 'manager_id_le', 'display_address_le', 'street_address_le', 'building_id-manager_id_le', 'building_id-display_address_le', 'building_id-street_address_le', 'manager_id-display_address_le', 'manager_id-street_address_le', 'display_address-street_address_le', 'building_id_pred_1', 'manager_id_pred_2', 'building_id_pred_0', 'building_id_pred_2', 'manager_id_pred_0', 'manager_id_pred_1', 'listing_id'])-set(['bathrooms', 'bedrooms', 'latitude', 'longitude', 'price', 'created_month', 'created_dayofweek', 'created_dayofyear', 'created_weekofyear', 'created_hour', 'created_epoch', 'rooms', 'num_of_photos', 'num_of_features', 'len_of_desc', 'words_of_desc', 'has_phone', 'has_email', 'building_id_is_zero', 'avg_word_len', 'price_per_room', 'price_per_bedroom', 'price_per_bathroom', 'price_per_feature', 'price_per_photo', 'price_per_word', 'price_by_desc_len', 'photos_per_room', 'photos_per_bedroom', 'photos_per_bathroom', 'desc_len_per_room', 'desc_len_per_bedroom', 'desc_len_per_bathroom', 'desc_len_per_word', 'desc_len_per_numeric', 'features_per_room', 'features_per_bedroom', 'features_per_bathroom', 'features_per_photo', 'features_per_word', 'features_by_desc_len', 'norm_listing_id', 'building_id_le', 'manager_id_le', 'display_address_le', 'street_address_le', 'building_id-manager_id_le', 'building_id-display_address_le', 'building_id-street_address_le', 'manager_id-display_address_le', 'manager_id-street_address_le', 'display_address-street_address_le', 'building_id_pred_1', 'manager_id_pred_2', 'building_id_pred_0', 'building_id_pred_2', 'manager_id_pred_0', 'manager_id_pred_1', 'listing_id'])
 
 
-# In[21]:
 
 
 get_ipython().run_cell_magic('time', '', "import lightgbm as lgb\nlgb_params = dict()\nlgb_params['objective'] = 'multiclass'\nlgb_params['num_class'] = 3\nlgb_params['learning_rate'] = 0.1\nlgb_params['num_leaves'] = 63\nlgb_params['max_depth'] = 15\nlgb_params['min_gain_to_split '] = 1\nlgb_params['subsample'] = 0.7\nlgb_params['colsample_bytree'] = 0.7\nlgb_params['min_sum_hessian_in_leaf'] = 0.001\nlgb_params['seed']=42\n\nlgb_cv = lgb.cv(lgb_params,\n                lgb.Dataset(train_x,\n                            label=train_y\n                            ),\n                num_boost_round=100000,\n                nfold=5,\n                stratified=True,\n                shuffle=True,\n                early_stopping_rounds=50,\n                seed=42,\n                verbose_eval=50)\n\n\nbest_score = min(lgb_cv['multi_logloss-mean'])\nbest_iteration = len(lgb_cv['multi_logloss-mean'])\nprint ('Best iteration: %d, best score: %f' % (best_iteration, best_score))\n# 0.549718")
 
 
-# In[22]:
 
 
 get_ipython().run_cell_magic('time', '', "lgb_params = dict()\nlgb_params['objective'] = 'multiclass'\nlgb_params['num_class'] = 3\nlgb_params['learning_rate'] = 0.05\nlgb_params['num_leaves'] = 63\nlgb_params['max_depth'] = 15\nlgb_params['min_gain_to_split '] = 1\nlgb_params['subsample'] = 0.7\nlgb_params['colsample_bytree'] = 0.7\nlgb_params['min_sum_hessian_in_leaf'] = 0.001\nlgb_params['seed']=42\n\nlgb_cv = lgb.cv(lgb_params,\n                lgb.Dataset(train_x,\n                            label=train_y\n                            ),\n                num_boost_round=100000,\n                nfold=5,\n                stratified=True,\n                shuffle=True,\n                early_stopping_rounds=50,\n                seed=42,\n                verbose_eval=50)\n\n\nbest_score = min(lgb_cv['multi_logloss-mean'])\nbest_iteration = len(lgb_cv['multi_logloss-mean'])\nprint ('Best iteration: %d, best score: %f' % (best_iteration, best_score))")
 
 
-# In[23]:
 
 
 sns.jointplot('listing_id', 'created_epoch', full_data)
 
 
-# In[24]:
 
 
 min_listing_id = full_data['listing_id'].min()
@@ -463,7 +439,6 @@ full_data['norm_listing_id']=full_data['listing_id'].apply(lambda x:np.float64((
 listing_vars = [ 'norm_listing_id']
 
 
-# In[25]:
 
 
 full_num_vars = num_vars + date_num_vars + additional_num_vars + interactive_num_vars+ geo_cat_vars +geo_num_vars + count_vars      + listing_vars
@@ -485,19 +460,16 @@ full_vars = full_vars + feature_vars + desc_vars + st_addr_vars
 print ("training data size: ", train_x.shape,"testing data size: ", test_x.shape)
 
 
-# In[26]:
 
 
 get_ipython().run_cell_magic('time', '', "lgb_params = dict()\nlgb_params['objective'] = 'multiclass'\nlgb_params['num_class'] = 3\nlgb_params['learning_rate'] = 0.1\nlgb_params['num_leaves'] = 63\nlgb_params['max_depth'] = 15\nlgb_params['min_gain_to_split '] = 1\nlgb_params['subsample'] = 0.7\nlgb_params['colsample_bytree'] = 0.7\nlgb_params['min_sum_hessian_in_leaf'] = 0.001\nlgb_params['seed']=42\n\nlgb_cv = lgb.cv(lgb_params,\n                lgb.Dataset(train_x,\n                            label=train_y\n                            ),\n                num_boost_round=100000,\n                nfold=5,\n                stratified=True,\n                shuffle=True,\n                early_stopping_rounds=50,\n                seed=42,\n                verbose_eval=50)\n\n\nbest_score = min(lgb_cv['multi_logloss-mean'])\nbest_iteration = len(lgb_cv['multi_logloss-mean'])\nprint ('Best iteration: %d, best score: %f' % (best_iteration, best_score))")
 
 
-# In[27]:
 
 
 get_ipython().run_cell_magic('time', '', "lgb_params = dict()\nlgb_params['objective'] = 'multiclass'\nlgb_params['num_class'] = 3\nlgb_params['learning_rate'] = 0.05\nlgb_params['num_leaves'] = 63\nlgb_params['max_depth'] = 15\nlgb_params['min_gain_to_split '] = 1\nlgb_params['subsample'] = 0.7\nlgb_params['colsample_bytree'] = 0.7\nlgb_params['min_sum_hessian_in_leaf'] = 0.001\nlgb_params['seed']=42\n\nlgb_cv = lgb.cv(lgb_params,\n                lgb.Dataset(train_x,\n                            label=train_y\n                            ),\n                num_boost_round=100000,\n                nfold=5,\n                stratified=True,\n                shuffle=True,\n                early_stopping_rounds=50,\n                seed=42,\n                verbose_eval=50)\n\n\nbest_score = min(lgb_cv['multi_logloss-mean'])\nbest_iteration = len(lgb_cv['multi_logloss-mean'])\nprint ('Best iteration: %d, best score: %f' % (best_iteration, best_score))")
 
 
-# In[28]:
 
 
 mkt_price = full_data.groupby(['building_id', 'display_address', 'bedrooms', 'bathrooms']).price.mean().reset_index()
@@ -510,7 +482,6 @@ full_data['ratio_to_mkt_price'] = full_data['price'] / full_data['mkt_price']
 price_vars = ['diff_to_mkt_price', 'ratio_to_mkt_price']
 
 
-# In[29]:
 
 
 import hashlib
@@ -542,7 +513,6 @@ listing_quality_vars = ['disp_is_street', 'num_of_html_tag','num_of_#','num_of_!
                         'posted_times', 'disp_st_addr_word_ratio','upper_char_ratio']
 
 
-# In[30]:
 
 
 full_num_vars = num_vars + date_num_vars + additional_num_vars + interactive_num_vars+ geo_cat_vars +geo_num_vars + count_vars     + listing_vars + listing_quality_vars
@@ -564,13 +534,11 @@ full_vars = full_vars + feature_vars + desc_vars + st_addr_vars
 print ("training data size: ", train_x.shape,"testing data size: ", test_x.shape)
 
 
-# In[31]:
 
 
 get_ipython().run_cell_magic('time', '', "lgb_params = dict()\nlgb_params['objective'] = 'multiclass'\nlgb_params['num_class'] = 3\nlgb_params['learning_rate'] = 0.05\nlgb_params['num_leaves'] = 63\nlgb_params['max_depth'] = 15\nlgb_params['min_gain_to_split '] = 1\nlgb_params['subsample'] = 0.7\nlgb_params['colsample_bytree'] = 0.7\nlgb_params['min_sum_hessian_in_leaf'] = 0.001\nlgb_params['seed']=42\n\nlgb_cv = lgb.cv(lgb_params,\n                lgb.Dataset(train_x,\n                            label=train_y\n                            ),\n                num_boost_round=100000,\n                nfold=5,\n                stratified=True,\n                shuffle=True,\n                early_stopping_rounds=50,\n                seed=42,\n                verbose_eval=50)\n\n\nbest_score = min(lgb_cv['multi_logloss-mean'])\nbest_iteration = len(lgb_cv['multi_logloss-mean'])\nprint ('Best iteration: %d, best score: %f' % (best_iteration, best_score))\n\n# 0.547453")
 
 
-# In[32]:
 
 
 from scipy.stats import skew, kurtosis
@@ -603,7 +571,6 @@ def get_group_stats(df, stat_funcs, target_column, group_column, ranking=False, 
     return aggr.drop(group_column, axis=1)
 
 
-# In[33]:
 
 
 stat_funcs = {
@@ -673,7 +640,6 @@ for aggr_col in ['diff_to_mkt_price', 'ratio_to_mkt_price']:
                          )
 
 
-# In[34]:
 
 
 full_num_vars = num_vars + date_num_vars + additional_num_vars + interactive_num_vars+ geo_cat_vars + count_vars     + listing_vars + listing_quality_vars
@@ -698,13 +664,11 @@ print("training data size: ", train_x.shape,
       "testing data size: ", test_x.shape)
 
 
-# In[35]:
 
 
 get_ipython().run_cell_magic('time', '', "lgb_params = dict()\nlgb_params['objective'] = 'multiclass'\nlgb_params['num_class'] = 3\nlgb_params['learning_rate'] = 0.05\nlgb_params['num_leaves'] = 63\nlgb_params['max_depth'] = 15\nlgb_params['min_gain_to_split '] = 1\nlgb_params['subsample'] = 0.7\nlgb_params['colsample_bytree'] = 0.7\nlgb_params['min_sum_hessian_in_leaf'] = 0.001\nlgb_params['seed']=42\n\nlgb_cv = lgb.cv(lgb_params,\n                lgb.Dataset(train_x,\n                            label=train_y\n                            ),\n                num_boost_round=100000,\n                nfold=5,\n                stratified=True,\n                shuffle=True,\n                early_stopping_rounds=50,\n                seed=42,\n                verbose_eval=50)\n\n\nbest_score = min(lgb_cv['multi_logloss-mean'])\nbest_iteration = len(lgb_cv['multi_logloss-mean'])\nprint ('Best iteration: %d, best score: %f' % (best_iteration, best_score))\n# Best iteration: 306, best score: 0.531753")
 
 
-# In[36]:
 
 
 stat_funcs = {
@@ -742,7 +706,6 @@ building_aggr = pd.concat([building_aggr,
                      )
 
 
-# In[37]:
 
 
 full_num_vars = num_vars + date_num_vars + additional_num_vars + interactive_num_vars+ geo_cat_vars +geo_num_vars + count_vars     + listing_vars + listing_quality_vars
@@ -769,13 +732,11 @@ print("training data size: ", train_x.shape,
       "testing data size: ", test_x.shape)
 
 
-# In[38]:
 
 
 get_ipython().run_cell_magic('time', '', "lgb_params = dict()\nlgb_params['objective'] = 'multiclass'\nlgb_params['num_class'] = 3\nlgb_params['learning_rate'] = 0.05\nlgb_params['num_leaves'] = 63\nlgb_params['max_depth'] = 15\nlgb_params['min_gain_to_split '] = 1\nlgb_params['subsample'] = 0.7\nlgb_params['colsample_bytree'] = 0.7\nlgb_params['min_sum_hessian_in_leaf'] = 0.001\nlgb_params['seed']=42\n\nlgb_cv = lgb.cv(lgb_params,\n                lgb.Dataset(train_x,\n                            label=train_y\n                            ),\n                num_boost_round=100000,\n                nfold=5,\n                stratified=True,\n                shuffle=True,\n                early_stopping_rounds=50,\n                seed=42,\n                verbose_eval=50)\n\n\nbest_score = min(lgb_cv['multi_logloss-mean'])\nbest_iteration = len(lgb_cv['multi_logloss-mean'])\nprint ('Best iteration: %d, best score: %f' % (best_iteration, best_score))\n# Best iteration: 306, best score: 0.531753")
 
 
-# In[39]:
 
 
 from geopy.distance import vincenty
@@ -792,7 +753,6 @@ park_dist_data = pd.DataFrame(kms.transform(full_data[['latitude', 'longitude']]
                              )
 
 
-# In[40]:
 
 
 full_num_vars = num_vars + date_num_vars + additional_num_vars + interactive_num_vars +geo_num_vars+ geo_cat_vars + count_vars     + listing_vars + listing_quality_vars  
@@ -821,13 +781,11 @@ print("training data size: ", train_x.shape,
       "testing data size: ", test_x.shape)
 
 
-# In[41]:
 
 
 get_ipython().run_cell_magic('time', '', "lgb_params = dict()\nlgb_params['objective'] = 'multiclass'\nlgb_params['num_class'] = 3\nlgb_params['learning_rate'] = 0.05\nlgb_params['num_leaves'] = 63\nlgb_params['max_depth'] = 15\nlgb_params['min_gain_to_split '] = 1\nlgb_params['subsample'] = 0.7\nlgb_params['colsample_bytree'] = 0.7\nlgb_params['min_sum_hessian_in_leaf'] = 0.001\nlgb_params['seed']=42\n\nlgb_cv = lgb.cv(lgb_params,\n                lgb.Dataset(train_x,\n                            label=train_y\n                            ),\n                num_boost_round=100000,\n                nfold=5,\n                stratified=True,\n                shuffle=True,\n                early_stopping_rounds=50,\n                seed=42,\n                verbose_eval=50)\n\n\nbest_score = min(lgb_cv['multi_logloss-mean'])\nbest_iteration = len(lgb_cv['multi_logloss-mean'])\nprint ('Best iteration: %d, best score: %f' % (best_iteration, best_score))")
 
 
-# In[42]:
 
 
 subway_listings = full_data[full_data[['description', 'features']].apply(lambda x: 'subway' in x[0] or 'subway' in x[1], axis=1)][['latitude', 'longitude']]
@@ -841,7 +799,6 @@ subway_dist_data = pd.DataFrame(kms.transform(full_data[['latitude', 'longitude'
                              )
 
 
-# In[43]:
 
 
 full_num_vars = num_vars + date_num_vars + additional_num_vars + interactive_num_vars+geo_num_vars+ geo_cat_vars + count_vars     + listing_vars + listing_quality_vars 
@@ -872,13 +829,11 @@ print("training data size: ", train_x.shape,
       "testing data size: ", test_x.shape)
 
 
-# In[44]:
 
 
 get_ipython().run_cell_magic('time', '', "lgb_params = dict()\nlgb_params['objective'] = 'multiclass'\nlgb_params['num_class'] = 3\nlgb_params['learning_rate'] = 0.05\nlgb_params['num_leaves'] = 63\nlgb_params['max_depth'] = 15\nlgb_params['min_gain_to_split '] = 1\nlgb_params['subsample'] = 0.7\nlgb_params['colsample_bytree'] = 0.7\nlgb_params['min_sum_hessian_in_leaf'] = 0.001\nlgb_params['seed']=42\n\nlgb_cv = lgb.cv(lgb_params,\n                lgb.Dataset(train_x,\n                            label=train_y\n                            ),\n                num_boost_round=100000,\n                nfold=5,\n                stratified=True,\n                shuffle=True,\n                early_stopping_rounds=50,\n                seed=42,\n                verbose_eval=50)\n\n\nbest_score = min(lgb_cv['multi_logloss-mean'])\nbest_iteration = len(lgb_cv['multi_logloss-mean'])\nprint ('Best iteration: %d, best score: %f' % (best_iteration, best_score))")
 
 
-# In[45]:
 
 
 import spacy ## Spacy is the de-facto NLP tool used by industry
@@ -899,7 +854,6 @@ def tokens_to_vec(tokens, model, vec_size=10):
         return np.array([emb_model[token] for token in tokens]).mean(axis=1)
 
 
-# In[46]:
 
 
 ## Step 1: Generate "sentences"
@@ -907,7 +861,6 @@ building_by_mgr = full_data.groupby('manager_id')['building_id'].apply(list)
 building_by_mgr.head()
 
 
-# In[47]:
 
 
 ## Step 2: Train a fasttext model
@@ -919,7 +872,6 @@ building_model.train(sentences=building_by_mgr.values, total_examples=len(buildi
 building_model['8a8b08e08888819a3e745005a8cd0408']
 
 
-# In[48]:
 
 
 ## Step 3: Embed building ids
@@ -928,7 +880,6 @@ building_emb = np.array([e.reshape(1,-1) for e in building_emb]).reshape(-1,10)
 building_emb
 
 
-# In[49]:
 
 
 manager_by_building = full_data.groupby('building_id')['manager_id'].apply(list)  
@@ -941,7 +892,6 @@ manager_emb = np.array([e.reshape(1,-1) for e in manager_emb]).reshape(-1,10)
 manager_emb
 
 
-# In[50]:
 
 
 manager_by_building = full_data.groupby('building_id')['manager_id'].apply(list)  
@@ -954,7 +904,6 @@ manager_emb = np.array([e.reshape(1,-1) for e in manager_emb]).reshape(-1,10)
 manager_emb
 
 
-# In[51]:
 
 
 full_num_vars = num_vars + date_num_vars + additional_num_vars + interactive_num_vars+geo_num_vars+ geo_cat_vars + count_vars     + listing_vars + listing_quality_vars  
@@ -989,13 +938,11 @@ print("training data size: ", train_x.shape,
       "testing data size: ", test_x.shape)
 
 
-# In[52]:
 
 
 get_ipython().run_cell_magic('time', '', "lgb_params = dict()\nlgb_params['objective'] = 'multiclass'\nlgb_params['num_class'] = 3\nlgb_params['learning_rate'] = 0.05\nlgb_params['num_leaves'] = 63\nlgb_params['max_depth'] = 15\nlgb_params['min_gain_to_split '] = 1\nlgb_params['subsample'] = 0.7\nlgb_params['colsample_bytree'] = 0.7\nlgb_params['min_sum_hessian_in_leaf'] = 0.001\nlgb_params['seed']=42\n\nlgb_cv = lgb.cv(lgb_params,\n                lgb.Dataset(train_x,\n                            label=train_y\n                            ),\n                num_boost_round=100000,\n                nfold=5,\n                stratified=True,\n                shuffle=True,\n                early_stopping_rounds=50,\n                seed=42,\n                verbose_eval=50)\n\n\nbest_score = min(lgb_cv['multi_logloss-mean'])\nbest_iteration = len(lgb_cv['multi_logloss-mean'])\nprint ('Best iteration: %d, best score: %f' % (best_iteration, best_score))")
 
 
-# In[53]:
 
 
 image_date = pd.read_csv("../input/twosigma-magic-feature/listing_image_time.csv")
@@ -1005,7 +952,6 @@ full_data = pd.merge(full_data, image_date, on="listing_id", how="left")
 magic_vars = ['image_time_stamp']
 
 
-# In[54]:
 
 
 full_num_vars = num_vars + date_num_vars + additional_num_vars + interactive_num_vars+geo_num_vars+ geo_cat_vars + count_vars     + listing_vars + listing_quality_vars + magic_vars + price_vars
@@ -1040,13 +986,11 @@ print("training data size: ", train_x.shape,
       "testing data size: ", test_x.shape)
 
 
-# In[55]:
 
 
 get_ipython().run_cell_magic('time', '', "lgb_params = dict()\nlgb_params['objective'] = 'multiclass'\nlgb_params['num_class'] = 3\nlgb_params['learning_rate'] = 0.05\nlgb_params['num_leaves'] = 63\nlgb_params['max_depth'] = 15\nlgb_params['min_gain_to_split '] = 1\nlgb_params['subsample'] = 0.7\nlgb_params['colsample_bytree'] = 0.7\nlgb_params['min_sum_hessian_in_leaf'] = 0.001\nlgb_params['seed']=42\n\nlgb_cv = lgb.cv(lgb_params,\n                lgb.Dataset(train_x,\n                            label=train_y\n                            ),\n                num_boost_round=100000,\n                nfold=5,\n                stratified=True,\n                shuffle=True,\n                early_stopping_rounds=50,\n                seed=42,\n                verbose_eval=50)\n\n\nbest_score = min(lgb_cv['multi_logloss-mean'])\nbest_iteration = len(lgb_cv['multi_logloss-mean'])\nprint ('Best iteration: %d, best score: %f' % (best_iteration, best_score))")
 
 
-# In[56]:
 
 
 import copy
@@ -1107,13 +1051,11 @@ for p in params_lgb_space:
 print ('\n Best manually tuned parameters:', best_lgb_params)    
 
 
-# In[57]:
 
 
 print ('\n Best manually tuned parameters:', best_lgb_params)    
 
 
-# In[58]:
 
 
 from bayes_opt import BayesianOptimization
@@ -1178,7 +1120,6 @@ lgb_BO = BayesianOptimization(lgb_evaluate,
 lgb_BO.maximize(init_points=5, n_iter=20) 
 
 
-# In[59]:
 
 
 lgb_BO_scores = pd.DataFrame([p['params'] for p in lgb_BO.res])
@@ -1187,7 +1128,6 @@ lgb_BO_scores = lgb_BO_scores.sort_values(by='score',ascending=False)
 lgb_BO_scores.head()
 
 
-# In[60]:
 
 
 lgb_best_params = lgb_BO_scores.T.to_dict().get(lgb_BO_scores.index.values[0])
@@ -1220,7 +1160,6 @@ best_lgb_iteration = len(lgb_cv['%s-mean' % (lgb_metric)])
 print (', best_score: %f, best_iteration: %d' % (best_lgb_score, best_lgb_iteration))
 
 
-# In[61]:
 
 
 model = lgb.train(lgb_best_params,
@@ -1234,7 +1173,6 @@ sub_lgb_df["listing_id"] = test_data.listing_id.values
 sub_lgb_df.to_csv("../output/sub_lgb_auto_tuned.csv", index=False)
 
 
-# In[ ]:
 
 
 

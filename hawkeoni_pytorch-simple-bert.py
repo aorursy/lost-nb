@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system(' pip install transformers')
 
 
-# In[2]:
 
 
 import os
@@ -27,7 +25,6 @@ from sklearn.metrics import roc_auc_score
 from tqdm import tqdm
 
 
-# In[3]:
 
 
 get_ipython().system(' unzip ../input/jigsaw-toxic-comment-classification-challenge/train.csv.zip;')
@@ -36,7 +33,6 @@ get_ipython().system(' unzip ../input/jigsaw-toxic-comment-classification-challe
 get_ipython().system(' unzip ../input/jigsaw-toxic-comment-classification-challenge/test_labels.csv.zip;')
 
 
-# In[4]:
 
 
 path = "./"
@@ -53,7 +49,6 @@ train_df = pd.read_csv(os.path.join(path, 'train.csv'))
 train_df, val_df = train_test_split(train_df, test_size=0.05)
 
 
-# In[5]:
 
 
 class ToxicDataset(Dataset):
@@ -111,7 +106,6 @@ train_iterator = DataLoader(train_dataset, batch_size=BATCH_SIZE, sampler=train_
 dev_iterator = DataLoader(dev_dataset, batch_size=BATCH_SIZE, sampler=dev_sampler, collate_fn=collate_fn)
 
 
-# In[6]:
 
 
 class BertClassifier(nn.Module):
@@ -141,7 +135,6 @@ class BertClassifier(nn.Module):
 model = BertClassifier(BertModel.from_pretrained(bert_model_name), 6).to(device)
 
 
-# In[7]:
 
 
 def train(model, iterator, optimizer, scheduler):
@@ -176,7 +169,6 @@ def evaluate(model, iterator):
     print(f"Evaluate loss {total_loss / len(iterator)}")
 
 
-# In[8]:
 
 
 no_decay = ['bias', 'LayerNorm.weight']
@@ -193,7 +185,6 @@ scheduler = get_linear_schedule_with_warmup(optimizer, warmup_steps, total_steps
 # scheduler = WarmupLinearSchedule(optimizer, warmup_steps=warmup_steps, t_total=total_steps)
 
 
-# In[9]:
 
 
 for i in range(EPOCH_NUM):
@@ -202,7 +193,6 @@ for i in range(EPOCH_NUM):
     evaluate(model, dev_iterator)
 
 
-# In[10]:
 
 
 model.eval()
@@ -226,13 +216,11 @@ for i in tqdm(range(len(test_df) // BATCH_SIZE + 1)):
     submission.iloc[i * BATCH_SIZE: (i + 1) * BATCH_SIZE][columns] = outputs
 
 
-# In[11]:
 
 
 submission.to_csv("submission.csv", index=False)
 
 
-# In[ ]:
 
 
 

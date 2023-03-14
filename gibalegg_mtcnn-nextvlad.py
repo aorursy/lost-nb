@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -42,7 +41,6 @@ from albumentations.pytorch import ToTensor
 from albumentations import Compose
 
 
-# In[2]:
 
 
 test_dir = "/kaggle/input/deepfake-detection-challenge/test_videos/"
@@ -51,7 +49,6 @@ test_videos = sorted([x for x in os.listdir(test_dir) if x[-4:] == ".mp4"])
 len(test_videos)
 
 
-# In[3]:
 
 
 #from torchvision.transforms import Normalize
@@ -65,7 +62,6 @@ gpu = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 gpu
 
 
-# In[4]:
 
 
 input_size = 224
@@ -81,7 +77,6 @@ train_transform = Compose([
 device = 'cuda:2' if torch.cuda.is_available() else 'cpu'
 
 
-# In[5]:
 
 
 #!pip install pytorchcv --quiet
@@ -233,7 +228,6 @@ _ = model.eval()
 del checkpoint
 
 
-# In[6]:
 
 
 class Detector:
@@ -399,14 +393,12 @@ class DetectionPipeline:
         return faces
 
 
-# In[7]:
 
 
 mtcnn = MTCNN(image_size = 224, margin=40, post_process=False, keep_all=False, factor=0.5, device=device).eval()
 detector = DetectionPipeline(detector=Detector(mtcnn), n_frames=6, batch_size=54, resize=0.25)
 
 
-# In[8]:
 
 
 def FaceExtractor(video_path,detector):
@@ -432,7 +424,6 @@ def predict_on_video(video_path):
     return 0.5
 
 
-# In[9]:
 
 
 from concurrent.futures import ThreadPoolExecutor
@@ -449,7 +440,6 @@ def predict_on_video_set(videos, num_workers):
     return list(predictions)
 
 
-# In[10]:
 
 
 speed_test = True  # you have to enable this manually
@@ -462,13 +452,11 @@ if speed_test:
     print("Elapsed %f sec. Average per video: %f sec." % (elapsed, elapsed / len(speedtest_videos)))
 
 
-# In[11]:
 
 
 predictions = predict_on_video_set(test_videos, num_workers=4)
 
 
-# In[12]:
 
 
 submission_df = pd.DataFrame({"filename": test_videos, "label": predictions})

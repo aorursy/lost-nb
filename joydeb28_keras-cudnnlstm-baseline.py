@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -18,7 +17,6 @@ from tensorflow.keras import backend as K
 import tensorflow as tf
 
 
-# In[2]:
 
 
 def get_salesval_coltypes():
@@ -27,7 +25,6 @@ def get_salesval_coltypes():
     return dict(zip(keys, values))
 
 
-# In[3]:
 
 
 timesteps = 100
@@ -36,7 +33,6 @@ input_scaler = MinMaxScaler()
 output_scaler = StandardScaler()
 
 
-# In[4]:
 
 
 def get_data():
@@ -87,7 +83,6 @@ print(x_train.shape)
 print(y_train.shape)
 
 
-# In[5]:
 
 
 def root_mean_squared_error(y_true, y_pred):
@@ -109,7 +104,6 @@ batch_size = 1000
 model = build_model(epochs,batch_size)
 
 
-# In[6]:
 
 
 def make_prediction(x_test):

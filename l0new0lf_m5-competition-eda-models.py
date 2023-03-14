@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from IPython.display import HTML
 HTML('<center><iframe width="700" height="400" src="https://www.youtube.com/embed/bn8rVBuIcFg?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe></center>')
 
 
-# In[2]:
 
 
 import os
@@ -51,7 +49,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[3]:
 
 
 INPUT_DIR = '../input/m5-forecasting-accuracy'
@@ -61,7 +58,6 @@ sample_submission = pd.read_csv(f'{INPUT_DIR}/sample_submission.csv')
 sales_train_val = pd.read_csv(f'{INPUT_DIR}/sales_train_validation.csv')
 
 
-# In[4]:
 
 
 ids = sorted(list(set(sales_train_val['id'])))
@@ -91,7 +87,6 @@ fig.update_layout(height=1200, width=800, title_text="Sample sales")
 fig.show()
 
 
-# In[5]:
 
 
 ids = sorted(list(set(sales_train_val['id'])))
@@ -120,7 +115,6 @@ fig.update_layout(height=1200, width=800, title_text="Sample sales snippets")
 fig.show()
 
 
-# In[6]:
 
 
 def maddest(d, axis=None):
@@ -136,7 +130,6 @@ def denoise_signal(x, wavelet='db4', level=1):
     return pywt.waverec(coeff, wavelet, mode='per')
 
 
-# In[7]:
 
 
 y_w1 = denoise_signal(x_1)
@@ -182,7 +175,6 @@ fig.update_layout(height=1200, width=800, title_text="Original (pale) vs. Denois
 fig.show()
 
 
-# In[8]:
 
 
 fig, ax = plt.subplots(nrows=3, ncols=2, figsize=(30, 20))
@@ -205,7 +197,6 @@ ax[2, 1].set_title('After Wavelet Denoising', fontsize=24)
 plt.show()
 
 
-# In[9]:
 
 
 def average_smoothing(signal, kernel_size=3, stride=1):
@@ -219,7 +210,6 @@ def average_smoothing(signal, kernel_size=3, stride=1):
     return np.array(sample)
 
 
-# In[10]:
 
 
 y_a1 = average_smoothing(x_1)
@@ -264,7 +254,6 @@ fig.update_layout(height=1200, width=800, title_text="Original (pale) vs. Denois
 fig.show()
 
 
-# In[11]:
 
 
 fig, ax = plt.subplots(nrows=3, ncols=2, figsize=(30, 20))
@@ -287,7 +276,6 @@ ax[2, 1].set_title('After Wavelet Denoising', fontsize=24)
 plt.show()
 
 
-# In[12]:
 
 
 past_sales = sales_train_val.set_index('id')[d_cols]     .T     .merge(calendar.set_index('d')['date'],
@@ -308,7 +296,6 @@ for s in store_list:
 fig.update_layout(yaxis_title="Sales", xaxis_title="Time", title="Rolling Average Sales vs. Time (per store)")
 
 
-# In[13]:
 
 
 fig = go.Figure()
@@ -321,7 +308,6 @@ for i, s in enumerate(store_list):
 fig.update_layout(yaxis_title="Sales", xaxis_title="Time", title="Rolling Average Sales vs. Store name ")
 
 
-# In[14]:
 
 
 df = pd.DataFrame(np.transpose([means, store_list]))
@@ -329,7 +315,6 @@ df.columns = ["Mean sales", "Store name"]
 px.bar(df, y="Mean sales", x="Store name", color="Store name", title="Mean sales vs. Store name")
 
 
-# In[15]:
 
 
 greens = ["mediumaquamarine", "mediumseagreen", "seagreen", "green"]
@@ -348,7 +333,6 @@ for i, s in enumerate(store_list):
 fig.update_layout(yaxis_title="Sales", xaxis_title="Time", title="Rolling Average Sales vs. Time (California)")
 
 
-# In[16]:
 
 
 fig = go.Figure()
@@ -362,7 +346,6 @@ for i, s in enumerate(store_list):
 fig.update_layout(yaxis_title="Sales", xaxis_title="Time", title="Rolling Average Sales vs. Store name (California)")
 
 
-# In[17]:
 
 
 df = pd.DataFrame(np.transpose([means, stores]))
@@ -378,7 +361,6 @@ fig.update_layout(barmode='group')
 fig.show()
 
 
-# In[18]:
 
 
 purples = ["thistle", "violet", "purple", "indigo"]
@@ -397,7 +379,6 @@ for i, s in enumerate(store_list):
 fig.update_layout(yaxis_title="Sales", xaxis_title="Time", title="Rolling Average Sales vs. Time (Wisconsin)")
 
 
-# In[19]:
 
 
 fig = go.Figure()
@@ -411,7 +392,6 @@ for i, s in enumerate(store_list):
 fig.update_layout(yaxis_title="Sales", xaxis_title="Time", title="Rolling Average Sales vs. Store name (Wisconsin)")
 
 
-# In[20]:
 
 
 df = pd.DataFrame(np.transpose([means, stores]))
@@ -427,7 +407,6 @@ fig.update_layout(barmode='group')
 fig.show()
 
 
-# In[21]:
 
 
 blues = ["skyblue", "dodgerblue", "darkblue"]
@@ -446,7 +425,6 @@ for i, s in enumerate(store_list):
 fig.update_layout(yaxis_title="Sales", xaxis_title="Time", title="Rolling Average Sales vs. Time (Texas)")
 
 
-# In[22]:
 
 
 fig = go.Figure()
@@ -460,7 +438,6 @@ for i, s in enumerate(store_list):
 fig.update_layout(yaxis_title="Sales", xaxis_title="Time", title="Rolling Average Sales vs. Store name (Texas)")
 
 
-# In[23]:
 
 
 df = pd.DataFrame(np.transpose([means, stores]))
@@ -476,14 +453,12 @@ fig.update_layout(barmode='group')
 fig.show()
 
 
-# In[24]:
 
 
 train_dataset = sales_train_val[d_cols[-100:-30]]
 val_dataset = sales_train_val[d_cols[-30:]]
 
 
-# In[25]:
 
 
 fig = make_subplots(rows=3, cols=1)
@@ -524,7 +499,6 @@ fig.update_layout(height=1200, width=800, title_text="Train (blue) vs. Validatio
 fig.show()
 
 
-# In[26]:
 
 
 predictions = []
@@ -538,7 +512,6 @@ predictions = np.transpose(np.array([row.tolist() for row in predictions]))
 error_naive = np.linalg.norm(predictions[:3] - val_dataset.values[:3])/len(predictions[0])
 
 
-# In[27]:
 
 
 pred_1 = predictions[0]
@@ -601,7 +574,6 @@ fig.update_layout(height=1200, width=800, title_text="Naive approach")
 fig.show()
 
 
-# In[28]:
 
 
 predictions = []
@@ -617,7 +589,6 @@ predictions = np.transpose(np.array([row.tolist() for row in predictions]))
 error_avg = np.linalg.norm(predictions[:3] - val_dataset.values[:3])/len(predictions[0])
 
 
-# In[29]:
 
 
 pred_1 = predictions[0]
@@ -680,7 +651,6 @@ fig.update_layout(height=1200, width=800, title_text="Moving average")
 fig.show()
 
 
-# In[30]:
 
 
 predictions = []
@@ -691,7 +661,6 @@ predictions = np.array(predictions).reshape((-1, 30))
 error_holt = np.linalg.norm(predictions - val_dataset.values[:len(predictions)])/len(predictions[0])
 
 
-# In[31]:
 
 
 pred_1 = predictions[0]
@@ -754,7 +723,6 @@ fig.update_layout(height=1200, width=800, title_text="Holt linear")
 fig.show()
 
 
-# In[32]:
 
 
 predictions = []
@@ -765,7 +733,6 @@ predictions = np.array(predictions).reshape((-1, 30))
 error_exponential = np.linalg.norm(predictions[:3] - val_dataset.values[:3])/len(predictions[0])
 
 
-# In[33]:
 
 
 pred_1 = predictions[0]
@@ -828,13 +795,11 @@ fig.update_layout(height=1200, width=800, title_text="Exponential smoothing")
 fig.show()
 
 
-# In[34]:
 
 
 HTML('<center><iframe width="700" height="400" src="https://www.youtube.com/embed/Y2khrpVo6qI?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe></center>')
 
 
-# In[35]:
 
 
 predictions = []
@@ -845,7 +810,6 @@ predictions = np.array(predictions).reshape((-1, 30))
 error_arima = np.linalg.norm(predictions[:3] - val_dataset.values[:3])/len(predictions[0])
 
 
-# In[36]:
 
 
 pred_1 = predictions[0]
@@ -908,13 +872,11 @@ fig.update_layout(height=1200, width=800, title_text="ARIMA")
 fig.show()
 
 
-# In[37]:
 
 
 HTML('<center><iframe width="700" height="400" src="https://www.youtube.com/embed/95-HMzxsghY?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe></center>')
 
 
-# In[38]:
 
 
 dates = ["2007-12-" + str(i) for i in range(1, 31)]
@@ -931,7 +893,6 @@ predictions = np.array(predictions).reshape((-1, 30))
 error_prophet = np.linalg.norm(predictions[:3] - val_dataset.values[:3])/len(predictions[0])
 
 
-# In[39]:
 
 
 pred_1 = predictions[0]
@@ -994,7 +955,6 @@ fig.update_layout(height=1200, width=800, title_text="Prophet")
 fig.show()
 
 
-# In[40]:
 
 
 days = range(1, 1913 + 1)
@@ -1012,7 +972,6 @@ predictions = pd.concat([predictions, forecast], axis=1)
 predictions.to_csv('submission.csv', index=False)
 
 
-# In[41]:
 
 
 error = [error_naive, error_avg, error_holt, error_exponential, error_arima, error_prophet]

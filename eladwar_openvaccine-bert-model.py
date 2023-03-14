@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -14,7 +13,6 @@ from sklearn.preprocessing import quantile_transform,StandardScaler,MinMaxScaler
 from transformers import BertConfig,TFBertModel,BertModel
 
 
-# In[2]:
 
 
 AUTO = tf.data.experimental.AUTOTUNE
@@ -35,26 +33,22 @@ else:
 print("REPLICAS: ", strategy.num_replicas_in_sync)
 
 
-# In[3]:
 
 
 # This will tell us the columns we are predicting
 pred_cols = ['reactivity', 'deg_Mg_pH10', 'deg_pH10', 'deg_Mg_50C', 'deg_50C']
 
 
-# In[4]:
 
 
 config = BertConfig() 
 
 
-# In[5]:
 
 
 config.num_attention_heads
 
 
-# In[6]:
 
 
 def MCRMSE(y_true, y_pred):
@@ -91,7 +85,6 @@ def build_model(seq_len=107, pred_len=68, dropout=0.5, embed_dim=100, hidden_dim
     return model
 
 
-# In[7]:
 
 
 vocab = {
@@ -112,7 +105,6 @@ def preprocess_inputs(df, cols=['sequence', 'structure', 'predicted_loop_type'])
         )
 
 
-# In[8]:
 
 
 train = pd.read_json('/kaggle/input/stanford-covid-vaccine/train.json', lines=True)
@@ -120,7 +112,6 @@ test = pd.read_json('/kaggle/input/stanford-covid-vaccine/test.json', lines=True
 sample_df = pd.read_csv('/kaggle/input/stanford-covid-vaccine/sample_submission.csv')
 
 
-# In[9]:
 
 
 print(pd.Series(list(train['structure'][0])).value_counts())
@@ -128,37 +119,31 @@ print(pd.Series(list(train['sequence'][0])).value_counts())
 print(pd.Series(list(train['predicted_loop_type'][0])).value_counts())
 
 
-# In[10]:
 
 
 train.columns
 
 
-# In[11]:
 
 
 sorted(train['signal_to_noise'].apply(np.round).astype(int).unique())
 
 
-# In[12]:
 
 
 np.bincount(train['signal_to_noise'].apply(np.round).astype(int))
 
 
-# In[13]:
 
 
 sorted(train['SN_filter'].apply(np.round).astype(int).unique()) 
 
 
-# In[14]:
 
 
 np.bincount(train['SN_filter'].apply(np.round).astype(int))
 
 
-# In[15]:
 
 
 train = train.query("signal_to_noise >= 4")
@@ -166,13 +151,11 @@ train_inputs = preprocess_inputs(train)
 train_labels = np.array(train[pred_cols].values.tolist()).transpose((0, 2, 1))
 
 
-# In[16]:
 
 
 train_inputs.shape
 
 
-# In[17]:
 
 
 for df in [train,test]:
@@ -194,7 +177,6 @@ for a in [ 'E', 'S', 'H',]:
     test[a+'_position']=[np.sum([i for i in range(len(j)) if j[i]==a])/len([i for i in range(len(j)) if j[i]==a]) for j in test['predicted_loop_type']]
 
 
-# In[18]:
 
 
 target_columns = ['reactivity', 'deg_Mg_pH10','deg_pH10', 'deg_Mg_50C', 'deg_50C']
@@ -203,46 +185,39 @@ target_columns.extend(['deg_error_pH10', 'deg_error_Mg_50C', 'deg_error_50C', 'r
 train.drop(target_columns,axis=1,inplace=True)
 
 
-# In[19]:
 
 
 SC = MinMaxScaler(feature_range=(-1, 1))
 train_measurements = SC.fit_transform(pd.concat((train.select_dtypes('float64'),train.select_dtypes('int64')),axis=1))
 
 
-# In[20]:
 
 
 train_measurements.shape
 
 
-# In[21]:
 
 
 np.min(train_measurements),np.max(train_measurements)
 # np.min(test_measurements),np.max(test_measurements)
 
 
-# In[22]:
 
 
 pd.DataFrame(train_measurements).describe().T
 
 
-# In[23]:
 
 
 model = build_model()
 model.summary()
 
 
-# In[24]:
 
 
 train_inputs.shape,train_labels.shape
 
 
-# In[25]:
 
 
 public_df = test.query("seq_length == 107").copy()
@@ -253,14 +228,12 @@ public_inputs = preprocess_inputs(public_df)
 private_inputs = preprocess_inputs(private_df)
 
 
-# In[26]:
 
 
 from sklearn.model_selection import KFold
 kf = KFold(n_splits=5,shuffle=True,random_state=42)
 
 
-# In[27]:
 
 
 # with tf.device('/gpu'):
@@ -299,20 +272,17 @@ with strategy.scope():
         fig.show()
 
 
-# In[28]:
 
 
 #Bert's a bitch with weights
 # model.save_weights('model.h5')
 
 
-# In[29]:
 
 
 print(public_preds.shape, private_preds.shape)
 
 
-# In[30]:
 
 
 preds_ls = []
@@ -329,7 +299,6 @@ for df, preds in [(public_df, public_preds), (private_df, private_preds)]:
 preds_df = pd.concat(preds_ls)
 
 
-# In[31]:
 
 
 submission = sample_df[['id_seqpos']].merge(preds_df, on=['id_seqpos'])

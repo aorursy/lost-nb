@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import gc
@@ -27,7 +26,6 @@ init_notebook_mode(connected=True)
 nrows = None
 
 
-# In[ ]:
 
 
 # just a list of trainable label codes
@@ -36,7 +34,6 @@ classes_trainable = set(classes_trainable.label_code)
 print(f'{len(classes_trainable)} trainable labels')
 
 
-# In[ ]:
 
 
 class_descriptions = pd.read_csv('../input/class-descriptions.csv', dtype=str)
@@ -45,7 +42,6 @@ print(f'{len(label_code_to_description)} labels with descriptions')
 class_descriptions.head()
 
 
-# In[ ]:
 
 
 class_description_counts = class_descriptions.groupby('description').count().rename(columns={'label_code': 'count'})
@@ -54,7 +50,6 @@ print(f'{len(repeated_descriptions)} descriptions have more than one associated 
 repeated_descriptions.head(15)
 
 
-# In[ ]:
 
 
 train_human_labels = pd.read_csv('../input/train_human_labels.csv', dtype={'ImageID': str, 'Source': str, 'LabelName': str, 'Confidence': np.float64}, nrows=nrows)
@@ -65,7 +60,6 @@ train_human_labels['type'] = 'human'
 train_human_labels.head()
 
 
-# In[ ]:
 
 
 train_machine_labels = pd.read_csv('../input/train_machine_labels.csv', dtype={'ImageID': str, 'Source': 'category', 'LabelName': 'category', 'Confidence': np.float64}, nrows=nrows)
@@ -76,7 +70,6 @@ train_machine_labels['type'] = 'machine'
 train_machine_labels.head()
 
 
-# In[ ]:
 
 
 train_bounding_boxes = pd.read_csv('../input/train_bounding_boxes.csv', 
@@ -108,7 +101,6 @@ train_bounding_boxes['type'] = 'bbox'
 train_bounding_boxes.head()
 
 
-# In[ ]:
 
 
 train_labels = pd.concat([train_human_labels, train_machine_labels, train_bounding_boxes], axis='rows', ignore_index=True, sort=False).reset_index(drop=True)
@@ -140,20 +132,17 @@ train_labels = train_labels.astype(dtypes)
 print(f'{len(train_labels)} total labels on {len(train_labels.ImageID.unique())} training images')
 
 
-# In[ ]:
 
 
 train_labels = train_labels.drop(['XMin', 'XMax', 'YMin', 'YMax'], axis='columns')
 
 
-# In[ ]:
 
 
 gc.collect()
 train_labels.head(1)
 
 
-# In[ ]:
 
 
 tuning_labels = pd.read_csv('../input/tuning_labels.csv', header=None, names=['ImageID', 'LabelNames'], dtype=str)
@@ -179,7 +168,6 @@ tuning_labels['LabelAndDescription'] = tuning_labels['LabelName'].str.cat(tuning
 tuning_labels.head()
 
 
-# In[ ]:
 
 
 labels_without_description = set(train_labels[train_labels.LabelDescription == '']['LabelName'])
@@ -187,7 +175,6 @@ print(f'Labels in train dataset with no description: {labels_without_description
 print(f'Trainable classes without description: {labels_without_description.intersection(classes_trainable)}')
 
 
-# In[ ]:
 
 
 human_train_label_set = set(train_labels[train_labels['type'] == 'human'].LabelName)
@@ -201,7 +188,6 @@ print(f'Bbox train labels: {len(bbox_train_label_set.intersection(classes_traina
 print(f'Stage 1 tuning labels: {len(stage_1_tuning_label_set.intersection(classes_trainable))}/{len(stage_1_tuning_label_set)} are "trainable"')
 
 
-# In[ ]:
 
 
 def plot_label_per_image_dist(df, title, bins=[300, 60], xmax=100):
@@ -225,7 +211,6 @@ def plot_label_per_image_dist(df, title, bins=[300, 60], xmax=100):
     fig.tight_layout()
 
 
-# In[ ]:
 
 
 aggs = {
@@ -237,7 +222,6 @@ counts.columns = counts.columns.map('_'.join)
 plot_label_per_image_dist(counts, 'Labels and Unique Labels per Image in Entire Train Dataset')
 
 
-# In[ ]:
 
 
 aggs = {
@@ -249,7 +233,6 @@ counts.columns = counts.columns.map('_'.join)
 plot_label_per_image_dist(counts, 'Labels and Unique Labels per Image in Tuning Dataset', bins=[10, 10], xmax=10)
 
 
-# In[ ]:
 
 
 def plot_label_frequency_grid(df, title):
@@ -285,7 +268,6 @@ def plot_label_frequency_grid(df, title):
     fig.tight_layout()
 
 
-# In[ ]:
 
 
 aggs = {
@@ -297,13 +279,11 @@ counts = counts.reset_index(drop=False)
 counts['LabelAndDescription'] = counts['LabelAndDescription'].astype(str)
 
 
-# In[ ]:
 
 
 plot_label_frequency_grid(counts, 'Frequencies of Labels in Entire Train Dataset')
 
 
-# In[ ]:
 
 
 aggs = {
@@ -315,13 +295,11 @@ trainable_counts = trainable_counts.reset_index(drop=False)
 trainable_counts['LabelAndDescription'] = trainable_counts['LabelAndDescription'].astype(str)
 
 
-# In[ ]:
 
 
 plot_label_frequency_grid(trainable_counts, 'Frequencies of Labels in "Trainable" Portion of Dataset')
 
 
-# In[ ]:
 
 
 del counts
@@ -329,7 +307,6 @@ del trainable_counts
 gc.collect()
 
 
-# In[ ]:
 
 
 bbox_labels = train_labels[train_labels['type'] == 'bbox']
@@ -348,13 +325,11 @@ bbox_counts = bbox_counts.reset_index(drop=False)
 bbox_counts['LabelAndDescription'] = bbox_counts['LabelAndDescription'].astype(str)
 
 
-# In[ ]:
 
 
 plot_label_frequency_grid(bbox_counts, 'Frequencies of Labels in Bbox Train Dataset')
 
 
-# In[ ]:
 
 
 aggs = {
@@ -366,13 +341,11 @@ tuning_counts = tuning_counts.reset_index(drop=False)
 tuning_counts['LabelAndDescription'] = tuning_counts['LabelAndDescription'].astype(str)
 
 
-# In[ ]:
 
 
 plot_label_frequency_grid(bbox_counts, 'Frequencies of Labels in Tuning Dataset')
 
 
-# In[ ]:
 
 
 def plot_attributes(df, title, attribute):
@@ -394,7 +367,6 @@ def plot_attributes(df, title, attribute):
     fig.tight_layout()
 
 
-# In[ ]:
 
 
 attributes = ['IsOccluded', 'IsTruncated', 'IsGroupOf', 'IsDepiction', 'IsInside']
@@ -403,27 +375,23 @@ for attribute in attributes:
     plot_attributes(df=bbox_counts, title=attribute, attribute=attribute)
 
 
-# In[ ]:
 
 
 # downloading the class hierarchy for the bbox classes from https://storage.googleapis.com/openimages/web/factsfigures.html
 get_ipython().system('wget https://storage.googleapis.com/openimages/2018_04/bbox_labels_600_hierarchy.json')
 
 
-# In[ ]:
 
 
 with open('./bbox_labels_600_hierarchy.json', 'r') as f_in:
     class_hierarchy = json.loads(f_in.read())
 
 
-# In[ ]:
 
 
 class_hierarchy
 
 
-# In[ ]:
 
 
 bbox_counts['LabelName'] = bbox_counts['LabelAndDescription'].apply(lambda x: x.split(' - ')[0])
@@ -432,13 +400,11 @@ bbox_counts['ImageID_count_log10'] = np.log10(bbox_counts['ImageID_count'])
 bbox_counts['ImageID_nunique_log10'] = np.log10(bbox_counts['ImageID_nunique'])
 
 
-# In[ ]:
 
 
 bbox_counts.head()
 
 
-# In[ ]:
 
 
 def get_label_features(df):
@@ -449,20 +415,17 @@ def get_label_features(df):
     return features
 
 
-# In[ ]:
 
 
 label_features = get_label_features(bbox_counts.drop(['LabelAndDescription'], axis='columns'))
 
 
-# In[ ]:
 
 
 # example of one item in the created dict
 next(iter(label_features.items()))
 
 
-# In[ ]:
 
 
 def make_graph(d, graph, prev_node_added=None, level=1, label_code_to_description=label_code_to_description, label_features=label_features):
@@ -507,7 +470,6 @@ def get_node_coords(g, layout_type):
     return coords
 
 
-# In[ ]:
 
 
 def build_node_traces(keys):
@@ -533,7 +495,6 @@ def build_node_traces(keys):
     return node_traces
 
 
-# In[ ]:
 
 
 def plot_tree(graph, node_coords, title):
@@ -629,7 +590,6 @@ def plot_tree(graph, node_coords, title):
     iplot(fig, filename='class_hierarchy_graph')
 
 
-# In[ ]:
 
 
 label_code_to_description.update({'/m/0bl9f': 'Entity'})
@@ -637,14 +597,12 @@ g = make_graph(class_hierarchy, graph=None, prev_node_added=None, label_code_to_
 g = add_adjacency_to_nodes(g)
 
 
-# In[ ]:
 
 
 p = get_node_coords(g, layout_type='layout_fruchterman_reingold')
 plot_tree(graph=g, node_coords=p, title='Bbox Class Hierarchy with Features from Bbox Train Dataset')
 
 
-# In[ ]:
 
 
 # tree-like layout
@@ -652,20 +610,17 @@ p = get_node_coords(g, layout_type='layout_reingold_tilford')
 plot_tree(graph=g, node_coords=p, title='Bbox Class Hierarchy with Features from Bbox Train Dataset')
 
 
-# In[ ]:
 
 
 p = get_node_coords(g, layout_type='layout_kamada_kawai')
 plot_tree(graph=g, node_coords=p, title='Bbox Class Hierarchy with Features from Bbox Train Dataset')
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 tuning_counts['LabelName'] = tuning_counts['LabelAndDescription'].apply(lambda x: x.split(' - ')[0])
@@ -674,13 +629,11 @@ tuning_counts['ImageID_count_log10'] = np.log10(tuning_counts['ImageID_count'])
 tuning_counts['ImageID_nunique_log10'] = np.log10(tuning_counts['ImageID_nunique'])
 
 
-# In[ ]:
 
 
 label_features = get_label_features(tuning_counts.drop(['LabelAndDescription'], axis='columns'))
 
 
-# In[ ]:
 
 
 label_code_to_description.update({'/m/0bl9f': 'Entity'})
@@ -688,27 +641,23 @@ g = make_graph(class_hierarchy, graph=None, prev_node_added=None, label_code_to_
 g = add_adjacency_to_nodes(g)
 
 
-# In[ ]:
 
 
 p = get_node_coords(g, layout_type='layout_fruchterman_reingold')
 plot_tree(graph=g, node_coords=p, title='Bbox Class Hierarchy with Features from Tuning Dataset')
 
 
-# In[ ]:
 
 
 p = get_node_coords(g, layout_type='layout_kamada_kawai')
 plot_tree(graph=g, node_coords=p, title='Bbox Class Hierarchy with Features from Tuning Dataset')
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 stage_1_attribs = pd.read_csv('../input/stage_1_attributions.csv', dtype=str)
@@ -716,7 +665,6 @@ stage_1_attribs.head()
 print(f"{stage_1_attribs.image_id} image_ids with {} unique sources")
 
 
-# In[ ]:
 
 
 

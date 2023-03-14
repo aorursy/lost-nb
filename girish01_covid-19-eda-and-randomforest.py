@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -15,7 +14,6 @@ import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -31,7 +29,6 @@ plt.style.use('ggplot')
 pd.plotting.register_matplotlib_converters()
 
 
-# In[3]:
 
 
 train_df=pd.read_csv('/kaggle/input/covid19-global-forecasting-week-3/train.csv')
@@ -40,25 +37,21 @@ all_data=pd.concat([train_df,test_df],axis=0)
 all_data.reset_index(drop=True)
 
 
-# In[4]:
 
 
 train_df.head()
 
 
-# In[5]:
 
 
 train_df.info()
 
 
-# In[6]:
 
 
 train_df['Country_Region'].nunique()
 
 
-# In[7]:
 
 
 print("fill blanks and add region for counting")
@@ -66,7 +59,6 @@ print("fill blanks and add region for counting")
 train_df.drop('Province_State',axis=1,inplace=True)
 
 
-# In[8]:
 
 
 # Resetting Date column into Datetime object and making it an index of dataframe
@@ -74,7 +66,6 @@ train_df['Date']=pd.to_datetime(train_df['Date'])
 train_df.set_index('Date',inplace=True)
 
 
-# In[9]:
 
 
 pivot=pd.pivot_table(train_df,columns='Country_Region',index='Date',values='ConfirmedCases',aggfunc=np.sum)
@@ -100,13 +91,11 @@ plt.title('Top 10 Countries with Fatalities due to Covid-19')
 plt.tight_layout()
 
 
-# In[10]:
 
 
 top_confirmed=df.sort_values(by='Confirmed',ascending=False)[:10]
 
 
-# In[11]:
 
 
 # Make List of Top 10 Countries and India and Netherlands- The Countries of interest.
@@ -115,7 +104,6 @@ list_countries.append('India')
 list_countries.append('Netherlands')
 
 
-# In[12]:
 
 
 times_series_cntr = train_df.groupby(['Date','Country_Region'])['ConfirmedCases'].sum()                    .reset_index().set_index('Date')
@@ -129,14 +117,12 @@ plt.title('Cumulative trend plot for Confirmed Cases')
 plt.xticks(rotation=90);
 
 
-# In[13]:
 
 
 Confirm_pivot=pd.pivot_table(train_df,index='Date',columns='Country_Region',
                              values='ConfirmedCases',aggfunc=np.sum)
 
 
-# In[14]:
 
 
 plt.figure(figsize=(16,8))
@@ -150,7 +136,6 @@ for i,country in enumerate(list_countries):
 plt.tight_layout()
 
 
-# In[15]:
 
 
 plt.figure(figsize=(20,16))
@@ -167,7 +152,6 @@ for i,country in enumerate(list_countries):
 plt.tight_layout()
 
 
-# In[16]:
 
 
 for country in list_countries:
@@ -176,13 +160,11 @@ for country in list_countries:
     print('Maximum New Cases registered for {0} was {1} on {2}'.format(country,maxim,id_max))
 
 
-# In[17]:
 
 
 Fatal_pivot=pd.pivot_table(train_df,index='Date',columns='Country_Region',values='Fatalities',aggfunc=np.sum)
 
 
-# In[18]:
 
 
 plt.figure(figsize=(16,8))
@@ -195,7 +177,6 @@ for i,country in enumerate(list_countries):
 plt.tight_layout()
 
 
-# In[19]:
 
 
 plt.figure(figsize=(20,16))
@@ -210,7 +191,6 @@ for i,country in enumerate(list_countries):
 plt.tight_layout()
 
 
-# In[20]:
 
 
 # Understanding New cases confirmation variations on daily basis
@@ -223,7 +203,6 @@ for i,country in enumerate(list_countries):
 plt.suptitle('Variation in number of confirmed cases on daily basis',fontsize=24,va='baseline')
 
 
-# In[21]:
 
 
 plt.figure(figsize=(16,8))
@@ -236,7 +215,6 @@ for i,country in enumerate(list_countries):
     plt.legend(title='Countries')
 
 
-# In[22]:
 
 
 plt.figure(figsize=(16,10))
@@ -249,7 +227,6 @@ for i,country in enumerate(list_countries):
     plt.legend(title='Countries')
 
 
-# In[23]:
 
 
 plt.figure(figsize=(16,8))
@@ -266,7 +243,6 @@ plt.title("Fatalities worldwide trend")
 plt.tight_layout()
 
 
-# In[24]:
 
 
 # Confirmed Cases and Fatalities without China's data
@@ -283,13 +259,11 @@ plt.title("Fatalities worldwide trend(without China)")
 plt.tight_layout()
 
 
-# In[25]:
 
 
 countries=train_df['Country_Region'].unique()
 
 
-# In[26]:
 
 
 country_list=[]
@@ -305,43 +279,36 @@ max_dict={'Country':country_list,'ConfirmedCases':confirmation_list,'Fatalities'
 map_df=pd.DataFrame.from_dict(max_dict)
 
 
-# In[27]:
 
 
 map_df
 
 
-# In[28]:
 
 
 code_df=pd.read_csv('../input/contry-codes/country-codes.csv')
 
 
-# In[29]:
 
 
 code_df=code_df[['ISO3166-1-Alpha-3','CLDR display name']]
 
 
-# In[30]:
 
 
 map_df=map_df.merge(code_df,left_on='Country',right_on='CLDR display name')
 
 
-# In[31]:
 
 
 map_df.drop('CLDR display name',axis=1,inplace=True)
 
 
-# In[32]:
 
 
 map_df.rename(columns={'ISO3166-1-Alpha-3':'Country Code'},inplace=True)
 
 
-# In[33]:
 
 
 
@@ -366,25 +333,21 @@ fig.update_layout(
 iplot(fig)
 
 
-# In[34]:
 
 
 test_df['Date']=pd.to_datetime(test_df['Date'])
 
 
-# In[35]:
 
 
 test_df['Province_State']=test_df.drop('Province_State',axis=1)
 
 
-# In[36]:
 
 
 train_df=train_df.reset_index()
 
 
-# In[37]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -399,7 +362,6 @@ test_df.loc[:, 'Date'] = test_df.Date.dt.strftime("%m%d")
 test_df["Date"]  = test_df["Date"].astype(int)
 
 
-# In[38]:
 
 
 #Select feature column names and target variable we are going to use for training
@@ -410,7 +372,6 @@ target = 'ConfirmedCases'
 train_df[features].head(10)
 
 
-# In[39]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -422,7 +383,6 @@ rfcla = RandomForestClassifier(n_estimators=100, max_samples=0.8,
 rfcla.fit(train_df[features],train_df[target])
 
 
-# In[40]:
 
 
 #Make predictions using the features from the test data set
@@ -431,13 +391,11 @@ predictions = rfcla.predict(test_df[features])
 predictions
 
 
-# In[41]:
 
 
 target2='Fatalities'
 
 
-# In[42]:
 
 
 # We define the model
@@ -447,7 +405,6 @@ rfcla2 = RandomForestClassifier(n_estimators=100, max_samples=0.8,
 rfcla2.fit(train_df[features],train_df[target2])
 
 
-# In[43]:
 
 
 #Make predictions using the features from the test data set
@@ -456,7 +413,6 @@ predictions2 = rfcla2.predict(test_df[features])
 print(predictions2[0:50])
 
 
-# In[44]:
 
 
 #Create a  DataFrame
@@ -467,7 +423,6 @@ submission = pd.DataFrame({'ForecastId':test_df['ForecastId'],'ConfirmedCases':p
 submission.head(10)
 
 
-# In[45]:
 
 
 #Convert DataFrame to a csv file that can be uploaded
@@ -479,7 +434,6 @@ submission.to_csv(filename,index=False)
 print('Saved file: ' + filename)
 
 
-# In[ ]:
 
 
 

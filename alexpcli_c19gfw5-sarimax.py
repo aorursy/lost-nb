@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -19,7 +18,6 @@ import traceback
 import logging
 
 
-# In[2]:
 
 
 # adapted from https://github.com/endolith/waveform_analysis
@@ -56,14 +54,12 @@ def freq_from_crossings(sig):
     return np.mean(np.diff(crossings))
 
 
-# In[3]:
 
 
 get_ipython().system('date')
 get_ipython().system('ls -ltrh ../input/covid19-global-forecasting-week-5/')
 
 
-# In[4]:
 
 
 test = pd.read_csv(
@@ -77,7 +73,6 @@ train = pd.read_csv(
 ).fillna('')
 
 
-# In[5]:
 
 
 def prepare_dataset(X):
@@ -88,38 +83,32 @@ def prepare_dataset(X):
     return X.drop(columns=['Country_Region', 'Province_State', 'County'])
 
 
-# In[6]:
 
 
 get_ipython().run_cell_magic('time', '', "train = prepare_dataset(train)\ntrain = train.set_index(['Location', 'Date', 'Target']).TargetValue.unstack('Target')")
 
 
-# In[7]:
 
 
 train.head()
 
 
-# In[8]:
 
 
 get_ipython().run_cell_magic('time', '', "test = prepare_dataset(test).set_index(['Location', 'Date', 'Target'])[['ForecastId']]")
 
 
-# In[9]:
 
 
 test.head()
 
 
-# In[10]:
 
 
 locations = train.index.get_level_values('Location').unique()
 targets = train.columns.unique()
 
 
-# In[11]:
 
 
 R = []
@@ -196,7 +185,6 @@ for location, target in tqdm(itertools.product(locations, targets),
     R.append(result)
 
 
-# In[12]:
 
 
 # Graph
@@ -217,26 +205,22 @@ ax.fill_between(ci.index, ci.iloc[:,0], ci.iloc[:,1], color='g', alpha=0.1)
 ax.legend(loc='best');
 
 
-# In[13]:
 
 
 submission = pd.read_csv('/kaggle/input/covid19-global-forecasting-week-5/submission.csv',
                          index_col=0)
 
 
-# In[14]:
 
 
 submission.head()
 
 
-# In[15]:
 
 
 submission[[]].join(pd.concat(R)).fillna(0).clip(lower=0, upper=None).to_csv('submission.csv')
 
 
-# In[16]:
 
 
 get_ipython().system('ls -ltrh submission.csv')

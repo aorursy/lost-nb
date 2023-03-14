@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import fastai
@@ -28,54 +26,46 @@ from fastai.vision import *
 fastai.__version__
 
 
-# In[3]:
 
 
 torch.cuda.is_available()
 
 
-# In[4]:
 
 
 d_path = Path('../input/imet-2019-fgvc6')
 m_path = Path('../input/pytorch-model-zoo')
 
 
-# In[5]:
 
 
 train_df = pd.read_csv(d_path/'train.csv')
 train_df.head()
 
 
-# In[6]:
 
 
 labels_df = pd.read_csv(d_path/'labels.csv')
 labels_df.head()
 
 
-# In[7]:
 
 
 test_df = pd.read_csv(d_path/'sample_submission.csv')
 test_df.head()
 
 
-# In[8]:
 
 
 # SIZE = 224
 # BATCH = 64
 
 
-# In[9]:
 
 
 tfms = get_transforms(max_lighting=0.1, max_zoom=1.05, max_warp=0.1, xtra_tfms=[(symmetric_warp(magnitude=(-0,0), p=0)),])
 
 
-# In[10]:
 
 
 train = ImageList.from_df(train_df, path=d_path, cols='id', folder='train', suffix='.png') 
@@ -87,13 +77,11 @@ test = ImageList.from_df(test_df, path=d_path, cols='id', folder='test', suffix=
 #         .databunch(path=Path('.'), bs=BATCH, device=torch.device('cuda:0')).normalize(imagenet_stats))
 
 
-# In[11]:
 
 
 # data.show_batch(rows=3)
 
 
-# In[12]:
 
 
 # Source: https://www.kaggle.com/c/human-protein-atlas-image-classification/discussion/78109
@@ -114,7 +102,6 @@ class FocalLoss(nn.Module):
         return loss.mean()
 
 
-# In[13]:
 
 
 from collections import OrderedDict
@@ -354,58 +341,49 @@ def se_resnext101_32x4d(pretrained=False):
     return model
 
 
-# In[14]:
 
 
 # learn = cnn_learner(data, base_arch=models.densenet169, loss_func=FocalLoss(), metrics=fbeta).mixup()
 # learn = cnn_learner(data, se_resnext101_32x4d, loss_func=FocalLoss(), metrics=fbeta)
 
 
-# In[15]:
 
 
 # learn.lr_find()
 # learn.recorder.plot(suggestion=True)
 
 
-# In[16]:
 
 
 # lr = 1e-2
 
 
-# In[17]:
 
 
 # learn.fit_one_cycle(5, slice(lr))
 
 
-# In[18]:
 
 
 # learn.unfreeze()
 
 
-# In[19]:
 
 
 # learn.fit_one_cycle(3, slice(lr/1e4, lr/100))
 
 
-# In[20]:
 
 
 # learn.save('s1')
 
 
-# In[21]:
 
 
 SIZE = 224
 BATCH=32
 
 
-# In[22]:
 
 
 # learn = None
@@ -413,7 +391,6 @@ BATCH=32
 # learn = cnn_learner(data, se_resnext101_32x4d, loss_func=FocalLoss(), metrics=fbeta).load('s1')
 
 
-# In[23]:
 
 
 data1 = (train.split_by_rand_pct(0.2, seed=1234)
@@ -423,68 +400,57 @@ data1 = (train.split_by_rand_pct(0.2, seed=1234)
         .databunch(path=Path('.'), bs=BATCH, device=torch.device('cuda:0')).normalize(imagenet_stats))
 
 
-# In[24]:
 
 
 learn = cnn_learner(data1, se_resnext101_32x4d, loss_func=FocalLoss(), metrics=fbeta)
 
 
-# In[25]:
 
 
 data1.show_batch(rows=3)
 
 
-# In[26]:
 
 
 learn.data=data1
 
 
-# In[27]:
 
 
 learn.freeze()
 
 
-# In[28]:
 
 
 learn.lr_find()
 learn.recorder.plot(suggestion=True)
 
 
-# In[29]:
 
 
 lr2 = 1e-6
 
 
-# In[30]:
 
 
 learn.fit_one_cycle(5, slice(lr2))
 
 
-# In[31]:
 
 
 learn.unfreeze()
 
 
-# In[32]:
 
 
 learn.fit_one_cycle(3, slice(lr2/2.6**3, lr2/5))
 
 
-# In[33]:
 
 
 learn.recorder.plot_losses()
 
 
-# In[34]:
 
 
 def find_best_fixed_threshold(preds, targs, do_plot=True):
@@ -509,21 +475,18 @@ def join_preds(preds, thr):
     return [' '.join(i2c[np.where(t==1)[0],1].astype(str)) for t in (preds[0].sigmoid()>thr).long()]
 
 
-# In[35]:
 
 
 valid_preds = learn.TTA(ds_type=DatasetType.Valid)
 best_thr = find_best_fixed_threshold(*valid_preds)
 
 
-# In[36]:
 
 
 test_preds = learn.TTA(ds_type=DatasetType.Test)
 test_df.attribute_ids = join_preds(test_preds, best_thr)
 
 
-# In[37]:
 
 
 test_df.to_csv('submission.csv', index=False)

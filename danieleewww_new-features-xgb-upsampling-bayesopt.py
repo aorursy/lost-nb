@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # coding: utf-8
@@ -71,7 +70,6 @@ def scale_data(X, scaler=None):
     return X, scaler
 
 
-# In[2]:
 
 
 # Comment out any parameter you don't want to test
@@ -160,7 +158,6 @@ def XGB_CV(
     return mean_eval[best_round]
 
 
-# In[3]:
 
 
 GINIbest = -1.
@@ -205,7 +202,6 @@ print(' Shape of processed test data:', sub_df.shape)
 timer(start_time)
 
 
-# In[4]:
 
 
 XGB_BO = BayesianOptimization(XGB_CV, {
@@ -221,7 +217,6 @@ XGB_BO = BayesianOptimization(XGB_CV, {
                                     })
 
 
-# In[5]:
 
 
 XGB_BO.explore({
@@ -247,7 +242,6 @@ XGB_BO.explore({
 #              })
 
 
-# In[6]:
 
 
 print('-'*126)
@@ -259,7 +253,6 @@ with warnings.catch_warnings():
 timer(start_time)
 
 
-# In[7]:
 
 
 print('-'*126)
@@ -271,7 +264,6 @@ print(' Saving grid search parameters to %s' % grid_file)
 XGB_BO.points_to_csv(grid_file)
 
 
-# In[8]:
 
 
 

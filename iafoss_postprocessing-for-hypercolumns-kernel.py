@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('reload_ext', 'autoreload')
@@ -23,7 +22,6 @@ import os
 from fastai.vision import *
 
 
-# In[2]:
 
 
 sz = 256
@@ -51,7 +49,6 @@ for item in items:
 ys = torch.cat(ys)
 
 
-# In[3]:
 
 
 #dice for threshold selection
@@ -67,7 +64,6 @@ def dice_overall(preds, targs):
     return (2. * intersect / union)
 
 
-# In[4]:
 
 
 noise_th = 75.0*255*(sz/128.0)**2 #threshold for the number of predicted pixels
@@ -95,7 +91,6 @@ plt.text(best_thr, best_dice, f'DICE = {best_dice:.3f}', fontsize=14);
 plt.show()
 
 
-# In[5]:
 
 
 TEST = '../input/siimacr-pneumothorax-segmentation-data-256/test/'
@@ -107,7 +102,6 @@ preds_test0 = preds_test.clone()
 preds_test[preds_test.view(preds_test.shape[0],-1).float().sum(-1) < noise_th,...] = 0
 
 
-# In[6]:
 
 
 # Generate rle encodings (images are first converted to the original size)
@@ -126,7 +120,6 @@ print(len(sub_df))
 sub_df.head()
 
 
-# In[7]:
 
 
 def split_mask(mask):
@@ -145,7 +138,6 @@ def split_mask(mask):
     return result
 
 
-# In[8]:
 
 
 rles = []
@@ -171,7 +163,6 @@ print(len(sub_df))
 sub_df.head()
 
 
-# In[9]:
 
 
 rles = []
@@ -211,7 +202,6 @@ print(len(sub_df))
 sub_df.head()
 
 
-# In[ ]:
 
 
 

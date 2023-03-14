@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 from datetime import datetime
@@ -33,14 +31,12 @@ import matplotlib.pyplot as plt
 from sklearn import metrics
 
 
-# In[3]:
 
 
 df_train = pd.read_csv('../input/covid19-global-forecasting-week-1/train.csv', infer_datetime_format=True)
 df_test = pd.read_csv('../input/covid19-global-forecasting-week-1/test.csv', infer_datetime_format=True)
 
 
-# In[4]:
 
 
 datetime_array = np.array([df_train['Date'][0]])
@@ -53,7 +49,6 @@ df_test["Lat"]  = df_test["Lat"].fillna(12.5211)
 df_test["Long"]  = df_test["Long"].fillna(69.9683)
 
 
-# In[5]:
 
 
 inferred_datetime_format =         pd.core.tools.datetimes._guess_datetime_format_for_array(
@@ -62,7 +57,6 @@ inferred_datetime_format1 =         pd.core.tools.datetimes._guess_datetime_form
             datetime_array1)
 
 
-# In[6]:
 
 
 df_master_data_dt = pd.to_datetime(df_train['Date'],
@@ -71,7 +65,6 @@ df_test_data_dt = pd.to_datetime(df_test['Date'],
                                        format=inferred_datetime_format1)
 
 
-# In[7]:
 
 
 df_train['Year'] = df_master_data_dt.dt.year
@@ -85,7 +78,6 @@ df_test['Origin Month'] = df_test_data_dt.dt.month
 df_test['Origin Week'] = df_test_data_dt.dt.week
 
 
-# In[8]:
 
 
 df_train["Date"] = df_train["Date"].apply(lambda x: x.replace("-",""))
@@ -95,7 +87,6 @@ df_test["Date"] = df_test["Date"].apply(lambda x: x.replace("-",""))
 df_test["Date"]  = df_test["Date"].astype(int)
 
 
-# In[9]:
 
 
 features = ["Lat","Long","Date","Year","Origin Day of Week","Origin Month","Origin Week"]
@@ -109,7 +100,6 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_
 x_train1, x_test1, y_train1, y_test1 = train_test_split(x, y1, test_size=0.2, random_state=23, shuffle=False)
 
 
-# In[10]:
 
 
 cb_model = CatBoostRegressor(iterations=5000, learning_rate=0.0001, max_depth=15)
@@ -121,7 +111,6 @@ pred1 = pd.DataFrame(pred1)
 pred1.columns = ["ConfirmedCases_prediction"]
 
 
-# In[11]:
 
 
 cb_model1 = CatBoostRegressor(iterations=2000, learning_rate=0.0001, max_depth=15)
@@ -147,7 +136,6 @@ OP["Fatalities"] = OP["Fatalities"].astype(int)
 OP.head()
 
 
-# In[12]:
 
 
 OP.to_csv("submission.csv",index=False)

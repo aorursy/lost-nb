@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 from __future__ import division
@@ -45,13 +43,11 @@ init_notebook_mode(connected=True)
 import plotly.figure_factory as ff
 
 
-# In[3]:
 
 
 #metadata_dtype = {'site_id':"uint8",'building_id':'uint16','square_feet':'float32','year_built':'float32','floor_count':"float16"}
 
 
-# In[4]:
 
 
 df_data_train = pd.read_csv('/kaggle/input/ashrae-energy-prediction/train.csv',parse_dates=['timestamp'])
@@ -61,7 +57,6 @@ df_weather_train = pd.read_csv('/kaggle/input/ashrae-energy-prediction/weather_t
 df_data_test = pd.read_csv('/kaggle/input/ashrae-energy-prediction/test.csv',parse_dates=['timestamp'])
 
 
-# In[5]:
 
 
 ## Function to reduce the DF size
@@ -94,7 +89,6 @@ def reduce_mem_usage(df, verbose=True):
     return df
 
 
-# In[6]:
 
 
 df_data_train = reduce_mem_usage(df_data_train)
@@ -104,7 +98,6 @@ df_data_test = reduce_mem_usage(df_data_test)
 df_weather_test = reduce_mem_usage(df_weather_test)
 
 
-# In[7]:
 
 
 def fill_weather_dataset(weather_df):
@@ -159,44 +152,37 @@ def fill_weather_dataset(weather_df):
     return weather_df
 
 
-# In[8]:
 
 
 df_weather_train = fill_weather_dataset(df_weather_train)
 df_weather_test = fill_weather_dataset(df_weather_test)
 
 
-# In[ ]:
 
 
 
 
 
-# In[9]:
 
 
 get_ipython().run_cell_magic('time', '', 'df_data_train = pd.merge(df_data_train,df_meta_train,on=\'building_id\',how=\'left\')\ndf_data_test  = pd.merge(df_data_test,df_meta_train,on=\'building_id\',how=\'left\')\nprint ("Training Data Shape {}".format(df_data_train.shape))\nprint ("Testing Data Shape {}".format(df_data_test.shape))\ngc.collect()')
 
 
-# In[10]:
 
 
 df_weather_train.info()
 
 
-# In[11]:
 
 
 df_data_train.info()
 
 
-# In[12]:
 
 
 get_ipython().run_cell_magic('time', '', 'df_data_train = df_data_train.merge(df_weather_train,on=[\'site_id\',\'timestamp\'], how=\'left\')\ndf_data_test  = df_data_test.merge(df_weather_test,on=[\'site_id\',\'timestamp\'], how=\'left\')\nprint ("Training Data Shape {}".format(df_data_train.shape))\nprint ("Testing Data Shape {}".format(df_data_test.shape))\ngc.collect()')
 
 
-# In[13]:
 
 
 for df in [df_data_train,df_data_test]:
@@ -205,49 +191,41 @@ for df in [df_data_train,df_data_test]:
     df['Age_isNa'] = df['year_built_isNa']
 
 
-# In[14]:
 
 
 df_data_train.info()
 
 
-# In[15]:
 
 
 df_meta_train.info()
 
 
-# In[16]:
 
 
 df_merge_train_meta = df_data_train.merge(df_meta_train, how='left', on='building_id')
 
 
-# In[17]:
 
 
 df_merge_test_meta = df_data_test.merge(df_meta_train, how='left', on='building_id')
 
 
-# In[18]:
 
 
 df_merge_train_meta.loc[(df_merge_train_meta['site_id'] == 0) & (df_merge_train_meta['meter'] == 0),'meter_reading'] =       df_merge_train_meta[(df_merge_train_meta['site_id'] == 0) & (df_merge_train_meta['meter'] == 0)]       ['meter_reading'] * 0.293
 
 
-# In[19]:
 
 
 df_merge_train_all = df_merge_train_meta.merge(df_weather_train,on=['site_id','timestamp'], how='left')
 
 
-# In[20]:
 
 
 df_merge_test_all = df_merge_test_meta.merge(df_weather_test,on=['site_id','timestamp'], how='left')
 
 
-# In[21]:
 
 
 #df_merge_test_all.isna()
@@ -255,20 +233,17 @@ df_merge_test_all = df_merge_test_meta.merge(df_weather_test,on=['site_id','time
  #                           for c in df_merge_test_all.columns} ,index=['Total','%'])
 
 
-# In[22]:
 
 
 del test_miss
 
 
-# In[23]:
 
 
 #train_miss=pd.DataFrame({c:[sum(df_merge_train_all[c].isna()),(sum(df_merge_train_all[c].isna())/len(df_merge_train_all[c]))*100] \
 #                            for c in df_merge_train_all.columns} ,index=['Total','%'])
 
 
-# In[24]:
 
 
 del df_data_train
@@ -277,56 +252,47 @@ del df_data_test
 del df_weather_test
 
 
-# In[25]:
 
 
 df_merge_train_all.dropna(axis=1,inplace=True)
 
 
-# In[26]:
 
 
 df_merge_test_all.dropna(axis=1,inplace=True)
 
 
-# In[27]:
 
 
 #df_merge_train_all.head(100)
 df_merge_train_all = df_merge_train_all[(df_merge_train_all.meter_reading>0)]
 
 
-# In[28]:
 
 
 df_merge_test_all.info()
 
 
-# In[29]:
 
 
 df_merge_train_all.info()
 
 
-# In[30]:
 
 
 df_merge_train_all.drop(['timestamp'],axis=1,inplace=True)
 
 
-# In[31]:
 
 
 df_merge_test_all.drop(['timestamp'],axis=1,inplace=True)
 
 
-# In[32]:
 
 
 df_merge_train_all.head()
 
 
-# In[33]:
 
 
 df_meterType_0_train = df_merge_train_all[(df_merge_train_all.meter == 0) & (df_merge_train_all.meter_reading>0)]
@@ -335,7 +301,6 @@ df_meterType_2_train = df_merge_train_all[(df_merge_train_all.meter == 2) & (df_
 df_meterType_3_train = df_merge_train_all[(df_merge_train_all.meter == 3) & (df_merge_train_all.meter_reading>0)]
 
 
-# In[34]:
 
 
 df_meterType_0_test = df_merge_test_all[df_merge_test_all.meter == 0]
@@ -344,92 +309,77 @@ df_meterType_2_test = df_merge_test_all[df_merge_test_all.meter == 2]
 df_meterType_3_test = df_merge_test_all[df_merge_test_all.meter == 3]
 
 
-# In[35]:
 
 
 print(np.unique(df_merge_test_all.primary_use)
 
 
-# In[36]:
 
 
 columns_list  = list(df_meterType_0_train.columns)
 features = list(set(columns_list)-set(['meter_reading','primary_use']))
 
 
-# In[37]:
 
 
 print(features)
 
 
-# In[38]:
 
 
 y = df_meterType_0_train.meter_reading.values
 
 
-# In[39]:
 
 
 x = df_meterType_0_train[features].values
 
 
-# In[40]:
 
 
 from sklearn.model_selection import train_test_split
 
 
-# In[41]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.4, random_state=101)
 
 
-# In[42]:
 
 
 from sklearn.linear_model import LinearRegression
 
 
-# In[43]:
 
 
 lm = LinearRegression()
 
 
-# In[44]:
 
 
 lm.fit(X_train,y_train)
 
 
-# In[45]:
 
 
 print(lm.intercept_)
 
 
-# In[46]:
 
 
 predictions = lm.predict(X_test)
 
 
-# In[47]:
 
 
 plt.scatter(y_test,predictions)
 
 
-# In[48]:
 
 
 from sklearn import metrics
 
 
-# In[49]:
 
 
 print('MAE:', metrics.mean_absolute_error(y_test, predictions))

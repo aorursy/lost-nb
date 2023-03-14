@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -25,7 +24,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 print('Loading data...')
@@ -56,7 +54,6 @@ songs_extra = pd.read_csv(data_path + 'song_extra_info.csv')
 print('Done loading...')
 
 
-# In[3]:
 
 
 print('Data merging...')
@@ -108,7 +105,6 @@ test.song_id = test.song_id.astype('category')
 print('Done merging...')
 
 
-# In[4]:
 
 
 print ("Adding new features")
@@ -229,7 +225,6 @@ test['count_artist_played'] = test['artist_name'].apply(count_artist_played).ast
 print "Done adding features"
 
 
-# In[5]:
 
 
 print ("Train test and validation sets")
@@ -254,7 +249,6 @@ watchlist_final = lgb.Dataset(X_train, y_train)
 print('Processed data...')
 
 
-# In[6]:
 
 
 params = {
@@ -278,7 +272,6 @@ params = {
 get_ipython().run_line_magic('time', 'model_f1 = lgb.train(params, train_set=d_train_final,  valid_sets=watchlist_final, verbose_eval=5)')
 
 
-# In[7]:
 
 
 params = {
@@ -302,7 +295,6 @@ params = {
 get_ipython().run_line_magic('time', 'model_f2 = lgb.train(params, train_set=d_train_final,  valid_sets=watchlist_final, verbose_eval=5)')
 
 
-# In[8]:
 
 
 print('Making predictions')
@@ -314,7 +306,6 @@ p_test_avg = np.mean([p_test_1, p_test_2], axis = 0)
 print('Done making predictions')
 
 
-# In[9]:
 
 
 print ('Saving predictions Model model of gbdt')

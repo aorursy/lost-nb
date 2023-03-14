@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os, gc
@@ -19,7 +18,6 @@ import PIL
 from IPython.display import Image, display
 
 
-# In[2]:
 
 
 TRAIN = '../input/prostate-cancer-grade-assessment/train_images/'
@@ -31,7 +29,6 @@ N = 16
 TIFF_LEVEL = 1
 
 
-# In[3]:
 
 
 names = [name[:-10] for name in os.listdir(MASKS)]
@@ -43,7 +40,6 @@ names = [name[:-10] for name in os.listdir(MASKS)]
 # len(names)
 
 
-# In[4]:
 
 
 done_names = ['4cbde67c6d4feb90b93497fa08b413f7']
@@ -51,7 +47,6 @@ names = [x for x in names if x in done_names]
 len(names)
 
 
-# In[5]:
 
 
 # names = [x for x in names if x not in done_names]
@@ -59,7 +54,6 @@ len(names)
 # names = names[0:1856]
 
 
-# In[6]:
 
 
 def read_img(ID, path, level=2):
@@ -83,7 +77,6 @@ def mask_img(img_gray, tol=210):
     return mask
 
 
-# In[7]:
 
 
 img_mask = read_mask_img(names[0], MASKS)
@@ -94,7 +87,6 @@ img_gray1 = img_to_gray(img1)
 mask1 = mask_img(img_gray1)
 
 
-# In[8]:
 
 
 # fig, ax = plt.subplots(3, 2, figsize=(20, 25))
@@ -112,7 +104,6 @@ mask1 = mask_img(img_gray1)
 #     ax[i][1].set_title(f'{img} - Mask - Label: {names[i]}')
 
 
-# In[9]:
 
 
 def tile(img, mask = 0, idxs = None, index = 0):
@@ -138,7 +129,6 @@ def tile(img, mask = 0, idxs = None, index = 0):
     return img, idxs
 
 
-# In[10]:
 
 
 x_tot,x2_tot = [],[]
@@ -169,7 +159,6 @@ with zipfile.ZipFile(OUT_TRAIN, 'w') as img_out, zipfile.ZipFile(OUT_MASKS, 'w')
         gc.collect()
 
 
-# In[11]:
 
 
 #image stats

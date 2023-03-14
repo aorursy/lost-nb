@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import gc
@@ -27,7 +26,6 @@ import tensorflow as tf
 import keras.backend.tensorflow_backend as KTF
 
 
-# In[2]:
 
 
 def get_session(gpu_fraction=0.6):
@@ -43,25 +41,21 @@ def get_session(gpu_fraction=0.6):
 KTF.set_session(get_session())
 
 
-# In[3]:
 
 
 plt.rcParams['figure.figsize'] = (12, 9)
 
 
-# In[4]:
 
 
 os.listdir('../input')
 
 
-# In[5]:
 
 
 os.listdir('../input/petfinder-adoption-prediction/test/')
 
 
-# In[6]:
 
 
 train = pd.read_csv('../input/petfinder-adoption-prediction/train/train.csv')
@@ -69,7 +63,6 @@ test = pd.read_csv('../input/petfinder-adoption-prediction/test/test.csv')
 sample_submission = pd.read_csv('../input/petfinder-adoption-prediction/test/sample_submission.csv')
 
 
-# In[7]:
 
 
 
@@ -118,7 +111,6 @@ train["gdp_vs_population"] = train["state_gdp"] / train["state_population"]
 test["gdp_vs_population"] = test["state_gdp"] / test["state_population"]
 
 
-# In[8]:
 
 
 labels_breed = pd.read_csv('../input/petfinder-adoption-prediction/breed_labels.csv')
@@ -126,7 +118,6 @@ labels_state = pd.read_csv('../input/petfinder-adoption-prediction/color_labels.
 labels_color = pd.read_csv('../input/petfinder-adoption-prediction/state_labels.csv')
 
 
-# In[9]:
 
 
 train_image_files = sorted(glob.glob('../input/petfinder-adoption-prediction/train_images/*.jpg'))
@@ -147,7 +138,6 @@ print('num of test metadata files: {}'.format(len(test_metadata_files)))
 print('num of test sentiment files: {}'.format(len(test_sentiment_files)))
 
 
-# In[10]:
 
 
 plt.rcParams['figure.figsize'] = (12, 9)
@@ -190,7 +180,6 @@ pets_with_sentiments = len(np.intersect1d(train_sentiment_pets.unique(), train_d
 print('fraction of pets with sentiment: {:.3f}'.format(pets_with_sentiments / train_df_ids.shape[0]))
 
 
-# In[11]:
 
 
 # Images:
@@ -237,7 +226,6 @@ print('images and metadata distributions the same? {}'.format(
     np.all(test_metadata_pets == test_imgs_pets)))
 
 
-# In[12]:
 
 
 class PetFinderParser(object):
@@ -491,7 +479,6 @@ def extract_additional_features(pet_id, mode='train'):
 pet_parser = PetFinderParser()
 
 
-# In[13]:
 
 
 import pynvml
@@ -506,7 +493,6 @@ print(meminfo.free) #第一块显卡剩余显存大小
 print(pynvml.nvmlDeviceGetCount())#显示有几块GPU
 
 
-# In[14]:
 
 
 import cv2
@@ -542,7 +528,6 @@ train_dfs_metadata = pd.DataFrame(train_dfs_metadata)
 print(train_dfs_sentiment.shape, train_dfs_metadata.shape)
 
 
-# In[15]:
 
 
 # 测试集读取：
@@ -559,7 +544,6 @@ test_dfs_metadata = pd.DataFrame(test_dfs_metadata)
 print(test_dfs_sentiment.shape, test_dfs_metadata.shape)
 
 
-# In[16]:
 
 
 # 再确认一次GPU
@@ -571,7 +555,6 @@ print(meminfo.free) #第一块显卡剩余显存大小
 print(pynvml.nvmlDeviceGetCount())#显示有几块GPU
 
 
-# In[17]:
 
 
 # 分别处理metadata和sentiment，最终会在merge部分和main DFs融合。
@@ -592,7 +575,6 @@ for idx, a in enumerate(possible_annots):
 metadata_desc['meta_desc'] = metadata_desc['meta_annots_top_desc'].apply(lambda x: ' '.join(annot_mapper[i] for i in x.split('; ')))
 
 
-# In[18]:
 
 
 # 情感特征，包括词长，内容等
@@ -604,13 +586,11 @@ senti_df['sentiment_word_unique'] = senti_df['sentiment_entities'].apply(lambda 
 senti_df['doc_language'] = pd.factorize(senti_df['doc_language'])[0]
 
 
-# In[19]:
 
 
 senti_df.head()
 
 
-# In[20]:
 
 
 # metadata, 因为每一个宠物都有着很多个json文件，也就对应着大量的数据。我们需要通过聚合，将特征通过均值、最大值、最小值或者平均值反映出来。
@@ -644,7 +624,6 @@ metadata_gr.columns = pd.Index(['{}_{}_{}'.format('meta', c[0], c[1].upper()) fo
 metadata_gr = metadata_gr.reset_index()
 
 
-# In[21]:
 
 
 meta_df = metadata_desc.merge(metadata_gr, on='PetID', how='left')
@@ -655,7 +634,6 @@ meta_df['meta_annots_top_desc'].fillna(' ', inplace=True)
 meta_df[meta_df['meta_textblock_num_MEAN']>0.8].head()
 
 
-# In[22]:
 
 
 # Train merges:
@@ -669,13 +647,11 @@ assert train_proc.shape[0] == train.shape[0]
 assert test_proc.shape[0] == test.shape[0]
 
 
-# In[23]:
 
 
 train_proc.head()
 
 
-# In[24]:
 
 
 # 以breed1为主breed
@@ -723,13 +699,11 @@ test_proc = pd.concat(
 print(train_proc.shape, test_proc.shape)
 
 
-# In[25]:
 
 
 train_proc.head()
 
 
-# In[26]:
 
 
 # FROM: https://www.kaggle.com/myltykritik/simple-lgbm-image-features
@@ -738,14 +712,12 @@ img_size = 256
 batch_size = 16
 
 
-# In[27]:
 
 
 pet_ids = train['PetID'].values
 n_batches = len(pet_ids) // batch_size + 1
 
 
-# In[28]:
 
 
 def resize_to_square(im):
@@ -770,7 +742,6 @@ def load_image(path, pet_id,i=1):
     return new_image
 
 
-# In[29]:
 
 
 # 通过使用别人训练好的DenseNet分类器分类特征
@@ -790,7 +761,6 @@ out = Lambda(lambda x: x[:,:,0])(x)
 m = Model(inp,out)
 
 
-# In[30]:
 
 
 # 图片特征提取，前面注释的部分是遍历每一张图片，最终我们只遍历每一个PetID的第一张图片。
@@ -839,14 +809,12 @@ for b in tqdm_notebook(range(n_batches)):
         features[pet_id] = batch_preds[i]
 
 
-# In[31]:
 
 
 train_feats = pd.DataFrame.from_dict(features, orient='index')
 train_feats.columns = ['pic_'+str(i) for i in range(train_feats.shape[1])]
 
 
-# In[32]:
 
 
 # 测试集遍历
@@ -906,7 +874,6 @@ for b in tqdm_notebook(range(n_batches)):
         features[pet_id] = batch_preds[i]
 
 
-# In[33]:
 
 
 # 再一次查看GPU
@@ -921,14 +888,12 @@ print(meminfo.free) #第1块显卡剩余显存大小
 print(pynvml.nvmlDeviceGetCount())#显示有几块GPU
 
 
-# In[34]:
 
 
 test_feats = pd.DataFrame.from_dict(features, orient='index')
 test_feats.columns = ['pic_'+str(i) for i in range(test_feats.shape[1])]
 
 
-# In[35]:
 
 
 test_feats = test_feats.reset_index()
@@ -941,27 +906,23 @@ train = pd.merge(train, train_feats, how='left', on='PetID')
 test = pd.merge(test, test_feats, how='left', on='PetID')
 
 
-# In[36]:
 
 
 train_proc = pd.merge(train_proc, train_feats, how='left', on='PetID')
 test_proc = pd.merge(test_proc, test_feats, how='left', on='PetID')
 
 
-# In[37]:
 
 
 X = pd.concat([train_proc, test_proc], ignore_index=True, sort=False)
 print('NaN structure:\n{}'.format(np.sum(pd.isnull(X))))
 
 
-# In[38]:
 
 
 X.head()
 
 
-# In[39]:
 
 
 column_types = X.dtypes
@@ -975,7 +936,6 @@ print('\n\tfloat columns:\n{}'.format(float_cols))
 print('\n\tto encode categorical columns:\n{}'.format(cat_cols))
 
 
-# In[40]:
 
 
 # 首先，我们先定义一个to_drop_columns，这个list用于保存不需要进入模型训练的数据列名
@@ -994,7 +954,6 @@ X_temp['Color_full'],_ = pd.factorize(X_temp['Color_full'])
 to_drop_columns.extend(['Breed1','Breed2','Color1','Color2','Color3'])
 
 
-# In[41]:
 
 
 # 添加姓名特征，因为姓名本身的意义并不大，但是可以通过操作来得到一些有用的特征
@@ -1006,7 +965,6 @@ X_temp['name_len'] = X_temp['Name'].apply(lambda x: len(x))
 X_temp['strange_name'] = X_temp['Name'].apply(lambda x: len(pattern.findall(x))>0).astype(np.int8)
 
 
-# In[42]:
 
 
 # 重新编码Vacinated, Dewormed, Sterilized等特征。目的也是降维
@@ -1031,13 +989,11 @@ X_temp['Health'] = X_temp['Health'].replace(0, np.nan)
 to_drop_columns.extend
 
 
-# In[43]:
 
 
 to_drop_columns.extend(['Type','Gender','Vaccinated','Dewormed','Sterilized'])
 
 
-# In[44]:
 
 
 # nltk是常用的自然语言处理包
@@ -1071,7 +1027,6 @@ def custom_tokenizer(text):
     return retval
 
 
-# In[45]:
 
 
 X_temp['Description'] = X_temp['Description'].fillna(' ')
@@ -1111,7 +1066,6 @@ for i in range(len(X_temp)):
     pos_sequences.append(pos_seq)
 
 
-# In[46]:
 
 
 # 从所提取的文本信息中提取特征，特征主要有文本长度，单词长度，单词数量等等。
@@ -1134,7 +1088,6 @@ X_temp['description_word_len'] = X_temp['Description'].apply(lambda x: len(x.spl
 to_drop_columns.extend(['English_desc','Description','Chinese_desc'])
 
 
-# In[47]:
 
 
 # 选择需要处理的列
@@ -1142,7 +1095,6 @@ text_columns = ['Description','English_desc','Chinese_desc']
 categorical_columns = ['main_breed_BreedName', 'second_breed_BreedName']
 
 
-# In[48]:
 
 
 # 和name和PetID都该被处理， RescuerID被处理后也会被丢掉
@@ -1155,13 +1107,11 @@ rescuer_count.columns = ['RescuerID', 'RescuerID_COUNT']
 X_temp = X_temp.merge(rescuer_count, how='left', on='RescuerID')
 
 
-# In[49]:
 
 
 feat_df = X_temp[['PetID','Color1','Breed1','State','RescuerID','Name','Breed_full','Color_full','hard_interaction']]
 
 
-# In[50]:
 
 
 # 继续处理其他特征
@@ -1190,7 +1140,6 @@ feat.reset_index(inplace=True)
 feat_df = feat_df.merge(feat, on='Color_full', how='left')
 
 
-# In[51]:
 
 
 # Breed feature
@@ -1227,7 +1176,6 @@ feat.reset_index(inplace=True)
 feat_df = feat_df.merge(feat, on='Breed_full', how='left')
 
 
-# In[52]:
 
 
 # State 特征
@@ -1254,7 +1202,6 @@ feat.reset_index(inplace=True)
 feat_df = feat_df.merge(feat, on='State', how='left')
 
 
-# In[53]:
 
 
 agg = {
@@ -1286,7 +1233,6 @@ feat.reset_index(inplace=True)
 feat_df = feat_df.merge(feat, on=['State','Breed_full','Color_full'], how='left')
 
 
-# In[54]:
 
 
 # name feature
@@ -1294,7 +1240,6 @@ feat = X_temp.groupby('Name')['PetID'].agg({'name_count':'nunique'}).reset_index
 feat_df = feat_df.merge(feat, on='Name', how='left')
 
 
-# In[55]:
 
 
 # 继续添加特征
@@ -1314,7 +1259,6 @@ rescuer_count.reset_index(inplace=True)
 feat_df = feat_df.merge(rescuer_count, how='left', on='RescuerID')
 
 
-# In[56]:
 
 
 # State 特征
@@ -1327,13 +1271,11 @@ feat.reset_index(inplace=True)
 feat_df = feat_df.merge(feat, on='hard_interaction', how='left')
 
 
-# In[57]:
 
 
 feat_df.drop(['Color1','Breed1','State','RescuerID','Name','Breed_full','Color_full','hard_interaction'], axis=1, inplace=True)
 
 
-# In[58]:
 
 
 # 将特征型的列重新编码
@@ -1341,13 +1283,11 @@ for i in categorical_columns:
     X_temp.loc[:, i] = pd.factorize(X_temp.loc[:, i])[0]
 
 
-# In[59]:
 
 
 X_temp.head()
 
 
-# In[60]:
 
 
 # 建立text数据子集
@@ -1357,13 +1297,11 @@ for i in X_text.columns:
     X_text.loc[:, i] = X_text.loc[:, i].fillna('<MISSING>')
 
 
-# In[61]:
 
 
 X_text = X_text.drop(['Chinese_desc'],axis =1)
 
 
-# In[62]:
 
 
 # 通过TFIDF处理文本特征
@@ -1404,7 +1342,6 @@ text_features = pd.concat(text_features, axis=1)
 X_temp = pd.concat([X_temp, text_features], axis=1)
 
 
-# In[63]:
 
 
 # 这一步本来是为了删除一些不必要的列的。。后来没删，但是后面的代码懒得改了，于是就多出来了一个X_proc
@@ -1416,7 +1353,6 @@ X_proc = X_temp.copy()
 #print('X shape: {}'.format(X_temp.shape))
 
 
-# In[64]:
 
 
 # 在merge之前观察一下我们的列
@@ -1431,7 +1367,6 @@ print('\n\tfloat columns:\n{}'.format(float_cols))
 print('\n\tto encode categorical columns:\n{}'.format(cat_cols))
 
 
-# In[65]:
 
 
 # merge
@@ -1442,13 +1377,11 @@ X_temp = X_temp.merge(feat_df, how='left', on='PetID')
 print(X_temp.shape)
 
 
-# In[66]:
 
 
 X_temp.head()
 
 
-# In[67]:
 
 
 # 将训练集和测试集分开
@@ -1477,19 +1410,16 @@ rescuer_ids = rescuer_ids[:len(X_train)]
 assert len(rescuer_ids) == len(X_train)
 
 
-# In[68]:
 
 
 np.sum(pd.isnull(X_train))
 
 
-# In[69]:
 
 
 np.sum(pd.isnull(X_test))
 
 
-# In[70]:
 
 
 import scipy as sp
@@ -1646,7 +1576,6 @@ def rmse(actual, predicted):
     return sqrt(mean_squared_error(actual, predicted))
 
 
-# In[71]:
 
 
 # 以下几个函数，是用来调参的时候查看输出结果的。
@@ -1784,7 +1713,6 @@ def _init_esim_weights(module):
                 param.data[hidden_size:(2 * hidden_size)] = 1.0
 
 
-# In[72]:
 
 
 # K交叉验证算法需要的函数
@@ -1834,7 +1762,6 @@ def stratified_group_k_fold(X, y, groups, k, seed=None):
         yield train_indices, test_indices
 
 
-# In[73]:
 
 
 def get_oof(clf, X, y, X_test, groups):   
@@ -1860,7 +1787,6 @@ def get_oof(clf, X, y, X_test, groups):
     return oof_train.reshape(-1, 1), oof_test.reshape(-1, 1)
 
 
-# In[74]:
 
 
 # 这一块是几个模型训练定义的类。当然，最后我们并没有用到全部的模型，例如sklearn和xgb我们就没有用。
@@ -1930,7 +1856,6 @@ class LGBWrapper(object):
     
 
 
-# In[75]:
 
 
 from contextlib import contextmanager
@@ -1945,7 +1870,6 @@ def timer(task_name="timer"):
     print("----{} done in {:.0f} seconds".format(task_name, time.time() - t0))
 
 
-# In[76]:
 
 
 # 这一段预先训练一次lightGBM，是为了使用LGB中的feature importance函数来确定哪些特征可以被剔除
@@ -1980,7 +1904,6 @@ lgb_wrapper.importance()
 """
 
 
-# In[77]:
 
 
 """
@@ -1990,25 +1913,21 @@ feature_importance = pd.DataFrame({'feature_name':names,'importance':importance}
 """
 
 
-# In[78]:
 
 
 # feature_importance
 
 
-# In[79]:
 
 
 # feature_no_result = feature_importance[feature_importance['importance']<130]
 
 
-# In[80]:
 
 
 # list_column=feature_no_result['feature_name'].tolist()
 
 
-# In[81]:
 
 
 X_train_drop = X_train.fillna(-1)
@@ -2017,13 +1936,11 @@ X_test_drop = X_test.fillna(-1)
 #     X_train_drop = X_train_drop.drop(columns=[index])
 
 
-# In[82]:
 
 
 X_train_drop.to_csv('X_train_drop.csv', index = True)
 
 
-# In[83]:
 
 
 from sklearn.model_selection import StratifiedKFold, GroupKFold
@@ -2040,7 +1957,6 @@ for train_idx, valid_idx in kfold.split(X_train_drop, X_train_drop['AdoptionSpee
     split_index.append((train_idx, valid_idx))
 
 
-# In[84]:
 
 
 # 定义一部分几个模型通用的超参数
@@ -2057,14 +1973,12 @@ drop_columns = ['PetID', 'Name', 'RescuerID', 'AdoptionSpeed',
 to_drop_columns.extend(drop_columns)
 
 
-# In[85]:
 
 
 # 去除重复的列
 to_drop_columns = list(set(to_drop_columns))
 
 
-# In[86]:
 
 
 # torch imports
@@ -2081,7 +1995,6 @@ torch.cuda.manual_seed(1991)
 torch.backends.cudnn.deterministic = True
 
 
-# In[87]:
 
 
 # 在NN模型中需要预处理的列
@@ -2096,7 +2009,6 @@ for c in fm_cols:
     fm_values+=fm_data[c].unique().tolist()
 
 
-# In[88]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -2106,13 +2018,11 @@ for c in fm_cols:
     fm_data.loc[:,c] = lbe.transform(fm_data[c])
 
 
-# In[89]:
 
 
 numerical_cols = [x for x in X_train_drop.columns if x not in to_drop_columns+fm_cols]
 
 
-# In[90]:
 
 
 # 将numerical feature单独拿出
@@ -2127,13 +2037,11 @@ numerical_feats = np.vstack(numerical_feats).T
 # numerical_feats = stdscaler.fit_transform(numerical_feats)
 
 
-# In[91]:
 
 
 numerical_feats.shape
 
 
-# In[92]:
 
 
 from torch.utils.data import Dataset, DataLoader
@@ -2188,7 +2096,6 @@ def nn_collate(batch):
         return sentences, poses, lengths, fm_data, numerical_feats
 
 
-# In[93]:
 
 
 
@@ -2232,7 +2139,6 @@ class Attention(nn.Module):
         return weighted_input
 
 
-# In[94]:
 
 
 
@@ -2264,7 +2170,6 @@ class FM(nn.Module):
         return bias+second_order, emb.view(-1, self.feat_len*self.embed_size)
 
 
-# In[95]:
 
 
 
@@ -2348,7 +2253,6 @@ class FmNlpModel(nn.Module):
         return out, feat
 
 
-# In[96]:
 
 
 
@@ -2367,7 +2271,6 @@ X_test_fm = fm_data.iloc[len(train):].values
 Y_train = X_temp.iloc[0:len(train)]['AdoptionSpeed'].values
 
 
-# In[97]:
 
 
 # 通过Glove建立文本模型
@@ -2387,13 +2290,11 @@ del glove_emb
 gc.collect()
 
 
-# In[98]:
 
 
 nb_pos = len(pos_dict)
 
 
-# In[99]:
 
 
 # 训练
@@ -2516,7 +2417,6 @@ for n_fold, (train_idx, valid_idx) in enumerate(split_index):
 #     rmses.append(min_val_loss)
 
 
-# In[100]:
 
 
 pynvml.nvmlInit()
@@ -2529,25 +2429,21 @@ print(meminfo.free) #第二块显卡剩余显存大小
 print(pynvml.nvmlDeviceGetCount())#显示有几块GPU
 
 
-# In[101]:
 
 
 oof_test_nlp = np.mean(oof_test_nlp, axis=0)
 
 
-# In[102]:
 
 
 print(oof_train_nlp)
 
 
-# In[103]:
 
 
 oof_test_nlp[:,-1]
 
 
-# In[104]:
 
 
 #for item in to_drop_columns:
@@ -2557,7 +2453,6 @@ oof_test_nlp[:,-1]
 print('X shape: {}'.format(X_temp.shape))
 
 
-# In[105]:
 
 
 # 再一次将训练集和测试集分开
@@ -2586,7 +2481,6 @@ rescuer_ids = rescuer_ids[:len(X_train)]
 assert len(rescuer_ids) == len(X_train)
 
 
-# In[106]:
 
 
 X_train_drop = X_train.fillna(-1)
@@ -2595,26 +2489,22 @@ ntrain = X_train_drop.shape[0]
 ntest = X_test_drop.shape[0]
 
 
-# In[107]:
 
 
 import lightgbm as lgb
 import xgboost as xgb
 
 
-# In[108]:
 
 
 features = [x for x in X_train_drop.columns if x not in to_drop_columns]
 
 
-# In[109]:
 
 
 # features.remove('AdoptionSpeed')
 
 
-# In[110]:
 
 
 # Additional parameters:
@@ -2623,7 +2513,6 @@ verbose_eval = 100
 num_rounds = 10000
 
 
-# In[111]:
 
 
 # LGB训练，这一段在report中有介绍，可以看那边
@@ -2696,7 +2585,6 @@ print('mean rmse =', np.mean(rmses), 'rmse std =', np.std(rmses))
 print('mean QWK =', np.mean(qwks), 'std QWK =', np.std(qwks))
 
 
-# In[112]:
 
 
 """
@@ -2776,7 +2664,6 @@ for param_name in sorted(parameters.keys()):
 """
 
 
-# In[113]:
 
 
 """
@@ -2819,7 +2706,6 @@ def argsDict_tranform(argsDict, isPrint=False):
 """
 
 
-# In[114]:
 
 
 """
@@ -2861,7 +2747,6 @@ def get_tranformer_score(tranformer):
 """
 
 
-# In[115]:
 
 
 # 开始使用hyperopt进行自动调参
@@ -2871,13 +2756,11 @@ def get_tranformer_score(tranformer):
 # print('best :', best)
 
 
-# In[116]:
 
 
 # oof_train_lgb
 
 
-# In[117]:
 
 
 """
@@ -2892,7 +2775,6 @@ print("QWK_1 = ", qwk)
 """
 
 
-# In[118]:
 
 
 # 接下来训练catboost
@@ -2950,7 +2832,6 @@ for n_fold, (train_idx, valid_idx) in enumerate(split_index):
     print('rmse=',rmses[-1],"QWK_2 = ", qwk,'elapsed time:',time.time()-since)
 
 
-# In[119]:
 
 
 print('overall rmse: %.5f'%rmse(oof_train_cat, X_train_drop['AdoptionSpeed']))
@@ -2958,7 +2839,6 @@ print('mean rmse =', np.mean(rmses), 'rmse std =', np.std(rmses))
 print('mean QWK =', np.mean(qwks), 'std QWK =', np.std(qwks))
 
 
-# In[120]:
 
 
 features = [x for x in X_train_drop.columns if x not in to_drop_columns]
@@ -2966,7 +2846,6 @@ features = [x for x in X_train_drop.columns if x not in to_drop_columns]
 xgb_features = features
 
 
-# In[121]:
 
 
 """
@@ -3022,7 +2901,6 @@ for n_fold, (train_idx, valid_idx) in enumerate(split_index):
 """
 
 
-# In[122]:
 
 
 """
@@ -3083,7 +2961,6 @@ for param_name in sorted(parameters.keys()):
 """
 
 
-# In[123]:
 
 
 np.corrcoef([np.mean(oof_test_lgb,axis=0), 
@@ -3094,7 +2971,6 @@ np.corrcoef([np.mean(oof_test_lgb,axis=0),
             ])
 
 
-# In[124]:
 
 
 from sklearn.linear_model import Ridge
@@ -3152,7 +3028,6 @@ print('mean rmse:',np.mean(rmses), 'rmse std:', np.std(rmses))
 print('mean qwk:', np.mean(qwks), 'qwk std:', np.std(qwks))
 
 
-# In[125]:
 
 
 # 计算融合之后的QWK
@@ -3166,7 +3041,6 @@ qwk = quadratic_weighted_kappa(X_train['AdoptionSpeed'].values, train_prediction
 print("QWK = ", qwk)
 
 
-# In[126]:
 
 
 # 最终生成结果文件，上传
@@ -3175,7 +3049,6 @@ submission = pd.DataFrame({'PetID': test['PetID'].values, 'AdoptionSpeed': test_
 submission.to_csv('submission.csv', index=False)
 
 
-# In[127]:
 
 
 submission.head()

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # download runtime and unpack
@@ -22,7 +21,6 @@ get_ipython().system('pip install knime')
 get_ipython().system('pip install dfply')
 
 
-# In[2]:
 
 
 import numpy as np # linear algebra
@@ -35,27 +33,23 @@ workspace = "./knime_4.1.2/knime-workspace"
 workflow = "knime-cat-publ/cat_publ/cat_publ"
 
 
-# In[3]:
 
 
 knime.Workflow(workflow_path=workflow,workspace_path=workspace)
 
 
-# In[4]:
 
 
 with knime.Workflow(workflow_path=workflow,workspace_path=workspace) as wf:
     wf.execute()
 
 
-# In[5]:
 
 
 # Alternatively wf can be executed through the command-line processor directly (instead of Python wrapper - you'll get more detailed output)
 #!./knime_4.1.2/knime -nosplash -application org.knime.product.KNIME_BATCH_APPLICATION -workflowDir="./knime_4.1.2/knime-workspace/knime-cat-publ/cat_publ"
 
 
-# In[6]:
 
 
 rm -rf knime_4.1.2

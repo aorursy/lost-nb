@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 '''
@@ -43,7 +42,6 @@ from IPython.display import Markdown
 dataset = pd.DataFrame()
 
 
-# In[2]:
 
 
 import sys
@@ -53,7 +51,6 @@ if not sys.warnoptions:
     warnings.simplefilter("ignore")
 
 
-# In[3]:
 
 
 def statelat(sate):
@@ -99,7 +96,6 @@ def statelat(sate):
     return lat[sate]
 
 
-# In[4]:
 
 
 def statelong(sate):
@@ -145,13 +141,11 @@ def statelong(sate):
     return long[sate]
 
 
-# In[5]:
 
 
 get_ipython().run_cell_magic('HTML', '', '<div class="flourish-embed flourish-bar-chart-race" data-src="visualisation/2061549" data-url="https://flo.uri.sh/visualisation/2061549/embed"><script src="https://public.flourish.studio/resources/embed.js"></script></div>')
 
 
-# In[6]:
 
 
 df = pd.read_csv('../input/covid19-in-india/covid_19_india.csv')
@@ -170,7 +164,6 @@ state_cases["Death Rate (per 100)"] = np.round(100*state_cases["Deaths"]/state_c
 state_cases["Cure Rate (per 100)"] = np.round(100*state_cases["Cured"]/state_cases["Confirmed"],2)
 
 
-# In[7]:
 
 
 indiaLiveJson = 'https://api.covid19india.org/data.json'
@@ -196,7 +189,6 @@ display(Markdown("**Deceased Today**           :<font color='red'>{}</font>".for
 display(Markdown("**Recoverd Today**           :<font color='red'>{}</font>".format(r.json()['cases_time_series'][len(r.json()['cases_time_series'])-1]['dailyrecovered'])))         
 
 
-# In[8]:
 
 
 testingHistory = pd.DataFrame()
@@ -242,7 +234,6 @@ fig = fig.update_layout(
 fig.show()
 
 
-# In[9]:
 
 
 total_test = pd.read_csv('../input/globaltestcovid19/full-list-total-tests-for-covid-19.csv')
@@ -295,7 +286,6 @@ fig.update_layout(template = 'plotly_white', title_text = '<b>Total Tests for CO
 fig.show()
 
 
-# In[10]:
 
 
 indiaConfirmed = []
@@ -334,7 +324,6 @@ fig = fig.update_layout(
 fig.show()
 
 
-# In[11]:
 
 
 indiaPrediction = pd.DataFrame()
@@ -495,7 +484,6 @@ fig = fig.update_layout(
 fig.show()
 
 
-# In[12]:
 
 
 def base_seir_model(init_vals, params, t):
@@ -515,7 +503,6 @@ def base_seir_model(init_vals, params, t):
     return [S,E, I,R]
 
 
-# In[13]:
 
 
 # Define parameters
@@ -555,7 +542,6 @@ fig = fig.update_layout(
 fig.show()
 
 
-# In[14]:
 
 
 def seir_model_with_soc_dist(init_vals, params, t):
@@ -575,13 +561,11 @@ def seir_model_with_soc_dist(init_vals, params, t):
     return [S, E, I, R]
 
 
-# In[15]:
 
 
 #sum((Hospitalbeds['NumRuralBeds_NHP18']+Hospitalbeds['NumUrbanBeds_NHP18']).tolist())/1352600000
 
 
-# In[16]:
 
 
 # Define parameters
@@ -692,7 +676,6 @@ fig = fig.update_layout(
 fig.show()
 
 
-# In[17]:
 
 
 def base_sird_model(init_vals, params, t):
@@ -714,7 +697,6 @@ def base_sird_model(init_vals, params, t):
     return [S,I,R,D]
 
 
-# In[18]:
 
 
 # Define parameters
@@ -755,7 +737,6 @@ fig = fig.update_layout(
 fig.show()
 
 
-# In[19]:
 
 
 def sird_model_with_soc_dist(init_vals, params, t):
@@ -776,7 +757,6 @@ def sird_model_with_soc_dist(init_vals, params, t):
     return [S, I, R, D]
 
 
-# In[20]:
 
 
 # Define parameters
@@ -888,14 +868,12 @@ fig = fig.update_layout(
 fig.show()
 
 
-# In[21]:
 
 
 display(Markdown("** STATE WISE CONFIRMED, DEATH AND CURED CASES of 2019-nCoV**"))
 state_cases.sort_values('Confirmed', ascending= False).fillna(0).style.background_gradient(cmap='YlOrBr',subset=["Confirmed"])                        .background_gradient(cmap='Reds',subset=["Deaths"])                        .background_gradient(cmap='Greens',subset=["Cured"])                        .background_gradient(cmap='Blues',subset=["Active"])                        .background_gradient(cmap='Purples',subset=["Death Rate (per 100)"])                        .background_gradient(cmap='Greens',subset=["Cure Rate (per 100)"])
 
 
-# In[22]:
 
 
 states = []
@@ -924,7 +902,6 @@ india_map['Recovered'] = list(np.array(confirmed) - np.array(active))
 india_map['Deaths'] = deaths
 
 
-# In[23]:
 
 
 indiaMap = folium.Map(location=[23,80], tiles="Stamen Toner", zoom_start=4)
@@ -957,7 +934,6 @@ for lat, lon, value1,value2,value3, name in zip(india_map['lat'], india_map['lon
 indiaMap
 
 
-# In[24]:
 
 
 df = pd.read_csv('/kaggle/input/covid19-in-india/covid_19_india.csv')
@@ -1005,7 +981,6 @@ fig.update_yaxes(title_text='No. of Confirmed recoveries')
 fig.show()
 
 
-# In[25]:
 
 
 def add_daily_measures(df):
@@ -1038,7 +1013,6 @@ def add_daily_measures(df):
     return df
 
 
-# In[26]:
 
 
 df_states.sort_values(by=['state','date'],inplace=True)
@@ -1074,13 +1048,11 @@ fig.update_yaxes(title_text='7-Day Rolling average')
 fig.show()
 
 
-# In[27]:
 
 
 state_cases.sort_values('Confirmed', ascending= False).head(15).style.background_gradient(cmap='YlOrBr',subset=["Confirmed"])                        .background_gradient(cmap='Reds',subset=["Deaths"])                        .background_gradient(cmap='Greens',subset=["Cured"])                        .background_gradient(cmap='Blues',subset=["Active"])                        .background_gradient(cmap='Purples',subset=["Death Rate (per 100)"])                        .background_gradient(cmap='Greens',subset=["Cure Rate (per 100)"])
 
 
-# In[28]:
 
 
 Hospitalbeds = pd.read_csv('../input/covid19-in-india/HospitalBedsIndia.csv')
@@ -1135,7 +1107,6 @@ fig.update_layout(barmode='stack', template="ggplot2", title_text = '<b>Sample T
 fig.show()
 
 
-# In[29]:
 
 
 medicalFacility = pd.read_csv('../input/indian-medical-facility-dataset/phcdoclabasstpharma2012mar.csv')
@@ -1177,7 +1148,6 @@ fig.update_layout(barmode='stack', template="ggplot2", title_text = '<b>Sample T
 fig.show()
 
 
-# In[30]:
 
 
 def makeitstring(line):
@@ -1206,7 +1176,6 @@ def makeitfloat(line):
     return newLine
 
 
-# In[31]:
 
 
 medicalFacility = pd.read_csv('../input/indian-medical-facility-dataset/geocode_health_centre.csv')
@@ -1227,7 +1196,6 @@ fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0},    width=1100,height=1100)
 fig.show()
 
 
-# In[ ]:
 
 
 

@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
 
 
-# In[2]:
 
 
 import librosa
@@ -18,7 +16,6 @@ from scipy                 import signal
 from scipy.io              import wavfile
 
 
-# In[3]:
 
 
 import matplotlib.pyplot as plt
@@ -34,13 +31,11 @@ py.init_notebook_mode(connected=True)
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[4]:
 
 
 trainAudioPath = '../input/train/audio/'
 
 
-# In[5]:
 
 
 from IPython.display import Markdown, display
@@ -48,7 +43,6 @@ def printMarkdown(string):
     display(Markdown(string))
 
 
-# In[6]:
 
 
 def plotRawWave(plotTitle, sampleRate, samples, figWidth=14, figHeight=4):
@@ -61,7 +55,6 @@ def plotRawWave(plotTitle, sampleRate, samples, figWidth=14, figHeight=4):
     return None
 
 
-# In[7]:
 
 
 def computeLogSpectrogram(audio, sampleRate, windowSize=20, stepSize=10, epsilon=1e-10):
@@ -76,7 +69,6 @@ def computeLogSpectrogram(audio, sampleRate, windowSize=20, stepSize=10, epsilon
     return freqs, times, np.log(spec.T.astype(np.float32) + epsilon)
 
 
-# In[8]:
 
 
 def plotLogSpectrogram(plotTitle, freqs, times, spectrogram, figWidth=14, figHeight=4):
@@ -93,7 +85,6 @@ def plotLogSpectrogram(plotTitle, freqs, times, spectrogram, figWidth=14, figHei
     return None
 
 
-# In[9]:
 
 
 def computeLogMelSpectrogram(samples, sampleRate, nMels=128):
@@ -105,7 +96,6 @@ def computeLogMelSpectrogram(samples, sampleRate, nMels=128):
     return logMelSpectrogram
 
 
-# In[10]:
 
 
 def plotLogMelSpectrogram(plotTitle, sampleRate, logMelSpectrum, figWidth=14, figHeight=4):
@@ -118,7 +108,6 @@ def plotLogMelSpectrogram(plotTitle, sampleRate, logMelSpectrum, figWidth=14, fi
     return None
 
 
-# In[11]:
 
 
 def computeMFCC(samples, sampleRate, nFFT=512, hopLength=256, nMFCC=40):
@@ -130,7 +119,6 @@ def computeMFCC(samples, sampleRate, nFFT=512, hopLength=256, nMFCC=40):
     return mfcc
 
 
-# In[12]:
 
 
 def plotMFCC(plotTitle, sampleRate, mfcc, figWidth=14, figHeight=4):
@@ -143,7 +131,6 @@ def plotMFCC(plotTitle, sampleRate, mfcc, figWidth=14, figHeight=4):
     return None
 
 
-# In[13]:
 
 
 def showWavefile(filename):
@@ -163,7 +150,6 @@ def showWavefile(filename):
     return sampleRate, samples, logSpectrogram, logMelSpectrogram, mfcc
 
 
-# In[14]:
 
 
 labels = ['filename', 'comments']
@@ -209,7 +195,6 @@ wavedf = pd.DataFrame.from_records(waves, columns=labels)
 wavedf
 
 
-# In[15]:
 
 
 for i in range(wavedf.shape[0]):
@@ -229,7 +214,6 @@ for i in range(wavedf.shape[0]):
     sampleRate, samples, logSpectrogram, logMelSpectrogram, mfcc = showWavefile(filename)
 
 
-# In[ ]:
 
 
 

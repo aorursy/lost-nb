@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import numpy as np
@@ -37,7 +35,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[3]:
 
 
 from glob import glob #glob is used to read file extensions here
@@ -56,7 +53,6 @@ all_cervix_images['type'] = all_cervix_images.apply(lambda row: row.imagepath.sp
 all_cervix_images.head()
 
 
-# In[4]:
 
 
 def trim(im):
@@ -69,7 +65,6 @@ def trim(im):
    
 
 
-# In[5]:
 
 
 
@@ -100,7 +95,6 @@ for t in all_cervix_images['type'].unique():
     
 
 
-# In[6]:
 
 
 image_name = all_cervix_images['imagepath'].values[2]
@@ -111,7 +105,6 @@ print(blue)
     
 
 
-# In[7]:
 
 
 

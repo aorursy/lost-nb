@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -10,7 +9,6 @@ import seaborn as sns
 import numpy as np
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -24,55 +22,46 @@ departments = pd.read_csv('../input/instacart-market-basket-analysis/departments
 aisles = pd.read_csv('../input/instacart-market-basket-analysis/aisles.csv')
 
 
-# In[3]:
 
 
 order_product_count = prior.groupby('order_id').count()[['product_id']]
 
 
-# In[ ]:
 
 
 
 
 
-# In[4]:
 
 
 order_product_count
 
 
-# In[ ]:
 
 
 
 
 
-# In[5]:
 
 
 order_product_count.columns = ['product_count']
 
 
-# In[6]:
 
 
 order_product_count
 
 
-# In[7]:
 
 
 orders2 = orders.merge(order_product_count, left_on='order_id', right_index=True)
 
 
-# In[8]:
 
 
 index_day = "Sun Mon Tue Wen Thu Fri Sat".split()
 
 
-# In[9]:
 
 
 def drawWeekHour(ds, values,  aggfunc=len, title=None, figsize=(18,5) , cmap=None):
@@ -87,20 +76,17 @@ def drawWeekHour(ds, values,  aggfunc=len, title=None, figsize=(18,5) , cmap=Non
         plt.title(title, fontsize=15)
 
 
-# In[10]:
 
 
 
 drawWeekHour(orders, values='days_since_prior_order',aggfunc=lambda x: np.mean(x), title="prior orders", cmap='YlGn')
 
 
-# In[11]:
 
 
 orders.head()
 
 
-# In[12]:
 
 
 sns.set(style="whitegrid", palette="colorblind", font_scale=1.5)
@@ -111,37 +97,31 @@ plt.tight_layout()
 plt.show()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 ls ../input/
 
 
-# In[ ]:
 
 
 import os
@@ -17,7 +15,6 @@ print(f"Train files: {len(train)}. ---> {train[:3]}")
 print(f"Test files :  {len(test)}. ---> {test[:3]}")
 
 
-# In[ ]:
 
 
 import PIL # We will import the packages at "use-time (just for this kernel)
@@ -25,19 +22,16 @@ import PIL # We will import the packages at "use-time (just for this kernel)
 PIL.Image.open("../input/train/000c34352.jpg")
 
 
-# In[ ]:
 
 
 PIL.Image.open("../input/train/000c34352.jpg").size
 
 
-# In[ ]:
 
 
 PIL.Image.open('../input/train/000c34352.jpg').resize((200, 200))
 
 
-# In[ ]:
 
 
 import numpy as np
@@ -49,35 +43,30 @@ rgb_pixels = np.array(img)
 rgb_pixels.shape
 
 
-# In[ ]:
 
 
 # Red saturation of the top-left most 2x2 square pixels
 rgb_pixels[0:2, 0:2, 0]
 
 
-# In[ ]:
 
 
 import matplotlib.pyplot as plt
 plt.imshow(rgb_pixels);
 
 
-# In[ ]:
 
 
 # Note that imshow can plot a 1-channel image on monochrome
 plt.imshow(rgb_pixels[:, :, 1], cmap='Greys');
 
 
-# In[ ]:
 
 
 # And also:
 plt.imshow(np.random.random(size=(10, 10)));
 
 
-# In[ ]:
 
 
 plt.imshow(rgb_pixels)
@@ -93,7 +82,6 @@ plt.title("Right half");
 plt.show()
 
 
-# In[ ]:
 
 
 # these two variables are "the parameters" of this cell
@@ -114,7 +102,6 @@ for axes in axes_list:
         
 
 
-# In[ ]:
 
 
 

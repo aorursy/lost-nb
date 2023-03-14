@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import cv2, pandas as pd, matplotlib.pyplot as plt
@@ -26,13 +25,11 @@ for i,k in enumerate(imgs):
 plt.show()
 
 
-# In[2]:
 
 
 get_ipython().system('pip install -q efficientnet >> /dev/null')
 
 
-# In[3]:
 
 
 import pandas as pd, numpy as np
@@ -45,7 +42,6 @@ from sklearn.metrics import roc_auc_score
 import matplotlib.pyplot as plt
 
 
-# In[4]:
 
 
 DEVICE = "TPU" #or "GPU"
@@ -86,7 +82,6 @@ WGTS = [1/FOLDS]*FOLDS
 TTA = 11
 
 
-# In[5]:
 
 
 if DEVICE == "TPU":
@@ -123,7 +118,6 @@ REPLICAS = strategy.num_replicas_in_sync
 print(f'REPLICAS: {REPLICAS}')
 
 
-# In[6]:
 
 
 GCS_PATH = [None]*FOLDS; GCS_PATH2 = [None]*FOLDS; GCS_PATH3 = [None]*FOLDS; GCS_PATH4 = [None]*FOLDS
@@ -140,7 +134,6 @@ files_train = np.sort(np.array(tf.io.gfile.glob(GCS_PATH[0] + '/train*.tfrec')))
 files_test  = np.sort(np.array(tf.io.gfile.glob(GCS_PATH[0] + '/test*.tfrec')))
 
 
-# In[7]:
 
 
 ROT_ = 180.0
@@ -151,7 +144,6 @@ HSHIFT_ = 8.0
 WSHIFT_ = 8.0
 
 
-# In[8]:
 
 
 def get_mat(rotation, shear, height_zoom, width_zoom, height_shift, width_shift):
@@ -226,7 +218,6 @@ def transform(image, DIM=256):
     return tf.reshape(d,[DIM, DIM,3])
 
 
-# In[9]:
 
 
 def read_labeled_tfrecord(example):
@@ -275,7 +266,6 @@ def count_data_items(filenames):
     return np.sum(n)
 
 
-# In[10]:
 
 
 def get_dataset(files, augment = False, shuffle = False, repeat = False, 
@@ -308,7 +298,6 @@ def get_dataset(files, augment = False, shuffle = False, repeat = False,
     return ds
 
 
-# In[11]:
 
 
 from tensorflow.keras import backend as K
@@ -390,7 +379,6 @@ def categorical_focal_loss(gamma=2., alpha=.25):
     return categorical_focal_loss_fixed
 
 
-# In[12]:
 
 
 EFNS = [efn.EfficientNetB0, efn.EfficientNetB1, efn.EfficientNetB2, efn.EfficientNetB3, 
@@ -410,7 +398,6 @@ def build_model(dim=128, ef=0):
     return model
 
 
-# In[13]:
 
 
 def get_lr_callback(batch_size=8):
@@ -437,7 +424,6 @@ def get_lr_callback(batch_size=8):
     return lr_callback
 
 
-# In[14]:
 
 
 # USE VERBOSE=0 for silent, VERBOSE=1 for interactive, VERBOSE=2 for commit
@@ -592,7 +578,6 @@ for fold,(idxT,idxV) in enumerate(skf.split(np.arange(15))):
     """
 
 
-# In[15]:
 
 
 # COMPUTE OVERALL OOF AUC
@@ -608,7 +593,6 @@ df_oof.to_csv('oof.csv',index=False)
 df_oof.head()
 
 
-# In[16]:
 
 
 ds = get_dataset(files_test, augment=False, repeat=False, dim=IMG_SIZES[fold],
@@ -618,7 +602,6 @@ image_names = np.array([img_name.numpy().decode("utf-8")
                         for img, img_name in iter(ds.unbatch())])
 
 
-# In[17]:
 
 
 submission = pd.DataFrame(dict(image_name=image_names, target=preds[:,0]))
@@ -627,14 +610,12 @@ submission.to_csv('submission.csv', index=False)
 submission.head()
 
 
-# In[18]:
 
 
 plt.hist(submission.target,bins=100)
 plt.show()
 
 
-# In[ ]:
 
 
 

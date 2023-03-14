@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # For notebook plotting
@@ -47,7 +46,6 @@ for file in os.listdir(KAGGLE_DIR + 'test/'):
                              str(round(os.path.getsize(KAGGLE_DIR + 'test/' + file) / 1000000, 2))))
 
 
-# In[2]:
 
 
 # Read in data
@@ -56,7 +54,6 @@ test_df = pd.read_csv(KAGGLE_DIR + "test/test.csv")
 target = train_df['AdoptionSpeed']
 
 
-# In[3]:
 
 
 # Stats
@@ -64,7 +61,6 @@ print('Data Statistics:')
 train_df.describe()
 
 
-# In[4]:
 
 
 # Types
@@ -72,7 +68,6 @@ print('Info about types and missing values: ')
 train_df.info()
 
 
-# In[5]:
 
 
 # Overview
@@ -81,7 +76,6 @@ print('Example rows:')
 train_df.head(2)
 
 
-# In[6]:
 
 
 # Type distribution
@@ -93,7 +87,6 @@ plt.yticks(fontsize = 'xx-large')
 plt.title('Type Distribution', fontsize = 'xx-large')
 
 
-# In[7]:
 
 
 # Gender distribution
@@ -105,7 +98,6 @@ plt.yticks(fontsize = 'xx-large')
 plt.title('Gender distribution', fontsize = 'xx-large')
 
 
-# In[8]:
 
 
 # Age distribution 
@@ -118,7 +110,6 @@ plt.title('Age distribution', fontsize = 'xx-large')
 plt.xlabel('Age in months')
 
 
-# In[9]:
 
 
 # Photo amount distribution
@@ -131,7 +122,6 @@ plt.title('PhotoAmt distribution', fontsize='xx-large')
 plt.xlabel('Photos')
 
 
-# In[10]:
 
 
 # Target variable (Adoption Speed)
@@ -143,7 +133,6 @@ train_df['AdoptionSpeed'].value_counts().sort_index(ascending = False).plot(kind
 plt.title('Adoption Speed (Target Variable)', fontsize = 'xx-large')
 
 
-# In[11]:
 
 
 # Example Description (of Nibble) ^^ 
@@ -151,7 +140,6 @@ print('Example Description (of Nibble) ^^ : ')
 train_df['Description'][0]
 
 
-# In[12]:
 
 
 # Metric used for this competition (Quadratic Weigthed Kappa aka Quadratic Cohen Kappa Score)
@@ -162,7 +150,6 @@ def metric(y1,y2):
 scorer = make_scorer(metric)
 
 
-# In[13]:
 
 
 # Clean up DataFrames
@@ -171,7 +158,6 @@ clean_df = train_df.drop(columns = ['Name', 'RescuerID', 'Description', 'PetID',
 clean_test = test_df.drop(columns = ['Name', 'RescuerID', 'Description', 'PetID'])
 
 
-# In[14]:
 
 
 # Preparation for XGBoost
@@ -186,7 +172,6 @@ d_valid = xgb.DMatrix(x_valid, label = y_valid)
 watchlist = [(d_train, 'train'), (d_valid, 'valid')]
 
 
-# In[15]:
 
 
 # Create base models
@@ -275,7 +260,6 @@ adaboost_gridsearch = GridSearchCV(estimator = clf3,
                                    scoring = scorer)
 
 
-# In[16]:
 
 
 # Fit XGBoost
@@ -288,7 +272,6 @@ bst = xgb.train(xgb_params,
                 verbose_eval = 0)
 
 
-# In[17]:
 
 
 # Fit the models
@@ -302,7 +285,6 @@ print('Fitting AdaBoost: ')
 adaboost_gridsearch.fit(clean_df, target)
 
 
-# In[18]:
 
 
 # What are the best parameters for each model
@@ -313,7 +295,6 @@ print('Extra Trees model:\n{}\n'.format(extra_trees_gridsearch.best_params_))
 print('Adaboost model:\n{}\n'.format(adaboost_gridsearch.best_params_))
 
 
-# In[19]:
 
 
 # Score on training set
@@ -339,7 +320,6 @@ print('\nMean Score: {0:10.4f}'.format(np.mean(train_scores)))
 print('\nStandard Deviation of Scores: {0:10.4f}'.format(np.std(train_scores)))
 
 
-# In[20]:
 
 
 # Cross validation
@@ -371,7 +351,6 @@ val_ADA = list(cross_val_score(adaboost_gridsearch,
 val_XGB = metric(bst.predict(xgb.DMatrix(x_valid)).astype(int), y_valid)
 
 
-# In[21]:
 
 
 print('Cross validation scores:\n\n')
@@ -406,7 +385,6 @@ print('Standard Deviation of Cross Validation scores: {}'.format(round(np.std([n
                                                                                val_XGB]), 4)))
 
 
-# In[22]:
 
 
 # Get predictions
@@ -423,7 +401,6 @@ for pred in zip(pred0, pred1, pred2, pred3, pred4):
     final_predictions.append(int(round((sum(pred)) / len(pred), 0)))
 
 
-# In[23]:
 
 
 # Compare predictions
@@ -439,7 +416,6 @@ print('Predictions for each model: ')
 prediction_df.head(10)
 
 
-# In[24]:
 
 
 # Store predictions for Kaggle Submission
@@ -448,14 +424,12 @@ submission_df = pd.DataFrame(data = {'PetID' : test_df['PetID'],
 submission_df.to_csv('submission.csv', index = False)
 
 
-# In[25]:
 
 
 # Check submission
 submission_df.head(3)
 
 
-# In[26]:
 
 
 # Compare distributions of training set and test set (Adoption Speed)

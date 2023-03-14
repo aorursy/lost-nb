@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -16,7 +15,6 @@ import PIL.Image
 from IPython.display import display
 
 
-# In[2]:
 
 
 def load_image_blackandwhite(filename):
@@ -29,7 +27,6 @@ def load_image_blackandwhite(filename):
     return np.float32(image)
 
 
-# In[3]:
 
 
 def plot_image(image):
@@ -43,7 +40,6 @@ def plot_image(image):
     plt.show()
 
 
-# In[4]:
 
 
 def reshape_image(image_file, new_wigth, new_height):
@@ -79,14 +75,12 @@ def reshape_image(image_file, new_wigth, new_height):
     return img
 
 
-# In[5]:
 
 
 archive = ZipFile("../input/train.zip", 'r')
 archive.namelist()[0:5]
 
 
-# In[6]:
 
 
 ['train/',
@@ -96,32 +90,27 @@ archive.namelist()[0:5]
  'train/00214f311d5d2247d5dfe4fe24b2303d.jpg']
 
 
-# In[7]:
 
 
 image = load_image_blackandwhite(filename=BytesIO(archive.read(archive.namelist()[150])))
 image.shape
 
 
-# In[8]:
 
 
 (500, 333)
 
 
-# In[9]:
 
 
 The shape of the image is 500 pixels x 333 pixels. If you try another image, you will see that the shape might change.
 
 
-# In[10]:
 
 
 plot_image(image)
 
 
-# In[11]:
 
 
 image_reshaped = reshape_image(image_file=image, new_wigth = 100, new_height = 100)

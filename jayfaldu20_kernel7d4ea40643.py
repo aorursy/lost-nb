@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # libraries
@@ -34,20 +33,17 @@ import albumentations
 from albumentations import torch as AT
 
 
-# In[2]:
 
 
 train_data=pd.read_csv('../input/train.csv')
 test_data=pd.read_csv('../input/test.csv')
 
 
-# In[3]:
 
 
 train_data['diagnosis'].value_counts().plot(kind='bar')
 
 
-# In[4]:
 
 
 fig=plt.figure(figsize=(25,16))
@@ -59,7 +55,6 @@ for id in sorted(train_data['diagnosis'].unique()):
         ax.set_title(f'Label: {id}')
 
 
-# In[5]:
 
 
 from sklearn.preprocessing import OneHotEncoder,LabelEncoder
@@ -73,19 +68,16 @@ def encode(y):
     return y,le
 
 
-# In[6]:
 
 
 y,le=encode(train_data['diagnosis'])
 
 
-# In[7]:
 
 
 y.shape
 
 
-# In[8]:
 
 
 class make_dataset(Dataset):
@@ -116,13 +108,11 @@ class make_dataset(Dataset):
         
 
 
-# In[9]:
 
 
 from skimage.transform import resize
 
 
-# In[10]:
 
 
 tfms=transforms.Compose([transforms.Resize((224,224)),
@@ -131,7 +121,6 @@ tfms=transforms.Compose([transforms.Resize((224,224)),
                               transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])])
 
 
-# In[11]:
 
 
 dataset=make_dataset(df=train_data,transform=tfms,y=y)
@@ -146,7 +135,6 @@ train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampl
 valid_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=valid_sampler, num_workers=num_workers)
 
 
-# In[12]:
 
 
 test_dataset=make_dataset(df=test_data,transform=transforms.Compose([transforms.Resize((224,224)),
@@ -156,20 +144,17 @@ test_dataset=make_dataset(df=test_data,transform=transforms.Compose([transforms.
 test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, num_workers=num_workers)
 
 
-# In[13]:
 
 
 model_conv = torchvision.models.resnet50(pretrained=True)
 
 
-# In[14]:
 
 
 num_ftrs = model_conv.fc.in_features
 model_conv.fc = nn.Linear(2048, 5)
 
 
-# In[15]:
 
 
 model_conv.cuda()
@@ -179,7 +164,6 @@ scheduler = lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.1)
 scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.8, patience=2, )
 
 
-# In[16]:
 
 
 valid_loss_min = np.Inf
@@ -258,13 +242,11 @@ for epoch in range(1, n_epochs+1):
         break
 
 
-# In[17]:
 
 
 sub = pd.read_csv('../input/sample_submission.csv')
 
 
-# In[18]:
 
 
 sub = pd.read_csv('../input/sample_submission.csv')
@@ -280,7 +262,6 @@ for (data, target, name) in test_loader:
 sub.to_csv('submission.csv', index=False)
 
 
-# In[19]:
 
 
 sub.head()

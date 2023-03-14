@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 TRAIN_DF = '../input/humpback-whale-identification/train.csv'
@@ -32,7 +30,6 @@ P2SIZE = '../input/metadata/p2size.pickle'
 BB_DF = "../input/metadata/bounding_boxes.csv"
 
 
-# In[3]:
 
 
 get_ipython().system('pip install lap')
@@ -43,7 +40,6 @@ join = list(tagged.keys()) + submit
 len(tagged),len(submit),len(join),list(tagged.items())[:5],submit[:5]
 
 
-# In[4]:
 
 
 from os.path import isfile
@@ -57,7 +53,6 @@ def expand_path(p):
     return p
 
 
-# In[5]:
 
 
 import gzip
@@ -72,7 +67,6 @@ from keras.utils import Sequence
 import time
 
 
-# In[6]:
 
 
 import platform
@@ -84,7 +78,6 @@ from keras import backend as K
 from keras.preprocessing.image import img_to_array,array_to_img
 
 
-# In[7]:
 
 
 def show_whale(imgs, per_row=2):
@@ -101,7 +94,6 @@ def read_raw_image(p):
     return img
 
 
-# In[8]:
 
 
 with open(P2H, 'rb') as f:
@@ -121,7 +113,6 @@ anisotropy = 2.15
 crop_margin = 0.1  
 
 
-# In[9]:
 
 
 def prefer(ps):
@@ -142,7 +133,6 @@ for h, ps in h2ps.items():
 len(h2p), list(h2p.items())[:5]
 
 
-# In[10]:
 
 
 def build_transform(rotation, shear, height_zoom, width_zoom, height_shift, width_shift):
@@ -158,7 +148,6 @@ def build_transform(rotation, shear, height_zoom, width_zoom, height_shift, widt
     return np.dot(np.dot(rotation_matrix, shear_matrix), np.dot(zoom_matrix, shift_matrix))
 
 
-# In[11]:
 
 
 def read_cropped_image(p, augment):
@@ -228,7 +217,6 @@ def read_cropped_image(p, augment):
     return img
 
 
-# In[12]:
 
 
 from keras import regularizers
@@ -238,7 +226,6 @@ from keras.models import Model
 from keras.optimizers import Adam
 
 
-# In[13]:
 
 
 def subblock(x, filter, **kwargs):
@@ -337,7 +324,6 @@ model, branch_model, head_model = build_model(64e-5, 0)
 head_model.summary()
 
 
-# In[14]:
 
 
 from keras.utils import plot_model
@@ -345,7 +331,6 @@ plot_model(head_model, to_file='head-model.png')
 pil_image.open('head-model.png')
 
 
-# In[15]:
 
 
 h2ws = {}
@@ -370,7 +355,6 @@ for w, hs in w2hs.items():
         w2hs[w] = sorted(hs)
 
 
-# In[16]:
 
 
 train = []  # A list of training image ids
@@ -396,7 +380,6 @@ for i, t in enumerate(train):
     t2i[t] = i
 
 
-# In[17]:
 
 
 try:
@@ -481,7 +464,6 @@ class TrainingData(Sequence):
         return (len(self.match) + len(self.unmatch) + self.batch_size - 1) // self.batch_size
 
 
-# In[18]:
 
 
 def read_for_training(p):
@@ -497,7 +479,6 @@ def read_for_validation(p):
     return read_cropped_image(p, False)
 
 
-# In[19]:
 
 
 score = np.random.random_sample(size=(len(train), len(train)))
@@ -506,7 +487,6 @@ data = TrainingData(score)
 a.shape, b.shape, c.shape
 
 
-# In[20]:
 
 
 # First pair is for matching whale
@@ -514,7 +494,6 @@ imgs = [array_to_img(a[2]), array_to_img(b[2])]
 show_whale(imgs, per_row=2)
 
 
-# In[21]:
 
 
 # First pair is for not matching whale
@@ -522,7 +501,6 @@ imgs = [array_to_img(a[3]), array_to_img(b[3])]
 show_whale(imgs, per_row=2)
 
 
-# In[22]:
 
 
 #These are used to calculate the scores of the CNN on the training set
@@ -582,7 +560,6 @@ class ScoreGen(Sequence):
         return (len(self.ix) + self.batch_size - 1) // self.batch_size
 
 
-# In[23]:
 
 
 def set_lr(model, lr):
@@ -592,7 +569,6 @@ def get_lr(model):
     return K.get_value(model.optimizer.lr)
 
 
-# In[24]:
 
 
 #converting the upper triangular matrix into a square matrix
@@ -613,7 +589,6 @@ def score_reshape(score, x, y=None):
     return m
 
 
-# In[25]:
 
 
 #use the FeatureGen and the ScoreGen to calculate the score for our trained models
@@ -626,7 +601,6 @@ def compute_score(verbose=1):
     return features, score
 
 
-# In[26]:
 
 
 def make_steps(step, ampl):
@@ -662,7 +636,6 @@ def make_steps(step, ampl):
     histories.append(history)
 
 
-# In[27]:
 
 
 histories = []
@@ -672,7 +645,6 @@ model.set_weights(tmp.get_weights())
 model.summary()
 
 
-# In[28]:
 
 
 def prepare_submission(threshold, filename):

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -16,14 +15,12 @@ import tensorflow as tf
 from tensorflow.keras.optimizers import Adam
 
 
-# In[2]:
 
 
 df = pd.read_csv('/kaggle/input/global-wheat-detection/train.csv')
 df.head()
 
 
-# In[3]:
 
 
 df['bbox'] = df['bbox'].apply(lambda x: x[1:-1].split(","))
@@ -36,7 +33,6 @@ df = df[['image_id','x', 'y', 'w', 'h']]
 df.head()
 
 
-# In[4]:
 
 
 image_ids = df['image_id'].unique()
@@ -44,13 +40,11 @@ image_dict = dict(zip(image_ids, range(len(image_ids))))
 len(image_dict)
 
 
-# In[5]:
 
 
 json_dict = {"images": [], "type": "instances", "annotations": [], "categories": []}
 
 
-# In[6]:
 
 
 for image_id in image_ids:
@@ -61,14 +55,12 @@ for image_id in image_ids:
     json_dict['images'].append(image)
 
 
-# In[7]:
 
 
 categories = {'supercategory': 'wh', 'id': 1, 'name': 'wh'}
 json_dict['categories'].append(categories)
 
 
-# In[8]:
 
 
 for idx, box_id in df.iterrows(): 
@@ -85,7 +77,6 @@ for idx, box_id in df.iterrows():
     json_dict['annotations'].append(ann)
 
 
-# In[9]:
 
 
 class NpEncoder(json.JSONEncoder):
@@ -100,7 +91,6 @@ class NpEncoder(json.JSONEncoder):
             return super(NpEncoder, self).default(obj)
 
 
-# In[10]:
 
 
 annFile='instances_Images.json'
@@ -111,25 +101,21 @@ json_fp.write(json_str)
 json_fp.close()
 
 
-# In[11]:
 
 
 get_ipython().system('git clone https://github.com/kamauz/EfficientDet.git')
 
 
-# In[12]:
 
 
 cd /kaggle/working/EfficientDet/
 
 
-# In[13]:
 
 
 get_ipython().system('python setup.py build_ext --inplace')
 
 
-# In[14]:
 
 
 from model import efficientdet
@@ -138,7 +124,6 @@ from efficientnet import BASE_WEIGHTS_PATH, WEIGHTS_HASHES
 from generators.common import Generator
 
 
-# In[15]:
 
 
 get_ipython().system("pip install -U 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI' -q")
@@ -146,7 +131,6 @@ get_ipython().system("pip install -U 'git+https://github.com/cocodataset/cocoapi
 from pycocotools.coco import COCO
 
 
-# In[16]:
 
 
 def preprocess_image(image):
@@ -160,7 +144,6 @@ def preprocess_image(image):
     return image
 
 
-# In[17]:
 
 
 def postprocess_boxes(boxes, height, width):
@@ -172,7 +155,6 @@ def postprocess_boxes(boxes, height, width):
     return c_boxes
 
 
-# In[18]:
 
 
 class CocoGenerator(Generator):
@@ -265,20 +247,17 @@ class CocoGenerator(Generator):
         return annotations    
 
 
-# In[19]:
 
 
 phi = 4
 score_threshold=0.4
 
 
-# In[20]:
 
 
 train_generator = CocoGenerator(data_dir=None, set_name=None, batch_size = 4, phi = phi)
 
 
-# In[21]:
 
 
 model, prediction_model = efficientdet(phi,
@@ -289,7 +268,6 @@ model, prediction_model = efficientdet(phi,
                                        )
 
 
-# In[22]:
 
 
 model_name = 'efficientnet-b{}'.format(phi)
@@ -302,14 +280,12 @@ weights_path = tf.keras.utils.get_file(file_name,
 model.load_weights(weights_path, by_name=True)
 
 
-# In[23]:
 
 
 for i in range(1, [227, 329, 329, 374, 464, 566, 656][phi]):
     model.layers[i].trainable = False
 
 
-# In[24]:
 
 
 model.compile(optimizer=Adam(lr=1e-3), loss={
@@ -318,31 +294,26 @@ model.compile(optimizer=Adam(lr=1e-3), loss={
 }, )
 
 
-# In[25]:
 
 
 get_ipython().run_cell_magic('time', '', '\nmodel.fit_generator(\n        generator=train_generator,\n        epochs=20\n    )')
 
 
-# In[26]:
 
 
 cd /kaggle/working/
 
 
-# In[27]:
 
 
 model.save('model.h5')
 
 
-# In[28]:
 
 
 prediction_model.load_weights('/kaggle/working/model.h5', by_name=True)
 
 
-# In[29]:
 
 
 score_threshold = 0.7
@@ -375,7 +346,6 @@ test_df = pd.DataFrame(result_data, columns=['image_id','PredictionString'])
 test_df.head()
 
 
-# In[30]:
 
 
 from matplotlib import pyplot as plt

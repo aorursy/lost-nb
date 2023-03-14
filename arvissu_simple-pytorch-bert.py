@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import gc
@@ -53,7 +51,6 @@ from transformers import (
 from math import floor, ceil
 
 
-# In[3]:
 
 
 ### just get 50,000 training data
@@ -67,20 +64,17 @@ sub = pd.read_csv('/kaggle/input/jigsaw-multilingual-toxic-comment-classificatio
 validation = pd.read_csv('/kaggle/input/jigsaw-multilingual-toxic-comment-classification/validation.csv')
 
 
-# In[4]:
 
 
 del train_2
 gc.collect()
 
 
-# In[5]:
 
 
 tokenizer = BertTokenizer.from_pretrained("/kaggle/input/bert-mmm/bert-base-multilingual-uncased-vocab.txt")
 
 
-# In[6]:
 
 
 def clean_newline(context):
@@ -91,7 +85,6 @@ test['clean_text'] = test['content'].apply(lambda x: clean_newline(x))
 validation['clean_text'] = validation['comment_text'].apply(lambda x: clean_newline(x))
 
 
-# In[7]:
 
 
 train['comment_text_len'] = train.clean_text.apply(lambda x : len(x.split()))
@@ -99,31 +92,26 @@ test['comment_text_len'] = test.clean_text.apply(lambda x : len(x.split()))
 validation['comment_text_len'] = train.clean_text.apply(lambda x : len(x.split()))
 
 
-# In[8]:
 
 
 train.hist('comment_text_len')
 
 
-# In[9]:
 
 
 test.hist('comment_text_len')
 
 
-# In[10]:
 
 
 validation.hist('comment_text_len')
 
 
-# In[11]:
 
 
 MAX_SEQ_LENGTH = 200
 
 
-# In[12]:
 
 
 class TextDataset(torch.utils.data.TensorDataset):
@@ -146,7 +134,6 @@ class TextDataset(torch.utils.data.TensorDataset):
         return len(self.input_ids)
 
 
-# In[13]:
 
 
 def get_bert_tokenize(df):
@@ -165,13 +152,11 @@ def get_bert_tokenize(df):
     return token_ids, segment_ids, attention_mask
 
 
-# In[14]:
 
 
 get_ipython().run_cell_magic('time', '', 'x_train = get_bert_tokenize(train)\nx_test = get_bert_tokenize(test)\nx_validation = get_bert_tokenize(validation)')
 
 
-# In[15]:
 
 
 def seed_everything(seed):
@@ -183,14 +168,12 @@ def seed_everything(seed):
     torch.backends.cudnn.deterministic = True
 
 
-# In[16]:
 
 
 bert_config = BertConfig.from_pretrained('/kaggle/input/bert-pytorch/bert-base-multilingual-uncased-config.json') 
 bert_config.num_labels = 1
 
 
-# In[17]:
 
 
 import torch
@@ -289,7 +272,6 @@ class callback:
     
 
 
-# In[18]:
 
 
 def model_validation(net, val_loader, validation_length):
@@ -322,7 +304,6 @@ def model_validation(net, val_loader, validation_length):
     return valid_preds, avg_val_loss, score
 
 
-# In[19]:
 
 
 from sklearn.metrics import roc_auc_score, accuracy_score
@@ -412,7 +393,6 @@ for epoch in range(EPOCHS):
 
 
 
-# In[20]:
 
 
 net = cb.get_model()
@@ -454,13 +434,11 @@ for epoch in range(EPOCHS):
           .format(epoch+1, EPOCHS, avg_loss/len(val_loader) elapsed_time))
 
 
-# In[21]:
 
 
 pickle.dump(cb.get_model(), open('bert_model.pkl', 'wb'))
 
 
-# In[22]:
 
 
 test_loader = torch.utils.data.DataLoader(TextDataset(x_test, test.index), batch_size=128, shuffle=False)
@@ -480,7 +458,6 @@ with torch.no_grad():
         result.extend(torch.sigmoid(y_pred).cpu().detach().numpy())
 
 
-# In[23]:
 
 
 sub['toxic'] = np.array(result)
@@ -488,13 +465,11 @@ sub.to_csv('submission.csv', index=False)
 sub.head()
 
 
-# In[24]:
 
 
 sub.hist('toxic')
 
 
-# In[25]:
 
 
 sub.describe()

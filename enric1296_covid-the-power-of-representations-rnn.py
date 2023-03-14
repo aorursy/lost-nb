@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 ############################################
@@ -32,7 +31,6 @@ pd.set_option('max_rows', 1000)
 ############################################
 
 
-# In[2]:
 
 
 ############################################
@@ -69,7 +67,6 @@ else:
 ############################################
 
 
-# In[3]:
 
 
 ############################################
@@ -84,7 +81,6 @@ df_population = pd.read_csv(path_population + 'locations_population.csv', sep=',
 ############################################
 
 
-# In[4]:
 
 
 ############################################
@@ -100,7 +96,6 @@ window_test_days = (datetime.strptime(df_test.Date.max(), date_format) - datetim
 ############################################
 
 
-# In[5]:
 
 
 ############################################
@@ -419,7 +414,6 @@ def buildModel(lr=0.001, summary=False):
 ############################################
 
 
-# In[6]:
 
 
 ############################################
@@ -530,7 +524,6 @@ y_train = [y_confirmedcases[series_with_confimred_cases], y_fatalities[series_wi
 ############################################
 
 
-# In[7]:
 
 
 candidates_samples = ['#NF_Spain', '#NF_Italy', '#NF_Germany', '#NF_Mexico', '#NF_Algeria', '#NF_Brazil', 'New York_US', 'California_US', 'Alaska_US']
@@ -545,7 +538,6 @@ for i, sample in enumerate(samples):
     plt.show()
 
 
-# In[8]:
 
 
 ############################################
@@ -575,7 +567,6 @@ for sample in samples:
 ############################################
 
 
-# In[9]:
 
 
 ###############################################
@@ -643,7 +634,6 @@ while dt_end.strftime(date_format) < dt_max_test:
 ###############################################
 
 
-# In[10]:
 
 
 for sample in samples:
@@ -653,7 +643,6 @@ for sample in samples:
     testStepPlot(np.expm1(X_final_confirmedcases[sample, :WINDOW_X_SIZE]), np.expm1(X_final_confirmedcases[sample, WINDOW_X_SIZE:]))
 
 
-# In[11]:
 
 
 ##############################################
@@ -680,7 +669,6 @@ submission.to_csv(path_output + FILE_NAME, sep=',', index=False, header=True)
 ###############################################
 
 
-# In[12]:
 
 
 print(submission.shape)

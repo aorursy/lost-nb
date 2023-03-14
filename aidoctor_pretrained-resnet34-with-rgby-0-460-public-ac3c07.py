@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install fastai==0.7.0 --no-deps')
 get_ipython().system('pip install torch==0.4.1 torchvision==0.2.1')
 
 
-# In[2]:
 
 
 from fastai.conv_learner import *
@@ -25,7 +23,6 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
 
-# In[3]:
 
 
 PATH = './'
@@ -38,7 +35,6 @@ TEST='../input/picture-1/';pic=TEST+'0070171c-bad0-11e8-b2b8-ac1f6b6435d0_blue.p
 nw = 2  
 
 
-# In[4]:
 
 
 name_label_dict = {
@@ -72,7 +68,6 @@ name_label_dict = {
 27:  'Rods & rings' }
 
 
-# In[5]:
 
 
 with open(os.path.join(SPLIT,'tr_names.txt'), 'r') as text_file:
@@ -85,7 +80,6 @@ test_names = sorted({f[:36] for f in os.listdir(TEST)})
 print(len(tr_n),len(val_n))
 
 
-# In[6]:
 
 
 class Oversampling:
@@ -111,7 +105,6 @@ tr_n = [idx for idx in tr_n for _ in range(s.get(idx))]
 print(len(tr_n),flush=True)
 
 
-# In[7]:
 
 
 def open_rgby(path,id): #a function that reads RGBY image
@@ -122,7 +115,6 @@ def open_rgby(path,id): #a function that reads RGBY image
     return np.stack(img, axis=-1)
 
 
-# In[8]:
 
 
 class pdFilesDataset(FilesDataset):
@@ -150,7 +142,6 @@ class pdFilesDataset(FilesDataset):
     def get_c(self): return len(name_label_dict) #number of classes
 
 
-# In[9]:
 
 
 def get_data(sz,bs,is_test=False):
@@ -173,7 +164,6 @@ def get_data(sz,bs,is_test=False):
     return md
 
 
-# In[10]:
 
 
 bs = 16
@@ -184,7 +174,6 @@ x,y = next(iter(md.aug_dl))
 x.shape, y.shape
 
 
-# In[11]:
 
 
 def display_imgs(x):
@@ -203,7 +192,6 @@ def display_imgs(x):
 # display_imgs(np.asarray(md.trn_ds.denorm(x)))
 
 
-# In[12]:
 
 
 class Resnet34_4(nn.Module):
@@ -237,7 +225,6 @@ class Resnet34_4(nn.Module):
         return x
 
 
-# In[13]:
 
 
 class FocalLoss(nn.Module):
@@ -258,7 +245,6 @@ class FocalLoss(nn.Module):
         return loss.sum(dim=1).mean()
 
 
-# In[14]:
 
 
 def acc(preds,targs,th=0.0):
@@ -267,7 +253,6 @@ def acc(preds,targs,th=0.0):
     return (preds==targs).float().mean()
 
 
-# In[15]:
 
 
 class F1:
@@ -304,7 +289,6 @@ class F1_callback(Callback):
         self.f1.reset()
 
 
-# In[16]:
 
 
 sz = 256 #image size
@@ -320,20 +304,17 @@ learner.metrics = [acc,f1_callback.f1]
 learner.summary
 
 
-# In[17]:
 
 
 get_ipython().system('cp ../input/resnet34-256-1h5/ResNet34_256_1.h5 models/resnet34_256_1.h5')
 get_ipython().system('cp ../input/pictures/00008af0-bad0-11e8-b2b8-ac1f6b6435d0_red.png test.png')
 
 
-# In[18]:
 
 
 learner.load("resnet34_256_1")
 
 
-# In[19]:
 
 
 # with warnings.catch_warnings():
@@ -342,7 +323,6 @@ learner.load("resnet34_256_1")
 # learner.sched.plot()
 
 
-# In[20]:
 
 
 # lr = 0.5e-2
@@ -351,14 +331,12 @@ learner.load("resnet34_256_1")
 #     learner.fit(lr,1,callbacks=[f1_callback])
 
 
-# In[21]:
 
 
 # learner.unfreeze()
 # lrs=np.array([lr/10,lr/3,lr])
 
 
-# In[22]:
 
 
 # with warnings.catch_warnings():
@@ -366,7 +344,6 @@ learner.load("resnet34_256_1")
 #     learner.fit(lrs/4,4,cycle_len=2,use_clr=(10,20),callbacks=[f1_callback])
 
 
-# In[23]:
 
 
 # with warnings.catch_warnings():
@@ -374,7 +351,6 @@ learner.load("resnet34_256_1")
 #     learner.fit(lrs/16,2,cycle_len=4,use_clr=(10,20),callbacks=[f1_callback])
 
 
-# In[24]:
 
 
 # with warnings.catch_warnings():
@@ -382,13 +358,11 @@ learner.load("resnet34_256_1")
 #     learner.fit(lrs/32,1,cycle_len=8,use_clr=(10,20),callbacks=[f1_callback])
 
 
-# In[25]:
 
 
 # learner.save('ResNet34_256_1')
 
 
-# In[26]:
 
 
 preds_t,y_t = learner.TTA(n_aug=8,is_test=True)
@@ -396,7 +370,6 @@ preds_t = np.stack(preds_t, axis=-1)
 pred_t = preds_t.mean(axis=-1)
 
 
-# In[27]:
 
 
 import matplotlib.pyplot as plt
@@ -411,7 +384,6 @@ for line in pred_t:
     print('预测结果为：',results)
 
 
-# In[28]:
 
 
 def save_pred(pred, th=0.0, fname='protein_classification.csv'):
@@ -424,7 +396,6 @@ def save_pred(pred, th=0.0, fname='protein_classification.csv'):
     df.sort_values(by='Id').to_csv(fname, header=True, index=False)
 
 
-# In[29]:
 
 
 save_pred(pred_t,0,'protein_classification.csv')

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import gc
@@ -38,7 +37,6 @@ from sklearn.metrics import fbeta_score
 torch.multiprocessing.set_start_method("spawn")
 
 
-# In[2]:
 
 
 @contextmanager
@@ -82,19 +80,16 @@ def seed_torch(seed=1029):
     torch.backends.cudnn.deterministic = True
 
 
-# In[3]:
 
 
 logger = get_logger(name="Main", tag="Pytorch-VGG16")
 
 
-# In[4]:
 
 
 get_ipython().system('ls ../input/imet-2019-fgvc6/')
 
 
-# In[5]:
 
 
 labels = pd.read_csv("../input/imet-2019-fgvc6/labels.csv")
@@ -103,14 +98,12 @@ sample = pd.read_csv("../input/imet-2019-fgvc6/sample_submission.csv")
 train.head()
 
 
-# In[6]:
 
 
 get_ipython().system('cp ../input/pytorch-pretrained-image-models/* ./')
 get_ipython().system('ls')
 
 
-# In[7]:
 
 
 # This loader is to extract 1024d features from the images.
@@ -159,7 +152,6 @@ data_transforms = {
 data_transforms["test"] = data_transforms["val"]
 
 
-# In[8]:
 
 
 # This loader is to be used for serving image tensors for the MLP.
@@ -185,7 +177,6 @@ class IMetDataset(data.Dataset):
             return [tensor]
 
 
-# In[9]:
 
 
 class Classifier(nn.Module):
@@ -226,7 +217,6 @@ class MultiLayerPerceptron(nn.Module):
         return self.sigmoid(self.linear2(x))
 
 
-# In[10]:
 
 
 train_dataset = ImageDataLoader(
@@ -247,7 +237,6 @@ test_loader = data.DataLoader(dataset=test_dataset,
                               batch_size=128)
 
 
-# In[11]:
 
 
 def get_feature_vector(df, loader, device):
@@ -262,14 +251,12 @@ def get_feature_vector(df, loader, device):
     return matrix
 
 
-# In[12]:
 
 
 train_tensor = get_feature_vector(train, train_loader, "cuda:0")
 test_tensor = get_feature_vector(sample, test_loader, "cuda:0")
 
 
-# In[13]:
 
 
 del train_dataset, train_loader
@@ -277,7 +264,6 @@ del test_dataset, test_loader
 gc.collect()
 
 
-# In[14]:
 
 
 class Trainer:
@@ -401,20 +387,17 @@ class Trainer:
         return preds
 
 
-# In[15]:
 
 
 trainer = Trainer(MultiLayerPerceptron, logger, train_batch=64, kwargs={})
 
 
-# In[16]:
 
 
 y = train.attribute_ids.map(lambda x: x.split()).values
 valid_preds = trainer.fit(train_tensor, y, n_epochs=40)
 
 
-# In[17]:
 
 
 def threshold_search(y_pred, y_true):
@@ -429,7 +412,6 @@ def threshold_search(y_pred, y_true):
     return best_th, best_score
 
 
-# In[18]:
 
 
 y_true = np.zeros((train.shape[0], 1103)).astype(int)
@@ -438,26 +420,22 @@ for i, row in enumerate(y):
         y_true[i, int(idx)] = 1
 
 
-# In[19]:
 
 
 best_threshold, best_score = threshold_search(valid_preds, y_true)
 best_score
 
 
-# In[20]:
 
 
 test_preds = trainer.predict(test_tensor)
 
 
-# In[21]:
 
 
 preds = (test_preds > best_threshold).astype(int)
 
 
-# In[22]:
 
 
 prediction = []
@@ -471,7 +449,6 @@ sample.to_csv("submission.csv", index=False)
 sample.head()
 
 
-# In[23]:
 
 
 

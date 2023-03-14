@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install geopy')
@@ -13,7 +12,6 @@ get_ipython().system('pip install reverse_geocoder')
 get_ipython().system('pip install -U scikit-learn')
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -37,7 +35,6 @@ test_dataframe = pd.read_csv('test.csv', index_col=0)
 print dataframe.head()
 
 
-# In[3]:
 
 
 from geopy.distance import great_circle
@@ -81,7 +78,6 @@ new_df['trip_duration'] = new_df.apply(lambda row: np.log1p(row['trip_duration']
 print new_df.head()
 
 
-# In[4]:
 
 
 import reverse_geocoder as rg
@@ -112,7 +108,6 @@ new_df = add_borough(new_df)
 print new_df.head()
 
 
-# In[5]:
 
 
 features = ['vendor_id', 'month', 'day', 'pickup_hour', 'store_and_fwd_flag', 'distance', 'pickup_borough', 'dropoff_borough']
@@ -136,7 +131,6 @@ scaled_df = scale_df(new_df)
 print scaled_df.head()
 
 
-# In[6]:
 
 
 from sklearn.ensemble import GradientBoostingRegressor
@@ -162,7 +156,6 @@ xgb_model = XGBRegressor(objective='reg:linear', max_depth=7, learning_rate=0.3,
 print -1.0*cross_val_score(xgb_model, X_train, y_train.ravel(), scoring=rlmse, cv=10, verbose=8).mean()
 
 
-# In[7]:
 
 
 test_df = parallelize_dataframe(test_dataframe, transform_df, cpu_count(), cpu_count())
@@ -170,7 +163,6 @@ new_test_df = scale_df(add_borough(test_df), test=True)
 print new_test_df.head()
 
 
-# In[8]:
 
 
 xgb_model = XGBRegressor(objective='reg:linear', max_depth=7, learning_rate=0.3, reg_lambda = 1.5, n_estimators=2000, nthread=-1)
@@ -179,7 +171,6 @@ predictions = xgb_model.predict(new_test_df.values)
 print predictions
 
 
-# In[9]:
 
 
 test_trip_duration = np.expm1(abs(predictions))
@@ -187,7 +178,6 @@ result_df = pd.DataFrame({'id': test_dataframe.index.values, 'trip_duration': te
 result_df.to_csv('answer.csv', index=False)
 
 
-# In[10]:
 
 
 

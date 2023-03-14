@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Поставим стабильную версию CatBoost
@@ -9,7 +8,6 @@ get_ipython().system('pip uninstall catboost --yes')
 get_ipython().system('pip install catboost==0.15.2')
 
 
-# In[2]:
 
 
 import os
@@ -36,14 +34,12 @@ from lightgbm import LGBMRegressor
 from catboost import CatBoostRegressor, Pool, cv 
 
 
-# In[3]:
 
 
 import shap
 shap.initjs()
 
 
-# In[4]:
 
 
 warnings.filterwarnings("ignore")
@@ -53,7 +49,6 @@ get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'retina'")
 sns.set()
 
 
-# In[5]:
 
 
 # Системные константы
@@ -72,7 +67,6 @@ mmt_dict = {'test': os.path.join(DATA, 'test.csv'),
             'sights': os.path.join(EXT_DATA, 'sights.csv')}
 
 
-# In[6]:
 
 
 os.chdir(PREPROCESS)
@@ -80,7 +74,6 @@ import make_master_table as mmt
 os.chdir(CWD)
 
 
-# In[7]:
 
 
 # Корретировка ответов по тестовой выборке на выбросы:
@@ -97,7 +90,6 @@ def correct_test(df):
     return newdf
 
 
-# In[8]:
 
 
 df_test = pd.read_csv(os.path.join(DATA, 'test.csv'))
@@ -107,49 +99,41 @@ unknown = list(set(df_test.select_dtypes(object)['property_type'].unique())-set(
 df_test[df_test['property_type'].isin(unknown)]
 
 
-# In[9]:
 
 
 df_train.groupby(['property_type'])['price'].median()
 
 
-# In[10]:
 
 
 df_train.info()
 
 
-# In[11]:
 
 
 df_test.info()
 
 
-# In[12]:
 
 
 df_train.describe()
 
 
-# In[13]:
 
 
 df_test.describe()
 
 
-# In[14]:
 
 
 df_train[df_train['price']==0]
 
 
-# In[15]:
 
 
 df_train[df_train['price']>0.5*df_train['price'].max()]
 
 
-# In[16]:
 
 
 df_train = df_train[df_train['price']!=0].copy(deep=True)
@@ -157,7 +141,6 @@ df_train = df_train[df_train['price']<9000].copy(deep=True)
 df_train.reset_index(inplace=True, drop=True)
 
 
-# In[17]:
 
 
 fig = plt.figure(figsize=(6,5))
@@ -166,7 +149,6 @@ plt.xlim((0, 1300))
 plt.title('df_train: Price', fontsize=14)
 
 
-# In[18]:
 
 
 df_train['log_price'] = np.log(df_train['price'])
@@ -184,7 +166,6 @@ ax2.set_title('df_train: Log Price', fontsize=14)
 plt.show()
 
 
-# In[19]:
 
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 5))
@@ -199,7 +180,6 @@ ax2.set_title('df_train: Log Price', fontsize=14)
 plt.show()
 
 
-# In[20]:
 
 
 # Строковые типы в таблице
@@ -208,43 +188,36 @@ for c in df_train.columns:
         print(f'Column: {c}')
 
 
-# In[21]:
 
 
 df_train['host_is_superhost'].value_counts()
 
 
-# In[22]:
 
 
 df_train['host_identity_verified'].value_counts()
 
 
-# In[23]:
 
 
 df_train['property_type'].value_counts()
 
 
-# In[24]:
 
 
 df_train['room_type'].value_counts()
 
 
-# In[25]:
 
 
 df_train['instant_bookable'].value_counts()
 
 
-# In[26]:
 
 
 df_train['cancellation_policy'].value_counts()
 
 
-# In[27]:
 
 
 # Теплокарта матрицы корреляций 
@@ -253,7 +226,6 @@ ax = sns.heatmap(df_train.iloc[:,1:].corr(), vmin=0, vmax=1, cmap = 'YlGnBu')
 plt.show()
 
 
-# In[28]:
 
 
 fig, axes = plt.subplots(nrows=7, ncols=3, figsize=(12, 27))
@@ -264,7 +236,6 @@ for ax, feature in tqdm.tqdm_notebook(zip(axes.reshape(-1,1).tolist(), subset.to
 plt.tight_layout()
 
 
-# In[29]:
 
 
 def get_orderlist(df, xs, j, k, y, sort):
@@ -282,7 +253,6 @@ def boxplot_mat(df, x_columns, y, nrows, ncols, figsize, sort):
     plt.show()
 
 
-# In[30]:
 
 
 boxplot_mat(df_train, 
@@ -293,7 +263,6 @@ boxplot_mat(df_train,
              2, 3, (22, 12), True)
 
 
-# In[31]:
 
 
 boxplot_mat(df_train, 
@@ -303,7 +272,6 @@ boxplot_mat(df_train,
              2, 2, (14, 10), False)
 
 
-# In[32]:
 
 
 fig = plt.figure(figsize=(16,10))
@@ -315,7 +283,6 @@ plt.xticks(rotation=90)
 plt.show()
 
 
-# In[33]:
 
 
 this_map = folium.Map(prefer_canvas=True)
@@ -362,7 +329,6 @@ this_map.save('MelbournePlot_train.html')
 this_map
 
 
-# In[34]:
 
 
 this_map = folium.Map(prefer_canvas=True)
@@ -378,7 +344,6 @@ this_map.save('MelbournePlot_test.html')
 this_map
 
 
-# In[35]:
 
 
 # Расчет рассотяния между объектами на геоиде
@@ -398,7 +363,6 @@ def gps_distance(pos1, pos2, earth_rad=6350000.):
     return dist
 
 
-# In[36]:
 
 
 # Дополнительынй признак 1: расстояние до центра Мельбурна по поисковой системе
@@ -416,7 +380,6 @@ def city_center_feature(df):
 df_train = city_center_feature(df_train)
 
 
-# In[37]:
 
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 5))
@@ -431,7 +394,6 @@ ax2.set_title('df_train: Log Center distance', fontsize=14)
 plt.show()
 
 
-# In[38]:
 
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 5))
@@ -446,7 +408,6 @@ ax2.set_title('df_train: Log Center distance', fontsize=14)
 plt.show()
 
 
-# In[39]:
 
 
 fig = plt.figure(figsize=(8,5))
@@ -454,14 +415,12 @@ sns.scatterplot(df_train['log_center_dist'], df_train['log_price'], alpha=0.5)
 plt.show()
 
 
-# In[40]:
 
 
 df_districts = pd.read_csv(os.path.join(EXT_DATA, 'districts.csv'))
 df_districts
 
 
-# In[41]:
 
 
 # Ближайший район к апартаментам
@@ -481,7 +440,6 @@ def close_district_feature(df, df_districts):
 df_train = close_district_feature(df_train, df_districts)
 
 
-# In[42]:
 
 
 fig = plt.figure(figsize=(10,5))
@@ -493,7 +451,6 @@ plt.xticks(rotation=90)
 plt.show()
 
 
-# In[43]:
 
 
 # Парков в радиусе n км из списка 
@@ -501,7 +458,6 @@ df_parks = pd.read_csv(os.path.join(EXT_DATA, 'parks.csv'))
 df_parks
 
 
-# In[44]:
 
 
 # Парков в радиусе n км из списка 
@@ -523,20 +479,17 @@ def parks_feature(df, df_parks, n_list):
 df_train = parks_feature(df_train, df_parks,[2,5,10,15])
 
 
-# In[45]:
 
 
 df_train = df_train[~df_train['log_price'].isnull()].copy(deep=True)
 df_train.info()
 
 
-# In[46]:
 
 
 df_train.describe()
 
 
-# In[47]:
 
 
 fig, axes = plt.subplots(2, 2, figsize=(9, 6))
@@ -551,7 +504,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[48]:
 
 
 # Некоторые важные места города по данным Airbnb и анализе карт с расположениями жилья
@@ -559,7 +511,6 @@ df_sights = pd.read_csv(os.path.join(EXT_DATA, 'sights.csv'))
 df_sights
 
 
-# In[49]:
 
 
 # Расстояния до 20 точек города
@@ -577,7 +528,6 @@ def sights_feature(df, df_sights):
 df_train = sights_feature(df_train, df_sights)
 
 
-# In[50]:
 
 
 fig, axes = plt.subplots(nrows=7, ncols=3, figsize=(12, 27))
@@ -587,7 +537,6 @@ for ax, feature in tqdm.tqdm_notebook(zip(axes.reshape(-1,1).tolist(), subset)):
 plt.tight_layout()
 
 
-# In[51]:
 
 
 df_dummies = pd.get_dummies(df_train[df_train.select_dtypes('object').columns.tolist()])
@@ -599,7 +548,6 @@ for c in df_train.select_dtypes('object').columns.tolist():
     del df_train[c]
 
 
-# In[52]:
 
 
 # Запишем в словарь 3 базовых стратегии обработки пропусков
@@ -623,7 +571,6 @@ with open('fill_value_strategies.pkl', 'wb') as f:
     pickle.dump(nullable_dict, f)
 
 
-# In[53]:
 
 
 def fill_na(df, nullable_dict, strategy):
@@ -661,14 +608,12 @@ def preprocess_data(data, strategy, scaler_type='standard'):
     return data2.loc[:,cols], y_train, cols, scaler
 
 
-# In[54]:
 
 
 mmt_instance = mmt.MasterTable(**mmt_dict)
 df_train = mmt_instance.make_train(with_dummy=True)
 
 
-# In[55]:
 
 
 def cv_result(model, X, y, cv=5,scoring='neg_mean_squared_error'):
@@ -683,27 +628,23 @@ def cv_result(model, X, y, cv=5,scoring='neg_mean_squared_error'):
     return res
 
 
-# In[56]:
 
 
 df_train2, y_train, cols, _ = preprocess_data(df_train, 'zero')
 
 
-# In[57]:
 
 
 reg = LinearRegression()
 cv_result(reg, df_train2.loc[:,cols[:21]], y_train)
 
 
-# In[58]:
 
 
 reg = LinearRegression()
 cv_result(reg, df_train2.loc[:,cols], y_train)
 
 
-# In[59]:
 
 
 def regulizer_alpha(model, X, y, alphas, cv=5, scoring='neg_mean_squared_error', return_data=False):
@@ -723,35 +664,30 @@ def regulizer_alpha(model, X, y, alphas, cv=5, scoring='neg_mean_squared_error',
         return mean_rmse
 
 
-# In[60]:
 
 
 # Ridge: Начальные данные
 regulizer_alpha(Ridge, df_train2.loc[:,cols[:21]], y_train, np.arange(0.05, 50, 0.5))
 
 
-# In[61]:
 
 
 # Ridge: Добавленные геопризнаки
 regulizer_alpha(Ridge, df_train2.loc[:,cols], y_train, np.arange(0.05, 50, 0.5))
 
 
-# In[62]:
 
 
 # Lasso: Начальные данные
 regulizer_alpha(Lasso, df_train2.loc[:,cols[:21]], y_train, np.arange(0.001, 20, 0.05))
 
 
-# In[63]:
 
 
 # Lasso: Добавленные геопризнаки
 regulizer_alpha(Lasso, df_train2.loc[:,cols], y_train, np.arange(0.001, 20, 0.05))
 
 
-# In[64]:
 
 
 # Настроим Ridge немного точнее
@@ -759,41 +695,35 @@ regulizer_alpha(Lasso, df_train2.loc[:,cols], y_train, np.arange(0.001, 20, 0.05
 regulizer_alpha(Ridge, df_train2.loc[:,cols], y_train, np.arange(1e-4, 2, 5e-3))
 
 
-# In[65]:
 
 
 df_train2, y_train,_ , _ = preprocess_data(df_train, 'mean')
 
 
-# In[66]:
 
 
 # Ridge: Начальные данные
 regulizer_alpha(Ridge, df_train2.loc[:,cols[:21]], y_train, np.arange(0.05, 50, 0.5))
 
 
-# In[67]:
 
 
 # Ridge: Добавленные геопризнаки
 regulizer_alpha(Ridge, df_train2.loc[:,cols], y_train, np.arange(0.05, 50, 0.5))
 
 
-# In[68]:
 
 
 # Lasso: Начальные данные
 regulizer_alpha(Lasso, df_train2.loc[:,cols[:21]], y_train, np.arange(0.001, 20, 0.05))
 
 
-# In[69]:
 
 
 # Lasso: Добавленные геопризнаки
 regulizer_alpha(Lasso, df_train2.loc[:,cols], y_train, np.arange(0.001, 20, 0.05))
 
 
-# In[70]:
 
 
 # Настроим Ridge немного точнее
@@ -801,41 +731,35 @@ regulizer_alpha(Lasso, df_train2.loc[:,cols], y_train, np.arange(0.001, 20, 0.05
 regulizer_alpha(Ridge, df_train2.loc[:,cols], y_train, np.arange(1e-4, 2, 5e-3), return_data=False)
 
 
-# In[71]:
 
 
 df_train2, y_train, _, _ = preprocess_data(df_train, 'median')
 
 
-# In[72]:
 
 
 # Ridge: Начальные данные
 regulizer_alpha(Ridge, df_train2.loc[:,cols[:21]], y_train, np.arange(0.05, 50, 0.5))
 
 
-# In[73]:
 
 
 # Ridge: Добавленные геопризнаки
 regulizer_alpha(Ridge, df_train2.loc[:,cols], y_train, np.arange(0.05, 50, 0.5))
 
 
-# In[74]:
 
 
 # Lasso: Начальные данные
 regulizer_alpha(Lasso, df_train2.loc[:,cols[:21]], y_train, np.arange(0.001, 20, 0.05))
 
 
-# In[75]:
 
 
 # Lasso: Добавленные геопризнаки
 regulizer_alpha(Lasso, df_train2.loc[:,cols], y_train, np.arange(0.001, 20, 0.05))
 
 
-# In[76]:
 
 
 # Настроим Ridge немного точнее
@@ -843,13 +767,11 @@ regulizer_alpha(Lasso, df_train2.loc[:,cols], y_train, np.arange(0.001, 20, 0.05
 regulizer_alpha(Ridge, df_train2.loc[:,cols], y_train, np.arange(1e-4, 2, 5e-3))
 
 
-# In[77]:
 
 
 df_train2, y_train, _, _ = preprocess_data(df_train, 'zero')
 
 
-# In[78]:
 
 
 ridge = Ridge(0.0001)
@@ -857,7 +779,6 @@ df_ridge = cv_result(ridge, df_train2.loc[:,cols], y_train)
 df_ridge.head(20)
 
 
-# In[79]:
 
 
 lasso = Lasso(0.001)
@@ -865,13 +786,11 @@ df_lasso = cv_result(lasso, df_train2.loc[:,cols], y_train)
 df_lasso.head(20)
 
 
-# In[80]:
 
 
 df_train2, y_train, _, _ = preprocess_data(df_train, 'zero')
 
 
-# In[81]:
 
 
 def cvknn_result(X, y, **kwargs):
@@ -893,7 +812,6 @@ def cvknn_result(X, y, **kwargs):
     plt.show()
 
 
-# In[82]:
 
 
 params_dict = {'k': np.arange(1, 31), 'metric':'minkowski',
@@ -902,7 +820,6 @@ params_dict = {'k': np.arange(1, 31), 'metric':'minkowski',
 cvknn_result(df_train2.loc[:,cols[:21]], y_train, **params_dict)
 
 
-# In[83]:
 
 
 params_dict = {'k': np.arange(1, 31), 'metric':'minkowski',
@@ -911,13 +828,11 @@ params_dict = {'k': np.arange(1, 31), 'metric':'minkowski',
 cvknn_result(df_train2.loc[:,cols], y_train, **params_dict)
 
 
-# In[84]:
 
 
 df_train2, y_train, _, _ = preprocess_data(df_train, 'mean')
 
 
-# In[85]:
 
 
 params_dict = {'k': np.arange(1, 31), 'metric':'minkowski',
@@ -926,7 +841,6 @@ params_dict = {'k': np.arange(1, 31), 'metric':'minkowski',
 cvknn_result(df_train2.loc[:,cols[:21]], y_train, **params_dict)
 
 
-# In[86]:
 
 
 params_dict = {'k': np.arange(1, 31), 'metric':'minkowski',
@@ -935,13 +849,11 @@ params_dict = {'k': np.arange(1, 31), 'metric':'minkowski',
 cvknn_result(df_train2.loc[:,cols], y_train, **params_dict)
 
 
-# In[87]:
 
 
 df_train2, y_train, _, _ = preprocess_data(df_train, 'median')
 
 
-# In[88]:
 
 
 params_dict = {'k': np.arange(1, 31), 'metric':'minkowski',
@@ -950,7 +862,6 @@ params_dict = {'k': np.arange(1, 31), 'metric':'minkowski',
 cvknn_result(df_train2.loc[:,cols[:21]], y_train, **params_dict)
 
 
-# In[89]:
 
 
 params_dict = {'k': np.arange(1, 31), 'metric':'minkowski',
@@ -959,7 +870,6 @@ params_dict = {'k': np.arange(1, 31), 'metric':'minkowski',
 cvknn_result(df_train2.loc[:,cols], y_train, **params_dict)
 
 
-# In[90]:
 
 
 def cv_random_forest(X, y, **kwargs):
@@ -981,13 +891,11 @@ def cv_random_forest(X, y, **kwargs):
     plt.show()
 
 
-# In[91]:
 
 
 df_train2, y_train, _, _ = preprocess_data(df_train, 'zero')
 
 
-# In[92]:
 
 
 params_dict = {'trees': np.arange(5, 201, 20), 'cv':5,
@@ -995,7 +903,6 @@ params_dict = {'trees': np.arange(5, 201, 20), 'cv':5,
 cv_random_forest(df_train2.loc[:,cols[:21]], y_train, **params_dict)
 
 
-# In[93]:
 
 
 params_dict = {'trees': np.arange(5, 201, 20), 'cv':5,
@@ -1003,13 +910,11 @@ params_dict = {'trees': np.arange(5, 201, 20), 'cv':5,
 cv_random_forest(df_train2.loc[:,cols], y_train, **params_dict)
 
 
-# In[94]:
 
 
 df_train2, y_train, _, _ = preprocess_data(df_train, 'mean')
 
 
-# In[95]:
 
 
 params_dict = {'trees': np.arange(5, 201, 20), 'cv':5,
@@ -1017,7 +922,6 @@ params_dict = {'trees': np.arange(5, 201, 20), 'cv':5,
 cv_random_forest(df_train2.loc[:,cols[:21]], y_train, **params_dict)
 
 
-# In[96]:
 
 
 params_dict = {'trees': np.arange(5, 201, 20), 'cv':5,
@@ -1025,13 +929,11 @@ params_dict = {'trees': np.arange(5, 201, 20), 'cv':5,
 cv_random_forest(df_train2.loc[:,cols], y_train, **params_dict)
 
 
-# In[97]:
 
 
 df_train2, y_train, _, _ = preprocess_data(df_train, 'median')
 
 
-# In[98]:
 
 
 params_dict = {'trees': np.arange(5, 201, 20), 'cv':5,
@@ -1039,7 +941,6 @@ params_dict = {'trees': np.arange(5, 201, 20), 'cv':5,
 cv_random_forest(df_train2.loc[:,cols[:21]], y_train, **params_dict)
 
 
-# In[99]:
 
 
 params_dict = {'trees': np.arange(5, 201, 20), 'cv':5,
@@ -1047,13 +948,11 @@ params_dict = {'trees': np.arange(5, 201, 20), 'cv':5,
 cv_random_forest(df_train2.loc[:,cols], y_train, **params_dict)
 
 
-# In[100]:
 
 
 df_train2, y_train, cols, _ = preprocess_data(df_train, 'zero')
 
 
-# In[101]:
 
 
 def rf_randomized_cv_search(X, y, **kwargs):
@@ -1080,7 +979,6 @@ def rf_randomized_cv_search(X, y, **kwargs):
     return best_params
 
 
-# In[102]:
 
 
 max_features = ['auto', 'sqrt']
@@ -1102,32 +1000,27 @@ params_dict = {'random_grid':random_grid,
                'scoring':'neg_mean_squared_error', 'n_estimators':145}
 
 
-# In[103]:
 
 
 best = rf_randomized_cv_search(df_train2.loc[:,cols], y_train,**params_dict)
 
 
-# In[104]:
 
 
 rf_explainer = shap.TreeExplainer(best)
 shap_values = rf_explainer.shap_values(df_train2.loc[:,cols], approximate=True)
 
 
-# In[105]:
 
 
 shap.summary_plot(shap_values, df_train2.loc[:,cols])
 
 
-# In[106]:
 
 
 shap.summary_plot(shap_values, df_train2.loc[:,cols], plot_type="bar")
 
 
-# In[107]:
 
 
 class RFHyperoptSearch:
@@ -1153,7 +1046,6 @@ class RFHyperoptSearch:
         return np.mean(rmse)
 
 
-# In[108]:
 
 
 params_space = {'max_depth': hyperopt.hp.uniform('max_depth', 100, 200),
@@ -1174,13 +1066,11 @@ best = hyperopt.fmin(
 print(best)
 
 
-# In[109]:
 
 
 best
 
 
-# In[110]:
 
 
 best['n_estimators'] = int(best['n_estimators'])
@@ -1192,26 +1082,22 @@ rf_explainer = shap.TreeExplainer(rf)
 shap_values = rf_explainer.shap_values(df_train2.loc[:,cols], approximate=True)
 
 
-# In[111]:
 
 
 shap.summary_plot(shap_values, df_train2.loc[:,cols])
 
 
-# In[112]:
 
 
 shap.summary_plot(shap_values, df_train2.loc[:,cols], plot_type="bar")
 
 
-# In[113]:
 
 
 mmt_instance = mmt.MasterTable(**mmt_dict)
 df_train = mmt_instance.make_train(with_dummy=True)
 
 
-# In[114]:
 
 
 df_train2, y_train2, _ , boost_scaler = preprocess_data(df_train, 'zero')
@@ -1220,7 +1106,6 @@ X_train, X_val, y_train, y_val = train_test_split(df_train2, y_train2, test_size
                                                   random_state=42, shuffle=True)
 
 
-# In[115]:
 
 
 class HyperOpt:
@@ -1297,7 +1182,6 @@ class HyperOpt:
         return best_rmse
 
 
-# In[116]:
 
 
 # Посмотрим на качество с дефолтными параметрами, 1500 деревьями и ранней остановкой
@@ -1311,7 +1195,6 @@ gbm = XGBRegressor(**params)
 gbm.fit(X_train,y_train, eval_set=[[X_val, y_val]])
 
 
-# In[117]:
 
 
 nlistgbm, implistgbm = [], []
@@ -1323,13 +1206,11 @@ df_impgbm = pd.DataFrame({'Feature':nlistgbm, 'Importance': implistgbm})
 df_impgbm.sort_values(by=['Importance'], ascending=False).head(20)
 
 
-# In[118]:
 
 
 min(gbm.evals_result_['validation_0']['rmse'])
 
 
-# In[119]:
 
 
 best = {'gamma': 0.15340366103115533,
@@ -1340,7 +1221,6 @@ best = {'gamma': 0.15340366103115533,
  'reg_lambda': 1.0868061353806249}
 
 
-# In[120]:
 
 
 # Обучим итоговую модель с обновлением параметров
@@ -1362,7 +1242,6 @@ X_train, X_val, y_train, y_val = train_test_split(df_train2, y_train2,
 gbm.fit(X_train,y_train, eval_set=[[X_val, y_val]])
 
 
-# In[121]:
 
 
 nlistgbm, implistgbm = [], []
@@ -1374,32 +1253,27 @@ df_impgbm = pd.DataFrame({'Feature':nlistgbm, 'Importance': implistgbm})
 df_impgbm.sort_values(by=['Importance'], ascending=False).head(20)
 
 
-# In[122]:
 
 
 xgb_explainer = shap.TreeExplainer(gbm)
 shap_values = xgb_explainer.shap_values(X_val, approximate=True)
 
 
-# In[123]:
 
 
 shap.summary_plot(shap_values, X_val)
 
 
-# In[124]:
 
 
 shap.summary_plot(shap_values, X_val, plot_type="bar")
 
 
-# In[125]:
 
 
 test_to_submit = mmt_instance.make_test(with_dummy=True)
 
 
-# In[126]:
 
 
 def process_test_data(scaler, test_data):
@@ -1422,7 +1296,6 @@ def predict_test(test_data, model):
     return np.exp(result) 
 
 
-# In[127]:
 
 
 test_to_submit_processed, test_to_submit_id = process_test_data(boost_scaler, test_to_submit)
@@ -1434,14 +1307,12 @@ submit_result_xgb = correct_test(submit_result_xgb)
 submit_result_xgb.to_csv('xgb_submit_kaggle.csv', index=False)
 
 
-# In[128]:
 
 
 mmt_instance = mmt.MasterTable(**mmt_dict)
 df_train = mmt_instance.make_train(with_dummy=False)
 
 
-# In[129]:
 
 
 def catboost_data_preparation(data):
@@ -1465,13 +1336,11 @@ def catboost_data_preparation(data):
 categorical_features_indices, catbs_cols, catb_scaler, data = catboost_data_preparation(df_train)
 
 
-# In[130]:
 
 
 categorical_features_indices
 
 
-# In[131]:
 
 
 X_train, X_val, y_train, y_val = train_test_split(df_train, df_train['log_price'],
@@ -1479,7 +1348,6 @@ X_train, X_val, y_train, y_val = train_test_split(df_train, df_train['log_price'
                                                   shuffle=True)
 
 
-# In[132]:
 
 
 # Посмотрим на качество с дефолтными параметрами
@@ -1497,7 +1365,6 @@ validate_pool = Pool(X_val, y_val, cat_features=categorical_features_indices)
 catb.fit(train_pool, eval_set=validate_pool)
 
 
-# In[133]:
 
 
 nlist, implist = [], []
@@ -1509,19 +1376,16 @@ df_imp = pd.DataFrame({'Feature':nlist, 'Importance': implist})
 df_imp.sort_values(by=['Importance'], ascending=False).head(20)
 
 
-# In[134]:
 
 
 catb.best_score_
 
 
-# In[135]:
 
 
 best = {'l2_leaf_reg': 6.0, 'learning_rate': 0.08390144719977513}
 
 
-# In[136]:
 
 
 # Итоговое обучение
@@ -1546,7 +1410,6 @@ validate_pool = Pool(X_val, y_val, cat_features=categorical_features_indices)
 catb.fit(train_pool, eval_set=validate_pool)
 
 
-# In[137]:
 
 
 nlist, implist = [], []
@@ -1558,26 +1421,22 @@ df_imp = pd.DataFrame({'Feature':nlist, 'Importance': implist})
 df_imp.sort_values(by=['Importance'], ascending=False).head(20)
 
 
-# In[138]:
 
 
 catb_explainer = shap.TreeExplainer(catb)
 shap_values = catb_explainer.shap_values(validate_pool)
 
 
-# In[139]:
 
 
 shap.summary_plot(shap_values, X_val)
 
 
-# In[140]:
 
 
 shap.summary_plot(shap_values, X_val, plot_type="bar")
 
 
-# In[141]:
 
 
 test_to_submit = mmt_instance.make_test(with_dummy=False)
@@ -1590,7 +1449,6 @@ test_to_submit_processed['log_price'] = 0
 test_to_submit_processed = test_to_submit_processed[X_train.columns.tolist()]
 
 
-# In[142]:
 
 
 pred = predict_test(test_to_submit_processed, catb)
@@ -1601,7 +1459,6 @@ submit_result_catb = correct_test(submit_result_catb)
 submit_result_catb.to_csv('catb_submit_kaggle.csv',index=False)
 
 
-# In[143]:
 
 
 df_train = mmt_instance.make_train(with_dummy=True)
@@ -1611,7 +1468,6 @@ X_train, X_val, y_train, y_val = train_test_split(df_train2, y_train2, test_size
                                                   random_state=42, shuffle=True)
 
 
-# In[144]:
 
 
 ## Посмотрим на качество с дефолтными параметрами
@@ -1625,7 +1481,6 @@ lgbm = LGBMRegressor(**params)
 lgbm.fit(X_train, y_train, eval_set=[[X_val, y_val]])
 
 
-# In[145]:
 
 
 nlistlgbm, implistlgbm = [], []
@@ -1637,13 +1492,11 @@ df_implgbm = pd.DataFrame({'Feature':nlistlgbm, 'Importance': implistlgbm})
 df_implgbm.sort_values(by=['Importance'], ascending=False).head(20)
 
 
-# In[146]:
 
 
 lgbm.best_score_
 
 
-# In[147]:
 
 
 best = {'learning_rate': 0.00865486636310301, 
@@ -1653,7 +1506,6 @@ best = {'learning_rate': 0.00865486636310301,
         'subsample': 0.8373883555532842}
 
 
-# In[148]:
 
 
 # Обучим итоговую модель с обновлением параметров
@@ -1675,26 +1527,22 @@ X_train, X_val, y_train, y_val = train_test_split(df_train2, y_train2,
 lgbm.fit(X_train,y_train, eval_set=[[X_val, y_val]])
 
 
-# In[149]:
 
 
 lgbm_explainer = shap.TreeExplainer(lgbm)
 shap_values = lgbm_explainer.shap_values(X_val)
 
 
-# In[150]:
 
 
 shap.summary_plot(shap_values, X_val)
 
 
-# In[151]:
 
 
 shap.summary_plot(shap_values, X_val, plot_type="bar")
 
 
-# In[152]:
 
 
 test_to_submit = mmt_instance.make_test(with_dummy=True)

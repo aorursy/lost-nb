@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # Import libraries
@@ -16,7 +15,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[ ]:
 
 
 # Set visualization style
@@ -25,13 +23,11 @@ plt.rc('xtick', labelsize=20)
 plt.rc('ytick', labelsize=20)
 
 
-# In[ ]:
 
 
 ls ../input
 
 
-# In[ ]:
 
 
 # Read Data
@@ -39,7 +35,6 @@ df = pd.read_csv('../input/airbus-ship-detection/train_ship_segmentations.csv')
 df.head()
 
 
-# In[ ]:
 
 
 # Features Engineering - We will use EncodedPixels in a second DataFrame bellow
@@ -50,13 +45,11 @@ df['ShipPresent'] = df['Ships'] > 0
 df.head()
 
 
-# In[ ]:
 
 
 df.info()
 
 
-# In[ ]:
 
 
 # Features Engineering - Second DataFrame with EncodedPixels and only images with ships
@@ -67,13 +60,11 @@ df_box['Path'] = df_box['ImageId'].apply(lambda filename: os.path.join('../input
 df_box.info()
 
 
-# In[ ]:
 
 
 df_box.head()
 
 
-# In[ ]:
 
 
 def rle_to_pixels(rle_code):
@@ -94,7 +85,6 @@ def apply_mask(image, mask):
     return image
 
 
-# In[ ]:
 
 
 # Plots with masked ships on random images from the dataset
@@ -112,13 +102,11 @@ for axes in axes_list:
         ax.set_title(df_box[df_box['Path'] == path]['ImageId'].iloc[0])
 
 
-# In[ ]:
 
 
 df_box.info()
 
 
-# In[ ]:
 
 
 # Imbalanced Dataset | Ship/No-Ship Ratio
@@ -133,7 +121,6 @@ print(f"Images with ships:    {round(ships_images/total_images,2)} ({ships_image
 print(f"Images with no ships: {round(no_ship/total_images,2)} ({no_ship})")
 
 
-# In[ ]:
 
 
 # Engineering Features for the graphs
@@ -144,7 +131,6 @@ ship_ratio = ship_ratio.rename(index={True:'Ship', False:'No Ship'})
 total_ship_distribution = df['Ships'].value_counts()[1::]/ships_images
 
 
-# In[ ]:
 
 
 # Plotting
@@ -157,7 +143,6 @@ axes[0].title.set_size(30)
 axes[1].title.set_size(30)
 
 
-# In[ ]:
 
 
 # The operation bellow is expensive, if possible just load the pre-calculated dataset
@@ -168,7 +153,6 @@ df_box = pd.read_csv('../input/airbus-challenge/train_box_pixels.csv')
 df_box.head()
 
 
-# In[ ]:
 
 
 # Imbalanced Dataset | Ship/No-Ship Pixels Ratio

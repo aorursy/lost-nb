@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -67,7 +66,6 @@ from sklearn.feature_extraction import text
 from scipy import spatial
 
 
-# In[2]:
 
 
 html_tags = ['<P>', '</P>', '<Table>', '</Table>', '<Tr>', '</Tr>', '<Ul>', '<Ol>', '<Dl>', '</Ul>', '</Ol>',              '</Dl>', '<Li>', '<Dd>', '<Dt>', '</Li>', '</Dd>', '</Dt>']
@@ -153,25 +151,21 @@ def predict(json_data, annotated=False):
     return ans_long, ans_short, question, ann_long_text, ann_short_text, ans_long_text, ans_short_text
 
 
-# In[3]:
 
 
 get_ipython().run_cell_magic('time', '', "ids = []\nanns = []\npreds = []\n\n# Debug data\nquestions = []\nann_texts = []\nans_texts = []\n\nn_samples = 500\n\nwith open('/kaggle/input/tensorflow2-question-answering/simplified-nq-train.jsonl', 'r') as json_file:\n    cnt = 0\n    for line in tqdm(json_file):\n        json_data = json.loads(line)\n        \n        ids.append(str(json_data['example_id']) + '_long')\n        ids.append(str(json_data['example_id']) + '_short')\n        \n        l_ans = str(json_data['annotations'][0]['long_answer']['start_token']) + ':' + \\\n            str(json_data['annotations'][0]['long_answer']['end_token'])\n        if json_data['annotations'][0]['yes_no_answer'] == 'NONE':\n            if len(json_data['annotations'][0]['short_answers']) > 0:\n                s_ans = str(json_data['annotations'][0]['short_answers'][0]['start_token']) + ':' + \\\n                    str(json_data['annotations'][0]['short_answers'][0]['end_token'])\n            else:\n                s_ans = ''\n        else:\n            s_ans = json_data['annotations'][0]['yes_no_answer']\n            \n        anns.append(l_ans)\n        anns.append(s_ans)\n        \n        l_ans, s_ans, question, ann_long_text, ann_short_text, ans_long_text, ans_short_text = predict(json_data, annotated=True)\n        \n        preds.append(l_ans)\n        preds.append(s_ans)\n        questions.append(question)\n        questions.append(question)\n        ann_texts.append(ann_long_text)\n        ann_texts.append(ann_short_text)\n        ans_texts.append(ans_long_text)\n        ans_texts.append(ans_short_text)\n        \n        cnt += 1\n        if cnt >= n_samples:\n            break\n        \ntrain_ann = pd.DataFrame()\ntrain_ann['example_id'] = ids\ntrain_ann['question'] = questions\ntrain_ann['CorrectString'] = anns\ntrain_ann['CorrectText'] = ann_texts\nif len(preds) > 0:\n    train_ann['PredictionString'] = preds\n    train_ann['PredictionText'] = ans_texts\n    \ntrain_ann.to_csv('train_data.csv', index=False)\ntrain_ann.head(10)")
 
 
-# In[4]:
 
 
 train_ann.shape
 
 
-# In[5]:
 
 
 reindexed_data = train_ann['question']
 
 
-# In[6]:
 
 
 # Define helper functions
@@ -195,7 +189,6 @@ def get_top_n_words(n_top_words, count_vectorizer, text_data):
     return (words, word_values[0,:n_top_words].tolist()[0])
 
 
-# In[7]:
 
 
 count_vectorizer = CountVectorizer(stop_words='english')
@@ -213,13 +206,11 @@ ax.set_ylabel('Number of occurences');
 plt.show()
 
 
-# In[8]:
 
 
 tagged_headlines = [TextBlob(reindexed_data[i]).pos_tags for i in range(reindexed_data.shape[0])]
 
 
-# In[9]:
 
 
 tagged_headlines_df = pd.DataFrame({'tags':tagged_headlines})
@@ -239,7 +230,6 @@ print('Total number of words: ', np.sum(word_counts))
 print('Mean number of words per question: ', np.mean(word_counts))
 
 
-# In[10]:
 
 
 y = stats.norm.pdf(np.linspace(0,14,50), np.mean(word_counts), np.std(word_counts))
@@ -253,7 +243,6 @@ ax.set_xlabel('Number of words');
 plt.show()
 
 
-# In[11]:
 
 
 pos_sorted_types = sorted(pos_counts, key=pos_counts.__getitem__, reverse=True)
@@ -267,7 +256,6 @@ ax.set_title('Part-of-Speech Tagging for questions Corpus');
 ax.set_xlabel('Type of Word');
 
 
-# In[12]:
 
 
 small_count_vectorizer = CountVectorizer(stop_words='english', max_features=40000)
@@ -280,20 +268,17 @@ small_document_term_matrix = small_count_vectorizer.fit_transform(small_text_sam
 print('Questions after vectorization: \n{}'.format(small_document_term_matrix[123]))
 
 
-# In[13]:
 
 
 n_topics = 15
 
 
-# In[14]:
 
 
 lsa_model = TruncatedSVD(n_components=n_topics)
 lsa_topic_matrix = lsa_model.fit_transform(small_document_term_matrix)
 
 
-# In[15]:
 
 
 # Define helper functions
@@ -316,14 +301,12 @@ def keys_to_counts(keys):
     return (categories, counts)
 
 
-# In[16]:
 
 
 lsa_keys = get_keys(lsa_topic_matrix)
 lsa_categories, lsa_counts = keys_to_counts(lsa_keys)
 
 
-# In[17]:
 
 
 # Define helper functions
@@ -353,7 +336,6 @@ def get_top_n_words(n, keys, document_term_matrix, count_vectorizer):
     return top_words
 
 
-# In[18]:
 
 
 top_n_words_lsa = get_top_n_words(10, lsa_keys, small_document_term_matrix, small_count_vectorizer)
@@ -362,7 +344,6 @@ for i in range(len(top_n_words_lsa)):
     print("Topic {}: ".format(i+1), top_n_words_lsa[i])
 
 
-# In[19]:
 
 
 top_3_words = get_top_n_words(3, lsa_keys, small_document_term_matrix, small_count_vectorizer)
@@ -377,7 +358,6 @@ ax.set_title('LSA topic counts');
 plt.show()
 
 
-# In[20]:
 
 
 tsne_lsa_model = TSNE(n_components=2, perplexity=50, learning_rate=100, 
@@ -385,7 +365,6 @@ tsne_lsa_model = TSNE(n_components=2, perplexity=50, learning_rate=100,
 tsne_lsa_vectors = tsne_lsa_model.fit_transform(lsa_topic_matrix)
 
 
-# In[21]:
 
 
 # Define helper functions
@@ -406,7 +385,6 @@ def get_mean_topic_vectors(keys, two_dim_vectors):
     return mean_topic_vectors
 
 
-# In[22]:
 
 
 colormap = np.array([
@@ -417,7 +395,6 @@ colormap = np.array([
 colormap = colormap[:n_topics]
 
 
-# In[23]:
 
 
 top_3_words_lsa = get_top_n_words(3, lsa_keys, small_document_term_matrix, small_count_vectorizer)
@@ -434,7 +411,6 @@ for t in range(n_topics):
 show(plot)
 
 
-# In[24]:
 
 
 lda_model = LatentDirichletAllocation(n_components=n_topics, learning_method='online', 
@@ -442,14 +418,12 @@ lda_model = LatentDirichletAllocation(n_components=n_topics, learning_method='on
 lda_topic_matrix = lda_model.fit_transform(small_document_term_matrix)
 
 
-# In[25]:
 
 
 lda_keys = get_keys(lda_topic_matrix)
 lda_categories, lda_counts = keys_to_counts(lda_keys)
 
 
-# In[26]:
 
 
 top_n_words_lda = get_top_n_words(10, lda_keys, small_document_term_matrix, small_count_vectorizer)
@@ -458,7 +432,6 @@ for i in range(len(top_n_words_lda)):
     print("Topic {}: ".format(i+1), top_n_words_lda[i])
 
 
-# In[27]:
 
 
 top_3_words = get_top_n_words(3, lda_keys, small_document_term_matrix, small_count_vectorizer)
@@ -472,7 +445,6 @@ ax.set_title('LDA topic counts');
 ax.set_ylabel('Number of questions');
 
 
-# In[28]:
 
 
 tsne_lda_model = TSNE(n_components=2, perplexity=50, learning_rate=100, 
@@ -480,7 +452,6 @@ tsne_lda_model = TSNE(n_components=2, perplexity=50, learning_rate=100,
 tsne_lda_vectors = tsne_lda_model.fit_transform(lda_topic_matrix)
 
 
-# In[29]:
 
 
 top_3_words_lda = get_top_n_words(3, lda_keys, small_document_term_matrix, small_count_vectorizer)
@@ -497,7 +468,6 @@ for t in range(n_topics):
 show(plot)
 
 
-# In[30]:
 
 
 # Preparing a corpus for analysis and checking the first 10 entries
@@ -508,20 +478,17 @@ corpus = train_ann['question'].to_list()
 corpus[:10]
 
 
-# In[31]:
 
 
 corpus = list(set(corpus))
 corpus[:10]
 
 
-# In[32]:
 
 
 print('There is '+str(len(corpus))+' unique question')
 
 
-# In[33]:
 
 
 TEMP_FOLDER = tempfile.gettempdir()
@@ -530,7 +497,6 @@ print('Folder "{}" will be used to save temporary dictionary and corpus.'.format
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 
-# In[34]:
 
 
 # removing common words and tokenizing
@@ -542,52 +508,44 @@ dictionary = corpora.Dictionary(texts)
 dictionary.save(os.path.join(TEMP_FOLDER, 'TF2.0_QA.dict'))  # store the dictionary,
 
 
-# In[35]:
 
 
 corpus = [dictionary.doc2bow(text) for text in texts]
 corpora.MmCorpus.serialize(os.path.join(TEMP_FOLDER, 'TF2.0_QA.mm'), corpus) 
 
 
-# In[36]:
 
 
 tfidf = models.TfidfModel(corpus) # step 1 -- initialize a model
 
 
-# In[37]:
 
 
 corpus_tfidf = tfidf[corpus]  # step 2 -- use the model to transform vectors
 
 
-# In[38]:
 
 
 total_topics = 15
 
 
-# In[39]:
 
 
 lda = models.LdaModel(corpus, id2word=dictionary, num_topics=total_topics)
 corpus_lda = lda[corpus_tfidf] # create a double wrapper over the original corpus: bow->tf
 
 
-# In[40]:
 
 
 lda.show_topics(total_topics,5)
 
 
-# In[41]:
 
 
 data_lda = {i: OrderedDict(lda.show_topic(i,25)) for i in range(total_topics)}
 #data_lda
 
 
-# In[42]:
 
 
 df_lda = pd.DataFrame(data_lda)
@@ -595,13 +553,11 @@ df_lda = df_lda.fillna(0).T
 print(df_lda.shape)
 
 
-# In[43]:
 
 
 df_lda
 
 
-# In[44]:
 
 
 g=sns.clustermap(df_lda.corr(), center=0, standard_scale=1, cmap="OrRd", metric='cosine', linewidths=.75, figsize=(15, 15))
@@ -610,7 +566,6 @@ plt.show()
 #plt.setp(ax_heatmap.get_yticklabels(), rotation=0)  # For y axis
 
 
-# In[45]:
 
 
 pyLDAvis.enable_notebook()

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -31,19 +29,16 @@ import pandas as pd
 train_df = pd.read_csv('/kaggle/input/mlp-en-cifar-100/cifar100_train.csv')
 
 
-# In[3]:
 
 
 train_df.head()
 
 
-# In[4]:
 
 
 base_dir = '/kaggle/input/mlp-en-cifar-100/'
 
 
-# In[5]:
 
 
 import matplotlib.pyplot as plt
@@ -54,7 +49,6 @@ plt.imshow(img)
 print(img.shape)
 
 
-# In[6]:
 
 
 x_train = np.zeros((50000,32,32,3),dtype='uint8')
@@ -64,20 +58,17 @@ for i,imgname in enumerate(train_df['Image'].values):
     
 
 
-# In[7]:
 
 
 y_train = train_df['Label'].values
 
 
-# In[8]:
 
 
 plt.imshow(x_train[10,])
 x_train[10,].shape
 
 
-# In[9]:
 
 
 
@@ -90,7 +81,6 @@ def plot_images(x_train,y_train,N,n_rows=3,n_cols=12):
 plot_images(x_train,y_train,36)
 
 
-# In[10]:
 
 
 from sklearn.preprocessing import OneHotEncoder
@@ -98,13 +88,11 @@ enc = OneHotEncoder(handle_unknown='ignore')
 y_categorical = enc.fit_transform(y_train.reshape(-1, 1))
 
 
-# In[11]:
 
 
 print(y_categorical[0,])
 
 
-# In[12]:
 
 
 from keras.models import Sequential
@@ -120,13 +108,11 @@ model.add(Dense(100, activation='softmax'))#input: 512 #output:100
 model.summary()
 
 
-# In[13]:
 
 
 32*32*3
 
 
-# In[14]:
 
 
 
@@ -134,7 +120,6 @@ model.compile(loss='categorical_crossentropy', optimizer='rmsprop',
                   metrics=['accuracy'])
 
 
-# In[15]:
 
 
 hist = model.fit(x_train, y_categorical, batch_size=32, epochs=20,
@@ -142,7 +127,6 @@ hist = model.fit(x_train, y_categorical, batch_size=32, epochs=20,
           verbose=2, shuffle=True)
 
 
-# In[16]:
 
 
 test_df = pd.read_csv(base_dir+'cifar100_test.csv')
@@ -154,7 +138,6 @@ for i,imgname in enumerate(test_df['Image'].values):
     
 
 
-# In[17]:
 
 
 # Use the model to make predictions
@@ -162,19 +145,16 @@ predicted_classes = np.argmax(model.predict(x_test),axis=1)
 print(predicted_classes.shape)
 
 
-# In[18]:
 
 
 predicted_classes
 
 
-# In[19]:
 
 
 predicted_classes[0]
 
 
-# In[20]:
 
 
 
@@ -182,13 +162,11 @@ y_labels = [y.split('x0_')[-1] for y in enc.get_feature_names()]
 y_labels
 
 
-# In[21]:
 
 
 y_labels[predicted_classes[100]]
 
 
-# In[22]:
 
 
 my_submission = pd.DataFrame({'Image': test_df['Image'], 'Label': y_predictions})
@@ -196,13 +174,11 @@ my_submission = pd.DataFrame({'Image': test_df['Image'], 'Label': y_predictions}
 my_submission.to_csv('submission.csv', index=False)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

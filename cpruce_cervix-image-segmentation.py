@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -103,7 +102,6 @@ print("Type 3", additional_type_3_ids[:10])
 #print(crop_type_1_ids) # from manually selecting images that are not solely the cervix
 
 
-# In[2]:
 
 
 def mask_black_bkgd(img):
@@ -177,13 +175,11 @@ plt.imshow(complete_images[0])
 plt.title("Training dataset of type %i" % (1))
 
 
-# In[3]:
 
 
 Thanks @Allunia. Looking into gaussian mixtures now
 
 
-# In[4]:
 
 
 def mask_black_bkgd(img):

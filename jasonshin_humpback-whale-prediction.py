@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from collections import defaultdict
@@ -44,7 +43,6 @@ from keras.optimizers import Adam
 from tqdm import tqdm
 
 
-# In[2]:
 
 
 training_dir = '../input/train/'
@@ -56,7 +54,6 @@ print('Checking test data head')
 print(test.head())
 
 
-# In[3]:
 
 
 sampleImageFile1 = train.Image[2]
@@ -65,7 +62,6 @@ plt.imshow(sampleImage)
 plt.show()
 
 
-# In[4]:
 
 
 sampleImageFile2 = train.Image[89]
@@ -73,7 +69,6 @@ sampleImage2 = mpimg.imread(training_dir + sampleImageFile2)
 plt.imshow(sampleImage2)
 
 
-# In[5]:
 
 
 vc = train.Id.value_counts().sort_values(ascending=False)
@@ -81,7 +76,6 @@ vc[:50].plot(kind='bar')
 plt.show()
 
 
-# In[6]:
 
 
 # PARAMETERS
@@ -97,7 +91,6 @@ num_of_epochs = 10
 num_of_classes = 4251
 
 
-# In[7]:
 
 
 # NETWORK
@@ -117,7 +110,6 @@ model.add(Dropout(0.25))
 model.add(Dense(num_of_classes, activation="softmax"))
 
 
-# In[8]:
 
 
 # COST AND OPTIMIZER
@@ -126,7 +118,6 @@ model.compile(loss=categorical_crossentropy,
               metrics=['accuracy'])
 
 
-# In[9]:
 
 
 def process(image):
@@ -142,14 +133,12 @@ def process(image):
     
 
 
-# In[10]:
 
 
 x = []
 y = []
 
 
-# In[11]:
 
 
 for path in tqdm(train.Image):
@@ -161,13 +150,11 @@ for path in tqdm(train.Image):
     y.append(cod)
 
 
-# In[12]:
 
 
 model.fit(np.array(x), np.array(y), batch_size=batch_size, epochs=num_of_epochs, verbose=1)
 
 
-# In[13]:
 
 
 test_preds = []

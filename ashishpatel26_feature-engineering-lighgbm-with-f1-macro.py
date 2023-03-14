@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np # linear algebra
@@ -16,7 +15,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[ ]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -43,7 +41,6 @@ def encode_data(df):
     df['idhogar'] = LabelEncoder().fit_transform(df['idhogar'])
 
 
-# In[ ]:
 
 
 def do_features(df):
@@ -98,7 +95,6 @@ def do_features(df):
     return df
 
 
-# In[ ]:
 
 
 def convert_OHE2LE(df):
@@ -134,14 +130,12 @@ def convert_OHE2LE(df):
     return tmp_df
 
 
-# In[ ]:
 
 
 train = pd.read_csv('../input/train.csv')
 test = pd.read_csv('../input/test.csv')
 
 
-# In[ ]:
 
 
 def process_df(df_):
@@ -158,13 +152,11 @@ train = process_df(train)
 test = process_df(test)
 
 
-# In[ ]:
 
 
 train.info()
 
 
-# In[ ]:
 
 
 def train_test_apply_func(train_, test_, func_):
@@ -179,19 +171,16 @@ def train_test_apply_func(train_, test_, func_):
     return train_, test_
 
 
-# In[ ]:
 
 
 train, test = train_test_apply_func(train, test, convert_OHE2LE)
 
 
-# In[ ]:
 
 
 train.info()
 
 
-# In[ ]:
 
 
 cols_2_ohe = ['eviv_LE', 'etecho_LE', 'epared_LE', 'elimbasu_LE', 
@@ -214,13 +203,11 @@ def convert_geo2aggs(df_):
 train, test = train_test_apply_func(train, test, convert_geo2aggs)
 
 
-# In[ ]:
 
 
 train.info()
 
 
-# In[ ]:
 
 
 X = train.query('parentesco1==1')
@@ -231,7 +218,6 @@ y = X['Target'] - 1
 X = X.drop(['Target'], axis=1)
 
 
-# In[ ]:
 
 
 cols_2_drop = ['abastagua_LE', 'agg18_estadocivil1_MEAN', 'agg18_instlevel6_MEAN', 'agg18_parentesco10_MEAN', 'agg18_parentesco11_MEAN', 'agg18_parentesco12_MEAN', 'agg18_parentesco4_MEAN', 'agg18_parentesco5_MEAN', 'agg18_parentesco6_MEAN', 'agg18_parentesco7_MEAN', 'agg18_parentesco8_MEAN', 'agg18_parentesco9_MEAN', 'fe_people_not_living', 'fe_people_weird_stat', 'geo_elimbasu_LE_3_MEAN', 'geo_elimbasu_LE_4_MEAN', 'geo_energcocinar_LE_0_MEAN', 'geo_energcocinar_LE_1_MEAN', 'geo_energcocinar_LE_2_MEAN', 'geo_epared_LE_0_MEAN', 'geo_epared_LE_2_MEAN', 'geo_etecho_LE_2_MEAN', 'geo_eviv_LE_0_MEAN', 'geo_hogar_mayor_MEAN', 'geo_hogar_nin_MEAN', 'geo_manual_elec_LE_1_MEAN', 'geo_manual_elec_LE_2_MEAN', 'geo_manual_elec_LE_3_MEAN', 'geo_pared_LE_0_MEAN', 'geo_pared_LE_1_MEAN', 'geo_pared_LE_3_MEAN', 'geo_pared_LE_4_MEAN', 'geo_pared_LE_5_MEAN', 'geo_pared_LE_6_MEAN', 'geo_pared_LE_7_MEAN', 'hacapo', 'hacdor', 'mobilephone', 'parentesco1', 'parentesco_LE', 'rez_esc', 'techo_LE', 'v14a', 'v18q']
@@ -242,7 +228,6 @@ X.drop((cols_2_drop+['idhogar']), axis=1, inplace=True)
 test.drop((cols_2_drop+['idhogar']), axis=1, inplace=True)
 
 
-# In[ ]:
 
 
 XY = pd.concat([X,y], axis=1)
@@ -250,27 +235,23 @@ max_corr = XY.corr()['Target'].loc[lambda x: abs(x)>0.2].index
 #min_corr = XY.corr()['Target'].loc[lambda x: abs(x)<0.05].index
 
 
-# In[ ]:
 
 
 _ = plt.figure(figsize=(10,7))
 _ = sns.heatmap(XY[max_corr].corr(), vmin=-0.5, vmax=0.5, cmap='coolwarm')
 
 
-# In[ ]:
 
 
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=314, stratify=y)
 
 
-# In[ ]:
 
 
 X_test.info(max_cols=20)
 
 
-# In[ ]:
 
 
 from sklearn.metrics import f1_score
@@ -298,7 +279,6 @@ fit_params={"early_stopping_rounds":300,
 fit_params['verbose'] = 200
 
 
-# In[ ]:
 
 
 # %%time
@@ -351,13 +331,11 @@ fit_params['verbose'] = 200
 # opt_params = bayes_parameter_opt_lgb(X_train, y_train, init_round=10, opt_roun=10, n_folds=6, random_seed=42, n_estimators=500, learning_rate=0.02,colsample_bytree=0.93)
 
 
-# In[ ]:
 
 
 opt_params
 
 
-# In[ ]:
 
 
 #v8
@@ -386,7 +364,6 @@ opt_parameters = {
                 }
 
 
-# In[ ]:
 
 
 from sklearn.externals.joblib import Parallel, delayed
@@ -454,7 +431,6 @@ class VotingClassifierLGBM(VotingClassifier):
         return self
 
 
-# In[ ]:
 
 
 from sklearn.ensemble import VotingClassifier
@@ -473,7 +449,6 @@ class VotingPrefitClassifier(VotingClassifier):
     
 
 
-# In[ ]:
 
 
 #clfs = []
@@ -492,7 +467,6 @@ class VotingPrefitClassifier(VotingClassifier):
 #clf_final = vc.estimators_[0]
 
 
-# In[ ]:
 
 
 from sklearn.model_selection import StratifiedKFold
@@ -557,7 +531,6 @@ for n_outer_fold, (outer_trn_idx, outer_val_idx) in enumerate(outer_cv.split(X,y
     del inner_cv, X_out, y_out, X_stp, y_stp
 
 
-# In[ ]:
 
 
 vc = VotingPrefitClassifier(clfs)
@@ -565,7 +538,6 @@ vc = vc.fit(X,y)
 clf_final = vc.estimators_[0]
 
 
-# In[ ]:
 
 
 global_score = np.mean(perf_eval['f1_oof'])
@@ -581,33 +553,28 @@ print('Std  validation score LGBM Classifier: {:.4f}'.format(global_score_std))
 #print('Validation score of a VotingClassifier on 3 LGBMs with hard voting strategy: {:.4f}'.format(global_score_hard))
 
 
-# In[ ]:
 
 
 from sklearn.metrics import precision_score, recall_score, classification_report
 
 
-# In[ ]:
 
 
 # print(classification_report(y_test, clf_final.predict(X_test)))
 
 
-# In[ ]:
 
 
 #vc.voting = 'hard'
 #print(classification_report(y_test, vc.predict(X_test)))
 
 
-# In[ ]:
 
 
 #vc.voting = 'soft'
 #print(classification_report(y_test, vc.predict(X_test)))
 
 
-# In[ ]:
 
 
 def display_importances(feature_importance_df_, doWorst=False, n_feat=50):
@@ -640,13 +607,11 @@ importance_df["importance"] = clf_final.booster_.feature_importance('gain')
 display_importances(feature_importance_df_=importance_df, n_feat=20)
 
 
-# In[ ]:
 
 
 #display_importances(feature_importance_df_=importance_df, doWorst=True, n_feat=20)
 
 
-# In[ ]:
 
 
 # import shap
@@ -657,25 +622,21 @@ display_importances(feature_importance_df_=importance_df, n_feat=20)
 # #shap_df["importance"] = np.sum(np.abs(shap_values), 0)[:-1]
 
 
-# In[ ]:
 
 
 #display_importances(feature_importance_df_=shap_df, n_feat=20)
 
 
-# In[ ]:
 
 
 # shap.summary_plot(shap_values, X, plot_type='bar')
 
 
-# In[ ]:
 
 
 y_subm = pd.read_csv('../input/sample_submission.csv')
 
 
-# In[ ]:
 
 
 y_subm['Target'] = clf_final.predict(test) + 1
@@ -689,7 +650,6 @@ y_subm_hard = y_subm.copy(deep=True)
 y_subm_hard['Target'] = vc.predict(test) + 1
 
 
-# In[ ]:
 
 
 # nor needed anymore
@@ -697,7 +657,6 @@ y_subm_hard['Target'] = vc.predict(test) + 1
 #y_subm_0forNonHeads.loc[y_subm_0forNonHeads[test['parentesco1'] == 0].index,'Target'] = 1
 
 
-# In[ ]:
 
 
 from datetime import datetime
@@ -715,7 +674,6 @@ y_subm_hard.to_csv(sub_file_hard, index=False)
 #y_subm_0forNonHeads.to_csv(sub_file_0forNonHeads, index=False)
 
 
-# In[ ]:
 
 
 

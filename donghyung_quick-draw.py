@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,27 +19,23 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import ast
 import matplotlib.pyplot as plt
 
 
-# In[3]:
 
 
 df = pd.read_csv('../input/test_simplified.csv')
 df['drawing'] = df['drawing'].apply(ast.literal_eval)
 
 
-# In[4]:
 
 
 df_show = df.iloc[:25]
 
 
-# In[5]:
 
 
 n = 5
@@ -53,19 +48,16 @@ for i, drawing in enumerate(df_show['drawing']):
 plt.show()
 
 
-# In[6]:
 
 
 df_show['drawing'].apply(np.array).apply(np.shape)[:10]
 
 
-# In[7]:
 
 
 import cv2
 
 
-# In[8]:
 
 
 def to_pixel_matrix(drawing_ls, size=224, lw=6, time_color=True):
@@ -105,93 +97,78 @@ def to_pixel_matrix(drawing_ls, size=224, lw=6, time_color=True):
     return cv2.resize(img, (size, size))
 
 
-# In[9]:
 
 
 img = to_pixel_matrix(df_show['drawing'][0], time_color=True, lw=5)
 plt.imshow(img)
 
 
-# In[10]:
 
 
 img.shape
 
 
-# In[11]:
 
 
 from collections import Counter
 import seaborn as sns
 
 
-# In[12]:
 
 
 #df = pd.concat([chunk for chunk in pd.read_csv('total_train.csv', chunksize=100000)])
 
 
-# In[13]:
 
 
 #len(set(df['word']))
 
 
-# In[14]:
 
 
 #word_frequency_dic = Counter(df['word'])
 
 
-# In[15]:
 
 
 #most_frequent_words = sorted(((val, key) for key, val in word_frequency_dic.items()), reverse=True)
 
 
-# In[16]:
 
 
 #most_frequent_words[:10]
 
 
-# In[17]:
 
 
 #most_frequent_words[-10:]
 
 
-# In[18]:
 
 
 #len(set(df['countrycode']))
 
 
-# In[19]:
 
 
 #most_frequent_codes = sorted(((val, key) for key, val in Counter(df['countrycode']).items()), reverse=True)
 
 
-# In[20]:
 
 
 #most_frequent_codes[:10]
 
 
-# In[21]:
 
 
 #most_frequent_codes[-10:]
 
 
-# In[22]:
 
 
 from collections import defaultdict
 
 
-# In[23]:
 
 
 '''
@@ -207,7 +184,6 @@ for _, code in most_frequent_codes[:30]:
 '''
 
 
-# In[24]:
 
 
 '''
@@ -218,13 +194,11 @@ plt.title(label)
 '''
 
 
-# In[25]:
 
 
 from torch.utils.data import Dataset, DataLoader
 
 
-# In[26]:
 
 
 label2idx = defaultdict(lambda: len(label2idx))
@@ -239,7 +213,6 @@ for file_name in file_name_ls:
     label2idx[label] # label2idx 사전에 등록
 
 
-# In[27]:
 
 
 for i, (key, val) in enumerate(label2idx.items()):
@@ -249,7 +222,6 @@ for i, (key, val) in enumerate(label2idx.items()):
         break
 
 
-# In[28]:
 
 
 cc2idx = defaultdict(lambda: len(cc2idx))
@@ -263,19 +235,16 @@ for code in country_code_ls:
     cc2idx[code]
 
 
-# In[29]:
 
 
 len(cc2idx)
 
 
-# In[30]:
 
 
 import torch
 
 
-# In[31]:
 
 
 class QuickDrawDataset(Dataset):
@@ -385,7 +354,6 @@ class QuickDrawDataset(Dataset):
             return img, country_code
 
 
-# In[32]:
 
 
 # 데이터의 idx 순서대로 0 ~ 15,000 사용
@@ -398,7 +366,6 @@ train_dataset = QuickDrawDataset(
 )
 
 
-# In[33]:
 
 
 #15,000 ~ 17,500번째 index만 사용
@@ -411,21 +378,18 @@ val_dataset = QuickDrawDataset(
 )
 
 
-# In[34]:
 
 
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, num_workers=0)
 val_loader = DataLoader(val_dataset, batch_size=32, shuffle=True, num_workers=0)
 
 
-# In[35]:
 
 
 import torchvision
 import torch
 
 
-# In[36]:
 
 
 resnet = torchvision.models.resnet18(pretrained=True)
@@ -434,7 +398,6 @@ resnet.conv1 = torch.nn.Conv2d(1, 64, (7,7), stride=(2,2), padding=(3,3), bias=F
 resnet.fc = torch.nn.Linear(512, 384, bias=True) # output_dim customizing
 
 
-# In[37]:
 
 
 class DrawingClassifier(torch.nn.Module):
@@ -462,27 +425,23 @@ class DrawingClassifier(torch.nn.Module):
         return torch.log_softmax(out, dim=-1)        
 
 
-# In[38]:
 
 
 model = DrawingClassifier(resnet)
 model.to(model.device)
 
 
-# In[39]:
 
 
 for batch in train_loader:
     break
 
 
-# In[40]:
 
 
 plt.imshow(np.array(batch[0][0].cpu().numpy()*255, dtype=np.uint8)[0])
 
 
-# In[41]:
 
 
 import time
@@ -579,7 +538,6 @@ class Fitter() :
         return epoch_loss/n_batch, score/n_batch
 
 
-# In[42]:
 
 
 args = {
@@ -591,19 +549,16 @@ args = {
 fitter = Fitter(**args)
 
 
-# In[43]:
 
 
 fitter.train_and_evaluate(n_epoch=3)
 
 
-# In[44]:
 
 
 len(df)
 
 
-# In[45]:
 
 
 test_dataset = QuickDrawDataset(
@@ -617,7 +572,6 @@ test_dataset = QuickDrawDataset(
 test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False, num_workers=0)
 
 
-# In[46]:
 
 
 def predict(model, test_loader):
@@ -636,13 +590,11 @@ def predict(model, test_loader):
         
 
 
-# In[47]:
 
 
 pred_ls = predict(model, test_loader)
 
 
-# In[48]:
 
 
 # decode
@@ -656,7 +608,6 @@ submission.drop(['countrycode', 'drawing'], axis=1, inplace=True)
 submission['word'] = pred_ls
 
 
-# In[49]:
 
 
 submission.to_csv('submission.csv', index=False)

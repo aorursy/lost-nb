@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import gc
@@ -13,7 +12,6 @@ from sklearn.metrics import matthews_corrcoef
 from operator import itemgetter
 
 
-# In[2]:
 
 
 def get_date_features():
@@ -91,7 +89,6 @@ def get_mindate():
     return subset
 
 
-# In[3]:
 
 
 df_mindate = get_mindate()
@@ -147,7 +144,6 @@ def eval_mcc(y_true, y_prob, show=False):
         return best_mcc
 
 
-# In[4]:
 
 
 def mcc_eval(y_prob, dtrain):
@@ -279,7 +275,6 @@ def GrabData():
     return blindtraindata, testdata
 
 
-# In[5]:
 
 
 def Train():

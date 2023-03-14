@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -24,7 +23,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 # Load data
@@ -37,7 +35,6 @@ print(df_test.shape)
 df_train.info()
 
 
-# In[3]:
 
 
 # Binary data
@@ -58,7 +55,6 @@ for i in range(5):
     sns.barplot(x=col, y='target', data=df_train, ax=ax)
 
 
-# In[4]:
 
 
 # Categorical count
@@ -72,7 +68,6 @@ for i in range(6):
     print(col, df_train[col].nunique())
 
 
-# In[5]:
 
 
 # Categorical with few uniques
@@ -88,7 +83,6 @@ for i in range(5):
     ax.legend(title="target", loc='upper center')
 
 
-# In[6]:
 
 
 # Ordinal
@@ -103,7 +97,6 @@ for i in range(6):
     ax.legend(title="target", loc='upper center')
 
 
-# In[7]:
 
 
 # Ordinal sorted by label
@@ -122,7 +115,6 @@ for i in range(6):
     ax.legend(title="target", loc='upper center')
 
 
-# In[8]:
 
 
 cyclic_cols = ['day','month']
@@ -137,7 +129,6 @@ for i in range(len(cyclic_cols)):
     ax.legend(title="target", loc='upper center')
 
 
-# In[9]:
 
 
 for df in [df_train, df_test]:
@@ -146,19 +137,16 @@ for df in [df_train, df_test]:
         df[col+'_cos'] = np.cos((2 * np.pi * df[col]) / max(df[col]))
 
 
-# In[10]:
 
 
 sns.pairplot(df_train.loc[:1000], vars=['day_sin', 'day_cos', 'day'], hue='target')
 
 
-# In[11]:
 
 
 sns.pairplot(df_train.loc[:1000], vars=['month_sin', 'month_cos', 'month'], hue='target')
 
 
-# In[12]:
 
 
 # Subset
@@ -188,13 +176,11 @@ for df in [train0, test0]:
 train0.head()
 
 
-# In[13]:
 
 
 get_ipython().run_cell_magic('time', '', "from sklearn.decomposition import TruncatedSVD, PCA\n\n# One hot for features with few categories\ncol_names = ['nom_{}'.format(i) for i in range(5)] + ['ord_{}'.format(i) for i in range(5)] + ['day', 'month']\ntrain_ohe = df_train[col_names]\ntest_ohe = df_test[col_names]\n\ntraintest = pd.concat([train_ohe, test_ohe])\ndummies = pd.get_dummies(traintest, columns=traintest.columns, drop_first=True, sparse=True)\n\ntrain_ohe1 = dummies.iloc[:df_train.shape[0], :]\ntest_ohe1 = dummies.iloc[df_train.shape[0]:, :]\nprint('train_ohe1.shape', train_ohe1.shape)\n\n# One hot + SVD  for features with many categories\ncol_names = ['nom_{}'.format(i) for i in range(5, 10)] + ['ord_{}'.format(i) for i in range(5, 6)]\ntrain_ohe = df_train[col_names]\ntest_ohe = df_test[col_names]\n\ntraintest = pd.concat([train_ohe, test_ohe])\ndummies = pd.get_dummies(traintest, columns=traintest.columns, drop_first=True, sparse=True)\n\ntrain_ohe2 = dummies.iloc[:df_train.shape[0], :].sparse.to_coo().tocsr()\ntest_ohe2 = dummies.iloc[df_train.shape[0]:, :].sparse.to_coo().tocsr()\nprint('train_ohe2.shape', train_ohe2.shape)\n\n# Lower dimensionality\nn_components = 200\nsvd = TruncatedSVD(n_components=n_components)\ntrain_svd = svd.fit_transform(train_ohe2)\ntest_svd = svd.transform(test_ohe2)\nprint('train_svd.shape', train_svd.shape)\n\n# Join features\ntrain = train0.drop(['nom_{}'.format(i) for i in range(10)], axis=1)\ntest = test0.drop(['nom_{}'.format(i) for i in range(10)], axis=1)\ncol_names = ['pca_{}'.format(i) for i in range(n_components)]\ntrain = pd.concat([train, train_ohe1, pd.DataFrame(train_svd, columns=col_names)], axis=1)\ntest = pd.concat([test, test_ohe1, pd.DataFrame(test_svd, columns=col_names)], axis=1)\n\nprint('train.shape', train.shape) # feature set #1")
 
 
-# In[14]:
 
 
 # One hot
@@ -211,7 +197,6 @@ test_ohe = dummies.iloc[df_train.shape[0]:, :].sparse.to_coo().tocsr()
 print('train_ohe.shape', train_ohe.shape)  # feature set #2
 
 
-# In[15]:
 
 
 from sklearn.model_selection import cross_val_score
@@ -226,13 +211,11 @@ with ignore_warnings(category=FutureWarning):
     get_ipython().run_line_magic('time', "print('OHE CV:', cross_val_score(lr2, train_ohe, target, cv=2, scoring='roc_auc', n_jobs=-1).mean())")
 
 
-# In[16]:
 
 
 get_ipython().run_cell_magic('time', '', 'lr1.fit(train, target)\nlr2.fit(train_ohe, target)')
 
 
-# In[17]:
 
 
 from sklearn.utils.testing import ignore_warnings
@@ -244,7 +227,6 @@ lr1_submission.to_csv('lr1.csv', index=False)
 lr1_submission.head()
 
 
-# In[18]:
 
 
 with ignore_warnings(category=FutureWarning):
@@ -254,7 +236,6 @@ lr2_submission.to_csv('lr2.csv', index=False)
 lr2_submission.head()
 
 
-# In[19]:
 
 
 # %%time
@@ -265,13 +246,11 @@ lr2_submission.head()
 # print('CV:', cross_val_score(svm, train.iloc[:10000], target.iloc[:10000], cv=2, n_jobs=-1, scoring='roc_auc').mean())
 
 
-# In[20]:
 
 
 # svm.fit(train.iloc[:10000], target.iloc[:10000])
 
 
-# In[21]:
 
 
 # %%time
@@ -281,19 +260,15 @@ lr2_submission.head()
 # svm_submission.head()
 
 
-# In[22]:
 
 
 get_ipython().run_cell_magic('time', '', "import torch\nimport torch.nn as nn\nimport torch.nn.functional as F\n\nfrom skorch import NeuralNetClassifier\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\n\nclass MyModule(nn.Module):\n    def __init__(self, num_units=20):\n        super(MyModule, self).__init__()\n\n        self.dense1 = nn.Linear(train.shape[1], num_units)\n        self.dropout = nn.Dropout(0.5)\n        self.dense2 = nn.Linear(num_units, 2)\n\n    def forward(self, X, **kwargs):\n        X = self.dense1(X)\n        X = torch.tanh(X)\n        X = self.dropout(X)\n        X = self.dense2(X)\n        X = F.softmax(X, dim=-1)\n        return X\n\nnet = NeuralNetClassifier(\n    MyModule,\n    max_epochs=20,\n    lr=0.01,\n    iterator_train__shuffle=True,\n)\n\npipe = Pipeline([\n    ('scale', StandardScaler()),\n    ('net', net),\n])\n\nprint('CV:', cross_val_score(pipe,\n                             train.values.astype('float32'),\n                             target.values,\n                             cv=2,\n                             n_jobs=-1,\n                             scoring='roc_auc').mean())")
 
 
-# In[23]:
 
 
-pipe.fit(train.values.astype('float32'), target.values)
 
 
-# In[24]:
 
 
 net_predictions = pipe.predict_proba(test.values.astype('float32'))
@@ -302,7 +277,6 @@ net_submission.to_csv('net.csv', index=False)
 net_submission.head()
 
 
-# In[25]:
 
 
 predictions = pd.DataFrame({'lr1': lr1_predictions[:, 1],
@@ -312,13 +286,11 @@ corr = predictions.corr()
 corr
 
 
-# In[26]:
 
 
 sns.heatmap(corr, annot=True, square=True);
 
 
-# In[27]:
 
 
 vote_predictions = (lr1_predictions + lr2_predictions) / 2
@@ -327,7 +299,6 @@ vote_submission.to_csv('vote1.csv', index=False)
 vote_submission.head()
 
 
-# In[28]:
 
 
 vote_predictions = (lr1_predictions * 0.1 + lr2_predictions) / 1.1
@@ -336,7 +307,6 @@ vote_submission.to_csv('vote2.csv', index=False)
 vote_submission.head()
 
 
-# In[29]:
 
 
 vote_predictions = (lr1_predictions * 0.1 + net_predictions * 0.1 + lr2_predictions) / 1.2

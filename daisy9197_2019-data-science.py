@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import numpy as np
@@ -47,7 +45,6 @@ import tensorflow as tf
 import keras
 
 
-# In[3]:
 
 
 # Read in the data CSV files
@@ -57,7 +54,6 @@ test = pd.read_csv('../input/data-science-bowl-2019/test.csv')
 specs = pd.read_csv('../input/data-science-bowl-2019/specs.csv')
 
 
-# In[4]:
 
 
 # create a new column to capture the correct/incorrect info from specs data
@@ -90,7 +86,6 @@ train_attempts['attempts']     .plot(kind='hist',
 plt.show()
 
 
-# In[5]:
 
 
 # for each data, create two new variablse named'weekend' and 'evening'
@@ -118,7 +113,6 @@ train_date = train_date_temp.drop(['timestamp','hour','weekday','weekend','eveni
 train_prep1 = pd.merge(train_attempts,train_date,on=['installation_id','game_session'],how='outer')
 
 
-# In[6]:
 
 
 # make a graph to see the relationship between freetime and total attempts
@@ -132,7 +126,6 @@ plt.title('total attempts in weekend')
 plt.show()
 
 
-# In[7]:
 
 
 # make a copy of train dataset
@@ -154,7 +147,6 @@ train_event['uni_eventid'].plot(kind='hist',
 plt.show()
 
 
-# In[8]:
 
 
 # groupby installation_id and game_session to get the maxium value of game_time.
@@ -171,7 +163,6 @@ train_gametime['game_time'].apply(np.log1p).plot(kind='hist',
 plt.show()
 
 
-# In[9]:
 
 
 # groupby installation_id and game_session to get the maxium value of event_count.
@@ -188,7 +179,6 @@ train_etcount['event_count'].apply(np.log1p).plot(kind='hist',
 plt.show()
 
 
-# In[10]:
 
 
 # before we get into detail, we need to check if one game seesion has only one type.
@@ -197,7 +187,6 @@ len(train_gtcheck[train_gtcheck['type'] != 1]) # 0
 # which means one game_session has only one unique type
 
 
-# In[11]:
 
 
 # groupby installation_id and game_session
@@ -211,7 +200,6 @@ train_assess = train_assess.drop('type',axis=1)
 train_prep5 = pd.merge(train_prep4,train_assess,on=['installation_id','game_session'],how='outer')
 
 
-# In[12]:
 
 
 # make a graph to see the relationship between 'assessment type' and total attempts
@@ -225,7 +213,6 @@ plt.title('total attempts in assessment type')
 plt.show()
 
 
-# In[13]:
 
 
 # count values
@@ -242,7 +229,6 @@ train_etcode['event_code'].apply(np.log1p).plot(kind='hist',
 plt.show()
 
 
-# In[14]:
 
 
 # before we get into more detail, we need to check is there only one unique title within one game session.
@@ -250,7 +236,6 @@ train_gticheck = train.groupby(['installation_id','game_session'])['title'].nuni
 len(train_gticheck[train_gtcheck['type'] != 1]) #0
 
 
-# In[15]:
 
 
 train_title = train.copy() # make a copy of train data set.
@@ -268,7 +253,6 @@ train_five_title = train_title.groupby(['installation_id','game_session'],as_ind
 train_prep7 = pd.merge(train_prep6,train_five_title,on=['installation_id','game_session'],how='outer')
 
 
-# In[16]:
 
 
 # plot
@@ -283,7 +267,6 @@ plt.xticks(rotation=45)
 plt.show()
 
 
-# In[17]:
 
 
 # based on 8, we know that one game_session only has one unique world, therefore we omit the checking procedure for simplicity.
@@ -302,7 +285,6 @@ train_four_world = train_world.groupby(['installation_id','game_session'],as_ind
 train_prep8 = pd.merge(train_prep7,train_four_world,on=['installation_id','game_session'],how='outer')
 
 
-# In[18]:
 
 
 # plot
@@ -317,7 +299,6 @@ plt.xticks(rotation=45)
 plt.show()
 
 
-# In[19]:
 
 
 # merge the specs_attempts data with test data
@@ -336,7 +317,6 @@ test_attempts['attempts']     .plot(kind='hist',
 plt.show()
 
 
-# In[20]:
 
 
 # for each data, create two new variablse named'weekend' and 'evening'
@@ -364,7 +344,6 @@ test_date = test_date_temp.drop(['timestamp','hour','weekday','weekend','evening
 test_prep1 = pd.merge(test_attempts,test_date,on=['installation_id','game_session'],how='outer')
 
 
-# In[21]:
 
 
 # make a graph to see the relationship between freetime and total attempts
@@ -378,7 +357,6 @@ plt.title('total attempts in weekend')
 plt.show()
 
 
-# In[22]:
 
 
 # make a copy of test dataset
@@ -400,7 +378,6 @@ test_event['uni_eventid'].plot(kind='hist',
 plt.show()
 
 
-# In[23]:
 
 
 # groupby installation_id and game_session to get the maxium value of game_time.
@@ -417,7 +394,6 @@ test_gametime['game_time'].apply(np.log1p).plot(kind='hist',
 plt.show()
 
 
-# In[24]:
 
 
 # groupby installation_id and game_session to get the maxium value of event_count.
@@ -434,7 +410,6 @@ test_etcount['event_count'].apply(np.log1p).plot(kind='hist',
 plt.show()
 
 
-# In[25]:
 
 
 # groupby installation_id and game_session
@@ -458,7 +433,6 @@ plt.title('total attempts in assessment type')
 plt.show()
 
 
-# In[26]:
 
 
 # count values
@@ -475,7 +449,6 @@ test_etcode['event_code'].apply(np.log1p).plot(kind='hist',
 plt.show()
 
 
-# In[27]:
 
 
 test_title = test.copy() # make a copy of test data set.
@@ -504,7 +477,6 @@ plt.xticks(rotation=45)
 plt.show()
 
 
-# In[28]:
 
 
 # based on 8, we know that one game_session only has one unique world, therefore we omit the checking procedure for simplicity.
@@ -534,7 +506,6 @@ plt.xticks(rotation=45)
 plt.show()
 
 
-# In[29]:
 
 
 # merge train data with train label
@@ -553,7 +524,6 @@ trainset['freetime'] = trainset['freetime'].astype('category').cat.codes
 trainset['assessment'] = trainset['assessment'].astype('category').cat.codes
 
 
-# In[30]:
 
 
 trainset_train,trainset_test = train_test_split(trainset,test_size=0.2,random_state=42) # split data
@@ -569,7 +539,6 @@ trainset_test_ybin = trainset_test[['num_correct']].values.astype('float32')
 trainset_test_ynum = trainset_test[['num_incorrect']].values.astype('float32')
 
 
-# In[31]:
 
 
 one_input = Input(shape=(16,), name='one_input') # pass by one input
@@ -591,7 +560,6 @@ model.compile(optimizer='Adam', loss=['binary_crossentropy', 'mean_squared_error
 model.fit(trainset_train_X, [trainset_train_ybin, trainset_train_ynum],epochs=30,verbose=0)
 
 
-# In[32]:
 
 
 # predict using trainset_test_X
@@ -614,7 +582,6 @@ print('The mean square error is: ',trainset_mse )
 # It is clearly to see that the model is pretty good
 
 
-# In[33]:
 
 
 testset = test_prep8.copy()
@@ -625,7 +592,6 @@ testset['freetime'] =testset['freetime'].astype('category').cat.codes
 testset['assessment'] = testset['assessment'].astype('category').cat.codes
 
 
-# In[34]:
 
 
 testset['num_correct'] = 0
@@ -638,7 +604,6 @@ for i in range(len(testset)):
     testset['num_incorrect'][i] = np.around(pred_y[1])
 
 
-# In[35]:
 
 
 testset['accuracy'] = testset['num_correct']/(testset['num_correct'] + testset['num_incorrect'])
@@ -647,7 +612,6 @@ testset['accuracy'] = testset['num_correct']/(testset['num_correct'] + testset['
 testset.fillna(0,inplace=True)
 
 
-# In[36]:
 
 
 # calculate accuracy_group
@@ -664,7 +628,6 @@ for m in range(len(testset)):
         
 
 
-# In[37]:
 
 
 final_pred_1 = testset[(testset['Bird Measurer'] !=0) | (testset['Cart Balancer'] !=0)| (testset['Cauldron Filler'] !=0)                    | (testset['Chest Sorter'] !=0)| (testset['Mushroom Sorter'] !=0)]
@@ -672,21 +635,18 @@ final_pred_1 = testset[(testset['Bird Measurer'] !=0) | (testset['Cart Balancer'
 final_pred = final_pred_1.groupby('installation_id',as_index=False)['accuracy_group'].mean()
 
 
-# In[38]:
 
 
 final = final_pred.round(0)
 final
 
 
-# In[39]:
 
 
 # save as csv
 final.to_csv('submission.csv',index=False)
 
 
-# In[ ]:
 
 
 

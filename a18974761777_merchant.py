@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -19,14 +18,12 @@ warnings.filterwarnings('ignore')
 np.random.seed(4590)
 
 
-# In[2]:
 
 
 def get_new_columns(name,aggs):
     return [name + '_' + k + '_' + agg for k in aggs.keys() for agg in aggs[k]]
 
 
-# In[3]:
 
 
 df_train = pd.read_csv('../input/elo-merchant-category-recommendation/train.csv')
@@ -36,7 +33,6 @@ df_new_merchant_trans = pd.read_csv('../input/elo-merchant-category-recommendati
 df_merchants = pd.read_csv('../input/elo-merchant-category-recommendation/merchants.csv')
 
 
-# In[4]:
 
 
 gdf = df_hist_trans.groupby("card_id")
@@ -48,7 +44,6 @@ df_train = pd.merge(df_train, gdf, on="card_id", how="left")
 df_test = pd.merge(df_test, gdf, on="card_id", how="left")
 
 
-# In[5]:
 
 
 gdf = df_hist_trans.groupby("card_id")
@@ -60,7 +55,6 @@ df_train = pd.merge(df_train, gdf, on="card_id", how="left")
 df_test = pd.merge(df_test, gdf, on="card_id", how="left")
 
 
-# In[6]:
 
 
 for df in [df_hist_trans,df_new_merchant_trans]:
@@ -69,7 +63,6 @@ for df in [df_hist_trans,df_new_merchant_trans]:
     df['merchant_id'].fillna('M_ID_00a6ca8a8a',inplace=True)
 
 
-# In[7]:
 
 
 for df in [df_hist_trans,df_new_merchant_trans]:
@@ -87,7 +80,6 @@ for df in [df_hist_trans,df_new_merchant_trans]:
     df['month_diff'] += df['month_lag']
 
 
-# In[8]:
 
 
 aggs = {}
@@ -119,13 +111,11 @@ del df_hist_trans_group;gc.collect()
 del df_new_merchant_trans;gc.collect()
 
 
-# In[9]:
 
 
 df_train.columns
 
 
-# In[10]:
 
 
 aggs = {}
@@ -158,15 +148,13 @@ df_test = df_test.merge(df_hist_trans_group,on='card_id',how='left')
 del df_hist_trans_group;gc.collect()
 
 
-# In[11]:
 
 
 del df_hist_trans;gc.collect()
-#del df_new_merchant_trans;gc.collect()#清理内存-
+#del df_new_merchant_trans;gc.collect()
 df_train.head(5)
 
 
-# In[12]:
 
 
 from sklearn.preprocessing import Imputer
@@ -178,7 +166,6 @@ df_merchants['category_2']=imp.fit(pd.DataFrame(df_merchants['category_2'].value
 df_merchants.head()
 
 
-# In[13]:
 
 
 aggs={}
@@ -194,7 +181,6 @@ df_test=df_test.merge(df_merchants_group.reset_index(),on='merchant_category_id'
 df_train.head()
 
 
-# In[14]:
 
 
 df_merchants['max_merchant_category_id']=df_merchants['merchant_category_id']
@@ -213,7 +199,6 @@ df_test=df_test.merge(df_merchants_group.reset_index(),on='max_merchant_category
 df_train.head()
 
 
-# In[15]:
 
 
 df_train['outliers'] = 0
@@ -221,7 +206,6 @@ df_train.loc[df_train['target'] < -30, 'outliers'] = 1
 df_train['outliers'].value_counts()
 
 
-# In[16]:
 
 
 for df in [df_train,df_test]:
@@ -243,7 +227,6 @@ for f in ['feature_1','feature_2','feature_3']:
     df_test[f] = df_test[f].map(order_label)
 
 
-# In[17]:
 
 
 df_train_columns = [c for c in df_train.columns if c not in ['card_id', 'first_active_month','target','outliers']]
@@ -251,7 +234,6 @@ target = df_train['target']
 del df_train['target']
 
 
-# In[18]:
 
 
 param = {'num_leaves': 31,
@@ -295,14 +277,12 @@ for fold_, (trn_idx, val_idx) in enumerate(folds.split(df_train,df_train['outlie
 np.sqrt(mean_squared_error(oof, target))
 
 
-# In[19]:
 
 
 model_without_outliers = pd.DataFrame({"card_id":df_test["card_id"].values})
 model_without_outliers["target"] = predictions
 
 
-# In[20]:
 
 
 #del df_train['outliers']
@@ -310,14 +290,12 @@ model_without_outliers["target"] = predictions
 #target = df_train['outliers']
 
 
-# In[21]:
 
 
 features = [c for c in df_train.columns if c not in ['card_id', 'first_active_month']]
 categorical_feats = [c for c in features if 'feature_' in c]
 
 
-# In[22]:
 
 
 param = {'num_leaves': 31,
@@ -336,7 +314,6 @@ param = {'num_leaves': 31,
          "random_state": 2333}
 
 
-# In[23]:
 
 
 from sklearn.model_selection import StratifiedKFold, KFold
@@ -371,7 +348,6 @@ for fold_, (trn_idx, val_idx) in enumerate(folds.split(df_train.values, target.v
 print("CV score: {:<8.5f}".format(log_loss(target, oof)))
 
 
-# In[24]:
 
 
 ### 'target' is the probability of whether an observation is an outlier
@@ -380,13 +356,11 @@ df_outlier_prob["target"] = predictions
 df_outlier_prob.head()
 
 
-# In[25]:
 
 
 outlier_id = pd.DataFrame(df_outlier_prob.sort_values(by='target',ascending = False).head(25000)['card_id'])
 
 
-# In[26]:
 
 
 best_submission = pd.read_csv('../input/finaldata/submission_ashish.csv')
@@ -394,19 +368,16 @@ most_likely_liers = best_submission.merge(outlier_id,how='right')
 most_likely_liers.head()
 
 
-# In[27]:
 
 
 get_ipython().run_cell_magic('time', '', "for card_id in most_likely_liers['card_id']:\n    model_without_outliers.loc[model_without_outliers['card_id']==card_id,'target']\\\n    = most_likely_liers.loc[most_likely_liers['card_id']==card_id,'target'].values")
 
 
-# In[28]:
 
 
 model_without_outliers.to_csv("combining_submission.csv", index=False)
 
 
-# In[29]:
 
 
 #sub_df = pd.DataFrame({"card_id":df_test["card_id"].values})
@@ -414,7 +385,6 @@ model_without_outliers.to_csv("combining_submission.csv", index=False)
 #sub_df.to_csv("submission.csv", index=False)
 
 
-# In[30]:
 
 
 #cols = (feature_importance_df[["Feature", "importance"]]

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import torch
@@ -17,7 +16,6 @@ import torch.nn.functional as F
 warnings.simplefilter(action='ignore', category=FutureWarning)  # thx NumPy
 
 
-# In[2]:
 
 
 epochs = 10
@@ -28,14 +26,12 @@ learning_rate = 1e-4
 batch_size = 1024
 
 
-# In[3]:
 
 
 Z_train = pd.read_csv('../input/train.csv', index_col='Id', dtype=np.float32)
 Z_test = pd.read_csv('../input/test.csv', index_col='Id', dtype=np.float32)
 
 
-# In[4]:
 
 
 # See https://www.kaggle.com/c/how-much-did-it-rain-ii/discussion/16622
@@ -47,7 +43,6 @@ Z_train.fillna(0, inplace=True)
 Z_test.fillna(0, inplace=True)
 
 
-# In[5]:
 
 
 train_unique_ids = Z_train.index.unique()
@@ -58,7 +53,6 @@ Z_val = Z_train.loc[val_ids]
 Z_train = Z_train.loc[train_ids]
 
 
-# In[6]:
 
 
 def align_ids(df):
@@ -82,7 +76,6 @@ Z_val.set_index(pd.Index(new_val_ids), inplace=True)
 Z_test.set_index(pd.Index(new_test_ids), inplace=True)
 
 
-# In[7]:
 
 
 def train(model, device, train_loader, criterion, optimizer, epoch):
@@ -133,7 +126,6 @@ def test(model, device, test_loader):
     return sol.sort_values(by='Id')
 
 
-# In[8]:
 
 
 class BidirectionalRNN(nn.Module):
@@ -188,7 +180,6 @@ class BidirectionalRNN(nn.Module):
         return outputs
 
 
-# In[9]:
 
 
 class RainDataset(data.Dataset):
@@ -206,7 +197,6 @@ class RainDataset(data.Dataset):
             return self.radar_measurements.loc[idx].values, self.expected.loc[idx].iloc[0]
 
 
-# In[10]:
 
 
 def collate_fn(batch):
@@ -223,7 +213,6 @@ def collate_fn(batch):
     return pack, torch.FloatTensor(expectations)
 
 
-# In[11]:
 
 
 Z_test['Expected'] = Z_test.index + 1  # Hacked
@@ -236,7 +225,6 @@ X, y = Z_test.drop('Expected', axis=1), Z_test['Expected'].astype(np.float32)
 test_dataset = RainDataset(X, y)
 
 
-# In[12]:
 
 
 train_loader = data.DataLoader(train_dataset, collate_fn=collate_fn, batch_size=batch_size, shuffle=True)
@@ -244,7 +232,6 @@ val_loader = data.DataLoader(val_dataset, collate_fn=collate_fn, batch_size=batc
 test_loader = data.DataLoader(test_dataset, collate_fn=collate_fn, batch_size=batch_size, shuffle=False)
 
 
-# In[13]:
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -257,7 +244,6 @@ for epoch in range(epochs):
     val(model, device, val_loader, criterion)
 
 
-# In[14]:
 
 
 submission = test(model, device, test_loader)

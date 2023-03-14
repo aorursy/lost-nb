@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import time
@@ -42,7 +41,6 @@ from torch.optim.optimizer import Optimizer
 from unidecode import unidecode
 
 
-# In[2]:
 
 
 embed_size = 300 # how big is each word vector
@@ -55,7 +53,6 @@ n_splits = 5 # Number of K-fold Splits
 SEED = 1029
 
 
-# In[3]:
 
 
 def seed_everything(seed=1029):
@@ -68,7 +65,6 @@ def seed_everything(seed=1029):
 seed_everything()
 
 
-# In[4]:
 
 
 ## FUNCTIONS TAKEN FROM https://www.kaggle.com/gmhost/gru-capsule
@@ -135,7 +131,6 @@ def load_para(word_index):
     return embedding_matrix
 
 
-# In[5]:
 
 
 df_train = pd.read_csv("../input/train.csv")
@@ -143,7 +138,6 @@ df_test = pd.read_csv("../input/test.csv")
 df = pd.concat([df_train ,df_test],sort=True)
 
 
-# In[6]:
 
 
 def build_vocab(texts):
@@ -159,7 +153,6 @@ def build_vocab(texts):
 vocab = build_vocab(df['question_text'])
 
 
-# In[7]:
 
 
 sin = len(df_train[df_train["target"]==0])
@@ -171,7 +164,6 @@ print("# Sincere questions: {:,}({:.2f}%) and # Insincere questions: {:,}({:.2f}
 print("# Test samples: {:,}({:.3f}% of train samples)".format(len(df_test),len(df_test)/len(df_train)))
 
 
-# In[8]:
 
 
 def build_vocab(texts):
@@ -237,7 +229,6 @@ def add_lower(embedding, vocab):
     print(f"Added {count} words to embedding")    
 
 
-# In[9]:
 
 
 puncts = [',', '.', '"', ':', ')', '(', '-', '!', '?', '|', ';', "'", '$', '&', '/', '[', ']', '>', '%', '=', '#', '*', '+', '\\', '•',  '~', '@', '£', 
@@ -272,7 +263,6 @@ def replace_typical_misspell(text):
     return mispellings_re.sub(replace, text)
 
 
-# In[10]:
 
 
 from sklearn.preprocessing import StandardScaler
@@ -366,7 +356,6 @@ def load_and_prec():
 #     return train_X, test_X, train_y, tokenizer.word_index
 
 
-# In[11]:
 
 
 
@@ -376,7 +365,6 @@ x_train, x_test, y_train, features, test_features, word_index = load_and_prec()
 # x_train, x_test, y_train, x_test_f,y_test_f,features, test_features,features_t, word_index = load_and_prec() 
 
 
-# In[12]:
 
 
 np.save("x_train",x_train)
@@ -388,7 +376,6 @@ np.save("test_features",test_features)
 np.save("word_index.npy",word_index)
 
 
-# In[13]:
 
 
 x_train = np.load("x_train.npy")
@@ -399,13 +386,11 @@ test_features = np.load("test_features.npy")
 word_index = np.load("word_index.npy").item()
 
 
-# In[14]:
 
 
 features.shape
 
 
-# In[15]:
 
 
 # missing entries in the embedding are set using np.random.normal so we have to seed here too
@@ -425,20 +410,17 @@ gc.collect()
 np.shape(embedding_matrix)
 
 
-# In[16]:
 
 
 np.shape(embedding_matrix)
 
 
-# In[17]:
 
 
 splits = list(StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=SEED).split(x_train, y_train))
 splits[:3]
 
 
-# In[18]:
 
 
 # code inspired from: https://github.com/anandsaha/pytorch.cyclic.learning.rate/blob/master/cls.py
@@ -526,7 +508,6 @@ class CyclicLR(object):
         return lrs
 
 
-# In[19]:
 
 
 import torch as t
@@ -667,7 +648,6 @@ class Capsule_Main(nn.Module):
     
 
 
-# In[20]:
 
 
 class Attention(nn.Module):
@@ -779,7 +759,6 @@ class NeuralNet(nn.Module):
         return out
 
 
-# In[21]:
 
 
 class MyDataset(Dataset):
@@ -794,7 +773,6 @@ class MyDataset(Dataset):
         return len(self.dataset)
 
 
-# In[22]:
 
 
 def sigmoid(x):
@@ -821,7 +799,6 @@ avg_losses_f = []
 avg_val_losses_f = []
 
 
-# In[23]:
 
 
 for i, (train_idx, valid_idx) in enumerate(splits):    
@@ -943,7 +920,6 @@ print('All \t loss={:.4f} \t val_loss={:.4f} \t '.format(np.average(avg_losses_f
 # x_train, x_test_f, y_train, y_test_f
 
 
-# In[24]:
 
 
 def bestThresshold(y_train,train_preds):
@@ -959,7 +935,6 @@ def bestThresshold(y_train,train_preds):
 delta = bestThresshold(y_train,train_preds)
 
 
-# In[25]:
 
 
 submission = df_test[['qid']].copy()
@@ -967,7 +942,6 @@ submission['prediction'] = (test_preds > delta).astype(int)
 submission.to_csv('submission.csv', index=False)
 
 
-# In[26]:
 
 
 get_ipython().system('head submission.csv')

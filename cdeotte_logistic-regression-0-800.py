@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np, pandas as pd, os
@@ -15,7 +14,6 @@ test = pd.read_csv('../input/test.csv')
 train.head()
 
 
-# In[2]:
 
 
 cols = [c for c in train.columns if c not in ['id', 'target']]
@@ -31,7 +29,6 @@ auc = roc_auc_score(train['target'],oof)
 print('LR without interactions scores CV =',round(auc,5))
 
 
-# In[3]:
 
 
 # INITIALIZE VARIABLES
@@ -67,7 +64,6 @@ auc = roc_auc_score(train['target'],oof)
 print('LR with interactions scores CV =',round(auc,5))
 
 
-# In[4]:
 
 
 sub = pd.read_csv('../input/sample_submission.csv')
@@ -75,7 +71,6 @@ sub['target'] = preds
 sub.to_csv('submission.csv',index=False)
 
 
-# In[5]:
 
 
 import seaborn as sns
@@ -105,7 +100,6 @@ plt.legend()
 plt.show()
 
 
-# In[6]:
 
 
 plt.figure(figsize=(15,5))
@@ -130,7 +124,6 @@ plt.legend()
 plt.show()
 
 
-# In[7]:
 
 
 # PLOT INTERACTIONS WITH WHEEZY-MAGIC

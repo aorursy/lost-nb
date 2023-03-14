@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -15,20 +14,17 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
-# In[2]:
 
 
 train_df = pd.read_json("../input/train.json")
 train_df.head()
 
 
-# In[3]:
 
 
 print(train_df.iloc[1,6])
 
 
-# In[4]:
 
 
 print(train_df.description[100007].split('w/'))
@@ -40,7 +36,6 @@ feature_key = {'amenities':['garage', 'garden', 'fitness', 'laundry','rooftop']
               'fee': ['noo fee']}
 
 
-# In[5]:
 
 
 test_df = pd.read_json("../input/test.json")
@@ -48,7 +43,6 @@ print("Train Rows : ", train_df.shape[0])
 print("Test Rows : ", test_df.shape[0])
 
 
-# In[6]:
 
 
 int_level = train_df['interest_level'].value_counts()
@@ -60,7 +54,6 @@ plt.xlabel('Interest level', fontsize=12)
 plt.show()
 
 
-# In[7]:
 
 
 cnt_srs = train_df['bathrooms'].value_counts()
@@ -72,7 +65,6 @@ plt.xlabel('bathrooms', fontsize=12)
 plt.show()
 
 
-# In[8]:
 
 
 train_df['bathrooms'].ix[train_df['bathrooms']>3] = 3
@@ -83,7 +75,6 @@ plt.ylabel('bathrooms', fontsize=12)
 plt.show()
 
 
-# In[9]:
 
 
 cnt_srs = train_df['bedrooms'].value_counts()
@@ -95,7 +86,6 @@ plt.xlabel('bedrooms', fontsize=12)
 plt.show()
 
 
-# In[10]:
 
 
 plt.figure(figsize=(8,6))
@@ -105,7 +95,6 @@ plt.xlabel('bedrooms', fontsize=12)
 plt.show()
 
 
-# In[11]:
 
 
 plt.figure(figsize=(8,6))
@@ -115,7 +104,6 @@ plt.ylabel('price', fontsize=12)
 plt.show()
 
 
-# In[12]:
 
 
 ulimit = np.percentile(train_df.price.values, 99)
@@ -127,7 +115,6 @@ plt.xlabel('price', fontsize=12)
 plt.show()
 
 
-# In[13]:
 
 
 llimit = np.percentile(train_df.latitude.values, 1)
@@ -141,7 +128,6 @@ plt.xlabel('latitude', fontsize=12)
 plt.show()
 
 
-# In[14]:
 
 
 llimit = np.percentile(train_df.longitude.values, 1)
@@ -155,7 +141,6 @@ plt.xlabel('longitude', fontsize=12)
 plt.show()
 
 
-# In[15]:
 
 
 from mpl_toolkits.basemap import Basemap
@@ -172,7 +157,6 @@ m.hexbin(x, y, gridsize=200,
          bins='log', cmap=cm.YlOrRd_r);
 
 
-# In[16]:
 
 
 train_df["created"] = pd.to_datetime(train_df["created"])
@@ -188,7 +172,6 @@ plt.xticks(rotation='vertical')
 plt.show()
 
 
-# In[17]:
 
 
 test_df["created"] = pd.to_datetime(test_df["created"])
@@ -203,7 +186,6 @@ plt.xticks(rotation='vertical')
 plt.show()
 
 
-# In[18]:
 
 
 train_df["hour_created"] = train_df["created"].dt.hour
@@ -215,7 +197,6 @@ plt.xticks(rotation='vertical')
 plt.show()
 
 
-# In[19]:
 
 
 cnt_srs = train_df.groupby('display_address')['display_address'].count()
@@ -230,7 +211,6 @@ plt.ylabel('log(Count)', fontsize=12)
 plt.show()
 
 
-# In[20]:
 
 
 train_df["num_photos"] = train_df["photos"].apply(len)
@@ -243,7 +223,6 @@ plt.ylabel('Number of Occurrences', fontsize=12)
 plt.show()
 
 
-# In[21]:
 
 
 train_df['num_photos'].ix[train_df['num_photos']>12] = 12
@@ -254,7 +233,6 @@ plt.ylabel('Interest Level', fontsize=12)
 plt.show()
 
 
-# In[22]:
 
 
 train_df["num_features"] = train_df["features"].apply(len)
@@ -267,7 +245,6 @@ plt.xlabel('Number of features', fontsize=12)
 plt.show()
 
 
-# In[23]:
 
 
 train_df['num_features'].ix[train_df['num_features']>17] = 17
@@ -278,7 +255,6 @@ plt.ylabel('Number of features', fontsize=12)
 plt.show()
 
 
-# In[24]:
 
 
 from wordcloud import WordCloud

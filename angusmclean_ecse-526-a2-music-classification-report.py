@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from musicclassificationlib_py import *
@@ -14,7 +13,6 @@ DROP_COLS = dfLabels.columns
 TARGET_COL = 'category'
 
 
-# In[2]:
 
 
 def graphSong(songRow):
@@ -26,7 +24,6 @@ def graphSong(songRow):
 graphSong(dfLabels.iloc[0])
 
 
-# In[3]:
 
 
 ## Load Song Data
@@ -35,34 +32,29 @@ dfAll = pd.merge(dfSongVects, dfLabels, left_index=True, right_on='id', how='lef
 dfAll
 
 
-# In[4]:
 
 
 plot_cols = dfAll.columns[:4].tolist() + [TARGET_COL]
 sns.pairplot(dfAll[plot_cols], hue=TARGET_COL, plot_kws={"s": 12})
 
 
-# In[5]:
 
 
 get_ipython().run_cell_magic('time', '', 'numNeighboursResults = []\n\n## GridSearch k in kNN\nfor n in list(range(1, 20)):\n    ## Run CrossValidation Test\n    knnResults = testClassifier(dfAll, KnnClassifier(n=n))\n    \n    ## Calculate average score and append to results\n    avg_f1_score = np.mean([r[\'f1_score\'] for r in knnResults])\n    avg_accuracy_score = np.mean([r[\'accuracy_score\'] for r in knnResults])\n    numNeighboursResults.append([avg_accuracy_score, avg_f1_score])\n\n## Plot Results\npd.DataFrame(numNeighboursResults, columns=[\'accuracy\',\'f1_score\'])\\\n    .plot(title="kNN Performance for varying k", figsize=(16,8))')
 
 
-# In[6]:
 
 
 gausResults = testClassifier(dfAll, GaussianSongClassifier(), verbose=True)
 resultsToConfusionMat(gausResults)
 
 
-# In[7]:
 
 
 knnResults = testClassifier(dfAll, KnnClassifier(n=9), verbose=True)
 resultsToConfusionMat(knnResults)
 
 
-# In[8]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -72,14 +64,12 @@ rfResults = testClassifier(dfAll, rfClf, verbose=True)
 resultsToConfusionMat(rfResults)
 
 
-# In[9]:
 
 
 dfSongVects_ext = getSongVectors(dfLabels.id, agg=['mean','std']).set_index(dfLabels.id)
 dfAll_ext = pd.merge(dfSongVects_ext, dfLabels, left_index=True, right_on='id', how='left')
 
 
-# In[10]:
 
 
 rfClf_ext = RandomForestClassifier(max_features=0.8, n_estimators=50)
@@ -87,7 +77,6 @@ rfResults_ext = testClassifier(dfAll_ext, rfClf_ext, verbose=True)
 resultsToConfusionMat(rfResults_ext)
 
 
-# In[11]:
 
 
 model_test_results = [gausResults, knnResults, rfResults, rfResults_ext]
@@ -97,19 +86,16 @@ display(dfModelResults.style.background_gradient())
 _=dfModelResults.plot.bar(title="Model CV Performance Comparison")
 
 
-# In[12]:
 
 
 loadSong(dfLabels.iloc[0].id).corr().style.background_gradient()
 
 
-# In[13]:
 
 
 get_ipython().run_cell_magic('time', '', "genres = []\ncorrs = []\n\n# Iterate genres, load and average song correlations\nfor genre, dfGenre in dfLabels.sample(1000).groupby('category'):\n    songCorrs = []\n    # print(genre, dfGenre.shape)\n\n    for r,row in dfGenre.iterrows():\n        songCorrs.append(loadSong(row.id).corr().values)\n\n    arrGenreCor = np.mean(np.array(songCorrs), axis=0)\n    corrs.append(arrGenreCor)\n    genres.append(genre)\n    \ndef getCor(genreA):\n    return corrs[genres.index(genreA)]\n\ndef displayCor(genreA):\n        display(pd.DataFrame(getCor(genreA)).replace(1,0.3).style.background_gradient())")
 
 
-# In[14]:
 
 
 display('----- rock -----')
@@ -122,7 +108,6 @@ display('----- classical -----')
 displayCor('classical')
 
 
-# In[15]:
 
 
 # Fetch and calculate absolute distance between correlation matrices

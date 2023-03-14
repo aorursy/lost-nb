@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,27 +22,23 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 cd /kaggle/working/
 
 
-# In[3]:
 
 
 sub_df = pd.read_csv('../input/submission/submission.csv')
 sub_df.head()
 
 
-# In[4]:
 
 
 sub_df.to_csv('submission.csv', index=False)
 sub_df.head()
 
 
-# In[ ]:
 
 
 

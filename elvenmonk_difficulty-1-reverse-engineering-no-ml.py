@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -20,7 +19,6 @@ plaintext = train.loc[range(train.shape[0])]["text"]
 ciphertext1 = test1.loc[list(range(test1.shape[0]))]["ciphertext"]
 
 
-# In[2]:
 
 
 def letter_frequency_stats(texts):
@@ -50,7 +48,6 @@ plt.show()
 plainStatsL = plainStats
 
 
-# In[3]:
 
 
 def word_frequency_stats(texts):
@@ -77,7 +74,6 @@ plt.xticks(plot_series, cipherStats['Word'].values[:40])
 plt.show()
 
 
-# In[4]:
 
 
 {
@@ -90,7 +86,6 @@ plt.show()
 }
 
 
-# In[5]:
 
 
 def caesar_shift(text, key):
@@ -112,7 +107,6 @@ encodedtext = ciphertext1.map(lambda x: caesar_shift(x, 'pyle'))
 encodedtext.values[:20]
 
 
-# In[6]:
 
 
 encodedStats = word_frequency_stats(encodedtext)
@@ -133,7 +127,6 @@ plt.xticks(plot_series, encodedStats['Word'].values[:40])
 plt.show()
 
 
-# In[7]:
 
 
 {
@@ -150,51 +143,43 @@ plt.show()
 }
 
 
-# In[8]:
 
 
 [x for x in ciphertext1.values if 'AHYK WDYVO U: Iltqpmd sssk ydx bdew wybto apmdf qipq\'o' in x]
 
 
-# In[9]:
 
 
 print(caesar_shift("RUld.B]4:tV79 wTUXjHHxgAHYK WDYVO U: Iltqpmd sssk ydx bdew wybto apmdf qipq'oYVRwT5KnGazYrqKYOdBF4.5", 'pyle'))
 print(caesar_shift("RUld.B]4:tV79 wTUXjHHxgAHYK WDYVO U: Iltqpmd sssk ydx bdew wybto apmdf qipq'oYVRwT5KnGazYrqKYOdBF4.5", 'qzmf'))
 
 
-# In[10]:
 
 
 ''.join((chr((ord(x) - 97) % 26 + 97) for x in caesar_shift('AHYKWDYVOU', 'KINGHENRYV')))
 
 
-# In[11]:
 
 
 print(caesar_shift("RUld.B]4:tV79 wTUXjHHxgAHYK WDYVO U: Iltqpmd sssk ydx bdew wybto apmdf qipq'oYVRwT5KnGazYrqKYOdBF4.5", 'qzlepzle'))
 
 
-# In[12]:
 
 
 [x for x in plaintext.values if 'KING HENRY V: Wherein' in x]
 
 
-# In[13]:
 
 
 key01 = ''.join((chr((ord(x) - 97) % 26 + 97) for x in caesar_shift('AHYKWDYVOUIltqpmdssskydxbdewwybtoapmdfqipqo', 'KINGHENRYVWhereinthouartlesshappybeingfeard')))
 key01
 
 
-# In[14]:
 
 
 np.array([x for x in (key01 + ' ')]).reshape((-1, 4))
 
 
-# In[15]:
 
 
 print(''.join((chr((ord(x) - 97) % 26 + 97) for x in caesar_shift('MHTX', 'I')))) # Upper case to lower case transformation magic here
@@ -204,7 +189,6 @@ print(caesar_shift('xe fs sa jn', 'to'))
 print(caesar_shift('su nq ee aj', 'of'))
 
 
-# In[16]:
 
 
 {
@@ -223,7 +207,6 @@ print(caesar_shift('su nq ee aj', 'of'))
 }
 
 
-# In[17]:
 
 
 {
@@ -242,7 +225,6 @@ print(caesar_shift('su nq ee aj', 'of'))
 }
 
 
-# In[18]:
 
 
 print(ord('a') - 97 + ord('y') - 97, ord('b') - 97 + ord('z') - 97)
@@ -251,7 +233,6 @@ print(ord('j') - 97 + ord('p') - 97, ord('k') - 97 + ord('q') - 97)
 print(ord('u') - 97 + ord('e') - 97, ord('v') - 97 + ord('f') - 97)
 
 
-# In[19]:
 
 
 def caesar_shift_ex(text, key):
@@ -273,19 +254,16 @@ encodedtext = ciphertext1.map(lambda x: caesar_shift_ex(x, 'pyle'))
 encodedtext.values[:20]
 
 
-# In[20]:
 
 
 encodedtext.values[9]
 
 
-# In[21]:
 
 
 [x for x in plaintext.values if 'DOMITIUS ENOBARBUS: Had gone to' in x]
 
 
-# In[22]:
 
 
 def caesar_shift_ex2(text, key):
@@ -307,7 +285,6 @@ encodedtext = ciphertext1.map(lambda x: caesar_shift_ex2(x, 'pyle'))
 encodedtext.values[:20]
 
 
-# In[23]:
 
 
 rare_symbols = plainStatsL.loc[plainStatsL["Frequency"] < 100]['Letter'].values

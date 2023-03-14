@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_cell_magic('capture', '', '%matplotlib inline\n\nimport pandas as pd\nimport numpy as np\nimport matplotlib.pylab as plt\n\nimport pandas as pd\nimport matplotlib.pyplot as plt\nimport matplotlib.ticker as ticker\nimport matplotlib.animation as animation\nfrom IPython.display import HTML\n\nimport matplotlib.colors as mcolors\nimport seaborn as sns')
 
 
-# In[2]:
 
 
 mypal = plt.rcParams['axes.prop_cycle'].by_key()['color'] # Grab the color pal
@@ -17,7 +15,6 @@ mypal = [mcolors.to_hex(cm(1.*i/NUM_COLORS)) for i in range(NUM_COLORS)]
 # mypal = [mcolors.CSS4_COLORS[val] for val in mcolors.CSS4_COLORS]
 
 
-# In[3]:
 
 
 df = pd.read_csv('../input/arcleaderboard/abstraction-and-reasoning-challenge-publicleaderboard.csv')
@@ -43,13 +40,11 @@ my_df['colors'] = [np.random.choice(mypal) for c in range(len(my_df))]
 color_map = my_df['colors'].to_dict()
 
 
-# In[4]:
 
 
 TOP_SCORE , FIFTEENTH_SCORE , FIFTYTH_SCORE 
 
 
-# In[5]:
 
 
 def draw_barchart(mydate):
@@ -96,7 +91,6 @@ def draw_barchart(mydate):
 # draw_barchart('2020-03-05')
 
 
-# In[6]:
 
 
 dates = [pd.to_datetime(x) for x in pd.Series(df.index.date).unique() if x > pd.to_datetime('3-1-2020')]
@@ -109,13 +103,11 @@ animator = animation.FuncAnimation(fig,
 ani = HTML(animator.to_jshtml())
 
 
-# In[7]:
 
 
 ani
 
 
-# In[ ]:
 
 
 

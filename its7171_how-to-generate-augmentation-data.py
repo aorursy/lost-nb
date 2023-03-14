@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('wget https://www.tbi.univie.ac.at/RNA/download/ubuntu/ubuntu_18_04/viennarna_2.4.15-1_amd64.deb')
@@ -16,7 +15,6 @@ get_ipython().system("yes '' | cpan -i Graph")
 get_ipython().system('git clone https://github.com/hendrixlab/bpRNA')
 
 
-# In[2]:
 
 
 import os
@@ -31,7 +29,6 @@ sys.path.append('/kaggle/working/draw_rna_pkg/ipynb/')
 pkg = 'vienna_2'
 
 
-# In[3]:
 
 
 
@@ -51,19 +48,16 @@ n_candidates = 2
 debug = True
 
 
-# In[4]:
 
 
 get_ipython().system('grep processor /proc/cpuinfo | wc -l')
 
 
-# In[5]:
 
 
 MAX_THRE = 4
 
 
-# In[6]:
 
 
 train = pd.read_json('../input/stanford-covid-vaccine/train.json', lines=True)
@@ -74,7 +68,6 @@ if debug:
 target_df = train.append(test)
 
 
-# In[7]:
 
 
 def proc1(arg):
@@ -109,7 +102,6 @@ for id in df['id'].unique():
     new_df = new_df.append(unq_df[1:min(n_candidates,len(unq_df))])
 
 
-# In[8]:
 
 
 get_ipython().system('mkdir -p tmp_files')
@@ -148,13 +140,11 @@ new_df = new_df.merge(pd.DataFrame(results_loop_type, columns=('id', 'structure'
 new_df.to_csv('aug_data.csv', index=False)
 
 
-# In[9]:
 
 
 new_df.head()
 
 
-# In[ ]:
 
 
 

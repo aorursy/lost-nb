@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -15,7 +14,6 @@ import concurrent.futures
 from multiprocessing import cpu_count
 
 
-# In[2]:
 
 
 num_images = 200000
@@ -54,7 +52,6 @@ with open('../input/train.bson', 'rb') as f:
         pass;
 
 
-# In[3]:
 
 
 X = np.array(X, dtype=np.float32)
@@ -63,7 +60,6 @@ y = pd.Series(y)
 X.shape, y.shape
 
 
-# In[4]:
 
 
 num_classes = 30  # This will reduce the max accuracy to just above 0.2
@@ -80,14 +76,12 @@ max_acc = valid_y.mean()
 print(max_acc)
 
 
-# In[5]:
 
 
 # Now we categorize the dataframe
 y, rev_labels = pd.factorize(y)
 
 
-# In[6]:
 
 
 # Now we have a X,y pair. Let's train a simple KNN Classifier
@@ -99,7 +93,6 @@ knn = KNeighborsClassifier(3)
 knn.fit(X, y)
 
 
-# In[7]:
 
 
 submission = pd.read_csv('../input/sample_submission.csv', index_col='_id')
@@ -108,7 +101,6 @@ most_frequent_guess = 1000018296
 submission['category_id'] = most_frequent_guess # Most frequent guess
 
 
-# In[8]:
 
 
 num_images_test = 100000  # We only have time for a few test images..
@@ -142,7 +134,6 @@ with open('../input/test.bson', 'rb') as f,          concurrent.futures.ThreadPo
         submission.loc[_id, 'category_id'] = y_cat
 
 
-# In[9]:
 
 
 submission.to_csv('new_submission.csv.gz', compression='gzip')

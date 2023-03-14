@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #Added by me
@@ -42,20 +41,17 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 tourney_data=pd.read_csv("../input/TourneyDetailedResults.csv")
 tourney_data.shape
 
 
-# In[3]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[4]:
 
 
 tourney_data=tourney_data.groupby(['Season']).mean()
@@ -64,7 +60,6 @@ tourney_data.plot(y='Wscore')
 tourney_data.plot(y='Wfga')
 
 
-# In[5]:
 
 
 detailed_data=pd.read_csv("../input/TourneyDetailedResults.csv")
@@ -92,7 +87,6 @@ def loadInTraining(name,data):
     return new_training_data
 
 
-# In[6]:
 
 
 season_data=pd.read_csv("../input/RegularSeasonDetailedResults.csv")
@@ -111,7 +105,6 @@ training_data=loadInTraining("PPG",ppg_data)
 training_data.head()
 
 
-# In[7]:
 
 
 season_data=pd.read_csv("../input/RegularSeasonDetailedResults.csv")
@@ -130,7 +123,6 @@ training_data=loadInTraining("RPG",rpg_data)
 training_data.head()
 
 
-# In[8]:
 
 
 season_data=pd.read_csv("../input/RegularSeasonDetailedResults.csv")
@@ -152,7 +144,6 @@ training_data=loadInTraining("REC",rec_data)
 training_data.head()
 
 
-# In[9]:
 
 
 season_data=pd.read_csv("../input/RegularSeasonDetailedResults.csv")
@@ -171,7 +162,6 @@ training_data=loadInTraining("eFG%",efg_data)
 training_data.head()
 
 
-# In[10]:
 
 
 season_data=pd.read_csv("../input/RegularSeasonDetailedResults.csv")
@@ -190,7 +180,6 @@ training_data=loadInTraining("dFG%",efg_data)
 training_data.head()
 
 
-# In[11]:
 
 
 season_data=pd.read_csv("../input/RegularSeasonDetailedResults.csv")
@@ -209,7 +198,6 @@ training_data=loadInTraining("TOV%",tov_data)
 training_data.head()
 
 
-# In[12]:
 
 
 season_data=pd.read_csv("../input/RegularSeasonDetailedResults.csv")
@@ -228,7 +216,6 @@ training_data=loadInTraining("dTO%",tov_data)
 training_data.head()
 
 
-# In[13]:
 
 
 season_data=pd.read_csv("../input/RegularSeasonDetailedResults.csv")
@@ -247,7 +234,6 @@ training_data=loadInTraining("ORB%",orb_data)
 training_data.head()
 
 
-# In[14]:
 
 
 season_data=pd.read_csv("../input/RegularSeasonDetailedResults.csv")
@@ -266,7 +252,6 @@ training_data=loadInTraining("DRB%",drb_data)
 training_data.head()
 
 
-# In[15]:
 
 
 season_data=pd.read_csv("../input/RegularSeasonDetailedResults.csv")
@@ -285,7 +270,6 @@ training_data=loadInTraining("FTR",ftr_data)
 training_data.head()
 
 
-# In[16]:
 
 
 seed_data=pd.read_csv("../input/TourneySeeds.csv")
@@ -298,7 +282,6 @@ training_data=loadInTraining("SdN",seed_data)
 training_data.head()
 
 
-# In[17]:
 
 
 season_data=pd.read_csv("../input/RegularSeasonDetailedResults.csv")
@@ -317,7 +300,6 @@ training_data=loadInTraining("dFT",ftr_data)
 training_data.head()
 
 
-# In[18]:
 
 
 X = pd.DataFrame()
@@ -351,7 +333,6 @@ Xtest = Xtest.drop(["Season","team1","team2","pred"],axis=1)
 X.head()
 
 
-# In[19]:
 
 
 def normalize(df):
@@ -369,7 +350,6 @@ Xtest=normalize(Xtest)
 Xval.head()
 
 
-# In[20]:
 
 
 Xforest=X.copy()
@@ -386,7 +366,6 @@ table=table.drop("index",axis=1)
 table
 
 
-# In[21]:
 
 
 def reduction(X,features,cant):
@@ -405,7 +384,6 @@ reduct_to=7
 #Xtest=reduction(Xtest,table,reduct_to)
 
 
-# In[22]:
 
 
 n_neighbors=135
@@ -415,13 +393,11 @@ knn=knn.fit(X,y)
 knn.score(X,y)
 
 
-# In[23]:
 
 
 predict=knn.predict(Xval)
 
 
-# In[24]:
 
 
 accuracy=metrics.accuracy_score(yval, predict)
@@ -429,14 +405,12 @@ accuracy
 #print (metrics.classification_report(yval, predict))
 
 
-# In[25]:
 
 
 predict_test=knn.predict(Xtest)
 probs = knn.predict_proba(Xtest)
 
 
-# In[26]:
 
 
 xtr=pd.concat((probs,predic_test,ytest),axis=0)
@@ -446,7 +420,6 @@ xtr=xtr.loc[xtr[]]
 #accuracy_xtreme
 
 
-# In[27]:
 
 
 accuracy_test=metrics.accuracy_score(ytest, predict_test)
@@ -455,7 +428,6 @@ accuracy_test
 #print (metrics.classification_report(ytest, predict))
 
 
-# In[28]:
 
 
 bestScore=pd.Series.from_csv("../working/BestCase.csv")
@@ -467,7 +439,6 @@ else:
     scoreTest.to_csv("../working/BestCase.csv")
 
 
-# In[29]:
 
 
 if grabar:
@@ -478,7 +449,6 @@ if grabar:
     Xseeds.head()
 
 
-# In[30]:
 
 
 def getValues(seeds,team,year):
@@ -495,7 +465,6 @@ def getValues(seeds,team,year):
     return values
 
 
-# In[31]:
 
 
 def getDataFrame(one,two):
@@ -516,7 +485,6 @@ def getDataFrame(one,two):
     return frame
 
 
-# In[32]:
 
 
 #2013
@@ -543,7 +511,6 @@ if grabar:
     submission.shape
 
 
-# In[33]:
 
 
 #2014
@@ -570,7 +537,6 @@ if grabar:
     submission.shape
 
 
-# In[34]:
 
 
 #2015
@@ -597,7 +563,6 @@ if grabar:
     submission.shape
 
 
-# In[35]:
 
 
 #2016
@@ -625,7 +590,6 @@ if grabar:
     submission.shape
 
 
-# In[36]:
 
 
 if grabar:

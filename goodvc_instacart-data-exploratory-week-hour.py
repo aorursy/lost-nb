@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -25,7 +24,6 @@ def toReadable(v):
     return value
 
 
-# In[2]:
 
 
 raw_order_ds = pd.read_csv('./resource/orders.csv')
@@ -39,7 +37,6 @@ order_product_cnt_ds.columns = ['product_cnt']
 order_ds = raw_order_ds.merge(order_product_cnt_ds, left_on='order_id', right_index=True)
 
 
-# In[3]:
 
 
 total_user = len(order_ds.user_id.unique())
@@ -54,13 +51,11 @@ print("total ordered product  = {} ({} orders per a product )".format(
     toReadable(total_ordered_product), toReadable(total_ordered_product/unique_products) ))
 
 
-# In[4]:
 
 
 index2day = "Sun Mon Tue Wed Thu Fri Sat".split()
 
 
-# In[5]:
 
 
 def drawWeekHour(ds, values,  aggfunc=len, title=None, figsize=(18,5) , cmap=None):
@@ -76,41 +71,35 @@ def drawWeekHour(ds, values,  aggfunc=len, title=None, figsize=(18,5) , cmap=Non
         plt.title(title, fontsize=15)
 
 
-# In[6]:
 
 
 drawWeekHour(order_ds, values='order_id', title="Total Order Frequency(unit:1k)", aggfunc=lambda x: len(x)/1000)
 
 
-# In[7]:
 
 
 avg_users = round(order_ds.groupby(['order_dow','order_hour_of_day']).agg({'user_id':lambda x: len(x.unique())/1000}).mean().values[0],2)
 drawWeekHour(order_ds, values='user_id', title="Total Unique Users(unit:1k) / Avg Users= {}k".format(avg_users), aggfunc=lambda x: len(x.unique())/1000)
 
 
-# In[8]:
 
 
 drawWeekHour(order_ds, values='user_id', title="Total Unique Users(unit:1k)"
              , aggfunc=lambda x: len(x)/len(x.unique()))
 
 
-# In[9]:
 
 
 merge_order_product_ds = order_product_ds.merge(order_ds, on='order_id' )
 merge_order_product_ds = merge_order_product_ds.merge(product_ds, on='product_id')
 
 
-# In[10]:
 
 
 hour_9_order_product_ds = merge_order_product_ds[merge_order_product_ds.order_hour_of_day==9]
 grouped = hour_9_order_product_ds[:].groupby(['order_dow'])
 
 
-# In[11]:
 
 
 topn = 5
@@ -126,13 +115,11 @@ hour_9_popluar_product_ds = pd.concat(hour_9_popluar_product).sort_values(['rank
 hour_9_popluar_product_ds.index = index2day
 
 
-# In[12]:
 
 
 hour_9_popluar_product_ds
 
 
-# In[13]:
 
 
 def topItemEachGroup(ds, group_name, sort_name, topn):
@@ -145,7 +132,6 @@ def topItemEachGroup(ds, group_name, sort_name, topn):
     return pd.concat(concat_list)
 
 
-# In[14]:
 
 
 def drawRankTrend(pivot_ds, ylabel='Rank'):
@@ -164,7 +150,6 @@ def drawRankTrend(pivot_ds, ylabel='Rank'):
     
 
 
-# In[15]:
 
 
 hour_product_ds = merge_order_product_ds.groupby(['product_name','order_hour_of_day'], as_index=False).agg({'order_id':len})
@@ -172,13 +157,11 @@ hour_top_product_ds = topItemEachGroup(hour_product_ds, 'order_hour_of_day', 'or
 hour_top_product_pivot_ds = hour_top_product_ds.pivot(index='order_hour_of_day', columns='product_name', values='rank') 
 
 
-# In[16]:
 
 
 drawRankTrend(hour_top_product_pivot_ds)
 
 
-# In[17]:
 
 
 rank_ds = merge_order_product_ds.groupby(['product_name','order_dow'], as_index=False).agg({'order_id':len})
@@ -186,37 +169,31 @@ rank_ds = topItemEachGroup(rank_ds, 'order_dow', 'order_id' , 20)
 rank_pivot_ds = rank_ds.pivot(index='order_dow', columns='product_name', values='rank') 
 
 
-# In[18]:
 
 
 drawRankTrend(rank_pivot_ds)
 
 
-# In[19]:
 
 
 drawWeekHour(order_ds, values='product_cnt', title="Product cnt per a order", aggfunc=lambda x: np.mean(x), cmap='YlGn')
 
 
-# In[20]:
 
 
 drawWeekHour(order_ds, values='days_since_prior_order', title="prior orders", aggfunc=lambda x: np.mean(x), cmap='YlGn')
 
 
-# In[21]:
 
 
 sns.set(style="whitegrid", palette="colorblind", font_scale=1.4, rc={'font.family':'NanumGothic'} )
 
 
-# In[22]:
 
 
 print("Avg days_since_prior_order {} Days".format( round(order_ds.days_since_prior_order.mean(),2)))
 
 
-# In[23]:
 
 
 order_ds.groupby('order_number').agg({'days_since_prior_order':np.mean, 'product_cnt':np.mean}).plot(figsize=(16,6), 
@@ -225,13 +202,11 @@ plt.tight_layout()
 plt.show()
 
 
-# In[24]:
 
 
 merge_order_product_ds = order_product_ds.merge(order_ds, on='order_id' )
 
 
-# In[25]:
 
 
 reordered_since_days_ds = merge_order_product_ds.groupby(['days_since_prior_order','reordered']).agg({'product_id':len})
@@ -240,7 +215,6 @@ reordered_since_days_ds['reorder_rate'] = reordered_since_days_ds[1] /reordered_
 avg_reordered_rate = round(reordered_since_days_ds[1].sum() / reordered_since_days_ds[[0,1]].sum().sum(),2)
 
 
-# In[26]:
 
 
 reordered_since_days_ds[['reorder_rate']].plot(kind='line', marker='o',figsize=(16,6))
@@ -249,7 +223,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[27]:
 
 
 reordered_order_num_ds = merge_order_product_ds.groupby(['order_number','reordered']).agg({'product_id':len})
@@ -259,7 +232,6 @@ avg_reordered_rate = round(reordered_order_num_ds[1].sum() / reordered_order_num
 reordered_order_num_ds.fillna(0, inplace=True)
 
 
-# In[28]:
 
 
 reordered_order_num_ds[['reorder_rate']].plot(kind='line', marker='o',figsize=(16,6))
@@ -267,7 +239,6 @@ plt.title("Reordered Rate (Avg {})".format(avg_reordered_rate), fontsize=20)
 plt.show()
 
 
-# In[29]:
 
 
 product_reorder_ds = merge_order_product_ds.groupby(['product_id']).agg({'order_id':len,
@@ -275,14 +246,12 @@ product_reorder_ds = merge_order_product_ds.groupby(['product_id']).agg({'order_
                                                                          'user_id':lambda x: len(x.unique())})
 
 
-# In[30]:
 
 
 convert_colnames = {'user_id':'unique_users','reordered':'reorder' , 'order_id':'total_order'}
 product_reorder_ds.columns = [  convert_colnames[col] for col in product_reorder_ds.columns]
 
 
-# In[31]:
 
 
 product_reorder_ds['reorder_rate'] = round(product_reorder_ds.reorder / product_reorder_ds.total_order,2)
@@ -290,13 +259,11 @@ product_reorder_ds['orders_per_user'] = round(product_reorder_ds.total_order/pro
 product_reorder_ds = product_reorder_ds.merge(product_ds, left_index=True, right_on='product_id')
 
 
-# In[32]:
 
 
 product_reorder_ds[product_reorder_ds.total_order>1000].sort_values('reorder_rate', ascending=False)        [['product_name','total_order', 'reorder_rate', 'aisle_id','orders_per_user']][:20]
 
 
-# In[33]:
 
 
 # product_reorder_ds.groupby('aisle_id').agg({'product_name':                                           lambda x: })
@@ -314,7 +281,6 @@ def popularWords(names, topn=2):
     return " ".join([n[0] for n in tops])
 
 
-# In[34]:
 
 
 aisle_ds = product_ds.groupby('aisle_id').agg({'product_name':popularWords
@@ -322,7 +288,6 @@ aisle_ds = product_ds.groupby('aisle_id').agg({'product_name':popularWords
 # aisle_ds.columns = ['products','product_names']
 
 
-# In[35]:
 
 
 aisle_order_stat_ds = product_reorder_ds.groupby('aisle_id').agg({'total_order':sum, 'reorder':sum})
@@ -330,7 +295,6 @@ aisle_order_stat_ds['reorder_rate'] = round(aisle_order_stat_ds.reorder / aisle_
 aisle_order_stat_ds = aisle_order_stat_ds.merge(aisle_ds, left_index=True, right_index=True).sort_values('reorder_rate', ascending=False)
 
 
-# In[36]:
 
 
 sns.set(style="whitegrid", palette="colorblind", font_scale=1.4, rc={'font.family':'NanumGothic'} )
@@ -347,7 +311,6 @@ bottom20_ds.plot(kind='bar', figsize=(16,6), alpha=.7, ax=ax2
 plt.show()
 
 
-# In[37]:
 
 
 from scipy.stats import spearmanr
@@ -356,7 +319,6 @@ g = sns.jointplot("reorder_rate", "total_order", kind="reg", marker='.', ylim=(0
                   , data=product_reorder_ds)
 
 
-# In[38]:
 
 
 order_product_list = merge_order_product_ds    .sort_values(['user_id','order_id','add_to_cart_order'])[['order_id','product_id']]    .values.tolist()
@@ -372,7 +334,6 @@ for (order_id, product_id) in order_product_list:
     sentence.append(str(product_id))
 
 
-# In[39]:
 
 
 from gensim.models import Word2Vec
@@ -382,7 +343,6 @@ model100D = Word2Vec(product_corpus, window=6, size=100, workers=4, min_count=20
 # model = Word2Vec.load('./resource/prod2vec.100d.model')
 
 
-# In[40]:
 
 
 def toProductName(id):
@@ -390,7 +350,6 @@ def toProductName(id):
 toProductName(24852)
 
 
-# In[41]:
 
 
 def most_similar_readable(model, product_id):
@@ -399,37 +358,31 @@ def most_similar_readable(model, product_id):
     return [( toProductName(int(id)), similarity ) for (id,similarity) in similar_list]
 
 
-# In[42]:
 
 
 pd.DataFrame(most_similar_readable(model, 24852), columns=['product','similarity'])
 
 
-# In[43]:
 
 
 pd.DataFrame(most_similar_readable(model, 27845), columns=['product','similarity'])
 
 
-# In[44]:
 
 
 pd.DataFrame(most_similar_readable(model, 40939), columns=['product','similarity'])
 
 
-# In[45]:
 
 
 pd.DataFrame(most_similar_readable(model, 48697), columns=['product','similarity'])
 
 
-# In[46]:
 
 
 import kmeans
 
 
-# In[47]:
 
 
 def clustering(model, k=500, delta=0.00000001, maxiter=200):
@@ -446,19 +399,16 @@ def clustering(model, k=500, delta=0.00000001, maxiter=200):
     return (centres, index2cid, dist, clustered_ds, prod2cid)
 
 
-# In[48]:
 
 
 (centres, index2cid, dist, clustered_ds, prod2cid) = clustering(model)
 
 
-# In[49]:
 
 
 clustered_ds.product_id = clustered_ds.product_id.apply(pd.to_numeric)
 
 
-# In[50]:
 
 
 def idToProductDesc(id):
@@ -476,49 +426,41 @@ def printClusterMembers(cluster_id, topn=10):
         )
 
 
-# In[51]:
 
 
 printClusterMembers(1, topn=10)
 
 
-# In[52]:
 
 
 printClusterMembers(100, topn=10)
 
 
-# In[53]:
 
 
 printClusterMembers(200, topn=10)
 
 
-# In[54]:
 
 
 printClusterMembers(300, topn=10)
 
 
-# In[55]:
 
 
 printClusterMembers(400, topn=10)
 
 
-# In[56]:
 
 
 printClusterMembers(499, topn=10)
 
 
-# In[57]:
 
 
 clusterIdToKeywords = { cid: popularWords(sub_ds.product_name,3) for cid, sub_ds in clustered_ds.merge(product_ds, on='product_id').groupby('cid')}
 
 
-# In[58]:
 
 
 product_hod_ds = merge_order_product_ds.pivot_table(index='product_id', columns='order_hour_of_day', values='order_id', aggfunc=len, fill_value=0)
@@ -526,7 +468,6 @@ product_hod_ds = merge_order_product_ds.pivot_table(index='product_id', columns=
 orderByHotHour = clustered_ds.merge(product_hod_ds, left_on='product_id', right_index=True)    .groupby('cid').sum()[np.arange(0,24)].idxmax(axis=1).sort_values().index
 
 
-# In[59]:
 
 
 sns.set(style="whitegrid", palette="colorblind", font_scale=1, rc={'font.family':'NanumGothic'} )
@@ -552,7 +493,6 @@ def drawHODCluster(ncols, nrows, startClusterNumber, step):
     fig.tight_layout()
 
 
-# In[60]:
 
 
 ncols, nrows=(6,4)
@@ -561,7 +501,6 @@ for n in np.arange(0,500,ncols*nrows*step):
     drawHODCluster(ncols, nrows, n, step)
 
 
-# In[61]:
 
 
 product_dow_ds = merge_order_product_ds.pivot_table(index='product_id', columns='order_dow', values='order_id', aggfunc=len, fill_value=0)
@@ -569,7 +508,6 @@ product_dow_ds = merge_order_product_ds.pivot_table(index='product_id', columns=
 orderByHotDay = clustered_ds.merge(product_dow_ds, left_on='product_id', right_index=True)    .groupby('cid').sum()[np.arange(0,6)].idxmax(axis=1).sort_values().index
 
 
-# In[62]:
 
 
 def drawDOWCluster(ncols, nrows, startClusterNumber, step):
@@ -595,7 +533,6 @@ def drawDOWCluster(ncols, nrows, startClusterNumber, step):
     fig.tight_layout()
 
 
-# In[63]:
 
 
 ncols, nrows=(6,4)
@@ -604,7 +541,6 @@ for n in np.arange(0,500,ncols*nrows*step):
     drawDOWCluster(ncols, nrows, n, step)
 
 
-# In[64]:
 
 
 

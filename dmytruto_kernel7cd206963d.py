@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -34,7 +33,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 # Read in the data CSV files
@@ -43,7 +41,6 @@ test = pd.read_csv('/kaggle/input/google-quest-challenge/test.csv')
 sample_submission = pd.read_csv('/kaggle/input/google-quest-challenge/sample_submission.csv')
 
 
-# In[3]:
 
 
 PATH = '../input/google-quest-challenge/'
@@ -68,7 +65,6 @@ print('\noutput categories:\n\t', output_categories)
 print('\ninput categories:\n\t', input_categories)
 
 
-# In[4]:
 
 
 get_ipython().system('pip install ../input/sacremoses > /dev/null')
@@ -77,7 +73,6 @@ import sys
 sys.path.insert(0, "../input/transformers/")
 
 
-# In[5]:
 
 
 print('train', train.shape)
@@ -85,38 +80,32 @@ print('test', test.shape)
 print('sample_submission', sample_submission.shape)
 
 
-# In[6]:
 
 
 train.head()
 
 
-# In[7]:
 
 
 sample_submission.head()
 
 
-# In[8]:
 
 
 sample_submission.columns
 
 
-# In[9]:
 
 
 feature_columns = [col for col in train.columns if col not in sample_submission.columns]
 print('Feature columns: ', feature_columns)
 
 
-# In[10]:
 
 
 train[feature_columns].head()
 
 
-# In[11]:
 
 
 target_cols = ['question_asker_intent_understanding',
@@ -137,25 +126,21 @@ target_cols = ['question_asker_intent_understanding',
        'answer_well_written']
 
 
-# In[12]:
 
 
 train.isna().sum()
 
 
-# In[13]:
 
 
 train.info()
 
 
-# In[14]:
 
 
 train[target_cols]
 
 
-# In[15]:
 
 
 fig, axes = plt.subplots(6, 5, figsize=(18, 15))
@@ -173,26 +158,22 @@ plt.show()
 plt.close()
 
 
-# In[16]:
 
 
 train_category = train['category'].value_counts()
 test_category = test['category'].value_counts()
 
 
-# In[17]:
 
 
 test_category
 
 
-# In[18]:
 
 
 train_category
 
 
-# In[19]:
 
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 6))
@@ -203,7 +184,6 @@ axes[1].set_title('Test')
 print('Train/Test category distribution')
 
 
-# In[20]:
 
 
 def plot_wordcloud(text, ax, title=None):
@@ -215,7 +195,6 @@ def plot_wordcloud(text, ax, title=None):
     ax.axis("off")
 
 
-# In[21]:
 
 
 print('Training data Word Cloud')
@@ -235,7 +214,6 @@ plt.tight_layout()
 fig.show()
 
 
-# In[22]:
 
 
 print('Test data Word Cloud')
@@ -255,7 +233,6 @@ plt.tight_layout()
 fig.show()
 
 
-# In[23]:
 
 
 def _convert_to_transformer_inputs(title, question, answer, tokenizer, max_sequence_length):
@@ -315,7 +292,6 @@ def compute_output_arrays(df, columns):
     return np.asarray(df[columns])
 
 
-# In[24]:
 
 
 def compute_spearmanr_ignore_nan(trues, preds):
@@ -361,7 +337,6 @@ def create_model():
     return model
 
 
-# In[25]:
 
 
 outputs = compute_output_arrays(df_train, output_categories)
@@ -369,7 +344,6 @@ inputs = compute_input_arrays(df_train, input_categories, tokenizer, MAX_SEQUENC
 test_inputs = compute_input_arrays(df_test, input_categories, tokenizer, MAX_SEQUENCE_LENGTH)
 
 
-# In[26]:
 
 
 gkf = GroupKFold(n_splits=5).split(X=df_train.question_body, groups=df_train.question_body)
@@ -400,7 +374,6 @@ for fold, (train_idx, valid_idx) in enumerate(gkf):
         print('validation score = ', rho_val)
 
 
-# In[27]:
 
 
 df_sub.iloc[:, 1:] = np.average(test_preds, axis=0) # for weighted average set weights=[...]

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np, pandas as pd, os, gc
@@ -35,7 +34,6 @@ train_df = train2.iloc[train_indexes, :]
 val_df = train2.iloc[val_indexes, :]
 
 
-# In[2]:
 
 
 from albumentations import (
@@ -56,7 +54,6 @@ train_augmentator = Compose([
     ], p=1)
 
 
-# In[3]:
 
 
 import mxnet as mx
@@ -148,7 +145,6 @@ class SteelDataset(data.Dataset):
         return image, mask
 
 
-# In[4]:
 
 
 # for test
@@ -166,7 +162,6 @@ plt.imshow(mask[::4, ::4])
 mm.flatten().shape
 
 
-# In[5]:
 
 
 from gluoncv.model_zoo.resnetv1b import resnet50_v1s, resnet101_v1s, resnet152_v1s
@@ -208,7 +203,6 @@ class ResNetBackbone(mx.gluon.HybridBlock):
         return c1, c2, c3, c4
 
 
-# In[6]:
 
 
 import mxnet as mx
@@ -429,7 +423,6 @@ class ConvBlock(HybridBlock):
         return self.body(x)
 
 
-# In[7]:
 
 
 class SteelFPN(HybridBlock):
@@ -445,7 +438,6 @@ class SteelFPN(HybridBlock):
         return segment_out
 
 
-# In[8]:
 
 
 # unet = ResNetUnet(output_channels=[256, 128, 64, 32], num_classes=5)
@@ -456,7 +448,6 @@ class SteelFPN(HybridBlock):
 # print(out.shape)
 
 
-# In[9]:
 
 
 import numpy as np
@@ -653,7 +644,6 @@ class SigmoidBinaryCrossEntropyLoss(Loss):
         return F.mean(loss, axis=self._batch_axis, exclude=True)
 
 
-# In[10]:
 
 
 def compute_iou(label, pred):
@@ -681,7 +671,6 @@ def iou_metric(labels, preds):
     return {k:v for k, v in zip(cls, ious)}
 
 
-# In[11]:
 
 
 def training(epoch, data, net, loss, trainer, ctx):
@@ -714,7 +703,6 @@ def training(epoch, data, net, loss, trainer, ctx):
             tbar.set_description(f'Epoch {epoch}, training loss {train_loss/(i+1):.6f}, training_ious:{train_iou/(i+1):.6f}, bg_ious:{bg_iou/(i+1):.6f},class1_ious:{iou1/(i+1):.6f},class2_ious:{iou2/(i+1):.6f}, class3_ious:{iou3/(i+1):.6f}, class4_ious:{iou4/(i+1):.6f}')
 
 
-# In[12]:
 
 
 def evaluation(data, net, ctx):
@@ -739,7 +727,6 @@ def evaluation(data, net, ctx):
     return val_iou * 1.0 /(i+1)
 
 
-# In[13]:
 
 
 import os
@@ -780,7 +767,6 @@ def train_from_manual(train_df, val_df, img_dir, batch_size, epoches, lr=0.001, 
             unet.save_parameters('unet_{}_{}.params'.format(epoch, max_iou))
 
 
-# In[14]:
 
 
 batch_size = 12
@@ -791,7 +777,6 @@ epoches = 15
 train_from_manual(train_df, val_df, img_dir, batch_size, epoches, ctx=mx.gpu())
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,13 +21,11 @@ import os, shutil
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 original_dataset_dir = r'/kaggle/input/train/train/'
 
 
-# In[3]:
 
 
 base_dir = r'/kaggle/cats_and_dogs_small'
@@ -36,7 +33,6 @@ if not os.path.exists(base_dir):
     os.mkdir(base_dir)
 
 
-# In[4]:
 
 
 train_dir = os.path.join(base_dir, 'train')
@@ -47,7 +43,6 @@ test_dir = os.path.join(base_dir, 'test')
 os.mkdir(test_dir)
 
 
-# In[5]:
 
 
 # Directory with training cat pictures
@@ -67,7 +62,6 @@ test_dogs_dir = os.path.join(test_dir, 'dogs')
 os.mkdir(test_dogs_dir)
 
 
-# In[6]:
 
 
 fnames = ['cat.{}.jpg'.format(i) for i in range(1000)]
@@ -77,7 +71,6 @@ for fname in fnames:
     shutil.copyfile(src, dst)
 
 
-# In[7]:
 
 
 fnames = ['cat.{}.jpg'.format(i) for i in range(1000, 1500)]
@@ -92,7 +85,6 @@ for fname in fnames:
     shutil.copyfile(src, dst)
 
 
-# In[8]:
 
 
 fnames = ['dog.{}.jpg'.format(i) for i in range(1000)]
@@ -112,7 +104,6 @@ for fname in fnames:
     shutil.copyfile(src, dst)
 
 
-# In[9]:
 
 
 # check
@@ -124,7 +115,6 @@ print('total test cat images:', len(os.listdir(test_cats_dir)))
 print('total test dog images:', len(os.listdir(test_dogs_dir)))
 
 
-# In[10]:
 
 
 from keras import layers
@@ -144,13 +134,11 @@ model.add(layers.Dense(512, activation='relu'))
 model.add(layers.Dense(1, activation='sigmoid'))
 
 
-# In[11]:
 
 
 model.summary()
 
 
-# In[12]:
 
 
 from keras import optimizers
@@ -159,7 +147,6 @@ model.compile(loss='binary_crossentropy',
     metrics=['acc'])
 
 
-# In[13]:
 
 
 from keras.preprocessing.image import ImageDataGenerator
@@ -167,7 +154,6 @@ train_datagen = ImageDataGenerator(rescale=1./255)
 test_datagen = ImageDataGenerator(rescale=1./255)
 
 
-# In[14]:
 
 
 train_generator = train_datagen.flow_from_directory(
@@ -182,7 +168,6 @@ validation_generator = test_datagen.flow_from_directory(
         class_mode='binary')
 
 
-# In[15]:
 
 
 for data_batch, labels_batch in train_generator:
@@ -191,7 +176,6 @@ for data_batch, labels_batch in train_generator:
     break
 
 
-# In[16]:
 
 
 history = model.fit_generator(
@@ -202,13 +186,11 @@ history = model.fit_generator(
         validation_steps = 50)
 
 
-# In[17]:
 
 
 model.save('cats_and_dogs_small_1.h5')
 
 
-# In[18]:
 
 
 import matplotlib.pyplot as plt
@@ -229,7 +211,6 @@ plt.legend()
 plt.show()
 
 
-# In[19]:
 
 
 datagen = ImageDataGenerator(   
@@ -242,7 +223,6 @@ datagen = ImageDataGenerator(
     fill_mode='nearest')
 
 
-# In[20]:
 
 
 # look at augmented image
@@ -263,7 +243,6 @@ for batch in datagen.flow(x, batch_size=1):
 plt.show()
 
 
-# In[21]:
 
 
 # add dropout layer to prevent overfitting
@@ -286,7 +265,6 @@ model.compile(loss='binary_crossentropy',
                 metrics=['acc'])
 
 
-# In[22]:
 
 
 train_datagen = ImageDataGenerator(
@@ -318,13 +296,11 @@ history = model.fit_generator(
     validation_steps=50)
 
 
-# In[23]:
 
 
 model.save('cats_and_dogs_small_2.h5')
 
 
-# In[24]:
 
 
 acc = history.history['acc']
@@ -344,7 +320,6 @@ plt.legend()
 plt.show()
 
 
-# In[25]:
 
 
 from keras.applications import VGG16
@@ -353,13 +328,11 @@ conv_base = VGG(weights = 'imagenet',
                input_shape = (150,150,3))
 
 
-# In[26]:
 
 
 conv_base.summary()
 
 
-# In[27]:
 
 
 from keras.preprocessing.image import ImageDataGenerator
@@ -393,7 +366,6 @@ validation_features, validation_labels = extract_features(validation_dir, 1000)
 test_features, test_labels = extract_features(test_dir, 1000)
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -33,7 +32,6 @@ date_info = pd.read_csv(DATA_DIR / 'date_info.csv',
                        ).rename(columns={'calendar_date':'visit_date'})
 
 
-# In[2]:
 
 
 ## Build test set
@@ -56,7 +54,6 @@ train['is_train'][:len(air_visit_data)] = 1
 # len(air_visit_data), sum(train['is_test'])
 
 
-# In[3]:
 
 
 ## Build integer air_store_id
@@ -76,19 +73,16 @@ store_id_relation = map_asid(store_id_relation)
 test_id = map_asid(test_id)
 
 
-# In[4]:
 
 
 get_ipython().run_cell_magic('time', '', "## Get visit date features\ndef get_date_feat(df, cache_size=512):\n    from functools import lru_cache\n    get_year  = lru_cache(cache_size)(lambda x: x.year - 2016)\n    get_month = lru_cache(cache_size)(lambda x: x.month)\n    get_week  = lru_cache(cache_size)(lambda x: x.week)\n    get_dow   = lru_cache(cache_size)(lambda x: x.dayofweek + 1)\n    df['visit_year']   = df['visit_date'].apply(get_year)\n    df['visit_month']  = df['visit_date'].apply(get_month)\n    df['visit_week']   = df['visit_date'].apply(get_week)\n    df['visit_dow']    = df['visit_date'].apply(get_dow)\n    return df\nget_date_feat(train, 0)\n# get_date_feat(train)")
 
 
-# In[5]:
 
 
 get_ipython().run_cell_magic('time', '', 'train = get_date_feat(train)')
 
 
-# In[6]:
 
 
 ## Clear date info
@@ -105,7 +99,6 @@ del date_clear['holiday_flg'], date_clear['dow']
 date_clear.head()
 
 
-# In[7]:
 
 
 ## Calc nthday, nthday_last, continuous_span
@@ -149,20 +142,17 @@ date_clear = date_clear.merge(get_date_feat(date_clear, flg_col='Date_FriSatSun_
 date_clear.head()
 
 
-# In[8]:
 
 
 train = train.merge(date_clear, how='left', on='visit_date')
 train.head()
 
 
-# In[9]:
 
 
 air_store_info.head()
 
 
-# In[10]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -171,7 +161,6 @@ air_store_info['genre_id'] = le.fit_transform(air_store_info['air_genre_name'])
 air_store_info.head()
 
 
-# In[11]:
 
 
 tmp = air_store_info.copy()
@@ -180,7 +169,6 @@ tmp['area_split_len'] = tmp['area_split'].apply(len)
 tmp['area_split_len'].hist()
 
 
-# In[12]:
 
 
 for i in range(tmp['area_split_len'].max()):
@@ -190,7 +178,6 @@ for i in range(tmp['area_split_len'].max()):
 tmp.head()
 
 
-# In[13]:
 
 
 for i in range(tmp['area_split_len'].max()):
@@ -199,13 +186,11 @@ for i in range(tmp['area_split_len'].max()):
 tmp.head()
 
 
-# In[14]:
 
 
 tmp[list(filter(lambda c: '_id' in c, tmp.columns))].head()
 
 
-# In[15]:
 
 
 tmp = tmp[list(filter(lambda c: '_id' in c, tmp.columns))]
@@ -214,20 +199,17 @@ print(train.shape)
 train.head()
 
 
-# In[16]:
 
 
 train['target'] = train['visitors'].map(np.log1p)
 train[train['is_train']==1]['target'].hist()
 
 
-# In[17]:
 
 
 list(train.columns)
 
 
-# In[18]:
 
 
 # non_key_li = ['visitors', 'target', 'visit_date']
@@ -259,7 +241,6 @@ for i in range(1, 1+len(key_li)):
     print(combos)
 
 
-# In[19]:
 
 
 def get_grp_mean(df, by, y='target'):
@@ -275,7 +256,6 @@ for i in range(1, 1+len(key_li)):
         res_d[by] = get_grp_mean(train[train['is_train']==1], by)
 
 
-# In[20]:
 
 
 res_df = train[train['is_train']==1].copy()
@@ -287,14 +267,12 @@ for by, res in res_d.items():
 res_df.head()
 
 
-# In[21]:
 
 
 res_cols = list(filter(lambda c: '@' in c, res_df.columns))
 res_cols
 
 
-# In[22]:
 
 
 from sklearn.metrics import mean_squared_error
@@ -305,7 +283,6 @@ for col in res_cols:
     print(col, rmsle)
 
 
-# In[23]:
 
 
 rmsle_df = pd.DataFrame(rmsle_li, columns=['rmsle'], index=res_cols)
@@ -316,13 +293,11 @@ del rmsle_df['index']
 rmsle_df
 
 
-# In[24]:
 
 
 rmsle_df['rmsle'].hist()
 
 
-# In[25]:
 
 
 def keep_shortest_keys(x):
@@ -334,21 +309,18 @@ rmsle_mini_df['keys_len'] = rmsle_mini_df['stat@by'].apply(lambda x:len(x.split(
 rmsle_mini_df
 
 
-# In[26]:
 
 
 print('rmsle<0.65 results')
 rmsle_mini_df[rmsle_mini_df['rmsle']<0.65]
 
 
-# In[27]:
 
 
 selected = list(rmsle_mini_df[rmsle_mini_df['rmsle']<0.65]['stat@by'])
 selected[0].split('@')[-1].split('|')
 
 
-# In[28]:
 
 
 test_df = train[train['is_train']==0].copy()
@@ -357,7 +329,6 @@ print('test shape', test_df.shape)
 test_df.head()
 
 
-# In[29]:
 
 
 for i in range(len(selected)):
@@ -369,13 +340,11 @@ for i in range(len(selected)):
 test_df
 
 
-# In[30]:
 
 
 np.sum(np.isnan(test_df.iloc[:, -len(selected):]))
 
 
-# In[31]:
 
 
 nan_mask = np.isnan(test_df.iloc[:, -len(selected):])
@@ -383,7 +352,6 @@ nan_index_li = [test_df[nan_mask.iloc[:, i]].index for i in range(nan_mask.shape
 nan_index_li[-5]
 
 
-# In[32]:
 
 
 tmp = test_df.iloc[:, -len(selected):].copy()
@@ -392,13 +360,11 @@ test_df.iloc[:, -len(selected):] = tmp.copy()
 np.sum(np.isnan(test_df.iloc[:, -len(selected):]))
 
 
-# In[33]:
 
 
 test_df.iloc[:, -len(selected):] = np.expm1(test_df.iloc[:, -len(selected):])
 
 
-# In[34]:
 
 
 def get_sub(df, pred_col):
@@ -412,14 +378,12 @@ sub_best_stat.to_csv(f'sub_{rmsle_0}.csv', index=False)
 sub_best_stat.head()
 
 
-# In[35]:
 
 
 selected_rmsle_mini_df = rmsle_mini_df[rmsle_mini_df['rmsle']<0.65]
 selected_rmsle_mini_df
 
 
-# In[36]:
 
 
 pred_ratio = np.exp(len(selected) - np.arange(len(selected)))
@@ -427,7 +391,6 @@ pred_ratio = pred_ratio / np.sum(pred_ratio)
 pred_ratio
 
 
-# In[37]:
 
 
 pred_avgw = (test_df.iloc[:, -len(selected):] * pred_ratio).sum(axis=1)
@@ -436,7 +399,6 @@ test_df['pred_avgw'] = pred_avgw
 test_df['pred_avg'] = pred_avg
 
 
-# In[38]:
 
 
 sub_avgw = get_sub(test_df, 'pred_avgw')
@@ -444,7 +406,6 @@ sub_avgw.to_csv('sub_avgw.csv', index=False)
 sub_avgw.head()
 
 
-# In[39]:
 
 
 sub_avg = get_sub(test_df, 'pred_avg')

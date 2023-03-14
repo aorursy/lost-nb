@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import torch
@@ -39,7 +37,6 @@ import torch.nn.functional as F
 import time
 
 
-# In[3]:
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -48,7 +45,6 @@ modelpath = "/kaggle/input/se-resnext50-32x4d-fold2/se_resnext50_32x4d_fold2.pkl
 root_path="/kaggle/input/bengaliai-cv19"
 
 
-# In[4]:
 
 
 simple_transform_valid = torchtransforms.Compose([
@@ -57,7 +53,6 @@ simple_transform_valid = torchtransforms.Compose([
 ])
 
 
-# In[5]:
 
 
 HEIGHT = 137
@@ -127,7 +122,6 @@ def make_loader(
     )
 
 
-# In[6]:
 
 
 from __future__ import print_function, division, absolute_import
@@ -385,7 +379,6 @@ def se_resnext50_32x4d(num_classes=1000, pretrained='imagenet'):
     return model
 
 
-# In[7]:
 
 
 model = se_resnext50_32x4d(pretrained=None)
@@ -399,7 +392,6 @@ model.load_state_dict(newmodelvalue)
 model = model.to(device)
 
 
-# In[8]:
 
 
 def getmodeleval(model, dataloaders):
@@ -432,7 +424,6 @@ def getmodeleval(model, dataloaders):
     return pathes, alllogit1, alllogit2, alllogit3
 
 
-# In[9]:
 
 
 allpathes=[]
@@ -462,13 +453,11 @@ tAllEnd = time.time()
 print(len(allpathes), len(allpreds_root), len(allpreds_vowel), len(allpreds_consonant),  int(round(tAllEnd * 1000)) - int(round(tAllBegin * 1000)), "ms")
 
 
-# In[10]:
 
 
 print(len(allpathes), len(allpreds_root), len(allpreds_vowel), len(allpreds_consonant))
 
 
-# In[11]:
 
 
 row_id=[]

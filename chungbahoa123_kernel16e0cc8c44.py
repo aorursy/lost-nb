@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[1]:
 
 
 import os, math, subprocess
@@ -39,7 +37,6 @@ pd.set_option('display.precision', 4)
 pd.set_option('display.max_colwidth', -1)
 
 
-# In[5]:
 
 
 # load data
@@ -48,19 +45,15 @@ print(pdf_data.shape)
 pdf_data.head()
 
 
-# In[6]:
 
 
 get_ipython().run_cell_magic('time', '', 'profile = pandas_profiling.ProfileReport(pdf_data)\nprofile')
 
 
-# In[7]:
 
 
-pip install pandas_profiling
 
 
-# In[ ]:
 
 
 

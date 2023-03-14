@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,14 +22,12 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 data=pd.read_csv("../input/train.csv")
 print(data.shape)
 
 
-# In[ ]:
 
 
 data.hist()

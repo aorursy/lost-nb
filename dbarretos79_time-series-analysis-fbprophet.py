@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -32,7 +31,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 # importing and seeing the kaggle's file
@@ -40,7 +38,6 @@ k1=pd.read_csv('/kaggle/input/web-traffic-time-series-forecasting/key_1.csv')
 k1.head()
 
 
-# In[3]:
 
 
 # importing and seeing the kaggle's file
@@ -48,7 +45,6 @@ k2=pd.read_csv('/kaggle/input/web-traffic-time-series-forecasting/key_2.csv')
 k2.head()
 
 
-# In[4]:
 
 
 # importing and seeing the kaggle's file
@@ -56,7 +52,6 @@ t2=pd.read_csv('/kaggle/input/web-traffic-time-series-forecasting/train_2.csv')
 t2.head()
 
 
-# In[5]:
 
 
 # importing and seeing the kaggle's file
@@ -64,7 +59,6 @@ t1=pd.read_csv('/kaggle/input/web-traffic-time-series-forecasting/train_1.csv')
 t1.head()
 
 
-# In[6]:
 
 
 # importing and seeing the kaggle's file
@@ -72,7 +66,6 @@ ss2=pd.read_csv('/kaggle/input/web-traffic-time-series-forecasting/sample_submis
 ss2.head()
 
 
-# In[7]:
 
 
 # importing and seeing the kaggle's file
@@ -80,7 +73,6 @@ ss1=pd.read_csv('/kaggle/input/web-traffic-time-series-forecasting/sample_submis
 ss1.head()
 
 
-# In[8]:
 
 
 # view shapes of files 
@@ -99,7 +91,6 @@ print('shape ss2')
 print(ss2.shape)
 
 
-# In[9]:
 
 
 # Verify general behavior
@@ -108,7 +99,6 @@ print(ss2.shape)
 t1.loc['Total',:]= t1.mean(axis=0)
 
 
-# In[10]:
 
 
 x = t1.tail(1)
@@ -116,20 +106,17 @@ x = x.T
 x
 
 
-# In[11]:
 
 
 x.drop('Page', axis=0, inplace=True)
 x.drop('lang', axis=0, inplace=True)
 
 
-# In[12]:
 
 
 x
 
 
-# In[13]:
 
 
 def plotly_df(df, title=''):
@@ -141,13 +128,11 @@ def plotly_df(df, title=''):
     iplot(fig, show_link=False)
 
 
-# In[14]:
 
 
 plotly_df(x, 'Total behavior')
 
 
-# In[15]:
 
 
 # TO use prophet is necessary 2 columns ds (with date ) and y with information
@@ -156,14 +141,12 @@ df.columns = ['ds', 'y']
 df.tail(n=3)
 
 
-# In[16]:
 
 
 # ds MUST be date
 df['ds'] = pd.to_datetime(df['ds']).dt.date
 
 
-# In[17]:
 
 
 # to try, last month will be predict 
@@ -173,7 +156,6 @@ train_df = df[:-prediction_size]
 train_df.tail(n=3)
 
 
-# In[18]:
 
 
 # It's time to predict with prophet 
@@ -184,31 +166,26 @@ future = m.make_future_dataframe(periods=prediction_size)
 forecast = m.predict(future)
 
 
-# In[19]:
 
 
 forecast.tail(n=3)
 
 
-# In[20]:
 
 
 m.plot(forecast)
 
 
-# In[21]:
 
 
 m.plot_components(forecast)
 
 
-# In[ ]:
 
 
 
 
 
-# In[22]:
 
 
 # minimizing outliers effects
@@ -224,21 +201,18 @@ for i in range(0,len(df)-1):
 outliers = pd.DataFrame(outliers)
 
 
-# In[23]:
 
 
 df_new = df.copy()
 df_new
 
 
-# In[24]:
 
 
 for i in range (0, len(outliers)-1 ):    
     df_new['y'][outliers['index'][i]] = df_new['y'][outliers['index'][i]] / outliers['factor'][i]
 
 
-# In[25]:
 
 
 # Prophet AGAIN with NEW df
@@ -247,7 +221,6 @@ for i in range (0, len(outliers)-1 ):
 df_new['ds'] = pd.to_datetime(df_new['ds']).dt.date
 
 
-# In[26]:
 
 
 # to try, last month will be predict 
@@ -257,7 +230,6 @@ train_df = df_new[:-prediction_size]
 train_df.tail(n=3)
 
 
-# In[27]:
 
 
 # It's time to predict with prophet 
@@ -268,115 +240,96 @@ future = m.make_future_dataframe(periods=prediction_size)
 forecast = m.predict(future)
 
 
-# In[28]:
 
 
 m.plot(forecast)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[29]:
 
 
 # Function to find page language
@@ -391,7 +344,6 @@ t1['lang'] = t1.Page.map(get_language) # new collumn
 # see: map () relation between series = https://www.geeksforgeeks.org/python-pandas-map/
 
 
-# In[30]:
 
 
 plt.figure(figsize=(12, 6))
@@ -399,37 +351,31 @@ plt.title("Number of sites by languages", fontsize="18")
 t1['lang'].value_counts().plot.bar(rot=0);
 
 
-# In[31]:
 
 
 t1.values[0]
 
 
-# In[32]:
 
 
 t1.T.index.values
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[33]:
 
 
 t1['mean'] = 
 
 
-# In[34]:
 
 
 
@@ -443,19 +389,16 @@ def get_subject(page):
     return 'na'
 
 
-# In[35]:
 
 
 t1['subject'] = t1.Page.map(get_subject) # new collumn
 
 
-# In[36]:
 
 
 t1.Page
 
 
-# In[37]:
 
 
 #Split datasets in languages
@@ -471,7 +414,6 @@ lang_sets['ru'] = t1[t1.lang=='ru'].iloc[:,0:-1]
 lang_sets['es'] = t1[t1.lang=='es'].iloc[:,0:-1]
 
 
-# In[38]:
 
 
 # access means for languages
@@ -480,13 +422,11 @@ for key in lang_sets:
     sums[key] = lang_sets[key].iloc[:,1:].sum(axis=0) / lang_sets[key].shape[0]
 
 
-# In[39]:
 
 
 days = [r for r in range(sums['en'].shape[0])]
 
 
-# In[40]:
 
 
 ################################ TESTS 
@@ -513,7 +453,6 @@ days = [r for r in range(sums['en'].shape[0])]
 #lang_sets['en'].shape[0]
 
 
-# In[ ]:
 
 
 

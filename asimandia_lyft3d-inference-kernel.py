@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install lyft-dataset-sdk -q')
 
 
-# In[2]:
 
 
 from datetime import datetime
@@ -43,7 +41,6 @@ from pathlib import Path
 from lyft_dataset_sdk.lyftdataset import LyftDataset,LyftDatasetExplorer
 
 
-# In[3]:
 
 
 get_ipython().system('ln -s /kaggle/input/3d-object-detection-for-autonomous-vehicles/test_images images')
@@ -51,7 +48,6 @@ get_ipython().system('ln -s /kaggle/input/3d-object-detection-for-autonomous-veh
 get_ipython().system('ln -s /kaggle/input/3d-object-detection-for-autonomous-vehicles/test_lidar lidar')
 
 
-# In[4]:
 
 
 class LyftTestDataset(LyftDataset):
@@ -148,27 +144,23 @@ class LyftTestDataset(LyftDataset):
             print("Done reverse indexing in {:.1f} seconds.\n======".format(time.time() - start_time))
 
 
-# In[5]:
 
 
 get_ipython().system('tar -xf ../input/lyft3d-test-dataset/lyft3d_bev_test_data.tar.gz')
 
 
-# In[6]:
 
 
 classes = ["car", "motorcycle", "bus", "bicycle", "truck", "pedestrian", "other_vehicle", "animal", "emergency_vehicle"]
 train_dataset = LyftDataset(data_path='.', json_path='../input/3d-object-detection-for-autonomous-vehicles/train_data', verbose=True)
 
 
-# In[7]:
 
 
 train_dataset.list_categories()
 del train_dataset;
 
 
-# In[8]:
 
 
 class_heights = {'animal':0.51,'bicycle':1.44,'bus':3.44,'car':1.72,'emergency_vehicle':2.39,'motorcycle':1.59,
@@ -176,7 +168,6 @@ class_heights = {'animal':0.51,'bicycle':1.44,'bus':3.44,'car':1.72,'emergency_v
 level5data = LyftTestDataset(data_path='.', json_path='../input/3d-object-detection-for-autonomous-vehicles/test_data', verbose=True)
 
 
-# In[9]:
 
 
 def move_boxes_to_car_space(boxes, ego_pose):
@@ -214,7 +205,6 @@ def draw_boxes(im, voxel_size, boxes, classes, z_offset=0.0):
         cv2.drawContours(im, np.int0([corners_voxel]), 0, (class_color, class_color, class_color), -1)
 
 
-# In[10]:
 
 
 # Some hyperparameters we'll need to define for the system
@@ -226,7 +216,6 @@ bev_shape = (336, 336, 3)
 box_scale = 0.8
 
 
-# In[11]:
 
 
 def visualize_lidar_of_sample(sample_token, axes_limit=80):
@@ -235,7 +224,6 @@ def visualize_lidar_of_sample(sample_token, axes_limit=80):
     level5data.render_sample_data(sample_lidar_token, axes_limit=axes_limit)
 
 
-# In[12]:
 
 
 import torch
@@ -283,7 +271,6 @@ plt.show()
 visualize_lidar_of_sample(sample_token)
 
 
-# In[13]:
 
 
 # This implementation was copied from https://github.com/jvanvugt/pytorch-unet, it is MIT licensed.
@@ -408,7 +395,6 @@ class UNetUpBlock(nn.Module):
         return out
 
 
-# In[14]:
 
 
 def get_unet_model(in_channels=3, num_output_classes=2):
@@ -419,7 +405,6 @@ def get_unet_model(in_channels=3, num_output_classes=2):
     return model
 
 
-# In[15]:
 
 
 def visualize_predictions(input_image, prediction, n_images=2, apply_softmax=True):
@@ -459,7 +444,6 @@ def visualize_predictions(input_image, prediction, n_images=2, apply_softmax=Tru
     plt.show()
 
 
-# In[16]:
 
 
 # We weigh the loss for the 0 class lower to account for (some of) the big class imbalance.
@@ -468,7 +452,6 @@ class_weights = torch.from_numpy(np.array([0.2] + [1.0]*len(classes), dtype=np.f
 class_weights = class_weights.to(device)
 
 
-# In[17]:
 
 
 # del model
@@ -483,7 +466,6 @@ model = model.to(device)
 model.eval();
 
 
-# In[18]:
 
 
 def calc_detection_box(prediction_opened,class_probability):
@@ -518,7 +500,6 @@ def calc_detection_box(prediction_opened,class_probability):
     return np.array(sample_boxes),sample_detection_scores,sample_detection_classes
 
 
-# In[19]:
 
 
 # We perform an opening morphological operation to filter tiny detections
@@ -536,7 +517,6 @@ def open_preds(predictions_non_class0):
     return predictions_opened
 
 
-# In[20]:
 
 
 import gc
@@ -593,7 +573,6 @@ with torch.no_grad():
             
 
 
-# In[21]:
 
 
 print("Total amount of boxes:", np.sum([len(x) for x in detection_boxes]))
@@ -614,7 +593,6 @@ plt.ylabel("Count")
 plt.show()
 
 
-# In[22]:
 
 
 def create_transformation_matrix_to_voxel_space(shape, voxel_size, offset):
@@ -677,7 +655,6 @@ def normalize_voxel_intensities(bev, max_intensity=16):
     return (bev/max_intensity).clip(0,1)
 
 
-# In[23]:
 
 
 from lyft_dataset_sdk.eval.detection.mAP_evaluation import Box3D, recall_precision
@@ -767,13 +744,11 @@ for (sample_token, sample_boxes, sample_detection_scores, sample_detection_class
         pred_box3ds.append(box3d)
 
 
-# In[24]:
 
 
 pred_box3ds[0]
 
 
-# In[25]:
 
 
 sub = {}
@@ -793,7 +768,6 @@ for token in set(sample_sub.Id.values).difference(sub.keys()):
     sub[token] = ''
 
 
-# In[26]:
 
 
 sub = pd.DataFrame(list(sub.items()))
@@ -801,25 +775,21 @@ sub.columns = sample_sub.columns
 sub.head()
 
 
-# In[27]:
 
 
 sub.tail()
 
 
-# In[28]:
 
 
 sub.to_csv('lyft3d_pred.csv',index=False)
 
 
-# In[29]:
 
 
 ls
 
 
-# In[30]:
 
 
 get_ipython().system('rm -r ./artifacts/')

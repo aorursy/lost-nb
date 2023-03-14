@@ -1,19 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
-pip install tensorflow_datasets
 
 
-# In[2]:
 
 
 get_ipython().system('pip install -q git+https://github.com/tensorflow/examples.git')
 
 
-# In[3]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -52,7 +48,6 @@ import numpy as np
 # Any results you write to the current directory are saved as output.
 
 
-# In[4]:
 
 
 
@@ -66,7 +61,6 @@ test_data = pd.read_csv(TEST_PATH)
 plant_data = pd.read_csv(TRAIN_PATH)
 
 
-# In[5]:
 
 
 
@@ -84,7 +78,6 @@ labels = np.float32(plant_data.loc[:, 'healthy':'scab'].values)
 train_path,val_path,train_lab,val_label=train_test_split(train_paths,labels, test_size=0.3, random_state=42)
 
 
-# In[6]:
 
 
 IMG_SIZE = 160 # All images will be resized to 160x160
@@ -119,7 +112,6 @@ def format_example(image, label=None):
         return image, label
 
 
-# In[7]:
 
 
 BATCH_SIZE = 32
@@ -130,7 +122,6 @@ val=tf.data.Dataset.from_tensor_slices((val_path, val_label)).map(format_example
 test=tf.data.Dataset.from_tensor_slices((test_paths)).map(format_example)
 
 
-# In[8]:
 
 
 #Now shuffle and batch the data.
@@ -139,7 +130,6 @@ validation_batches =val.batch(BATCH_SIZE)
 test_batches=test.batch(BATCH_SIZE)
 
 
-# In[9]:
 
 
 #Inspect a batch of data:
@@ -149,7 +139,6 @@ for image_batch, label_batch in train_batches.take(1):
 image_batch.shape
 
 
-# In[10]:
 
 
 IMG_SIZE=160
@@ -161,7 +150,6 @@ base_model =tf.keras.applications.MobileNetV2(input_shape=IMG_SHAPE,
                                                weights='imagenet')
 
 
-# In[11]:
 
 
 
@@ -169,20 +157,17 @@ feature_batch = base_model(image_batch)
 print(feature_batch.shape)
 
 
-# In[12]:
 
 
 base_model.trainable = False
 
 
-# In[13]:
 
 
 # Let's take a look at the base model architecture
 base_model.summary()
 
 
-# In[14]:
 
 
 global_average_layer = tf.keras.layers.GlobalAveragePooling2D()
@@ -191,7 +176,6 @@ feature_batch_average = global_average_layer(feature_batch)
 print(feature_batch_average.shape)
 
 
-# In[15]:
 
 
 prediction_layer = tf.keras.layers.Dense(4,activation='sigmoid')
@@ -199,7 +183,6 @@ prediction_batch = prediction_layer(feature_batch_average)
 print(prediction_batch.shape)
 
 
-# In[16]:
 
 
 model = tf.keras.models.Sequential([base_model,
@@ -208,7 +191,6 @@ model = tf.keras.models.Sequential([base_model,
                                 ])
 
 
-# In[17]:
 
 
 base_learning_rate = 0.0001
@@ -217,19 +199,16 @@ model.compile(optimizer=tf.keras.optimizers.Adam(lr=base_learning_rate),
               metrics=['accuracy'])
 
 
-# In[18]:
 
 
 model.summary()
 
 
-# In[19]:
 
 
 len(model.trainable_variables)
 
 
-# In[20]:
 
 
 initial_epochs = 10
@@ -238,14 +217,12 @@ validation_steps=20
 loss0,accuracy0 = model.evaluate(validation_batches, steps = validation_steps)
 
 
-# In[21]:
 
 
 print("initial loss: {:.2f}".format(loss0))
 print("initial accuracy: {:.2f}".format(accuracy0))
 
 
-# In[22]:
 
 
 # Define the checkpoint directory to store the checkpoints
@@ -255,7 +232,6 @@ checkpoint_dir = './training_checkpoints'
 checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt_{epoch}")
 
 
-# In[23]:
 
 
 def decay(epochs):
@@ -267,7 +243,6 @@ def decay(epochs):
         return 1e-5
 
 
-# In[24]:
 
 
 # Callback for printing the LR at the end of each epoch.
@@ -277,7 +252,6 @@ class PrintLR(tf.keras.callbacks.Callback):
                                                       model.optimizer.lr.numpy()))
 
 
-# In[25]:
 
 
 callbacks = [
@@ -289,7 +263,6 @@ callbacks = [
 ]
 
 
-# In[26]:
 
 
 
@@ -301,7 +274,6 @@ history = model.fit(train_batches,
                     validation_data=validation_batches)
 
 
-# In[27]:
 
 
 acc = history.history['accuracy']
@@ -330,20 +302,17 @@ plt.xlabel('epoch')
 plt.show()
 
 
-# In[28]:
 
 
 base_model.trainable = True
 
 
-# In[29]:
 
 
 # Let's take a look to see how many layers are in the base model
 print("Number of layers in the base model: ", len(base_model.layers))
 
 
-# In[30]:
 
 
 # Fine-tune from this layer onwards
@@ -354,7 +323,6 @@ for layer in base_model.layers[:fine_tune_at]:
     layer.trainable =  False
 
 
-# In[31]:
 
 
 
@@ -363,19 +331,16 @@ model.compile(optimizer = tf.keras.optimizers.Adam(lr=base_learning_rate/10),
               metrics=['accuracy'])
 
 
-# In[32]:
 
 
 model.summary()
 
 
-# In[33]:
 
 
 len(model.trainable_variables)
 
 
-# In[34]:
 
 
 fine_tune_epochs = 10
@@ -389,7 +354,6 @@ history_fine = model.fit(train_batches,
                          validation_data=validation_batches)
 
 
-# In[35]:
 
 
 acc += history_fine.history['accuracy']
@@ -399,7 +363,6 @@ loss += history_fine.history['loss']
 val_loss += history_fine.history['val_loss']
 
 
-# In[36]:
 
 
 plt.figure(figsize=(8, 8))
@@ -424,7 +387,6 @@ plt.xlabel('epoch')
 plt.show()
 
 
-# In[37]:
 
 
 
@@ -437,7 +399,6 @@ y_val=np.array(y_val).reshape(32,4)
   
 
 
-# In[38]:
 
 
 #predicting on validation input
@@ -447,7 +408,6 @@ Y_pred = model.predict(c)
 Y_pred
 
 
-# In[39]:
 
 
 for row in range(len(Y_pred)):
@@ -458,7 +418,6 @@ for row in range(len(Y_pred)):
             Y_pred[row][col] = 0
 
 
-# In[40]:
 
 
 #funtion to create confition _matrix
@@ -489,7 +448,6 @@ def plot_confusion_matrix(cm, classes,
     plt.xlabel('Predicted label')
 
 
-# In[41]:
 
 
 #Y_pred_classes = np.argmax(y_p,axis=0) 
@@ -497,7 +455,6 @@ confusion_mtx = confusion_matrix(y_val[:,0],np.array(Y_pred)[:,0])
 plot_confusion_matrix(confusion_mtx, classes = list(dict_characters.values()))
 
 
-# In[42]:
 
 
 #Y_pred_classes = np.argmax(y_p,axis=0) 
@@ -505,7 +462,6 @@ confusion_mtx = confusion_matrix(y_val[:,1],np.array(Y_pred)[:,1])
 plot_confusion_matrix(confusion_mtx, classes = list(dict_characters.values()))
 
 
-# In[43]:
 
 
 #Y_pred_classes = np.argmax(y_p,axis=0) 
@@ -513,7 +469,6 @@ confusion_mtx = confusion_matrix(y_val[:,2],np.array(Y_pred)[:,2])
 plot_confusion_matrix(confusion_mtx, classes = list(dict_characters.values()))
 
 
-# In[44]:
 
 
 #Y_pred_classes = np.argmax(y_p,axis=0) 
@@ -521,7 +476,6 @@ confusion_mtx = confusion_matrix(y_val[:,3],np.array(Y_pred)[:,3])
 plot_confusion_matrix(confusion_mtx, classes = list(dict_characters.values()))
 
 
-# In[45]:
 
 
 t=test_batches
@@ -531,7 +485,6 @@ Y_pred1
 
 
 
-# In[46]:
 
 
 Y_pred1=pd.DataFrame(Y_pred1 ,columns=['healthy',	'multiple_diseases','rust','scab'])

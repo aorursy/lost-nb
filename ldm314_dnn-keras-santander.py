@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -46,7 +45,6 @@ def clear_session(model):
     gc.collect()
 
 
-# In[2]:
 
 
 # config
@@ -55,7 +53,6 @@ RESCALE = True
 MIN_MAX = (-1,1)
 
 
-# In[3]:
 
 
 #file paths
@@ -64,7 +61,6 @@ train_csv = str(input_path / "train.csv")
 test_csv = str(input_path / "test.csv")
 
 
-# In[4]:
 
 
 #load original features
@@ -73,7 +69,6 @@ test_df = pd.read_csv(test_csv)
 train_df.head()
 
 
-# In[5]:
 
 
 #rescale all feature cols to, MIN_MAX setting
@@ -88,7 +83,6 @@ for i in range(0,200,1):
 train_df.head()
 
 
-# In[6]:
 
 
 #make a model
@@ -123,7 +117,6 @@ model = build_model()
 model.summary()
 
 
-# In[7]:
 
 
 #checkpoint reverter, reloads saved if not better val score
@@ -194,7 +187,6 @@ class CheckpointReverter(keras.callbacks.Callback):
                     self.current_skip += 1
 
 
-# In[8]:
 
 
 # custom loss
@@ -334,7 +326,6 @@ def brian_loss(t,p):
 #     return auc_loss(t,p) + binary_crossentropy(t,p)
 
 
-# In[9]:
 
 
 BATCH_SIZE=50000
@@ -387,7 +378,6 @@ for idx, (train_idx, val_idx) in enumerate(splits):
                             )
 
 
-# In[10]:
 
 
 preds_test = []
@@ -401,13 +391,11 @@ for i in range(FOLDS):
     preds_test.append(pred)
 
 
-# In[11]:
 
 
 preds = np.mean(np.array(preds_test),axis=0)
 
 
-# In[12]:
 
 
 #TODO, build this better target ends up being a list of one for each row
@@ -416,7 +404,6 @@ submission_df['target'] = submission_df['target'].apply(lambda x: float(x[0])).a
 submission_df[submission_df['target'] > 0.5].head(10)
 
 
-# In[13]:
 
 
 #TODO, try different thresholds? No: submit the fractional instead
@@ -424,13 +411,11 @@ submission_df[submission_df['target'] > 0.5].head(10)
 # submission_df[submission_df['target'] > 0.5].head(10)
 
 
-# In[14]:
 
 
 submission_df.to_csv('submission.csv', index=False)
 
 
-# In[15]:
 
 
 

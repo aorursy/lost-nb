@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import matplotlib.pyplot as plt
@@ -57,7 +56,6 @@ def get_image_data(image_id, image_type):
     return img
 
 
-# In[2]:
 
 
 def maxHist(hist):
@@ -143,7 +141,6 @@ def cropCircle(img):
     return [img_crop, rectangle, tile_size]
 
 
-# In[3]:
 
 
 def Ra_space(img, Ra_ratio, a_threshold):
@@ -164,7 +161,6 @@ def Ra_space(img, Ra_ratio, a_threshold):
     return Ra
 
 
-# In[4]:
 
 
 def get_and_crop_image(image_id, image_type):
@@ -230,7 +226,6 @@ def get_and_crop_image(image_id, image_type):
     return [image_id, img, rectangle]
 
 
-# In[5]:
 
 
 def parallelize_image_cropping(image_ids):
@@ -272,7 +267,6 @@ def parallelize_image_cropping(image_ids):
     return
 
 
-# In[6]:
 
 
 parallelize_image_cropping(type_ids)

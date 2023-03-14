@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import os
@@ -11,13 +10,11 @@ cities = cities * 1000  # not sure if coords are rounded as concorde
 cities.head()
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '-e', 'wget http://akira.ruc.dk/~keld/research/LKH/LKH-2.0.9.tgz\ntar xvfz LKH-2.0.9.tgz\ncd LKH-2.0.9\nmake')
 
 
-# In[ ]:
 
 
 def write_tsp(nodes, filename, name='traveling-santa-2018-prime-paths'):
@@ -36,7 +33,6 @@ def write_tsp(nodes, filename, name='traveling-santa-2018-prime-paths'):
 write_tsp(cities, '../working/LKH-2.0.9/cities.tsp')
 
 
-# In[ ]:
 
 
 def write_parameters(parameters, filename='../working/LKH-2.0.9/params.par'):
@@ -56,13 +52,11 @@ parameters = [
 write_parameters(parameters)
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '-e', 'cd ./LKH-2.0.9\ntimeout 18000s ./LKH params.par')
 
 
-# In[ ]:
 
 
 def read_tour(filename):
@@ -79,7 +73,6 @@ tour = read_tour('../working/LKH-2.0.9/tsp_solution.csv')
 print("Tour length", len(tour))
 
 
-# In[ ]:
 
 
 import numpy as np

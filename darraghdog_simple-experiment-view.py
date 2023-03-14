@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('reload_ext', 'autoreload')
@@ -9,7 +8,6 @@ get_ipython().run_line_magic('autoreload', '2')
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 import numpy as np
@@ -23,13 +21,11 @@ from pathlib import Path
 from PIL import Image
 
 
-# In[3]:
 
 
 path = Path('../input')
 
 
-# In[4]:
 
 
 def pil2tensor(image,dtype):
@@ -42,7 +38,6 @@ def pil2tensor(image,dtype):
     return torch.from_numpy(a.astype(dtype, copy=False) )
 
 
-# In[5]:
 
 
 def _load_dataset(base_path, dataset, include_controls=True):
@@ -64,7 +59,6 @@ def _load_dataset(base_path, dataset, include_controls=True):
     return res
 
 
-# In[6]:
 
 
 def combine_metadata(base_path=path,
@@ -79,19 +73,16 @@ def combine_metadata(base_path=path,
     return df
 
 
-# In[7]:
 
 
 md = combine_metadata()
 
 
-# In[8]:
 
 
 md.head()
 
 
-# In[9]:
 
 
 def image_path(dataset, experiment, plate,
@@ -101,7 +92,6 @@ def image_path(dataset, experiment, plate,
                         "{}_s{}_w{}.png".format(address, site, channel))
 
 
-# In[10]:
 
 
 def open_6_channel(dataset, experiment, plate, address, site, base_path=path):
@@ -109,13 +99,11 @@ def open_6_channel(dataset, experiment, plate, address, site, base_path=path):
             in range(1,7)])
 
 
-# In[11]:
 
 
 DEFAULT_CHANNELS = (1, 2, 3, 4, 5, 6)
 
 
-# In[12]:
 
 
 RGB_MAP = {
@@ -146,7 +134,6 @@ RGB_MAP = {
 }
 
 
-# In[13]:
 
 
 def convert_tensor_to_rgb(t, channels=DEFAULT_CHANNELS, vmax=255, rgb_map=RGB_MAP):
@@ -179,7 +166,6 @@ def save_rgb(dataset, experiment, plate, address, site):
     PIL.Image.fromarray(im_rgb.astype('uint8')).save(save_file)
 
 
-# In[14]:
 
 
 path = ''
@@ -191,7 +177,6 @@ for type_ in ['train', 'test']:
             os.mkdir(os.path.join('{}_rgb'.format(type_), folder, 'Plate{}'.format(i)))
 
 
-# In[15]:
 
 
 def plot_experiment(x,y,stater_pos):
@@ -214,7 +199,6 @@ def plot_experiment(x,y,stater_pos):
     plt.show() 
 
 
-# In[16]:
 
 
 EXPERIMENT = 'U2OS-01'
@@ -222,14 +206,12 @@ mdtmp = md[(md['experiment']==EXPERIMENT) & (md['plate']==1) & (md['site']==1)]
 _ = mdtmp.apply(lambda row: save_rgb(row['dataset'], row['experiment'], row['plate'], row['well'], row['site']), axis=1)
 
 
-# In[17]:
 
 
 imgidx = mdtmp.iloc[0]
 imgidx
 
 
-# In[18]:
 
 
 plot_experiment(22,14,0)

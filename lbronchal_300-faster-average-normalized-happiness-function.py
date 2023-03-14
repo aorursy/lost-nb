@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
 import pandas as pd 
 
 
-# In[2]:
 
 
 gift_pref = pd.read_csv('../input/child_wishlist.csv',header=None).drop(0, 1).values
@@ -16,7 +14,6 @@ child_pref = pd.read_csv('../input/gift_goodkids.csv',header=None).drop(0, 1).va
 random_sub = pd.read_csv('../input/sample_submission_random.csv').values.tolist()
 
 
-# In[3]:
 
 
 # https://www.kaggle.com/wendykan/average-normalized-happiness-demo
@@ -76,7 +73,6 @@ def avg_normalized_happiness(pred, child_pref, gift_pref):
     return float(total_child_happiness)/(float(n_children)*float(max_child_happiness)) + np.mean(total_gift_happiness) / float(max_gift_happiness*n_gift_quantity)
 
 
-# In[4]:
 
 
 from numba import jit
@@ -143,19 +139,16 @@ def avg_normalized_happiness_fast(pred, child_pref, gift_pref):
             
 
 
-# In[5]:
 
 
 time_original = get_ipython().run_line_magic('timeit', '-r 10 -o avg_normalized_happiness(random_sub, child_pref, gift_pref)')
 
 
-# In[6]:
 
 
 time_fast = get_ipython().run_line_magic('timeit', '-r 10 -o avg_normalized_happiness_fast(np.array(random_sub), child_pref, gift_pref)')
 
 
-# In[7]:
 
 
 import matplotlib.pyplot as plt
@@ -166,27 +159,23 @@ time_result = pd.DataFrame({'time_original': time_original.all_runs,
 time_result.describe()
 
 
-# In[8]:
 
 
 time_result.plot.box(figsize=(12,10))
 plt.show()
 
 
-# In[9]:
 
 
 time_result.plot(figsize=(12,10))
 plt.show()
 
 
-# In[10]:
 
 
 avg_normalized_happiness(np.array(random_sub), child_pref, gift_pref)
 
 
-# In[11]:
 
 
 avg_normalized_happiness_fast(np.array(random_sub), child_pref, gift_pref)

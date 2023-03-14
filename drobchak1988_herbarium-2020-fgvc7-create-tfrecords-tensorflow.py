@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os, json, time, sys, math
@@ -20,7 +19,6 @@ AUTO = tf.data.experimental.AUTOTUNE
 start_time = time.time()
 
 
-# In[2]:
 
 
 df = pd.read_csv('../input/data-for-datatse-herbarium/data.csv')
@@ -29,20 +27,17 @@ df1['file_name'] = df['file_name'].map(lambda x: x.split('/')[-1])
 df1.head()
 
 
-# In[3]:
 
 
 TRAIN_PATTERN = '/kaggle/input/herbarium-2020-fgvc7/nybg2020/train/images/*/*/*.jpg'
 TEST_PATTERN = '/kaggle/input/herbarium-2020-fgvc7/nybg2020/test/images/*/*/*.jpg'
 
 
-# In[4]:
 
 
 shard_size = 32
 
 
-# In[5]:
 
 
 def display_from_dataset(dataset):
@@ -90,7 +85,6 @@ def recompress_image(image, label):
     return image, label, height, width
 
 
-# In[6]:
 
 
 filenames = tf.data.Dataset.list_files(TRAIN_PATTERN) 
@@ -101,13 +95,11 @@ dataset   = dataset.batch(shard_size)
 dataset   = dataset.prefetch(AUTO)
 
 
-# In[7]:
 
 
 get_ipython().system('mkdir tfrecords')
 
 
-# In[8]:
 
 
 
@@ -170,7 +162,6 @@ for shard, (image, label, height, width) in enumerate(dataset):
         print("Wrote file {} containing {} records".format(filename, shard_size))
 
 
-# In[9]:
 
 
 def read_tfrecord(example):
@@ -209,13 +200,11 @@ dataset = dataset.map(read_tfrecord, num_parallel_calls=AUTO)
 dataset = dataset.shuffle(300)
 
 
-# In[10]:
 
 
 display_from_dataset(dataset)
 
 
-# In[11]:
 
 
 end_time = time.time()

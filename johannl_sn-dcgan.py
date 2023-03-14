@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import matplotlib.pyplot as plt
@@ -60,7 +59,6 @@ N_IMAGES=10000
 ComputeLB = True
 
 
-# In[2]:
 
 
 class DogsDataset(Dataset):
@@ -159,7 +157,6 @@ class DogsDataset(Dataset):
         return len(self.samples)
 
 
-# In[3]:
 
 
 # First preprocessing of data
@@ -190,7 +187,6 @@ plt.title("Training Images")
 plt.imshow(np.transpose(make_grid(real_batch.to(device)[:64], padding=2, normalize=True).cpu(),(1,2,0)))
 
 
-# In[4]:
 
 
 class BatchNormModulate2d(nn.Module):
@@ -513,7 +509,6 @@ class Discriminator(nn.Module):
         return x
 
 
-# In[5]:
 
 
 from numpy.random import choice
@@ -688,21 +683,18 @@ class Trainer:
 #             scheduler_G.step()
 
 
-# In[6]:
 
 
 netG = Generator(nz, NFEATS, 3, False, SPECTRAL_NORM, NORMALIZATION, RANDOM_NOISE, USE_STYLE, PIXEL_NORM).to(device)
 print(netG)
 
 
-# In[7]:
 
 
 netD = Discriminator(3, NFEATS).to(device)
 print(netD)
 
 
-# In[8]:
 
 
 def weights_init(m):
@@ -713,7 +705,6 @@ def weights_init(m):
 #             m.bias.data.fill_(0.01)
 
 
-# In[9]:
 
 
 
@@ -728,7 +719,6 @@ scheduler_D = optim.lr_scheduler.ExponentialLR(optimizerD, gamma=0.99)
 scheduler_G = optim.lr_scheduler.ExponentialLR(optimizerG, gamma=0.99)
 
 
-# In[10]:
 
 
 trainer = Trainer(nz, netG, netD, track_grads=True)
@@ -738,7 +728,6 @@ trainer.train(EPOCHS, train_loader, criterion, optimizerG, optimizerD, scheduler
 # torch.save(netD.state_dict(), 'discriminator.pth')
 
 
-# In[11]:
 
 
 plt.figure(figsize=(10,5))
@@ -751,7 +740,6 @@ plt.legend()
 plt.show()
 
 
-# In[12]:
 
 
 # Show D(x) and D(G(z))
@@ -765,7 +753,6 @@ plt.legend()
 plt.show()
 
 
-# In[13]:
 
 
 # Check the gradients for G
@@ -773,7 +760,6 @@ for i in trainer.g_grads: plt.plot(i)
 plt.legend(range(5))
 
 
-# In[14]:
 
 
 # Check the gradients for D
@@ -781,7 +767,6 @@ for i in trainer.d_grads: plt.plot(i)
 plt.legend(range(5))
 
 
-# In[15]:
 
 
 # import matplotlib.animation as animation
@@ -794,7 +779,6 @@ plt.legend(range(5))
 # HTML(ani.to_jshtml())
 
 
-# In[16]:
 
 
 # Grab a batch of real images from the dataloader
@@ -810,7 +794,6 @@ plt.imshow(np.transpose(trainer.img_list[-1],(1,2,0)))
 plt.show()
 
 
-# In[17]:
 
 
 if not os.path.exists(OUTPUT_PATH):
@@ -828,7 +811,6 @@ import shutil
 shutil.make_archive('images', 'zip', OUTPUT_PATH)
 
 
-# In[18]:
 
 
 from __future__ import absolute_import, division, print_function
@@ -1097,7 +1079,6 @@ def calculate_kid_given_paths(paths, model_name, model_path, feature_path=None, 
         return fid_value, distance, m2, s2, features2
 
 
-# In[19]:
 
 
 import zipfile
@@ -1124,7 +1105,6 @@ if ComputeLB:
     get_ipython().system(' rm -r ../tmp')
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -49,7 +48,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 #/kaggle/input/google-quest-challenge/sample_submission.c
 
 
-# In[2]:
 
 
 train = pd.read_csv('/kaggle/input/google-quest-challenge/train.csv')
@@ -64,7 +62,6 @@ print('Test samples: %s' % len(test))
 display(train.head())
 
 
-# In[3]:
 
 
 samp_id = 9
@@ -73,7 +70,6 @@ print('Question Body: %s \n' % train['question_body'].values[samp_id])
 print('Answer: %s' % train['answer'].values[samp_id])
 
 
-# In[4]:
 
 
 question_target_cols = ['question_asker_intent_understanding','question_body_critical', 'question_conversational', 
@@ -94,7 +90,6 @@ print('Answer labels')
 display(train.iloc[[samp_id]][answer_target_cols])
 
 
-# In[5]:
 
 
 train_users = set(train['question_user_page'].unique())
@@ -106,7 +101,6 @@ print('Users in both sets: %s' % len(train_users & test_users))
 print('What users are in both sets? %s' % list(train_users & test_users))
 
 
-# In[6]:
 
 
 train_users = set(train['answer_user_page'].unique())
@@ -117,7 +111,6 @@ print('Unique users in test set: %s' % len(test_users))
 print('Users in both sets: %s' % len(train_users & test_users))
 
 
-# In[7]:
 
 
 question_gp = complete_set[['qa_id', 'question_user_name', 'question_user_page']].groupby(['question_user_name', 'question_user_page'], as_index=False).count()
@@ -136,7 +129,6 @@ sns.countplot(x="Question count", data=test_question_gp, palette="Set3", ax=ax2)
 plt.show()
 
 
-# In[8]:
 
 
 answer_gp = complete_set[['qa_id', 'answer_user_name', 'answer_user_page']].groupby(['answer_user_name', 'answer_user_page'], as_index=False).count()
@@ -154,7 +146,6 @@ sns.countplot(x="Answer count", data=test_answer_gp, palette="Set3", ax=ax2).set
 plt.show()
 
 
-# In[9]:
 
 
 question_title_gp = complete_set[['qa_id', 'question_title']].groupby('question_title', as_index=False).count()
@@ -172,7 +163,6 @@ sns.countplot(x="Question title count", data=test_question_title_gp, palette="Se
 plt.show()
 
 
-# In[10]:
 
 
 question_body_gp = complete_set[['qa_id', 'question_body']].groupby('question_body', as_index=False).count()
@@ -190,7 +180,6 @@ sns.countplot(x="Question body count", data=test_question_body_gp, palette="Set3
 plt.show()
 
 
-# In[11]:
 
 
 complete_set['question_title_len'] = complete_set['question_title'].apply(lambda x : len(x))
@@ -211,7 +200,6 @@ sns.distplot(complete_set[complete_set['set'] == 'test']['question_title_wordCnt
 plt.show()
 
 
-# In[12]:
 
 
 f, (ax1, ax2) = plt.subplots(2, 1, figsize=(24, 7), sharex=True)
@@ -225,7 +213,6 @@ sns.distplot(complete_set[complete_set['set'] == 'test']['question_body_wordCnt'
 plt.show()
 
 
-# In[13]:
 
 
 f, (ax1, ax2) = plt.subplots(2, 1, figsize=(24, 7), sharex=True)
@@ -239,7 +226,6 @@ sns.distplot(complete_set[complete_set['set'] == 'test']['answer_wordCnt'], ax=a
 plt.show()
 
 
-# In[14]:
 
 
 f, (ax1, ax2) = plt.subplots(1, 2, figsize=(24, 7), sharex=True)
@@ -248,7 +234,6 @@ sns.countplot(complete_set[complete_set['set'] == 'test']['category'], ax=ax2).s
 plt.show()
 
 
-# In[15]:
 
 
 complete_set['host_first'] = complete_set['host'].apply(lambda x : x.split('.')[0])
@@ -258,7 +243,6 @@ sns.countplot(y=complete_set[complete_set['set'] == 'test']['host_first'], ax=ax
 plt.show()
 
 
-# In[16]:
 
 
 f = plt.subplots(figsize=(24, 7))
@@ -282,7 +266,6 @@ for col in question_target_cols[15:]:
 plt.show()
 
 
-# In[17]:
 
 
 f = plt.subplots(figsize=(24, 7))
@@ -296,7 +279,6 @@ for col in answer_target_cols[5:]:
 plt.show()
 
 
-# In[18]:
 
 
 eng_stopwords = stopwords.words('english')
@@ -327,7 +309,6 @@ freq_dist.plot(60, marker='.', markersize=10)
 plt.show()
 
 
-# In[19]:
 
 
 import pandas as pd
@@ -347,7 +328,6 @@ from math import floor, ceil
 np.set_printoptions(suppress=True)
 
 
-# In[20]:
 
 
 PATH = '../input/google-quest-challenge/'
@@ -367,7 +347,6 @@ print('\noutput categories:\n\t', output_categories)
 print('\ninput categories:\n\t', input_categories)
 
 
-# In[21]:
 
 
 def _get_masks(tokens, max_seq_length):
@@ -471,7 +450,6 @@ def compute_output_arrays(df, columns):
     return np.asarray(df[columns])
 
 
-# In[22]:
 
 
 def compute_spearmanr(trues, preds):
@@ -552,7 +530,6 @@ def train_and_predict(model, train_data, valid_data, test_data,
     return custom_callback
 
 
-# In[23]:
 
 
 gkf = GroupKFold(n_splits=5).split(X=df_train.question_body, groups=df_train.question_body)
@@ -562,7 +539,6 @@ inputs = compute_input_arays(df_train, input_categories, tokenizer, MAX_SEQUENCE
 test_inputs = compute_input_arays(df_test, input_categories, tokenizer, MAX_SEQUENCE_LENGTH)
 
 
-# In[24]:
 
 
 
@@ -592,7 +568,6 @@ for fold, (train_idx, valid_idx) in enumerate(gkf):
         histories.append(history)
 
 
-# In[25]:
 
 
 test_predictions = [histories[i].test_predictions for i in range(len(histories))]
@@ -604,13 +579,11 @@ df_sub.iloc[:, 1:] = test_predictions
 df_sub.to_csv('submission.csv', index=False)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

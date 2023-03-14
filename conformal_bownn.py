@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import warnings
@@ -260,14 +259,12 @@ def model(max_features=200000):
     return m
 
 
-# In[2]:
 
 
 path = '../input/'
 x, y, test = get_sample(path + "train.tsv", path + "test_stg2.tsv", max_text_length=60)
 
 
-# In[3]:
 
 
 m = model()
@@ -284,7 +281,6 @@ test_id["price"] = pred
 test_id.to_csv("ans.csv", index=False)
 
 
-# In[ ]:
 
 
 

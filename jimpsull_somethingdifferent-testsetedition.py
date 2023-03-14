@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np
@@ -89,13 +88,11 @@ def get_chunks(info, chunk_size=1000):
     return chunks
 
 
-# In[ ]:
 
 
 info = init_reading()
 
 
-# In[ ]:
 
 
 # single object read as pandas object, first object
@@ -103,7 +100,6 @@ object_info13 = read_object_info(info, 13)
 object_info13.head()
 
 
-# In[ ]:
 
 
 # last object from test_set
@@ -111,14 +107,12 @@ object_info104853812 = read_object_info(info, 104853812)
 object_info104853812.tail()
 
 
-# In[ ]:
 
 
 object_info104853812 = read_object_info(info, 104853812, as_pandas=False, columns=['flux', 'flux_err'])
 object_info104853812['flux'][-5:]
 
 
-# In[ ]:
 
 
 object_ids = info['object_id_to_range']['object_id'].values.tolist()
@@ -133,7 +127,6 @@ for object_id in object_ids:
 print("Single field reading took {:6.4f} secs, records = {}".format((time.time() - start_time), records_read))
 
 
-# In[ ]:
 
 
 start_time = time.time()
@@ -148,7 +141,6 @@ for index_start, index_end in chunks:
 print("Chunks reading took {:6.4f} secs, records = {}".format((time.time() - start_time), records_read))
 
 
-# In[ ]:
 
 
 import warnings
@@ -168,7 +160,6 @@ print(bdf.shape)
 #print(rdf.shape)
 
 
-# In[ ]:
 
 
 
@@ -197,7 +188,6 @@ alcdf=getLCDF(objA, info, show=True)
 blcdf=getLCDF(objB, info, show=True)
 
 
-# In[ ]:
 
 
 def divideLcdf(elcdf, ddf, lep=2, hep=5):
@@ -265,7 +255,6 @@ print(falcdf.shape)
         
 
 
-# In[ ]:
 
 
 def getSubPopFeats(pbdf, outSig=3.0):
@@ -323,7 +312,6 @@ print(j)
 print(k)
 
 
-# In[ ]:
 
 
 def processLc(objid, elcdf, ddf, lep=2, hep=5):
@@ -369,7 +357,6 @@ print(feats)
     
 
 
-# In[ ]:
 
 
 from io import StringIO
@@ -448,7 +435,6 @@ for i in range(firstLoop, lastLoop):
     print(fdf.shape)
 
 
-# In[ ]:
 
 
 print(bdf.shape)
@@ -464,7 +450,6 @@ print(mdf.shape)
 mdf.head()
 
 
-# In[ ]:
 
 
 def testForOutlier(bdf, energy='high', sigmas=1.0):
@@ -521,7 +506,6 @@ fdf=testForOutlier(fdf, energy=energy, sigmas=sigmas)
 print(fdf.loc[:,energy + 'Energy_transitory_' + str(round(sigmas,1)) + '_TF'].sum())
 
 
-# In[ ]:
 
 
 
@@ -561,7 +545,6 @@ print(np.max(fdf.loc[:,'outlierScore']))
 print(np.median(fdf.loc[:,'outlierScore']))
 
 
-# In[ ]:
 
 
 fdf['hipd']=0
@@ -588,7 +571,6 @@ print(lipdFilter.sum())
 print(ltpdFilter.sum())
 
 
-# In[ ]:
 
 
 #peak to peak
@@ -606,7 +588,6 @@ fdf.loc[ltpdFilter,'ltpd']=(fdf.loc[ltpdFilter,'lmmax']-fdf.loc[ltpdFilter,'llma
 fdf[outlierFilter].head()
 
 
-# In[ ]:
 
 
 hiprFilter = (fdf['hmmin']<fdf['hemin']) & (fdf['hmmin']<fdf['hlmin']) & outlierFilter
@@ -627,7 +608,6 @@ fdf.loc[ltpdFilter,'ltpr']=(fdf.loc[ltpdFilter,'lmmin']-fdf.loc[ltpdFilter,'llmi
 fdf[outlierFilter].head()
 
 
-# In[ ]:
 
 
 fdf.to_csv('testFeaturesFrom' + str(veryFirstRow) + 'TO' + str(veryLastRow) + '.csv')

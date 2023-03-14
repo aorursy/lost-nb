@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -24,7 +23,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 # функция оптимизирующая место занимаемое набором данных
@@ -73,7 +71,6 @@ def reduce_mem_usage(df, use_float16=False):
     return df
 
 
-# In[ ]:
 
 
 submission = pd.read_csv('/kaggle/input/m5-forecasting-accuracy/sample_submission.csv')
@@ -82,7 +79,6 @@ calendar_df = pd.read_csv('/kaggle/input/m5-forecasting-accuracy/calendar.csv')
 prices_df = pd.read_csv('/kaggle/input/m5-forecasting-accuracy/sell_prices.csv')
 
 
-# In[ ]:
 
 
 submission = reduce_mem_usage(submission, True)
@@ -91,13 +87,11 @@ calendar_df = reduce_mem_usage(calendar_df, True)
 prices_df = reduce_mem_usage(prices_df, True)
 
 
-# In[ ]:
 
 
 f"Shapes of df's: submission - {submission.shape}, sales - {sales_df.shape}, calendar - {calendar_df.shape}, prices - {prices_df.shape}"
 
 
-# In[ ]:
 
 
 """id - HOBBIES_2_004_WI_1 - говорит о том, что это 4 позиция товара 2-й подкатегории товаров категории "Хобби" в 1-м магазине штата WI
@@ -107,13 +101,11 @@ F1 - F28 - 28 дней по которым необходимо предсказ
 submission.sample(3)
 
 
-# In[ ]:
 
 
 submission[submission.id.apply(lambda r: r.endswith('validation'))].shape, submission[submission.id.apply(lambda r: r.endswith('evaluation'))].shape, 
 
 
-# In[ ]:
 
 
 """id - обозначает тоже самое, что в submission с той лишь разницей, что тут данные только для открытой части соревнования
@@ -127,19 +119,16 @@ d_1..d_1913 - сведения о количестве товаров купле
 sales_df.sample(3)
 
 
-# In[ ]:
 
 
 sales_df.describe()
 
 
-# In[ ]:
 
 
 sales_df.info()
 
 
-# In[ ]:
 
 
 """date - дата
@@ -158,49 +147,41 @@ snap_CA, snap_TX, snap_WI - (SNAP - программа помощи в пита�
 calendar_df.head(5)
 
 
-# In[ ]:
 
 
 calendar_df.event_name_1.value_counts()
 
 
-# In[ ]:
 
 
 calendar_df.event_type_1.value_counts()
 
 
-# In[ ]:
 
 
 calendar_df.event_name_2.value_counts()
 
 
-# In[ ]:
 
 
 calendar_df.event_type_2.value_counts()
 
 
-# In[ ]:
 
 
 calendar_df.describe()
 
 
-# In[ ]:
 
 
 calendar_df.info()
 
 
-# In[ ]:
 
 
 calendar_df.snap_CA.sum(), calendar_df.snap_TX.sum(), calendar_df.snap_WI.sum(), 
 
 
-# In[ ]:
 
 
 """store_id - идентификатор магазина (включает наименование штата)
@@ -211,86 +192,72 @@ sell_price - цена товара в данном магазине на дан�
 prices_df.sample(5)
 
 
-# In[ ]:
 
 
 prices_df.describe()
 
 
-# In[ ]:
 
 
 prices_df.info()
 
 
-# In[ ]:
 
 
 sales_df.groupby('state_id').sum().T.plot(subplots=True, figsize=(16, 8))
 
 
-# In[ ]:
 
 
 sales_df.groupby('store_id').sum().T.plot(subplots=True, figsize=(16, 10))
 
 
-# In[ ]:
 
 
 sales_df.groupby('cat_id').sum().loc[:,'d_1':'d_51'].T.plot(subplots=False, figsize=(16, 10))
 
 
-# In[ ]:
 
 
 sales_df['sum_for_peariod'] = sales_df.iloc[:, 6:].sum(axis=1)
 
 
-# In[ ]:
 
 
 sales_df.groupby('store_id')['sum_for_peariod'].describe()
 
 
-# In[ ]:
 
 
 # sales_df[]
 sales_df[sales_df['sum_for_peariod'] == sales_df['sum_for_peariod'].min()]
 
 
-# In[ ]:
 
 
 sales_df[sales_df['sum_for_peariod'] == sales_df['sum_for_peariod'].max()]
 
 
-# In[ ]:
 
 
 sales_df.groupby('cat_id').sum_for_peariod.sum()
 
 
-# In[ ]:
 
 
 sales_df.groupby(['cat_id', 'store_id']).sum_for_peariod.agg([min, max, np.mean, np.std])
 
 
-# In[ ]:
 
 
 sales_df.sample(5)
 
 
-# In[ ]:
 
 
 calendar_df.sample(3)
 
 
-# In[ ]:
 
 
 events_days = pd.concat([sales_df.loc[:, :'state_id'],
@@ -299,7 +266,6 @@ events_days = pd.concat([sales_df.loc[:, :'state_id'],
 events_days.sample(5)
 
 
-# In[ ]:
 
 
 not_events_days = pd.concat([sales_df.loc[:, :'state_id'],
@@ -308,37 +274,31 @@ not_events_days = pd.concat([sales_df.loc[:, :'state_id'],
 not_events_days.sample(5)
 
 
-# In[ ]:
 
 
 events_days.groupby(['state_id', 'cat_id']).sum().T.plot(subplots=False, figsize=(16, 8))
 
 
-# In[ ]:
 
 
 not_events_days.groupby(['state_id', 'cat_id']).sum().T.plot(subplots=True, figsize=(16, 8))
 
 
-# In[ ]:
 
 
 events_days.groupby(['store_id', 'cat_id']).sum()
 
 
-# In[ ]:
 
 
 not_events_days.groupby(['store_id', 'cat_id']).sum() #.T.plot(subplots=True, figsize=(16, 20))
 
 
-# In[ ]:
 
 
 calendar_df
 
 
-# In[ ]:
 
 
 snapCA = pd.concat([not_events_days.loc[not_events_days.state_id=='CA', :'state_id'],
@@ -361,25 +321,21 @@ not_snapWI = pd.concat([not_events_days.loc[not_events_days.state_id=='WI', :'st
                        axis = 1)
 
 
-# In[ ]:
 
 
 snapCA.groupby(['state_id', 'cat_id']).sum().T.plot(subplots=False, figsize=(16, 8))
 
 
-# In[ ]:
 
 
 not_snapCA.groupby(['state_id', 'cat_id']).sum().T.plot(subplots=False, figsize=(16, 8))
 
 
-# In[ ]:
 
 
 prices_df.sample(5)
 
 
-# In[ ]:
 
 
 one_item = prices_df[prices_df.item_id == 'FOODS_3_133']
@@ -388,25 +344,21 @@ for id in one_item.store_id.unique():
     df.plot.scatter('wm_yr_wk','sell_price', title=id)
 
 
-# In[ ]:
 
 
 prices_df[(prices_df.item_id == 'HOBBIES_1_001') & (prices_df.store_id == 'TX_1')].wm_yr_wk.values
 
 
-# In[ ]:
 
 
 sales_df[(sales_df.item_id == 'HOBBIES_1_001') & (sales_df.store_id=='CA_1')].groupby('store_id').sum() #calendar_df.wm_yr_wk == 11353
 
 
-# In[ ]:
 
 
 sales_df
 
 
-# In[ ]:
 
 
 # импортируем библиотеки для работы со временем, очистки от лишних ссылок в памяти, биб
@@ -430,7 +382,6 @@ fday = datetime(2016,4, 25) # дата первого дня для предск
 fday
 
 
-# In[ ]:
 
 
 # собираем все таблицы в одну
@@ -479,7 +430,6 @@ def create_dt(is_train = True, nrows = None, first_day = 1200):
     return dt
 
 
-# In[ ]:
 
 
 def create_fea(dt):
@@ -516,62 +466,52 @@ def create_fea(dt):
             dt[date_feat_name] = getattr(dt["date"].dt, date_feat_func).astype("int16")
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', '\ndf = create_dt(is_train=True, first_day= FIRST_DAY)\ndf.shape')
 
 
-# In[ ]:
 
 
 df.head()
 
 
-# In[ ]:
 
 
 df.info()
 
 
-# In[ ]:
 
 
 df = reduce_mem_usage(df)
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', '\ncreate_fea(df)\ndf.shape')
 
 
-# In[ ]:
 
 
 df.info()
 
 
-# In[ ]:
 
 
 df.head()
 
 
-# In[ ]:
 
 
 df.dropna(inplace = True)
 df.shape
 
 
-# In[ ]:
 
 
 df = reduce_mem_usage(df)
 
 
-# In[ ]:
 
 
 cat_feats = ['item_id', 'dept_id','store_id', 'cat_id', 'state_id'] + ["event_name_1", "event_name_2", "event_type_1", "event_type_2"]
@@ -581,7 +521,6 @@ X_train = df[train_cols]
 y_train = df["sales"]
 
 
-# In[ ]:
 
 
 train_data = lgb.Dataset(X_train, label = y_train, categorical_feature=cat_feats, free_raw_data=False)
@@ -590,7 +529,6 @@ fake_valid_data = lgb.Dataset(X_train.iloc[fake_valid_inds], label = y_train.ilo
                              free_raw_data=False)   # This is just a subsample of the training set, not a real validation set !
 
 
-# In[ ]:
 
 
 params = {
@@ -610,37 +548,31 @@ params = {
 }
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', '\nm_lgb = lgb.train(params, train_data, valid_sets = [fake_valid_data], verbose_eval=50) ')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', '\nte = create_dt(False)\nte.shape')
 
 
-# In[ ]:
 
 
 df = reduce_mem_usage(df)
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', '\nfor i in range(0, 28):\n    day = fday + timedelta(days=i)\n    print(i, day)\n    tst = te[(te.date >= day - timedelta(days=max_lags)) & (te.date <= day)].copy()\n    create_fea(tst)\n    tst = tst.loc[tst.date == day , train_cols]\n    te.loc[te.date == day, "sales"] = 1.02*m_lgb.predict(tst) # magic multiplier by kyakovlev')
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', '\nte_sub = te.loc[te.date >= fday, ["id", "sales"]].copy()\nte_sub.loc[te.date >= fday+ timedelta(days=h), "id"] = te_sub.loc[te.date >= fday+timedelta(days=h), \n                                                                      "id"].str.replace("validation$", "evaluation")\nte_sub["F"] = [f"F{rank}" for rank in te_sub.groupby("id")["id"].cumcount()+1]\nte_sub = te_sub.set_index(["id", "F" ]).unstack()["sales"][[f"F{i}" for i in range(1,29)]].reset_index()\nte_sub.fillna(0., inplace = True)\nte_sub.to_csv("submission.csv",index=False)\nte_sub.shape')
 
 
-# In[ ]:
 
 
 te_sub.head(10)

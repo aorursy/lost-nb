@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -14,7 +13,6 @@ from IPython.display import Image, display
 from tqdm import tqdm_notebook as tqdm
 
 
-# In[2]:
 
 
 DTYPE = {
@@ -88,32 +86,27 @@ TRAIN_USE = list(DTYPE.keys())
 TEST_USE = [c for c in TRAIN_USE if c != TARGET]
 
 
-# In[3]:
 
 
 train = pd.read_csv(f'{IN_DIR}/train_transaction.csv', usecols=TRAIN_USE, dtype=DTYPE)
 train.shape
 
 
-# In[4]:
 
 
 train.TransactionDT.max() 
 
 
-# In[5]:
 
 
 train.TransactionDT.max() / 86400
 
 
-# In[6]:
 
 
 86400 / 480
 
 
-# In[7]:
 
 
 WIDTH = 480
@@ -123,7 +116,6 @@ SECONDS_PER_PIXEL = 180
 DAY_MARKER = 10
 
 
-# In[8]:
 
 
 def make_plot(source_df, querystr, verbose=False):
@@ -144,19 +136,16 @@ def make_and_save(source_df, png_file, querystr):
     cv2.imwrite(png_file, normalize(np.log1p(p)))
 
 
-# In[9]:
 
 
 make_and_save(train, 'all_transactions.png', 'TransactionID>0')
 
 
-# In[10]:
 
 
 display(Image('all_transactions.png'))
 
 
-# In[11]:
 
 
 def save_all(df, cols, base_dir):
@@ -175,51 +164,43 @@ def save_all(df, cols, base_dir):
                 make_and_save(df, png, f'{col}=="{value}"')
 
 
-# In[12]:
 
 
 save_all(train, BASE_COLS, PLOTS_TRAIN_BASE)
 
 
-# In[13]:
 
 
 get_ipython().system('ls -1 $PLOTS_TRAIN_BASE | wc -l')
 
 
-# In[14]:
 
 
 save_all(train, V_COLS, PLOTS_TRAIN_V)
 
 
-# In[15]:
 
 
 get_ipython().system('ls -1 $PLOTS_TRAIN_V | wc -l')
 
 
-# In[16]:
 
 
 xlabels = [f'{h}am' for h in range(12)] +           [f'{h}pm' for h in range(12)]
 xlabels[12] = '12pm'
 
 
-# In[17]:
 
 
 ylabels = [f'day{i}' for i in range(0, HEIGHT, DAY_MARKER)]
 
 
-# In[18]:
 
 
 plt.rcParams["figure.figsize"] = (15, 5)
 plt.rcParams["image.cmap"] = 'afmhot'
 
 
-# In[19]:
 
 
 def show_plot(source_df, querystr):
@@ -236,194 +217,162 @@ def show_plot(source_df, querystr):
     return plt.tight_layout()
 
 
-# In[20]:
 
 
 show_plot(train, 'TransactionID>0')
 
 
-# In[21]:
 
 
 show_plot(train, 'isFraud==1')
 
 
-# In[22]:
 
 
 show_plot(train, 'D4.isnull()')
 
 
-# In[23]:
 
 
 show_plot(train, 'D15.isnull()')
 
 
-# In[24]:
 
 
 show_plot(train, 'card1==7919')
 
 
-# In[25]:
 
 
 show_plot(train, 'card2==194')
 
 
-# In[26]:
 
 
 show_plot(train, 'card2.isnull()')
 
 
-# In[27]:
 
 
 show_plot(train, 'card5==202')
 
 
-# In[28]:
 
 
 show_plot(train, 'card5==126')
 
 
-# In[29]:
 
 
 show_plot(train, 'R_emaildomain=="gmail.com"')
 
 
-# In[30]:
 
 
 show_plot(train, 'D6==0')
 
 
-# In[31]:
 
 
 show_plot(train, 'D9==0.75')
 
 
-# In[32]:
 
 
 show_plot(train, 'ProductCD=="S"')
 
 
-# In[33]:
 
 
 show_plot(train, '(P_emaildomain.isnull()) and (TransactionAmt<=30)')
 
 
-# In[34]:
 
 
 test = pd.read_csv(f'{IN_DIR}/test_transaction.csv', usecols=TEST_USE, dtype=DTYPE)
 test.shape
 
 
-# In[35]:
 
 
 test.TransactionDT.min()
 
 
-# In[36]:
 
 
 test.TransactionDT.max()
 
 
-# In[37]:
 
 
 test.TransactionDT.min() / 86400
 
 
-# In[38]:
 
 
 test.TransactionDT.max() / 86400
 
 
-# In[39]:
 
 
 test['TransactionDT'] -= 213 * 86400
 
 
-# In[40]:
 
 
 test.TransactionDT.max() / 86400
 
 
-# In[41]:
 
 
 save_all(test, test.columns, PLOTS_TEST)
 
 
-# In[42]:
 
 
 get_ipython().system('ls -1 $PLOTS_TEST | wc -l')
 
 
-# In[43]:
 
 
 show_plot(test, 'TransactionID>0')
 
 
-# In[44]:
 
 
 show_plot(test, 'D9==0.75')
 
 
-# In[45]:
 
 
 show_plot(test, 'D15.isnull()')
 
 
-# In[46]:
 
 
 show_plot(test, 'card1==7919')
 
 
-# In[47]:
 
 
 show_plot(test, 'ProductCD=="S"')
 
 
-# In[48]:
 
 
 show_plot(test, 'ProductCD=="R"')
 
 
-# In[49]:
 
 
 show_plot(test, 'ProductCD=="H"')
 
 
-# In[50]:
 
 
 get_ipython().system('7z a -bd -mmt4 -sdel $PLOTS_TRAIN_V.7z $PLOTS_TRAIN_V >>compress_7z.log')
 
 
-# In[51]:
 
 
 get_ipython().system('7z a -bd -mmt4 -sdel $PLOTS_TEST.7z $PLOTS_TEST >>compress_7z.log')

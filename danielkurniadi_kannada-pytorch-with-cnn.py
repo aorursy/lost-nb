@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_cell_magic('bash', '', 'pip3 install --quiet torchsummary')
 
 
-# In[2]:
 
 
 import os, sys
@@ -35,31 +33,26 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[3]:
 
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 
-# In[4]:
 
 
 data_dir = 'data/Kannada'
 
 
-# In[5]:
 
 
 get_ipython().run_cell_magic('bash', '', '# Install Kaggle CLI using Python Pip\npip3 install --quiet kaggle\nmkdir -p ~/.kaggle\n\n# Copy API key file to where Kaggle expects it\n# Make sure to upload kaggle key file next to this notebook\ncp kaggle.json ~/.kaggle/kaggle.json && chmod 600 ~/.kaggle/kaggle.json')
 
 
-# In[6]:
 
 
 get_ipython().run_cell_magic('bash', '', '\n# Download Kannada MNIST from Kaggle\nkaggle competitions download -c Kannada-MNIST\n\n# Create our data directory\nmkdir -p data/Kannada/raw\nmkdir -p data/Kannada/processed\n\n# Unzip to data/Kannada directory\nunzip Kannada-MNIST.zip -d data/Kannada/raw')
 
 
-# In[7]:
 
 
 for dirname, _, filenames in os.walk(data_dir):
@@ -67,7 +60,6 @@ for dirname, _, filenames in os.walk(data_dir):
         print('data at: ' + os.path.join(dirname, filename))
 
 
-# In[8]:
 
 
 from sklearn.model_selection import train_test_split
@@ -86,7 +78,6 @@ test_images=test.drop('label',axis=1)
 test_labels=test['label']
 
 
-# In[9]:
 
 
 # Train Test Split for validation
@@ -95,7 +86,6 @@ train_images, val_images, train_labels, val_labels = train_test_split(train_data
                                                                      test_size=0.15)
 
 
-# In[10]:
 
 
 # Reset Index
@@ -109,13 +99,11 @@ test_images.reset_index(drop=True, inplace=True)
 test_labels.reset_index(drop=True, inplace=True)
 
 
-# In[11]:
 
 
 train_images.iloc[20000:20005, 200:320]
 
 
-# In[12]:
 
 
 print("Train Set: \n" + '-'*20)
@@ -123,13 +111,11 @@ print(train_images.shape)
 print(train_labels.shape)
 
 
-# In[13]:
 
 
 val_images.iloc[8000:8005, 200:320]
 
 
-# In[14]:
 
 
 print("\nValidation Set: \n"  + '-'*20)
@@ -137,13 +123,11 @@ print(val_images.shape)
 print(val_labels.shape)
 
 
-# In[15]:
 
 
 test_images.iloc[5000:5005, 200:320]
 
 
-# In[16]:
 
 
 print("\nTest Set: \n"  + '-'*20)
@@ -154,7 +138,6 @@ print("\nSubmission: ")
 print(submission_set.shape)
 
 
-# In[17]:
 
 
 train_dist = train_labels.value_counts(normalize = True)
@@ -169,7 +152,6 @@ pd.DataFrame({
 })
 
 
-# In[18]:
 
 
 class KannadaDataSet(Dataset):
@@ -197,7 +179,6 @@ class KannadaDataSet(Dataset):
             return data
 
 
-# In[19]:
 
 
 IMGSIZE = 28
@@ -217,7 +198,6 @@ val_trans = transforms.Compose(([
 ]))
 
 
-# In[20]:
 
 
 batch_size = 64
@@ -247,7 +227,6 @@ submission_loader = DataLoader(submission_data,
                                shuffle=False)
 
 
-# In[21]:
 
 
 # obtain one batch of training images
@@ -263,7 +242,6 @@ for idx in np.arange(16):
     ax.set_title('digit ' + str(labels[idx].item()), fontsize=16)  # .item() gets single value in scalar tensor
 
 
-# In[22]:
 
 
 img = np.squeeze(images[1])
@@ -285,7 +263,6 @@ for x in range(width):
 ax.set_title('Kannada Digit in detail: label %d' % labels[1].item());
 
 
-# In[23]:
 
 
 # Save data to local folder first
@@ -299,7 +276,6 @@ test_images.to_csv(os.path.join(data_dir, 'processed/test.csv'), index=False, he
 test_labels.to_csv(os.path.join(data_dir, 'processed/test_labels.csv'), index=False, header=False)
 
 
-# In[24]:
 
 
 class KannadaCNN(nn.Module):
@@ -398,7 +374,6 @@ class KannadaCNN(nn.Module):
         return out
 
 
-# In[25]:
 
 
 # Constructing our CNN module
@@ -414,7 +389,6 @@ criterion = nn.CrossEntropyLoss()
 summary(model, input_size=(1,IMGSIZE,IMGSIZE))  # IMGSIZE = 28
 
 
-# In[26]:
 
 
 def accuracy(output, target, topk=(1,)):
@@ -433,7 +407,6 @@ def accuracy(output, target, topk=(1,)):
     return res
 
 
-# In[27]:
 
 
 def train_helper(train_loader, model, optimizer, criterion,
@@ -491,7 +464,6 @@ def train_helper(train_loader, model, optimizer, criterion,
     return train_loss, train_top1, train_top5 
 
 
-# In[28]:
 
 
 def test_helper(test_loader, model, criterion, 
@@ -533,7 +505,6 @@ def test_helper(test_loader, model, criterion,
     return test_loss, test_top1, test_top5
 
 
-# In[29]:
 
 
 # ----------------------------
@@ -564,7 +535,6 @@ print('\n' + 'Final Test Set Result:\n'+ '*' * 80)
 test_helper(test_loader, net, criterion, epoch, device=device);
 
 
-# In[30]:
 
 
 fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(14, 5))
@@ -590,7 +560,6 @@ axes[1].set_ylim(80, 100);
 axes[1].legend(labels=['train acc', 'validation acc']);
 
 
-# In[31]:
 
 
 # Time to get the network's predictions on the test set
@@ -606,20 +575,17 @@ for images in submission_loader:
     predictions = torch.cat((predictions, preds.argmax(dim=1)), dim=0)
 
 
-# In[32]:
 
 
 submission_pred_df = pd.DataFrame(predictions.cpu().detach().numpy())
 
 
-# In[33]:
 
 
 submission_pred_df.to_csv(os.path.join(data_dir, 'kannada_sub_baseline.csv'), 
                           index=True, index_label='id', header=['label'])
 
 
-# In[ ]:
 
 
 

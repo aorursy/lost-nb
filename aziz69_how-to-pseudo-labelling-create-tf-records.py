@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import cv2, pandas as pd, matplotlib.pyplot as plt
@@ -26,13 +25,11 @@ for i,k in enumerate(imgs):
 plt.show()
 
 
-# In[ ]:
 
 
 get_ipython().system('pip install -q efficientnet >> /dev/null')
 
 
-# In[ ]:
 
 
 import pandas as pd, numpy as np
@@ -48,7 +45,6 @@ get_ipython().system("pip install tensorflow-addons=='0.9.1'")
 import tensorflow_addons as tfa
 
 
-# In[ ]:
 
 
 DEVICE = "TPU" #or "GPU"
@@ -83,7 +79,6 @@ WGTS = [1/FOLDS]*FOLDS
 TTA = 11
 
 
-# In[ ]:
 
 
 if DEVICE == "TPU":
@@ -120,7 +115,6 @@ REPLICAS = strategy.num_replicas_in_sync
 print(f'REPLICAS: {REPLICAS}')
 
 
-# In[ ]:
 
 
 # SET MIXED PRECISION
@@ -139,7 +133,6 @@ if XLA_ACCELERATE:
     print('Accelerated Linear Algebra enabled')
 
 
-# In[ ]:
 
 
 GCS_PATH = [None]*FOLDS; GCS_PATH2 = [None]*FOLDS
@@ -157,13 +150,11 @@ files_test  = np.sort(np.array(tf.io.gfile.glob(GCS_PATH[0] + '/test*.tfrec')))
 files_pseulabeling = np.sort(np.array(tf.io.gfile.glob(GCS_PATH3[0] + '/train_pseudo_*.tfrec')))
 
 
-# In[ ]:
 
 
 len(files_pseulabeling)
 
 
-# In[ ]:
 
 
 cutmix_rate = 0.3
@@ -181,7 +172,6 @@ DROP_SIZE = [0,0.2,0.2] # between 0 and 1
 RATE = 0; CT = 0; SIZE = 0
 
 
-# In[ ]:
 
 
 # batch
@@ -239,7 +229,6 @@ def cutmix_v2(data, label, PROBABILITY = cutmix_rate):
     return data,label2
 
 
-# In[ ]:
 
 
 def get_mat(rotation, shear, height_zoom, width_zoom, height_shift, width_shift):
@@ -314,7 +303,6 @@ def transform_shear_rot(image,cfg):
     return tf.reshape(d,[DIM,DIM,3])
 
 
-# In[ ]:
 
 
 def transform_grid(image, inv_mat, image_shape):
@@ -429,7 +417,6 @@ def apply_grid_mask_v2(data, image_shape, PROBABILITY = gridmask_rate):
         return data
 
 
-# In[ ]:
 
 
 def dropout(image, DIM=img_size, PROBABILITY = 0.75, CT = 8, SZ = 0.2):
@@ -462,7 +449,6 @@ def dropout(image, DIM=img_size, PROBABILITY = 0.75, CT = 8, SZ = 0.2):
     return image
 
 
-# In[ ]:
 
 
 ROT_ = 180.0
@@ -545,7 +531,6 @@ def transform(image, DIM=img_size):
     return tf.reshape(d,[DIM, DIM,3])
 
 
-# In[ ]:
 
 
 def read_labeled_tfrecord(example):
@@ -628,7 +613,6 @@ def count_data_items(filenames):
     return np.sum(n)
 
 
-# In[ ]:
 
 
 def train_setup(image,label,data) :
@@ -645,7 +629,6 @@ def test_setup(image,image_name,data) :
     return {'image_data' : image , 'meta_data' : tabular } , image_name
 
 
-# In[ ]:
 
 
 def get_dataset(files, augment = False, shuffle = False, repeat = False, 
@@ -685,7 +668,6 @@ def get_dataset(files, augment = False, shuffle = False, repeat = False,
     return ds
 
 
-# In[ ]:
 
 
 '''ds = ds.map(lambda img, imgname_or_label: (prepare_image(img, augment=augment, dim=dim), 
@@ -696,7 +678,6 @@ def get_dataset(files, augment = False, shuffle = False, repeat = False,
    ds = ds.prefetch(AUTO)'''
 
 
-# In[ ]:
 
 
 from tensorflow.keras.applications import InceptionResNetV2
@@ -750,7 +731,6 @@ def build_model(dim=img_size, ef=0):
     return model
 
 
-# In[ ]:
 
 
 def get_lr_callback(batch_size=8):
@@ -777,7 +757,6 @@ def get_lr_callback(batch_size=8):
     return lr_callback
 
 
-# In[ ]:
 
 
 # USE VERBOSE=0 for silent, VERBOSE=1 for interactive, VERBOSE=2 for commit
@@ -892,7 +871,6 @@ for fold,(idxT,idxV) in enumerate(skf.split(np.arange(15))):
         plt.show()  
 
 
-# In[ ]:
 
 
 # COMPUTE OVERALL OOF AUC
@@ -908,7 +886,6 @@ df_oof.to_csv('oof.csv',index=False)
 df_oof.head()
 
 
-# In[ ]:
 
 
 ds = get_dataset(files_test, augment=False, repeat=False, dim=IMG_SIZES[fold],
@@ -918,7 +895,6 @@ image_names = np.array([img_name.numpy().decode("utf-8")
                         for img, img_name in iter(ds.unbatch())])
 
 
-# In[ ]:
 
 
 submission = pd.DataFrame(dict(image_name=image_names, target=preds[:,0]))
@@ -927,14 +903,12 @@ submission.to_csv('stratify_e4_128meta_512.4concat_18epochs_512img_with_pseudo_l
 submission.head()
 
 
-# In[ ]:
 
 
 plt.hist(submission.target,bins=100)
 plt.show()
 
 
-# In[ ]:
 
 
 
@@ -953,7 +927,6 @@ test = pd.read_csv('../input/siim-isic-melanoma-classification/test.csv')
 model_1.head(5)
 
 
-# In[ ]:
 
 
 
@@ -973,14 +946,12 @@ model5 = model_5.sort_values(by = ['target'])[top:].image_name
 model5 = model5.values.tolist()
 
 
-# In[ ]:
 
 
 label_1_imagename = set(model1).intersection(model2) #.intersection(model3).intersection(model4).intersection(model5)
 print('Number of new positive examples: %i' %len(label_1_imagename))
 
 
-# In[ ]:
 
 
 label_1_data = test.loc[test['image_name'].isin(label_1_imagename)].reset_index(drop = True)
@@ -988,7 +959,6 @@ label_1_data['target'] = 1
 label_1_data.head(10)
 
 
-# In[ ]:
 
 
 model1 = model_1.sort_values(by = ['target'])[:bottom].image_name
@@ -1007,14 +977,12 @@ model5 = model_5.sort_values(by = ['target'])[:bottom].image_name
 model5 = model5.values.tolist()
 
 
-# In[ ]:
 
 
 label_0_imagename = set(model1).intersection(model2) #.intersection(model3).intersection(model4).intersection(model5)
 print('Number of new negative examples: %i' %len(label_0_imagename))
 
 
-# In[ ]:
 
 
 label_0_data = test.loc[test['image_name'].isin(label_0_imagename)].reset_index(drop = True)
@@ -1022,21 +990,18 @@ label_0_data['target'] = 0
 label_0_data.head(10)
 
 
-# In[ ]:
 
 
 label_1_data.dropna(inplace = True)
 label_0_data.dropna(inplace = True)
 
 
-# In[ ]:
 
 
 data = pd.concat([label_0_data, label_1_data])
 data.shape
 
 
-# In[ ]:
 
 
 PATH = '../input/jpeg-melanoma-512x512/test/'
@@ -1047,7 +1012,6 @@ IMGS = IMGS + '.jpg'
 print('Number of images: %i' %len(IMGS))
 
 
-# In[ ]:
 
 
 str_col = ['patient_id','sex','anatom_site_general_challenge'] 
@@ -1058,7 +1022,6 @@ for col in str_col:
 data['age_approx'] = data['age_approx'].astype('int')
 
 
-# In[ ]:
 
 
 def _bytes_feature(value):
@@ -1076,7 +1039,6 @@ def _int64_feature(value):
     return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
 
 
-# In[ ]:
 
 
 def serialize_example(feature0, feature1, feature2, feature3, feature4, feature5, feature6):
@@ -1094,7 +1056,6 @@ def serialize_example(feature0, feature1, feature2, feature3, feature4, feature5
     return example_proto.SerializeToString()
 
 
-# In[ ]:
 
 
 SIZE = 1000

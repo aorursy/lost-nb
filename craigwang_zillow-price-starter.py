@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -20,14 +19,12 @@ from subprocess import check_output
 print(check_output(["ls", "../input"]).decode("utf8"))
 
 
-# In[2]:
 
 
 train = pd.read_csv("../input/train_2016_v2.csv", parse_dates = ["transactiondate"])
 train.head()
 
 
-# In[3]:
 
 
 plt.figure(figsize = (8,6))
@@ -37,7 +34,6 @@ plt.ylabel('logerror')
 plt.show()
 
 
-# In[4]:
 
 
 ulimit = np.percentile(train.logerror.values, 99)
@@ -50,7 +46,6 @@ plt.xlabel('logerror')
 plt.show()
 
 
-# In[5]:
 
 
 train['trainsaction_month'] = train.transactiondate.dt.month
@@ -62,7 +57,6 @@ plt.ylabel('Transaction Count')
 plt.show()
 
 
-# In[6]:
 
 
 train.parcelid.value_counts().value_counts()
@@ -72,26 +66,22 @@ train.transN[train.parcelid.duplicated(keep='last').values] = 2
 train.transN.unique()
 
 
-# In[7]:
 
 
 
 
 
-# In[7]:
 
 
 
 
 
-# In[7]:
 
 
 prop = pd.read_csv("../input/properties_2016.csv")
 prop.head()
 
 
-# In[8]:
 
 
 missing_prop = prop.isnull().sum(axis=0)
@@ -107,7 +97,6 @@ ax.set_ylabel('Number of missing values in each column')
 plt.show()
 
 
-# In[9]:
 
 
 plt.figure(figsize=(12,12))
@@ -117,20 +106,17 @@ plt.xlabel('Latitude')
 plt.show()
 
 
-# In[10]:
 
 
 train_df = pd.merge(train, prop, on = 'parcelid', how='left')
 train_df.head()
 
 
-# In[11]:
 
 
 train_df.dtypes.value_counts()
 
 
-# In[12]:
 
 
 missing_train = train_df.isnull().sum(axis=0)
@@ -138,31 +124,26 @@ missing_train =missing_train.to_frame('MissingCount')
 missing_train['missing_ratio'] = missing_train.MissingCount.values/len(train_df)
 
 
-# In[13]:
 
 
 missing_train[missing_train.missing_ratio>0.998]
 
 
-# In[14]:
 
 
 train_df.fillna(train_df.mean(axis=0), inplace = True)
 
 
-# In[15]:
 
 
 ((train_df.isnull().sum(axis=0)).to_frame('MissingCount')).join(train_df.dtypes.to_frame('dtype'))
 
 
-# In[16]:
 
 
 train_df['taxamount'].head()
 
 
-# In[17]:
 
 
 x_cols = [col for col in train_df.columns if (col != 'logerror' and train_df[col].dtype == 'float64')]
@@ -176,7 +157,6 @@ corr_df = corr_df.sort_values(by = 'corr_values')
 corr_df
 
 
-# In[18]:
 
 
 ind = np.arange(len(labels))
@@ -189,20 +169,17 @@ ax.set_title('Correlation between variables and logerror')
 plt.show()
 
 
-# In[19]:
 
 
 train_df[corr_df[corr_df.corr_values.isnull()].col_labels.values].std()
 
 
-# In[20]:
 
 
 corr_df_select = corr_df[ (corr_df['corr_values']>0.02).values | (corr_df['corr_values'] < -0.01).values ]
 corr_df_select
 
 
-# In[21]:
 
 
 train_df[['yearbuilt', 'bedroomcnt', 'fullbathcnt']] = train_df[['yearbuilt', 'bedroomcnt', 'fullbathcnt']].applymap(int)
@@ -214,7 +191,6 @@ plt.title('Variables Correlation Map')
 plt.show()
 
 
-# In[22]:
 
 
 fig = plt.figure(figsize = (12,12))
@@ -225,7 +201,6 @@ sns.pairplot(train_df[col_corrs[5:-1] + ['logerror']])
 plt.show()
 
 
-# In[23]:
 
 
 col = 'finishedsquarefeet12'
@@ -241,7 +216,6 @@ plt.title('Finished Square Feet 12 VS Log Error')
 plt.show()
 
 
-# In[24]:
 
 
 col = 'calculatedfinishedsquarefeet'
@@ -257,7 +231,6 @@ plt.title('Calculated finished square feet 12 VS Log Error')
 plt.show()
 
 
-# In[25]:
 
 
 plt.figure(figsize=(12,12))
@@ -269,7 +242,6 @@ plt.title('Bathroom Count VS Log Error')
 plt.show()
 
 
-# In[26]:
 
 
 plt.figure(figsize=(12,12))
@@ -281,7 +253,6 @@ plt.title('Bedroom Count VS Log Error')
 plt.show()
 
 
-# In[27]:
 
 
 from ggplot import *
@@ -320,26 +291,22 @@ plt.xticks(range(len(indices)),featrure_name[indices], rotation = 'vertical' , f
 plt.show()
 
 
-# In[28]:
 
 
 sub = pd.read_csv('../input/sample_submission.csv')
 
 
-# In[29]:
 
 
 sub.head()
 
 
-# In[30]:
 
 
 train.head()
 train.trainsaction_month.value_counts().sort_index()
 
 
-# In[31]:
 
 
 prop.head()

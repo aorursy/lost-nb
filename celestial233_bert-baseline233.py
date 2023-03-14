@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import torch
@@ -33,7 +32,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 batch_size = 8
@@ -44,7 +42,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("device: ", device)
 
 
-# In[3]:
 
 
 def divide_dataset(__train, factor, fields):
@@ -89,7 +86,6 @@ def postproc(text, x):
     return ret
 
 
-# In[4]:
 
 
 def read_SQuAD(file, fields, train):
@@ -211,7 +207,6 @@ def read_SQuAD(file, fields, train):
         return data.Dataset(examples, fields), context_raw_test, word_to_char_list
 
 
-# In[5]:
 
 
 from transformers import BertTokenizer   , BertForQuestionAnswering   , BertConfig
@@ -267,7 +262,6 @@ pad_token = tokenizer.pad_token
 unk_token = tokenizer.unk_token
 
 
-# In[6]:
 
 
 CONTEXT     = data.Field(batch_first=True, use_vocab=False, postprocessing=postproc, pad_token=pad_token)#, preprocessing=preproc)
@@ -301,7 +295,6 @@ valid_iter = data.BucketIterator(valid, batch_size=batch_size, train=False,sort_
 test_iter  = data.Iterator(test , batch_size=1, train=False, sort=False, device=device)
 
 
-# In[7]:
 
 
 def data_check():
@@ -331,7 +324,6 @@ def data_check():
 data_check()
 
 
-# In[8]:
 
 
 class MRCMetrics(object):
@@ -369,7 +361,6 @@ class MRCMetrics(object):
         return ("loss: %.4f, EM: %.4f, F1: %.4f, ja: %.4f" %(self["loss"], self["EM"], self["F1"], self["ja"]))
 
 
-# In[9]:
 
 
 total_num = sum(p.numel() for p in model.parameters())
@@ -389,7 +380,6 @@ optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=3e-3)
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.2, patience=3)
 
 
-# In[10]:
 
 
 def model_check():
@@ -417,7 +407,6 @@ def model_check():
 #model_check()
 
 
-# In[11]:
 
 
 def run_epoch(data_iter, train):
@@ -466,7 +455,6 @@ def run_epoch(data_iter, train):
     return metrics
 
 
-# In[12]:
 
 
 for epoch in range(n_epochs):
@@ -481,7 +469,6 @@ for epoch in range(n_epochs):
     # train loss: 0.83, EM: 0.53, F1: 0.74, ja: 0.69
 
 
-# In[13]:
 
 
 def decode(st_prob, ed_prob, word_to_char):
@@ -504,7 +491,6 @@ def decode(st_prob, ed_prob, word_to_char):
 # 80 zero
 
 
-# In[14]:
 
 
 model.eval()
@@ -535,7 +521,6 @@ sample.loc[:, 'selected_text'] = out
 sample.to_csv("submission.csv", index=False)
 
 
-# In[15]:
 
 
 sample.head()

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -30,7 +29,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
 
 
 sampledf = False  #Uses a specific amount of rows , use this for faster training and testing functionalities and features
@@ -63,7 +61,6 @@ print('Options Active: \n\t SampledDF: {} frac: {} \n\t Augmentation: {}\n\t Wei
                                                                                                                             ,dim_red,sq_data,standradize,train_between,freq))
 
 
-# In[3]:
 
 
 df_t = pd.read_csv('../input/train.csv')
@@ -82,13 +79,11 @@ print('Training df shape',df_train.shape)
 print('Test df shape',df_test.shape)
 
 
-# In[4]:
 
 
 df_train.head()
 
 
-# In[5]:
 
 
 def vis_classes(labels,values,title='Target Percentages'):
@@ -107,7 +102,6 @@ values = [(len(df_train[df_train['target'] == 0])/len(df_train))*100,(len(df_tra
 vis_classes(labels,values)
 
 
-# In[6]:
 
 
 df_ones = df_train[df_train['target'] > 0]
@@ -119,7 +113,6 @@ df_sampling = pd.concat([df_ones, df_zeros]).sample(frac=1) #shuffling
 print(df_sampling.shape)
 
 
-# In[7]:
 
 
 #thanks to https://www.kaggle.com/jiweiliu/lgb-2-leaves-augment
@@ -152,7 +145,6 @@ def augment(x,y,t=2):
     return x,y
 
 
-# In[8]:
 
 
 #part of it Inspired by Gabriel Preda 's Kernel'
@@ -207,7 +199,6 @@ def eng_features_preprocess(df,idx,use_perc,freq,log_transf,sq_data,perc_list =[
             df['var_sq_'+str(i)] = np.square(df['var_'+str(i)])
 
 
-# In[9]:
 
 
 #part of it Inspired by Gabriel Preda 's Kernel'
@@ -281,7 +272,6 @@ if not feature_eng_cv: #full scale feature engineering on train and test data
     print('Number of Features: ', len(df_train.columns[2:]))
 
 
-# In[10]:
 
 
 X = df_train.iloc[:,2:]
@@ -302,7 +292,6 @@ if augmnt:
     sub_name = sub_name+'_agmted'    
 
 
-# In[11]:
 
 
 if dim_red :
@@ -316,7 +305,6 @@ if dim_red :
     X.head()
 
 
-# In[12]:
 
 
 #test train split
@@ -331,7 +319,6 @@ print("X_train: ", X_train.shape)
 print("X_test: " ,X_test.shape)
 
 
-# In[13]:
 
 
 #Model LGBM 
@@ -445,7 +432,6 @@ mean_cv_score = np.mean(val_aucs)
 print ('-----   Mean CV Score: {:.2} ------'.format(mean_cv_score))
 
 
-# In[14]:
 
 
 if feature_eng_cv:
@@ -460,7 +446,6 @@ lgbm_pred_noncv = clf_non_cv.predict(X_target)
 print('LGBM NO-CV Val Score: {}'.format(roc_auc_score(y_test,clf_non_cv.predict(X_test))))
 
 
-# In[15]:
 
 
 num_features = 60
@@ -478,7 +463,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[16]:
 
 
 def auc(y_true, y_pred):
@@ -527,7 +511,6 @@ target_pred_nn = model_nn.predict(X_target)[:,0]
 print('\n Validation Max score : {}'.format(np.max(history.history['val_auc'])))
 
 
-# In[17]:
 
 
 #Ditribution Plots from both models 
@@ -562,7 +545,6 @@ plt.show()
 plt.savefig('combination_target_test.png')
 
 
-# In[18]:
 
 
 def sub_pred(preds,df_test,name='submission.csv'):

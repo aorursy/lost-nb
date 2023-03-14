@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -10,7 +9,6 @@ from catboost import CatBoostRegressor
 from sklearn.metrics import mean_absolute_error
 
 
-# In[2]:
 
 
 train_df = pd.read_csv('../input/train_2016_v2.csv', parse_dates=['transactiondate'], low_memory=False)
@@ -20,7 +18,6 @@ properties = pd.read_csv('../input/properties_2016.csv', low_memory=False)
 test_df['parcelid'] = test_df['ParcelId']
 
 
-# In[3]:
 
 
 # similar to the1owl
@@ -33,7 +30,6 @@ def add_date_features(df):
     return df
 
 
-# In[4]:
 
 
 VAL_SPLIT_DATE = '2016-09-15'   # Cutoff date for validation split
@@ -49,7 +45,6 @@ print("Train: ", train_df.shape)
 print("Test: ", test_df.shape)
 
 
-# In[5]:
 
 
 missing_perc_thresh = 0.98
@@ -66,7 +61,6 @@ print("We exclude: %s" % exclude_missing)
 print(len(exclude_missing))
 
 
-# In[6]:
 
 
 # exclude where we only have one unique value :D
@@ -81,7 +75,6 @@ print("We exclude: %s" % exclude_unique)
 print(len(exclude_unique))
 
 
-# In[7]:
 
 
 exclude_other = ['parcelid', 'logerror']  # for indexing/training only
@@ -95,7 +88,6 @@ print("We use these for training: %s" % train_features)
 print(len(train_features))
 
 
-# In[8]:
 
 
 cat_feature_inds = []
@@ -108,7 +100,6 @@ for i, c in enumerate(train_features):
 print("Cat features are: %s" % [train_features[ind] for ind in cat_feature_inds])
 
 
-# In[9]:
 
 
 # some out of range int is a good choice
@@ -117,7 +108,6 @@ valid_df.fillna(-999, inplace=True)
 test_df.fillna(-999, inplace=True)
 
 
-# In[10]:
 
 
 X_train = train_df[train_features]
@@ -128,7 +118,6 @@ print(X_train.shape, y_train.shape)
 print(X_valid.shape, y_valid.shape)
 
 
-# In[11]:
 
 
 test_df['transactiondate'] = pd.Timestamp('2016-12-01')  # Dummy
@@ -137,7 +126,6 @@ X_test = test_df[train_features]
 print(X_test.shape)
 
 
-# In[12]:
 
 
 num_ensembles = 2
@@ -163,14 +151,12 @@ for i in range(num_ensembles):
     MAEs.append( mean_absolute_error(y_valid, model.predict(X_valid)) )   
 
 
-# In[13]:
 
 
 print( tree_counts )
 print( MAEs )
 
 
-# In[14]:
 
 
 

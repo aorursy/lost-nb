@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # All imports
@@ -430,7 +429,6 @@ def comp_timings(time_stamp_low, time_stamp_high, verbose=False):
     
 
 
-# In[2]:
 
 
 # Set up example slide and run pipeline on low resolution
@@ -445,13 +443,11 @@ time_stamps_pipeline_low, detect_time_low) = detect_and_crop(
                                 show_plots="verbose"
                                 )
 print("Pipeline Timings: Low")
-pipe_times_low, pipe_time_pct_low = get_timings(time_stamps_pipeline_low, verbose=True)
 print("-"*30)
 print("Tissue Detect Timings: Low")
 tiss_times_low, tiss_time_pct_low = get_timings(detect_time_low, verbose=True)
 
 
-# In[3]:
 
 
 (processed_slide_med, pct_change_med, 
@@ -461,17 +457,14 @@ tiss_times_low, tiss_time_pct_low = get_timings(detect_time_low, verbose=True)
                                         )
 
 print("Pipeline Timings: Med")
-pipe_times_med, pipe_time_pct_med = get_timings(time_stamps_pipeline_med, verbose=True)
 print("-"*30)
 print("Tissue Detect Timings: Med")
 tiss_times_med, tiss_time_pct_med = get_timings(detect_time_med, verbose=True)
 
 
-# In[4]:
 
 
 print("Pipeline Timings: Med")
-pipe_times_comp, pipe_time_pct_comp = comp_timings(pipe_times_low, pipe_times_med,verbose=True)
 print("-"*30)
 print("Tissue Detect Timings: Med")
 tiss_times_comp, tiss_time_pct_comp = comp_timings(tiss_times_low,tiss_times_med,verbose=True)
@@ -481,7 +474,6 @@ time_full_low, time_full_med = time_stamps_pipeline_low["crop"], time_stamps_pip
 print(f"Processed Time Ratio: {time_full_low / time_full_med}")
 
 
-# In[5]:
 
 
 # Open slide on lowest resolution
@@ -491,7 +483,6 @@ plt.imshow(img_low)
 plt.show()
 
 
-# In[6]:
 
 
 # Detect Tissue and 
@@ -513,7 +504,6 @@ plt.imshow(smart_bounding_boxes)
 plt.show()
 
 
-# In[7]:
 
 
 # Open slide on lowest resolution
@@ -523,7 +513,6 @@ plt.imshow(img_high)
 plt.show()
 
 
-# In[8]:
 
 
 smart_scale = img_high.copy()
@@ -541,7 +530,6 @@ plt.imshow(smart_scale)
 plt.show()
 
 
-# In[9]:
 
 
 scaled_smart_crop = getSubImage(smart_scale, scaled_rect)
@@ -549,7 +537,6 @@ plt.imshow(scaled_smart_crop)
 plt.show()
 
 
-# In[10]:
 
 
 big_slide_cut = color_cut(scaled_smart_crop, color=[255,255,255])
@@ -557,7 +544,6 @@ plt.imshow(big_slide_cut)
 plt.show()
 
 
-# In[11]:
 
 
 resized_prod_slide = cv2.resize(big_slide_cut, (512, 512))
@@ -565,7 +551,6 @@ plt.imshow(resized_prod_slide)
 plt.show()
 
 
-# In[12]:
 
 
 (tissue_contours_high,
@@ -581,7 +566,6 @@ plt.imshow(tissue_only_slide)
 plt.show()
 
 
-# In[13]:
 
 
 def detect_tissue_external(input_slide, sensitivity=3000):
@@ -653,7 +637,6 @@ plt.imshow(tissue_only_slide)
 plt.show()
 
 
-# In[14]:
 
 
 def new_detect_and_crop(image_location="",sensitivity: int = 3000, downsample_lvl = -1,
@@ -793,31 +776,26 @@ def new_detect_and_crop(image_location="",sensitivity: int = 3000, downsample_lv
                                         )
 
 
-# In[15]:
 
 
 tiss_times_comp, tiss_time_pct_comp = get_timings(time_stamps_pipeline_med, verbose=True)
 
 
-# In[16]:
 
 
 base_pipe_low = get_ipython().run_line_magic('timeit', '-o detect_and_crop(image_location=example_slide, downsample_lvl=-1, show_plots="none")')
 
 
-# In[17]:
 
 
 base_pipe_high = get_ipython().run_line_magic('timeit', '-o detect_and_crop(image_location=example_slide, downsample_lvl=-2, show_plots="none")')
 
 
-# In[18]:
 
 
 new_pipe_high = get_ipython().run_line_magic('timeit', '-o new_detect_and_crop(image_location=example_slide,show_plots="none")')
 
 
-# In[19]:
 
 
 base = base_pipe_low.best
@@ -832,7 +810,6 @@ print(f"Base->New: {base_new:.2f}")
 print(f"Old->New: {new_old:.2f}")
 
 
-# In[20]:
 
 
 from tqdm.notebook import tqdm
@@ -865,7 +842,6 @@ with Pool(processes=4) as pool:
     )
 
 
-# In[21]:
 
 
 get_ipython().system('tar -czf train_images.tar.gz ../train_images/*.png')

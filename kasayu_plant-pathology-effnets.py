@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -23,14 +22,12 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 
-# In[2]:
 
 
 get_ipython().system('pip install efficientnet')
 import efficientnet.tfkeras as efn
 
 
-# In[3]:
 
 
 AUTO = tf.data.experimental.AUTOTUNE
@@ -55,7 +52,6 @@ print("REPLICAS: ", strategy.num_replicas_in_sync)
 GCS_DS_PATH = KaggleDatasets().get_gcs_path()
 
 
-# In[4]:
 
 
 img = plt.imread('../input/plant-pathology-2020-fgvc7/images/Train_0.jpg')
@@ -63,7 +59,6 @@ print(img.shape)
 plt.imshow(img)
 
 
-# In[5]:
 
 
 path='../input/plant-pathology-2020-fgvc7/'
@@ -77,7 +72,6 @@ test_paths = test.image_id.apply(lambda x: GCS_DS_PATH + '/images/' + x + '.jpg'
 train_labels = train.loc[:, 'healthy':].values
 
 
-# In[6]:
 
 
 nb_classes = 4
@@ -87,7 +81,6 @@ EPOCHS = 5
 SEED = 123
 
 
-# In[7]:
 
 
 def decode_image(filename, label=None, image_size=(img_size, img_size)):
@@ -103,7 +96,6 @@ def decode_image(filename, label=None, image_size=(img_size, img_size)):
         return image, label
 
 
-# In[8]:
 
 
 # データ拡張
@@ -118,7 +110,6 @@ def data_augment(image, label=None, seed=2020):
         return image, label
 
 
-# In[9]:
 
 
 train_dataset = (
@@ -133,7 +124,6 @@ train_dataset = (
     )
 
 
-# In[10]:
 
 
 test_dataset = (
@@ -144,7 +134,6 @@ test_dataset = (
 )
 
 
-# In[11]:
 
 
 # 学習率の減衰
@@ -172,7 +161,6 @@ test_dataset = (
 # print("Learning rate schedule: {:.3g} to {:.3g} to {:.3g}".format(y[0], max(y), y[-1]))
 
 
-# In[12]:
 
 
 def get_model1():
@@ -182,7 +170,6 @@ def get_model1():
     return Model(inputs=base_model.input, outputs=predictions)
 
 
-# In[13]:
 
 
 # def get_model2():
@@ -192,7 +179,6 @@ def get_model1():
 #     return Model(inputs=base_model.input, outputs=predictions)
 
 
-# In[14]:
 
 
 # def get_model3():
@@ -204,7 +190,6 @@ def get_model1():
 #     return model
 
 
-# In[15]:
 
 
 # def get_model4():
@@ -216,7 +201,6 @@ def get_model1():
 #     return model
 
 
-# In[16]:
 
 
 # def get_model5():
@@ -228,7 +212,6 @@ def get_model1():
 #     return model
 
 
-# In[17]:
 
 
 # def get_model6():
@@ -240,7 +223,6 @@ def get_model1():
 #     return model
 
 
-# In[18]:
 
 
 # def get_model7():
@@ -252,7 +234,6 @@ def get_model1():
 #     return model
 
 
-# In[19]:
 
 
 strategy.scope()でコードのどの部分を分散して実行するかを示す
@@ -263,13 +244,11 @@ with strategy.scope():
 model1.compile(optimizer='adam', loss='categorical_crossentropy',metrics=['categorical_accuracy'])
 
 
-# In[20]:
 
 
 get_ipython().run_cell_magic('time', '', 'model1.fit(\n    train_dataset, \n    steps_per_epoch=train_labels.shape[0] // BATCH_SIZE,\n#     callbacks=[lr_callback],\n    epochs=EPOCHS\n)')
 
 
-# In[21]:
 
 
 # with strategy.scope():
@@ -278,7 +257,6 @@ get_ipython().run_cell_magic('time', '', 'model1.fit(\n    train_dataset, \n    
 # model2.compile(optimizer='adam', loss='categorical_crossentropy',metrics=['categorical_accuracy'])
 
 
-# In[22]:
 
 
 # %%time
@@ -290,7 +268,6 @@ get_ipython().run_cell_magic('time', '', 'model1.fit(\n    train_dataset, \n    
 # )
 
 
-# In[23]:
 
 
 # with strategy.scope():
@@ -299,7 +276,6 @@ get_ipython().run_cell_magic('time', '', 'model1.fit(\n    train_dataset, \n    
 # model3.compile(optimizer='adam', loss='categorical_crossentropy',metrics=['categorical_accuracy'])
 
 
-# In[24]:
 
 
 # %%time
@@ -311,7 +287,6 @@ get_ipython().run_cell_magic('time', '', 'model1.fit(\n    train_dataset, \n    
 # )
 
 
-# In[25]:
 
 
 # with strategy.scope():
@@ -320,7 +295,6 @@ get_ipython().run_cell_magic('time', '', 'model1.fit(\n    train_dataset, \n    
 # model4.compile(optimizer='adam', loss='categorical_crossentropy',metrics=['categorical_accuracy'])
 
 
-# In[26]:
 
 
 # %%time
@@ -332,7 +306,6 @@ get_ipython().run_cell_magic('time', '', 'model1.fit(\n    train_dataset, \n    
 # )
 
 
-# In[27]:
 
 
 # with strategy.scope():
@@ -341,7 +314,6 @@ get_ipython().run_cell_magic('time', '', 'model1.fit(\n    train_dataset, \n    
 # model5.compile(optimizer='adam', loss='categorical_crossentropy',metrics=['categorical_accuracy'])
 
 
-# In[28]:
 
 
 # %%time
@@ -353,7 +325,6 @@ get_ipython().run_cell_magic('time', '', 'model1.fit(\n    train_dataset, \n    
 # )
 
 
-# In[29]:
 
 
 # with strategy.scope():
@@ -362,7 +333,6 @@ get_ipython().run_cell_magic('time', '', 'model1.fit(\n    train_dataset, \n    
 # model6.compile(optimizer='adam', loss='categorical_crossentropy',metrics=['categorical_accuracy'])
 
 
-# In[30]:
 
 
 # %%time
@@ -374,7 +344,6 @@ get_ipython().run_cell_magic('time', '', 'model1.fit(\n    train_dataset, \n    
 # )
 
 
-# In[31]:
 
 
 # with strategy.scope():
@@ -383,13 +352,11 @@ get_ipython().run_cell_magic('time', '', 'model1.fit(\n    train_dataset, \n    
 # model7.compile(optimizer='adam', loss='categorical_crossentropy',metrics=['categorical_accuracy'])
 
 
-# In[32]:
 
 
 get_ipython().run_cell_magic('time', '', "probs1 = model1.predict(test_dataset, verbose=1)\n# probs2 = model2.predict(test_dataset, verbose=1)\n# probs3 = model3.predict(test_dataset, verbose=1)\n# probs4 = model4.predict(test_dataset, verbose=1)\n# probs5 = model5.predict(test_dataset, verbose=1)\n# probs6 = model6.predict(test_dataset, verbose=1)\n# probs7 = model7.predict(test_dataset, verbose=1)\n# probs_avg = (2*probs1 + probs2 + probs3 + probs4) / 5  # + probs5+ probs6 + probs7) / 8\n# probs_avg = (probs1 + probs3 + probs5) / 3\n# sub.loc[:, 'healthy':] = probs_avg\nsub.loc[:, 'healthy':] = probs1\nsub.to_csv('submission_effnets.csv', index=False)\nsub.head()")
 
 
-# In[33]:
 
 
 for dirname, _, filenames in os.walk('./'):

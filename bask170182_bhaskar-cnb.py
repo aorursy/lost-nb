@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 
 
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -35,26 +33,22 @@ from torchvision import models
 from torchvision import transforms, utils
 
 
-# In[2]:
 
 
 PATH = '../input/pku-autonomous-driving/'
 os.listdir(PATH)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[3]:
 
 
 import pandas as pd
@@ -62,7 +56,6 @@ import pandas as pd
 train = pd.read_csv("../input/pku-autonomous-driving/train.csv")
 
 
-# In[4]:
 
 
 camera_matrix = np.array([[2304.5479, 0,  1686.2379],
@@ -71,7 +64,6 @@ camera_matrix = np.array([[2304.5479, 0,  1686.2379],
 camera_matrix_inv = np.linalg.inv(camera_matrix)
 
 
-# In[5]:
 
 
 def imread(path, fast_mode=False):
@@ -81,13 +73,11 @@ def imread(path, fast_mode=False):
     return img
 
 
-# In[ ]:
 
 
 
 
 
-# In[6]:
 
 
 img = imread(PATH + 'train_images/ID_8a6e65317' + '.jpg')
@@ -96,20 +86,17 @@ IMG_SHAPE = img.shape
 IMG_SHAPE
 
 
-# In[ ]:
 
 
 
 
 
-# In[7]:
 
 
 plt.figure(figsize=(15,8))
 plt.imshow(img)
 
 
-# In[8]:
 
 
 def str2coords(s, names=['id', 'yaw', 'pitch', 'roll', 'x', 'y', 'z']):
@@ -128,13 +115,11 @@ def str2coords(s, names=['id', 'yaw', 'pitch', 'roll', 'x', 'y', 'z']):
     return coords
 
 
-# In[9]:
 
 
 train["PredictionString"][0]
 
 
-# In[10]:
 
 
 inp = train['PredictionString'][0]
@@ -143,7 +128,6 @@ print()
 print('Output:\n', str2coords(inp))
 
 
-# In[11]:
 
 
 def get_img_coords(s):
@@ -171,13 +155,11 @@ plt.imshow(imread(PATH + 'train_images/' + train['ImageId'][2217] + '.jpg'))
 plt.scatter(*get_img_coords(train['PredictionString'][2217]), color='yellow', s=100);
 
 
-# In[12]:
 
 
 get_img_coords(train['PredictionString'][2217])
 
 
-# In[13]:
 
 
 from math import sin, cos
@@ -196,7 +178,6 @@ def euler_to_Rot(yaw, pitch, roll):
     return np.dot(Y, np.dot(P, R))
 
 
-# In[14]:
 
 
 def draw_line(image, points):
@@ -216,7 +197,6 @@ def draw_points(image, points):
     return image
 
 
-# In[15]:
 
 
 def visualize(img, coords):
@@ -254,7 +234,6 @@ def visualize(img, coords):
     return img
 
 
-# In[16]:
 
 
 n_rows = 6
@@ -268,38 +247,32 @@ for idx in range(n_rows):
     plt.show()
 
 
-# In[17]:
 
 
 idx = 0
 #fig, axes = plt.subplots(1, 2, figsize=(20,20))
 
 
-# In[18]:
 
 
 PATH + 'train_images/' + train['ImageId'].iloc[idx] + '.jpg'
 
 
-# In[19]:
 
 
 train['PredictionString'][idx]
 
 
-# In[20]:
 
 
 train['ImageId'].iloc[idx]
 
 
-# In[21]:
 
 
 str2coords(train['PredictionString'].iloc[idx])
 
 
-# In[22]:
 
 
 IMG_WIDTH = 1024
@@ -317,38 +290,32 @@ def preprocess_image(img, flip=False):
     return (img / 255).astype('float32')
 
 
-# In[23]:
 
 
 img0 = imread(PATH + 'train_images/' + train['ImageId'][22] + '.jpg')
 img = preprocess_image(img0)
 
 
-# In[24]:
 
 
 img0.shape
 
 
-# In[25]:
 
 
 img.shape
 
 
-# In[26]:
 
 
 plt.imshow(img0)
 
 
-# In[27]:
 
 
 plt.imshow(img)
 
 
-# In[28]:
 
 
 def rotate(x, angle): #adds angle to x, and the sum is made to lie in [-pi,pi). 180 is changed to -180.
@@ -398,7 +365,6 @@ def get_mask_and_regr(img, labels, flip=False):
     return mask, regr
 
 
-# In[29]:
 
 
 DISTANCE_THRESH_CLEAR = 2
@@ -463,7 +429,6 @@ def extract_coords(prediction, flipped=False): #This extracts coordinates from t
     return coords
 
 
-# In[30]:
 
 
 ax_i = 0
@@ -478,62 +443,52 @@ mrconc = np.concatenate([mask[None], regr], 0) #regr: (7x40x128). mask[None]: 1x
 coords = extract_coords(mrconc, ax_i==1) # mrconc IS THE PREDICTION!!!
 
 
-# In[31]:
 
 
 mask[None].shape
 
 
-# In[32]:
 
 
 mask.shape
 
 
-# In[33]:
 
 
 mrconc.shape
 
 
-# In[ ]:
 
 
 
 
 
-# In[34]:
 
 
 mrconc = np.concatenate([mask[None], regr], 0)
 #mask[None].shape
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[35]:
 
 
 #this function is only for understanding purpoes.
@@ -543,25 +498,21 @@ def rotate_degrees(x, angle):
     return x
 
 
-# In[36]:
 
 
 rotate_degrees(50,180) #adds angle to x, and the sum is made to lie in [-pi,pi). 180 is changed to -180.
 
 
-# In[ ]:
 
 
 
 
 
-# In[37]:
 
 
 fig, axes = plt.subplots(1, 2, figsize=(20,20))
 
 
-# In[ ]:
 
 
 

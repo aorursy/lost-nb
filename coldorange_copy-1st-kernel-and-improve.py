@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -74,7 +73,6 @@ for c in columns:
 for c in str_type: dtypes[c] = 'category'
 
 
-# In[2]:
 
 
 # LOAD TRAIN
@@ -95,7 +93,6 @@ del train_id, test_id, X_train['isFraud']; x = gc.collect()
 print('Train shape',X_train.shape,'test shape',X_test.shape)
 
 
-# In[3]:
 
 
 # NORMALIZE D COLUMNS
@@ -122,7 +119,6 @@ for i,f in enumerate(X_train.columns):
         X_test[f].fillna(-1,inplace=True)
 
 
-# In[4]:
 
 
 # FREQUENCY ENCODE TOGETHER
@@ -225,7 +221,6 @@ def encode_CD(main_cols, uids, aggregations, train=X_train, test=X_test, fillna=
             print(col + '_next_amt_' + agg_type + ', ', end='')
 
 
-# In[5]:
 
 
 # TRANSACTION AMT CENTS
@@ -243,7 +238,6 @@ encode_FE(X_train,X_test,['card1_addr1','card1_addr1_P_emaildomain'])
 encode_AG(['TransactionAmt','D9','D11'],['card1','card1_addr1','card1_addr1_P_emaildomain'],['mean','std'],usena=True)
 
 
-# In[6]:
 
 
 # CONVERT DATETIME
@@ -262,7 +256,6 @@ X_test['day'] = X_test.TransactionDT / (24*60*60)
 X_test['uid'] = X_test.card1_addr1.astype(str) + '_' + X_test.P_emaildomain.astype(str) +'_' +                 np.floor(X_test.day - X_test.D1).astype(str)
 
 
-# In[7]:
 
 
 # FREQUENCY ENCODE UID
@@ -290,7 +283,6 @@ X_test['outsider15'] = (np.abs(X_test.D1-X_test.D15)>3).astype('int8')
 print('outsider15')
 
 
-# In[8]:
 
 
 cols = list( X_train.columns )
@@ -312,7 +304,6 @@ print('NOW USING THE FOLLOWING',len(cols),'FEATURES.')
 np.array(cols)
 
 
-# In[9]:
 
 
 # TRAIN 75% PREDICT 25%
@@ -337,7 +328,6 @@ model = clf.fit(X_train.loc[idxT,cols], y_train[idxT],
     verbose=50, early_stopping_rounds=100)
 
 
-# In[10]:
 
 
 # PLOT MODEL FEATURES IMPORTANCE
@@ -352,7 +342,6 @@ plt.show()
 del clf, model; x=gc.collect()
 
 
-# In[11]:
 
 
 # GROUPKFOLD MODEL
@@ -390,7 +379,6 @@ print('#'*20)
 print ('XGB96 OOF CV=',roc_auc_score(y_train,oof))
 
 
-# In[12]:
 
 
 # PLOT OOF DISTRIBUTION
@@ -405,7 +393,6 @@ X_train[['TransactionID','oof']].to_csv('oof_xgb_96.csv')
 X_train.set_index('TransactionID',drop=True,inplace=True)
 
 
-# In[13]:
 
 
 # GENERATE SUBMISSION
@@ -419,7 +406,6 @@ plt.title('XGB96 Submission')
 plt.show()
 
 
-# In[ ]:
 
 
 

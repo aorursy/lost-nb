@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -15,7 +14,6 @@ from functools import partial
 from pathlib import Path
 
 
-# In[2]:
 
 
 DATA_DIR = Path("../input/santa-workshop-tour-2019/")
@@ -27,7 +25,6 @@ print("shape: %d x %d" % df.shape)
 df.head(2)
 
 
-# In[3]:
 
 
 choices = df.loc[:, "choice_0":"choice_9"].values
@@ -36,7 +33,6 @@ n_fams = fam_sizes.shape[0]
 n_days = 100
 
 
-# In[4]:
 
 
 MIN_OCCUPANCY, MAX_OCCUPANCY = 125, 300
@@ -93,7 +89,6 @@ def accounting_penalty(n_cur, n_prev):
     return res * p
 
 
-# In[5]:
 
 
 class SantasAccountant(object):
@@ -177,7 +172,6 @@ class SantasAccountant(object):
         return cost
 
 
-# In[6]:
 
 
 accountant = SantasAccountant(choices, fam_sizes)
@@ -189,7 +183,6 @@ for i in 1, 50, 99:
     assert np.all(np.equal(true_acc_penalties, test_acc_penalties)), f"Day {i} problem"
 
 
-# In[7]:
 
 
 class Sleigh (SantasAccountant):
@@ -284,7 +277,6 @@ class Sleigh (SantasAccountant):
         self.update_acc_penalty(dec_day)
 
 
-# In[8]:
 
 
 class Reindeer (Sleigh):
@@ -381,20 +373,17 @@ class Reindeer (Sleigh):
             self.travel(fam_id, inc_day)
 
 
-# In[9]:
 
 
 Prancer = Reindeer(choices, fam_sizes)
 Prancer.days
 
 
-# In[10]:
 
 
 get_ipython().run_cell_magic('time', '', 'c_prev = Prancer.cost()\nPrancer.search(n_steps=50000)\n\nprint(f"Best cost: {Prancer.best_cost:.0f}")\nprint(f"Cost improvement: {c_prev - Prancer.best_cost:.0f}")\nplt.plot(range(len(Prancer.costs)), Prancer.costs)\nplt.show()')
 
 
-# In[11]:
 
 
 submission['assigned_day'] = Prancer.best_days

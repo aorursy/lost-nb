@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd, numpy as np
@@ -9,7 +8,6 @@ import scipy.stats as ss, statsmodels,pywt
 from scipy import signal
 
 
-# In[2]:
 
 
 param1 =[{'coeff': 0, 'attr': 'abs'},{'coeff': 1, 'attr': 'abs'},{'coeff': 2, 'attr': 'abs'},{'coeff': 3, 'attr': 'abs'},
@@ -19,7 +17,6 @@ param1 =[{'coeff': 0, 'attr': 'abs'},{'coeff': 1, 'attr': 'abs'},{'coeff': 2, 'a
 param2 = [{"aggtype": "centroid"},{"aggtype": 'variance'},{'aggtype':'skew'},{'aggtype':'kurtosis'}]
 
 
-# In[3]:
 
 
 # x is the each individual signal

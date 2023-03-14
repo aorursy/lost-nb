@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #This Python 3 environment comes with many helpful analytics libraries installed
@@ -28,53 +27,45 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 #Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 df_train = pd.read_csv('../input/forest-cover-type-prediction/train.csv')
 df_test = pd.read_csv('../input/forest-cover-type-prediction/test.csv')
 
 
-# In[3]:
 
 
 df_train.head()
 
 
-# In[4]:
 
 
 #df_test1.head()
 
 
-# In[5]:
 
 
 df_train.dtypes
 
 
-# In[6]:
 
 
 pd.set_option('display.max_columns', None)
 df_train.describe()
 
 
-# In[7]:
 
 
 df_train = df_train.drop(['Soil_Type7', 'Soil_Type15'], axis = 1)
 df_test = df_test.drop(['Soil_Type7', 'Soil_Type15'], axis = 1)
 
 
-# In[8]:
 
 
 df_train = df_train.iloc[:,1:]
 df_test = df_test.iloc[:,1:]
 
 
-# In[9]:
 
 
 size = 10
@@ -83,7 +74,6 @@ f, ax = plt.subplots(figsize = (10,8))
 sns.heatmap(corrmat, vmax = 0.8, square = True)
 
 
-# In[10]:
 
 
 data = df_train.iloc[:, :size]
@@ -94,13 +84,11 @@ threshold = 0.5
 corr_list = []
 
 
-# In[11]:
 
 
 data_corr
 
 
-# In[12]:
 
 
 #sorting the highly correlated values
@@ -110,7 +98,6 @@ for i in range(0, size):
             corr_list.append([data_corr.iloc[i,j],i,j])
 
 
-# In[13]:
 
 
 #Sorting values
@@ -121,13 +108,11 @@ for v, i, j in s_corr_list:
     print("%s and %s = %.2f" % (cols[i], cols[j], v))
 
 
-# In[14]:
 
 
 df_train.iloc[:, :10].skew()
 
 
-# In[15]:
 
 
 for v, i, j in s_corr_list:
@@ -135,7 +120,6 @@ for v, i, j in s_corr_list:
     plt.show()
 
 
-# In[16]:
 
 
 # A violin plot is a hybrid of a box plot and a kernel density plot, which shows peaks in the data.
@@ -150,13 +134,11 @@ for i in range(0, size):
     plt.show()
 
 
-# In[17]:
 
 
 df_train.Wilderness_Area2.value_counts()
 
 
-# In[18]:
 
 
 ### Group one-hot encoded variables of a category into one single variable
@@ -193,7 +175,6 @@ sns.countplot(x='Soil_Type', hue = 'Cover_Type', data= new_data)
 plt.show()
 
 
-# In[19]:
 
 
 # Checking the value count for different soil_types
@@ -202,7 +183,6 @@ for i in range(10, df_train.shape[1]-1):
     print (df_train[j].value_counts())
 
 
-# In[20]:
 
 
 df_train = df_train.drop(['Soil_Type8', 'Soil_Type25'], axis=1)
@@ -211,14 +191,12 @@ df_train1 = df_train # To be used for algos like SVM where we need normalization
 df_test1 = df_test # To be used under normalization and StandardScaler
 
 
-# In[21]:
 
 
 # Checking for data transformation (take only non-categorical values)
 df_train.iloc[:,:10].skew()
 
 
-# In[22]:
 
 
 from scipy import stats
@@ -228,13 +206,11 @@ fig = plt.figure(figsize=(8,6))
 res = stats.probplot(df_train1['Horizontal_Distance_To_Hydrology'], plot=plt)
 
 
-# In[23]:
 
 
 df_train1['Horizontal_Distance_To_Hydrology'] = np.sqrt(df_train1['Horizontal_Distance_To_Hydrology'])
 
 
-# In[24]:
 
 
 plt.figure(figsize=(8,6))
@@ -243,7 +219,6 @@ fig = plt.figure(figsize=(8,6))
 res = stats.probplot(df_train1['Horizontal_Distance_To_Hydrology'], plot=plt)
 
 
-# In[25]:
 
 
 #Vertical_Distance_To_Hydrology
@@ -253,7 +228,6 @@ fig = plt.figure(figsize=(8,6))
 res = stats.probplot(df_train1['Vertical_Distance_To_Hydrology'], plot=plt)
 
 
-# In[26]:
 
 
 #Horizontal_Distance_To_Roadways
@@ -263,13 +237,11 @@ fig = plt.figure(figsize=(8,6))
 res = stats.probplot(df_train1['Horizontal_Distance_To_Roadways'], plot=plt)
 
 
-# In[27]:
 
 
 df_train1['Horizontal_Distance_To_Roadways'] = np.sqrt(df_train1['Horizontal_Distance_To_Roadways'])
 
 
-# In[28]:
 
 
 # Plot again after sqrt transformation
@@ -279,7 +251,6 @@ fig = plt.figure(figsize=(8,6))
 res = stats.probplot(df_train1['Horizontal_Distance_To_Roadways'], plot=plt)
 
 
-# In[29]:
 
 
 plt.figure(figsize=(8, 6))
@@ -288,13 +259,11 @@ plt.figure(figsize=(8, 6))
 res = stats.probplot(df_train1['Hillshade_9am'], plot = plt)
 
 
-# In[30]:
 
 
 df_train['Hillshade_9am'] = np.square(df_train1['Hillshade_9am'])
 
 
-# In[31]:
 
 
 plt.figure(figsize = (8,6))
@@ -303,7 +272,6 @@ fig = plt.figure(figsize = (8,6))
 res = stats.probplot(df_train1['Hillshade_9am'], plot = plt)
 
 
-# In[32]:
 
 
 # Hillshade_Noon
@@ -313,13 +281,11 @@ fig = plt.figure(figsize=(8,6))
 res = stats.probplot(df_train1['Hillshade_Noon'],plot=plt)
 
 
-# In[33]:
 
 
 df_train1['Hillshade_Noon'] = np.square(df_train1['Hillshade_Noon'])
 
 
-# In[34]:
 
 
 # Plot again after square transformation
@@ -329,7 +295,6 @@ fig = plt.figure(figsize=(8,6))
 res = stats.probplot(df_train1['Hillshade_Noon'],plot=plt)
 
 
-# In[35]:
 
 
 # Horizontal_Distance_To_Fire_Points
@@ -339,13 +304,11 @@ plt.figure(figsize=(8,6))
 res = stats.probplot(df_train1['Horizontal_Distance_To_Fire_Points'],plot=plt)
 
 
-# In[36]:
 
 
 df_train1['Horizontal_Distance_To_Fire_Points'] = np.sqrt(df_train1['Horizontal_Distance_To_Fire_Points'])
 
 
-# In[37]:
 
 
 # Plot again after sqrt transformation
@@ -355,27 +318,23 @@ plt.figure(figsize=(8,6))
 res = stats.probplot(df_train1['Horizontal_Distance_To_Fire_Points'],plot=plt)
 
 
-# In[38]:
 
 
 # To be used in case of algorithms like SVM
 df_test1[['Horizontal_Distance_To_Hydrology','Horizontal_Distance_To_Fire_Points'        ,'Horizontal_Distance_To_Roadways']] = np.sqrt(df_test1[['Horizontal_Distance_To_Hydrology',        'Horizontal_Distance_To_Fire_Points','Horizontal_Distance_To_Roadways']])
 
 
-# In[39]:
 
 
 # To be used in case of algorithms like SVM
 df_test1[['Hillshade_9am','Hillshade_Noon']] = np.square(df_test1[['Hillshade_9am','Hillshade_Noon']])
 
 
-# In[40]:
 
 
 from sklearn.preprocessing import StandardScaler
 
 
-# In[41]:
 
 
 #non categorical variables only
@@ -390,13 +349,11 @@ X_train_temp1 = StandardScaler().fit_transform(X_train_temp1)
 X_test_temp1 = StandardScaler().fit_transform(X_test_temp1)
 
 
-# In[42]:
 
 
 df_train1.iloc[:,:]
 
 
-# In[43]:
 
 
 r,c = df_train.shape
@@ -405,7 +362,6 @@ X_train1 = np.concatenate((X_train_temp1, df_train1.iloc[:,Size:c-1]), axis=1) #
 y_train = df_train.Cover_Type.values
 
 
-# In[44]:
 
 
 from sklearn import svm
@@ -414,14 +370,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
 
-# In[45]:
 
 
 x_data, x_test_data, y_data, y_test_data = train_test_split(X_train1,y_train,test_size=0.2, random_state=123)
 svm_para = [{'kernel':['rbf'],'C': [1,10,100,100]}]
 
 
-# In[46]:
 
 
 classifier = GridSearchCV(svm.SVC(),svm_para,cv=3,verbose=2)
@@ -430,7 +384,6 @@ classifier.best_params_
 #classifier.best_score_
 
 
-# In[47]:
 
 
 # Parameters optimized using the code in above cell
@@ -441,38 +394,32 @@ classifier.fit(X_train1,y_train)
 classifier.score(X_train1,y_train)
 
 
-# In[48]:
 
 
 classifier.best_score_
 
 
-# In[49]:
 
 
 classifier.cv_results_
 
 
-# In[50]:
 
 
 #y_pred = classifier.predict(df_test1)
 
 
-# In[51]:
 
 
 df_Test1 = pd.read_csv('../input/forest-cover-type-prediction/test.csv')
 
 
-# In[52]:
 
 
 #solution = pd.DataFrame({'Id':df_Test1.Id, 'Cover_Type':y_pred}, columns = ['Id','Cover_Type'])
 #solution.to_csv('SVMcover_sol.csv', index=False)
 
 
-# In[53]:
 
 
 from sklearn.ensemble import ExtraTreesClassifier
@@ -483,7 +430,6 @@ etc_para = [{'n_estimators': [20, 30, 100], 'max_depth':[5, 10, 15], 'max_featur
 #default number of min_samples_leaf is 1
 
 
-# In[54]:
 
 
 ETC = GridSearchCV(ExtraTreesClassifier(),param_grid=etc_para, cv=10, n_jobs=-1)
@@ -492,7 +438,6 @@ ETC.best_params_
 ETC.best_score_
 
 
-# In[55]:
 
 
 print ('Best accuracy obtained: {}'.format(ETC.best_score_))
@@ -501,7 +446,6 @@ for key, value in ETC.best_params_.items():
     print('\t{}:{}'.format(key,value))
 
 
-# In[56]:
 
 
 # Classification Report
@@ -510,7 +454,6 @@ target = ['class1', 'class2','class3','class4','class5','class6','class7' ]
 print (classification_report(y_test_data, Y_pred, target_names=target))
 
 
-# In[57]:
 
 
 from sklearn.model_selection import learning_curve
@@ -544,7 +487,6 @@ def plot_learning_curve(model,title, X, y,n_jobs = 1, ylim = None, cv = None,tra
     return plt
 
 
-# In[58]:
 
 
 # 'max_features': 0.3, 'n_estimators': 100, 'max_depth': 15, 'min_samples_leaf: 1'
@@ -555,7 +497,6 @@ etc.fit(X_train, y_train)
 etc.score(X_train, y_train)
 
 
-# In[59]:
 
 
 r,c = df_test.shape
@@ -565,7 +506,6 @@ solution = pd.DataFrame({'Id':df_Test1.Id, 'Cover_Type':yy_pred}, columns = ['Id
 solution.to_csv('ETCcover_sol.csv', index=False)
 
 
-# In[60]:
 
 
 # Plotting learning curve

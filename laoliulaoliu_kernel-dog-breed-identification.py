@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import collections
@@ -13,7 +12,6 @@ import os
 import time
 
 
-# In[2]:
 
 
 data_dir = '../input/'
@@ -21,7 +19,6 @@ label_file, train_dir, test_dir = 'labels.csv', 'train', 'test'
 batch_size, valid_ratio = 128, 0.1
 
 
-# In[3]:
 
 
 transform_train = gdata.vision.transforms.Compose([
@@ -61,7 +58,6 @@ test_iter = gdata.DataLoader(test_ds.transform_first(transform_test),
                              batch_size, shuffle=False, last_batch='keep')
 
 
-# In[4]:
 
 
 loss = gloss.SoftmaxCrossEntropyLoss()
@@ -120,7 +116,6 @@ def train(net, train_iter, valid_iter, num_epochs, lr, wd, ctx, lr_period,
         print(epoch_s + time_s + ', lr ' + str(trainer.learning_rate))
 
 
-# In[5]:
 
 
 def try_gpu():

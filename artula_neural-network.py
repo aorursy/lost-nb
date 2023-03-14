@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # The code of the neural network
 
 
-# In[2]:
 
 
 from torch.autograd import Variable
@@ -26,7 +24,6 @@ import math
 import glob
 
 
-# In[3]:
 
 
 # The final neural architecture
@@ -137,7 +134,6 @@ class Net(nn.Module):
 		return x
 
 
-# In[4]:
 
 
 # Set seeds 
@@ -150,7 +146,6 @@ model = Net()
 optimizer = optim.Adam(model.parameters())
 
 
-# In[5]:
 
 
 # Load datalocations and create train and validation set
@@ -162,7 +157,6 @@ valset = train[trainsize:]
 trainset = train[:trainsize]
 
 
-# In[6]:
 
 
 # Function that runs the model on a batch and return the loss
@@ -183,7 +177,6 @@ def show(avg=25, fname='log.txt'):
 	plt.show()
 
 
-# In[7]:
 
 
 # Generates a batch and label set for training or evaluating
@@ -218,7 +211,6 @@ def genBatch(bs=1, tset=trainset):
 	return dset, labels
 
 
-# In[8]:
 
 
 # Transforms the photos to neural embeddings
@@ -248,7 +240,6 @@ def transformToHidden(model, tset):
   model.train()
 
 
-# In[9]:
 
 
 # Generate the weights for class inbalance compensation
@@ -267,7 +258,6 @@ def genWeights(dset, samplesize):
 	return ll
 
 
-# In[10]:
 
 
 # Augment the data with random image flip and some rotation
@@ -278,7 +268,6 @@ def augment(img):
 		return img.copy()
 
 
-# In[11]:
 
 
 # Function to test the model on the validation set
@@ -320,7 +309,6 @@ def testscore(model, bs=64):
   return int(totscore)/tel
 
 
-# In[12]:
 
 
 # Function that returns the confusion matrix for all the 
@@ -367,7 +355,6 @@ def confusionMatrix():
  return l1
 
 
-# In[13]:
 
 
 # The final training function
@@ -432,7 +419,6 @@ def startTraining():
 			model.train()
 
 
-# In[14]:
 
 
 # Function that convert photos to fixed size

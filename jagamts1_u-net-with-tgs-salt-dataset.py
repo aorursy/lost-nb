@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -13,7 +12,6 @@ plt.style.use('ggplot')
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 from tqdm import tqdm_notebook, tnrange
@@ -36,7 +34,6 @@ from keras.optimizers import Adam
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 
 
-# In[3]:
 
 
 im_width = 128
@@ -47,19 +44,16 @@ path_train = '../input/tgs-salt-identification-challenge/train/'
 path_test = '../input/tgs-salt-identification-challenge/test/' 
 
 
-# In[4]:
 
 
 df = pd.read_csv("../input/tgs-salt-identification-challenge/train.csv")
 
 
-# In[5]:
 
 
 df.head()
 
 
-# In[6]:
 
 
 def get_data(path, train=True):
@@ -88,25 +82,21 @@ def get_data(path, train=True):
         return X
 
 
-# In[7]:
 
 
 X ,y = get_data(path_train, train=True)
 
 
-# In[8]:
 
 
 X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.15, random_state=2018)
 
 
-# In[9]:
 
 
 ls ../input/tgs-salt-identification-challenge/train/
 
 
-# In[10]:
 
 
 ix = random.randint(0,len(X_train))
@@ -123,7 +113,6 @@ ax[1].imshow(y_train[ix].squeeze(), interpolation='bilinear', cmap='gray')
 ax[1].set_title('Salt')
 
 
-# In[11]:
 
 
 def conv2d_block(input_tensor, n_filters, kernel_size=3, batchnorm=True):
@@ -138,7 +127,6 @@ def conv2d_block(input_tensor, n_filters, kernel_size=3, batchnorm=True):
     return x
 
 
-# In[12]:
 
 
 def get_unet(input_img, n_filters=16, dropout=0.5, batchnorm=True):
@@ -188,7 +176,6 @@ def get_unet(input_img, n_filters=16, dropout=0.5, batchnorm=True):
     return model
 
 
-# In[13]:
 
 
 input_img = Input((im_height, im_width, 1), name='img')
@@ -197,7 +184,6 @@ model.compile(optimizer=Adam(), loss='binary_crossentropy', metrics=['accuracy']
 model.summary()
 
 
-# In[14]:
 
 
 callbacks = [
@@ -207,13 +193,11 @@ callbacks = [
 ]
 
 
-# In[15]:
 
 
 results = model.fit(X_train,y_train, batch_size=32, epochs=100, callbacks=callbacks, validation_data=(X_valid, y_valid))
 
 
-# In[16]:
 
 
 plt.figure(figsize=(8,8))
@@ -226,19 +210,16 @@ plt.ylabel('log_loss')
 plt.legend();
 
 
-# In[17]:
 
 
 model.load_weights('model-tgs-salt.h5')
 
 
-# In[18]:
 
 
 model.evaluate(X_valid, y_valid, verbose=1)
 
 
-# In[19]:
 
 
 preds_train = model.predict(X_train, verbose=1)
@@ -248,7 +229,6 @@ preds_train_t = (preds_train > 0.5).astype(np.uint8)
 preds_val_t = (preds_val > 0.5).astype(np.uint8)
 
 
-# In[20]:
 
 
 def plot_sample(X, y, preds, binary_preds, ix=None):
@@ -278,19 +258,16 @@ def plot_sample(X, y, preds, binary_preds, ix=None):
     ax[3].set_title("Salt Predicted Binary")
 
 
-# In[21]:
 
 
 plot_sample(X_train, y_train, preds_train, preds_train_t, ix=14)
 
 
-# In[22]:
 
 
 plot_sample(X_valid, y_valid, preds_val, preds_val_t, ix=25)
 
 
-# In[ ]:
 
 
 

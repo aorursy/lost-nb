@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,19 +19,16 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 cd train_val2019
 
 
-# In[3]:
 
 
 get_ipython().system('ls Birds/202/0046f8c09d5d6acaa78baeffb2ba5c43.jpg')
 
 
-# In[4]:
 
 
 from matplotlib.image import imread
@@ -42,13 +38,11 @@ data = imread('Birds/202/0046f8c09d5d6acaa78baeffb2ba5c43.jpg')
 
 
 
-# In[5]:
 
 
 data
 
 
-# In[6]:
 
 
 from PIL import Image

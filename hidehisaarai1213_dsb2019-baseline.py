@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import abc
@@ -34,7 +33,6 @@ from sklearn.model_selection import train_test_split, GroupKFold
 from tqdm import tqdm_notebook
 
 
-# In[2]:
 
 
 conf_string = '''
@@ -94,13 +92,11 @@ output_dir: "output"
 '''
 
 
-# In[3]:
 
 
 config = dict(yaml.load(conf_string, Loader=yaml.SafeLoader))
 
 
-# In[4]:
 
 
 def feature_existence_checker(feature_path: Path,
@@ -114,7 +110,6 @@ def feature_existence_checker(feature_path: Path,
     return True
 
 
-# In[5]:
 
 
 class MyEncoder(json.JSONEncoder):
@@ -135,7 +130,6 @@ def save_json(config: dict, save_path: Union[str, Path]):
     f.close()
 
 
-# In[6]:
 
 
 def configure_logger(config_name: str, log_dir: Union[Path, str], debug: bool):
@@ -160,7 +154,6 @@ def configure_logger(config_name: str, log_dir: Union[Path, str], debug: bool):
         datefmt="%m/%d/%Y %I:%M:%S %p")
 
 
-# In[7]:
 
 
 @contextmanager
@@ -180,7 +173,6 @@ def timer(name: str, log: bool = False):
         logging.info(msg)
 
 
-# In[8]:
 
 
 def group_kfold(df: pd.DataFrame, groups: pd.Series,
@@ -208,7 +200,6 @@ def get_validation(df: pd.DataFrame,
         return func(df, config)
 
 
-# In[9]:
 
 
 @jit
@@ -242,7 +233,6 @@ def calc_metric(y_true: Union[np.ndarray, list],
     return qwk(y_true, y_pred)
 
 
-# In[10]:
 
 
 # type alias
@@ -348,7 +338,6 @@ class BaseModel(object):
         return models, oof_preds, test_preds, feature_importance, evals_results
 
 
-# In[11]:
 
 
 CatModel = Union[CatBoostClassifier, CatBoostRegressor]
@@ -385,7 +374,6 @@ class CatBoost(BaseModel):
         return model.feature_importances_
 
 
-# In[12]:
 
 
 def catboost() -> CatBoost:
@@ -400,7 +388,6 @@ def get_model(config: dict):
     return func()
 
 
-# In[13]:
 
 
 class Feature(metaclass=abc.ABCMeta):
@@ -494,7 +481,6 @@ def load_features(config: dict) -> Tuple[pd.DataFrame, pd.DataFrame]:
     return x_train, x_test
 
 
-# In[14]:
 
 
 IoF = Union[int, float]
@@ -674,7 +660,6 @@ class KernelFeatures(PartialFeature):
         return self.df
 
 
-# In[15]:
 
 
 warnings.filterwarnings("ignore")
@@ -704,7 +689,6 @@ logging.info(f"model output dir: {str(output_dir)}")
 config["model_output_dir"] = str(output_dir)
 
 
-# In[16]:
 
 
 input_dir = Path(config["dataset"]["dir"])
@@ -746,7 +730,6 @@ logging.debug(f"number of train samples: {len(x_train)}")
 logging.debug(f"numbber of test samples: {len(x_test)}")
 
 
-# In[17]:
 
 
 logging.info("Adversarial Validation")
@@ -805,7 +788,6 @@ config["av_result"]["feature_importances"] =     feature_imp.set_index("feature"
     ).head(100).to_dict()["value"]
 
 
-# In[18]:
 
 
 logging.info("Train model")
@@ -837,7 +819,6 @@ plt.tight_layout()
 plt.savefig(output_dir / "feature_importance_model.png")
 
 
-# In[19]:
 
 
 save_path = output_dir / "output.json"
@@ -848,7 +829,6 @@ with open(output_dir / "model.pkl", "wb") as m:
     pickle.dump(models, m)
 
 
-# In[20]:
 
 
 sample_submission = pd.read_csv(

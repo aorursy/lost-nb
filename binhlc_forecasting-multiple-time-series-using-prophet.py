@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 df_sale = pd.read_csv('/kaggle/input/m5-forecasting-accuracy/sales_train_validation.csv')
@@ -30,7 +28,6 @@ df_calendar = pd.read_csv('/kaggle/input/m5-forecasting-accuracy/calendar.csv')
 df_price = pd.read_csv('/kaggle/input/m5-forecasting-accuracy/sell_prices.csv')
 
 
-# In[3]:
 
 
 from fbprophet import Prophet
@@ -59,7 +56,6 @@ def CreateTimeSeries(id):
     return dates
 
 
-# In[4]:
 
 
 #%%time
@@ -70,7 +66,6 @@ def CreateTimeSeries(id):
 #df_price_ext = df_price_ext.fillna(0)
 
 
-# In[5]:
 
 
 #last_month = list(date_columns[-28:])
@@ -80,7 +75,6 @@ def CreateTimeSeries(id):
 #    df_sale_lastmonth[col] = df_sale_lastmonth[col].mul(df_price_lastmonth[col], axis=0)
 
 
-# In[6]:
 
 
 #forecast with prophet without holiday
@@ -102,32 +96,27 @@ print(f'Prophet without: {ids1.shape[0]}, Prophet bu: {ids2.shape[0]}, Prophet t
 print(f'Total ids: {ids1.shape[0] + ids2.shape[0] + ids3.shape[0] + ids4.shape[0]} , Total sample: {df_sale.shape[0]}')
 
 
-# In[7]:
 
 
 # Check duplicate
 np.setdiff1d(ids1,np.setdiff1d(ids1,ids2))
 
 
-# In[8]:
 
 
 get_ipython().run_cell_magic('time', '', "\n# Without holiday\n\ndef run_prophet(id):\n    timeserie = CreateTimeSeries(id)\n    model = Prophet(uncertainty_samples=False)\n    model.fit(timeserie)\n    forecast = model.make_future_dataframe(periods=28, include_history=False)\n    forecast = model.predict(forecast)\n    return np.append(np.array([id]),forecast['yhat'].values.transpose())\n\n\nfrom multiprocessing import Pool, cpu_count\nprint(f'Parallelism on {cpu_count()} CPU')\nwith Pool(cpu_count()) as p:\n    predictions1  = list(p.map(run_prophet, ids1))")
 
 
-# In[9]:
 
 
 get_ipython().run_cell_magic('time', '', "\n# With holiday\n\ndef run_prophet2(id):\n    timeserie = CreateTimeSeries(id)\n    model = Prophet(holidays = holidays, uncertainty_samples = False, n_changepoints = 50, changepoint_range = 0.8, changepoint_prior_scale = 0.7)\n    # changepoint_prior_scale default is 0.5. Increasing it will make the trend more flexible    \n    model.fit(timeserie)\n    forecast = model.make_future_dataframe(periods=28, include_history=False)\n    forecast = model.predict(forecast)\n    return np.append(np.array([id]),forecast['yhat'].values.transpose())\n\n\nfrom multiprocessing import Pool, cpu_count\nprint(f'Parallelism on {cpu_count()} CPU')\nwith Pool(cpu_count()) as p:\n    predictions2  = list(p.map(run_prophet2, ids2))")
 
 
-# In[10]:
 
 
 get_ipython().run_cell_magic('time', '', "\ndf_sale_group_item = df_sale[np.hstack([['dept_id','store_id'],date_columns])].groupby(['dept_id','store_id']).sum()\ndf_sale_group_item = df_sale_group_item.reset_index()\n\ndef CreateTimeSeries3(dept_id, store_id):\n    item_series =  df_sale_group_item[(df_sale_group_item.dept_id == dept_id) & (df_sale_group_item.store_id == store_id)]\n    dates = pd.DataFrame({'ds': dates_s}, index=range(len(dates_s)))\n    dates['y'] = item_series[date_columns].values[0].transpose()     \n    return dates\n\ndef run_prophet3(dept_id, store_id):\n    timeserie = CreateTimeSeries3(dept_id, store_id)\n    # Tunned by one id\n    #model = Prophet(holidays = holidays, uncertainty_samples = False, n_changepoints = 50, changepoint_range = 0.8, changepoint_prior_scale = 0.7)\n    # Tunned by level 9    \n    model = Prophet(holidays = holidays, uncertainty_samples = False, n_changepoints = 50, changepoint_range = 0.8, changepoint_prior_scale = 0.7, seasonality_mode = 'multiplicative')\n    model.fit(timeserie)\n    forecast = model.make_future_dataframe(periods=28, include_history=False)\n    forecast = model.predict(forecast)\n    return np.append(np.array([dept_id,store_id]),forecast['yhat'].values.transpose())\n\n# create list param\nids = []\nfor i in range(0,df_sale_group_item.shape[0]):\n    ids = ids + [(df_sale_group_item[i:i+1]['dept_id'].values[0],df_sale_group_item[i:i+1]['store_id'].values[0])]\n\nprint(f'Parallelism on {cpu_count()} CPU')\nwith Pool(cpu_count()) as p:\n    predictions3  = list(p.starmap(run_prophet3, ids))")
 
 
-# In[11]:
 
 
 df_prophet_forecast_3 = pd.DataFrame()
@@ -144,13 +133,11 @@ for k in range(0, len(predictions3)):
 df_prophet_forecast_3 = df_prophet_forecast_3.drop('val',axis=1)
 
 
-# In[12]:
 
 
 df_sample = pd.read_csv('/kaggle/input/m5-forecasting-accuracy/sample_submission.csv')
 
 
-# In[13]:
 
 
 # Forecast with MA
@@ -173,7 +160,6 @@ df_ma_forecast = df_ma_forecast.pivot(index='id', columns='d', values='sale')
 df_ma_forecast = df_ma_forecast.reset_index()
 
 
-# In[14]:
 
 
 if len(ids4) > 0:
@@ -217,7 +203,6 @@ print(f'Submission shape: {df_sub.shape}')
 print(f'Prophet without holiday: {df_prophet_forecast_1.shape[0]}, Prophet bu: {df_prophet_forecast_2.shape[0]}, Prophet td: {df_prophet_forecast_3.shape[0]}, MA: {df_ma_forecast.shape[0]}')
 
 
-# In[15]:
 
 
 import matplotlib.pyplot as plt
@@ -239,7 +224,6 @@ def plotForecast(item_id):
     plt.gcf().autofmt_xdate()
 
 
-# In[16]:
 
 
 if len(ids1)>0:
@@ -247,7 +231,6 @@ if len(ids1)>0:
     plotForecast(item_id)
 
 
-# In[17]:
 
 
 if len(ids2)>0:
@@ -255,7 +238,6 @@ if len(ids2)>0:
     plotForecast(item_id)
 
 
-# In[18]:
 
 
 if len(ids3)>0:
@@ -263,7 +245,6 @@ if len(ids3)>0:
     plotForecast(item_id)
 
 
-# In[19]:
 
 
 if len(ids4)0:

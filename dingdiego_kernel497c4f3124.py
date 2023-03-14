@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np
@@ -16,7 +15,6 @@ from tqdm import tqdm
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[ ]:
 
 
 def rle_decode(rle_mask):
@@ -36,13 +34,11 @@ def rle_decode(rle_mask):
     return img.reshape(101,101)
 
 
-# In[ ]:
 
 
 ls ../input
 
 
-# In[ ]:
 
 
 """
@@ -67,7 +63,6 @@ while True:
     i = i + 1
 
 
-# In[ ]:
 
 
 """
@@ -110,13 +105,11 @@ def crf(original_image, mask_img):
     return MAP.reshape((original_image.shape[0],original_image.shape[1]))
 
 
-# In[ ]:
 
 
 test_path = '../input/tgs-salt-identification-challenge/test/images/'
 
 
-# In[ ]:
 
 
 """
@@ -150,7 +143,6 @@ while True:
     i = i + 1
 
 
-# In[ ]:
 
 
 """
@@ -169,7 +161,6 @@ def rle_encode(im):
     return ' '.join(str(x) for x in runs)
 
 
-# In[ ]:
 
 
 """
@@ -184,13 +175,11 @@ for i in tqdm(range(df.shape[0])):
         df.loc[i,'rle_mask'] = rle_encode(crf_output)
 
 
-# In[ ]:
 
 
 df.to_csv('crf_correction.csv',index=False)
 
 
-# In[ ]:
 
 
 

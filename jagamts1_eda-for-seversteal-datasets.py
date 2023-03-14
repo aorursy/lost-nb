@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import cv2
@@ -14,39 +13,33 @@ import pandas as pd
 import seaborn as sns
 
 
-# In[2]:
 
 
 ls ../input/severstal-steel-defect-detection/
 
 
-# In[3]:
 
 
 train_df = pd.read_csv("../input/severstal-steel-defect-detection/train.csv")
 sample_df = pd.read_csv("../input/severstal-steel-defect-detection/sample_submission.csv")
 
 
-# In[4]:
 
 
 train_df.head()
 
 
-# In[5]:
 
 
 sample_df.head()
 
 
-# In[6]:
 
 
 kind_class_dict = defaultdict(int)
 class_dict = defaultdict(int)
 
 
-# In[7]:
 
 
 no_defects_num = 0
@@ -67,13 +60,11 @@ for col in range(0, len(train_df), 4):
             class_dict[idx+1] += 1
 
 
-# In[8]:
 
 
 kind_class_dict ,class_dict
 
 
-# In[9]:
 
 
 fig, ax = plt.subplots()
@@ -82,7 +73,6 @@ ax.set_title('the number of images for each class')
 ax.set_xlabel('class')
 
 
-# In[10]:
 
 
 fig, ax = plt.subplots()
@@ -91,14 +81,12 @@ ax.set_title('Number defects based on image')
 ax.set_xlabel("number of class ")
 
 
-# In[11]:
 
 
 train_size_dict = defaultdict(int)
 train_path = Path("../input/severstal-steel-defect-detection/train_images/")
 
 
-# In[12]:
 
 
 for img_name in train_path.iterdir():
@@ -106,20 +94,17 @@ for img_name in train_path.iterdir():
     train_size_dict[img.size] += 1
 
 
-# In[13]:
 
 
 train_size_dict
 
 
-# In[14]:
 
 
 test_size_dict = defaultdict(int)
 test_path = Path('../input/severstal-steel-defect-detection/test_images/')
 
 
-# In[15]:
 
 
 for img in test_path.iterdir():
@@ -128,25 +113,21 @@ for img in test_path.iterdir():
     
 
 
-# In[16]:
 
 
 test_size_dict
 
 
-# In[17]:
 
 
 train_size_dict
 
 
-# In[18]:
 
 
 palet = [(249, 192, 12), (0, 185, 241), (114, 0, 218), (249,50,12)]
 
 
-# In[19]:
 
 
 def name_and_mask(start_idx):
@@ -169,7 +150,6 @@ def name_and_mask(start_idx):
     return img_names[0], mask
 
 
-# In[20]:
 
 
 def show_mask_image(col):
@@ -185,7 +165,6 @@ def show_mask_image(col):
     plt.show()
 
 
-# In[21]:
 
 
 fig, ax = plt.subplots(1,4, figsize=(15,5))
@@ -197,7 +176,6 @@ fig.suptitle("each class colors")
 plt.show()
 
 
-# In[22]:
 
 
 idx_no_defect = []
@@ -228,56 +206,48 @@ for col in range(0, len(train_df), 4):
         idx_class_multi.append(col)
 
 
-# In[23]:
 
 
 for idx in idx_no_defect[:5]:
     show_mask_image(idx)
 
 
-# In[24]:
 
 
 for idx in idx_class_1[:5]:
     show_mask_image(idx)
 
 
-# In[25]:
 
 
 for idx in idx_class_2[:5]:
     show_mask_image(idx)
 
 
-# In[26]:
 
 
 for idx in idx_class_3[:5]:
     show_mask_image(idx)
 
 
-# In[27]:
 
 
 for idx in idx_class_4[:5]:
     show_mask_image(idx)
 
 
-# In[28]:
 
 
 for idx in idx_class_trip[:5]:
     show_mask_image(idx)
 
 
-# In[29]:
 
 
 for idx in idx_class_multi[:5]:
     show_mask_image(idx)
 
 
-# In[ ]:
 
 
 

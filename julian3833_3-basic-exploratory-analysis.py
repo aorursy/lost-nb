@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 ls ../input/
 
 
-# In[ ]:
 
 
 import os
@@ -25,7 +23,6 @@ print(f"Images for submission: {n_submit_images}")
 pd.read_csv(f"../input/train_ship_segmentations.csv").head()
 
 
-# In[ ]:
 
 
 def load_df(file="train"):
@@ -63,7 +60,6 @@ def show_df(df):
     total_ships_distribution.plot(kind='bar', ax=axes[1], rot=0, title="Total ships distribution");
 
 
-# In[ ]:
 
 
 df_train = load_df("train")
@@ -71,13 +67,11 @@ df_test = load_df("test")
 show_df(df_train.append(df_test))
 
 
-# In[ ]:
 
 
 show_df(df_test)
 
 
-# In[ ]:
 
 
 # This function transforms EncodedPixels into a list of pixels
@@ -108,14 +102,12 @@ def show_pixels_distribution(df):
     print(f"No ship: {round(1 - ratio, 3)} ({total_pixels - ship_pixels})")
 
 
-# In[ ]:
 
 
 df = pd.read_csv("../input/train_ship_segmentations.csv").append(pd.read_csv("../input/test_ship_segmentations.csv"))
 show_pixels_distribution(df)
 
 
-# In[ ]:
 
 
 show_pixels_distribution(df.dropna())

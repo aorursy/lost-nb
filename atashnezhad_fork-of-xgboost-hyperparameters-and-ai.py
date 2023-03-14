@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -19,7 +18,6 @@ from sklearn.metrics import mean_squared_error
 import plotly.express as px
 
 
-# In[2]:
 
 
 def De_Algorithm(fobj, bounds, mut=0.8, crossp=0.7, popsize=100, its=1000):
@@ -55,7 +53,6 @@ def De_Algorithm(fobj, bounds, mut=0.8, crossp=0.7, popsize=100, its=1000):
         yield best, fitness[best_idx]
 
 
-# In[3]:
 
 
 def xgb2(X_training, y_training, X_valid, y_valid, w):
@@ -101,13 +98,11 @@ def xgb2(X_training, y_training, X_valid, y_valid, w):
     return model, rmse
 
 
-# In[4]:
 
 
 address_train = '../input/newdataamin/data.csv'
 
 
-# In[5]:
 
 
 def Drop_cols(df, x):
@@ -142,7 +137,6 @@ def Merge_data(df1, df2):
     return df
 
 
-# In[6]:
 
 
 #df_train = read_train_test_data_balanced(address_train)
@@ -150,7 +144,6 @@ df_train = pd.read_csv(address_train)
 df_train.head(3)
 
 
-# In[7]:
 
 
 # See the output paramters distribution 
@@ -158,14 +151,12 @@ xlist = ['Real density (gr/cc)']
 Plot_Hist_columns(df_train, xlist)
 
 
-# In[8]:
 
 
 fig = px.scatter_matrix(df_train, width=800, height=800)
 fig.show()
 
 
-# In[9]:
 
 
 df = df_train.head(30)
@@ -173,7 +164,6 @@ fig = px.parallel_categories(df, color="Real density (gr/cc)", color_continuous_
 fig.show()
 
 
-# In[10]:
 
 
 sns.set()
@@ -182,7 +172,6 @@ sns.pairplot(df_train[columns],size = 2.4 ,kind ='scatter',diag_kind='kde')#,hue
 plt.show()
 
 
-# In[11]:
 
 
 # Devide data set to input (X) and output (Y) paramters.
@@ -190,14 +179,12 @@ X, Y = Make_X_Y(df_train);
 X_training, y_training, X_valid, y_valid = Train_Test_training_valid(X, Y, 0.02)
 
 
-# In[12]:
 
 
 w = [0.2, 140, 10, 0.9, 0.7, 0.7, 0, 4, 9, 8, 99]
 model2, rmse = xgb2(X_training, y_training, X_valid, y_valid, w)
 
 
-# In[13]:
 
 
 #Define an objective funtion.
@@ -207,7 +194,6 @@ def Objective_Function2(w):
     return (rmse)
 
 
-# In[14]:
 
 
 #Run the DE algorithm on objective function in your favorite range of hyperparameters.
@@ -226,7 +212,6 @@ result = list(De_Algorithm(Objective_Function2,
                   mut=0.7, crossp=0.8, popsize=10, its=150))
 
 
-# In[15]:
 
 
 df = pd.DataFrame(result)
@@ -243,7 +228,6 @@ def Best_coffs(df):
 Best_coffs(df)
 
 
-# In[16]:
 
 
 def Plot_DEA_Evolution(df):
@@ -268,13 +252,11 @@ def Plot_DEA_Evolution(df):
     plt.show()
 
 
-# In[17]:
 
 
 Plot_DEA_Evolution(df)
 
 
-# In[18]:
 
 
 df = pd.DataFrame(result)
@@ -304,7 +286,6 @@ def print_hyper_parameters(df):
 print_hyper_parameters(df)   
 
 
-# In[19]:
 
 
 def xgb2(X_training, y_training, X_valid, y_valid, w):
@@ -350,7 +331,6 @@ def xgb2(X_training, y_training, X_valid, y_valid, w):
     return model, rmse
 
 
-# In[20]:
 
 
 def xgb2(X_training, y_training, X_valid, y_valid, w):
@@ -396,7 +376,6 @@ def xgb2(X_training, y_training, X_valid, y_valid, w):
     return model, rmse
 
 
-# In[21]:
 
 
 df = pd.DataFrame(result)
@@ -404,7 +383,6 @@ w = list(Best_coffs(df))
 Trained_Model, rmse = xgb2(X_training, y_training, X_valid, y_valid, w)
 
 
-# In[22]:
 
 
 # make predictions for all data
@@ -419,7 +397,6 @@ plt.title('Model and Data comparison')
 plt.grid(True)
 
 
-# In[23]:
 
 
 df_train['Model'] = pd.DataFrame(Y_pred)
@@ -429,7 +406,6 @@ results = px.get_trendline_results(fig)
 results.px_fit_results.iloc[0].summary()
 
 
-# In[24]:
 
 
 df_train['Model'] = pd.DataFrame(Y_pred)
@@ -437,7 +413,6 @@ fig = px.scatter(df_train, x="Real density (gr/cc)", y="Model", trendline = "ols
 fig.show()
 
 
-# In[25]:
 
 
 df_train['Model'] = pd.DataFrame(Y_pred)
@@ -445,7 +420,6 @@ fig = px.scatter(df_train, x="Real density (gr/cc)", y="Model", trendline = "ols
 fig.show()
 
 
-# In[26]:
 
 
 # make predictions for all data
@@ -453,7 +427,6 @@ X_valid = xgb.DMatrix(X_valid)
 Y_pred = Trained_Model.predict(X_valid, ntree_limit=Trained_Model.best_ntree_limit)
 
 
-# In[27]:
 
 
 fig = plt.figure(figsize=(10,10))
@@ -464,13 +437,11 @@ plt.title('Model and Data comparison')
 plt.grid(True)
 
 
-# In[28]:
 
 
 df_train.to_csv('Amin_csv_to_submit1.csv', index = False)
 
 
-# In[29]:
 
 
 df_train_valid = pd.DataFrame()
@@ -478,13 +449,11 @@ df_train_valid['Model'] = Y_pred
 df_train_valid['Real density (gr/cc)'] = y_valid['Real density (gr/cc)'].to_numpy()
 
 
-# In[30]:
 
 
 df_train_valid.to_csv('Amin_csv_to_submit2.csv', index = False)
 
 
-# In[31]:
 
 
 fig = px.scatter(df_train_valid, x="Real density (gr/cc)", y="Model", trendline = "ols", width=600, height=600)
@@ -493,13 +462,11 @@ results = px.get_trendline_results(fig)
 results.px_fit_results.iloc[0].summary()
 
 
-# In[32]:
 
 
 sns.regplot(x='Real density (gr/cc)',y='Model',data=df_train_valid, fit_reg=True) 
 
 
-# In[33]:
 
 
 fig = px.scatter_3d(df_train, x='Mw', y='Tpr', z='Real density (gr/cc)',
@@ -507,7 +474,6 @@ fig = px.scatter_3d(df_train, x='Mw', y='Tpr', z='Real density (gr/cc)',
 fig.show()
 
 
-# In[34]:
 
 
 fig = px.scatter_3d(df_train, x='Mw', y='Ppr', z='Real density (gr/cc)',
@@ -515,7 +481,6 @@ fig = px.scatter_3d(df_train, x='Mw', y='Ppr', z='Real density (gr/cc)',
 fig.show()
 
 
-# In[35]:
 
 
 fig = px.scatter_3d(df_train, x='Tpr', y='Ppr', z='Real density (gr/cc)',

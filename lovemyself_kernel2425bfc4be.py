@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -17,7 +16,6 @@ sys.path.insert(0, "/kaggle/input/testpy")
 # For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory
 
 
-# In[2]:
 
 
 import os
@@ -37,7 +35,6 @@ import pandas as pd
 print(torch.cuda.is_available())
 
 
-# In[3]:
 
 
 data_path = ["../input/deepfake-detection-challenge/test_videos"]  # define UCF-101 RGB data path
@@ -453,7 +450,6 @@ new_df=dataframe.sort_values(by="filename", ascending=True)
 new_df.to_csv('submission.csv',index=False)
 
 
-# In[ ]:
 
 
 

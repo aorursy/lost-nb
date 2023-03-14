@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -25,7 +24,6 @@ import seaborn as sns
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 df_train = pd.read_csv("../input/nlp-dataset/labeledTrainData.tsv", header = 0,
@@ -36,7 +34,6 @@ df_unlabeled = pd.read_csv("../input/nlp-dataset/unlabeledTrainData.tsv", header
                       delimiter = "\t", quoting = 3)
 
 
-# In[3]:
 
 
 class KaggleWord2VecUtility(object):
@@ -113,7 +110,6 @@ class KaggleWord2VecUtility(object):
 # 코드 출처: https://github.com/corazzon/KaggleStruggle/blob/master/word2vec-nlp-tutorial/KaggleWord2VecUtility.py
 
 
-# In[4]:
 
 
 sentences = []
@@ -124,7 +120,6 @@ for review in df_train["review"]:
 # KaggleWord2VecUtility을 사용하여 train 데이터를 정제해준다.
 
 
-# In[5]:
 
 
 for review in df_unlabeled["review"]:
@@ -132,7 +127,6 @@ for review in df_unlabeled["review"]:
     review, remove_stopwords = False)
 
 
-# In[6]:
 
 
 num_features = 300 # 문자 벡터 차원 수 (size)
@@ -148,7 +142,6 @@ model = Word2Vec(sentences, workers = num_workers,
 model
 
 
-# In[7]:
 
 
 # 숫자로 단어를 표현
@@ -159,25 +152,21 @@ model
 type(model.wv.syn0)
 
 
-# In[8]:
 
 
 model.wv.syn0.shape
 
 
-# In[9]:
 
 
 model.wv["flower"].shape
 
 
-# In[10]:
 
 
 model.wv["flower"][:10]
 
 
-# In[11]:
 
 
 # 단어 벡터에서 k-means를 실행하고 일부 클러스터를 찍어본다.
@@ -199,7 +188,6 @@ elapsed = end - start
 print("Time taken for K Means clustering: ", elapsed, "seconds.")
 
 
-# In[12]:
 
 
 # 각 어휘 단어를 클러스터 번호에 매핑되게 word/index 사전을 만든다.
@@ -221,7 +209,6 @@ for cluster in range(0, 10):
     print(words)
 
 
-# In[13]:
 
 
 """
@@ -232,7 +219,6 @@ clean_test_review로 텍스트를 정제한다.
 """
 
 
-# In[14]:
 
 
 clean_train_reviews = []
@@ -242,7 +228,6 @@ for review in df_train["review"]:
                                                 remove_stopwords = True))
 
 
-# In[15]:
 
 
 clean_test_reviews = []
@@ -252,7 +237,6 @@ for review in df_test["review"]:
                                                 remove_stopwords = True))
 
 
-# In[16]:
 
 
 # bag of centroids 생성
@@ -263,7 +247,6 @@ train_centroids = np.zeros((df_train["review"].size, num_clusters),
 train_centroids[:5]
 
 
-# In[17]:
 
 
 # centroid는 두 클러스터의 중심점을 정의 한 다음 중심점의 거리를 측정한 것
@@ -286,7 +269,6 @@ def create_bag_of_centroids(wordlist, word_centroid_map):
     return bag_of_centroids
 
 
-# In[18]:
 
 
 # 학습 리뷰를 bags of centroids로 변환한다.
@@ -307,7 +289,6 @@ for review in clean_test_reviews:
     counter += 1
 
 
-# In[19]:
 
 
 # RandomForest를 사용하여 학습시키고 예측
@@ -318,26 +299,22 @@ rf = RandomForestClassifier(n_estimators = 100)
 get_ipython().run_line_magic('time', 'rf = rf.fit(train_centroids, df_train["sentiment"])')
 
 
-# In[20]:
 
 
 from sklearn.model_selection import cross_val_score
 get_ipython().run_line_magic('time', 'score = np.mean(cross_val_score(rf, train_centroids,                                df_train["sentiment"],                                      cv = 10,                                      scoring = "roc_auc"))')
 
 
-# In[21]:
 
 
 get_ipython().run_line_magic('time', 'result = rf.predict(test_centroids)')
 
 
-# In[22]:
 
 
 score
 
 
-# In[23]:
 
 
 output = pd.DataFrame(data = {"id": df_test["id"], "sentiment":result})

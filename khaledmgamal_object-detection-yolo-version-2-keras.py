@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,19 +21,16 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 get_ipython().system('pip install tensorflow==1.13.1')
 
 
-# In[3]:
 
 
 get_ipython().system("python3 -c 'import tensorflow as tf; print(tf.__version__)'")
 
 
-# In[4]:
 
 
 import argparse
@@ -135,7 +131,6 @@ def draw_boxes(image, out_scores, out_boxes, out_classes, class_names, colors):
         del draw
 
 
-# In[5]:
 
 
 
@@ -403,7 +398,6 @@ def yolo_eval(yolo_outputs, image_shape = (720., 1280.), max_boxes=10, score_thr
 
 
 
-# In[6]:
 
 
 def predict(sess, image_file):
@@ -446,7 +440,6 @@ def predict(sess, image_file):
     return out_scores, out_boxes, out_classes
 
 
-# In[7]:
 
 
 sess = K.get_session()
@@ -458,7 +451,6 @@ yolo_outputs = yolo_head(yolo_model.output, anchors, len(class_names))
 yolo_model.summary()
 
 
-# In[8]:
 
 
 import cv2
@@ -472,7 +464,6 @@ scores, boxes, classes = yolo_eval(yolo_outputs, image_shape)
 out_scores, out_boxes, out_classes = predict(sess,image_)
 
 
-# In[9]:
 
 
 image_="/kaggle/input/google-ai-open-images-object-detection-track/test/challenge2018_test/e252f53d4dfb5afd.jpg"
@@ -485,7 +476,6 @@ scores, boxes, classes = yolo_eval(yolo_outputs, image_shape)
 out_scores, out_boxes, out_classes = predict(sess,image_)
 
 
-# In[10]:
 
 
 image_="/kaggle/input/google-ai-open-images-object-detection-track/test/challenge2018_test/c69f8f40bdf7ad53.jpg"
@@ -498,7 +488,6 @@ scores, boxes, classes = yolo_eval(yolo_outputs, image_shape)
 out_scores, out_boxes, out_classes = predict(sess,image_)
 
 
-# In[11]:
 
 
 image_="/kaggle/input/google-ai-open-images-object-detection-track/test/challenge2018_test/1858cfe5c26f18f8.jpg"
@@ -511,7 +500,6 @@ scores, boxes, classes = yolo_eval(yolo_outputs, image_shape)
 out_scores, out_boxes, out_classes = predict(sess,image_)
 
 
-# In[12]:
 
 
 image_="/kaggle/input/google-ai-open-images-object-detection-track/test/challenge2018_test/6db9b5d07da41430.jpg"
@@ -524,7 +512,6 @@ scores, boxes, classes = yolo_eval(yolo_outputs, image_shape)
 out_scores, out_boxes, out_classes = predict(sess,image_)
 
 
-# In[13]:
 
 
 image_="/kaggle/input/google-ai-open-images-object-detection-track/test/challenge2018_test/e96b35e036492067.jpg"
@@ -537,7 +524,6 @@ scores, boxes, classes = yolo_eval(yolo_outputs, image_shape)
 out_scores, out_boxes, out_classes = predict(sess,image_)
 
 
-# In[14]:
 
 
 image_="/kaggle/input/google-ai-open-images-object-detection-track/test/challenge2018_test/760febac191eb035.jpg"
@@ -550,7 +536,6 @@ scores, boxes, classes = yolo_eval(yolo_outputs, image_shape)
 out_scores, out_boxes, out_classes = predict(sess,image_)
 
 
-# In[ ]:
 
 
 

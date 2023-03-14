@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np
@@ -20,7 +19,6 @@ from sklearn.preprocessing import MinMaxScaler
 np.random.seed(42)
 
 
-# In[ ]:
 
 
 # Installing the AutoML library
@@ -29,7 +27,6 @@ np.random.seed(42)
 # Note - there are optional extras needed to use other elements of TPOT - see the docs: http://epistasislab.github.io/tpot/installing/
 
 
-# In[ ]:
 
 
 from tpot import TPOTRegressor
@@ -37,14 +34,12 @@ from sklearn.model_selection import train_test_split
 from sklearn import metrics
 
 
-# In[ ]:
 
 
 train_raw = pd.read_csv("../input/TrainData.csv",low_memory=False)
 test_raw = pd.read_csv("../input/TestData.csv",low_memory=False)
 
 
-# In[ ]:
 
 
 def prep_pipeline(data_prep):
@@ -195,39 +190,33 @@ def prep_pipeline(data_prep):
     return data_prep
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'train_prep = prep_pipeline(train_raw)\ntest_prep = prep_pipeline(test_raw)')
 
 
-# In[ ]:
 
 
 # Relabelling target variable in training data so TPOT works over data
 train_prep.rename(columns={'donations_and_bequests':'target'},inplace=True)
 
 
-# In[ ]:
 
 
 test_prep['main_activity-animal_protection'] = 0
 set(train_prep.columns).difference(set(test_prep.columns)) # confirming that only the label differs between train and test
 
 
-# In[ ]:
 
 
 train_prep.corr()['donations_and_bequests'].sort_values(ascending=False).head(20)
 
 
-# In[ ]:
 
 
 train_prep.corr()['donations_and_bequests'].sort_values(ascending=False).tail(20)
 
 
-# In[ ]:
 
 
 feat_subset = [
@@ -256,7 +245,6 @@ feat_subset = [
 len(feat_subset)
 
 
-# In[ ]:
 
 
 # Split Training Data into Test Train
@@ -266,14 +254,12 @@ len(feat_subset)
 #                                                     test_size=0.25)
 
 
-# In[ ]:
 
 
 # Instantiating the estimator
 # tpot = TPOTRegressor(generations=5, population_size=30, verbosity=2)
 
 
-# In[ ]:
 
 
 # When you invoke fit method, TPOT will create generations of populations, 
@@ -283,19 +269,16 @@ len(feat_subset)
 # tpot.fit(X_train, y_train)
 
 
-# In[ ]:
 
 
 # tpot.export('charity_feat_subset_tpot_pipeline.py')
 
 
-# In[ ]:
 
 
 # !cat charity_feat_subset_tpot_pipeline.py
 
 
-# In[ ]:
 
 
 import numpy as np
@@ -325,26 +308,22 @@ exported_pipeline.fit(training_features, training_target)
 results = exported_pipeline.predict(testing_features)
 
 
-# In[ ]:
 
 
 from sklearn.metrics import mean_squared_error
 
 
-# In[ ]:
 
 
 exported_pipeline.score(testing_features,testing_target)
 # That accuracy is fairly poor.
 
 
-# In[ ]:
 
 
 predicted_target = exported_pipeline.predict(testing_features)
 
 
-# In[ ]:
 
 
 # RMSE?
@@ -352,7 +331,6 @@ np.sqrt(mean_squared_error(testing_target,predicted_target))
 # Pretty rough, but still might generalize.
 
 
-# In[ ]:
 
 
 # What are the features weighted in the model?
@@ -360,7 +338,6 @@ names = train_prep[feat_subset].columns.tolist()
 list(sorted(zip(map(lambda x: round(x, 4), exported_pipeline.steps[-1][1].feature_importances_), names),reverse=True))
 
 
-# In[ ]:
 
 
 y_submission = exported_pipeline.predict(test_prep[feat_subset])
@@ -368,7 +345,6 @@ submission = pd.DataFrame({'id': test_raw['id'], 'log__donations_and_bequests': 
 submission.to_csv('tpot_test_submission.csv', index = False)
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('javascript', '', "$.getScript('https://kmahelona.github.io/ipython_notebook_goodies/ipython_notebook_toc.js')\n// Table of contents")

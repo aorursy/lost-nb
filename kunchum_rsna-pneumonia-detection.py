@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -17,13 +16,11 @@ from matplotlib.patches import Rectangle
 datapath = '../input/rsna-pneumonia-detection-challenge/'
 
 
-# In[2]:
 
 
 get_ipython().system('ls ../input/rsna-pneumonia-detection-challenge/stage_2_train_images/ | wc -l')
 
 
-# In[3]:
 
 
 def parse_data(df):
@@ -86,7 +83,6 @@ def overlay_box(im, box, rgb, stroke=1):
     return im
 
 
-# In[4]:
 
 
 df_box = pd.read_csv(datapath+'stage_2_train_labels.csv')
@@ -95,14 +91,12 @@ print('Number of unique patient IDs:', df_box['patientId'].nunique())
 df_box.head(10)
 
 
-# In[5]:
 
 
 df_box.groupby('Target').size().plot.bar()
 print(df_box.groupby('Target').size() / df_box.shape[0])
 
 
-# In[6]:
 
 
 df_det = pd.read_csv(datapath+'stage_2_detailed_class_info.csv')
@@ -111,7 +105,6 @@ print('Number of unique patient IDs:', df_det['patientId'].nunique())
 df_det.head(10)
 
 
-# In[7]:
 
 
 df_det.groupby('class').size().plot.bar()
@@ -120,7 +113,6 @@ assert df_det.loc[df_box['Target']==0].shape[0] == df_det.loc[df_det['class'].is
 assert df_box.loc[df_box['Target']==1].shape[0] == df_det.loc[df_det['class'] == 'Lung Opacity'].shape[0],     'Number of positive targets does not match between main and detailed dataset.'
 
 
-# In[8]:
 
 
 assert df_box['patientId'].values.tolist() == df_det['patientId'].values.tolist(), 'PatientId columns are different.'
@@ -128,7 +120,6 @@ df_train = pd.concat([df_box, df_det.drop(labels=['patientId'], axis=1)], axis=1
 df_train.head(10)
 
 
-# In[9]:
 
 
 pId = "003d8fa0-6bf1-40ed-b54c-ac657f8495c5"    
@@ -136,7 +127,6 @@ dcmdata = pydicom.read_file(datapath+'stage_2_train_images/'+pId+'.dcm')
 print(dcmdata)
 
 
-# In[10]:
 
 
 dcmimg = dcmdata.pixel_array
@@ -144,7 +134,6 @@ plt.figure(figsize=(7,7))
 plt.imshow(dcmimg, cmap=pylab.cm.binary)
 
 
-# In[11]:
 
 
 parsed = parse_data(df_box)
@@ -158,7 +147,6 @@ plt.title("Sample Patient - Lung Opacity")
 draw(parsed[patientId])
 
 
-# In[12]:
 
 
 plt.figure(figsize=(20,10))
@@ -176,7 +164,6 @@ plt.title("No Lung Opacity / Not Normal")
 draw(parsed[df_box['patientId'][1]])
 
 
-# In[ ]:
 
 
 

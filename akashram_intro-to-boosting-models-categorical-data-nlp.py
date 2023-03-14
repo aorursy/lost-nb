@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -20,7 +19,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
 
 
 train_df = pd.read_csv('../input/data-science-bowl-2019/train.csv')
@@ -33,13 +31,11 @@ data = pd.read_csv('/kaggle/input/jobs-on-naukricom/home/sdf/marketing_sample_fo
 data.head(5)
 
 
-# In[3]:
 
 
 data.dtypes
 
 
-# In[4]:
 
 
 rc = data['Role Category'].value_counts().reset_index()
@@ -48,7 +44,6 @@ rc['Percent'] = rc['Count']/rc['Count'].sum() * 100
 rc
 
 
-# In[5]:
 
 
 rc = rc[:10]
@@ -62,7 +57,6 @@ ax = sns.barplot(x="Role Category", y="Count", data=rc)
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
 
 
-# In[6]:
 
 
 rc = data['Role Category'].value_counts().nlargest(n=10)
@@ -80,7 +74,6 @@ fig.update_layout(title_x=0.5)
 fig.show()
 
 
-# In[7]:
 
 
 location = data['Location'].value_counts().nlargest(n=10)
@@ -106,7 +99,6 @@ fig.update_layout(width=800,
 fig.show()
 
 
-# In[8]:
 
 
 data1 = data[:10 ] ## taking just 10 records for demo
@@ -119,14 +111,12 @@ two_cls.plot.bar(stacked=True)
 plt.show()
 
 
-# In[9]:
 
 
 place_map = {'Location': {'Hyderabad': 1, 'Pune': 2, 'Bengaluru': 3, 'Mumbai': 4,
                                   'Gurgaon': 5, 'Pune,Pune': 6}}
 
 
-# In[10]:
 
 
 labels = data1['Location'].astype('category').cat.categories.tolist()
@@ -136,7 +126,6 @@ replace_map_comp = {'Location' : {k: v for k,v in zip(labels,list(range(1,len(la
 print(replace_map_comp)
 
 
-# In[11]:
 
 
 #data1.replace(replace_map_comp, inplace=True)
@@ -144,7 +133,6 @@ data1['Location']
 data1['Location'].value_counts()
 
 
-# In[12]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -158,7 +146,6 @@ data2['l_code'] = lb_make.fit_transform(data1['Location'])
 data2.head() #Results in appending a new column to df
 
 
-# In[13]:
 
 
 from sklearn.preprocessing import LabelBinarizer
@@ -172,7 +159,6 @@ lb_results_df = pd.DataFrame(lb_results, columns=lb.classes_)
 print(lb_results_df.head())
 
 
-# In[14]:
 
 
 result_df = pd.concat([data2, lb_results_df], axis=1)
@@ -180,13 +166,11 @@ result_df = pd.concat([data2, lb_results_df], axis=1)
 result_df.head(2)
 
 
-# In[15]:
 
 
 get_ipython().system('pip install category_encoders')
 
 
-# In[16]:
 
 
 import category_encoders as ce
@@ -196,7 +180,6 @@ df_binary = encoder.fit_transform(data2)
 df_binary.head()
 
 
-# In[17]:
 
 
 encoder = ce.BackwardDifferenceEncoder(cols=['Job Title'])
@@ -206,19 +189,16 @@ df_bd = encoder.fit_transform(data2)
 df_bd.head()
 
 
-# In[18]:
 
 
 data2['Job Experience Required'].value_counts()
 
 
-# In[19]:
 
 
 data2['Job Experience Required'] = data2['Job Experience Required'].str.replace("yrs", "")
 
 
-# In[20]:
 
 
 def split_mean(x):
@@ -231,14 +211,12 @@ data2['exp_mean'] = data2['Job Experience Required'].apply(lambda x: split_mean(
 data2.head()
 
 
-# In[21]:
 
 
 data["About_me"] = "I am a" + data["Job Title"]+" from "+ data["Location"]+". "+" I work in the "+ data["Industry"]+" Industry as a "+ data['Role']
 data['len'] = data['About_me'].str.len()
 
 
-# In[22]:
 
 
 import spacy
@@ -248,7 +226,6 @@ import nltk
 import gensim
 
 
-# In[23]:
 
 
 import plotly.express as px
@@ -256,7 +233,6 @@ fig = px.histogram(data, x="len")
 fig.show()
 
 
-# In[24]:
 
 
 pd.set_option('display.max_colwidth', -1)
@@ -265,7 +241,6 @@ ab = data[data['len'] == m]
 ab['About_me']
 
 
-# In[25]:
 
 
 import re 
@@ -274,7 +249,6 @@ data['About_me'] = data['About_me'].fillna('').astype('str')
 data['detail_abt'] = data['About_me'].apply(lambda x: nltk.sent_tokenize(x))
 
 
-# In[26]:
 
 
 avg_len = data['About_me'].str.split().apply(lambda x : [len(i) for i in x]).map(lambda x: np.mean(x))
@@ -286,7 +260,6 @@ fig = px.histogram(avg_len)
 fig.show()
 
 
-# In[27]:
 
 
 import nltk
@@ -295,7 +268,6 @@ stopwords = nltk.corpus.stopwords.words('english')
 print(stopwords[:10])
 
 
-# In[28]:
 
 
 # Now, we’ll  create the corpus.
@@ -317,7 +289,6 @@ for word in corpus:
         dic[word]+=1
 
 
-# In[29]:
 
 
 #plotly.offline.initnotebookmode(connected = True)
@@ -341,7 +312,6 @@ fig = go.Figure(go.Bar(
 fig.show()
 
 
-# In[30]:
 
 
 counter=Counter(corpus)
@@ -366,7 +336,6 @@ fig = go.Figure(go.Bar(
 fig.show()        
 
 
-# In[31]:
 
 
 from nltk.util import ngrams
@@ -382,7 +351,6 @@ def get_top_ngram(corpus, n=None):
     return words_freq[:10]
 
 
-# In[32]:
 
 
 top_n_bigrams=get_top_ngram(data['About_me'],2)[:10]
@@ -403,7 +371,6 @@ fig = go.Figure(go.Bar(
 fig.show()     
 
 
-# In[33]:
 
 
 top_tri_grams=get_top_ngram(data['About_me'], n=3)
@@ -420,7 +387,6 @@ fig = go.Figure(go.Bar(
 fig.show()     
 
 
-# In[34]:
 
 
 from wordcloud import WordCloud, STOPWORDS
@@ -447,7 +413,6 @@ def show_wordcloud(data):
 show_wordcloud(corpus)
 
 
-# In[35]:
 
 
 # There are three pre-trained models for English in spaCy. I will use en_core_web_sm for our task but you can try other models.
@@ -456,7 +421,6 @@ import spacy
 nlp = spacy.load("en_core_web_sm")
 
 
-# In[36]:
 
 
 doc = nlp('India and Iran have agreed to boost the economic viability of the strategic Chabahar port through various measures, including larger subsidies to merchant shipping firms using the facility, people familiar with the development said on Thursday.')
@@ -464,7 +428,6 @@ doc = nlp('India and Iran have agreed to boost the economic viability of the str
 [(x.text,x.label_) for x in doc.ents]
 
 
-# In[37]:
 
 
 from spacy import displacy
@@ -472,7 +435,6 @@ from spacy import displacy
 displacy.render(doc, style='ent')
 
 
-# In[38]:
 
 
 def ner(text):
@@ -490,7 +452,6 @@ counter=Counter(ent)
 count=counter.most_common()
 
 
-# In[39]:
 
 
 x,y=map(list,zip(*count))
@@ -508,7 +469,6 @@ fig = go.Figure(go.Bar(
 fig.show()
 
 
-# In[40]:
 
 
 def ner(text,ent="GPE"):
@@ -536,7 +496,6 @@ fig = go.Figure(go.Bar(
 fig.show()
 
 
-# In[41]:
 
 
 # I will use the nltk to do the parts of speech tagging but there are other libraries that do a good job (spacy, textblob).
@@ -552,7 +511,6 @@ tokens = nltk.word_tokenize(sentence)
 nltk.pos_tag(tokens)
 
 
-# In[42]:
 
 
 doc = nlp('The greatest comeback stories in 2020')
@@ -560,7 +518,6 @@ doc = nlp('The greatest comeback stories in 2020')
 displacy.render(doc, style='dep', jupyter=True, options={'distance': 90})
 
 
-# In[43]:
 
 
 def pos(text):
@@ -591,7 +548,6 @@ fig = go.Figure(go.Bar(
 fig.show()     
 
 
-# In[44]:
 
 
 def get_adjs(text):
@@ -625,7 +581,6 @@ fig = go.Figure(go.Bar(
 fig.show()     
 
 
-# In[45]:
 
 
 get_ipython().system('pip install textstat')
@@ -637,7 +592,6 @@ score = data2['About_me'].apply(lambda x : flesch_reading_ease(x))
 score.hist()
 
 
-# In[46]:
 
 
 import plotly.graph_objects as go
@@ -650,7 +604,6 @@ fig = go.Figure(data=[go.Histogram(x=score, histnorm='probability')])
 fig.show()
 
 
-# In[47]:
 
 
 data2['read_score'] = data2['About_me'].apply(lambda x : flesch_reading_ease(x))
@@ -660,7 +613,6 @@ alls = data2[data2['read_score'] < 5].head(5)
 alls['About_me']
 
 
-# In[48]:
 
 
 import xgboost
@@ -673,7 +625,6 @@ import lightgbm as lgb
 from numba import jit
 
 
-# In[49]:
 
 
 def extract_time_features(df):
@@ -690,7 +641,6 @@ def extract_time_features(df):
     return df
 
 
-# In[50]:
 
 
 def get_object_columns(df, columns):
@@ -714,7 +664,6 @@ def get_numeric_columns_add(df, agg_column, column):
     return df
 
 
-# In[51]:
 
 
 def perform_features_engineering(train_df, test_df, train_labels_df):
@@ -761,7 +710,6 @@ def perform_features_engineering(train_df, test_df, train_labels_df):
     return comp_train_df, comp_test_df
 
 
-# In[52]:
 
 
 def qwk3(a1, a2, max_rat=3):
@@ -784,7 +732,6 @@ def qwk3(a1, a2, max_rat=3):
     return 1 - o / e
 
 
-# In[53]:
 
 
 ada_train_df, ada_test_df = perform_features_engineering(train_df, test_df, train_labels_df)
@@ -796,7 +743,6 @@ ada_test_df['game_time_std'] = ada_test_df['game_time_std'].fillna(0)
 ada_test_df['game_time_skew'] = ada_test_df['game_time_skew'].fillna(0)
 
 
-# In[54]:
 
 
 def adaboost_it(ada_train_df, ada_test_df):
@@ -828,7 +774,6 @@ def adaboost_it(ada_train_df, ada_test_df):
     return y_pred
 
 
-# In[55]:
 
 
 y_pred = adaboost_it(ada_train_df, ada_test_df)
@@ -840,7 +785,6 @@ ada_sample_submission_df = sample_submission_df.merge(ada_test_df, on = 'install
 ada_sample_submission_df.to_csv('ada_boost_submission.csv', index = False)
 
 
-# In[56]:
 
 
 xgb_train_df, xgb_test_df = perform_features_engineering(train_df, test_df, train_labels_df)
@@ -853,7 +797,6 @@ x_train  = xgb_train_df[features]
 y_train = xgb_train_df[target]
 
 
-# In[57]:
 
 
 ## Grid search is very time consuming and therefore i have commented it for now.
@@ -870,7 +813,6 @@ y_train = xgb_train_df[target]
 #grid_search.best_estimator_
 
 
-# In[58]:
 
 
 def xgb(xgb_train_df, xgb_test_df):
@@ -905,7 +847,6 @@ def xgb(xgb_train_df, xgb_test_df):
 y_pred = xgb(xgb_train_df, xgb_test_df)
 
 
-# In[59]:
 
 
 xgb_test_df = xgb_test_df.reset_index()
@@ -915,20 +856,17 @@ xgb_sample_submission_df = sample_submission_df.merge(xgb_test_df, on = 'install
 xgb_sample_submission_df.to_csv('xgb_submission.csv', index = False)
 
 
-# In[60]:
 
 
 xgb_sample_submission_df = xgb_sample_submission_df.drop('accuracy_group_x', axis=1)
 xgb_sample_submission_df.columns = ['installation_id', 'accuracy_group']
 
 
-# In[61]:
 
 
 xgb_sample_submission_df.to_csv('xgb_submission.csv', index = False)
 
 
-# In[62]:
 
 
 cat_train_df, cat_test_df = perform_features_engineering(train_df, test_df, train_labels_df)
@@ -937,7 +875,6 @@ xc_train  = cat_train_df[features]
 yc_train = cat_train_df[target]
 
 
-# In[63]:
 
 
 #cat_test_df.columns
@@ -947,7 +884,6 @@ yc_train = cat_train_df[target]
 #cat_train_df.columns = ["".join (c if c.isalnum() else "_" for c in str(x)) for x in cat_train_df.columns]
 
 
-# In[64]:
 
 
 import catboost as cb
@@ -981,7 +917,6 @@ def cat(cat_train_df, cat_test_df):
     return y_pred
 
 
-# In[65]:
 
 
 y_pred_cat = cat(cat_train_df, cat_test_df)
@@ -1002,7 +937,6 @@ cat_sample_submission_df.columns = ['installation_id', 'accuracy_group']
 cat_sample_submission_df.to_csv('submission.csv', index = False)
 
 
-# In[66]:
 
 
 lgb_train_df, lgb_test_df = perform_features_engineering(train_df, test_df, train_labels_df)
@@ -1011,7 +945,6 @@ xl_train  = lgb_train_df[features]
 yl_train = lgb_train_df[target]
 
 
-# In[67]:
 
 
 import lightgbm as lgb
@@ -1045,7 +978,6 @@ def lgbc(lgb_train_df, lgb_test_df):
     return y_pred
 
 
-# In[68]:
 
 
 #lgb_train_df.columns = ["".join (c if c.isalnum() else "_" for c in str(x)) for x in lgb_train_df.columns]
@@ -1067,7 +999,6 @@ def lgbc(lgb_train_df, lgb_test_df):
 #lgb_sample_submission_df.columns = ['installation_id', 'accuracy_group']
 
 
-# In[69]:
 
 
 data = [['ada', 0.42], ['xgb', 0.44], ['cat', 0.65], ['lgb', 0.62]]

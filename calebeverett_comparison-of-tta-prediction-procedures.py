@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -9,7 +8,6 @@ get_ipython().run_line_magic('load_ext', 'autoreload')
 get_ipython().run_line_magic('autoreload', '2')
 
 
-# In[2]:
 
 
 from google.cloud import storage
@@ -31,7 +29,6 @@ from tqdm.notebook import tqdm
 from tensorflow.keras.backend import dot
 
 
-# In[3]:
 
 
 def porc(c):
@@ -65,7 +62,6 @@ def show_images(imgs, titles=None, hw=(3,3), rc=(4,4)):
     plt.show()
 
 
-# In[4]:
 
 
 output = run_command('pip freeze | grep efficientnet')
@@ -76,7 +72,6 @@ else:
 from efficientnet import tfkeras as efn
 
 
-# In[5]:
 
 
 # raise SystemExit("Stop right there!")
@@ -107,7 +102,6 @@ SIZES = {s: f'{s}x{s}' for s in [192, 224, 331, 512]}
 AUTO = tf.data.experimental.AUTOTUNE
 
 
-# In[6]:
 
 
 if not KAGGLE:
@@ -129,7 +123,6 @@ if not KAGGLE:
         print_output(output)
 
 
-# In[7]:
 
 
 try:
@@ -148,7 +141,6 @@ else:
         print(d)
 
 
-# In[8]:
 
 
 def augment(example):
@@ -284,14 +276,12 @@ def get_file_pat(split, img_size):
     return f'{TFRECORD_DIR}/tfrecords-jpeg-{SIZES[img_size]}/{split}/*.tfrec'
 
 
-# In[9]:
 
 
 ds = get_ds('val').batch(16)
 ds_iter = iter(ds)
 
 
-# In[10]:
 
 
 b = next(ds_iter)
@@ -300,7 +290,6 @@ show_images(b['image'].numpy(), b['class'].numpy().tolist(), hw=(2,2), rc=(2,8))
 show_images(b_aug['image'].numpy(), b_aug['class'].numpy().tolist(), hw=(2,2), rc=(2,8))
 
 
-# In[11]:
 
 
 splits = ['train', 'val']
@@ -312,7 +301,6 @@ df_split_stats = pd.concat([pd.Series(split_classes(s)).value_counts() for s in 
 df_split_stats.columns = splits
 
 
-# In[12]:
 
 
 df_split_stats['total'] = df_split_stats[splits].sum(axis=1)
@@ -320,7 +308,6 @@ df_split_stats.sort_values('total', ascending=False)[splits].plot(kind='bar', st
 plt.xticks(fontsize=8);
 
 
-# In[13]:
 
 
 df_split_stats['weight'] = df_split_stats.sum(axis=1).max() / df_split_stats.sum(axis=1)
@@ -328,7 +315,6 @@ ax = df_split_stats.sort_values('total', ascending=False)['weight'] .plot(kind='
 plt.xticks(fontsize=8);
 
 
-# In[14]:
 
 
 img_size = 224
@@ -354,7 +340,6 @@ ds_train_fit = ds_train.map(preprocess, num_parallel_calls=AUTO)
 ds_valid_fit = ds_valid.map(preprocess, num_parallel_calls=AUTO)
 
 
-# In[15]:
 
 
 print('split', '\t', 'items', '\t',  'steps')
@@ -368,7 +353,6 @@ for split in splits:
     print(split, '\t', items, '\t',  items // batch_size)
 
 
-# In[16]:
 
 
 total_steps = int(512 / batch_size * 500 * 1.5) 
@@ -378,7 +362,6 @@ epochs = total_steps // steps_per_epoch
 print(total_steps, steps_per_epoch, val_steps, epochs)
 
 
-# In[17]:
 
 
 # https://docs.fast.ai/callbacks.one_cycle.html
@@ -421,7 +404,6 @@ class OneCycleScheduler(tf.keras.callbacks.Callback):
         print(f'\nepoch {epoch+1:02d}: learning_rate={scheduled_lr:0.3e}, beta_1={scheduled_mo:0.3e}')
 
 
-# In[18]:
 
 
 one_cycle = OneCycleScheduler(lr_max=reference_lr, lr_start=lr_start,                               lr_end=lr_end).schedule
@@ -434,7 +416,6 @@ ax.plot([one_cycle(e)[0] for e in range(epochs)], label='lr')
 ax2.plot([one_cycle(e)[1] for e in range(epochs)], c='orange', label='beta_1');
 
 
-# In[19]:
 
 
 with strategy.scope():
@@ -454,7 +435,6 @@ with strategy.scope():
 model.summary()
 
 
-# In[20]:
 
 
 history = model.fit(ds_train_fit,
@@ -470,7 +450,6 @@ history = model.fit(ds_train_fit,
                     )
 
 
-# In[21]:
 
 
 df_hist = pd.DataFrame({m: v for m, v in history.history.items() if 'val' not in m})
@@ -486,7 +465,6 @@ plt.gca().set_ylim(0, 1)
 plt.show()
 
 
-# In[22]:
 
 
 scale_factor = 0.5 # scales the base level of resize
@@ -506,14 +484,12 @@ titles.extend([f'{t} - flip' for t in titles])
 ds_tta_iter = ds_pred_tta.unbatch().batch(len(resize_factors) * len(crops) * 2 + 2) .as_numpy_iterator()
 
 
-# In[23]:
 
 
 b = next(ds_tta_iter)
 show_images(b['image'][2:], titles, rc=(8,5))
 
 
-# In[24]:
 
 
 pred_tta = model.predict(ds_pred_tta_pp)
@@ -528,7 +504,6 @@ for b in ds_pred_tta.as_numpy_iterator():
     class_list_tta.extend(b['class'].squeeze())
 
 
-# In[25]:
 
 
 df_pred_tta = pd.DataFrame(pred_tta)
@@ -537,7 +512,6 @@ df_pred_tta['label'] = label_list_tta
 df_pred_tta['tta_version'] = (['orig', 'orig - flip'] + titles) * (val_steps * batch_size)
 
 
-# In[26]:
 
 
 df_pred_tta_base = df_pred_tta[df_pred_tta.tta_version == 'orig'].copy()
@@ -547,7 +521,6 @@ f1_report_base = classification_report(df_pred_tta_base.label,                  
 print(f1_report_base['macro avg'])
 
 
-# In[27]:
 
 
 agg_dict = {c: 'mean' for c in range(len(CLASSES))}
@@ -560,7 +533,6 @@ f1_report_avg = classification_report(df_pred_tta_avg.label,                    
 print(f1_report_avg['macro avg'])
 
 
-# In[28]:
 
 
 agg_dict = {c: 'max' for c in range(len(CLASSES))}
@@ -575,7 +547,6 @@ f1_report_max = classification_report(df_pred_tta_max.label,
 print(f1_report_max['macro avg'])
 
 
-# In[29]:
 
 
 agg_dict = {'label': 'max',  'label_pred': lambda s: s.value_counts().index[0]}
@@ -590,7 +561,6 @@ f1_report_mode = classification_report(df_pred_tta_mode.label,                  
 print(f1_report_mode['macro avg'])
 
 
-# In[30]:
 
 
 with strategy.scope():
@@ -598,7 +568,6 @@ with strategy.scope():
 logits = pred_model_logits.predict(ds_pred_tta_pp)
 
 
-# In[31]:
 
 
 def softmax(x):
@@ -606,7 +575,6 @@ def softmax(x):
     return e_x / e_x.sum()
 
 
-# In[32]:
 
 
 df_pred_tta_logits = pd.DataFrame(logits)
@@ -614,7 +582,6 @@ df_pred_tta_logits['id'] = id_list_tta
 df_pred_tta_logits['label'] = label_list_tta
 
 
-# In[33]:
 
 
 agg_dict = {c: 'mean' for c in range(len(CLASSES))}
@@ -628,7 +595,6 @@ f1_report_logits_avg = classification_report(df_pred_tta_logits_avg.label,      
 print(f1_report_logits_avg['macro avg'])
 
 
-# In[34]:
 
 
 procs = ['Base', 'Argmax(Mean(Softmax))', 'Argmax(Max(Softmax))', 'Mode(Argmax(Softmax))', 'Argmax(Softmax(Mean(Logits))']
@@ -648,7 +614,6 @@ ax.set_title('Macro F1-Scores for TTA Procedures')
 ax.set_ylim((.91,.95));
 
 
-# In[35]:
 
 
 tta_ver_f1_scores = []
@@ -664,7 +629,6 @@ ax = df_tta_pred_ver['f1-score'].plot(kind='bar', figsize=(15,5), title='Macro F
 ax.set_ylim((0.8, 0.95));
 
 
-# In[36]:
 
 
 scenarios = {'orig': ['orig'],
@@ -698,7 +662,6 @@ ax.set_title('Macro F1-Scores by Scenario')
 ax.set_ylim((.9,.95));
 
 
-# In[37]:
 
 
 if False:
@@ -718,7 +681,6 @@ if False:
         print_output(run_command(f'kaggle datasets create -r tar -p {str(DATASET_DIR)}'))
 
 
-# In[38]:
 
 
 if False:

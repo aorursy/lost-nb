@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -30,13 +29,11 @@ from keras.optimizers import Adam
 from keras.preprocessing.image import image
 
 
-# In[2]:
 
 
 print(os.listdir("../input"))
 
 
-# In[3]:
 
 
 kernel_start = time.perf_counter()
@@ -66,7 +63,6 @@ DIRanno = "../input/annotation/Annotation"
 DIRout = "../output_images"
 
 
-# In[4]:
 
 
 def loadImage(fPath, resize = True):
@@ -86,7 +82,6 @@ def loadImage(fPath, resize = True):
     return img
 
 
-# In[5]:
 
 
 def clipImage(fPath):
@@ -130,7 +125,6 @@ def clipImage(fPath):
     return xmin,ymin,xmax,ymax
 
 
-# In[6]:
 
 
 all_fNames = os.listdir(DIRimg)
@@ -147,7 +141,6 @@ for i, axis in enumerate(axes.flatten()):
 plt.tight_layout()
 
 
-# In[7]:
 
 
 # train data
@@ -160,7 +153,6 @@ x_train = x_train / 255.
 print(x_train.shape)
 
 
-# In[8]:
 
 
 fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(12,10))
@@ -172,7 +164,6 @@ for indx, axis in enumerate(axes.flatten()):
 plt.tight_layout()
 
 
-# In[9]:
 
 
 def build_generator():
@@ -218,7 +209,6 @@ def build_generator():
     return model
 
 
-# In[10]:
 
 
 def build_discriminator():
@@ -244,7 +234,6 @@ def build_discriminator():
     return model
 
 
-# In[11]:
 
 
 def build_WGANgp(generator, discriminator):
@@ -288,7 +277,6 @@ def build_WGANgp(generator, discriminator):
     return g_train, d_train
 
 
-# In[12]:
 
 
 # generator Model
@@ -299,7 +287,6 @@ discriminator = build_discriminator()
 G_train, D_train = build_WGANgp(generator, discriminator)
 
 
-# In[13]:
 
 
 # fixed z for confirmation of generated image
@@ -317,7 +304,6 @@ d_loss_list = []
 X_train = (x_train.astype(np.float32) - 0.5) / 0.5
 
 
-# In[14]:
 
 
 def sumple_images(imgs, rows=3, cols=3, figsize=(12,10)):
@@ -329,7 +315,6 @@ def sumple_images(imgs, rows=3, cols=3, figsize=(12,10)):
     plt.tight_layout()
 
 
-# In[15]:
 
 
 iteration = 0
@@ -374,7 +359,6 @@ while time.perf_counter() - kernel_start < kernel_time_limit:
 print("last iteration:",iteration - 1)
 
 
-# In[16]:
 
 
 # plot loss
@@ -394,7 +378,6 @@ for i in range(5):
 plt.show()
 
 
-# In[17]:
 
 
 if os.path.exists(DIRout):
@@ -403,7 +386,6 @@ if not os.path.exists(DIRout):
     os.mkdir(DIRout)
 
 
-# In[18]:
 
 
 # generate images for submit
@@ -421,14 +403,12 @@ for i in tqdm(range(0, n, batch)):
 print(len(os.listdir(DIRout)))
 
 
-# In[19]:
 
 
 # generated DOGs sumple
 sumple_images(g_imgs, rows=5, cols=7, figsize=(12,8))
 
 
-# In[20]:
 
 
 if os.path.exists('images.zip'):

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,20 +22,17 @@ print(os.listdir("../input/apply-jieba-tokenizer"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 # ! pip install opencc-python-reimplemented
 
 
-# In[3]:
 
 
 # from opencc import OpenCC
 import pandas as pd
 
 
-# In[4]:
 
 
 if os.path.isdir("../input/fake-news-pair-classification-challenge"):
@@ -50,14 +46,12 @@ else:
     TOKENIZED_TRAIN_CSV_PATH = None
 
 
-# In[5]:
 
 
 train = pd.read_csv(TRAIN_CSV_PATH, index_col='id')
 train.head(3)
 
 
-# In[6]:
 
 
 cols = ['title1_zh', 
@@ -67,7 +61,6 @@ train = train.loc[:, cols]
 train.head(3)
 
 
-# In[7]:
 
 
 text = '我是台中人，但是我在板橋上班'
@@ -75,7 +68,6 @@ words = pseg.cut(text)
 [word for word in words]
 
 
-# In[8]:
 
 
 def jieba_tokenizer(text):
@@ -84,20 +76,17 @@ def jieba_tokenizer(text):
         word for word, flag in words if flag != 'x'])
 
 
-# In[9]:
 
 
 train.isna().any()
 
 
-# In[10]:
 
 
 train.title2_zh.fillna('UNKNOWN', inplace=True)
 train.isna().any()
 
 
-# In[11]:
 
 
 def process(data):
@@ -120,13 +109,11 @@ def parallelize(data, func):
     return res
 
 
-# In[12]:
 
 
 np.all(train.index == train.title1_zh.index)
 
 
-# In[13]:
 
 
 if os.path.exists(TOKENIZED_TRAIN_CSV_PATH):
@@ -139,25 +126,21 @@ else:
     train.to_csv('tokenized_train.csv',index=True)
 
 
-# In[14]:
 
 
 train.loc[:, ["title1_zh", "title1_tokenized"]].head(10)
 
 
-# In[15]:
 
 
 train.loc[:, ["title2_zh", "title2_tokenized"]].head(10)
 
 
-# In[16]:
 
 
 train.fillna('UNKNOWN', inplace=True)
 
 
-# In[17]:
 
 
 
@@ -165,7 +148,6 @@ MAX_NUM_WORDS = 10000
 tokenizer = keras     .preprocessing     .text     .Tokenizer(num_words=MAX_NUM_WORDS)
 
 
-# In[18]:
 
 
 corpus_x1 = train.title1_tokenized
@@ -175,20 +157,17 @@ corpus = pd.concat([
 corpus.shape
 
 
-# In[19]:
 
 
 pd.DataFrame(corpus.iloc[:5],
              columns=['title'])
 
 
-# In[20]:
 
 
 corpus.isna().any()
 
 
-# In[21]:
 
 
 tokenizer.fit_on_texts(corpus)
@@ -196,26 +175,22 @@ x1_train = tokenizer     .texts_to_sequences(corpus_x1)
 x2_train = tokenizer     .texts_to_sequences(corpus_x2)
 
 
-# In[22]:
 
 
 len(x1_train)
 
 
-# In[23]:
 
 
 x1_train[:1]
 
 
-# In[24]:
 
 
 for seq in x1_train[:1]:
     print([tokenizer.index_word[idx] for idx in seq])
 
 
-# In[25]:
 
 
 MAX_SEQUENCE_LENGTH = 20
@@ -226,13 +201,11 @@ x2_train = keras     .preprocessing     .sequence     .pad_sequences(x2_train,
                    maxlen=MAX_SEQUENCE_LENGTH)
 
 
-# In[26]:
 
 
 x1_train[0]
 
 
-# In[27]:
 
 
 for seq in x1_train + x2_train:
@@ -241,13 +214,11 @@ for seq in x1_train + x2_train:
 print("所有新聞標題的序列長度皆為 20 !")
 
 
-# In[28]:
 
 
 train.label[:5]
 
 
-# In[29]:
 
 
 import numpy as np 
@@ -268,7 +239,6 @@ y_train = np.asarray(y_train)             .astype('float32')
 y_train[:5]
 
 
-# In[30]:
 
 
 # 基本參數設置，有幾個分類
@@ -287,19 +257,16 @@ NUM_EMBEDDING_DIM = 256
 NUM_LSTM_UNITS = 128
 
 
-# In[31]:
 
 
 x1_train[:5]
 
 
-# In[32]:
 
 
 train.label[:5]
 
 
-# In[33]:
 
 
 y_train = keras     .utils     .to_categorical(y_train)
@@ -307,7 +274,6 @@ y_train = keras     .utils     .to_categorical(y_train)
 y_train[:5]
 
 
-# In[34]:
 
 
 from sklearn.model_selection     import train_test_split
@@ -323,7 +289,6 @@ x1_train, x1_val, x2_train, x2_val, y_train, y_val =     train_test_split(
 )
 
 
-# In[35]:
 
 
 print("Training Set")
@@ -340,7 +305,6 @@ print("-" * 10)
 print("Test Set")
 
 
-# In[36]:
 
 
 # 建立孿生 LSTM 架構（Siamese LSTM）
@@ -398,7 +362,6 @@ model = Model(
 model.summary()
 
 
-# In[37]:
 
 
 from keras.utils import plot_model
@@ -415,13 +378,11 @@ from keras.utils import model_to_dot
 SVG(model_to_dot(model, rankdir='LR', show_shapes=True, show_layer_names=False,).create(prog='dot', format='svg'))
 
 
-# In[38]:
 
 
 from keras.optimizers import Adam
 
 
-# In[39]:
 
 
 lr = 1e-3
@@ -432,13 +393,11 @@ model.compile(
     metrics=['accuracy'])
 
 
-# In[40]:
 
 
 x1_train[:9527].shape
 
 
-# In[41]:
 
 
 # 決定一次要放多少成對標題給模型訓練
@@ -466,7 +425,6 @@ history = model.fit(
 )
 
 
-# In[42]:
 
 
 import pandas as pd
@@ -483,7 +441,6 @@ else:
 test.head(3)
 
 
-# In[43]:
 
 
 
@@ -506,13 +463,11 @@ predictions = model.predict(
     [x1_test, x2_test])
 
 
-# In[44]:
 
 
 predictions[:5]
 
 
-# In[45]:
 
 
 index_to_label = {v: k for k, v in label_to_index.items()}

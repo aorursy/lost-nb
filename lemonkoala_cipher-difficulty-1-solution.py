@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy  as np
@@ -14,7 +13,6 @@ from collections import Counter
 from IPython.display import HTML
 
 
-# In[2]:
 
 
 ciphers_df = pd.read_csv('../input/test.csv')
@@ -23,7 +21,6 @@ ciphers_df['length'] = ciphers_df['ciphertext'].apply(lambda x: len(x))
 ciphers_df.head()
 
 
-# In[3]:
 
 
 plaintext_df = pd.read_csv("../input/training.csv", index_col='index')
@@ -32,14 +29,12 @@ plaintext_df['padded_length'] = (np.ceil(plaintext_df['length'] / 100) * 100).as
 plaintext_df.head()
 
 
-# In[4]:
 
 
 plaintext_corpus = ''.join(list(plaintext_df['text']))
 ciphrtext_corpus = ''.join(list(ciphers_df['ciphertext']))
 
 
-# In[5]:
 
 
 def count_characters(text):
@@ -50,7 +45,6 @@ def count_characters(text):
     return df_sorted
 
 
-# In[6]:
 
 
 def display_counts(plain_counts, ciphr_counts, n=5):
@@ -62,7 +56,6 @@ def wrap_html(name, df, n):
     return         "<div style='float: left; padding: 10px;'>" +             "<h3>" + name + "</h3>" +             df[:n].to_html() +             "..." +             df[-n:].to_html() +             str(df.shape) +         "</div>"
 
 
-# In[7]:
 
 
 plaintext_counts = count_characters(plaintext_corpus)
@@ -71,7 +64,6 @@ ciphrtext_counts = count_characters(ciphrtext_corpus)
 display_counts(plaintext_counts, ciphrtext_counts)
 
 
-# In[8]:
 
 
 class SubstitutionCipher:
@@ -100,14 +92,12 @@ class SubstitutionCipher:
         return ''.join(result)
 
 
-# In[9]:
 
 
 substitution = SubstitutionCipher(plaintext_counts['Character'], ciphrtext_counts['Character'])
 substitution.decrypt(ciphers_df.iloc[2]['ciphertext'])
 
 
-# In[10]:
 
 
 alphabet_per_cipher = [ set(text) for text in list(ciphers_df['ciphertext'].str[50:-50])]
@@ -121,13 +111,11 @@ character_presence  = pd.DataFrame([
 character_presence.head()
 
 
-# In[11]:
 
 
 character_presence.any().all()
 
 
-# In[12]:
 
 
 subset_indexes = [2]
@@ -143,7 +131,6 @@ display(len(subset_indexes))
 display(subset_indexes)
 
 
-# In[13]:
 
 
 def analyze(decrypted, plaintext):
@@ -190,7 +177,6 @@ for cipher_index, cipher_row in ciphers_df.loc[subset_indexes].iterrows():
             print()
 
 
-# In[14]:
 
 
 mistakes = [
@@ -202,7 +188,6 @@ for correct_plaintext, cipher_character in mistakes:
     substitution.update(correct_plaintext, cipher_character)
 
 
-# In[15]:
 
 
 matches = []
@@ -225,7 +210,6 @@ matches = pd.DataFrame(matches, columns=['ciphertext_id', 'index'])
 matches.head()
 
 
-# In[16]:
 
 
 sub = pd.read_csv('../input/sample_submission.csv')
@@ -237,13 +221,11 @@ sub.to_csv('submission_diff1.csv', index=False)
 sub.head()
 
 
-# In[17]:
 
 
 len(ciphers_df) / len(plaintext_df)
 
 
-# In[18]:
 
 
 plaintext_df['encrypt1'] = plaintext_df['text'].apply(lambda text: substitution.encrypt(text))

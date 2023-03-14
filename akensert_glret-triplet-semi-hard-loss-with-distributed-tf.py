@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -48,7 +47,6 @@ else:
     print("Setting strategy to MirroredStrategy()")
 
 
-# In[2]:
 
 
 config = {
@@ -65,7 +63,6 @@ config = {
 }
 
 
-# In[3]:
 
 
 def read_df(input_path):
@@ -88,7 +85,6 @@ df = read_df('../input/landmark-retrieval-2020/')
 df.head(10)
 
 
-# In[4]:
 
 
 def _get_transform_matrix(rotation, shear, hzoom, wzoom, hshift, wshift):
@@ -256,7 +252,6 @@ def create_triplet_dataset(df, training, batch_size, input_size, K):
     return dataset
 
 
-# In[5]:
 
 
 def create_model(input_shape, dense_units=512, dropout_rate=0.0):
@@ -364,7 +359,6 @@ class DistributedModel:
             self.mean_loss_train.reset_states()
 
 
-# In[6]:
 
 
 train_ds = create_triplet_dataset(
@@ -398,7 +392,6 @@ with strategy.scope():
         save_path='model.h5')
 
 
-# In[7]:
 
 
 newmodel = tf.keras.Model(
@@ -439,7 +432,6 @@ with ZipFile('submission.zip', 'w') as zip:
         zip.write(fp, arcname='/'.join(fp.split('/')[1:]))
 
 
-# In[ ]:
 
 
 

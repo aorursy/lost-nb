@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -34,7 +33,6 @@ MODEL_SOURCE = os.path.join("..","input","torchvisionmodelspartial1")
 MODEL_SIZE = 224
 
 
-# In[2]:
 
 
 def crop_image(img,tol=7):
@@ -70,7 +68,6 @@ def process_image(image, size=512):
     return image
 
 
-# In[3]:
 
 
 class RetinopathyDataset(Dataset):
@@ -116,7 +113,6 @@ class RetinopathyDataset(Dataset):
         return self.data
 
 
-# In[4]:
 
 
 # first we will prepare the dataset and create the folds
@@ -142,7 +138,6 @@ for t, e in folds_generator:
     data_eval.append(e)
 
 
-# In[5]:
 
 
 def get_dataloader_for_fold(n, data, train_data, eval_data, batch_size):
@@ -161,7 +156,6 @@ def get_dataloader_for_fold(n, data, train_data, eval_data, batch_size):
     return data_loader_train, data_loader_eval
 
 
-# In[6]:
 
 
 class Classificator(nn.Module):
@@ -180,7 +174,6 @@ class Classificator(nn.Module):
         return self.network(x)
 
 
-# In[7]:
 
 
 def get_base_model():
@@ -197,7 +190,6 @@ def get_base_model():
     return model
 
 
-# In[8]:
 
 
 def train_model(model, optimizer, scheduler, train_data_loader, eval_data_loader, 
@@ -278,7 +270,6 @@ def train_model(model, optimizer, scheduler, train_data_loader, eval_data_loader
 # Model training
 
 
-# In[9]:
 
 
 # train the model num_round_per_fold times for each fold
@@ -306,7 +297,6 @@ for no in range(NUM_FOLDS):
     print("")
 
 
-# In[10]:
 
 
 def get_trained_model(no): 
@@ -322,7 +312,6 @@ def get_trained_model(no):
     return extractor
 
 
-# In[11]:
 
 
 def get_extractor_model(no):
@@ -336,7 +325,6 @@ def get_extractor_model(no):
     return extractor
 
 
-# In[12]:
 
 
 def get_train_features(data_loader, extractor):
@@ -358,7 +346,6 @@ def get_train_features(data_loader, extractor):
     return features, targets
 
 
-# In[13]:
 
 
 XGBOOST_PARAM = {
@@ -370,7 +357,6 @@ XGBOOST_PARAM = {
 }
 
 
-# In[14]:
 
 
 # for each fold, get the data loader, extractor, 
@@ -400,7 +386,6 @@ for no in range(NUM_FOLDS):
     pickle.dump(xgb_model, open("xgb_model_"+str(no), "wb"))
 
 
-# In[15]:
 
 
 # change the data augmentation of the dataset object
@@ -412,7 +397,6 @@ base_transform = transforms.Compose([
 DATA.transform = base_transform
 
 
-# In[16]:
 
 
 # first we make predictions using the CNN models for each fold 
@@ -437,7 +421,6 @@ print("Cohen Kappa quadratic score",
       cohen_kappa_score(targets, predictions, weights="quadratic"))
 
 
-# In[17]:
 
 
 # now let's do it with the XGB models 
@@ -459,7 +442,6 @@ print("Cohen Kappa quadratic score",
       cohen_kappa_score(targets, predictions, weights="quadratic"))
 
 
-# In[18]:
 
 
 # cleaning
@@ -469,7 +451,6 @@ if os.path.exists("cache"):
     os.rmdir("cache")
 
 
-# In[19]:
 
 
 data_augmentation = transforms.Compose([
@@ -500,7 +481,6 @@ def get_test_features(data_loader, extractor):
     return features
 
 
-# In[20]:
 
 
 # adding prediction for each model 
@@ -522,7 +502,6 @@ for tta in range(2):
         predictions = predictions + prediction 
 
 
-# In[21]:
 
 
 # voting
@@ -533,13 +512,11 @@ df["diagnosis"] = prediction_final
 df.to_csv('submission.csv',index=False)
 
 
-# In[22]:
 
 
 df
 
 
-# In[23]:
 
 
 # cache cleaning

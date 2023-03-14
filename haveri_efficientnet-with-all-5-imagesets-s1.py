@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 get_ipython().system('pip install -q efficientnet')
 
 
-# In[ ]:
 
 
 import math, re, gc
@@ -23,7 +21,6 @@ print('TensorFlow version', tf.__version__)
 AUTO = tf.data.experimental.AUTOTUNE
 
 
-# In[ ]:
 
 
 try:
@@ -52,7 +49,6 @@ print(GCS_DS_PATH, '\n', MORE_IMAGES_GCS_DS_PATH)
 #!ls -l /kaggle/input/tf-flower-photo-tfrec/tf_flowers/tfrecords-jpeg-224x224/*.tfrec
 
 
-# In[ ]:
 
 
 start_time = datetime.now()
@@ -114,7 +110,6 @@ CLASSES = ['pink primrose', 'hard-leaved pocket orchid', 'canterbury bells', 'sw
            'trumpet creeper', 'blackberry lily', 'common tulip', 'wild rose'] # 100 - 102
 
 
-# In[ ]:
 
 
 LR_START = 0.00001
@@ -141,7 +136,6 @@ y = [lrfn(x) for x in rng]
 print(y)
 
 
-# In[ ]:
 
 
 # numpy and matplotlib defaults
@@ -249,7 +243,6 @@ def display_training_curves(training, validation, title, subplot):
     ax.legend(['train', 'valid.'])
 
 
-# In[ ]:
 
 
 def decode_image(image_data):
@@ -334,7 +327,6 @@ STEPS_PER_EPOCH = NUM_TRAINING_IMAGES // BATCH_SIZE
 print('Dataset: {} training images, {} validation images, {} unlabeled test images'.format(NUM_TRAINING_IMAGES, NUM_VALIDATION_IMAGES, NUM_TEST_IMAGES))
 
 
-# In[ ]:
 
 
 print('Training data shapes')
@@ -355,7 +347,6 @@ for image, idnum in get_test_dataset().take(3):
 print('Test data IDs:', idnum.numpy().astype('U'))
 
 
-# In[ ]:
 
 
 training_dataset = get_training_dataset()
@@ -365,7 +356,6 @@ train_batch = iter(training_dataset)
 #display_batch_of_images(next(train_batch))
 
 
-# In[ ]:
 
 
 test_dataset = get_test_dataset()
@@ -375,13 +365,11 @@ test_batch = iter(test_dataset)
 #display_batch_of_images(next(test_batch))
 
 
-# In[ ]:
 
 
 early_stop = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=20, restore_best_weights = True)
 
 
-# In[ ]:
 
 
 def create_VGG16_model():
@@ -398,7 +386,6 @@ def create_VGG16_model():
     return model
 
 
-# In[ ]:
 
 
 def create_Xception_model():
@@ -415,7 +402,6 @@ def create_Xception_model():
     return model
 
 
-# In[ ]:
 
 
 def create_DenseNet_model():
@@ -432,7 +418,6 @@ def create_DenseNet_model():
     return model
 
 
-# In[ ]:
 
 
 def create_EfficientNet_model():
@@ -449,7 +434,6 @@ def create_EfficientNet_model():
     return model
 
 
-# In[ ]:
 
 
 def create_InceptionV3_model():
@@ -466,7 +450,6 @@ def create_InceptionV3_model():
     return model
 
 
-# In[ ]:
 
 
 def create_ResNet152_model():
@@ -483,7 +466,6 @@ def create_ResNet152_model():
     return model
 
 
-# In[ ]:
 
 
 def create_MobileNetV2_model():
@@ -500,7 +482,6 @@ def create_MobileNetV2_model():
     return model
 
 
-# In[ ]:
 
 
 def create_InceptionResNetV2_model():
@@ -517,7 +498,6 @@ def create_InceptionResNetV2_model():
     return model
 
 
-# In[ ]:
 
 
 no_of_models = 1
@@ -533,7 +513,6 @@ test_probabilities = [0] * no_of_models
 all_probabilities = [0] * no_of_models
 
 
-# In[ ]:
 
 
 #with strategy.scope():
@@ -556,7 +535,6 @@ with strategy.scope():
 models[0].summary()
 
 
-# In[ ]:
 
 
 def write_history(j):
@@ -571,7 +549,6 @@ def write_history(j):
     pklfile.close()
 
 
-# In[ ]:
 
 
 EPOCHS = 50 # 30 # 50 # 35 # 2 # 20
@@ -609,7 +586,6 @@ print(datetime.now())
 #
 
 
-# In[ ]:
 
 
 cmdataset = get_validation_dataset(ordered = True)
@@ -618,7 +594,6 @@ labels_ds = cmdataset.map(lambda image, label: label).unbatch()
 cm_correct_labels = next(iter(labels_ds.batch(NUM_VALIDATION_IMAGES))).numpy()
 
 
-# In[ ]:
 
 
 test_ds = get_test_dataset(ordered = True)
@@ -630,7 +605,6 @@ test_ids = next(iter(test_ids_ds.batch(NUM_TEST_IMAGES))).numpy().astype('U')
 #
 
 
-# In[ ]:
 
 
 dataset = get_validation_dataset()
@@ -640,7 +614,6 @@ batch = iter(dataset)
 images, labels = next(batch)
 
 
-# In[ ]:
 
 
 print(datetime.now())
@@ -654,7 +627,6 @@ print(datetime.now())
 #
 
 
-# In[ ]:
 
 
 for j in range(start_model, finished_models):
@@ -668,7 +640,6 @@ for j in range(start_model, finished_models):
 #
 
 
-# In[ ]:
 
 
 cm_probabilities = np.zeros((val_probabilities[0].shape)) # = val_probabilities[0] + val_probabilities[1] + val_probabilities[2]
@@ -680,7 +651,6 @@ print('Correct labels: ', cm_correct_labels.shape, cm_correct_labels)
 print('Predicted labels: ', cm_predictions.shape, cm_predictions)
 
 
-# In[ ]:
 
 
 def getFitPrecisionRecall(correct_labels, predictions):
@@ -691,7 +661,6 @@ def getFitPrecisionRecall(correct_labels, predictions):
 #
 
 
-# In[ ]:
 
 
 cmat = confusion_matrix(cm_correct_labels, cm_predictions, labels = range(len(CLASSES)))
@@ -701,7 +670,6 @@ display_confusion_matrix(cmat, score, precision, recall)
 print('f1 score: {:.3f}, precision: {:.3f}, recall: {:.3f}'.format(score, precision, recall))
 
 
-# In[ ]:
 
 
 def create_submission_file(filename, probabilities):
@@ -714,7 +682,6 @@ def create_submission_file(filename, probabilities):
 #
 
 
-# In[ ]:
 
 
 probabilities = np.zeros((test_probabilities[0].shape)) # = test_probabilities[0] + test_probabilities[1] + test_probabilities[2]
@@ -727,7 +694,6 @@ create_submission_file('submission.csv', probabilities)
 #
 
 
-# In[ ]:
 
 
 def combine_two(correct_labels, probability_0, probability_1):
@@ -757,7 +723,6 @@ def combine_two(correct_labels, probability_0, probability_1):
     return best_alpha0, best_alpha1, best_val_predictions, best_score, best_precision, best_recall
 
 
-# In[ ]:
 
 
 def combine_three(correct_labels, probability_0, probability_1, probability_2):
@@ -794,7 +759,6 @@ def combine_three(correct_labels, probability_0, probability_1, probability_2):
     return best_alpha0, best_alpha1, best_alpha2, best_val_predictions, best_score, best_precision, best_recall
 
 
-# In[ ]:
 
 
 def get_best_combination(no_models, cm_correct_labels, val_probabilities, test_probabilities):
@@ -896,7 +860,6 @@ def get_best_combination(no_models, cm_correct_labels, val_probabilities, test_p
 #
 
 
-# In[ ]:
 
 
 best_predictions = cm_predictions
@@ -907,7 +870,6 @@ if no_of_models > 1:
 #
 
 
-# In[ ]:
 
 
 probabilities = np.zeros((all_probabilities[0].shape)) # = all_probabilities[0] + all_probabilities[1] + all_probabilities[2]
@@ -918,7 +880,6 @@ predictions = np.argmax(probabilities, axis =-1)
 display_batch_of_images((images, labels), predictions)
 
 
-# In[ ]:
 
 
 #val_probs = [cm_correct_labels, cm_predictions, test_ids, val_probabilities[0], val_probabilities[1], val_probabilities[2], test_probabilities[0], test_probabilities[1], test_probabilities[2]]
@@ -930,7 +891,6 @@ pickle.dump(val_probs, pklfile)
 pklfile.close()
 
 
-# In[ ]:
 
 
 #images_ds_unbatched = images_ds.unbatch()
@@ -939,7 +899,6 @@ use_correct_labels = cm_correct_labels
 use_val_predictions = best_predictions
 
 
-# In[ ]:
 
 
 print('type of labels_ds is {}'.format(type(labels_ds)))
@@ -948,7 +907,6 @@ print('type of use_val_predictions is {}. shape of use_val_predictions is {}'.fo
 #print('shape of use_correct_labels is {}, cm_images_ds_numpy is {}'.format(use_correct_labels.shape, cm_images_ds_numpy.shape))
 
 
-# In[ ]:
 
 
 correct_labels_cnt = 0
@@ -986,7 +944,6 @@ print('Incorrect labels', incorrect_labels)
 #
 
 
-# In[ ]:
 
 
 def display_my_batch_of_images(databatch, rows = 0, cols = 0, predictions=None):
@@ -1035,7 +992,6 @@ def display_my_batch_of_images(databatch, rows = 0, cols = 0, predictions=None):
 #
 
 
-# In[ ]:
 
 
 #disp_images = []
@@ -1054,7 +1010,6 @@ print(disp_predictions)
 #
 
 
-# In[ ]:
 
 
 #print('type of disp_images is {}, disp_labels is {}'.format(type(disp_images), type(disp_labels)))
@@ -1062,13 +1017,11 @@ print(disp_predictions)
 #print('type of disp_images[0] is {}, disp_labels[0] is {}'.format(type(disp_images[0]), type(disp_labels[0])))
 
 
-# In[ ]:
 
 
 #display_my_batch_of_images((disp_images, disp_labels), rows = 9, cols = 6, predictions = disp_predictions)
 
 
-# In[ ]:
 
 
 val_ids = list(range(len(use_correct_labels)))
@@ -1082,7 +1035,6 @@ np.savetxt(filename, np.rec.fromarrays([cls_ids, list(vals_actual_true.values())
 #
 
 
-# In[ ]:
 
 
 

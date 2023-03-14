@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('reset', '')
@@ -29,7 +28,6 @@ pd.options.mode.chained_assignment = None
 pd.options.display.max_rows = 40
 
 
-# In[2]:
 
 
 file = "D:/KI/01_keras/_kaggle/_invasiveplants/train_labels.csv"
@@ -37,7 +35,6 @@ df = pd.read_csv(file, sep=",", error_bad_lines= True)
 df.invasive.value_counts()
 
 
-# In[3]:
 
 
 get_ipython().run_line_magic('cd', '_kaggle/_invasiveplants/_train')
@@ -52,7 +49,6 @@ for idx, label in enumerate(labels):
         get_ipython().system('mv $iname true/')
 
 
-# In[4]:
 
 
 vgg16 = VGG16(weights='imagenet', include_top=False)
@@ -66,7 +62,6 @@ x = Dense(1, activation='sigmoid')(x)
 model_final = Model(inputs=vgg16.input, outputs=x)
 
 
-# In[5]:
 
 
 for layer in vgg16.layers:
@@ -75,7 +70,6 @@ for layer in vgg16.layers:
 model_final.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['accuracy'])
 
 
-# In[6]:
 
 
 # You need to have these three folders each with two subfolders for the two classes.
@@ -140,7 +134,6 @@ validation_samples = len(val_gen.filenames)
 test_samples = len(test_gen.filenames)
 
 
-# In[7]:
 
 
 now = datetime.now()
@@ -161,7 +154,6 @@ model_final.fit_generator(train_gen, epochs=epochs,
                           verbose=0, callbacks=[early_stopping, tb, TQDMNotebookCallback()])
 
 
-# In[8]:
 
 
 for i, layer in enumerate(model_final.layers):
@@ -173,13 +165,11 @@ for layer in model_final.layers[15:]:
    layer.trainable = True
 
 
-# In[9]:
 
 
 model_final.compile(optimizer=SGD(lr=0.0001, momentum=0.9, nesterov=True),  loss='binary_crossentropy', metrics=['accuracy'])
 
 
-# In[10]:
 
 
 now = datetime.now()
@@ -199,7 +189,6 @@ model_final.fit_generator(train_gen, epochs=epochs,
                           verbose=0, callbacks=[early_stopping, tb, TQDMNotebookCallback()])
 
 
-# In[11]:
 
 
 preds = model_final.predict_generator(test_gen, 1531)
@@ -223,7 +212,6 @@ df_result = df_result.drop(["name"], axis=1)
 df_result.to_csv("_kaggle/_invasiveplants/submission_03.csv", encoding="utf8", index=True)
 
 
-# In[12]:
 
 
 

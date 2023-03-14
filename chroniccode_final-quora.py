@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 import nltk
@@ -33,35 +31,30 @@ from string import punctuation
 from tqdm import tqdm
 
 
-# In[3]:
 
 
 get_ipython().system('unzip ../input/quora-question-pairs/train.csv.zip')
 get_ipython().system('unzip ../input/quora-question-pairs/test.csv.zip')
 
 
-# In[4]:
 
 
 train = pd.read_csv("/kaggle/working/train.csv")
 test = pd.read_csv("/kaggle/working/test.csv")
 
 
-# In[5]:
 
 
 print(train.isnull().sum())
 print(test.isnull().sum())
 
 
-# In[6]:
 
 
 train = train.fillna('empty')
 test = test.fillna('empty')
 
 
-# In[7]:
 
 
 stop_words = ['the','a','an','and','but','if','or','because','as','what','which','this','that','these','those','then',
@@ -69,7 +62,6 @@ stop_words = ['the','a','an','and','but','if','or','because','as','what','which'
               'Is','If','While','This']
 
 
-# In[8]:
 
 
 def text_to_wordlist(text):
@@ -84,7 +76,6 @@ def text_to_wordlist(text):
     return(text)
 
 
-# In[9]:
 
 
 def modify_column(dataframe,column):
@@ -94,7 +85,6 @@ def modify_column(dataframe,column):
     return temp
 
 
-# In[10]:
 
 
 train['question1'] = modify_column(train,'question1')
@@ -103,13 +93,11 @@ test['question1'] = modify_column(test,'question1')
 test['question2'] = modify_column(test,'question2')
 
 
-# In[11]:
 
 
 train.head() 
 
 
-# In[12]:
 
 
 from sklearn.feature_extraction.text import CountVectorizer
@@ -119,7 +107,6 @@ from keras.preprocessing.sequence import pad_sequences
 from sklearn.model_selection import train_test_split
 
 
-# In[13]:
 
 
 df_all = pd.concat((train, test))
@@ -128,13 +115,11 @@ counts_vectorizer = CountVectorizer(max_features=10000-1).fit(
 other_index = len(counts_vectorizer.vocabulary_)
 
 
-# In[14]:
 
 
 words_tokenizer = re.compile(counts_vectorizer.token_pattern)
 
 
-# In[15]:
 
 
 def create_padded_seqs(texts, max_len=10):
@@ -144,7 +129,6 @@ def create_padded_seqs(texts, max_len=10):
     return pad_sequences(seqs, maxlen=max_len)
 
 
-# In[16]:
 
 
 X1_train, X1_val, X2_train, X2_val, y_train, y_val =     train_test_split(create_padded_seqs(df_all[df_all['id'].notnull()]['question1']), 
@@ -154,14 +138,12 @@ X1_train, X1_val, X2_train, X2_val, y_train, y_val =     train_test_split(create
                      test_size=0.3, random_state=1989)
 
 
-# In[17]:
 
 
 import keras.layers as lyr
 from keras.models import Model
 
 
-# In[18]:
 
 
 input1 = lyr.Input(X1_train.shape[1:])
@@ -183,7 +165,6 @@ model.compile(loss='binary_crossentropy', optimizer='adam')
 model.summary()
 
 
-# In[19]:
 
 
 model.fit([X1_train, X2_train], y_train, 
@@ -191,34 +172,29 @@ model.fit([X1_train, X2_train], y_train,
           batch_size=128, epochs=6, verbose=2)
 
 
-# In[20]:
 
 
 features_model = Model([input1, input2], merge_layer)
 features_model.compile(loss='mse', optimizer='adam')
 
 
-# In[21]:
 
 
 F_train = features_model.predict([X1_train, X2_train], batch_size=128)
 F_val = features_model.predict([X1_val, X2_val], batch_size=128)
 
 
-# In[22]:
 
 
 import xgboost as xgb
 
 
-# In[23]:
 
 
 dTrain = xgb.DMatrix(F_train, label=y_train)
 dVal = xgb.DMatrix(F_val, label=y_val)
 
 
-# In[24]:
 
 
 xgb_params = {
@@ -236,26 +212,22 @@ bst = xgb.train(xgb_params, dTrain, 1000,  [(dTrain,'train'), (dVal,'val')],
                 verbose_eval=10, early_stopping_rounds=10)
 
 
-# In[25]:
 
 
 X1_test = create_padded_seqs(df_all[df_all['test_id'].notnull()]['question1'])
 X2_test = create_padded_seqs(df_all[df_all['test_id'].notnull()]['question2'])
 
 
-# In[26]:
 
 
 F_test = features_model.predict([X1_test, X2_test], batch_size=128)
 
 
-# In[27]:
 
 
 dTest = xgb.DMatrix(F_test)
 
 
-# In[28]:
 
 
 df_sub = pd.DataFrame({
@@ -264,13 +236,11 @@ df_sub = pd.DataFrame({
     }).set_index('test_id')
 
 
-# In[29]:
 
 
 df_sub.head()
 
 
-# In[30]:
 
 
 df_sub.to_csv("submission.csv")

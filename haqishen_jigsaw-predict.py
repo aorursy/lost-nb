@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 debug = False
 
 
-# In[2]:
 
 
 import time
@@ -17,7 +15,6 @@ package_dir = "../input/pytorchpretrainedberthaqishen/pytorch-pretrained-bert/py
 sys.path = [package_dir] + sys.path
 
 
-# In[3]:
 
 
 import os
@@ -58,7 +55,6 @@ device = torch.device('cuda')
 print('Import done! Time past %.2f secs' % (time.time() - start_time))
 
 
-# In[4]:
 
 
 # Pandas multiprocessing
@@ -75,7 +71,6 @@ def apply_by_multiprocessing(df, func, **kwargs):
     return pd.concat(list(result))
 
 
-# In[5]:
 
 
 class BertForJigsaw(BertPreTrainedModel):
@@ -145,7 +140,6 @@ class XLNetForJigSaw(XLNetPreTrainedModel):
         return self.linear(pooled_output)
 
 
-# In[6]:
 
 
 def convert_line(row, max_seq_length, tokenizer, model_name='bert'):
@@ -181,7 +175,6 @@ def convert_line(row, max_seq_length, tokenizer, model_name='bert'):
     return input_ids, input_mask, segment_ids, label
 
 
-# In[7]:
 
 
 def preprocess(x):
@@ -195,7 +188,6 @@ def preprocess(x):
     return x
 
 
-# In[8]:
 
 
 def get_input_data(test_data):
@@ -218,7 +210,6 @@ def get_input_data(test_data):
 print('Def functions done! Time past %.2f secs' % (time.time() - start_time))
 
 
-# In[9]:
 
 
 print('Loading data...')
@@ -232,7 +223,6 @@ df['comment_text'] = apply_by_multiprocessing(df['comment_text'], preprocess, wo
 print('Done! Time past %.2f secs' % (time.time() - start_time))
 
 
-# In[10]:
 
 
 try:
@@ -281,7 +271,6 @@ except:
     traceback.print_exc()
 
 
-# In[11]:
 
 
 try:
@@ -330,7 +319,6 @@ except:
     traceback.print_exc()
 
 
-# In[12]:
 
 
 try:
@@ -383,7 +371,6 @@ except:
     traceback.print_exc()
 
 
-# In[13]:
 
 
 try:
@@ -438,7 +425,6 @@ except:
     print('But the program is still running')
 
 
-# In[14]:
 
 
 predictions = np.zeros(df.shape[0])
@@ -460,7 +446,6 @@ try:
 except: pass
 
 
-# In[15]:
 
 
 df_prediction = pd.DataFrame({
@@ -471,7 +456,6 @@ df_prediction.to_csv('./submission.csv', index=False)
 print('Output done! Time past %.2f secs' % (time.time() - start_time))
 
 
-# In[16]:
 
 
 print(df_prediction.head(25))

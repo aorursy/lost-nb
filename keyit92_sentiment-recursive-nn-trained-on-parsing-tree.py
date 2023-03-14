@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -11,7 +10,6 @@ import os
 import gc
 
 
-# In[2]:
 
 
 DATA_ROOT = '../input/'
@@ -19,7 +17,6 @@ ORIGINAL_DATA_FOLDER = os.path.join(DATA_ROOT, 'movie-review-sentiment-analysis-
 TMP_DATA_FOLDER = os.path.join(DATA_ROOT, 'kaggle_review_sentiment_tmp_data')
 
 
-# In[3]:
 
 
 train_data_path = os.path.join(ORIGINAL_DATA_FOLDER, 'train.tsv')
@@ -31,39 +28,33 @@ test_df = pd.read_csv(test_data_path, sep="\t")
 sub_df = pd.read_csv(sub_data_path, sep=",")
 
 
-# In[4]:
 
 
 import seaborn as sns
 from sklearn.feature_extraction import text as sktext
 
 
-# In[5]:
 
 
 train_df.head()
 
 
-# In[6]:
 
 
 test_df.head()
 
 
-# In[7]:
 
 
 sub_df.head()
 
 
-# In[8]:
 
 
 overlapped = pd.merge(train_df[["Phrase", "Sentiment"]], test_df, on="Phrase", how="inner")
 overlap_boolean_mask_test = test_df['Phrase'].isin(overlapped['Phrase'])
 
 
-# In[9]:
 
 
 print("training and testing data sentences hist:")
@@ -71,7 +62,6 @@ sns.distplot(train_df['SentenceId'], kde_kws={"label": "train"})
 sns.distplot(test_df['SentenceId'], kde_kws={"label": "test"})
 
 
-# In[10]:
 
 
 print("The number of overlapped SentenceId between training and testing data:")
@@ -82,7 +72,6 @@ del train_overlapped_sentence_id_df
 gc.collect()
 
 
-# In[11]:
 
 
 pd.options.display.max_colwidth = 250
@@ -93,7 +82,6 @@ sample_sentence_group_df = train_df[train_df['SentenceId'] == sample_sentence_id
 sample_sentence_group_df
 
 
-# In[12]:
 
 
 from keras.preprocessing import sequence
@@ -101,7 +89,6 @@ import gensim
 from sklearn import preprocessing as skp
 
 
-# In[13]:
 
 
 max_len = 50
@@ -109,7 +96,6 @@ embed_size = 300
 max_features = 30000
 
 
-# In[14]:
 
 
 class TreeNode:
@@ -194,7 +180,6 @@ class TreeNode:
             raise ValueError(root.phrase)
 
 
-# In[15]:
 
 
 def build_sent_id_tree_map(raw_df):
@@ -209,7 +194,6 @@ train_trees = build_sent_id_tree_map(train_df)
 test_trees = build_sent_id_tree_map(test_df)
 
 
-# In[16]:
 
 
 def ptb_flatten_tree(root):
@@ -222,7 +206,6 @@ train_trees = dict([(sent_id, ptb_flatten_tree(tree)) for sent_id, tree in train
 test_trees = dict([(sent_id, ptb_flatten_tree(tree)) for sent_id, tree in test_trees.items()])
 
 
-# In[17]:
 
 
 train_trees_df = pd.Series(train_trees)
@@ -230,14 +213,12 @@ print(train_df[train_df['SentenceId']==4054].iloc[0]['Phrase'])
 train_trees_df[4054]
 
 
-# In[18]:
 
 
 print(train_df[train_df['Phrase']=='they are few and far between'])
 print(train_df[train_df['SentenceId']==899])
 
 
-# In[19]:
 
 
 class Node:  # a node in the tree
@@ -335,13 +316,11 @@ def loadTrees(trees_df):
     return trees
 
 
-# In[20]:
 
 
 train_data = loadTrees(train_trees_df)
 
 
-# In[21]:
 
 
 flatten = lambda l: [item for sublist in l for item in sublist]
@@ -355,7 +334,6 @@ for vo in vocab:
 index2word = {v:k for k, v in word2index.items()}
 
 
-# In[22]:
 
 
 import torch
@@ -365,7 +343,6 @@ import torch.optim as optim
 import torch.nn.functional as F
 
 
-# In[23]:
 
 
 class RNTN(nn.Module):
@@ -438,7 +415,6 @@ class RNTN(nn.Module):
         return F.log_softmax(self.W_out(propagated),1)
 
 
-# In[24]:
 
 
 import matplotlib.pyplot as plt
@@ -447,7 +423,6 @@ import random
 from collections import Counter, OrderedDict
 
 
-# In[25]:
 
 
 HIDDEN_SIZE = 30
@@ -460,7 +435,6 @@ RESCHEDULED = False
 USE_CUDA = True
 
 
-# In[26]:
 
 
 model = RNTN(word2index, HIDDEN_SIZE,5)
@@ -472,7 +446,6 @@ loss_function = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=LR)
 
 
-# In[27]:
 
 
 FloatTensor = torch.cuda.FloatTensor if USE_CUDA else torch.FloatTensor
@@ -526,20 +499,17 @@ for epoch in range(EPOCH):
             losses = []
 
 
-# In[28]:
 
 
 test_data = loadTrees(test_trees_df)
 
 
-# In[29]:
 
 
 accuracy = 0
 num_node = 0
 
 
-# In[30]:
 
 
 for test in test_data:

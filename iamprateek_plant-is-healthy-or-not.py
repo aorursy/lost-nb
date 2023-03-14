@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 import time
@@ -43,7 +41,6 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Sequential
 
 
-# In[3]:
 
 
 # load training datasets
@@ -51,20 +48,17 @@ train_df = pd.read_csv("../input/plant-pathology-2020-fgvc7/train.csv")
 IMAGE_PATH = "../input/plant-pathology-2020-fgvc7/images/"
 
 
-# In[4]:
 
 
 # check peak of the data
 train_df.head()
 
 
-# In[5]:
 
 
 get_ipython().run_cell_magic('time', '', 'size = []\nfiles = gb.glob(pathname= str("../input/plant-pathology-2020-fgvc7/images/*.jpg"))\nfor file in files: \n    image = plt.imread(file)\n    size.append(image.shape)\npd.Series(size).value_counts()')
 
 
-# In[6]:
 
 
 # check class distribution
@@ -74,7 +68,6 @@ print(train_df['rust'].value_counts())
 print(train_df['scab'].value_counts())
 
 
-# In[7]:
 
 
 fig,ax=plt.subplots(2,2,figsize=(14,14))
@@ -95,7 +88,6 @@ ax[1,1].set_xlabel('Scab',size=9)
 ax[1,1].set_ylabel('Count',size=9)
 
 
-# In[8]:
 
 
 healthy = list(train_df[train_df["healthy"]==1].image_id)
@@ -104,7 +96,6 @@ rust = list(train_df[train_df["rust"]==1].image_id)
 scab = list(train_df[train_df["scab"]==1].image_id)
 
 
-# In[9]:
 
 
 # helper function to show image
@@ -114,35 +105,30 @@ def load_image(filenames):
     plt.imshow(image) 
 
 
-# In[10]:
 
 
 # show health image
 load_image(healthy)
 
 
-# In[11]:
 
 
 # show image with multiple diseases
 load_image(multiple_diseases)
 
 
-# In[12]:
 
 
 # show image with rust
 load_image(rust)
 
 
-# In[13]:
 
 
 # show image with scab
 load_image(scab)
 
 
-# In[14]:
 
 
 GCS_DS_PATH = KaggleDatasets().get_gcs_path()
@@ -150,7 +136,6 @@ GCS_DS_PATH = KaggleDatasets().get_gcs_path()
 get_ipython().system('gsutil ls $GCS_DS_PATH')
 
 
-# In[15]:
 
 
 def format_path_gcs(st):
@@ -164,7 +149,6 @@ X_train, X_val, y_train, y_val =train_test_split(X, y, test_size=0.1, random_sta
 print('done!')
 
 
-# In[16]:
 
 
 print('Shape of X_train : ',X_train.shape)
@@ -174,7 +158,6 @@ print('Shape of X_val : ',X_val.shape)
 print('Shape of y_val : ',y_val.shape)
 
 
-# In[17]:
 
 
 # configure TPU settings
@@ -195,14 +178,12 @@ else:
 print("REPLICAS: ", strategy.num_replicas_in_sync)
 
 
-# In[18]:
 
 
 BATCH_SIZE = 4 * strategy.num_replicas_in_sync
 STEPS_PER_EPOCH = y_train.shape[0] // BATCH_SIZE
 
 
-# In[19]:
 
 
 # helper functions for image preprocessing and augmentation
@@ -229,7 +210,6 @@ def data_augment(image, label=None):
         return image, label
 
 
-# In[20]:
 
 
 train_dataset = (
@@ -252,7 +232,6 @@ valid_dataset = (
 )
 
 
-# In[21]:
 
 
 # custom learning rate function
@@ -270,7 +249,6 @@ def build_lrfn(lr_start=0.00001, lr_max=0.00005,lr_min=0.00001, lr_rampup_epochs
     return lrfn
 
 
-# In[22]:
 
 
 lrfn = build_lrfn()
@@ -279,7 +257,6 @@ lr_schedule = tf.keras.callbacks.LearningRateScheduler(lrfn, verbose=1)
 EarlyStopping=tf.keras.callbacks.EarlyStopping(monitor="val_loss",patience=10,verbose=True, mode="min")
 
 
-# In[23]:
 
 
 # define model
@@ -296,7 +273,6 @@ def Eff_B7_NS():
     return model_EfficientNetB7
 
 
-# In[24]:
 
 
 with strategy.scope():
@@ -305,7 +281,6 @@ with strategy.scope():
 model_Eff_B7.summary()
 
 
-# In[25]:
 
 
 # train the model
@@ -316,7 +291,6 @@ EfficientNetB7 = model_Eff_B7.fit(train_dataset,
                     validation_data=valid_dataset)
 
 
-# In[26]:
 
 
 # evaluate the model
@@ -335,7 +309,6 @@ ax2.set_title('Acurracy')
 ax2.set_xlabel('epoch')
 
 
-# In[27]:
 
 
 TEST_PATH = "../input/plant-pathology-2020-fgvc7/test.csv"
@@ -345,13 +318,11 @@ sub = pd.read_csv(SUB_PATH)
 test_data = pd.read_csv(TEST_PATH)
 
 
-# In[28]:
 
 
 test_paths = test_data.image_id.apply(format_path_gcs).values
 
 
-# In[29]:
 
 
 test_dataset = (
@@ -361,7 +332,6 @@ test_dataset = (
 )
 
 
-# In[30]:
 
 
 # make submission file

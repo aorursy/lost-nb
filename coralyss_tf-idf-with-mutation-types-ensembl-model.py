@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import pandas as pd
@@ -15,7 +14,6 @@ import xgboost as xgb
 from xgboost import XGBClassifier
 
 
-# In[ ]:
 
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -27,7 +25,6 @@ def train_and_evaluate(clf, X_train, y_train):
     print ('Average coefficient of determination using 5-fold cross validation:', np.mean(scores))
 
 
-# In[ ]:
 
 
 train_variants_df = pd.read_csv("../input/training_variants")
@@ -41,13 +38,11 @@ print("Train and Test text shape : ",train_text_df.shape, test_text_df.shape)
 train_merge_df = pd.concat([train_text_df,train_variants_df],axis=1)
 
 
-# In[ ]:
 
 
 train ,test = train_test_split(train_merge_df,test_size=0.2) 
 
 
-# In[ ]:
 
 
 X_train = train['Text'].values
@@ -58,7 +53,6 @@ X=train_merge_df['Text'].values
 y=train_merge_df['Class'].values
 
 
-# In[ ]:
 
 
 tfidf = TfidfVectorizer(
@@ -68,7 +62,6 @@ tfidf = TfidfVectorizer(
 ).fit(X)
 
 
-# In[ ]:
 
 
 X_train_text = tfidf.transform(X_train)
@@ -76,7 +69,6 @@ X_test_text = tfidf.transform(X_test)
 X_all_text=tfidf.transform(X)
 
 
-# In[ ]:
 
 
 # add feature name and make as df
@@ -86,7 +78,6 @@ test=X_all_text.todense()
 X_all_text_name=pd.DataFrame(test,columns=feature_names)
 
 
-# In[ ]:
 
 
 
@@ -95,14 +86,12 @@ clf.fit(X_train_text,y_train)
 clf.score(X_test_text,y_test)
 
 
-# In[ ]:
 
 
 sgd=SGDClassifier(loss='hinge',penalty='l1',n_iter=50,alpha=0.00001,fit_intercept=True)
 train_and_evaluate(sgd, X_all_text, y_train)
 
 
-# In[ ]:
 
 
 # Variation type that has highest number of occurrences in each class
@@ -117,13 +106,11 @@ for i in range(3):
         print sorted_gene_group_top_7
 
 
-# In[ ]:
 
 
 Train_all=pd.concat([train_variants_df,X_all_text_name],axis=1)
 
 
-# In[ ]:
 
 
 Train_all['var_del']=Train_all['Variation'].map(lambda s: 1 if 'Deletion' in s or 'del' in s else 0)
@@ -138,7 +125,6 @@ Train_all['var_dup']=Train_all['Variation'].map(lambda s: 1 if 'dup' in s else 0
 Train_all["var_simple"] = Train_all.Variation.str.contains(r'^[A-Z]\d{1,7}[A-Z]',case=0)
 
 
-# In[ ]:
 
 
 
@@ -146,19 +132,16 @@ X_all=Train_all.drop(['ID','Class'],axis=1)
 y_all=Train_all['Class']
 
 
-# In[ ]:
 
 
 X_all_cat = pd.get_dummies(X_all, prefix=['Gene','Variation'] )
 
 
-# In[ ]:
 
 
 train_all,test_all = train_test_split(X_all_cat.as_matrix(),test_size=0.2) 
 
 
-# In[ ]:
 
 
 svc=LinearSVC(penalty='l1',dual=False,tol=1e-3)
@@ -171,39 +154,33 @@ xgb = XGBClassifier(
     )
 
 
-# In[ ]:
 
 
 from sklearn.ensemble import VotingClassifier
 eclf = VotingClassifier(estimators=[('svc', svc), ('sgd', sgd), ('xgb', xgb)], voting='hard',n_jobs=-1)
 
 
-# In[ ]:
 
 
 eclf.fit(X_all_cat.as_matrix(),y_all)
 
 
-# In[ ]:
 
 
 train_and_evaluate(eclf, X_all_cat.as_matrix(), y_all)
 
 
-# In[ ]:
 
 
 train,test = X_all_cat.align(Text_X_all_cat, join='inner', axis=1)
 
 
-# In[ ]:
 
 
 eclf_align = VotingClassifier(estimators=[('svc', svc), ('sgd', sgd), ('xgb', xgb)], voting='hard',n_jobs=-1)
 eclf_align=eclf_align.fit(train,y_all)
 
 
-# In[ ]:
 
 
 prediction_test=eclf_align.predict(test)

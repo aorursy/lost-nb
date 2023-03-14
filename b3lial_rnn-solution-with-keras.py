@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import gc
@@ -22,7 +21,6 @@ from subprocess import check_output
 print(check_output(["ls", "../input"]).decode("utf8"))
 
 
-# In[2]:
 
 
 def rmsle(y, y_pred):
@@ -32,7 +30,6 @@ def rmsle(y, y_pred):
 #Source: https://www.kaggle.com/marknagelberg/rmsle-function
 
 
-# In[3]:
 
 
 #LOAD DATA
@@ -49,7 +46,6 @@ print(test.shape)
 test_len = test.shape[0]
 
 
-# In[4]:
 
 
 #HANDLE MISSING VALUES
@@ -66,13 +62,11 @@ print(train.shape)
 print(test.shape)
 
 
-# In[5]:
 
 
 train.head(3)
 
 
-# In[6]:
 
 
 #PROCESS CATEGORICAL DATA
@@ -91,7 +85,6 @@ del le
 train.head(3)
 
 
-# In[7]:
 
 
 #PROCESS TEXT: RAW
@@ -115,7 +108,6 @@ test["seq_name"] = tok_raw.texts_to_sequences(test.name.str.lower())
 train.head(3)
 
 
-# In[8]:
 
 
 #SEQUENCES VARIABLES ANALYSIS
@@ -129,25 +121,21 @@ print("max item desc seq "+str(max_seq_item_description))
 print("max category name seq "+str(max_seq_category_name))
 
 
-# In[9]:
 
 
 train.seq_name.apply(lambda x: len(x)).hist()
 
 
-# In[10]:
 
 
 train.seq_item_description.apply(lambda x: len(x)).hist()
 
 
-# In[11]:
 
 
 train.seq_category_name.apply(lambda x: len(x)).hist()
 
 
-# In[12]:
 
 
 #DEV TESTS
@@ -157,7 +145,6 @@ print(dtrain.shape)
 print(dvalid.shape)
 
 
-# In[13]:
 
 
 #EMBEDDINGS MAX VALUE
@@ -177,7 +164,6 @@ MAX_CONDITION = np.max([train.item_condition_id.max(),
                         test.item_condition_id.max()])+1
 
 
-# In[14]:
 
 
 #KERAS DATA DEFINITION
@@ -202,7 +188,6 @@ X_valid = get_keras_data(dvalid)
 X_test = get_keras_data(test)
 
 
-# In[15]:
 
 
 #KERAS MODEL DEFINITION
@@ -271,7 +256,6 @@ def get_model():
     return model
 
 
-# In[16]:
 
 
 def eval_model(model):
@@ -284,7 +268,6 @@ def eval_model(model):
     return v_rmsle
 
 
-# In[17]:
 
 
 exp_decay = lambda init, fin, steps: (init/fin)**(1/(steps-1)) - 1
@@ -294,7 +277,6 @@ del train
 gc.collect()
 
 
-# In[18]:
 
 
 #FITTING THE MODEL
@@ -317,7 +299,6 @@ history = model.fit(X_train, dtrain.target
                     )
 
 
-# In[19]:
 
 
 #EVALUATE MODEL ON DEV TESTS
@@ -330,7 +311,6 @@ log_subname = '_'.join(['ep', str(epochs),
                     'dr', str(dr)])
 
 
-# In[20]:
 
 
 #CREATE PREDICTIONS
@@ -341,7 +321,6 @@ submission = test[["test_id"]][:test_len]
 submission["price"] = preds[:test_len]
 
 
-# In[21]:
 
 
 submission.to_csv("sample_submission.csv", index=False)

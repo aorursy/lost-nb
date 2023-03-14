@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -29,7 +28,6 @@ pd.set_option('display.max_columns', 1000)
 pd.set_option('display.max_rows', 500)
 
 
-# In[2]:
 
 
 
@@ -41,19 +39,16 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[3]:
 
 
 test = pd.read_csv('../input/data-science-bowl-2019/test.csv')
 
 
-# In[4]:
 
 
 test.head()
 
 
-# In[5]:
 
 
 model_bm = CatBoostClassifier()
@@ -63,7 +58,6 @@ model_cs = CatBoostClassifier()
 model_ms = CatBoostClassifier()
 
 
-# In[6]:
 
 
 model_bm.load_model("../input/trainedmodels/classifier_bm")
@@ -73,7 +67,6 @@ model_cs.load_model("../input/trainedmodels/classifier_cs")
 model_ms.load_model("../input/trainedmodels/classifier_ms")
 
 
-# In[7]:
 
 
 def to_category(df, c_list):
@@ -97,13 +90,11 @@ def to_float32(df,c_list):
     return df
 
 
-# In[ ]:
 
 
 
 
 
-# In[8]:
 
 
 test = to_int32(test,['event_code','event_count','game_time'])
@@ -171,19 +162,16 @@ submit_df.reset_index(level=0, inplace=True)
 submit_df.columns= ['installation_id','accuracy_group']
 
 
-# In[9]:
 
 
 submit_df.head(10)
 
 
-# In[10]:
 
 
 submit_df.to_csv('submission.csv',index=False)
 
 
-# In[ ]:
 
 
 

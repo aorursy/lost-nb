@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,13 +21,11 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 ls ../input/firstsubmission
 
 
-# In[3]:
 
 
 import numpy as np 
@@ -45,13 +42,11 @@ new_result['label'] = new_result['label'].astype('int64')
 new_result.to_csv('submission.csv', index=False)
 
 
-# In[4]:
 
 
 ls
 
 
-# In[5]:
 
 
 import pandas as pd
@@ -59,19 +54,16 @@ submission = pd.read_csv("../input/firstsubmission/submission.csv")
 submission.head()
 
 
-# In[6]:
 
 
 import pandas as pd
 
 
-# In[7]:
 
 
 ls
 
 
-# In[8]:
 
 
 submitted = pd.read_csv('../input/firstsubmission/submission.csv')
@@ -81,13 +73,11 @@ submission.sort_values('filename').to_csv('submission.csv', index=False)
 submission.to_csv('submission.csv', index=False)
 
 
-# In[9]:
 
 
 ls
 
 
-# In[10]:
 
 
 
@@ -104,7 +94,6 @@ for line in file:
 # file2.close()
 
 
-# In[11]:
 
 
 
@@ -125,7 +114,6 @@ for i, row in enumerate(original.values):
 original.to_csv('newsubmission.csv', index=False)
 
 
-# In[12]:
 
 
 from pandas import *
@@ -143,13 +131,11 @@ for x, rows in enumerate(submitted.values):
     print(lable)
 
 
-# In[13]:
 
 
 ls
 
 
-# In[ ]:
 
 
 

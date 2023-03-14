@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
 import numpy as np
 
 
-# In[2]:
 
 
 data = pd.DataFrame({
@@ -18,37 +16,31 @@ data = pd.DataFrame({
 })
 
 
-# In[3]:
 
 
 data.y.value_counts()
 
 
-# In[4]:
 
 
 data[data.y == 1].X1.value_counts()
 
 
-# In[5]:
 
 
 data[data.y == 1].X2.value_counts()
 
 
-# In[6]:
 
 
 data[data.y == -1].X1.value_counts()
 
 
-# In[7]:
 
 
 data[data.y == -1].X2.value_counts()
 
 
-# In[8]:
 
 
 import matplotlib.pyplot as plt
@@ -57,7 +49,6 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 from scipy.stats import norm
 
 
-# In[9]:
 
 
 x = np.linspace(-5, 5)
@@ -66,7 +57,6 @@ plt.plot(x, y)
 plt.vlines(ymin=0, ymax=0.4, x=1, colors=['red'])
 
 
-# In[10]:
 
 
 train = pd.read_csv('../input/train.csv', index_col=0)
@@ -76,7 +66,6 @@ train.drop('target', axis=1, inplace=True)
 train.shape, target.shape, test.shape
 
 
-# In[11]:
 
 
 pos_idx = (target == 1)
@@ -94,7 +83,6 @@ stats_df = pd.DataFrame(stats, columns=['pos_mean', 'pos_sd', 'neg_mean', 'neg_s
 stats_df.head()
 
 
-# In[12]:
 
 
 # priori probability
@@ -106,20 +94,17 @@ def get_proba(x):
     return (ppos * norm.pdf(x, loc=stats_df.pos_mean, scale=stats_df.pos_sd).prod()) /           (pneg * norm.pdf(x, loc=stats_df.neg_mean, scale=stats_df.neg_sd).prod())
 
 
-# In[13]:
 
 
 tr_pred = train.apply(get_proba, axis=1)
 
 
-# In[14]:
 
 
 from sklearn.metrics import roc_auc_score
 roc_auc_score(target, tr_pred)
 
 
-# In[15]:
 
 
 plt.figure(figsize=(20, 10))
@@ -133,13 +118,11 @@ plt.plot(np.linspace(0, 20), norm.pdf(np.linspace(0, 20), loc=stats_df.loc[0, 'n
 plt.title('target==0')
 
 
-# In[16]:
 
 
 from scipy.stats.kde import gaussian_kde
 
 
-# In[17]:
 
 
 plt.figure(figsize=(20, 10))
@@ -155,7 +138,6 @@ plt.plot(np.linspace(0, 20), kde(np.linspace(0, 20)))
 plt.title('target==0')
 
 
-# In[18]:
 
 
 stats_df['pos_kde'] = None
@@ -165,7 +147,6 @@ for i, col in enumerate(train.columns):
     stats_df.loc[i, 'neg_kde'] = gaussian_kde(train.loc[neg_idx, col].values)
 
 
-# In[19]:
 
 
 def get_proba2(x):
@@ -175,13 +156,11 @@ def get_proba2(x):
     return proba
 
 
-# In[20]:
 
 
 get_ipython().run_cell_magic('time', '', 'get_proba2(train.iloc[0].values)')
 
 
-# In[21]:
 
 
 def get_col_prob(df, coli, bin_num=100):
@@ -195,7 +174,6 @@ def get_col_prob(df, coli, bin_num=100):
     return bins.map(dense.pos).astype(float) / bins.map(dense.neg).astype(float)
 
 
-# In[22]:
 
 
 tr_pred = ppos / pneg
@@ -203,13 +181,11 @@ for i in range(200):
     tr_pred *= get_col_prob(train, i)
 
 
-# In[23]:
 
 
 roc_auc_score(target, tr_pred)
 
 
-# In[24]:
 
 
 te_pred = ppos / pneg
@@ -217,7 +193,6 @@ for i in range(200):
     te_pred *= get_col_prob(test, i)
 
 
-# In[25]:
 
 
 pd.DataFrame({

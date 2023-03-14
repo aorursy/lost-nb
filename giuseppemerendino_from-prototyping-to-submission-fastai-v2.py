@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install torch torchvision feather-format kornia pyarrow --upgrade   > /dev/null')
 get_ipython().system('pip install git+https://github.com/fastai/fastai2 > /dev/null')
 
 
-# In[2]:
 
 
 from fastai2.basics           import *
@@ -21,7 +19,6 @@ np.set_printoptions(linewidth=120)
 matplotlib.rcParams['image.cmap'] = 'bone'
 
 
-# In[3]:
 
 
 path = Path('../input/rsna-intracranial-hemorrhage-detection/rsna-intracranial-hemorrhage-detection/')
@@ -34,7 +31,6 @@ path_meta = path_xtra/'meta'/'meta'
 path_jpg = path_xtra/'train_jpg'/'train_jpg'
 
 
-# In[4]:
 
 
 df_comb = pd.read_feather(path_meta/'comb.fth').set_index('SOPInstanceUID')
@@ -43,7 +39,6 @@ df_samp = pd.read_feather(path_meta/'wgt_sample.fth').set_index('SOPInstanceUID'
 bins = (path_meta/'bins.pkl').load()
 
 
-# In[5]:
 
 
 set_seed(42)
@@ -52,7 +47,6 @@ pat_mask = np.random.random(len(patients))<0.8
 pat_trn = patients[pat_mask]
 
 
-# In[6]:
 
 
 def split_data(df):
@@ -63,7 +57,6 @@ def split_data(df):
 splits = split_data(df_samp)
 
 
-# In[7]:
 
 
 df_trn = df_samp.iloc[splits[0]]
@@ -71,7 +64,6 @@ p1 = L.range(df_samp)[df_samp.PatientID==df_trn.PatientID[0]]
 assert len(p1) == len(set(p1) & set(splits[0]))
 
 
-# In[8]:
 
 
 def filename(o): return os.path.splitext(os.path.basename(o))[0]
@@ -81,14 +73,12 @@ fn = fns[0]
 fn
 
 
-# In[9]:
 
 
 def fn2image(fn): return PILCTScan.create((path_jpg/fn).with_suffix('.jpg'))
 fn2image(fn).show();
 
 
-# In[10]:
 
 
 htypes = ['any','epidural','intraparenchymal','intraventricular','subarachnoid','subdural']
@@ -96,13 +86,11 @@ def fn2label(fn): return df_comb.loc[fn][htypes].values.astype(np.float32)
 fn2label(fn)
 
 
-# In[11]:
 
 
 bs,nw = 128,4
 
 
-# In[12]:
 
 
 tfms = [[fn2image], [fn2label,EncodedMultiCategorize(htypes)]]
@@ -112,14 +100,12 @@ aug = aug_transforms(p_lighting=0.)
 batch_tfms = [IntToFloatTensor(), nrm, *aug]
 
 
-# In[13]:
 
 
 def get_data(bs, sz):
     return dsrc.dataloaders(bs=bs, num_workers=nw,after_item=[ToTensor],after_batch=batch_tfms+[AffineCoordTfm(size=sz)])
 
 
-# In[14]:
 
 
 dbch = get_data(128, 96)
@@ -128,7 +114,6 @@ dbch.show_batch(max_n=4, figsize=(9,6))
 xb.mean(),xb.std(),xb.shape,len(dbch.train_ds)
 
 
-# In[15]:
 
 
 def accuracy_any(inp, targ, thresh=0.5, sigmoid=True):
@@ -137,7 +122,6 @@ def accuracy_any(inp, targ, thresh=0.5, sigmoid=True):
     return ((inp>thresh)==targ.bool()).float().mean()
 
 
-# In[16]:
 
 
 def get_loss(scale=1.0):
@@ -146,7 +130,6 @@ def get_loss(scale=1.0):
         is_2d=False, activation=torch.sigmoid)
 
 
-# In[17]:
 
 
 loss_func = get_loss(0.14*2)
@@ -154,7 +137,6 @@ opt_func = partial(Adam, wd=0.01, eps=1e-3)
 metrics=[accuracy_multi,accuracy_any]
 
 
-# In[18]:
 
 
 def get_learner():
@@ -163,19 +145,16 @@ def get_learner():
     return learn.to_fp16()
 
 
-# In[19]:
 
 
 learn = get_learner()
 
 
-# In[20]:
 
 
 lrf = learn.lr_find()
 
 
-# In[21]:
 
 
 def do_fit(bs,sz,epochs,lr, freeze=True):
@@ -188,26 +167,22 @@ def do_fit(bs,sz,epochs,lr, freeze=True):
     learn.fit_one_cycle(epochs, slice(lr))
 
 
-# In[22]:
 
 
 do_fit(128, 96, 4, 1e-2)
 
 
-# In[23]:
 
 
 do_fit(128, 160, 3, 1e-3)
 
 
-# In[24]:
 
 
 fns = L(list(df_comb.fname)).map(filename)
 splits = split_data(df_comb)
 
 
-# In[25]:
 
 
 def fix_pxrepr(dcm):
@@ -219,7 +194,6 @@ def fix_pxrepr(dcm):
     dcm.RescaleIntercept = -1000
 
 
-# In[26]:
 
 
 def dcm_tfm(fn): 
@@ -235,7 +209,6 @@ def dcm_tfm(fn):
     return TensorImage(px.to_3chan(dicom_windows.brain,dicom_windows.subdural, bins=bins))
 
 
-# In[27]:
 
 
 dcm = dcm_tfm(fns[0])
@@ -243,7 +216,6 @@ show_images(dcm)
 dcm.shape
 
 
-# In[28]:
 
 
 tfms = [[dcm_tfm], [fn2label,EncodedMultiCategorize(htypes)]]
@@ -251,14 +223,12 @@ dsrc = Datasets(fns, tfms, splits=splits)
 batch_tfms = [nrm, *aug]
 
 
-# In[29]:
 
 
 def get_data(bs, sz):
     return dsrc.dataloaders(bs=bs, num_workers=nw, after_batch=batch_tfms+[AffineCoordTfm(size=sz)])
 
 
-# In[30]:
 
 
 dbch = get_data(64,256)
@@ -267,13 +237,11 @@ dbch.show_batch(max_n=4)
 x.shape
 
 
-# In[31]:
 
 
 learn.loss_func = get_loss(1.0)
 
 
-# In[32]:
 
 
 def fit_tune(bs, sz, epochs, lr):
@@ -284,45 +252,38 @@ def fit_tune(bs, sz, epochs, lr):
     learn.fit_one_cycle(epochs, slice(lr))
 
 
-# In[33]:
 
 
 fit_tune(64, 256, 2, 1e-3)
 
 
-# In[34]:
 
 
 test_fns = [(path_tst/f'{filename(o)}.dcm').absolute() for o in df_tst.fname.values]
 
 
-# In[35]:
 
 
 testFns = L(list(test_fns)).map(filename)
 tst = test_set(dsrc, testFns)
 
 
-# In[36]:
 
 
 learn.dls.device
 
 
-# In[37]:
 
 
 next(learn.model.parameters()).is_cuda
 
 
-# In[38]:
 
 
 #preds,targs = learn.get_preds(dl=tst.tls)
 preds_clipped = preds.clamp(.0001, .999)
 
 
-# In[39]:
 
 
 ids = []
@@ -335,7 +296,6 @@ for idx,pred in zip(df_tst.index, preds_clipped):
         labels.append(predicted_probability)
 
 
-# In[40]:
 
 
 df_csv = pd.DataFrame({'ID': ids, 'Label': labels})
@@ -343,14 +303,12 @@ df_csv.to_csv(f'submission.csv', index=False)
 df_csv.head()
 
 
-# In[41]:
 
 
 from IPython.display import FileLink, FileLinks
 FileLink('submission.csv')
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -11,20 +10,17 @@ import json
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 ann_file = '../input/train2019.json'
 
 
-# In[3]:
 
 
 with open(ann_file) as data_file:
         ann_data = json.load(data_file)
 
 
-# In[4]:
 
 
 import torch.utils.data as data
@@ -36,7 +32,6 @@ import random
 import numpy as np
 
 
-# In[5]:
 
 
 class INAT(data.Dataset):
@@ -110,7 +105,6 @@ class INAT(data.Dataset):
         return len(self.imgs)
 
 
-# In[6]:
 
 
 def default_loader(path):
@@ -142,19 +136,16 @@ def load_taxonomy(ann_data, tax_levels, classes):
     return taxonomy, classes_taxonomic
 
 
-# In[7]:
 
 
 trl=INAT(root='../input/train_val2019/', ann_file=ann_file)
 
 
-# In[8]:
 
 
 #next(iter(trl))
 
 
-# In[9]:
 
 
 import torch
@@ -486,7 +477,6 @@ class BasicConv2d(nn.Module):
         return F.relu(x, inplace=True)
 
 
-# In[10]:
 
 
 import os
@@ -535,7 +525,6 @@ best_prec3 = 0.0  # store current best top 3
 
 
 
-# In[11]:
 
 
 num_classes = 1010
@@ -546,7 +535,6 @@ model.aux_logits = False
 model = model.cuda()
 
 
-# In[12]:
 
 
 criterion = nn.CrossEntropyLoss().cuda()
@@ -555,7 +543,6 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001)#,
 #                                weight_decay=0.1)
 
 
-# In[13]:
 
 
 # optionally resume from a checkpoint
@@ -573,7 +560,6 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001)#,
    #         print("=> no checkpoint found at '{}'".format(args.resume))
 
 
-# In[14]:
 
 
 train_file = '../input/train2019.json'
@@ -581,28 +567,24 @@ val_file = '../input/val2019.json'
 test_file = '../input/test2019.json'
 
 
-# In[15]:
 
 
 with open(train_file) as data_file:
         train_data = json.load(data_file)
 
 
-# In[16]:
 
 
 with open(val_file) as data_file:
         val_data = json.load(data_file)
 
 
-# In[17]:
 
 
 with open(test_file) as data_file:
         test_data = json.load(data_file)
 
 
-# In[18]:
 
 
 cudnn.benchmark = True
@@ -620,7 +602,6 @@ val_loader = torch.utils.data.DataLoader(val_dataset,
               num_workers=0, pin_memory=True)
 
 
-# In[19]:
 
 
 test_dataset = INAT(root='../input/test2019/', ann_file=test_file,
@@ -631,20 +612,17 @@ test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=4,
                    shuffle=False, num_workers=0, pin_memory=True)
 
 
-# In[20]:
 
 
 evaluate = True
 save_preds = True
 
 
-# In[21]:
 
 
 op_file_name = 'wtf'
 
 
-# In[22]:
 
 
 if evaluate:
@@ -658,13 +636,11 @@ if evaluate:
             #return
 
 
-# In[23]:
 
 
 print_freq = 10 
 
 
-# In[24]:
 
 
 def save_checkpoint(state, is_best, filename='checkpoint.pth.tar'):
@@ -715,7 +691,6 @@ def accuracy(output, target, topk=(1,)):
     return res
 
 
-# In[25]:
 
 
 def train(train_loader, model, criterion, optimizer, epoch):
@@ -771,7 +746,6 @@ def train(train_loader, model, criterion, optimizer, epoch):
                 data_time=data_time, loss=losses, top1=top1, top3=top3))
 
 
-# In[26]:
 
 
 def validate(val_loader, model, criterion, save_preds=False):
@@ -833,7 +807,6 @@ def validate(val_loader, model, criterion, save_preds=False):
         return top3.avg
 
 
-# In[27]:
 
 
 
@@ -862,25 +835,21 @@ for epoch in range(start_epoch, epochs):
     }, is_best)
 
 
-# In[28]:
 
 
 get_ipython().system('wget http://vision.caltech.edu/~macaodha/inat2018/iNat_2018_InceptionV3.pth.tar')
 
 
-# In[29]:
 
 
 
 
 
-# In[29]:
 
 
 sub=pd.read_csv('../input/kaggle_sample_submission.csv')
 
 
-# In[30]:
 
 
 def test(test_loader, model, criterion, save_preds=True):
@@ -925,13 +894,11 @@ def test(test_loader, model, criterion, save_preds=True):
         ttop3.update(tprec3[0], input.size(0))
 
 
-# In[31]:
 
 
 wat = test(test_loader, model, criterion, save_preds=True)
 
 
-# In[32]:
 
 
 for epoch in range(start_epoch, 10):
@@ -944,13 +911,11 @@ for epoch in range(start_epoch, 10):
     prec3 = test(test_loader, model, criterion, save_preds=True)
 
 
-# In[33]:
 
 
 prec3.shape
 
 
-# In[34]:
 
 
 import torchvision
@@ -958,7 +923,6 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[35]:
 
 
 def imshow(img):
@@ -978,19 +942,16 @@ imshow(torchvision.utils.make_grid(images))
 print(' '.join('%5s' % labels[j] for j in range(4)))
 
 
-# In[36]:
 
 
 classes = trl.classes
 
 
-# In[37]:
 
 
 outputs = model(images.cuda())
 
 
-# In[38]:
 
 
 _, predicted = torch.max(outputs, 1)
@@ -999,7 +960,6 @@ print('Predicted: ', ' '.join('%5s' % classes[predicted[j]]
                               for j in range(4)))
 
 
-# In[39]:
 
 
 psz=[]
@@ -1011,25 +971,21 @@ with torch.no_grad():
         psz.append(predicted)
 
 
-# In[40]:
 
 
 outputs.shape
 
 
-# In[41]:
 
 
 
 
 
-# In[41]:
 
 
 
 
 
-# In[41]:
 
 
 

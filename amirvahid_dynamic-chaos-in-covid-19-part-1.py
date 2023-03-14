@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Import libraries
@@ -36,26 +35,22 @@ np.random.seed(RANDOM_SEED)
 torch.manual_seed(RANDOM_SEED)
 
 
-# In[2]:
 
 
 df_train = pd.read_csv("../input/covid19-local-us-ca-forecasting-week-1/ca_train.csv")
 df_test = pd.read_csv("../input/covid19-local-us-ca-forecasting-week-1/ca_test.csv")
 
 
-# In[3]:
 
 
 df_train.head()
 
 
-# In[4]:
 
 
 df_test.head()
 
 
-# In[5]:
 
 
 train_drop_cols = df_train.columns[:-3]
@@ -65,32 +60,27 @@ train = df_train.copy().drop(train_drop_cols, axis=1)
 test = df_test.copy().drop(test_drop_cols, axis=1)
 
 
-# In[6]:
 
 
 train.head()
 
 
-# In[7]:
 
 
 test.head()
 
 
-# In[8]:
 
 
 df = train
 df.head()
 
 
-# In[9]:
 
 
 df.isnull().sum().sum()
 
 
-# In[10]:
 
 
 train.index = pd.to_datetime(train['Date'])
@@ -100,79 +90,67 @@ test.index = pd.to_datetime(test['Date'])
 test.drop(['Date'], axis=1, inplace=True)
 
 
-# In[11]:
 
 
 train.head()
 
 
-# In[12]:
 
 
 test.head()
 
 
-# In[13]:
 
 
 daily_cases = train
 
 
-# In[14]:
 
 
 plt.plot(daily_cases['ConfirmedCases'])
 plt.title("Cumulative confirmed daily cases");
 
 
-# In[15]:
 
 
 plt.plot(daily_cases['Fatalities'])
 plt.title("Cumulative fatalities daily cases");
 
 
-# In[16]:
 
 
 daily_cases_infected = daily_cases['ConfirmedCases'].diff().fillna(daily_cases['ConfirmedCases'][0]).astype(np.int64)
 daily_cases_infected.head()
 
 
-# In[17]:
 
 
 daily_cases_fatality = daily_cases['Fatalities'].diff().fillna(daily_cases['Fatalities'][0]).astype(np.int64)
 daily_cases_fatality.head()
 
 
-# In[18]:
 
 
 plt.plot(daily_cases_infected)
 plt.title("Daily infected cases");
 
 
-# In[19]:
 
 
 plt.plot(daily_cases_fatality)
 plt.title("Daily fatality cases");
 
 
-# In[20]:
 
 
 daily_cases_infected.shape
 
 
-# In[21]:
 
 
 daily_cases_fatality.shape
 
 
-# In[22]:
 
 
 # train = train[train['ConfirmedCases'] > 0]
@@ -183,7 +161,6 @@ daily_cases_fatality.shape
 # fatality_test = test_data['Fatalities']
 
 
-# In[23]:
 
 
 train_data_infected, test_data_infected = train_test_split(daily_cases_infected, test_size=0.33, random_state=42)
@@ -194,19 +171,16 @@ infection_test = test_data_infected
 fatality_test = test_data_fatality
 
 
-# In[24]:
 
 
 train_data_infected.shape
 
 
-# In[25]:
 
 
 train_data_fatality.shape
 
 
-# In[26]:
 
 
 scaler_infection = MinMaxScaler()
@@ -227,13 +201,11 @@ fatality_test = scaler_fatality.transform(np.expand_dims(fatality_test, axis=1))
 
 
 
-# In[27]:
 
 
 fatality_test
 
 
-# In[28]:
 
 
 def create_sequences(data, seq_length):
@@ -249,7 +221,6 @@ def create_sequences(data, seq_length):
     return np.array(xs), np.array(ys)
 
 
-# In[29]:
 
 
 seq_length = 2
@@ -275,79 +246,66 @@ X_test_fatality = torch.from_numpy(X_test_fatality).float()
 y_test_fatality = torch.from_numpy(y_test_fatality).float()
 
 
-# In[30]:
 
 
 y_test_infection
 
 
-# In[31]:
 
 
 X_train_infection.shape
 
 
-# In[32]:
 
 
 X_train_fatality.shape
 
 
-# In[33]:
 
 
 X_train_infection[:2]
 
 
-# In[34]:
 
 
 X_train_fatality[:2]
 
 
-# In[35]:
 
 
 y_train_infection.shape
 
 
-# In[36]:
 
 
 y_train_fatality.shape
 
 
-# In[37]:
 
 
 y_train_infection[:2]
 
 
-# In[38]:
 
 
 y_train_fatality[:2]
 
 
-# In[39]:
 
 
 X_test_infection.shape
 
 
-# In[40]:
 
 
 infection_train[:10]
 
 
-# In[41]:
 
 
 fatality_train[:10]
 
 
-# In[42]:
 
 
 class CoronaVirusForecast(nn.Module):
@@ -384,7 +342,6 @@ class CoronaVirusForecast(nn.Module):
     return y_pred
 
 
-# In[43]:
 
 
 def train_model_infection(
@@ -431,7 +388,6 @@ def train_model_infection(
   return model.eval(), infection_train_hist, infection_test_hist
 
 
-# In[44]:
 
 
 def train_model_fatality(
@@ -478,7 +434,6 @@ def train_model_fatality(
   return model.eval(), fatality_train_hist, fatality_test_hist
 
 
-# In[45]:
 
 
 model = CoronaVirusForecast(
@@ -496,7 +451,6 @@ model, infection_train_hist, infection_test_hist = train_model_infection(
 )
 
 
-# In[46]:
 
 
 plt.plot(infection_train_hist, label="Training loss")
@@ -505,7 +459,6 @@ plt.ylim((0, 5))
 plt.legend();
 
 
-# In[47]:
 
 
 model = CoronaVirusForecast(
@@ -523,7 +476,6 @@ model, fatality_train_hist, fatality_test_hist = train_model_fatality(
 )
 
 
-# In[48]:
 
 
 plt.plot(fatality_train_hist, label="Training loss")
@@ -532,7 +484,6 @@ plt.ylim((0, 5))
 plt.legend();
 
 
-# In[49]:
 
 
 with torch.no_grad():
@@ -548,7 +499,6 @@ with torch.no_grad():
     test_seq_infection = torch.as_tensor(new_seq_infection).view(1, seq_length, 1).float()
 
 
-# In[50]:
 
 
 with torch.no_grad():
@@ -564,7 +514,6 @@ with torch.no_grad():
     test_seq_fatality = torch.as_tensor(new_seq_fatality).view(1, seq_length, 1).float()
 
 
-# In[51]:
 
 
 true_cases_infection = scaler_infection.inverse_transform(
@@ -576,7 +525,6 @@ predicted_cases_infection = scaler_infection.inverse_transform(
 ).flatten()
 
 
-# In[52]:
 
 
 true_cases_fatality = scaler_fatality.inverse_transform(
@@ -588,7 +536,6 @@ predicted_cases_fatality = scaler_fatality.inverse_transform(
 ).flatten()
 
 
-# In[53]:
 
 
 plt.plot(
@@ -612,7 +559,6 @@ plt.plot(
 plt.legend();
 
 
-# In[54]:
 
 
 scaler_infection = MinMaxScaler()
@@ -624,7 +570,6 @@ all_data_infection = scaler_infection.transform(np.expand_dims(daily_cases_infec
 all_data_infection.shape
 
 
-# In[55]:
 
 
 scaler_fatality = MinMaxScaler()
@@ -636,7 +581,6 @@ all_data_fatality = scaler_fatality.transform(np.expand_dims(daily_cases_fatalit
 all_data_fatality.shape
 
 
-# In[56]:
 
 
 X_all_infection, y_all_infection = create_sequences(all_data_infection, seq_length)
@@ -653,7 +597,6 @@ model = CoronaVirusForecast(
 model, train_hist_infection, _ = train_model_infection(model, X_all_infection, y_all_infection)
 
 
-# In[57]:
 
 
 X_all_fatality, y_all_fatality = create_sequences(all_data_fatality, seq_length)
@@ -670,7 +613,6 @@ model = CoronaVirusForecast(
 model, train_hist_fatality, _ = train_model_fatality(model, X_all_fatality, y_all_fatality)
 
 
-# In[58]:
 
 
 DAYS_TO_PREDICT_INFECTION = 43
@@ -688,7 +630,6 @@ with torch.no_grad():
     test_seq_infection = torch.as_tensor(new_seq_infection).view(1, seq_length, 1).float()
 
 
-# In[59]:
 
 
 DAYS_TO_PREDICT_FATALITY = 43
@@ -706,7 +647,6 @@ with torch.no_grad():
     test_seq_fatality = torch.as_tensor(new_seq_fatality).view(1, seq_length, 1).float()
 
 
-# In[60]:
 
 
 predicted_cases_infection = scaler_infection.inverse_transform(
@@ -714,7 +654,6 @@ predicted_cases_infection = scaler_infection.inverse_transform(
 ).flatten()
 
 
-# In[61]:
 
 
 predicted_cases_fatality = scaler_fatality.inverse_transform(
@@ -722,19 +661,16 @@ predicted_cases_fatality = scaler_fatality.inverse_transform(
 ).flatten()
 
 
-# In[62]:
 
 
 daily_cases_infected.index[-1]
 
 
-# In[63]:
 
 
 daily_cases_fatality.index[-1]
 
 
-# In[64]:
 
 
 predicted_index_infection = pd.date_range(
@@ -752,7 +688,6 @@ plt.plot(predicted_cases_infection, label='Predicted Infected Daily Cases')
 plt.legend();
 
 
-# In[65]:
 
 
 predicted_index_fatality = pd.date_range(
@@ -770,13 +705,11 @@ plt.plot(predicted_cases_fatality, label='Predicted Fatality Daily Cases')
 plt.legend();
 
 
-# In[66]:
 
 
 predicted_index_infection
 
 
-# In[67]:
 
 
 plt.plot(daily_cases_infected, label='Historical Infected Daily Cases')
@@ -784,7 +717,6 @@ plt.plot(predicted_cases_infection, label='Predicted Infected Daily Cases')
 plt.legend();
 
 
-# In[68]:
 
 
 plt.plot(daily_cases_fatality, label='Historical Fatality Daily Cases')
@@ -792,13 +724,11 @@ plt.plot(predicted_cases_fatality, label='Predicted Fatality Daily Cases')
 plt.legend();
 
 
-# In[ ]:
 
 
 
 
 
-# In[69]:
 
 
 sample_submission = pd.read_csv("../input/covid19-local-us-ca-forecasting-week-1/ca_submission.csv")
@@ -812,7 +742,6 @@ submission = submission[['ForecastId','ConfirmedCases','Fatalities']]
 submission.tail()
 
 
-# In[70]:
 
 
 submission.to_csv("submission.csv", index=False)

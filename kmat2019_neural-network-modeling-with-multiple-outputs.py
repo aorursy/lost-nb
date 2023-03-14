@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -23,7 +22,6 @@ warnings.filterwarnings(action="ignore",category=DeprecationWarning)
 warnings.filterwarnings(action="ignore",category=FutureWarning)
 
 
-# In[2]:
 
 
 df_train=pd.read_csv('../input/train.csv')
@@ -36,7 +34,6 @@ df_train_sub_charge=pd.read_csv('../input/mulliken_charges.csv')
 df_train_sub_tensor=pd.read_csv('../input/magnetic_shielding_tensors.csv')
 
 
-# In[3]:
 
 
 def map_atom_info(df_1,df_2, atom_idx):
@@ -79,7 +76,6 @@ for atom_idx in [0,1]:
     df_struct['atom_n']=df_struct.groupby('molecule_name')['atom_index'].transform('max')
 
 
-# In[4]:
 
 
 def make_features(df):
@@ -92,14 +88,12 @@ df_train=make_features(df_train)
 df_test=make_features(df_test) 
 
 
-# In[5]:
 
 
 Cosine angles also works.
 https://www.kaggle.com/kmat2019/effective-feature
 
 
-# In[6]:
 
 
 def get_closest_farthest(df):
@@ -157,7 +151,6 @@ df_train=get_closest_farthest(df_train)
 df_test=get_closest_farthest(df_test)    
 
 
-# In[7]:
 
 
 def add_cos_features(df):
@@ -207,13 +200,11 @@ df_train=add_cos_features(df_train)
 df_test=add_cos_features(df_test)
 
 
-# In[8]:
 
 
 df_train.head()
 
 
-# In[9]:
 
 
 def create_nn_model(input_shape):
@@ -238,7 +229,6 @@ def create_nn_model(input_shape):
     return model
 
 
-# In[10]:
 
 
 mol_types=df_train["type"].unique()
@@ -309,7 +299,6 @@ cv_score_total/=len(mol_types)
 #print("total score is",cv_score_total)
 
 
-# In[11]:
 
 
 i=0
@@ -319,7 +308,6 @@ for mol_type in mol_types:
 print("total cv score is",cv_score_total)
 
 
-# In[12]:
 
 
 def submit(predictions):
@@ -330,7 +318,6 @@ def submit(predictions):
 submit(test_prediction)
 
 
-# In[13]:
 
 
 mol_types=df_train["type"].unique()
@@ -401,7 +388,6 @@ cv_score_total/=len(mol_types)
 #print("total score is",cv_score_total)
 
 
-# In[14]:
 
 
 i=0

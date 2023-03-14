@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -16,7 +15,6 @@ from tqdm import tqdm
 import datetime as dt
 
 
-# In[2]:
 
 
 import matplotlib.pyplot as plt
@@ -29,7 +27,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 
-# In[3]:
 
 
 def to_log(x):
@@ -49,7 +46,6 @@ lb_periods = {
 }
 
 
-# In[4]:
 
 
 def get_competition_data(week, country = 'US'):
@@ -73,7 +69,6 @@ def get_competition_data(week, country = 'US'):
     return train, test
 
 
-# In[5]:
 
 
 def get_submissions(week):
@@ -106,7 +101,6 @@ def get_submissions(week):
     return submissions
 
 
-# In[6]:
 
 
 actual, _ = get_competition_data(week=4)
@@ -119,7 +113,6 @@ submissions.head()
 submissions.shape
 
 
-# In[7]:
 
 
 def add_errors(submissions):
@@ -137,7 +130,6 @@ def calculate_lb(submissions):
     return lb
 
 
-# In[8]:
 
 
 submissions = add_errors(submissions)
@@ -148,7 +140,6 @@ submissions.head()
 lb.head()
 
 
-# In[9]:
 
 
 def get_ensemble(submissions, k=10):
@@ -165,7 +156,6 @@ def get_ensemble(submissions, k=10):
     return ensemble
 
 
-# In[10]:
 
 
 def calculate_lb_and_ensemble(week):
@@ -190,7 +180,6 @@ def calculate_lb_and_ensemble(week):
     
 
 
-# In[11]:
 
 
 week = 1
@@ -199,7 +188,6 @@ lb.head()
 fig.show()
 
 
-# In[12]:
 
 
 week = 2
@@ -208,7 +196,6 @@ lb.head()
 fig.show()
 
 
-# In[13]:
 
 
 week = 3
@@ -217,7 +204,6 @@ lb.head()
 fig.show()
 
 
-# In[14]:
 
 
 week = 4
@@ -226,7 +212,6 @@ lb.head()
 fig.show()
 
 
-# In[15]:
 
 
 ens1['Week'] = 1
@@ -250,7 +235,6 @@ _ = fig.update_layout(
 fig.show()
 
 
-# In[16]:
 
 
 fig = px.line(daily_error, x='Days', y='Daily RMSLE', color='Week')
@@ -260,7 +244,6 @@ _ = fig.update_layout(
 fig.show()
 
 
-# In[17]:
 
 
 'Difficult Locations'
@@ -269,7 +252,6 @@ ensembles[ensembles.Week >= 3]    .groupby(['Week', 'Location']).mean().reset_in
 ensembles[ensembles.Week >= 3]    .groupby(['Week', 'Location']).mean().reset_index().sort_values(by='ConfirmedCasesSLE', ascending=False).dropna().tail(10)
 
 
-# In[18]:
 
 
 end = dt.datetime.now()

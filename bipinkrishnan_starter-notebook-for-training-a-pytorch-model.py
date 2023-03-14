@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 get_ipython().system('pip install efficientnet_pytorch')
 
 
-# In[ ]:
 
 
 import pandas as pd
@@ -28,7 +26,6 @@ import warnings
 warnings.simplefilter('ignore')
 
 
-# In[ ]:
 
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -43,13 +40,11 @@ df = pd.concat([benign, malignant], axis=0)
 df['target'].value_counts()
 
 
-# In[ ]:
 
 
 df_test.head()
 
 
-# In[ ]:
 
 
 def create_meta(df):
@@ -65,7 +60,6 @@ def create_meta(df):
     return np.concatenate((sex, age, part), axis=1)
 
 
-# In[ ]:
 
 
 class LoadDataset(Dataset):
@@ -94,7 +88,6 @@ class LoadDataset(Dataset):
             
 
 
-# In[ ]:
 
 
 class Model(nn.Module):
@@ -128,7 +121,6 @@ class Model(nn.Module):
         return out
 
 
-# In[ ]:
 
 
 train_transform = transforms.Compose([
@@ -149,7 +141,6 @@ train_df = create_meta(df)
 test_df = create_meta(df_test)
 
 
-# In[ ]:
 
 
 gkf = GroupKFold(5)
@@ -168,7 +159,6 @@ for params in model.parameters():
 next(model.parameters()).is_cuda
 
 
-# In[ ]:
 
 
 opt = optim.Adam(model.parameters(), 0.001)
@@ -189,7 +179,6 @@ scheduler = optim.lr_scheduler.ReduceLROnPlateau(
 )
 
 
-# In[ ]:
 
 
 for fold, (train_idx, val_idx) in enumerate(gkf.split(df, df['target'], df['patient_id']), 1):
@@ -270,7 +259,6 @@ for fold, (train_idx, val_idx) in enumerate(gkf.split(df, df['target'], df['pati
         model.eval()   
 
 
-# In[ ]:
 
 
 

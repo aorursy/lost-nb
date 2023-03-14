@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('load_ext', 'autoreload')
@@ -9,7 +8,6 @@ get_ipython().run_line_magic('autoreload', '2')
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[ ]:
 
 
 from fastai.imports import *
@@ -22,7 +20,6 @@ from IPython.display import display
 from sklearn import metrics
 
 
-# In[ ]:
 
 
 #PATH = "data/bulldozers/"
@@ -31,14 +28,12 @@ PATH = '../input/'
 get_ipython().system('ls {PATH}')
 
 
-# In[ ]:
 
 
 df_raw = pd.read_csv(f'{PATH}Train.csv', low_memory=False, 
                      parse_dates=["saledate"])
 
 
-# In[ ]:
 
 
 def display_all(df):
@@ -46,26 +41,22 @@ def display_all(df):
         display(df)
 
 
-# In[ ]:
 
 
 display_all(df_raw.tail().T)
 
 
-# In[ ]:
 
 
 display_all(df_raw.describe(include='all').T)
 
 
-# In[ ]:
 
 
 # replace price with log(price) so that rmse metric will compute rmsle
 df_raw.SalePrice = np.log(df_raw.SalePrice)
 
 
-# In[ ]:
 
 
 m = RandomForestRegressor(n_jobs=-1)
@@ -73,45 +64,38 @@ m = RandomForestRegressor(n_jobs=-1)
 m.fit(df_raw.drop('SalePrice', axis=1), df_raw.SalePrice)
 
 
-# In[ ]:
 
 
 add_datepart(df_raw, 'saledate')
 df_raw.saleYear.head()
 
 
-# In[ ]:
 
 
 train_cats(df_raw)
 
 
-# In[ ]:
 
 
 df_raw.UsageBand.cat.categories
 
 
-# In[ ]:
 
 
 df_raw.UsageBand.cat.set_categories(['High', 'Medium', 'Low'], ordered=True, inplace=True)
 df_raw.UsageBand = df_raw.UsageBand.cat.codes
 
 
-# In[ ]:
 
 
 display_all(df_raw.isnull().sum().sort_index()/len(df_raw))
 
 
-# In[ ]:
 
 
 get_ipython().system('conda install -c conda-forge feather-format ')
 
 
-# In[ ]:
 
 
 # make tmp directory to store results
@@ -120,7 +104,6 @@ os.makedirs('tmp', exist_ok=True)
 df_raw.to_feather('tmp/bulldozers-raw')
 
 
-# In[ ]:
 
 
 # why doesn't this work?
@@ -128,7 +111,6 @@ import feather
 feather.write_dataframe(df_raw, 'tmp/bulldozers-raw')
 
 
-# In[ ]:
 
 
 # why doesn't this work?
@@ -137,7 +119,6 @@ df_raw = pd.read_feather('tmp/bulldozers-raw')
 df = feather.read_dataframe(path)
 
 
-# In[ ]:
 
 
 # find out what proc_df does:
@@ -146,13 +127,11 @@ df = feather.read_dataframe(path)
 get_ipython().run_line_magic('pinfo2', 'proc_df')
 
 
-# In[ ]:
 
 
 df, y, nas = proc_df(df_raw, 'SalePrice')
 
 
-# In[ ]:
 
 
 m = RandomForestRegressor(n_jobs=-1)
@@ -160,7 +139,6 @@ get_ipython().run_line_magic('time', 'm.fit(df, y)')
 m.score(df,y)
 
 
-# In[ ]:
 
 
 def split_vals(a,n): return a[:n].copy(), a[n:].copy()
@@ -174,7 +152,6 @@ y_train, y_valid = split_vals(y, n_trn)
 X_train.shape, y_train.shape, X_valid.shape
 
 
-# In[ ]:
 
 
 # m.score defaults to R^2
@@ -187,7 +164,6 @@ def print_score(m):
     print(res)
 
 
-# In[ ]:
 
 
 m = RandomForestRegressor(n_jobs=-1)
@@ -195,7 +171,6 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 # speed-up by taking a subset ~10x smaller than the original dataset
@@ -204,7 +179,6 @@ X_train, _ = split_vals(df_trn, 20000)
 y_train, _ = split_vals(y_trn, 20000)
 
 
-# In[ ]:
 
 
 # doesn't achieve as good a score as using all the training examples
@@ -215,7 +189,6 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 # much lower scores, and same for training and validation sets
@@ -224,14 +197,12 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 # find the depth of each tree!
 [estimator.tree_.max_depth for estimator in m.estimators_]
 
 
-# In[ ]:
 
 
 # Install graphviz first!
@@ -239,7 +210,6 @@ print_score(m)
 draw_tree(m.estimators_[0], df_trn, precision=3)
 
 
-# In[ ]:
 
 
 # One tree (of depth 35!) manages to fit nearly all the data because max_depth was not set
@@ -248,21 +218,18 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 # don't do it -- takes too long!!!!!
 draw_tree(m.estimators_[0], df_trn, precision=3)
 
 
-# In[ ]:
 
 
 # instead, find the depth of each tree
 [estimator.tree_.max_depth for estimator in m.estimators_]
 
 
-# In[ ]:
 
 
 # remember we are using a subset of 30,000 training examples
@@ -272,13 +239,11 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 len(m.estimators_)
 
 
-# In[ ]:
 
 
 # RandomForestRegressor defaults to 10 trees
@@ -286,27 +251,23 @@ len(m.estimators_)
 get_ipython().run_line_magic('pinfo2', 'RandomForestRegressor')
 
 
-# In[ ]:
 
 
 preds = np.stack([t.predict(X_valid) for t in m.estimators_])
 preds[:,0], np.mean(preds[:,0]), y_valid[0]
 
 
-# In[ ]:
 
 
 preds.shape
 
 
-# In[ ]:
 
 
 # plot mean r2 score vs number of estimators (trees)
 plt.plot([metrics.r2_score(y_valid, np.mean(preds[:i+1], axis=0)) for i in range(10)]);
 
 
-# In[ ]:
 
 
 m = RandomForestRegressor(n_estimators=20, n_jobs=-1)
@@ -314,7 +275,6 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 m = RandomForestRegressor(n_estimators=40, n_jobs=-1)
@@ -322,7 +282,6 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 m = RandomForestRegressor(n_estimators=80, n_jobs=-1)
@@ -330,7 +289,6 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 # oob_score costs only ~5% overhead time
@@ -341,14 +299,12 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 # depths of each tree
 depths = [estimator.tree_.max_depth for estimator in m.estimators_]
 
 
-# In[ ]:
 
 
 # start with all the data
@@ -357,7 +313,6 @@ X_train, X_valid = split_vals(df_trn, n_trn)
 y_train, y_valid = split_vals(y_trn, n_trn)
 
 
-# In[ ]:
 
 
 # sets RandomForestRegressor to use 20000 samples per tree
@@ -366,13 +321,11 @@ y_train, y_valid = split_vals(y_trn, n_trn)
 set_rf_samples(20000)
 
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('pinfo2', 'set_rf_samples')
 
 
-# In[ ]:
 
 
 # this is a good result -- would be #74 on the leaderboard
@@ -383,7 +336,6 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 # using sample subsets has eliminated the overfitting
@@ -392,7 +344,6 @@ print_score(m)
 [estimator.tree_.max_depth for estimator in m.estimators_]
 
 
-# In[ ]:
 
 
 # now increase to 40 trees -- get a slight improvement in score for
@@ -403,14 +354,12 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 # back to full bootstrap sample
 reset_rf_samples()
 
 
-# In[ ]:
 
 
 # ????? not clear what this function does
@@ -430,7 +379,6 @@ def dectree_max_depth(tree):
     return walk(root_node_id)
 
 
-# In[ ]:
 
 
 # using entire bootstrap sample improves metric by quite a bit! 
@@ -444,26 +392,22 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 t=m.estimators_[0].tree_
 
 
-# In[ ]:
 
 
 dectree_max_depth(t)
 
 
-# In[ ]:
 
 
 # see what's in a tree
 dir(t)
 
 
-# In[ ]:
 
 
 # we are using all the features
@@ -471,7 +415,6 @@ print(X_train.shape)
 print(t.n_features)
 
 
-# In[ ]:
 
 
 # increase minimum number of samples in a leaf from default of 1 to 5
@@ -483,27 +426,23 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 # first tree
 t=m.estimators_[0].tree_
 
 
-# In[ ]:
 
 
 t.max_depth
 
 
-# In[ ]:
 
 
 # why does jeremy's code dectree_max_depth(t) return 53?????
 dectree_max_depth(t)
 
 
-# In[ ]:
 
 
 # print tree depths
@@ -512,14 +451,12 @@ print(depths)
 print(np.max(depths))
 
 
-# In[ ]:
 
 
 # my code says that the max tree depth is 41
 np.max([estimator.tree_.max_depth for estimator in m.estimators_])
 
 
-# In[ ]:
 
 
 # min_samples of 3 is a good way to limit tree depth,
@@ -531,7 +468,6 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 # use a random 50% of the features at each split
@@ -551,7 +487,6 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 # tree depths with min_samples_leaf=3
@@ -559,7 +494,6 @@ depths = np.array([estimator.tree_.max_depth for estimator in m.estimators_])
 print(depths)
 
 
-# In[ ]:
 
 
 # try min_sample_leaf = 10
@@ -576,7 +510,6 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 # tree depths with min_samples_leaf=10
@@ -585,14 +518,12 @@ depths = np.array([estimator.tree_.max_depth for estimator in m.estimators_])
 print(depths)
 
 
-# In[ ]:
 
 
 # what happens if each tree samples subsets instead of entire sample
 set_rf_samples(20000)
 
 
-# In[ ]:
 
 
 # back to min_samples_leaf = 3
@@ -604,7 +535,6 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 # doesn't improve much with 100 trees
@@ -613,14 +543,12 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 # revert to sampling the entire data set for each bootstrap sample
 reset_rf_samples()
 
 
-# In[ ]:
 
 
 # best model 100 trees with all the samples, min_samples_leaf=3,
@@ -635,7 +563,6 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 # mean tree depth is 40 with 3 samples in leaf
@@ -644,7 +571,6 @@ print(depths)
 print(np.mean(depths))
 
 
-# In[ ]:
 
 
 # same as best model except min_samples_leaf=1
@@ -656,7 +582,6 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 # mean tree depth is 46 with 1 sample in leaf
@@ -665,7 +590,6 @@ print(depths)
 print(np.mean(depths))
 
 
-# In[ ]:
 
 
 # Function to compute R2 score
@@ -678,7 +602,6 @@ def R2score(y_data,y_pred):
     return R2
 
 
-# In[ ]:
 
 
 # compute R2 scores for training and validation data
@@ -689,7 +612,6 @@ R2_valid = R2score(y_valid,y_valid_pred)
 print(R2_train,R2_valid)
 
 
-# In[ ]:
 
 
 # get and preprocess TrainAndValid set
@@ -709,47 +631,40 @@ df_train, y_train, nas = proc_df(df_train0, 'SalePrice')
 print(df_train.shape,df_train0.shape,len(y_train))
 
 
-# In[ ]:
 
 
 print(sum(df_train0.columns=='SalePrice'))
 print(sum(df_train.columns=='SalePrice'))
 
 
-# In[ ]:
 
 
 # the TrainAndValid data set has labels for *all* the examples
 df_train0.SalePrice
 
 
-# In[ ]:
 
 
 df_train0.columns[61:]#[51:60]#[41:50]#[31:40]#[21:30]#[11:20]#[2:10]
 
 
-# In[ ]:
 
 
 df_train.columns[60:]#[50:59]#[40:49]#[30:39]#[20:29]#[10:19]#[1:9]
 
 
-# In[ ]:
 
 
 print(sum(df_train.MachineHoursCurrentMeter_na))
 print(sum(df_train.auctioneerID_na))
 
 
-# In[ ]:
 
 
 # looks like df_train is clean, no nulls
 df_train.info()
 
 
-# In[ ]:
 
 
 # df_train0 is a different story,
@@ -760,7 +675,6 @@ for column in df_train0.columns:
     print(column, df_train0[column].isnull().sum()) 
 
 
-# In[ ]:
 
 
 # get and preprocess Valid set. Has no labels
@@ -777,25 +691,21 @@ df_valid, _, nas = proc_df(df_valid0)
 print(df_valid.shape,df_valid0.shape)
 
 
-# In[ ]:
 
 
 df_valid0.info()
 
 
-# In[ ]:
 
 
 df_valid.columns
 
 
-# In[ ]:
 
 
 df_valid0.columns
 
 
-# In[ ]:
 
 
 # get and preprocess Test set
@@ -812,31 +722,26 @@ df_test, _, _ = proc_df(df_test0)
 print(df_test.shape,df_test0.shape)
 
 
-# In[ ]:
 
 
 df_test0.columns
 
 
-# In[ ]:
 
 
 df_test.columns
 
 
-# In[ ]:
 
 
 df_test0.info()
 
 
-# In[ ]:
 
 
 df_test.info()
 
 
-# In[ ]:
 
 
 # we need to add an extra column labeled auctioneerID_na to df_valid and df_test
@@ -845,13 +750,11 @@ df_valid['auctioneerID_na']=False
 df_test['auctioneerID_na']=False
 
 
-# In[ ]:
 
 
 n_valid
 
 
-# In[ ]:
 
 
 # get the features matrix for TrainAndValid data set
@@ -859,7 +762,6 @@ X_train = df_train.values
 print(X_train.shape)
 
 
-# In[ ]:
 
 
 # m.score defaults to R^2
@@ -871,14 +773,12 @@ def print_score(m):
     print(res)
 
 
-# In[ ]:
 
 
 # sample the entire data set for each bootstrap sample
 reset_rf_samples()
 
 
-# In[ ]:
 
 
 # best model using only Train data -- n_estimators = 100, min_samples_leaf = 3,
@@ -901,7 +801,6 @@ get_ipython().run_line_magic('time', 'm.fit(X_train, y_train)')
 print_score(m)
 
 
-# In[ ]:
 
 
 # get the features matrix for Train data set
@@ -909,49 +808,41 @@ X_test = df_test.values
 print(X_test.shape)
 
 
-# In[ ]:
 
 
 df_test.info()
 
 
-# In[ ]:
 
 
 display_all(df_test.describe(include='all').T)
 
 
-# In[ ]:
 
 
 X_test.shape
 
 
-# In[ ]:
 
 
 y_test = m.predict(X_test)
 
 
-# In[ ]:
 
 
 df_solution = pd.DataFrame({'SalesID':df_test['SalesID'],'SalePrice':y_test})
 
 
-# In[ ]:
 
 
 df_solution
 
 
-# In[ ]:
 
 
 df_solution.to_csv('submission.csv',index=False)
 
 
-# In[ ]:
 
 
 # install latest version of kaggle api
@@ -959,38 +850,32 @@ df_solution.to_csv('submission.csv',index=False)
 #!kaggle --version
 
 
-# In[ ]:
 
 
 # ????? shows all scores as zero
 #!kaggle competitions leaderboard bluebook-for-bulldozers --show
 
 
-# In[ ]:
 
 
 #!kaggle kernels list -s bluebook-for-bulldozers
 
 
-# In[ ]:
 
 
 #!kaggle datasets status bluebook-for-bulldozers
 
 
-# In[ ]:
 
 
 #!kaggle competitions files bluebook-for-bulldozers
 
 
-# In[ ]:
 
 
 #!kaggle competitions submit bluebook-for-bulldozers -f submission.csv -m "using TrainAndValid data"
 
 
-# In[ ]:
 
 
 

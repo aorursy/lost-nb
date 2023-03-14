@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -53,7 +52,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 
@@ -93,7 +91,6 @@ sns.set_style('darkgrid')
 pylab.rcParams['figure.figsize'] = 12,8
 
 
-# In[3]:
 
 
 #Machine Learning Algorithm (MLA) Selection and Initialization
@@ -200,7 +197,6 @@ def train_model(data, MLA_list = MLA, print_feature_table=False, print_feature_s
     return MLA_compare
 
 
-# In[4]:
 
 
 train = pd.read_csv('../input/train/train.csv')
@@ -210,7 +206,6 @@ train['dataset_type'] = 'train'
 test['dataset_type'] = 'test'
 
 
-# In[5]:
 
 
 useColumns = ['Type', 'Age', 'Breed1', 'Breed2', 'Gender', 'Color1', 'Color2',
@@ -221,7 +216,6 @@ useColumns = ['Type', 'Age', 'Breed1', 'Breed2', 'Gender', 'Color1', 'Color2',
 #train_model(train[useColumns], print_feature_table=True, top_n=20)
 
 
-# In[6]:
 
 
 train['Name'] = train['Name'].fillna('Unnamed')
@@ -231,14 +225,12 @@ train['has_name'] = train['Name'].apply(lambda x: 0 if x == 'Unnamed' else 1)
 test['has_name'] = test['Name'].apply(lambda x: 0 if x == 'Unnamed' else 1)
 
 
-# In[7]:
 
 
 train['has_name'] = train['Name'].apply(lambda x: 0 if x == 'No Name' or x == 'Unnamed' else 1)
 test['has_name'] = test['Name'].apply(lambda x: 0 if x == 'No Name' or x == 'Unnamed' else 1)
 
 
-# In[8]:
 
 
 top_3 = [
@@ -255,7 +247,6 @@ useColumns = ['Type', 'Age', 'Breed1', 'Breed2', 'Gender', 'Color1', 'Color2',
 #train_model(train[useColumns], print_feature_table=True, top_n=10)
 
 
-# In[9]:
 
 
 # defining a function which returns a list of top names
@@ -272,7 +263,6 @@ def top_names(df, top_percent):
     return top_names
 
 
-# In[10]:
 
 
 topnames = top_names(train.append(test), 0.2)
@@ -280,7 +270,6 @@ train['has_topname'] = train['Name'].apply(lambda row: 1 if row in topnames else
 test['has_topname'] = test['Name'].apply(lambda row: 1 if row in topnames else 0)
 
 
-# In[11]:
 
 
 useColumns = ['Type', 'Age', 'Breed1', 'Breed2', 'Gender', 'Color1', 'Color2',
@@ -291,7 +280,6 @@ useColumns = ['Type', 'Age', 'Breed1', 'Breed2', 'Gender', 'Color1', 'Color2',
 #train_model(train[useColumns], top_3, print_feature_table=True, top_n=10)
 
 
-# In[12]:
 
 
 #Binning:
@@ -312,7 +300,6 @@ def binning(col, cut_points, labels=None):
   return colBin
 
 
-# In[13]:
 
 
 cut_points = [1,2,3,4,8,12,24,36,48]
@@ -328,7 +315,6 @@ train['age_bin'] = label.fit_transform(train['age_bin'])
 test['age_bin'] = label.fit_transform(test['age_bin'])
 
 
-# In[14]:
 
 
 top_3 = [
@@ -345,7 +331,6 @@ useColumns = ['Type', 'Breed1', 'Breed2', 'Gender', 'Color1', 'Color2',
 #train_model(train[useColumns], top_3, print_feature_table=True, top_n=10)
 
 
-# In[15]:
 
 
 binner = KBinsDiscretizer(n_bins=5,encode='ordinal', strategy='kmeans')
@@ -358,7 +343,6 @@ train['age_bin_kmeans'] = pd.DataFrame(binner.fit_transform(train[['Age']].copy(
 test['age_bin_kmeans'] = pd.DataFrame(binner.fit_transform(test[['Age']].copy()))
 
 
-# In[16]:
 
 
 binner = KBinsDiscretizer(n_bins=5,encode='ordinal', strategy='quantile')
@@ -371,7 +355,6 @@ train['age_bin_quantile'] = pd.DataFrame(binner.fit_transform(train[['Age']].cop
 test['age_bin_quantile'] = pd.DataFrame(binner.fit_transform(test[['Age']].copy()))
 
 
-# In[17]:
 
 
 useColumns = ['Type', 'Breed1', 'Breed2', 'Gender', 'Color1', 'Color2',
@@ -382,7 +365,6 @@ useColumns = ['Type', 'Breed1', 'Breed2', 'Gender', 'Color1', 'Color2',
 #train_model(train[useColumns], top_3, print_feature_table=True, top_n=10)
 
 
-# In[18]:
 
 
 # https://www.101computing.net/how-old-is-your-cat/
@@ -443,7 +425,6 @@ def lifestage(row):
     return 'Geriatic'
 
 
-# In[19]:
 
 
 train['human_age'] = train.apply(human_age, axis=1)
@@ -453,7 +434,6 @@ test['human_age'] = test.apply(human_age, axis=1)
 test['lifestage'] = test.apply(lifestage, axis=1)
 
 
-# In[20]:
 
 
 top_3 = [
@@ -471,7 +451,6 @@ useColumns = ['Type', 'Breed1', 'Breed2', 'Gender', 'Color1', 'Color2',
 #train_model(train[useColumns], top_3, print_feature_table=True, top_n=10)
 
 
-# In[21]:
 
 
 mapper = {'Kitten/Puppy':1, 'Junior':2, 'Prime':3, 'Mature':4,'Senior':5,'Geriatic':6}
@@ -480,7 +459,6 @@ train.lifestage.replace(mapper, inplace=True)
 test.lifestage.replace(mapper, inplace=True)
 
 
-# In[22]:
 
 
 useColumns = ['Type', 'Breed1', 'Breed2', 'Gender', 'Color1', 'Color2',
@@ -492,7 +470,6 @@ useColumns = ['Type', 'Breed1', 'Breed2', 'Gender', 'Color1', 'Color2',
 #train_model(train[useColumns], top_3, print_feature_table=True, top_n=10)
 
 
-# In[23]:
 
 
 def mixed_breed(row):
@@ -509,7 +486,6 @@ train['mixed_breed'] = train.apply(mixed_breed, axis=1)
 test['mixed_breed'] = test.apply(mixed_breed, axis=1)
 
 
-# In[24]:
 
 
 top_1 = [
@@ -525,13 +501,11 @@ useColumns = ['Type', 'Breed1', 'Breed2',  'Gender', 'Color1', 'Color2',
 #train_model(pd.get_dummies(train[useColumns], columns=['Breed1','Breed2'], sparse=True), top_1, print_feature_table=True, top_n=10)
 
 
-# In[25]:
 
 
 train.groupby('Breed1')["AdoptionSpeed"].value_counts().head(5)
 
 
-# In[26]:
 
 
 subtrain = train[train.Breed1 == 0]
@@ -542,7 +516,6 @@ print(cumulative_count)
 cumulative_sum/cumulative_count
 
 
-# In[27]:
 
 
 def cat_mean_encoding(df, column):
@@ -552,7 +525,6 @@ def cat_mean_encoding(df, column):
     df[column + "_mean_encoding"].fillna(df.AdoptionSpeed.mean(), inplace=True)
 
 
-# In[28]:
 
 
 # from: https://medium.com/@pouryaayria/k-fold-target-encoding-dfe9a594874b
@@ -628,7 +600,6 @@ class KFoldTargetEncoderTest(base.BaseEstimator, base.TransformerMixin):
         return X
 
 
-# In[29]:
 
 
 targetc = KFoldTargetEncoderTrain('Breed1','AdoptionSpeed',n_fold=5)
@@ -644,7 +615,6 @@ test_targetc = KFoldTargetEncoderTest(train,'Breed2','Breed2_Kfold_Target_Enc')
 test= test_targetc.fit_transform(test)
 
 
-# In[30]:
 
 
 cat_mean_encoding(train, 'Breed1')
@@ -657,7 +627,6 @@ test_targetc = KFoldTargetEncoderTest(train,'Breed2','Breed2_mean_encoding')
 test= test_targetc.fit_transform(test)
 
 
-# In[31]:
 
 
 print(train.Breed1_Kfold_Target_Enc.isna().sum())
@@ -673,7 +642,6 @@ print(test.Breed2_mean_encoding.isna().sum())
 test[~test.Breed1.isin(train.Breed1)].head(5)
 
 
-# In[32]:
 
 
 test.Breed1_Kfold_Target_Enc.fillna(train.AdoptionSpeed.mean(), inplace=True)
@@ -682,7 +650,6 @@ test.Breed1_mean_encoding.fillna(train.AdoptionSpeed.mean(), inplace=True)
 test.Breed2_mean_encoding.fillna(train.AdoptionSpeed.mean(), inplace=True)
 
 
-# In[33]:
 
 
 useColumns = ['Type', 'Breed1_Kfold_Target_Enc','Breed2_Kfold_Target_Enc','Gender', 'Color1', 'Color2',
@@ -695,7 +662,6 @@ useColumns = ['Type', 'Breed1_Kfold_Target_Enc','Breed2_Kfold_Target_Enc','Gende
 #train_model(train[useColumns], top_3, print_feature_table=True, top_n=10)
 
 
-# In[34]:
 
 
 # create pet count for each rescuer
@@ -724,7 +690,6 @@ test_targetc = KFoldTargetEncoderTest(train,'rescuer_bin_kmeans','rescuer_bin_km
 test= test_targetc.fit_transform(test)
 
 
-# In[35]:
 
 
 useColumns = ['Type', 'Breed1_Kfold_Target_Enc','Breed2_Kfold_Target_Enc','Gender', 'Color1', 'Color2',
@@ -737,7 +702,6 @@ useColumns = ['Type', 'Breed1_Kfold_Target_Enc','Breed2_Kfold_Target_Enc','Gende
 #train_model(train[useColumns], top_3, print_feature_table=True, top_n=10)
 
 
-# In[36]:
 
 
 # state GDP: https://en.wikipedia.org/wiki/List_of_Malaysian_states_by_GDP
@@ -803,7 +767,6 @@ test["state_population"] = test.State.map(state_population)
 test["state_area"] = test.State.map(state_area)
 
 
-# In[37]:
 
 
 targetc = KFoldTargetEncoderTrain('State','AdoptionSpeed',n_fold=5)
@@ -813,7 +776,6 @@ test_targetc = KFoldTargetEncoderTest(train,'State','State_Kfold_Target_Enc')
 test= test_targetc.fit_transform(test)
 
 
-# In[38]:
 
 
 useColumns = ['Type', 'Breed1_Kfold_Target_Enc','Breed2_Kfold_Target_Enc','Gender', 'Color1', 'Color2',
@@ -827,7 +789,6 @@ useColumns = ['Type', 'Breed1_Kfold_Target_Enc','Breed2_Kfold_Target_Enc','Gende
 #train_model(train[useColumns], top_3, print_feature_table=True, top_n=10)
 
 
-# In[39]:
 
 
 targetc = KFoldTargetEncoderTrain('Color1','AdoptionSpeed',n_fold=5)
@@ -849,7 +810,6 @@ test_targetc = KFoldTargetEncoderTest(train,'Color3','Color3_Kfold_Target_Enc')
 test= test_targetc.fit_transform(test)
 
 
-# In[40]:
 
 
 useColumns = ['Type', 'Breed1_Kfold_Target_Enc','Breed2_Kfold_Target_Enc','Gender', 
@@ -864,7 +824,6 @@ useColumns = ['Type', 'Breed1_Kfold_Target_Enc','Breed2_Kfold_Target_Enc','Gende
 #train_model(train[useColumns], top_3, print_feature_table=True, top_n=10)
 
 
-# In[41]:
 
 
 train.Description.fillna('none', inplace=True)
@@ -874,7 +833,6 @@ train['desc_length'] = train.Description.apply(len)
 test['desc_length'] = test.Description.apply(len)
 
 
-# In[42]:
 
 
 tfv = TfidfVectorizer(min_df=2,  max_features=None,
@@ -896,7 +854,6 @@ train = pcas.loc[np.isfinite(pcas.AdoptionSpeed), :]
 test = pcas.loc[~np.isfinite(pcas.AdoptionSpeed), :]
 
 
-# In[43]:
 
 
 useColumns = ['Type', 'Breed1_Kfold_Target_Enc','Breed2_Kfold_Target_Enc','Gender', 
@@ -911,7 +868,6 @@ useColumns = ['Type', 'Breed1_Kfold_Target_Enc','Breed2_Kfold_Target_Enc','Gende
 #result = train_model(train[useColumns],  print_feature_table=False)
 
 
-# In[44]:
 
 
 from sklearn.feature_selection import RFECV
@@ -942,7 +898,6 @@ for alg in []:
     plt.show()
 
 
-# In[45]:
 
 
 useColumns = ['Breed1_Kfold_Target_Enc', 'Breed2_Kfold_Target_Enc', 'FurLength',
@@ -969,7 +924,6 @@ tuning = GridSearchCV(estimator = ensemble.AdaBoostClassifier(), param_grid = pa
 #tuning.best_params_, tuning.best_score_
 
 
-# In[46]:
 
 
 params = {'learning_rate':[0.15,0.1,0.05,0.01,0.005,0.001], 
@@ -993,7 +947,6 @@ X_train = train_cleaned.drop(['AdoptionSpeed'],axis=1)
 #tuning.grid_scores_, tuning.best_params_, tuning.best_score_
 
 
-# In[47]:
 
 
 # from https://www.kaggle.com/naveenasaithambi/optimizedrounder-improved
@@ -1115,7 +1068,6 @@ class OptimizedRounder(object):
         return self.coef_['x']
 
 
-# In[48]:
 
 
 useColumns = ['Type', 'Breed1_Kfold_Target_Enc','Breed2_Kfold_Target_Enc','Gender', 
@@ -1140,7 +1092,6 @@ X_test=test[useColumns]
 #submit.to_csv('submission.csv',index=False)
 
 
-# In[49]:
 
 
 useColumns = ['AdoptionSpeed','Type', 'Breed1_Kfold_Target_Enc','Breed2_Kfold_Target_Enc','Gender', 
@@ -1157,7 +1108,6 @@ X_train=train[useColumns]
 X_test=test[useColumns].drop(['AdoptionSpeed'], axis=1)
 
 
-# In[50]:
 
 
 xgb_params = {
@@ -1167,7 +1117,6 @@ xgb_params = {
 }
 
 
-# In[51]:
 
 
 import xgboost as xgb
@@ -1213,13 +1162,11 @@ def run_xgb(params, X_train, X_test):
     return model, oof_train, oof_test
 
 
-# In[52]:
 
 
 model, oof_train, oof_test = run_xgb(xgb_params, X_train, X_test)
 
 
-# In[53]:
 
 
 optR = OptimizedRounder()
@@ -1230,7 +1177,6 @@ qwk = quadratic_weighted_kappa(X_train['AdoptionSpeed'].values, valid_pred)
 print("QWK = ", qwk)
 
 
-# In[54]:
 
 
 coefficients_ = coefficients.copy()
@@ -1239,7 +1185,6 @@ train_predictions = optR.predict(oof_train, coefficients_).astype(np.int8)
 test_predictions = optR.predict(oof_test.mean(axis=1), coefficients_).astype(np.int8)
 
 
-# In[55]:
 
 
 submission = pd.DataFrame({'PetID': test['PetID'].values, 'AdoptionSpeed': test_predictions})

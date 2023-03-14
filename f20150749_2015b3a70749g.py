@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -11,7 +10,6 @@ import seaborn as sns
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/Regression\ Evaluative\ Lab/train.csv')
@@ -32,19 +30,16 @@ for f in p:
 train.info()
 
 
-# In[3]:
 
 
 train.head()
 
 
-# In[4]:
 
 
 train = pd.get_dummies(columns=["year"],data=train)
 
 
-# In[5]:
 
 
 # Compute the correlation matrix
@@ -62,13 +57,11 @@ sns.heatmap(corr, cmap=cmap, vmax=1, vmin = -1, center=0.5,
 plt.show()
 
 
-# In[6]:
 
 
 train.drop(columns=['Total Bags'], inplace=True)
 
 
-# In[7]:
 
 
 from sklearn.preprocessing import MinMaxScaler
@@ -78,7 +71,6 @@ scaled_data = scaler.fit_transform(train)
 #scaled_X_val = scaler.transform(X_val)
 
 
-# In[8]:
 
 
 from sklearn.model_selection import train_test_split
@@ -87,14 +79,12 @@ from math import sqrt
 scaled_X_train,scaled_X_val,y_train,y_val = train_test_split(scaled_data[:10000], label, test_size = 0.33, random_state = 42)
 
 
-# In[9]:
 
 
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestRegressor
 
 
-# In[10]:
 
 
 rfr = RandomForestRegressor(random_state= 42, n_jobs=4)
@@ -110,7 +100,6 @@ acc_op = r2_score(y_true = y_val, y_pred = y_pred)*100
 print("Accuracy score on optimized model:{}".format(acc_op))
 
 
-# In[11]:
 
 
 scaled_X_train = scaled_data[:10000,:]
@@ -132,7 +121,6 @@ newd.rename(index=str, columns={0:'AveragePrice'}, inplace = True)
 newd.to_csv("submc.csv", index=False)
 
 
-# In[12]:
 
 
 from sklearn.metrics import mean_squared_error

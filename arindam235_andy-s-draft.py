@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -22,7 +21,6 @@ from keras.layers import Dense
 from keras.wrappers.scikit_learn import KerasRegressor
 
 
-# In[2]:
 
 
 env = nflrush.make_env()
@@ -30,7 +28,6 @@ dataset = pd.read_csv('/kaggle/input/nfl-big-data-bowl-2020/train.csv', low_memo
 dataset.head()
 
 
-# In[3]:
 
 
 unused_columns = ["GameId","PlayId","Team","TimeHandoff","TimeSnap"]
@@ -41,7 +38,6 @@ for c in dataset.columns:
         print(c," is unique")
 
 
-# In[4]:
 
 
 ok = True
@@ -62,7 +58,6 @@ for i in range(0,509762,11):
 print("train data is sorted by Team." if ok else "train data is not sorted by Team.")
 
 
-# In[5]:
 
 
 lbl_dict = {}
@@ -98,7 +93,6 @@ except:
     print("col does not exist")
 
 
-# In[6]:
 
 
 X = dataset.drop('Yards',axis=1)
@@ -123,7 +117,6 @@ preprocessor = ColumnTransformer(
         ('cat', categorical_transformer, categorical_features)])
 
 
-# In[7]:
 
 
 
@@ -139,7 +132,6 @@ def baseline_model():
     return model
 
 
-# In[8]:
 
 
 clf = Pipeline(steps=[('preprocessor', preprocessor),
@@ -147,13 +139,11 @@ clf = Pipeline(steps=[('preprocessor', preprocessor),
 #Result of the tuner hyper parameter as in commented section above
 
 
-# In[9]:
 
 
 clf.fit(X,y)
 
 
-# In[10]:
 
 
 index = 0

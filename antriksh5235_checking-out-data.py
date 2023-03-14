@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -21,7 +20,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import json
@@ -53,7 +51,6 @@ plt.scatter(ls,il,s=np.array(ls)/1000,c=il, alpha=0.5)
 plt.show()
 
 
-# In[3]:
 
 
 data = pd.read_json('../input/train.json')
@@ -65,7 +62,6 @@ data.drop(['building_id','created','latitude','longitude','listing_id','manager_
 data.head()
 
 
-# In[4]:
 
 
 import re
@@ -88,7 +84,6 @@ feature_set += list(set(list(data)))
 print(feature_set)
 
 
-# In[5]:
 
 
 new_data = 

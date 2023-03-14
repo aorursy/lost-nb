@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # import tensorflow as tf
@@ -9,50 +8,42 @@
 # tf.random.set_seed(0)
 
 
-# In[2]:
 
 
 get_ipython().system('pip install -U -q kaggle --force')
 
 
-# In[3]:
 
 
 from google.colab import files
 f=files.upload()
 
 
-# In[4]:
 
 
 get_ipython().system('mkdir -p ~/.kaggle')
 
 
-# In[5]:
 
 
 get_ipython().system('cp kaggle.json ~/.kaggle/')
 
 
-# In[6]:
 
 
 get_ipython().system('chmod 600 /root/.kaggle/kaggle.json')
 
 
-# In[7]:
 
 
 get_ipython().system('kaggle competitions download -c nnfl-cnn-lab2')
 
 
-# In[8]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cd /content\nunzip nnfl-cnn-lab2.zip')
 
 
-# In[9]:
 
 
 import numpy as np
@@ -66,7 +57,6 @@ import os
 print(os.listdir("../content"))
 
 
-# In[10]:
 
 
 FAST_RUN = False
@@ -76,19 +66,16 @@ IMAGE_SIZE=(IMAGE_WIDTH, IMAGE_HEIGHT)
 IMAGE_CHANNELS=3
 
 
-# In[11]:
 
 
 # !unzip ../content/train_images
 
 
-# In[12]:
 
 
 # !unzip ../content/test1.zip
 
 
-# In[13]:
 
 
 filenames = os.listdir("/content/upload/train_images/train_images")
@@ -103,25 +90,21 @@ filenames = os.listdir("/content/upload/train_images/train_images")
 df = pd.DataFrame(pd.read_csv('/content/upload/train_set.csv'))
 
 
-# In[14]:
 
 
 df.head()
 
 
-# In[15]:
 
 
 df.tail()
 
 
-# In[16]:
 
 
 df['label'].value_counts().plot.bar()
 
 
-# In[17]:
 
 
 sample = random.choice(filenames)
@@ -130,7 +113,6 @@ image = load_img("/content/upload/train_images/train_images/"+sample)
 plt.imshow(image)
 
 
-# In[18]:
 
 
 from tensorflow.python.keras.models import Sequential
@@ -174,7 +156,6 @@ from tensorflow.python.keras.layers import Input, Activation, Dense, Conv2D, Res
 # model.summary()
 
 
-# In[19]:
 
 
 bnmomemtum=0.9
@@ -192,7 +173,6 @@ def block_module(squeeze, expand):
   return lambda x: block(x, squeeze, expand)
 
 
-# In[20]:
 
 
 from tensorflow.python.keras.models import Model
@@ -236,25 +216,21 @@ model.compile(optimizer='rmsprop',
               metrics=['accuracy'])
 
 
-# In[21]:
 
 
 model.summary()
 
 
-# In[22]:
 
 
 from tensorflow.python.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 
-# In[23]:
 
 
 earlystop = EarlyStopping(patience=10)
 
 
-# In[24]:
 
 
 learning_rate_reduction = ReduceLROnPlateau(monitor='val_accuracy', 
@@ -264,25 +240,21 @@ learning_rate_reduction = ReduceLROnPlateau(monitor='val_accuracy',
                                             min_lr=0.00001)
 
 
-# In[25]:
 
 
 callbacks = [learning_rate_reduction]
 
 
-# In[26]:
 
 
 df['label'].head()
 
 
-# In[27]:
 
 
 df["label"] = df["label"].replace({0: '0', 1: '1', 2: '2', 3: '3', 4: '4', 5: '5'}) 
 
 
-# In[28]:
 
 
 train_df, validate_df = train_test_split(df, test_size=0.20, random_state=42)
@@ -290,19 +262,16 @@ train_df = train_df.reset_index(drop=True)
 validate_df = validate_df.reset_index(drop=True)
 
 
-# In[29]:
 
 
 train_df['label'].value_counts().plot.bar()
 
 
-# In[30]:
 
 
 validate_df['label'].value_counts().plot.bar()
 
 
-# In[31]:
 
 
 total_train = train_df.shape[0]
@@ -310,14 +279,12 @@ total_validate = validate_df.shape[0]
 batch_size=16
 
 
-# In[32]:
 
 
 print(total_train)
 print(total_validate)
 
 
-# In[33]:
 
 
 train_datagen = ImageDataGenerator(
@@ -344,7 +311,6 @@ train_generator = train_datagen.flow_from_dataframe(
 )
 
 
-# In[34]:
 
 
 validation_datagen = ImageDataGenerator(rescale=1./255, horizontal_flip=True)
@@ -359,7 +325,6 @@ validation_generator = validation_datagen.flow_from_dataframe(
 )
 
 
-# In[35]:
 
 
 example_df = train_df.sample(n=1).reset_index(drop=True)
@@ -373,7 +338,6 @@ example_generator = train_datagen.flow_from_dataframe(
 )
 
 
-# In[36]:
 
 
 plt.figure(figsize=(12, 12))
@@ -388,7 +352,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[37]:
 
 
 epochs=3 if FAST_RUN else 32
@@ -402,7 +365,6 @@ history = model.fit_generator(
 )
 
 
-# In[38]:
 
 
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 12))
@@ -420,7 +382,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[39]:
 
 
 test_filenames = os.listdir("/content/upload/test_images/test_images")
@@ -430,7 +391,6 @@ test_df = pd.DataFrame({
 nb_samples = test_df.shape[0]
 
 
-# In[40]:
 
 
 test_gen = ImageDataGenerator(rescale=1./255)
@@ -446,38 +406,32 @@ test_generator = test_gen.flow_from_dataframe(
 )
 
 
-# In[41]:
 
 
 predict = model.predict_generator(test_generator, steps=np.ceil(nb_samples/batch_size))
 
 
-# In[42]:
 
 
 test_df['label'] = np.argmax(predict, axis=-1)
 
 
-# In[43]:
 
 
 label_map = dict((v,k) for k,v in train_generator.class_indices.items())
 test_df['label'] = test_df['label'].replace(label_map)
 
 
-# In[44]:
 
 
 test_df['label'] = test_df['label'].replace({ '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5 })
 
 
-# In[45]:
 
 
 test_df['label'].value_counts().plot.bar()
 
 
-# In[46]:
 
 
 sample_test = test_df.head(18)
@@ -494,7 +448,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[47]:
 
 
 submission_df = test_df.copy()
@@ -505,13 +458,11 @@ submission_df = test_df.copy()
 submission_df.sort_values(by=['image_name'], axis=0, ascending=True)
 
 
-# In[ ]:
 
 
 
 
 
-# In[48]:
 
 
 from IPython.display import HTML
@@ -529,25 +480,21 @@ def create_download_link(df, title = "Download CSV file", filename = "data.csv")
 create_download_link(submission_df)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[49]:
 
 
 model.save_weights("model4.h5")
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import torch
@@ -16,7 +15,6 @@ import xml.etree.ElementTree as ET
 from PIL import Image
 
 
-# In[2]:
 
 
 import argparse
@@ -36,7 +34,6 @@ random.seed(manualSeed)
 torch.manual_seed(manualSeed)
 
 
-# In[3]:
 
 
 import os
@@ -101,7 +98,6 @@ import zipfile
 from tqdm import tqdm_notebook as tqdm
 
 
-# In[4]:
 
 
 batch_size = 32
@@ -135,14 +131,12 @@ beta1 = 0.5
 ngpu = 1
 
 
-# In[5]:
 
 
 if not os.path.exists('./dc_img'):
     os.mkdir('./dc_img')
 
 
-# In[6]:
 
 
 def to_img(x):
@@ -152,19 +146,16 @@ def to_img(x):
     return out
 
 
-# In[7]:
 
 
 get_ipython().system(" ls {'../input'}")
 
 
-# In[8]:
 
 
 annotation_folders = os.listdir('../input/annotation/Annotation')
 
 
-# In[9]:
 
 
 class DataGenerator(Dataset):
@@ -236,7 +227,6 @@ class DataGenerator(Dataset):
         return len(self.samples)
 
 
-# In[10]:
 
 
 database = '../input/all-dogs/all-dogs/'
@@ -274,7 +264,6 @@ print("Dog breeds loaded:  ", len(encoded_dog_labels))
 print("Data samples loaded:", len(train_data))
 
 
-# In[11]:
 
 
 # random_transforms = [transforms.ColorJitter(), transforms.RandomRotation(degrees=20)]
@@ -287,7 +276,6 @@ print("Data samples loaded:", len(train_data))
 #                                 transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
 
-# In[12]:
 
 
 # rand_aff = random.uniform(3.0, 15.0)
@@ -309,7 +297,6 @@ print("Data samples loaded:", len(train_data))
 # device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
 
 
-# In[13]:
 
 
 # dataset = datasets.ImageFolder(
@@ -319,13 +306,11 @@ print("Data samples loaded:", len(train_data))
 # )
 
 
-# In[14]:
 
 
 device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
 
 
-# In[15]:
 
 
 def weights_init(m):
@@ -337,7 +322,6 @@ def weights_init(m):
         nn.init.constant_(m.bias.data, 0)
 
 
-# In[16]:
 
 
 class Generator(nn.Module):
@@ -371,7 +355,6 @@ class Generator(nn.Module):
         return self.main(input)
 
 
-# In[17]:
 
 
 netG = Generator(ngpu).to(device)
@@ -388,7 +371,6 @@ netG.apply(weights_init)
 print(netG)
 
 
-# In[18]:
 
 
 class Discriminator(nn.Module):
@@ -420,7 +402,6 @@ class Discriminator(nn.Module):
         return self.main(input)
 
 
-# In[19]:
 
 
 netD = Discriminator(ngpu).to(device)
@@ -437,7 +418,6 @@ netD.apply(weights_init)
 print(netD)
 
 
-# In[20]:
 
 
 criterion = nn.BCELoss()
@@ -455,7 +435,6 @@ optimizerD = torch.optim.Adam(netD.parameters(), lr=lr, betas=(beta1, 0.999))
 optimizerG = torch.optim.Adam(netG.parameters(), lr=lr, betas=(beta1, 0.999))
 
 
-# In[21]:
 
 
 from numpy.random import random
@@ -465,7 +444,6 @@ def smooth_positive_labels(y):
     return torch.add(y,r)
 
 
-# In[22]:
 
 
 from numpy.random import choice
@@ -477,7 +455,6 @@ def noisy_labels(y, p_flip):
     return y
 
 
-# In[23]:
 
 
 img_list = []
@@ -571,7 +548,6 @@ for epoch in range(num_epochs):
         iters += 1
 
 
-# In[24]:
 
 
 plt.figure(figsize=(10,5))
@@ -584,7 +560,6 @@ plt.legend()
 plt.show()
 
 
-# In[25]:
 
 
 if not os.path.exists('../output_images'):
@@ -604,7 +579,6 @@ import shutil
 shutil.make_archive('images', 'zip', '../output_images')
 
 
-# In[26]:
 
 
 fig = plt.figure(figsize=(25, 16))
@@ -614,7 +588,6 @@ for i, j in enumerate(images[:32]):
     plt.imshow(j)
 
 
-# In[27]:
 
 
 real_batch = next(iter(dataloader))

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -19,7 +18,6 @@ train_df = pd.read_csv(os.path.join(DATA_PATH, 'train.csv'))
 #submission_df = pd.read_csv(os.path.join(DATA_PATH, 'sample_submission.csv'))
 
 
-# In[2]:
 
 
 x = train_df[['time','signal']]
@@ -32,7 +30,6 @@ x['f_DC'] = a1 * x['f_DC'].shift(1) + b0 * x['signal'] + b1 * x['signal'].shift(
 x.loc[0,'f_DC'] = x.loc[0,'signal']
 
 
-# In[3]:
 
 
 r = 0.995
@@ -50,7 +47,6 @@ x['f_50Hz'] = a1 * x['f_50Hz'].shift(1) + a2*x['f_50Hz'].shift(2) +             
 x.loc[0:1,'f_50Hz'] = x.loc[0:1,'signal']
 
 
-# In[4]:
 
 
 examples = ['signal']
@@ -77,7 +73,6 @@ ax.set_ylabel('PSD (dB)')
 ax.set_ylim(100,150)
 
 
-# In[5]:
 
 
 fs = 10000
@@ -98,7 +93,6 @@ x['f_3xn100Hz'] = x['f_2xn100Hz'] + a1 * x['f_2xn100Hz'].shift(K)
 x.loc[0:K-1,'f_3xn100Hz'] = x.loc[0:K-1,'f_2xn100Hz']
 
 
-# In[6]:
 
 
 examples = ['signal','f_DC','f_50Hz', 'f_n100Hz','f_2xn100Hz', 'f_3xn100Hz']
@@ -123,7 +117,6 @@ for i in range(len(examples)):
     #ax[i].set_ylim(0,5)
 
 
-# In[7]:
 
 
 def make_features(x,list_f):
@@ -155,7 +148,6 @@ x = make_features(x[['signal','f_50Hz', 'f_n100Hz']],
                   list_f = ['signal','f_50Hz', 'f_n100Hz'])
 
 
-# In[8]:
 
 
 test_df = pd.read_csv(os.path.join(DATA_PATH, 'test.csv'))
@@ -192,7 +184,6 @@ y.fillna(0, inplace=True)
 
 
 
-# In[9]:
 
 
 # Reference https://www.kaggle.com/teejmahal20/single-model-lgbm-kalman-filter
@@ -228,7 +219,6 @@ def run_lgb(pre_train, pre_test, features, params):
     return round_y_pred, model
 
 
-# In[10]:
 
 
 # lgb modeling
@@ -256,13 +246,11 @@ params = {'boosting_type': 'gbdt',
 y_pred_lgb, lgb_model = run_lgb(x, y, features, params)
 
 
-# In[11]:
 
 
 lgb.plot_importance(lgb_model)
 
 
-# In[12]:
 
 
 submission_df = pd.read_csv(os.path.join(DATA_PATH, 'sample_submission.csv'))
@@ -270,7 +258,6 @@ submission_df['open_channels'] = y_pred_lgb
 submission_df.to_csv('submit.csv', index = False,float_format='%.4f')
 
 
-# In[13]:
 
 
 x.loc[:,'time'] = test_df['time']
@@ -296,7 +283,6 @@ for i in range(len(examples)):
     #ax[i].set_ylim(0,5)
 
 
-# In[ ]:
 
 
 

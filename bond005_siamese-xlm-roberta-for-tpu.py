@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import codecs
@@ -15,7 +14,6 @@ import time
 from typing import Dict, List, Sequence, Set, Tuple
 
 
-# In[2]:
 
 
 import matplotlib.pyplot as plt
@@ -32,7 +30,6 @@ from transformers import AutoTokenizer, XLMRobertaTokenizer
 from transformers import TFXLMRobertaModel, XLMRobertaConfig
 
 
-# In[3]:
 
 
 class LossFunctionWrapper(tf.keras.losses.Loss):
@@ -58,7 +55,6 @@ class LossFunctionWrapper(tf.keras.losses.Loss):
         return dict(list(base_config.items()) + list(config.items()))
 
 
-# In[4]:
 
 
 def distance_based_log_loss(y_true, y_pred):
@@ -69,7 +65,6 @@ def distance_based_log_loss(y_true, y_pred):
     return tf.keras.backend.binary_crossentropy(target=y_true, output=p)
 
 
-# In[5]:
 
 
 class DBLLogLoss(LossFunctionWrapper):
@@ -79,7 +74,6 @@ class DBLLogLoss(LossFunctionWrapper):
                                          reduction=reduction)
 
 
-# In[6]:
 
 
 def dice_loss(y_true, y_pred):
@@ -91,7 +85,6 @@ def dice_loss(y_true, y_pred):
     return 1.0 - (2 * dice_loss_1 + 1.0) / (dice_loss_2 + dice_loss_3 + 1.0)
 
 
-# In[7]:
 
 
 class DiceLoss(LossFunctionWrapper):
@@ -99,7 +92,6 @@ class DiceLoss(LossFunctionWrapper):
         super(DiceLoss, self).__init__(dice_loss, name=name, reduction=reduction)
 
 
-# In[8]:
 
 
 class MaskCalculator(tf.keras.layers.Layer):
@@ -132,7 +124,6 @@ class MaskCalculator(tf.keras.layers.Layer):
         return tuple(shape)
 
 
-# In[9]:
 
 
 def regular_encode(texts: List[str], tokenizer: XLMRobertaTokenizer,
@@ -147,7 +138,6 @@ def regular_encode(texts: List[str], tokenizer: XLMRobertaTokenizer,
     return np.array(enc_di['input_ids']), np.array(enc_di['attention_mask'])
 
 
-# In[10]:
 
 
 def load_train_set(file_name: str, text_field: str, sentiment_fields: List[str],
@@ -213,7 +203,6 @@ def load_train_set(file_name: str, text_field: str, sentiment_fields: List[str],
     return data_by_lang
 
 
-# In[11]:
 
 
 def load_test_set(file_name: str, id_field: str, text_field: str,
@@ -267,7 +256,6 @@ def load_test_set(file_name: str, id_field: str, text_field: str,
     return data_by_lang
 
 
-# In[12]:
 
 
 def build_siamese_dataset(texts: Dict[str, List[Tuple[str, int]]],
@@ -425,7 +413,6 @@ def build_siamese_dataset(texts: Dict[str, List[Tuple[str, int]]],
     return dataset, n_steps
 
 
-# In[13]:
 
 
 def build_feature_extractor(transformer_name: str, hidden_state_size: int,
@@ -476,7 +463,6 @@ def build_feature_extractor(transformer_name: str, hidden_state_size: int,
     return cls_model, fe_model
 
 
-# In[14]:
 
 
 def euclidean_distance(vects):
@@ -488,7 +474,6 @@ def euclidean_distance(vects):
     )
 
 
-# In[15]:
 
 
 def eucl_dist_output_shape(shapes):
@@ -496,7 +481,6 @@ def eucl_dist_output_shape(shapes):
     return (shape1[0], 1)
 
 
-# In[16]:
 
 
 def build_siamese_nn(transformer_name: str, hidden_state_size: int, max_len: int,
@@ -549,7 +533,6 @@ def build_siamese_nn(transformer_name: str, hidden_state_size: int, max_len: int
     return nn, cls_, fe_
 
 
-# In[17]:
 
 
 def build_classifier(config: XLMRobertaConfig, hidden_state_size: int, max_len: int,
@@ -604,7 +587,6 @@ def build_classifier(config: XLMRobertaConfig, hidden_state_size: int, max_len: 
     return cls_model
 
 
-# In[18]:
 
 
 def show_training_process(history: tf.keras.callbacks.History, metric_name: str,
@@ -629,7 +611,6 @@ def show_training_process(history: tf.keras.callbacks.History, metric_name: str,
     plt.show()
 
 
-# In[19]:
 
 
 def train_siamese_nn(nn: tf.keras.Model, trainset: tf.data.Dataset, steps_per_trainset: int,
@@ -659,7 +640,6 @@ def train_siamese_nn(nn: tf.keras.Model, trainset: tf.data.Dataset, steps_per_tr
     show_training_process(history, 'loss')
 
 
-# In[20]:
 
 
 def show_roc_auc(y_true: np.ndarray, probabilities: np.ndarray, label: str,
@@ -678,7 +658,6 @@ def show_roc_auc(y_true: np.ndarray, probabilities: np.ndarray, label: str,
     plt.show()
 
 
-# In[21]:
 
 
 def calculate_features_of_texts(texts: Dict[str, List[Tuple[str, int]]],
@@ -728,7 +707,6 @@ def calculate_features_of_texts(texts: Dict[str, List[Tuple[str, int]]],
     return datasets_by_languages
 
 
-# In[22]:
 
 
 def predict_with_model(classifier: tf.keras.Model,
@@ -752,7 +730,6 @@ def predict_with_model(classifier: tf.keras.Model,
     return np.concatenate(predicted)
 
 
-# In[23]:
 
 
 def do_submit(data_for_training: Dict[str, Tuple[Tuple[np.ndarray, np.ndarray], np.ndarray]],
@@ -848,13 +825,11 @@ def do_submit(data_for_training: Dict[str, Tuple[Tuple[np.ndarray, np.ndarray], 
     return probabilities, int(np.ceil(end_time - postprocessing_start_time))
 
 
-# In[24]:
 
 
 experiment_start_time = time.time()
 
 
-# In[25]:
 
 
 try:
@@ -886,7 +861,6 @@ print('Batch size for Siamese NN is {0}'.format(batch_size_for_siamese))
 print('Batch size for classifier is {0}'.format(batch_size_for_cls))
 
 
-# In[26]:
 
 
 random.seed(42)
@@ -894,7 +868,6 @@ np.random.seed(42)
 tf.random.set_seed(42)
 
 
-# In[27]:
 
 
 siamese_learning_rate_max = 1e-5
@@ -905,7 +878,6 @@ dataset_dir = '/kaggle/input/jigsaw-multilingual-toxic-comment-classification'
 tmp_roberta_name = '/kaggle/working/base_nn.h5'
 
 
-# In[28]:
 
 
 xlmroberta_tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -913,7 +885,6 @@ xlmroberta_config = XLMRobertaConfig.from_pretrained(model_name)
 print(xlmroberta_config)
 
 
-# In[29]:
 
 
 sentence_embedding_size = xlmroberta_config.hidden_size
@@ -921,7 +892,6 @@ print('Sentence embedding size is {0}'.format(sentence_embedding_size))
 assert max_seq_len <= xlmroberta_config.max_position_embeddings
 
 
-# In[30]:
 
 
 corpus_for_training = load_train_set(
@@ -933,7 +903,6 @@ corpus_for_training = load_train_set(
 assert 'en' in corpus_for_training
 
 
-# In[31]:
 
 
 corpus_for_validation = load_train_set(
@@ -945,7 +914,6 @@ corpus_for_validation = load_train_set(
 assert 'en' in corpus_for_validation
 
 
-# In[32]:
 
 
 multilingual_corpus = load_train_set(
@@ -962,7 +930,6 @@ for language in sorted(list(multilingual_corpus.keys())):
         max_size = len(multilingual_corpus[language])
 
 
-# In[33]:
 
 
 texts_for_submission = load_test_set(
@@ -974,7 +941,6 @@ for language in sorted(list(texts_for_submission.keys())):
     print('  {0}\t\t{1} samples'.format(language, len(texts_for_submission[language])))
 
 
-# In[34]:
 
 
 dataset_for_training, n_train_batches = build_siamese_dataset(
@@ -984,13 +950,11 @@ dataset_for_training, n_train_batches = build_siamese_dataset(
 )
 
 
-# In[35]:
 
 
 del corpus_for_training
 
 
-# In[36]:
 
 
 dataset_for_validation, n_val_batches = build_siamese_dataset(
@@ -1000,7 +964,6 @@ dataset_for_validation, n_val_batches = build_siamese_dataset(
 )
 
 
-# In[37]:
 
 
 multilingual_corpus['en'] = random.sample(
@@ -1009,19 +972,16 @@ multilingual_corpus['en'] = random.sample(
 )
 
 
-# In[38]:
 
 
 del corpus_for_validation
 
 
-# In[39]:
 
 
 gc.collect()
 
 
-# In[40]:
 
 
 preparing_duration = int(round(time.time() - experiment_start_time))
@@ -1029,7 +989,6 @@ print("Duration of data loading and preparing to the Siamese NN training is "
       "{0} seconds.".format(preparing_duration))
 
 
-# In[41]:
 
 
 with strategy.scope():
@@ -1043,7 +1002,6 @@ with strategy.scope():
     )
 
 
-# In[42]:
 
 
 train_siamese_nn(nn=siamese_network,
@@ -1053,7 +1011,6 @@ train_siamese_nn(nn=siamese_network,
                  model_weights_path=tmp_roberta_name)
 
 
-# In[43]:
 
 
 del dataset_for_training
@@ -1061,20 +1018,17 @@ del dataset_for_validation
 gc.collect()
 
 
-# In[44]:
 
 
 siamese_network.load_weights(tmp_roberta_name)
 neural_classifier.save_weights(tmp_roberta_name, overwrite=True, save_format='h5')
 
 
-# In[45]:
 
 
 del neural_classifier, siamese_network
 
 
-# In[46]:
 
 
 dataset_for_training = calculate_features_of_texts(
@@ -1087,7 +1041,6 @@ dataset_for_training = calculate_features_of_texts(
 assert len(dataset_for_training) == 4
 
 
-# In[47]:
 
 
 dataset_for_submission = calculate_features_of_texts(
@@ -1099,7 +1052,6 @@ dataset_for_submission = calculate_features_of_texts(
 )
 
 
-# In[48]:
 
 
 X_embedded = []
@@ -1119,19 +1071,16 @@ X_embedded = np.vstack(X_embedded)
 y_embedded = np.concatenate(y_embedded)
 
 
-# In[49]:
 
 
 del dataset_for_training, dataset_for_submission, feature_extractor
 
 
-# In[50]:
 
 
 X_embedded = TSNE(n_components=2, n_jobs=-1).fit_transform(X_embedded)
 
 
-# In[51]:
 
 
 indices_of_unknown_classes = list(filter(
@@ -1160,7 +1109,6 @@ plt.legend(loc='best')
 plt.show()
 
 
-# In[52]:
 
 
 del indices_of_negative_classes
@@ -1169,7 +1117,6 @@ del indices_of_unknown_classes
 del X_embedded, y_embedded
 
 
-# In[53]:
 
 
 gc.collect()
@@ -1181,7 +1128,6 @@ if tpu:
     strategy = tf.distribute.experimental.TPUStrategy(tpu)
 
 
-# In[54]:
 
 
 all_languages_for_training = sorted(list(multilingual_corpus.keys()))
@@ -1189,7 +1135,6 @@ print('Languages in the labeled trainset: '       '{0}'.format(all_languages_for
 assert len(all_languages_for_training) == 4
 
 
-# In[55]:
 
 
 training_set_size = 0
@@ -1207,7 +1152,6 @@ for cur_lang in all_languages_for_training:
     training_set_size += multilingual_corpus[cur_lang][1].shape[0]
 
 
-# In[56]:
 
 
 texts_for_submission_ = []
@@ -1229,14 +1173,12 @@ identifiers_for_submission = np.array(
 )
 
 
-# In[57]:
 
 
 del xlmroberta_tokenizer, texts_for_submission_
 gc.collect()
 
 
-# In[58]:
 
 
 experiment_duration = int(round(time.time() - experiment_start_time))
@@ -1244,7 +1186,6 @@ print('Duration of the Siamese XLM-RoBERTa preparing is {0} seconds.'.format(
     experiment_duration))
 
 
-# In[59]:
 
 
 with strategy.scope():
@@ -1260,7 +1201,6 @@ with strategy.scope():
 neural_classifier.load_weights(tmp_roberta_name)
 
 
-# In[60]:
 
 
 result_of_submission1, postprocessing_duration = do_submit(
@@ -1273,13 +1213,11 @@ result_of_submission1, postprocessing_duration = do_submit(
 )
 
 
-# In[61]:
 
 
 assert result_of_submission1.shape == identifiers_for_submission.shape
 
 
-# In[62]:
 
 
 del neural_classifier
@@ -1292,7 +1230,6 @@ if tpu:
     strategy = tf.distribute.experimental.TPUStrategy(tpu)
 
 
-# In[63]:
 
 
 with strategy.scope():
@@ -1308,7 +1245,6 @@ with strategy.scope():
 neural_classifier.load_weights(tmp_roberta_name)
 
 
-# In[64]:
 
 
 result_of_submission2, _ = do_submit(
@@ -1322,13 +1258,11 @@ result_of_submission2, _ = do_submit(
 )
 
 
-# In[65]:
 
 
 assert result_of_submission2.shape == identifiers_for_submission.shape
 
 
-# In[66]:
 
 
 del neural_classifier
@@ -1341,7 +1275,6 @@ if tpu:
     strategy = tf.distribute.experimental.TPUStrategy(tpu)
 
 
-# In[67]:
 
 
 with strategy.scope():
@@ -1357,7 +1290,6 @@ with strategy.scope():
 neural_classifier.load_weights(tmp_roberta_name)
 
 
-# In[68]:
 
 
 result_of_submission3, _ = do_submit(
@@ -1371,13 +1303,11 @@ result_of_submission3, _ = do_submit(
 )
 
 
-# In[69]:
 
 
 assert result_of_submission3.shape == identifiers_for_submission.shape
 
 
-# In[70]:
 
 
 del neural_classifier
@@ -1390,7 +1320,6 @@ if tpu:
     strategy = tf.distribute.experimental.TPUStrategy(tpu)
 
 
-# In[71]:
 
 
 with strategy.scope():
@@ -1406,7 +1335,6 @@ with strategy.scope():
 neural_classifier.load_weights(tmp_roberta_name)
 
 
-# In[72]:
 
 
 result_of_submission4, _ = do_submit(
@@ -1420,13 +1348,11 @@ result_of_submission4, _ = do_submit(
 )
 
 
-# In[73]:
 
 
 assert result_of_submission4.shape == identifiers_for_submission.shape
 
 
-# In[74]:
 
 
 with codecs.open('submission.csv', mode='w', encoding='utf-8', errors='ignore') as fp:
@@ -1441,7 +1367,6 @@ with codecs.open('submission.csv', mode='w', encoding='utf-8', errors='ignore') 
         fp.write('{0},{1:.9f}\n'.format(id_val, proba_val))
 
 
-# In[75]:
 
 
 print('Experiment duration is {0:.3f}.'.format(time.time() - experiment_start_time))

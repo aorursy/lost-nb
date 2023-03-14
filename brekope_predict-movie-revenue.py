@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -44,7 +43,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 train_df = pd.read_csv("../input/train.csv")
@@ -53,13 +51,11 @@ test_df = pd.read_csv("../input/test.csv")
 train_df.head()
 
 
-# In[3]:
 
 
 train_df.shape
 
 
-# In[4]:
 
 
 
@@ -78,7 +74,6 @@ test_df['release_date'] = pd.to_datetime(test_df['release_date'].apply(lambda x:
 train_df['release_date'].head()
 
 
-# In[5]:
 
 
 # creating features based on dates
@@ -94,7 +89,6 @@ train_df = process_date(train_df)
 test_df = process_date(test_df)
 
 
-# In[6]:
 
 
 dict_columns = ['belongs_to_collection', 'genres', 'production_companies', 'production_countries', 
@@ -105,27 +99,23 @@ def convert_dict(df):
     return df
 
 
-# In[7]:
 
 
 train_df = convert_dict(train_df)
 test_df = convert_dict(test_df)
 
 
-# In[8]:
 
 
 collections = train_df['belongs_to_collection']
 collections[:5]
 
 
-# In[9]:
 
 
 train_df['belongs_to_collection'].isnull().sum()
 
 
-# In[10]:
 
 
 train_df['has_collection'] = train_df['belongs_to_collection'].apply(lambda x: 1 if not pd.isnull(x) else 0)
@@ -133,7 +123,6 @@ test_df['has_collection'] = test_df['belongs_to_collection'].apply(lambda x: 1 i
 train_df['has_collection'][:5]
 
 
-# In[11]:
 
 
 train_df['collection_name'] = train_df['belongs_to_collection'].apply(lambda x: x[0]['name'] if not pd.isnull(x) else 0)
@@ -141,14 +130,12 @@ test_df['collection_name'] = test_df['belongs_to_collection'].apply(lambda x: x[
 train_df['collection_name'][:5]
 
 
-# In[12]:
 
 
 train_df = train_df.drop("belongs_to_collection", axis =1)
 test_df = test_df.drop("belongs_to_collection", axis =1)
 
 
-# In[13]:
 
 
 def dictToInd(var, num):
@@ -177,20 +164,17 @@ def dictToInd(var, num):
         test_df[var +'_' + i] = test_df['all_' + var].apply(lambda x: 1 if x!=0 and i in x else 0)
 
 
-# In[14]:
 
 
 dictToInd('genres', 30)
 train_df.head()
 
 
-# In[15]:
 
 
 train_df['num_genres'].value_counts()
 
 
-# In[16]:
 
 
 genres = []
@@ -204,7 +188,6 @@ for i, e in enumerate(train_df['all_genres']):
 print(genres)
 
 
-# In[17]:
 
 
 train_df['genres'].head()
@@ -212,65 +195,55 @@ list_of_genres = train_df['genres'].apply(lambda x: x if x != {} else [])
 list_of_genres
 
 
-# In[18]:
 
 
 train_df['production_companies'].fillna(0).apply(lambda x: len(x) if x != 0 else 0).value_counts()
 
 
-# In[19]:
 
 
 dictToInd('production_companies', 6)
 train_df.head()
 
 
-# In[20]:
 
 
 train_df['production_countries'].fillna(0).apply(lambda x: len(x) if x != 0 else 0).value_counts()
 
 
-# In[21]:
 
 
 dictToInd('production_countries',5)
 train_df.head()
 
 
-# In[22]:
 
 
 train_df['spoken_languages'].fillna(0).apply(lambda x: len(x) if x != 0 else 0).value_counts()
 
 
-# In[23]:
 
 
 dictToInd('spoken_languages', 5)
 train_df.head()
 
 
-# In[24]:
 
 
 train_df['Keywords'].fillna(0).apply(lambda x: len(x) if x !=0 else 0).value_counts()
 
 
-# In[25]:
 
 
 train_df['Keywords']
 
 
-# In[26]:
 
 
 list_of_keywords = list(train_df['Keywords'].fillna(0).apply(lambda x: [i['name'] for i in x] if x != 0 else []).values)
 list_of_keywords[:19]
 
 
-# In[27]:
 
 
 plt.figure(figsize=(12,18))
@@ -280,34 +253,29 @@ wordcloud = WordCloud(max_font_size = None, background_color='white', collocatio
 plt.imshow(wordcloud)
 
 
-# In[28]:
 
 
 dictToInd('Keywords', 10)
 train_df.head()
 
 
-# In[29]:
 
 
 train_df['cast'].fillna(0).apply(lambda x: len(x) if x != 0 else 0).value_counts()
 
 
-# In[30]:
 
 
 dictToInd('cast', 10)
 train_df.head()
 
 
-# In[31]:
 
 
 dictToInd('crew', 10)
 train_df.head()
 
 
-# In[32]:
 
 
 for i in train_df.columns:
@@ -316,7 +284,6 @@ for i in train_df.columns:
         print(i, " :", num_nas)
 
 
-# In[33]:
 
 
 for i in test_df.columns:
@@ -325,13 +292,11 @@ for i in test_df.columns:
         print(i, " :", num_nas)
 
 
-# In[34]:
 
 
 test_df['status'].value_counts()
 
 
-# In[35]:
 
 
 train_df['runtime'] = train_df['runtime'].fillna(train_df['runtime'].median())
@@ -357,7 +322,6 @@ test_df['budget'] = test_df['budget'].fillna(test_df['budget'].median())
 test_df['status'] = test_df['status'].fillna(test_df['status'].mode()[0])
 
 
-# In[36]:
 
 
 le = LabelEncoder()
@@ -366,7 +330,6 @@ test_df['status'] = le.fit_transform(test_df['status'])
 train_df['status'].value_counts()
 
 
-# In[37]:
 
 
 fig, axes = plt.subplots(1,2, figsize=(16,6))
@@ -375,7 +338,6 @@ sns.distplot(train_df['revenue'], color ='y', ax=axes[0]).set_title('Revenue Dis
 sns.distplot(np.log1p(train_df['revenue']), color='b', ax=axes[1]).set_title('Log Revenue Distribution')
 
 
-# In[38]:
 
 
 fig, axes = plt.subplots(2,2, figsize=(16,8))
@@ -387,7 +349,6 @@ sns.scatterplot(train_df['budget'], train_df['revenue'],color ='y', ax=axes[1,0]
 sns.scatterplot(np.log1p(train_df['budget']), np.log1p(train_df['revenue']), ax=axes[1,1]).set_title('Log Revenue vs. Log Budget')
 
 
-# In[39]:
 
 
 fig, axes = plt.subplots(1,2, figsize=(16,6))
@@ -400,7 +361,6 @@ plt.close(2)
 plt.close(3)
 
 
-# In[40]:
 
 
 train_df['log_revenue'] = np.log1p(train_df['revenue'])
@@ -408,7 +368,6 @@ train_df['log_budget'] = np.log1p(train_df['budget'])
 test_df['log_budget'] = np.log1p(test_df['budget'])
 
 
-# In[41]:
 
 
 plt.figure(figsize=(16, 8))
@@ -420,7 +379,6 @@ sns.boxplot(x='original_language', y='log_revenue', data=train_df.loc[train_df['
 plt.title('Mean log revenue per language');
 
 
-# In[42]:
 
 
 vectorizer = TfidfVectorizer(
@@ -436,14 +394,12 @@ linreg.fit(overview_text, train_df['log_revenue'])
 eli5.show_weights(linreg, vec=vectorizer, top=20, feature_filter=lambda x: x != '<BIAS>')
 
 
-# In[43]:
 
 
 print('Target value:', train_df['log_revenue'][10])
 eli5.show_prediction(linreg, doc=train_df['overview'].values[10], vec=vectorizer)
 
 
-# In[44]:
 
 
 train_texts = train_df[['title', 'tagline', 'overview', 'original_title']]
@@ -452,7 +408,6 @@ test_texts = test_df[['title', 'tagline', 'overview', 'original_title']]
 train_df[['title', 'tagline', 'overview', 'original_title']].head()
 
 
-# In[45]:
 
 
 for col in ['title','overview', 'tagline','original_title']:
@@ -464,7 +419,6 @@ for col in ['title','overview', 'tagline','original_title']:
     test_df = test_df.drop(col, axis=1)
 
 
-# In[46]:
 
 
 f, axes = plt.subplots(4, 5, figsize=(24, 16))
@@ -473,7 +427,6 @@ for i, e in enumerate([col for col in train_df.columns if 'genres_' in col]):
     sns.violinplot(x=e, y='revenue', data=train_df, ax=axes[i // 5][i % 5]);
 
 
-# In[47]:
 
 
 plt.style.use('ggplot')
@@ -488,21 +441,18 @@ layout = go.Layout(dict(title = "Number of films per year",
 py.iplot(dict(data=data, layout=layout))
 
 
-# In[48]:
 
 
 f = ['budget', 'popularity', 'runtime', 'revenue', 'log_revenue', 'log_budget']
 sns.pairplot(train_df[f].dropna())
 
 
-# In[49]:
 
 
 corr = train_df.drop('release_date', axis=1).corr()
 corr.style.background_gradient(cmap='Blues')
 
 
-# In[50]:
 
 
 train_df = pd.concat([train_df, pd.get_dummies(train_df['release_date_weekday'], prefix='release_weekday')], axis=1)
@@ -514,7 +464,6 @@ test_df = pd.concat([test_df, pd.get_dummies(test_df['release_date_month'], pref
 test_df = pd.concat([test_df, pd.get_dummies(test_df['release_date_quarter'], prefix='release_quarter')], axis=1)
 
 
-# In[51]:
 
 
 def new_features(df):
@@ -533,7 +482,6 @@ def new_features(df):
     return df
 
 
-# In[52]:
 
 
 train_df =new_features(train_df)
@@ -541,7 +489,6 @@ test_df =new_features(test_df)
 train_df.head()
 
 
-# In[53]:
 
 
 y = train_df['log_revenue']
@@ -560,13 +507,11 @@ X_test= test_df.drop(['id', 'genres', 'homepage', 'imdb_id','original_language',
 X.head()
 
 
-# In[54]:
 
 
 X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.2, random_state=1)
 
 
-# In[55]:
 
 
 simple_forest = RandomForestRegressor(criterion = 'mse',
@@ -574,21 +519,18 @@ simple_forest = RandomForestRegressor(criterion = 'mse',
                               random_state = 1)
 
 
-# In[56]:
 
 
 simple_forest.fit(X_train, y_train)
 simple_forest_pred = simple_forest.predict(X_valid)
 
 
-# In[57]:
 
 
 mse = mean_squared_error(simple_forest_pred, y_valid)
 mse
 
 
-# In[58]:
 
 
 simple_forest_pred = simple_forest.predict(X_test)
@@ -599,7 +541,6 @@ submit.to_csv('submission_simple_forest.csv', index=False)
 submit.head()
 
 
-# In[59]:
 
 
 params = {'num_leaves': 30,
@@ -621,19 +562,16 @@ light_gbm.fit(X_train, y_train,
         verbose=1000, early_stopping_rounds=200)
 
 
-# In[60]:
 
 
 np.square(1.82195)
 
 
-# In[61]:
 
 
 eli5.show_weights(light_gbm, feature_filter=lambda x: x != '<BIAS>')
 
 
-# In[62]:
 
 
 light_gbm_pred = light_gbm.predict(X_test)
@@ -644,7 +582,6 @@ submit.to_csv('submission_light_gbm.csv', index=False)
 submit.head()
 
 
-# In[63]:
 
 
 # Number of trees in random forest
@@ -669,7 +606,6 @@ random_grid = {'n_estimators': n_estimators,
                'bootstrap': bootstrap}
 
 
-# In[64]:
 
 
 rf_best = RandomForestRegressor(n_estimators=1400,
@@ -681,7 +617,6 @@ rf_best = RandomForestRegressor(n_estimators=1400,
                                random_state=1)
 
 
-# In[65]:
 
 
 rf_best.fit(X_train, y_train)
@@ -690,14 +625,12 @@ mse_best= mean_squared_error(rf_best_pred, y_valid)
 mse_best
 
 
-# In[66]:
 
 
 rf_best_pred = rf_best.predict(X_test)
 rf_best_pred[:5]
 
 
-# In[67]:
 
 
 feature_importances = pd.DataFrame(rf_best.feature_importances_,
@@ -706,7 +639,6 @@ feature_importances = pd.DataFrame(rf_best.feature_importances_,
 plt.barh(feature_importances.index[:15],feature_importances['importance'][:15])
 
 
-# In[68]:
 
 
 rf_best_rev = np.expm1(rf_best_pred)
@@ -716,7 +648,6 @@ submit.to_csv('submission_rf_best.csv', index=False)
 submit.head()
 
 
-# In[ ]:
 
 
 

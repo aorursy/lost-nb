@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas
@@ -32,7 +31,6 @@ from sklearn.ensemble import (
 from xgboost import XGBClassifier
 
 
-# In[2]:
 
 
 train = pandas.read_csv('../input/train.csv')
@@ -59,7 +57,6 @@ train = train.drop(features_categorical, axis=1)
 test = test.drop(features_categorical, axis=1)
 
 
-# In[3]:
 
 
 combined_features = Pipeline([
@@ -90,7 +87,6 @@ combined_features = Pipeline([
 ])
 
 
-# In[4]:
 
 
 classifiers = {
@@ -126,7 +122,6 @@ classifiers = {
 }
 
 
-# In[5]:
 
 
 clf_acc = []
@@ -161,7 +156,6 @@ for i, (train_index, val_index) in enumerate(ss.split(train, labels), start=1):
 clf_acc = pandas.DataFrame(clf_acc, columns=['classifier', 'split', 'acc'])
 
 
-# In[6]:
 
 
 clf_cv_acc = clf_acc[['classifier', 'acc']]     .groupby('classifier')     .mean()     .sort_values(by='acc', ascending=False
@@ -173,7 +167,6 @@ top_estimators_acc = clf_cv_acc.head(3).classifier.values
 vc_estimators = {k: classifiers[k] for k in top_estimators_acc}
 
 
-# In[7]:
 
 
 ss = ShuffleSplit(
@@ -213,7 +206,6 @@ print('\n\n%r' % df.head())
 weights, _ = df.as_matrix()[0]
 
 
-# In[8]:
 
 
 eclf = VotingClassifier(

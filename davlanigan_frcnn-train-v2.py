@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -30,7 +29,6 @@ print(len(train_df["image_id"].unique()))
 train_df.head()
 
 
-# In[2]:
 
 
 # imgs_df=train_df["image_id"].unique()
@@ -44,7 +42,6 @@ train_df.head()
 # out=np.array(im_output)
 
 
-# In[3]:
 
 
 """
@@ -95,7 +92,6 @@ transformed_bboxes = transformed['bboxes']
 print_im(transformed_image,transformed_bboxes)
 
 
-# In[4]:
 
 
 class ImageDataset(Dataset):
@@ -1155,7 +1151,6 @@ AttributeError: 'JpegImageFile' object has no attribute 'imread'
         return len(self.imgs)
 
 
-# In[6]:
 
 
 """
@@ -1186,7 +1181,6 @@ for c in boxes:
 plt.show()
 
 
-# In[7]:
 
 
 """
@@ -1203,7 +1197,6 @@ model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 
-# In[8]:
 
 
 from torch import optim
@@ -1256,7 +1249,6 @@ print(" ")
 print("Training Time: {}".format( time.time() - start_time ))
 
 
-# In[9]:
 
 
 import matplotlib
@@ -1299,14 +1291,12 @@ for image_id in test_imgs:
 #torch.save(model.state_dict(), 'fasterRCNN_101.pth')
 
 
-# In[10]:
 
 
 print( len(scoresA[0]) )
 print( predsA[0] )
 
 
-# In[11]:
 
 
 import matplotlib
@@ -1325,7 +1315,6 @@ for i,pic in enumerate(predsA):
 plt.show()
 
 
-# In[12]:
 
 
 # test_df=pd.read_csv("{}{}.csv".format("/kaggle/input/global-wheat-detection/","test"))

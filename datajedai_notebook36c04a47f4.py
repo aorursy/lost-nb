@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -9,41 +8,35 @@ import pandas as pd
 import seaborn as sns
 
 
-# In[2]:
 
 
 # just to see where things are
 get_ipython().system(' ls -la ../input')
 
 
-# In[3]:
 
 
 def get_shape(df):
     return pd.DataFrame({'row':df.shape[0], 'features': df.shape[1]}, index=['count'])
 
 
-# In[4]:
 
 
 df = pd.read_csv("../input/properties_2016.csv")
 
 
-# In[5]:
 
 
 #get_shape(df)
 pd.DataFrame( dict(zip( ('rows','dims'), df.shape ) ) , index=[1])
 
 
-# In[6]:
 
 
 pd.options.display.float_format = '{:.2f}'.format
 df.describe().T
 
 
-# In[7]:
 
 
 # for col in df.columns[:2]:
@@ -51,50 +44,42 @@ df.describe().T
 sns.distplot(df.taxamount)
 
 
-# In[8]:
 
 
 # pivot the output to fit the scren
 df.head().T
 
 
-# In[9]:
 
 
 dftrn = pd.read_csv("../input/train_2016.csv")
 
 
-# In[10]:
 
 
 get_shape(dftrn)
 
 
-# In[11]:
 
 
 dftrn.head()
 
 
-# In[12]:
 
 
 pdm = pd.merge( dftrn, df , how='left', on=['parcelid'])
 
 
-# In[13]:
 
 
 pdm.head().T
 
 
-# In[14]:
 
 
 pdm.columns
 
 
-# In[15]:
 
 
 pdm.rename(columns={
@@ -176,7 +161,6 @@ pdm.rename(columns={
 }, inplace=True)
 
 
-# In[16]:
 
 
 def show_counts_per_feature():
@@ -187,13 +171,11 @@ def show_counts_per_feature():
 show_counts_per_feature()
 
 
-# In[17]:
 
 
 pdm.tax_delinquency.unique()
 
 
-# In[18]:
 
 
 pdm['tax_delinquency'].fillna('N', inplace=True)
@@ -201,85 +183,71 @@ pdm.rooms.fillna(0,inplace=True)
 pdm.total_rooms.fillna(0, inplace=True)
 
 
-# In[19]:
 
 
 show_counts_per_feature()
 
 
-# In[20]:
 
 
 pdm.total_rooms.unique()
 
 
-# In[21]:
 
 
 
 
 
-# In[21]:
 
 
 
 
 
-# In[21]:
 
 
 
 
 
-# In[21]:
 
 
 
 
 
-# In[21]:
 
 
 
 
 
-# In[21]:
 
 
 
 
 
-# In[21]:
 
 
 
 
 
-# In[21]:
 
 
 
 
 
-# In[21]:
 
 
 
 
 
-# In[21]:
 
 
 
 
 
-# In[21]:
 
 
 
 
 
-# In[21]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 # Importing Libraries for EDA
@@ -42,45 +40,38 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[3]:
 
 
 data_train = pd.read_csv('../input/new-york-city-taxi-fare-prediction/train.csv',nrows = 200000,parse_dates=["pickup_datetime"])
 
 
-# In[4]:
 
 
 print(len(data_train));
 
 
-# In[5]:
 
 
 #Data exploration
 data_train.info()
 
 
-# In[6]:
 
 
 data_train.describe()
 
 
-# In[7]:
 
 
 data_train.head()
 
 
-# In[8]:
 
 
 #Null value exploration code
 print(data_train.isnull().sum())
 
 
-# In[9]:
 
 
 #So we will enter there a median value.
@@ -92,13 +83,11 @@ median2 = data_train['dropoff_latitude'].median()
 data_train['dropoff_latitude'].fillna(median2, inplace=True)
 
 
-# In[10]:
 
 
 print(data_train.isnull().sum())
 
 
-# In[11]:
 
 
 data_train["pickup_longitude"] = pd.to_numeric(data_train.pickup_longitude, errors='coerce')
@@ -107,19 +96,16 @@ data_train["dropoff_longitude"] = pd.to_numeric(data_train.dropoff_longitude, er
 data_train["dropoff_latitude"] = pd.to_numeric(data_train.dropoff_latitude, errors='coerce')
 
 
-# In[12]:
 
 
 data_train.head()
 
 
-# In[13]:
 
 
 data_train.dtypes
 
 
-# In[14]:
 
 
 from math import pi,sqrt,sin,cos,atan2
@@ -151,27 +137,23 @@ def haversine(pickUp_lat,pickUp_long,dropOff_lat,dropOff_long):
     return km
 
 
-# In[15]:
 
 
 res = haversine(40.721319,-73.844311,40.712278,-73.841610)
 print("Distance is {} km".format(round(res)))
 
 
-# In[16]:
 
 
 # add new column to dataframe with distance in miles
 data_train['distance_km'] = haversine(data_train.pickup_latitude, data_train.pickup_longitude,data_train.dropoff_latitude, data_train.dropoff_longitude)
 
 
-# In[17]:
 
 
 data_train.head()
 
 
-# In[18]:
 
 
 data_train['year'] = data_train.pickup_datetime.apply(lambda t: t.year)
@@ -180,7 +162,6 @@ data_train['weekday'] = data_train.pickup_datetime.apply(lambda t: t.weekday())
 data_train['hour'] = data_train.pickup_datetime.apply(lambda t: t.hour)
 
 
-# In[19]:
 
 
 #Some statisitcs
@@ -197,13 +178,11 @@ for col in data_train.columns:
 stats_df = pd.DataFrame(statistics_of_data, columns=['Feature', 'Uniq_val', 'missing_val', 'val_biggest_cat', 'type'])
 
 
-# In[20]:
 
 
 stats_df.sort_values('val_biggest_cat', ascending=False)
 
 
-# In[21]:
 
 
 ## Now lets explore features one by one
@@ -217,79 +196,66 @@ def exploreFeatures(col):
   print(data_train[col].value_counts(normalize=True, dropna=False).head(10))
 
 
-# In[22]:
 
 
 exploreFeatures('passenger_count')
 
 
-# In[23]:
 
 
 exploreFeatures('fare_amount')
 
 
-# In[24]:
 
 
 exploreFeatures('weekday')
 
 
-# In[25]:
 
 
 exploreFeatures('hour')
 
 
-# In[26]:
 
 
 exploreFeatures('distance_km')
 
 
-# In[27]:
 
 
 exploreFeatures('pickup_latitude')
 
 
-# In[28]:
 
 
 exploreFeatures('pickup_longitude')
 
 
-# In[29]:
 
 
 exploreFeatures('dropoff_longitude')
 
 
-# In[30]:
 
 
 exploreFeatures('dropoff_latitude')
 
 
-# In[31]:
 
 
 exploreFeatures('year')
 
 
-# In[32]:
 
 
 exploreFeatures('month')
 
 
-# In[33]:
 
 
 data_train[data_train['distance_km'] == 0.00]
 
 
-# In[34]:
 
 
 ## SO, We will remove them
@@ -297,20 +263,17 @@ data_train[data_train['distance_km'] == 0.00]
 data_train = data_train[data_train['distance_km'] != 0.00]
 
 
-# In[35]:
 
 
 data_train
 
 
-# In[36]:
 
 
 ##Lets test it
 exploreFeatures('distance_km')
 
 
-# In[37]:
 
 
 ## Any coordiantes wrongly planted ??
@@ -328,7 +291,6 @@ maxdatapoints = max(data_test.pickup_longitude.max(), data_test.dropoff_longitud
 print("minimum LONGITUDE data points {0} maximum data points {1} in NYC".format(mindatapoints,maxdatapoints))
 
 
-# In[38]:
 
 
 mindatapointsLAT = min(data_test.pickup_latitude.min(), data_test.dropoff_latitude.min())
@@ -337,7 +299,6 @@ maxdatapointsLAT = max(data_test.pickup_latitude.max(), data_test.dropoff_latitu
 print("minimum LATITUDE data points {0} maximum data points {1} in NYC".format(mindatapointsLAT,maxdatapointsLAT))
 
 
-# In[39]:
 
 
 # Now Creating a Boundary.
@@ -346,14 +307,12 @@ def select_within_boundingbox(df, BB):
     return (df.pickup_longitude >= BB[0]) & (df.pickup_longitude <= BB[1]) &            (df.pickup_latitude >= BB[2]) & (df.pickup_latitude <= BB[3]) &            (df.dropoff_longitude >= BB[0]) & (df.dropoff_longitude <= BB[1]) &            (df.dropoff_latitude >= BB[2]) & (df.dropoff_latitude <= BB[3])
 
 
-# In[40]:
 
 
 #Boundary is :
 BB = (-74.5, -72.8, 40.5, 41.8)
 
 
-# In[41]:
 
 
 print('Old size: %d' % len(data_train))
@@ -361,7 +320,6 @@ data_train = data_train[select_within_boundingbox(data_train, BB)]
 print('New size: %d' % len(data_train))
 
 
-# In[42]:
 
 
 #We have successfully removed all data points which are not in the boundary of NYC.Now we need to remove data points in water, as they are Noisy data-points.
@@ -389,7 +347,6 @@ def remove_datapoints_from_water(df):
     return df[idx]
 
 
-# In[43]:
 
 
 print('Old size: %d' % len(data_train))
@@ -397,7 +354,6 @@ data_train = remove_datapoints_from_water(data_train)
 print('New size: %d' % len(data_train))
 
 
-# In[44]:
 
 
 #Strat From Airport, Did we find any lead ?
@@ -407,7 +363,6 @@ EWRAirport_Coord = (-74.175, 40.69)
 nyc = (-74.0063889, 40.7141667)
 
 
-# In[45]:
 
 
 def absoluteDataPoint(loc, name):
@@ -421,37 +376,31 @@ def absoluteDataPoint(loc, name):
     return idx0,idx1,fareAmount_Pickup,fareAmount_DropOff
 
 
-# In[46]:
 
 
 idx0,idx1,fareAmount_Pickup,fareAmount_DropOff = absoluteDataPoint(jfkAirport_Corrd,"JFK Airport")
 
 
-# In[47]:
 
 
 idx0,idx1,fareAmount_Pickup,fareAmount_DropOff = absoluteDataPoint(EWRAirport_Coord,"Newark Airport")
 
 
-# In[48]:
 
 
 idx0,idx1,fareAmount_Pickup,fareAmount_DropOff = absoluteDataPoint(LGAAirport_Corrd, 'LaGuardia Airport')
 
 
-# In[49]:
 
 
 data_train_ToAndFro_airport_JFK_Airport = data_train[(data_train.fare_amount == 57.33) | (data_train.fare_amount == 49.80) | (data_train.fare_amount == 49.57)]
 
 
-# In[50]:
 
 
 data_train_ToAndFro_airport_JFK_Airport.head()
 
 
-# In[ ]:
 
 
 

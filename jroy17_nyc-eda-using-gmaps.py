@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -22,7 +21,6 @@ import xgboost as xgb
 from xgboost import XGBRegressor
 
 
-# In[2]:
 
 
 def distance(source_lat, source_long, dest_lat, dest_long):
@@ -39,20 +37,17 @@ def distance(source_lat, source_long, dest_lat, dest_long):
     return dist
 
 
-# In[3]:
 
 
 direc = "../input/nyc-taxi-trip-duration/"
 
 
-# In[4]:
 
 
 train = pd.read_csv(direc+"train.csv")
 test = pd.read_csv(direc+"test.csv")
 
 
-# In[5]:
 
 
 dist = []
@@ -63,7 +58,6 @@ for i in range(len(train)):
 train["distance"] = dist
 
 
-# In[6]:
 
 
 dist_test = []
@@ -74,31 +68,26 @@ for i in range(len(test)):
 test["distance"] = dist_test
 
 
-# In[7]:
 
 
 train.head()
 
 
-# In[8]:
 
 
 test.head()
 
 
-# In[9]:
 
 
 unique=test.id.unique()
 
 
-# In[10]:
 
 
 len(unique)
 
 
-# In[11]:
 
 
 pickup_date = []
@@ -108,7 +97,6 @@ pickup_hr = []
 pickup_month = []
 
 
-# In[12]:
 
 
 pickup_datetime = train["pickup_datetime"]
@@ -133,7 +121,6 @@ for i in range(len(train)):
         pickup_hr.append(int(split_hr[0]))
 
 
-# In[13]:
 
 
 # Adding the columns to train dataset
@@ -142,7 +129,6 @@ train["pickup_day"] = pickup_day
 train["pickup_month"] = pickup_month
 
 
-# In[14]:
 
 
 # Plots a heatmap showing the maximum duration of trips grouped by days of the week
@@ -152,7 +138,6 @@ sns.heatmap(day_grp, annot=True,cmap="YlOrRd")
 plt.show()
 
 
-# In[15]:
 
 
 sunday = train.query("pickup_day == 'Sunday'")
@@ -164,7 +149,6 @@ friday = train.query("pickup_day == 'Friday'")
 saturday = train.query("pickup_day == 'Saturday'")
 
 
-# In[16]:
 
 
 plt.figure(figsize=(12,8))
@@ -180,13 +164,11 @@ ax.set_ylabel("Frequency of pickups")
 plt.show()
 
 
-# In[17]:
 
 
 train["pickup_hr"] =  train["pickup_hr"].convert_objects(convert_numeric=True)
 
 
-# In[18]:
 
 
 plt.figure(figsize=(12,8))
@@ -194,7 +176,6 @@ axe = sns.violinplot(x="pickup_day", y="pickup_hr", hue="vendor_id", data=train,
 plt.show()
 
 
-# In[19]:
 
 
 # Creating a pivot of train to create heat map between Pickup Months and Pickup Days
@@ -208,13 +189,11 @@ sns.heatmap(pvt,cmap='YlOrRd')
 plt.show()
 
 
-# In[20]:
 
 
 train["duration_hrs"] = train["trip_duration"]/3600
 
 
-# In[21]:
 
 
 grp_sum = train.groupby(['pickup_day','pickup_month'])['duration_hrs'].transform(max) == train['duration_hrs']
@@ -229,7 +208,6 @@ sns.heatmap(pvt,cmap='YlOrRd')
 plt.show()
 
 
-# In[22]:
 
 
 sns.set(style="whitegrid", color_codes=True)
@@ -265,14 +243,12 @@ plt.xlabel('Hours')
 plt.title('Frequency distribution of hours')
 
 
-# In[23]:
 
 
 plt.subplots_adjust(hspace=0.5,wspace=0.5)
 plt.show()
 
 
-# In[24]:
 
 
 long_dist = []
@@ -281,7 +257,6 @@ for i in range(len(train)):
         long_dist.append(i)
 
 
-# In[25]:
 
 
 def airportTrips(lat1,lat2, long1,long2):
@@ -309,19 +284,16 @@ def airportTrips(lat1,lat2, long1,long2):
     
 
 
-# In[26]:
 
 
 weather = pd.read_csv("../input/nycweather/nyc_Jan_Jun_2016_weat.csv")
 
 
-# In[27]:
 
 
 weather.head(10)
 
 
-# In[28]:
 
 
 weather.loc[weather.SNOW == -9999, 'SNOW'] = NaN
@@ -332,13 +304,11 @@ weather.loc[weather.TMAX == -9999, 'TMAX'] = NaN
 weather.loc[weather.TMIN == -9999, 'TMIN'] = NaN
 
 
-# In[29]:
 
 
 weather.head()
 
 
-# In[30]:
 
 
 pickup_date = weather["DATE"].apply(str)
@@ -352,13 +322,11 @@ for i in range(len(weather)):
 weather["DAY"] = weather_date
 
 
-# In[31]:
 
 
 weather.dtypes
 
 
-# In[32]:
 
 
 meanSnow = weather.groupby('DAY')['SNOW'].transform('mean')
@@ -369,7 +337,6 @@ meanTmin = weather.groupby('DAY')['TMIN'].transform('mean').astype(int)
 meanTmax = weather.groupby('DAY')['TMAX'].transform('mean').astype(int)
 
 
-# In[33]:
 
 
 weather["SNOW"] = weather["SNOW"].fillna(meanSnow)
@@ -380,7 +347,6 @@ weather["TMIN"] = weather["TMIN"].fillna(meanTmin)
 weather["TMAX"] = weather["TMAX"].fillna(meanTmax)
 
 
-# In[34]:
 
 
 # Extracting month from Date
@@ -393,7 +359,6 @@ for i in range(len(weather)):
 weather["MONTH"] = month_weather
 
 
-# In[35]:
 
 
 # Initialize a grid of plots with an Axes for each walk
@@ -410,7 +375,6 @@ grid.fig.tight_layout(w_pad=1)
 plt.show()
 
 
-# In[36]:
 
 
 # Initialize a grid of plots with an Axes for each walk
@@ -427,7 +391,6 @@ grid.fig.tight_layout(w_pad=1)
 plt.show()
 
 
-# In[37]:
 
 
 from sklearn.cross_validation import KFold, train_test_split
@@ -440,13 +403,11 @@ err = []
 kf = KFold(y.shape[0], n_folds=2, shuffle=True, random_state=0)
 
 
-# In[38]:
 
 
 kf
 
 
-# In[39]:
 
 
 for train_index, test_index in kf:
@@ -458,7 +419,6 @@ for train_index, test_index in kf:
 err
 
 
-# In[40]:
 
 
 sns.set(style="whitegrid", color_codes=True)

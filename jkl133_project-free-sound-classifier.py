@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 batch_size = 32
@@ -11,7 +10,6 @@ SAMPLING_RATE = 8000
 input_length = SAMPLING_RATE*2
 
 
-# In[2]:
 
 
 import numpy as np 
@@ -31,7 +29,6 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 matplotlib.style.use('ggplot')
 
 
-# In[3]:
 
 
 import IPython.display as ipd  # IPython의 display와 관련된 Public API: To play sound in the notebook
@@ -55,7 +52,6 @@ from scipy import signal  # Signal processing 패키지
 import librosa  # 파이썬 음악 분석 라이브러리
 
 
-# In[4]:
 
 
 def audio_norm(data):
@@ -81,7 +77,6 @@ def load_audio_file(file_path, input_length=input_length):
     return data
 
 
-# In[5]:
 
 
 import glob  # python에서 파일 리스트를 사용할 때 이용. 특정 이름의 파일을 찾고 파일 리스트를 받아서 처리할 때 유용
@@ -93,7 +88,6 @@ train.groupby(['label']).size().plot.bar()  # label을 기준으로 그룹화
 train.sample(3)  # 3개만 제시 
 
 
-# In[6]:
 
 
 train_audio_path = '../input/audio_train/audio_train'
@@ -101,31 +95,26 @@ filename = '/e6949d46.wav'
 sample_rate, samples = wavfile.read(str(train_audio_path) + filename)
 
 
-# In[7]:
 
 
 print(samples)
 
 
-# In[8]:
 
 
 print("Size of training data", train.shape)
 
 
-# In[9]:
 
 
 train.head()
 
 
-# In[10]:
 
 
 #제출용이 아니므로 submission.head()를 따로 출력하지 않음
 
 
-# In[11]:
 
 
 def clean_filename(fname, string):
@@ -140,7 +129,6 @@ def load_wav_file(name, path):
     return b
 
 
-# In[12]:
 
 
 train_data = pd.DataFrame({'file_name' : train['fname'], 'target' : train ['label']})
@@ -152,19 +140,16 @@ train_data['nframes'] = train_data['time_series'].apply(len)
 # dataframe: 여러 series들이 모여 하나의 매트릭스를 구성                                                         
 
 
-# In[13]:
 
 
 train_data.head()
 
 
-# In[14]:
 
 
 print ("Size of trainig data after some preprocessing : ", train_data.shape)
 
 
-# In[15]:
 
 
 # missing data in trainig data set
@@ -174,7 +159,6 @@ missing_train_data = pd.concat([total, percent], axis=1, keys=['Total', 'Percent
 missing_train_data.head()
 
 
-# In[16]:
 
 
 temp = train['manually_verified'].value_counts()
@@ -187,7 +171,6 @@ fig = go.Figure(data=data, layout=layout)
 py.iplot(fig)
 
 
-# In[17]:
 
 
 plt.figure(figsize=(12,8))
@@ -197,7 +180,6 @@ plt.title("Histogram of #frames")
 plt.show()
 
 
-# In[18]:
 
 
 plt.figure(figsize=(17,8))
@@ -211,7 +193,6 @@ plt.ylabel('nframes')
 plt.show()
 
 
-# In[19]:
 
 
 print ("Total number of labels in trainig data : ",len(train_data['target'].
@@ -229,19 +210,16 @@ plt.title("Top 30 labels woth their frequencies on traing data")
 plt.show()
 
 
-# In[20]:
 
 
 print("Number of traing examples=", train.shape[0], "  NUmber of classes=", len(train.label.unique()))
 
 
-# In[21]:
 
 
 print(train.label.unique())
 
 
-# In[22]:
 
 
 category_group = train.groupby(['label', 'manually_verified']).count()
@@ -250,14 +228,12 @@ plot.set_xlabel("Category")
 plot.set_ylabel("Number of Samples");
 
 
-# In[23]:
 
 
 print('Minimum samples per category = ', min(train.label.value_counts()))
 print('Maximum samples per category = ', max(train.label.value_counts()))
 
 
-# In[24]:
 
 
 import IPython.display as ipd # To play sound in the notebook
@@ -267,7 +243,6 @@ test_path = '../input/audio_test/audio_test'
 ipd.Audio(fname)
 
 
-# In[25]:
 
 
 import wave
@@ -277,7 +252,6 @@ print("Total samples (frames) = ", wav.getnframes())
 print("Duration = ", wav.getnframes()/wav.getframerate())
 
 
-# In[26]:
 
 
 # Using scipy
@@ -289,20 +263,17 @@ print("Total samples (frames) = ", data.shape)
 print(data)
 
 
-# In[27]:
 
 
 plt.plot(data, '-', );
 
 
-# In[28]:
 
 
 plt.figure(figsize=(16,4))
 plt.plot(data[:500], '-'); plt.plot(data[:500], '-');
 
 
-# In[29]:
 
 
 # Setup variables
@@ -312,7 +283,6 @@ input_length = 44100*10
 n_classes = train['label'].unique().shape[0]
 
 
-# In[30]:
 
 
 #Create model
@@ -348,7 +318,6 @@ model.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer='
 model.summary()
 
 
-# In[31]:
 
 
 from IPython.display import SVG
@@ -359,7 +328,6 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 SVG(model_to_dot(model, show_shapes=True).create(prog='dot',format='svg'))
 
 
-# In[32]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -369,7 +337,6 @@ from scipy.io import wavfile
 # train.sample(1).values[0]
 
 
-# In[33]:
 
 
 # Map files to label
@@ -392,7 +359,6 @@ print('\nEncoded Label "{}":\n{}'.format(example_label, LabelEncoder[example_lab
 prediction_to_label = {np.argmax(array):label for label, array in LabelEncoder.items()}
 
 
-# In[34]:
 
 
 # Define batch generator to yield random data batches
@@ -428,14 +394,12 @@ def batchGenerator(files, batch_size):
             yield batch_data, batch_label
 
 
-# In[35]:
 
 
 import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[36]:
 
 
 # Create random maxk to split files in train and validation set
@@ -453,7 +417,6 @@ train_generator = batchGenerator(train_files, batch_size=batch_size)
 val_generator = batchGenerator(val_files, batch_size=50)
 
 
-# In[37]:
 
 
 import warnings

@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 class conf:
@@ -64,7 +62,6 @@ class conf:
     predict = False
 
 
-# In[3]:
 
 
 import numpy as np
@@ -107,7 +104,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[4]:
 
 
 def get_logger(name="Main", tag="exp", log_dir="log/"):
@@ -131,7 +127,6 @@ def get_logger(name="Main", tag="exp", log_dir="log/"):
     return logger
 
 
-# In[5]:
 
 
 def seed_everything(seed):
@@ -146,7 +141,6 @@ SEED = conf.SEED
 seed_everything(SEED)
 
 
-# In[6]:
 
 
 def save_checkpoint(conf, model, optimizer, scheduler, epoch, best_acc, best_epoch, cell_type):
@@ -177,7 +171,6 @@ def load_checkpoint(conf, model, optimizer, scheduler, cell_type):
     return end_epoch, best_acc, best_epoch, model, optimizer, scheduler
 
 
-# In[7]:
 
 
 def image_path(experiment,
@@ -216,7 +209,6 @@ def transform_image(transforms, img):
     return img
 
 
-# In[8]:
 
 
 class ImagesDS(Dataset):
@@ -246,7 +238,6 @@ class ImagesDS(Dataset):
         return self.len
 
 
-# In[9]:
 
 
 def initialize_model(conf):
@@ -346,7 +337,6 @@ def initialize_model(conf):
     return model_ft, input_size
 
 
-# In[10]:
 
 
 # # To tune or design nn here.
@@ -369,7 +359,6 @@ else:
 print(model_ft)
 
 
-# In[11]:
 
 
 def train_single_epoch(conf, model, train_loader, criterion, optimizer, mb):
@@ -435,7 +424,6 @@ def set_requires_grad(conf, model, epoch):
     return model
 
 
-# In[12]:
 
 
 def train_model(conf, df, train_transforms, valid_transforms, cell_type='all'):
@@ -590,7 +578,6 @@ def train_model(conf, df, train_transforms, valid_transforms, cell_type='all'):
     return bests, loss_list, acc_list, lr_log
 
 
-# In[13]:
 
 
 class ImgAugTransform:
@@ -630,7 +617,6 @@ transforms_dict = {
     }
 
 
-# In[14]:
 
 
 train_df = pd.read_csv(conf.path_data+'/train.csv')
@@ -640,7 +626,6 @@ train_df['cell_type'] = train_df.experiment.str.split("-").apply(lambda a: a[0])
 train_df.cell_type.unique()
 
 
-# In[15]:
 
 
 train_df['site'] = 1 
@@ -651,14 +636,12 @@ del train_df_2
 gc.collect()
 
 
-# In[16]:
 
 
 #logger
 logger = get_logger("Main", tag="train", log_dir="log/")
 
 
-# In[17]:
 
 
 #run
@@ -671,7 +654,6 @@ else:
     result_all, loss_list_all, acc_list_all, lr_log_all = train_model(conf, train_df, transforms_dict['train'], transforms_dict['valid'])
 
 
-# In[18]:
 
 
 """
@@ -691,14 +673,12 @@ send_line_notification(result)
 """
 
 
-# In[19]:
 
 
 if conf.training_each_experiment:
     print(train_df.cell_type.value_counts().HEPG2/len(train_df) * max(acc_list_HEPG2) +           train_df.cell_type.value_counts().HUVEC/len(train_df) * max(acc_list_HUVEC) +           train_df.cell_type.value_counts().RPE/len(train_df) * max(acc_list_RPE) +           train_df.cell_type.value_counts().U2OS/len(train_df) * max(acc_list_U2OS))
 
 
-# In[20]:
 
 
 #plot
@@ -792,7 +772,6 @@ else:
     plt.show()
 
 
-# In[21]:
 
 
 if conf.predict:
@@ -804,7 +783,6 @@ if conf.predict:
     test_df.cell_type.unique()
 
 
-# In[22]:
 
 
 def predict_model(conf, df, model, test_transforms, weight_cycle, cell_type='all'):
@@ -856,7 +834,6 @@ def predict_model(conf, df, model, test_transforms, weight_cycle, cell_type='all
     return preds
 
 
-# In[23]:
 
 
 if conf.predict:
@@ -866,7 +843,6 @@ if conf.predict:
     preds_U2OS_1 = predict_model(conf, test_df, model_ft, transforms_dict['test'], 5,'U2OS')
 
 
-# In[24]:
 
 
 # apply plate leak
@@ -931,7 +907,6 @@ def select_plate_group(pp_mult, idx, exp_to_group):
     return pp_mult
 
 
-# In[25]:
 
 
 #densenet121
@@ -939,7 +914,6 @@ if conf.predict:
     sub_densenet121_1 = post_processing(preds_HEPG2_1, preds_HUVEC_1, preds_RPE_1, preds_U2OS_1, 'densenet121_1')
 
 
-# In[26]:
 
 
 if conf.predict:
@@ -948,14 +922,12 @@ if conf.predict:
     sub.head()
 
 
-# In[27]:
 
 
 if conf.predict:
     sub[['id_code','sirna']].to_csv('submission.csv', index=False)
 
 
-# In[28]:
 
 
 """

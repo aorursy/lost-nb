@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -12,7 +11,6 @@ import shutil as sh
 import sys
 
 
-# In[2]:
 
 
 sys.path.insert(0, "../input/weightedboxesfusion")
@@ -20,7 +18,6 @@ sys.path.append("../input/yolov5baseline/yolov5-master-update")
 get_ipython().system("pip install --no-deps '../input/weightedboxesfusion/' > /dev/null")
 
 
-# In[3]:
 
 
 def convertTrainLabel():
@@ -62,7 +59,6 @@ def convertTrainLabel():
                 sh.copy("../input/global-wheat-detection/{}/{}.jpg".format(source,name),'convertor/fold{}/images/{}/{}.jpg'.format(fold,path2save,name))
 
 
-# In[4]:
 
 
 from ensemble_boxes import *
@@ -139,7 +135,6 @@ def detect1Image(im0, imgsz, model, device, conf_thres, iou_thres):
     return np.array(boxes), np.array(scores) 
 
 
-# In[5]:
 
 
 from utils.datasets import *
@@ -212,25 +207,21 @@ def makePseudolabel():
         sh.copy("../input/global-wheat-detection/test/{}.jpg".format(image_id),'convertor/fold0/images/{}/{}.jpg'.format(path2save,image_id))
 
 
-# In[6]:
 
 
 convertTrainLabel()
 
 
-# In[7]:
 
 
 makePseudolabel()
 
 
-# In[8]:
 
 
 get_ipython().system('ls')
 
 
-# In[9]:
 
 
 if len(os.listdir('../input/global-wheat-detection/test/'))<11:
@@ -242,7 +233,6 @@ else:
 get_ipython().system('rm -rf convertor')
 
 
-# In[10]:
 
 
 def format_prediction_string(boxes, scores):
@@ -253,7 +243,6 @@ def format_prediction_string(boxes, scores):
     return " ".join(pred_strings)
 
 
-# In[11]:
 
 
 def detect():
@@ -334,7 +323,6 @@ def detect():
     return results
 
 
-# In[12]:
 
 
 results = detect()
@@ -343,7 +331,6 @@ test_df.to_csv('submission.csv', index=False)
 test_df.head()
 
 
-# In[ ]:
 
 
 

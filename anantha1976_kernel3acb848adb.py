@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # essential libraries
@@ -56,7 +55,6 @@ from scipy.stats import uniform
 import warnings
 
 
-# In[2]:
 
 
 pd.options.display.max_columns = 150
@@ -66,73 +64,61 @@ train = pd.read_csv('../input/train.csv')
 test = pd.read_csv('../input/test.csv')
 
 
-# In[3]:
 
 
 train.head()
 
 
-# In[4]:
 
 
 train.info()   
 
 
-# In[5]:
 
 
 sns.countplot("Target", data=train)
 
 
-# In[6]:
 
 
 sns.countplot(x="r4t3",hue="Target",data=train)
 
 
-# In[7]:
 
 
 sns.countplot(x="v18q",hue="Target",data=train)
 
 
-# In[8]:
 
 
 sns.countplot(x="v18q1",hue="Target",data=train)
 
 
-# In[9]:
 
 
 sns.countplot(x="tamhog",hue="Target",data=train)
 
 
-# In[10]:
 
 
 sns.countplot(x="hhsize",hue="Target",data=train)
 
 
-# In[11]:
 
 
 sns.countplot(x="abastaguano",hue="Target",data=train)
 
 
-# In[12]:
 
 
 sns.countplot(x="noelec",hue="Target",data=train)
 
 
-# In[13]:
 
 
 train.select_dtypes('object').head()
 
 
-# In[14]:
 
 
 
@@ -145,13 +131,11 @@ train['edjefa'] = train['edjefa'].replace(yes_no_map).astype(np.float32)
     
 
 
-# In[15]:
 
 
 train[["dependency","edjefe","edjefa"]].describe()
 
 
-# In[16]:
 
 
 # Number of missing in each column
@@ -163,21 +147,18 @@ missing['percent'] = missing['total'] / len(train)
 missing.sort_values('percent', ascending = False).head(10)
 
 
-# In[17]:
 
 
 train['v18q1'] = train['v18q1'].fillna(0)
 test['v18q1'] = test['v18q1'].fillna(0)
 
 
-# In[18]:
 
 
 train['v2a1'] = train['v2a1'].fillna(0)
 test['v2a1'] = test['v2a1'].fillna(0)
 
 
-# In[19]:
 
 
 train['rez_esc'] = train['rez_esc'].fillna(0)
@@ -188,7 +169,6 @@ train['meaneduc'] = train['meaneduc'].fillna(0)
 test['meaneduc'] = test['meaneduc'].fillna(0)
 
 
-# In[20]:
 
 
 #Checking for missing values again to confirm that no missing values present
@@ -201,7 +181,6 @@ missing['percent'] = missing['total'] / len(train)
 missing.sort_values('percent', ascending = False).head(10)
 
 
-# In[21]:
 
 
 train.drop(['Id','idhogar',"dependency","edjefe","edjefa"], inplace = True, axis =1)
@@ -209,33 +188,28 @@ train.drop(['Id','idhogar',"dependency","edjefe","edjefa"], inplace = True, axis
 test.drop(['Id','idhogar',"dependency","edjefe","edjefa"], inplace = True, axis =1)
 
 
-# In[22]:
 
 
 train.shape
 
 
-# In[23]:
 
 
 test.shape
 
 
-# In[24]:
 
 
 y = train.iloc[:,137]
 y.unique()
 
 
-# In[25]:
 
 
 X = train.iloc[:,1:138]
 X.shape
 
 
-# In[26]:
 
 
 
@@ -247,13 +221,11 @@ pca = PCA(0.95)
 X = pca.fit_transform(X)
 
 
-# In[27]:
 
 
 X.shape, y.shape
 
 
-# In[28]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(
@@ -262,14 +234,12 @@ X_train, X_test, y_train, y_test = train_test_split(
                                                     test_size = 0.2)
 
 
-# In[29]:
 
 
 
 modelrf = rf()
 
 
-# In[30]:
 
 
 start = time.time()
@@ -278,19 +248,16 @@ end = time.time()
 (end-start)/60
 
 
-# In[31]:
 
 
 classes = modelrf.predict(X_test)
 
 
-# In[32]:
 
 
 (classes == y_test).sum()/y_test.size 
 
 
-# In[33]:
 
 
 bayes_cv_tuner = BayesSearchCV(
@@ -315,48 +282,41 @@ bayes_cv_tuner = BayesSearchCV(
 )
 
 
-# In[34]:
 
 
 # Start optimization
 bayes_cv_tuner.fit(X_train, y_train)
 
 
-# In[35]:
 
 
 #  Get list of best-parameters
 bayes_cv_tuner.best_params_
 
 
-# In[36]:
 
 
 #  Get what average accuracy was acheived during cross-validation
 bayes_cv_tuner.best_score_
 
 
-# In[37]:
 
 
 #  What accuracy is available on test-data
 bayes_cv_tuner.score(X_test, y_test)
 
 
-# In[38]:
 
 
 #  And what all sets of parameters were tried?
 bayes_cv_tuner.cv_results_['params']
 
 
-# In[39]:
 
 
 modeletf = ExtraTreesClassifier()
 
 
-# In[40]:
 
 
 start = time.time()
@@ -365,7 +325,6 @@ end = time.time()
 (end-start)/60
 
 
-# In[41]:
 
 
 classes = modeletf.predict(X_test)
@@ -373,13 +332,11 @@ classes = modeletf.predict(X_test)
 classes
 
 
-# In[42]:
 
 
 (classes == y_test).sum()/y_test.size
 
 
-# In[43]:
 
 
 bayes_cv_tuner = BayesSearchCV(
@@ -400,48 +357,41 @@ bayes_cv_tuner = BayesSearchCV(
 )
 
 
-# In[44]:
 
 
 # Start optimization
 bayes_cv_tuner.fit(X_train, y_train)
 
 
-# In[45]:
 
 
 #  Get list of best-parameters
 bayes_cv_tuner.best_params_
 
 
-# In[46]:
 
 
 #  Get what average accuracy was acheived during cross-validation
 bayes_cv_tuner.best_score_
 
 
-# In[47]:
 
 
 #  What accuracy is available on test-data
 bayes_cv_tuner.score(X_test, y_test)
 
 
-# In[48]:
 
 
 #  And what all sets of parameters were tried?
 bayes_cv_tuner.cv_results_['params']
 
 
-# In[49]:
 
 
 modelneigh = KNeighborsClassifier(n_neighbors=4)
 
 
-# In[50]:
 
 
 start = time.time()
@@ -450,7 +400,6 @@ end = time.time()
 (end-start)/60
 
 
-# In[51]:
 
 
 classes = modelneigh.predict(X_test)
@@ -458,13 +407,11 @@ classes = modelneigh.predict(X_test)
 classes
 
 
-# In[52]:
 
 
 (classes == y_test).sum()/y_test.size 
 
 
-# In[53]:
 
 
 bayes_cv_tuner = BayesSearchCV(
@@ -479,48 +426,41 @@ bayes_cv_tuner = BayesSearchCV(
    )
 
 
-# In[54]:
 
 
 # Start optimization
 bayes_cv_tuner.fit(X_train, y_train)
 
 
-# In[55]:
 
 
 #  Get list of best-parameters
 bayes_cv_tuner.best_params_
 
 
-# In[56]:
 
 
 #  Get what average accuracy was acheived during cross-validation
 bayes_cv_tuner.best_score_
 
 
-# In[57]:
 
 
 #  What accuracy is available on test-data
 bayes_cv_tuner.score(X_test, y_test)
 
 
-# In[58]:
 
 
 #  And what all sets of parameters were tried?
 bayes_cv_tuner.cv_results_['params']
 
 
-# In[59]:
 
 
 modelgbm=gbm()
 
 
-# In[60]:
 
 
 start = time.time()
@@ -529,7 +469,6 @@ end = time.time()
 (end-start)/60
 
 
-# In[61]:
 
 
 classes = modelgbm.predict(X_test)
@@ -537,13 +476,11 @@ classes = modelgbm.predict(X_test)
 classes
 
 
-# In[62]:
 
 
 (classes == y_test).sum()/y_test.size 
 
 
-# In[63]:
 
 
 bayes_cv_tuner = BayesSearchCV(
@@ -568,48 +505,41 @@ bayes_cv_tuner = BayesSearchCV(
 )
 
 
-# In[64]:
 
 
 # Start optimization
 bayes_cv_tuner.fit(X_train, y_train)
 
 
-# In[65]:
 
 
 #  Get list of best-parameters
 bayes_cv_tuner.best_params_
 
 
-# In[66]:
 
 
 #  Get what average accuracy was acheived during cross-validation
 bayes_cv_tuner.best_score_
 
 
-# In[67]:
 
 
 #  What accuracy is available on test-data
 bayes_cv_tuner.score(X_test, y_test)
 
 
-# In[68]:
 
 
 #  And what all sets of parameters were tried?
 bayes_cv_tuner.cv_results_['params']
 
 
-# In[69]:
 
 
 modelxgb=XGBClassifier()
 
 
-# In[70]:
 
 
 start = time.time()
@@ -618,7 +548,6 @@ end = time.time()
 (end-start)/60
 
 
-# In[71]:
 
 
 classes = modelxgb.predict(X_test)
@@ -626,13 +555,11 @@ classes = modelxgb.predict(X_test)
 classes
 
 
-# In[72]:
 
 
 (classes == y_test).sum()/y_test.size 
 
 
-# In[73]:
 
 
 bayes_cv_tuner = BayesSearchCV(
@@ -657,42 +584,36 @@ bayes_cv_tuner = BayesSearchCV(
 )
 
 
-# In[74]:
 
 
 # Start optimization
 bayes_cv_tuner.fit(X_train, y_train)
 
 
-# In[75]:
 
 
 #  Get list of best-parameters
 bayes_cv_tuner.best_params_
 
 
-# In[76]:
 
 
 #  Get what average accuracy was acheived during cross-validation
 bayes_cv_tuner.best_score_
 
 
-# In[77]:
 
 
 #  What accuracy is available on test-data
 bayes_cv_tuner.score(X_test, y_test)
 
 
-# In[78]:
 
 
 #  And what all sets of parameters were tried?
 bayes_cv_tuner.cv_results_['params']
 
 
-# In[79]:
 
 
 modellgb = lgb.LGBMClassifier(max_depth=-1, learning_rate=0.1, objective='multiclass',
@@ -701,7 +622,6 @@ modellgb = lgb.LGBMClassifier(max_depth=-1, learning_rate=0.1, objective='multic
                              colsample_bytree =  0.93, min_child_samples = 95, num_leaves = 14, subsample = 0.96)
 
 
-# In[80]:
 
 
 start = time.time()
@@ -710,7 +630,6 @@ end = time.time()
 (end-start)/60
 
 
-# In[81]:
 
 
 classes = modellgb.predict(X_test)
@@ -718,13 +637,11 @@ classes = modellgb.predict(X_test)
 classes
 
 
-# In[82]:
 
 
 (classes == y_test).sum()/y_test.size 
 
 
-# In[83]:
 
 
 bayes_cv_tuner = BayesSearchCV(
@@ -749,7 +666,6 @@ bayes_cv_tuner = BayesSearchCV(
 )
 
 
-# In[84]:
 
 
 
@@ -757,28 +673,24 @@ bayes_cv_tuner = BayesSearchCV(
 bayes_cv_tuner.fit(X_train, y_train)
 
 
-# In[85]:
 
 
 #  Get list of best-parameters
 bayes_cv_tuner.best_params_
 
 
-# In[86]:
 
 
 #  Get what average accuracy was acheived during cross-validation
 bayes_cv_tuner.best_score_
 
 
-# In[87]:
 
 
 #  What accuracy is available on test-data
 bayes_cv_tuner.score(X_test, y_test)
 
 
-# In[88]:
 
 
 #  And what all sets of parameters were tried?

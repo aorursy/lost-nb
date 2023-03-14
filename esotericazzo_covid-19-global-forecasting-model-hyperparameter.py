@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 df_train = pd.read_csv('/kaggle/input/covid19-global-forecasting-week-2/train.csv')
@@ -31,19 +29,16 @@ df_test = pd.read_csv('/kaggle/input/covid19-global-forecasting-week-2/test.csv'
 df_submit = pd.read_csv('/kaggle/input/covid19-global-forecasting-week-2/submission.csv')
 
 
-# In[3]:
 
 
 df_train.head()
 
 
-# In[4]:
 
 
 df_train.info()
 
 
-# In[5]:
 
 
 print("Number of Country_Region: ", df_train['Country_Region'].nunique())
@@ -51,19 +46,16 @@ print("Dates are ranging from day", min(df_train['Date']), "to day", max(df_trai
 print("The countries that have Province/Region given are : ", df_train[df_train['Province_State'].isna()==False]['Country_Region'].unique())
 
 
-# In[6]:
 
 
 df_train.columns
 
 
-# In[7]:
 
 
 df_train['Province_State'].unique()
 
 
-# In[8]:
 
 
 plt.figure(figsize=(40,40))
@@ -76,7 +68,6 @@ plt.title("Counts of Countries affected by the pandemic that have confirmed case
 plt.xticks(rotation = 90)
 
 
-# In[9]:
 
 
 confirmed_total_dates = df_train.groupby(['Date']).agg({'ConfirmedCases':['sum']})
@@ -94,7 +85,6 @@ ax2.set_ylabel("Total Number of cases", size=13)
 ax2.set_xlabel("Date", size=13)
 
 
-# In[10]:
 
 
 italy = df_train[df_train['Country_Region'] == 'Italy']
@@ -107,7 +97,6 @@ plt.title('Confirmed Cases per date in Italy',size=20)
 plt.show()
 
 
-# In[11]:
 
 
 italy = df_train[df_train['Country_Region'] == 'Italy']
@@ -120,7 +109,6 @@ plt.title('Fatalities in Italy per Date',size=20)
 plt.show()
 
 
-# In[12]:
 
 
 usa = df_train[df_train['Country_Region'] == 'US']
@@ -133,7 +121,6 @@ plt.title('Confirmed Cases in US per Date',size=20)
 plt.show()
 
 
-# In[13]:
 
 
 plt.figure(figsize=(20,10))
@@ -145,7 +132,6 @@ plt.ylabel('Fatalities',size=15)
 plt.show()
 
 
-# In[14]:
 
 
 plt.figure(figsize=(20,10))
@@ -157,7 +143,6 @@ plt.title('Confirmed Cases in US Province_State ',size=20)
 plt.show()
 
 
-# In[15]:
 
 
 #we now do the analysis of NYC as per week.
@@ -174,7 +159,6 @@ axes[0].title.set_text('Confirmed Cases in NYC per week')
 axes[1].title.set_text('Fatalities in NYC per week')
 
 
-# In[16]:
 
 
 china  = df_train[df_train['Country_Region'] == 'China']
@@ -189,7 +173,6 @@ plt.title('Confirmed Cases in China per Date',size=20)
 plt.show()
 
 
-# In[17]:
 
 
 china  = df_train[df_train['Country_Region'] == 'China']
@@ -204,7 +187,6 @@ plt.title('Fatalities in China per Date',size=20)
 plt.show()
 
 
-# In[18]:
 
 
 plt.figure(figsize=(20,10))
@@ -216,7 +198,6 @@ plt.xlabel('Province_State',size=15)
 plt.show()
 
 
-# In[19]:
 
 
 #we now do the analysis of Hubei as per week.
@@ -234,14 +215,12 @@ axes[0].title.set_text('Confirmed Cases in Hubei per week')
 axes[1].title.set_text('Fatalities in Hubei per week')
 
 
-# In[20]:
 
 
 df_train = df_train[['Date','Province_State','Country_Region','ConfirmedCases','Fatalities']]
 df_train.head()
 
 
-# In[21]:
 
 
 #Using pd.to_datetime for adding new features
@@ -258,13 +237,11 @@ df_test.insert(3,'DayofWeek',df_test['Date'].dt.dayofweek)
 df_test.insert(4,'DayofYear',df_test['Date'].dt.dayofyear)
 
 
-# In[22]:
 
 
 df_train.head()
 
 
-# In[23]:
 
 
 # Replacing all the Province_State that are null by the Country_Region values
@@ -272,13 +249,11 @@ df_train.Province_State.fillna(df_train.Country_Region, inplace=True)
 df_test.Province_State.fillna(df_test.Country_Region, inplace=True)
 
 
-# In[24]:
 
 
 df_train.head()
 
 
-# In[25]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -291,7 +266,6 @@ df_test.Country_Region = le.fit_transform(df_test.Country_Region)
 df_test['Province_State'] = le.fit_transform(df_test['Province_State'])
 
 
-# In[26]:
 
 
 #One Hot Encoding columns
@@ -312,7 +286,6 @@ def one_hot(df, cols):
     return df
 
 
-# In[27]:
 
 
 #Handling categorical data
@@ -324,7 +297,6 @@ df_test = one_hot(df_test, objList)
 print (df_train.shape)
 
 
-# In[28]:
 
 
 #Avoiding duplicated data.
@@ -333,7 +305,6 @@ df_test = df_test.loc[:,~df_test.columns.duplicated()]
 print (df_test.shape)
 
 
-# In[29]:
 
 
 # Dropping the object type columns
@@ -342,33 +313,28 @@ df_test.drop(objList, axis=1, inplace=True)
 print (df_train.shape)
 
 
-# In[30]:
 
 
 df_train.head()
 
 
-# In[31]:
 
 
 #Selecting only the type Object Columns
 df_train.select_dtypes(include = "object").columns
 
 
-# In[32]:
 
 
 df_train
 
 
-# In[33]:
 
 
 X = df_train.drop(['Date', 'ConfirmedCases', 'Fatalities'], axis=1)
 y = df_train[['ConfirmedCases', 'Fatalities']]
 
 
-# In[34]:
 
 
 from sklearn.linear_model import LinearRegression
@@ -382,26 +348,22 @@ from sklearn.metrics import make_scorer, r2_score, mean_squared_log_error
 from sklearn.ensemble import BaggingRegressor
 
 
-# In[35]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1)
 
 
-# In[36]:
 
 
 y_train.head()
 
 
-# In[37]:
 
 
 n_folds = 5
 cv = KFold(n_splits = 5, shuffle=True, random_state=42).get_n_splits(X_train.values)
 
 
-# In[38]:
 
 
 def predict_scores(reg_alg):
@@ -429,25 +391,21 @@ for x in reg_models:
     predict_scores(x)
 
 
-# In[39]:
 
 
 sc_Cases
 
 
-# In[40]:
 
 
 sc_Fatalities
 
 
-# In[41]:
 
 
 from sklearn.ensemble import BaggingRegressor
 
 
-# In[42]:
 
 
 
@@ -479,7 +437,6 @@ clf_CC.fit(X_train, y_train['ConfirmedCases'])
 clf_Fat.fit(X_train, y_train['Fatalities'])
 
 
-# In[43]:
 
 
 model1 = clf_CC
@@ -489,14 +446,12 @@ model2 = clf_Fat
 model2.fit(X_train, y_train['Fatalities'])
 
 
-# In[44]:
 
 
 df_test['ConfirmedCases'] = model1.predict(df_test.drop(['Date', 'ForecastId'], axis=1))
 df_test['Fatalities'] = model2.predict(df_test.drop(['Date', 'ForecastId', 'ConfirmedCases'], axis=1))
 
 
-# In[45]:
 
 
 import warnings
@@ -508,7 +463,6 @@ df_results['Fatalities'] = df_results['Fatalities'].astype(int)
 df_results.head()
 
 
-# In[46]:
 
 
 df_results.to_csv('submission.csv', index=False)

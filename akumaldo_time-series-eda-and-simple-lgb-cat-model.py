@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Python ≥3.5 is required
@@ -36,14 +35,12 @@ print(os.listdir("../input")) #showing all the files in the ../input directory
 # Any results you write to the current directory are saved as output. Kaggle message :D
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/train.csv', parse_dates=True, infer_datetime_format=True, dayfirst=True)
 test = pd.read_csv('../input/test.csv', parse_dates=True, infer_datetime_format=True, dayfirst=True)
 
 
-# In[3]:
 
 
 print('----- DETAILS of our DATASET -----')
@@ -58,7 +55,6 @@ print('Number of unique items, testing set: %s' %test['item'].nunique())
 train.head()
 
 
-# In[4]:
 
 
 # Concatenating train & test
@@ -71,7 +67,6 @@ gc.collect()
 df_total.head()
 
 
-# In[5]:
 
 
 df_total['date'] = pd.to_datetime(df_total['date'], dayfirst=True,infer_datetime_format=True)
@@ -83,7 +78,6 @@ df_total['day_of_year'] = df_total['date'].dt.dayofyear
 df_total.tail()
 
 
-# In[6]:
 
 
 #sns.set_style('ticks') #setting the style for our plots
@@ -104,21 +98,18 @@ sns.barplot(x=df_total['item'], y=df_total['sales'], errwidth=0,palette="PuBuGn_
 plt.tight_layout(h_pad=2.5)
 
 
-# In[7]:
 
 
 # taking the log1+ of our target(sales)
 df_total['sales'] = np.log1p(df_total.sales.values)
 
 
-# In[8]:
 
 
 fig = plt.figure(figsize=(16,5))
 df_total.set_index('date')['sales'].plot(); plt.title('Distribution of sales log1p')
 
 
-# In[9]:
 
 
 val_months = (df_total.year==2017) & (df_total.month.isin([1,2,3]))
@@ -135,7 +126,6 @@ print('train labels(Y): %s' %str(train_labels.shape))
 print('train labels for the validation set(Y_val): %s' %str(train_labels_val.shape))
 
 
-# In[10]:
 
 
 fig = plt.figure(figsize=(16,5))
@@ -147,7 +137,6 @@ plt.title('Log 1+ Sales, training, skipped part and validation set.')
 plt.legend()
 
 
-# In[11]:
 
 
 lags=[91,98,105,112,119,126,182,364,546,728] #lag for previous months, 91 days until 728 days
@@ -180,13 +169,11 @@ del temp_groupby #--cleaning the memory up--
 gc.collect()
 
 
-# In[12]:
 
 
 train.head()
 
 
-# In[13]:
 
 
 fig = plt.figure(figsize=(16,5))
@@ -202,14 +189,12 @@ sns.lineplot(y='sales_rmean_546', x='month',  data=train, label="sales 20M mean"
 plt.tight_layout(h_pad=1.5)
 
 
-# In[14]:
 
 
 train = pd.get_dummies(train, columns=['store','item','day_of_month','weekday','month'])
 print('Shape after creating the dummies: {}'.format(train.shape))
 
 
-# In[15]:
 
 
 # Final train, validation and testing datasets
@@ -220,7 +205,6 @@ print('Training shape:{}, Validation shape:{}, Labels X: {}, Labels Validation: 
       .format(train_X.shape, train_val.shape,train_labels.shape,train_labels_val.shape, test_sub.shape))
 
 
-# In[16]:
 
 
 import time #implementing in this function the time spent on training the model
@@ -329,7 +313,6 @@ def train_model(X, X_val, y, y_val, params=None, model_type='lgb', plot_feature_
     gc.collect()
 
 
-# In[17]:
 
 
 params = {
@@ -350,7 +333,6 @@ params = {
 lgb_model = train_model(train_X,train_val,train_labels,train_labels_val,params, plot_feature_importance=True)
 
 
-# In[18]:
 
 
 params_cat = {
@@ -366,7 +348,6 @@ params_cat = {
 cat_model = train_model(train_X,train_val,train_labels,train_labels_val,params_cat,model_type='cat', plot_feature_importance=True)
 
 
-# In[19]:
 
 
 mask = ['date', 'sales', 'split', 'id', 'year']

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -20,7 +19,6 @@ prop_cycle = plt.rcParams['axes.prop_cycle']
 colors = prop_cycle.by_key()['color']
 
 
-# In[2]:
 
 
 # tests help notebooks stay managable
@@ -36,7 +34,6 @@ def autotest(func):
     return func
 
 
-# In[3]:
 
 
 from pathlib import Path
@@ -62,7 +59,6 @@ tf.random.set_random_seed(seed)
 clear_output()
 
 
-# In[4]:
 
 
 data_dir = Path('..') / 'input' / 'severstal-steel-defect-detection'
@@ -79,7 +75,6 @@ print(flat_train_df.shape)
 flat_train_df.head(5)
 
 
-# In[5]:
 
 
 def make_mask(c_row, mask_channel):
@@ -100,7 +95,6 @@ def full_mask(c_row):
     return np.stack([make_mask(c_row, '{}'.format(i)) for i in range(1, 5)], -1)
 
 
-# In[6]:
 
 
 rand_row = flat_train_df.sample(1).iloc[0]
@@ -109,13 +103,11 @@ rand_mask = full_mask(rand_row)
 plt.imshow(label2rgb(label=idx_mask(rand_mask), image=rand_img, bg_label=0))
 
 
-# In[7]:
 
 
 get_ipython().run_cell_magic('time', '', "# calculate for all rows\nif False:\n    flat_train_df['mask_image'] = flat_train_df.apply(full_mask, axis=1)")
 
 
-# In[8]:
 
 
 @autotest
@@ -215,7 +207,6 @@ def cut_jigsaw(
                 
 
 
-# In[9]:
 
 
 @autotest
@@ -286,7 +277,6 @@ def jigsaw_to_image(
     
 
 
-# In[10]:
 
 
 TILE_X = 128
@@ -300,7 +290,6 @@ BIG_LATENT_SIZE = 64
 NR_EPOCHS = 15
 
 
-# In[11]:
 
 
 fig, m_axs = plt.subplots(6, 4, figsize=(15, 25))
@@ -316,7 +305,6 @@ for img_idx, c_axs in enumerate(m_axs.T, 1):
     c_axs[-1].set_title('Reconstruction')
 
 
-# In[12]:
 
 
 @autotest
@@ -338,13 +326,11 @@ def get_rand_perms(n, k):
     return all_perm
 
 
-# In[13]:
 
 
 keep_perm = get_rand_perms(out_tiles.shape[0], KEEP_RANDOM_PERM)
 
 
-# In[14]:
 
 
 fig, m_axs = plt.subplots(5, 5, figsize=(15, 10))
@@ -359,7 +345,6 @@ for i, c_axs in enumerate(m_axs.T):
         c_ax.axis('off')
 
 
-# In[15]:
 
 
 from sklearn.model_selection import train_test_split
@@ -372,7 +357,6 @@ train_frames_df, valid_frames_df = train_test_split(flat_train_df,
 print(train_frames_df.shape, valid_frames_df.shape)
 
 
-# In[16]:
 
 
 out_tiles = cut_jigsaw(x_img, TILE_X, TILE_Y, gap=False) 
@@ -402,7 +386,6 @@ train_tiles, train_perms = make_tile_group(TRAIN_TILE_COUNT)
 valid_tiles, valid_perms = make_tile_group(VALID_TILE_COUNT, is_valid=True)
 
 
-# In[17]:
 
 
 from keras import models, layers
@@ -421,20 +404,17 @@ tile_encoder.add(layers.LeakyReLU(0.1))
 clear_output() # some annoying loading/warnings come up
 
 
-# In[18]:
 
 
 tile_encoder.summary()
 
 
-# In[19]:
 
 
 print('Model Input Shape:', train_tiles.shape[2:], 
       '-> Model Output Shape:', tile_encoder.predict(np.zeros((1,)+train_tiles.shape[2:])).shape[1:])
 
 
-# In[20]:
 
 
 big_in = layers.Input(train_tiles.shape[1:], name='All_Tile_Input')
@@ -452,7 +432,6 @@ big_model = models.Model(inputs=[big_in], outputs=[out_pred])
 big_model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['sparse_categorical_accuracy', 'sparse_top_k_categorical_accuracy'])
 
 
-# In[21]:
 
 
 from keras.utils.vis_utils import model_to_dot
@@ -462,7 +441,6 @@ dot_model.set_rankdir('LR')
 Image(dot_model.create_png())
 
 
-# In[22]:
 
 
 reversed_keep_perm = [[c_dict[j] for j in range(out_tiles.shape[0])]
@@ -472,7 +450,6 @@ for i in range(3):
     print('forward', keep_perm[i], 'reversed', reversed_keep_perm[i])
 
 
-# In[23]:
 
 
 def show_model_output(image_count=4, perm_count=3): 
@@ -502,7 +479,6 @@ def show_model_output(image_count=4, perm_count=3):
 show_model_output()
 
 
-# In[24]:
 
 
 fit_results = big_model.fit(train_tiles, train_perms, 
@@ -512,7 +488,6 @@ fit_results = big_model.fit(train_tiles, train_perms,
 clear_output()
 
 
-# In[25]:
 
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize = (20, 10))
@@ -527,19 +502,16 @@ ax2.set_title('Accuracy')
 ax2.set_ylim(0, 1)
 
 
-# In[26]:
 
 
 show_model_output(image_count=10, perm_count=4)
 
 
-# In[27]:
 
 
 tile_encoder.save('tile_encoder.h5')
 
 
-# In[28]:
 
 
 conv_weight_dict = {(idx, k.name): k.get_weights() for idx, k in enumerate(tile_encoder.layers) if isinstance(k, layers.Conv2D)}
@@ -557,14 +529,12 @@ for c_ax, ((idx, lay_name), [W, b]) in zip(m_axs.flatten(), conv_weight_dict.ite
     
 
 
-# In[29]:
 
 
 full_tiles = train_tiles.reshape((-1, train_tiles.shape[2], train_tiles.shape[3], train_tiles.shape[4]))
 print(full_tiles.shape)
 
 
-# In[30]:
 
 
 gp_outputs = []
@@ -583,7 +553,6 @@ for k, v in activation_maps.items():
     print(k, v.shape)
 
 
-# In[31]:
 
 
 keep_top_n = 5
@@ -598,13 +567,11 @@ for c_ax, (k, v) in zip(m_axs.T, activation_maps.items()):
     c_ax.axis('off')
 
 
-# In[32]:
 
 
 print(x_img.shape, '->', tile_encoder.predict(np.expand_dims(x_img, 0)).shape)
 
 
-# In[33]:
 
 
 img_in = layers.Input(x_img.shape)
@@ -616,7 +583,6 @@ image_encoder = models.Model(inputs=[img_in], outputs=[us_out], name='SegmentIma
 image_encoder.summary()
 
 
-# In[34]:
 
 
 def data_gen(in_df, batch_size):
@@ -629,7 +595,6 @@ samp_X, samp_y = next(train_gen)
 print(samp_X.shape, samp_y.shape)
 
 
-# In[35]:
 
 
 from keras import backend as K
@@ -648,7 +613,6 @@ def dice_coef_loss(y_true, y_pred):
 image_encoder.compile(optimizer='adam', loss=dice_coef_loss, metrics=['binary_accuracy', 'mae', dice_coef])
 
 
-# In[36]:
 
 
 def montage_tile(in_img):
@@ -667,7 +631,6 @@ def show_batch(in_gen):
 show_batch(valid_gen)
 
 
-# In[37]:
 
 
 seg_results = image_encoder.fit_generator(train_gen, 
@@ -678,7 +641,6 @@ seg_results = image_encoder.fit_generator(train_gen,
 clear_output()
 
 
-# In[38]:
 
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize = (20, 10))
@@ -693,13 +655,11 @@ ax2.set_title('Accuracy')
 ax2.set_ylim(0, 1)
 
 
-# In[39]:
 
 
 show_batch(valid_gen)
 
 
-# In[40]:
 
 
 image_encoder.save('encoder_model.h5')

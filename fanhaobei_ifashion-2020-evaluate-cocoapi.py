@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 TENSORFLOW_INSTALL = True
@@ -13,7 +12,6 @@ EVALUATE = True
 VISUAL = True
 
 
-# In[2]:
 
 
 import glob
@@ -21,13 +19,11 @@ glob_list = glob.glob(f'/kaggle/input/mask-rcnn-train-1536-5-5w-0-0001/*.h5')
 WEIGHTS_PATH = glob_list[0] if glob_list else '' 
 
 
-# In[3]:
 
 
 WEIGHTS_PATH
 
 
-# In[ ]:
 
 
 if TENSORFLOW_INSTALL:
@@ -35,7 +31,6 @@ if TENSORFLOW_INSTALL:
     get_ipython().system('pip install keras==2.1.5')
 
 
-# In[ ]:
 
 
 import tensorflow
@@ -65,13 +60,11 @@ from matplotlib import pyplot as plt
 from sklearn.model_selection import StratifiedKFold, KFold
 
 
-# In[6]:
 
 
 get_ipython().run_cell_magic('time', '', "with open('/kaggle/input/imaterialist-fashion-2020-fgvc7/label_descriptions.json', 'r') as file:\n    label_desc = json.load(file)\nsample_sub_df = pd.read_csv('/kaggle/input/imaterialist-fashion-2020-fgvc7/sample_submission.csv')\ntrain_df = pd.read_csv('/kaggle/input/imaterialist-fashion-2020-fgvc7/train.csv')")
 
 
-# In[7]:
 
 
 num_classes = len(label_desc['categories'])
@@ -80,7 +73,6 @@ print(f'Total # of classes: {num_classes}')
 print(f'Total # of attributes: {num_attributes}')
 
 
-# In[8]:
 
 
 categories_df = pd.DataFrame(label_desc['categories'])
@@ -88,7 +80,6 @@ attributes_df = pd.DataFrame(label_desc['attributes'])
 categories_df
 
 
-# In[14]:
 
 
 image_df = train_df.groupby('ImageId')['EncodedPixels', 'ClassId', 'AttributesIds'].agg(lambda x: list(x))
@@ -99,7 +90,6 @@ print("Total images: ", len(image_df))
 image_df.head()
 
 
-# In[15]:
 
 
 import os
@@ -123,14 +113,12 @@ else:
 os.chdir('Mask_RCNN')
 
 
-# In[16]:
 
 
 DATA_DIR = Path('/kaggle/input/imaterialist-fashion-2020-fgvc7')
 ROOT_DIR = Path('/kaggle/working')
 
 
-# In[17]:
 
 
 # sys.path.append(ROOT_DIR/'Mask_RCNN')
@@ -142,7 +130,6 @@ from mrcnn import visualize
 from mrcnn.model import log
 
 
-# In[18]:
 
 
 class FashionConfig(Config):
@@ -211,7 +198,6 @@ config = FashionConfig()
 config.display()
 
 
-# In[19]:
 
 
 # This code partially supports k-fold training, 
@@ -230,14 +216,12 @@ def get_fold():
 train_df, valid_df = get_fold()
 
 
-# In[20]:
 
 
 import warnings 
 warnings.filterwarnings("ignore")
 
 
-# In[21]:
 
 
 
@@ -257,7 +241,6 @@ print("Loading weights from ", WEIGHTS_PATH)
 model.load_weights(WEIGHTS_PATH, by_name=True)
 
 
-# In[22]:
 
 
 image_unique_array = image_df.index.unique()
@@ -267,21 +250,18 @@ for i,name in enumerate(image_unique_array):
 len(image_unique_dict)
 
 
-# In[23]:
 
 
 get_ipython().system('git clone https://github.com/AR-fan/cocoapi.git ')
 #    TypeError: object of type <class 'numpy.float64'> cannot be safely interpreted as an integer.
 
 
-# In[ ]:
 
 
 os.chdir('./cocoapi/PythonAPI')
 get_ipython().system('make')
 
 
-# In[25]:
 
 
 from pycocotools.coco import COCO
@@ -289,7 +269,6 @@ from pycocotools import mask as maskUtils
 from pycocotools.cocoeval import COCOeval
 
 
-# In[26]:
 
 
 # Since the submission system does not permit overlapped masks, we have to fix them
@@ -310,7 +289,6 @@ def refine_masks(masks):
     return masks, rois
 
 
-# In[28]:
 
 
 evaluate_train_results = []
@@ -411,7 +389,6 @@ fashion_annotations['annotations'] = annotations
 fashion_annotations['categories'] = categories             
 
 
-# In[29]:
 
 
 # TypeError: Object of type 'bytes' is not JSON serializable
@@ -431,7 +408,6 @@ class MyEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-# In[30]:
 
 
 get_ipython().system(' mkdir -p /kaggle/working/kaggle/')
@@ -440,7 +416,6 @@ with open('/kaggle/working/kaggle/fashion_annotations.json',"w") as dump_f:
     json.dump(fashion_annotations,dump_f, cls=MyEncoder) 
 
 
-# In[31]:
 
 
 get_ipython().system('mkdir -p /kaggle/working/kaggle/')
@@ -449,7 +424,6 @@ with open('/kaggle/working/kaggle/evaluate_train_results.json',"w") as dump_f2:
     json.dump(evaluate_train_results,dump_f2, cls=MyEncoder) 
 
 
-# In[33]:
 
 
 # fashion_annotations_coco_predicts
@@ -459,7 +433,6 @@ with open('/kaggle/working/kaggle/fashion_annotations_coco_predicts.json',"w") a
     json.dump(fashion_annotations_coco_predicts,dump_f3, cls=MyEncoder) 
 
 
-# In[34]:
 
 
 # %%python2
@@ -489,7 +462,6 @@ cocoEval.accumulate()
 cocoEval.summarize()
 
 
-# In[35]:
 
 
 annFile = '/kaggle/working/kaggle/fashion_annotations.json'
@@ -503,7 +475,6 @@ cocoEval.accumulate()
 cocoEval.summarize()
 
 
-# In[36]:
 
 
 def rle_decode(rle_str, mask_shape, mask_dtype):
@@ -520,7 +491,6 @@ def rle_to_string(runs):
     return ' '.join(str(x) for x in runs)
 
 
-# In[40]:
 
 
 IMAGE_SIZE = 400
@@ -585,7 +555,6 @@ if VISUAL:
         print(r['class_ids'])
 
 
-# In[ ]:
 
 
 

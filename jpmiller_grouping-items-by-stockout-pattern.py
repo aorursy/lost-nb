@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -18,7 +17,6 @@ sales = pd.read_csv('../input/m5-forecasting-accuracy/sales_train_validation.csv
 sales
 
 
-# In[2]:
 
 
 # Filter items at one store 
@@ -27,21 +25,18 @@ sales_ca1 = sales.loc['CA_1']                  .assign(d_median=lambda x: x.medi
 sales_ca1
 
 
-# In[3]:
 
 
 # Check dept counts
 sales_ca1.groupby(sales_ca1.index.str[:-6]).size()
 
 
-# In[4]:
 
 
 import missingno as msno
 msno.dendrogram(sales_ca1.replace(0, np.nan).T, method='ward')
 
 
-# In[5]:
 
 
 from scipy.cluster.hierarchy import linkage, fcluster
@@ -51,7 +46,6 @@ Z = linkage((sales_ca1>0).astype(int), method='ward')
 print(Z)
 
 
-# In[6]:
 
 
 # Map items to clusters
@@ -59,7 +53,6 @@ clust = fcluster(Z, t=12, criterion='maxclust')
 pd.crosstab(clust, sales_ca1.index.str[:-6])
 
 
-# In[ ]:
 
 
 

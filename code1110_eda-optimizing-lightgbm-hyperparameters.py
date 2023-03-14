@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from kaggle.competitions import nflrush
@@ -32,7 +31,6 @@ print("libraries imported!")
 pd.set_option('max_columns', 100)
 
 
-# In[2]:
 
 
 train_df = pd.read_csv('/kaggle/input/nfl-big-data-bowl-2020/train.csv', low_memory=False)
@@ -40,13 +38,11 @@ print(train_df.shape)
 train_df.head()
 
 
-# In[3]:
 
 
 print(train_df.dtypes)
 
 
-# In[4]:
 
 
 # search for missing data
@@ -54,7 +50,6 @@ import missingno as msno
 msno.matrix(df=train_df, figsize=(14,14), color=(0.5,0,0))
 
 
-# In[5]:
 
 
 # Which columns have nan?
@@ -64,26 +59,22 @@ for i in np.arange(train_df.shape[1]):
         print(list(train_df.columns.values)[i] + ': ' + str(n) + ' nans')
 
 
-# In[6]:
 
 
 train_df.nunique()
 
 
-# In[7]:
 
 
 train_df.describe()
 
 
-# In[8]:
 
 
 df_numeric = train_df.select_dtypes(exclude=['object'])
 print(df_numeric.shape)
 
 
-# In[9]:
 
 
 fig, ax = plt.subplots(5, 5, figsize=(20, 20))
@@ -94,26 +85,22 @@ for i, c in enumerate(df_numeric.columns.values):
 plt.tight_layout()
 
 
-# In[10]:
 
 
 del df_numeric
 gc.collect()
 
 
-# In[11]:
 
 
 sns.distplot(train_df["Yards"].values, bins=100)
 
 
-# In[12]:
 
 
 train_df["Yards"].value_counts()
 
 
-# In[13]:
 
 
 # Function to Create The Football Field 
@@ -193,7 +180,6 @@ def create_football_field(linenumbers=True,
     return fig, ax
 
 
-# In[14]:
 
 
 # Adding Players For a Play (cyan = home, magenta = away), highlighting the line of scrimmage
@@ -208,13 +194,11 @@ plt.legend()
 plt.show()
 
 
-# In[15]:
 
 
 train_df.head()
 
 
-# In[16]:
 
 
 #from https://www.kaggle.com/c/nfl-big-data-bowl-2020/discussion/112681#latest-649087
@@ -225,7 +209,6 @@ Turf = {'Field Turf':'Artificial', 'A-Turf Titan':'Artificial', 'Grass':'Natural
         'SISGrass':'Artificial', 'Twenty-Four/Seven Turf':'Artificial', 'natural grass':'Natural'} 
 
 
-# In[17]:
 
 
 # from https://www.kaggle.com/bgmello/neural-networks-feature-engineering-for-the-win
@@ -234,7 +217,6 @@ for abb in train_df['PossessionTeam'].unique():
     map_abbr[abb] = abb
 
 
-# In[18]:
 
 
 def uid_aggregation(comb, main_columns, uids, aggregations):
@@ -256,7 +238,6 @@ def uid_aggregation(comb, main_columns, uids, aggregations):
     return X
 
 
-# In[19]:
 
 
 def preprocess(df, labelEncoders=None):
@@ -509,7 +490,6 @@ def preprocess(df, labelEncoders=None):
     return X
 
 
-# In[20]:
 
 
 # mydf = preprocess(train_df)
@@ -517,7 +497,6 @@ def preprocess(df, labelEncoders=None):
 # mydf.head()
 
 
-# In[21]:
 
 
 train_df = preprocess(train_df)
@@ -525,14 +504,12 @@ print(train_df.shape)
 train_df.head()
 
 
-# In[22]:
 
 
 rm_cols = ['index','GameId','PlayId','NflId','FieldPosition', 
           'DisplayName','NflIdRusher']
 
 
-# In[23]:
 
 
 features = [c for c in train_df.columns.values if c not in rm_cols]
@@ -541,7 +518,6 @@ print(train_df.shape)
 train_df.head()
 
 
-# In[24]:
 
 
 # from https://www.kaggle.com/hukuda222/nfl-simple-model-using-lightgbm
@@ -554,19 +530,16 @@ for i in tqdm.tqdm(range(0,509762,22)):
         count+=1
 
 
-# In[25]:
 
 
 y_train_ = np.array([train_df["Yards"][i] for i in range(0,509762,22)])
 
 
-# In[26]:
 
 
 X_train = pd.DataFrame(data=train_data,columns=features)
 
 
-# In[27]:
 
 
 features = [f for f in features if f not in ["Yards"]]
@@ -576,7 +549,6 @@ print(X_train.shape)
 X_train.head()
 
 
-# In[28]:
 
 
 y_train = np.zeros(len(y_train_),dtype=np.float)
@@ -592,7 +564,6 @@ for y in y_train:
 plt.plot([i-99 for i in range(199)],data)
 
 
-# In[29]:
 
 
 missing = train_df.isnull().sum() # Sum of missing values
@@ -601,14 +572,12 @@ missing.sort_values(inplace=True)
 missing
 
 
-# In[30]:
 
 
 print(X_train.shape)
 print(y_train.shape)
 
 
-# In[31]:
 
 
 # from https://www.kaggle.com/newbielch/lgbm-regression-view
@@ -623,7 +592,6 @@ cdf = get_cdf_df(y_train).values.reshape(-1,)
 dist_to_end_train = X_train.apply(lambda x:(100 - x.loc['YardLine']) if x.loc["Field_eq_Possession"]==1 else x.loc['YardLine'],axis=1)
 
 
-# In[32]:
 
 
 def get_score(y_pred,cdf,w,dist_to_end):
@@ -669,7 +637,6 @@ def CRPS_pingyi1(y_preds,y_trues,w,cdf,dist_to_ends):
     return np.mean(tmp)
 
 
-# In[33]:
 
 
 # Initial LGB parameters are ...
@@ -691,7 +658,6 @@ lgbParams = {
 }
 
 
-# In[34]:
 
 
 ## Visualize feature importance
@@ -714,7 +680,6 @@ ax.set_xlabel("feature importance")
 plt.tight_layout()
 
 
-# In[35]:
 
 
 features = X_train.columns.values[ranking][:30]
@@ -722,7 +687,6 @@ print(features)
 X_train = X_train[features]
 
 
-# In[36]:
 
 
 # # FYI: Objective functions can take additional arguments
@@ -753,7 +717,6 @@ X_train = X_train[features]
 #     return mae
 
 
-# In[37]:
 
 
 # study = optuna.create_study(direction='minimize')
@@ -771,7 +734,6 @@ X_train = X_train[features]
 #     print('    {}: {}'.format(key, value))
 
 
-# In[38]:
 
 
 # lgbParams = trial.params
@@ -785,7 +747,6 @@ X_train = X_train[features]
 # print(lgbParams)
 
 
-# In[39]:
 
 
 lgbParams = {'lambda_l1': 9.22654100630611, 'lambda_l2': 0.0014139850193561965, 'num_leaves': 64, 'feature_fraction': 0.5952892097040369,
@@ -794,7 +755,6 @@ lgbParams = {'lambda_l1': 9.22654100630611, 'lambda_l2': 0.0014139850193561965, 
              'learning_rate': 0.01, 'num_iterations': 5000, 'random_state': 1220}
 
 
-# In[40]:
 
 
 n_splits = 5
@@ -819,14 +779,12 @@ for train_idx, valid_idx in kf.split(X_train, y_train):
 gc.collect()
 
 
-# In[41]:
 
 
 cprs = CRPS_pingyi1(y_valid, y_train.astype(int), 4, cdf, dist_to_end_train.astype(int))
 print("cprs = {}".format(cprs))
 
 
-# In[42]:
 
 
 # y_pred = np.zeros((509762//22,199))
@@ -849,26 +807,22 @@ print("cprs = {}".format(cprs))
 # print("validation score:",np.sum(np.power(y_pred-y_ans,2))/(199*(509762//22)))
 
 
-# In[43]:
 
 
 # _EvalFunction(y_train, y_valid)[1]
 
 
-# In[44]:
 
 
 sns.distplot(y_valid)
 
 
-# In[45]:
 
 
 # You can only call make_env() once, so don't lose it!
 env = nflrush.make_env()
 
 
-# In[46]:
 
 
 index = 0

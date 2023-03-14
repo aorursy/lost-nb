@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from shutil import unpack_archive as ua
@@ -9,31 +8,26 @@ ua("/kaggle/input/dogs-vs-cats/test1.zip", "/kaggle/output/working")
 ua("/kaggle/input/dogs-vs-cats/train.zip", "/kaggle/output/working")
 
 
-# In[2]:
 
 
 mkdir train
 
 
-# In[3]:
 
 
 cd /kaggle/working/train
 
 
-# In[4]:
 
 
 mkdir cat
 
 
-# In[5]:
 
 
 mkdir dog
 
 
-# In[6]:
 
 
 from shutil import copy as cp
@@ -46,7 +40,6 @@ for name in os.listdir("/kaggle/output/working/train"):
     #print(src, d)
 
 
-# In[7]:
 
 
 # Dimesion of images to be use. Can choose anything as a different dimenion will be resized to this.
@@ -63,7 +56,6 @@ validation_split_coeff = 0.2
 data_dir = "/kaggle/working/train"
 
 
-# In[8]:
 
 
 import tensorflow as tf
@@ -77,7 +69,6 @@ train_ds = tf.keras.preprocessing.image_dataset_from_directory(
   batch_size=batch_size)
 
 
-# In[9]:
 
 
 val_ds = tf.keras.preprocessing.image_dataset_from_directory(
@@ -89,7 +80,6 @@ val_ds = tf.keras.preprocessing.image_dataset_from_directory(
   batch_size=batch_size)
 
 
-# In[10]:
 
 
 from tensorflow.keras import layers

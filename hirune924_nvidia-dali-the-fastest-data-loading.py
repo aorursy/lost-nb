@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,13 +21,10 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
-pip install --extra-index-url https://developer.download.nvidia.com/compute/redist/cuda/10.0 nvidia-dali
 
 
-# In[3]:
 
 
 import time
@@ -54,7 +50,6 @@ class BasicDataset(Dataset):
         return image
 
 
-# In[4]:
 
 
 transform = transforms.Compose([
@@ -67,20 +62,17 @@ data_loader = DataLoader(
                     batch_size=64, shuffle=True, num_workers=2)
 
 
-# In[5]:
 
 
 get_ipython().run_cell_magic('time', '', 'start_time = time.time()\nfor image in tqdm(data_loader):\n    image = image.cuda()\n    pass\nbasic_time = time.time() - start_time')
 
 
-# In[6]:
 
 
 get_ipython().system('apt-get install libturbojpeg0')
 get_ipython().system('pip install jpeg4py')
 
 
-# In[7]:
 
 
 import jpeg4py as jpeg
@@ -102,7 +94,6 @@ class jpeg4pyDataset(Dataset):
         return image
 
 
-# In[8]:
 
 
 transform = transforms.Compose([
@@ -115,19 +106,16 @@ data_loader = DataLoader(
                     batch_size=64, shuffle=True, num_workers=2)
 
 
-# In[9]:
 
 
 get_ipython().run_cell_magic('time', '', 'start_time = time.time()\nfor image in tqdm(data_loader):\n    image = image.cuda()\n    pass\njpeg4py_time = time.time() - start_time')
 
 
-# In[10]:
 
 
 import torch
 
 
-# In[11]:
 
 
 import albumentations
@@ -148,7 +136,6 @@ class jpeg4pyalbDataset(Dataset):
         return torch.from_numpy(image['image'])
 
 
-# In[12]:
 
 
 transform = albumentations.Compose([
@@ -160,13 +147,11 @@ data_loader = DataLoader(
                     batch_size=64, shuffle=True, num_workers=2)
 
 
-# In[13]:
 
 
 get_ipython().run_cell_magic('time', '', 'start_time = time.time()\nfor image in tqdm(data_loader):\n    image = image.cuda()\n    pass\njpeg4pyalb_time = time.time() - start_time')
 
 
-# In[14]:
 
 
 import jpeg4py as jpeg
@@ -188,7 +173,6 @@ class jpeg4pyDataset(Dataset):
         return image
 
 
-# In[15]:
 
 
 from nvidia.dali.pipeline import Pipeline
@@ -197,7 +181,6 @@ import nvidia.dali.ops as ops
 import nvidia.dali.types as types
 
 
-# In[16]:
 
 
 class DALIPipeline(Pipeline):
@@ -228,7 +211,6 @@ class DALIPipeline(Pipeline):
         return output
 
 
-# In[17]:
 
 
 class DALICustomIterator(DALIGenericIterator):
@@ -248,7 +230,6 @@ class DALICustomIterator(DALIGenericIterator):
         return data
 
 
-# In[18]:
 
 
 def DALIDataLoader(batch_size):
@@ -261,13 +242,11 @@ def DALIDataLoader(batch_size):
 data_loader = DALIDataLoader(batch_size=64)
 
 
-# In[19]:
 
 
 get_ipython().run_cell_magic('time', '', 'start_time = time.time()\nfor image in tqdm(data_loader):\n    # image is already on GPU\n    image = image\n    pass\ndali_time = time.time() - start_time')
 
 
-# In[20]:
 
 
 print('simple data loader         : {}'.format(basic_time))

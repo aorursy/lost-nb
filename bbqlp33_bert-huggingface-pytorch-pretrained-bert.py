@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -27,34 +26,29 @@ print(os.listdir("../input/huggingfacepytorchpretrainedbertchinese/bert-base-chi
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 VOCAB = '../input/huggingfacepytorchpretrainedbertchinese/bert-base-chinese-vocab.txt'
 MODEL = '../input/huggingfacepytorchpretrainedbertchinese/bert-base-chinese'
 
 
-# In[3]:
 
 
 get_ipython().system('pip install pytorch_pretrained_bert ')
 
 
-# In[4]:
 
 
 import torch
 from pytorch_pretrained_bert import BertTokenizer, BertModel, BertForMaskedLM, BertForSequenceClassification
 
 
-# In[5]:
 
 
 # Load pre-trained model tokenizer (vocabulary)
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
 
-# In[6]:
 
 
 # Tokenized input
@@ -63,13 +57,11 @@ tokenized_text = tokenizer.tokenize(text)
 tokenized_text
 
 
-# In[7]:
 
 
 tokenizer.tokenize('su')
 
 
-# In[8]:
 
 
 if os.path.isdir("../input/fake-news-pair-classification-challenge"):
@@ -93,14 +85,12 @@ test.fillna('UNKNOWN', inplace=True)
 train.head(3)
 
 
-# In[9]:
 
 
 from collections import Counter
 Counter(train.label)
 
 
-# In[10]:
 
 
 get_ipython().system('wget https://raw.githubusercontent.com/huggingface/pytorch-pretrained-BERT/master/examples/run_classifier.py')
@@ -108,7 +98,6 @@ get_ipython().system('wget https://raw.githubusercontent.com/huggingface/pytorch
     
 
 
-# In[11]:
 
 
 from sklearn.model_selection     import train_test_split
@@ -124,13 +113,11 @@ train, val=     train_test_split(
 )
 
 
-# In[12]:
 
 
 label_list = ['unrelated', 'agreed', 'disagreed']
 
 
-# In[13]:
 
 
 from run_classifier import *
@@ -142,14 +129,12 @@ test_examples = [InputExample('test', row.title1_zh, row.title2_zh, 'unrelated')
 len(train_examples)
 
 
-# In[14]:
 
 
 orginal_total = len(train_examples)
 train_examples = train_examples[:int(orginal_total*0.2)]
 
 
-# In[15]:
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -170,7 +155,6 @@ max_seq_length = 128
 label_list = ['unrelated', 'agreed', 'disagreed']
 
 
-# In[16]:
 
 
 tokenizer = BertTokenizer.from_pretrained(VOCAB)
@@ -183,7 +167,6 @@ if n_gpu > 1:
 model, tokenizer
 
 
-# In[17]:
 
 
 # Prepare optimizer
@@ -199,7 +182,6 @@ optimizer = BertAdam(optimizer_grouped_parameters,
                              t_total=num_train_optimization_steps)
 
 
-# In[18]:
 
 
 
@@ -250,7 +232,6 @@ for _ in trange(int(num_train_epochs), desc="Epoch"):
             print("Fininshed: {:.2f}% ({}/{})".format(step/total_step*100, step, total_step))
 
 
-# In[19]:
 
 
 if not os.path.exists(output_dir):
@@ -265,7 +246,6 @@ with open(output_config_file, 'w') as f:
     f.write(model_to_save.config.to_json_string())
 
 
-# In[20]:
 
 
 # Load a trained model and config that you have fine-tuned
@@ -277,13 +257,11 @@ if n_gpu > 1:
     model = torch.nn.DataParallel(model)
 
 
-# In[21]:
 
 
 config
 
 
-# In[22]:
 
 
 # val
@@ -342,26 +320,22 @@ with open(output_eval_file, "w") as writer:
         writer.write("%s = %s\n" % (key, str(result[key])))
 
 
-# In[23]:
 
 
 device
 
 
-# In[24]:
 
 
 get_ipython().system('ls output')
 get_ipython().system(' cat output/eval_results.txt')
 
 
-# In[25]:
 
 
 model
 
 
-# In[26]:
 
 
 def predict(model, tokenizer, examples, label_list, eval_batch_size=128):
@@ -426,38 +400,32 @@ def predict(model, tokenizer, examples, label_list, eval_batch_size=128):
     
 
 
-# In[27]:
 
 
 res = predict(model, tokenizer, test_examples, label_list)
 
 
-# In[28]:
 
 
 label_list
 
 
-# In[29]:
 
 
 set(res)
 
 
-# In[30]:
 
 
 predict(model, tokenizer, test_examples[:10], label_list)
 
 
-# In[31]:
 
 
 cat_map = {idx:lab for idx, lab in enumerate(label_list)}
 res = [cat_map[c] for c  in res]
 
 
-# In[32]:
 
 
 #　For Submission

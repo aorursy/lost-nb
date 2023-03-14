@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,13 +19,11 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 cd ../input
 
 
-# In[3]:
 
 
 import cv2
@@ -36,7 +33,6 @@ import matplotlib.pyplot as plt
 from mask_functions import rle2mask
 
 
-# In[4]:
 
 
 sample_imgs = [path for path in glob(os.path.join('sample images', '*')) if 'csv' not in path]
@@ -49,7 +45,6 @@ for data in train_df.iterrows():
     data_info.append([path, rle])
 
 
-# In[5]:
 
 
 for path, rle in data_info:
@@ -84,7 +79,6 @@ for path, rle in data_info:
     plt.show()
 
 
-# In[ ]:
 
 
 

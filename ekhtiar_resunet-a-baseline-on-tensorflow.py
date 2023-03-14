@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # some basic imports
@@ -12,7 +11,6 @@ import cv2
 import matplotlib.pyplot as plt
 
 
-# In[2]:
 
 
 # imports for building the network
@@ -25,7 +23,6 @@ from tensorflow.keras.losses import binary_crossentropy
 from sklearn.model_selection import train_test_split
 
 
-# In[3]:
 
 
 # Kernel Configurations
@@ -38,7 +35,6 @@ model_save_path = './ResUNetSteel_w800e50_z.h5' # path of model to save
 train_image_dir = os.path.join(train_dir, 'train_images') # 
 
 
-# In[4]:
 
 
 # network configuration parameters
@@ -59,14 +55,12 @@ class_3_repeat = 1
 class_4_repeat = 1
 
 
-# In[5]:
 
 
 # load full data and label no mask as -1
 train_df = pd.read_csv(os.path.join(train_dir, 'train.csv')).fillna(-1)
 
 
-# In[6]:
 
 
 # image id and class id are two seperate entities and it makes it easier to split them up in two columns
@@ -77,7 +71,6 @@ train_df['ClassId_EncodedPixels'] = train_df.apply(lambda row: (row['ClassId'], 
 grouped_EncodedPixels = train_df.groupby('ImageId')['ClassId_EncodedPixels'].apply(list)
 
 
-# In[7]:
 
 
 # from https://www.kaggle.com/robertkag/rle-to-mask-converter
@@ -108,7 +101,6 @@ def rle_to_mask(rle_string,height,width):
         return img
 
 
-# In[8]:
 
 
 # Thanks to the authors of: https://www.kaggle.com/paulorzp/rle-functions-run-lenght-encode-decode
@@ -129,7 +121,6 @@ def mask_to_rle(mask):
     return ' '.join(str(x) for x in runs)
 
 
-# In[9]:
 
 
 class DataGenerator(tf.keras.utils.Sequence):
@@ -201,7 +192,6 @@ class DataGenerator(tf.keras.utils.Sequence):
         return X, y
 
 
-# In[10]:
 
 
 # create a dict of all the masks
@@ -210,7 +200,6 @@ for index, row in train_df[train_df['EncodedPixels']!=-1].iterrows():
     masks[row['ImageId_ClassId']] = row['EncodedPixels']
 
 
-# In[11]:
 
 
 # repeat low represented samples more frequently to balance our dataset
@@ -229,13 +218,11 @@ else:
     train_image_ids = train_df['ImageId'].unique()
 
 
-# In[12]:
 
 
 X_train, X_val = train_test_split(train_image_ids, test_size=val_size, random_state=42)
 
 
-# In[13]:
 
 
 params = {'img_h': img_h,
@@ -249,7 +236,6 @@ training_generator = DataGenerator(X_train, masks, **params)
 validation_generator = DataGenerator(X_val, masks, **params)
 
 
-# In[14]:
 
 
 # check out the shapes
@@ -257,7 +243,6 @@ x, y = training_generator.__getitem__(0)
 print(x.shape, y.shape)
 
 
-# In[15]:
 
 
 # visualize steel image with four classes of faults in seperate columns
@@ -270,7 +255,6 @@ def viz_steel_img_mask(img, masks):
         ax[idx].imshow(mask, alpha=0.3, cmap=cmaps[idx])
 
 
-# In[16]:
 
 
 # lets visualize some images with their faults to make sure our data generator is working like it should
@@ -281,7 +265,6 @@ for ix in range(0,batch_size):
         viz_steel_img_mask(img, masks_temp)
 
 
-# In[17]:
 
 
 def bn_act(x, act=True):
@@ -292,7 +275,6 @@ def bn_act(x, act=True):
     return x
 
 
-# In[18]:
 
 
 def conv_block(x, filters, kernel_size=3, padding='same', strides=1):
@@ -302,7 +284,6 @@ def conv_block(x, filters, kernel_size=3, padding='same', strides=1):
     return conv
 
 
-# In[19]:
 
 
 def stem(x, filters, kernel_size=3, padding='same', strides=1):
@@ -314,7 +295,6 @@ def stem(x, filters, kernel_size=3, padding='same', strides=1):
     return output
 
 
-# In[20]:
 
 
 def residual_block(x, filters, kernel_size=3, padding='same', strides=1):
@@ -326,7 +306,6 @@ def residual_block(x, filters, kernel_size=3, padding='same', strides=1):
     return output
 
 
-# In[21]:
 
 
 def upsample_concat_block(x, xskip):
@@ -335,7 +314,6 @@ def upsample_concat_block(x, xskip):
     return c
 
 
-# In[22]:
 
 
 def ResUNet(img_h, img_w):
@@ -372,7 +350,6 @@ def ResUNet(img_h, img_w):
     return model
 
 
-# In[23]:
 
 
 # Dice similarity coefficient loss, brought to you by: https://github.com/nabsabraham/focal-tversky-unet
@@ -393,7 +370,6 @@ def bce_dice_loss(y_true, y_pred):
     return loss
 
 
-# In[24]:
 
 
 # Focal Tversky loss, brought to you by:  https://github.com/nabsabraham/focal-tversky-unet
@@ -415,7 +391,6 @@ def focal_tversky_loss(y_true,y_pred):
     return tf.keras.backend.pow((1-pt_1), gamma)
 
 
-# In[25]:
 
 
 model = ResUNet(img_h=img_h, img_w=img_w)
@@ -423,7 +398,6 @@ adam = tf.keras.optimizers.Adam(lr = 0.05, epsilon = 0.1)
 model.compile(optimizer=adam, loss=focal_tversky_loss, metrics=[tversky])
 
 
-# In[26]:
 
 
 if load_pretrained_model:
@@ -434,20 +408,17 @@ if load_pretrained_model:
         print('You need to run the model and load the trained model')
 
 
-# In[27]:
 
 
 history = model.fit_generator(generator=training_generator, validation_data=validation_generator, epochs=epochs, verbose=1)
 
 
-# In[28]:
 
 
 if save_model: 
     model.save(model_save_path)
 
 
-# In[29]:
 
 
 # list all data in history
@@ -472,7 +443,6 @@ plt.xlabel('epoch')
 plt.legend(['train', 'validation'], loc='upper left')
 
 
-# In[30]:
 
 
 # a function to plot image with mask and image with predicted mask next to each other
@@ -493,7 +463,6 @@ def viz_single_fault(img, mask, pred, image_class):
     plt.show()
 
 
-# In[31]:
 
 
 # https://www.jeremyjordan.me/evaluating-image-segmentation-models/
@@ -507,7 +476,6 @@ def calculate_iou(target, prediction):
     return iou_score
 
 
-# In[32]:
 
 
 if make_submission == False:
@@ -552,7 +520,6 @@ if make_submission == False:
                         class_viz_count[i] += 1
 
 
-# In[33]:
 
 
 if make_submission == False:
@@ -582,7 +549,6 @@ if make_submission == False:
    plt.show()
 
 
-# In[34]:
 
 
 # return tensor in the right shape for prediction 
@@ -602,7 +568,6 @@ def get_test_tensor(img_dir, img_h, img_w, channels=1):
     return X
 
 
-# In[35]:
 
 
 # this is an awesome little function to remove small spots in our predictions
@@ -616,7 +581,6 @@ def remove_small_regions(img, size):
     return img
 
 
-# In[36]:
 
 
 import glob
@@ -624,7 +588,6 @@ import glob
 test_files = [f for f in glob.glob('../input/severstal-steel-defect-detection/test_images/' + "*.jpg", recursive=True)]
 
 
-# In[37]:
 
 
 submission = []
@@ -655,7 +618,6 @@ for f in test_files:
     [submission.append((id+'_%s' % (k+1), pred_mask)) for k, pred_mask in enumerate(pred_masks)]
 
 
-# In[38]:
 
 
 # convert to a csv
@@ -664,14 +626,12 @@ submission_df = pd.DataFrame(submission, columns=['ImageId_ClassId', 'EncodedPix
 submission_df[ submission_df['EncodedPixels'] != ''].head()
 
 
-# In[39]:
 
 
 # take a look at our submission 
 submission_df.head()
 
 
-# In[40]:
 
 
 # write it out

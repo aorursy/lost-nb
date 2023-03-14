@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 from sklearn.model_selection import train_test_split
@@ -38,14 +36,12 @@ import plotly.graph_objects as go
 from sklearn.tree import DecisionTreeRegressor
 
 
-# In[3]:
 
 
 train_df = pd.read_csv('../input/trends-assessment-prediction/train_scores.csv', dtype={'Id':str})            .dropna().reset_index(drop=True) # Load train dataFrame
 loading_df = pd.read_csv('../input/trends-assessment-prediction/loading.csv', dtype={'Id':str})
 
 
-# In[4]:
 
 
 # Lets merge train df with loading_df
@@ -53,13 +49,11 @@ train_df = train_df.merge(loading_df, on='Id', how='left')
 train_df.head() 
 
 
-# In[5]:
 
 
 train_df.shape
 
 
-# In[6]:
 
 
 X_train = train_df.iloc[:,6:]  #Train feature
@@ -67,13 +61,11 @@ target = train_df.iloc[:,1:6]   #Target feature
 X_train.head()
 
 
-# In[7]:
 
 
 x_train,x_val,y_train,y_val = train_test_split(X_train,target,test_size=0.33,shuffle=True) #Lets split the data
 
 
-# In[8]:
 
 
 scaler = MinMaxScaler()
@@ -82,20 +74,17 @@ x_train = scaler.transform(x_train)  ##transform train set
 x_val = scaler.transform(x_val)   ##transform validaion set
 
 
-# In[9]:
 
 
 x_train = pd.DataFrame(x_train,columns=X_train.columns)  ##Convert numpy into dataframe
 x_val = pd.DataFrame(x_val,columns=X_train.columns)
 
 
-# In[10]:
 
 
 loss_wt = [.3, .175, .175, .175, .175]  ##weight for each target variable in calculatting loss (Given)
 
 
-# In[11]:
 
 
 def k_loss(weight,y_pred,y_true):   ##Lets define the loss function
@@ -103,7 +92,6 @@ def k_loss(weight,y_pred,y_true):   ##Lets define the loss function
     return weight*s
 
 
-# In[12]:
 
 
 #model =  LGBMRegressor(random_state=17)  #Lets define model for feature selection
@@ -111,13 +99,11 @@ def k_loss(weight,y_pred,y_true):   ##Lets define the loss function
 model = DecisionTreeRegressor() #You can use your own model for feature selection
 
 
-# In[13]:
 
 
 col = target.columns
 
 
-# In[14]:
 
 
 loss_dict ={} #To keep the history of loss
@@ -145,7 +131,6 @@ for i in range(5): #Iterate for every target feature
     
 
 
-# In[15]:
 
 
 fig = go.Figure(data=go.Scatter(x=list(range(1,27)), y=loss_dict['age']))
@@ -155,7 +140,6 @@ fig.update_layout(title='Count of best features vs Loss for "AGE"',
 fig.show()
 
 
-# In[16]:
 
 
 fig = go.Figure(data=go.Scatter(x=list(range(1,27)), y=loss_dict['domain1_var1']))
@@ -165,7 +149,6 @@ fig.update_layout(title='Count of best features vs Loss for "domain1_var1"',
 fig.show()
 
 
-# In[17]:
 
 
 fig = go.Figure(data=go.Scatter(x=list(range(1,27)), y=loss_dict['domain1_var2']))
@@ -175,7 +158,6 @@ fig.update_layout(title='Count of best features vs Loss for "domain1_var2"',
 fig.show()
 
 
-# In[18]:
 
 
 fig = go.Figure(data=go.Scatter(x=list(range(1,27)), y=loss_dict['domain2_var1']))
@@ -185,7 +167,6 @@ fig.update_layout(title='Count of best features vs Loss for "domain2_var1"',
 fig.show()
 
 
-# In[19]:
 
 
 fig = go.Figure(data=go.Scatter(x=list(range(1,27)), y=loss_dict['domain2_var2']))
@@ -195,37 +176,31 @@ fig.update_layout(title='Count of best features vs Loss for "domain2_var2"',
 fig.show()
 
 
-# In[20]:
 
 
 best_feat_col['age']
 
 
-# In[21]:
 
 
 best_feat_col['domain1_var1']
 
 
-# In[22]:
 
 
 best_feat_col['domain1_var2']  ##Interesting result
 
 
-# In[23]:
 
 
 best_feat_col['domain2_var1']
 
 
-# In[24]:
 
 
 best_feat_col['domain2_var2']
 
 
-# In[ ]:
 
 
 

@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install pycountry_convert')
 
 
-# In[2]:
 
 
 # Imports .......
@@ -43,14 +41,12 @@ import gc
 from tqdm import tqdm
 
 
-# In[3]:
 
 
 df_train = pd.read_csv('/kaggle/input/covid19-global-forecasting-week-4/train.csv') 
 df_test = pd.read_csv('/kaggle/input/covid19-global-forecasting-week-4/test.csv')
 
 
-# In[4]:
 
 
 display(df_train.head())
@@ -58,28 +54,24 @@ display(df_train.describe())
 display(df_train.info())
 
 
-# In[5]:
 
 
 df_train['Date'] = pd.to_datetime(df_train['Date'], format = '%Y-%m-%d')
 df_test['Date'] = pd.to_datetime(df_test['Date'], format = '%Y-%m-%d')
 
 
-# In[6]:
 
 
 print('Minimum date from training set: {}'.format(df_train['Date'].min()))
 print('Maximum date from training set: {}'.format(df_train['Date'].max()))
 
 
-# In[7]:
 
 
 print('Minimum date from test set: {}'.format(df_test['Date'].min()))
 print('Maximum date from test set: {}'.format(df_test['Date'].max()))
 
 
-# In[8]:
 
 
 class country_utils():
@@ -139,7 +131,6 @@ class country_utils():
             return self.get_continent(country)
 
 
-# In[9]:
 
 
 df_tm = df_train.copy()
@@ -156,7 +147,6 @@ fig = px.treemap(df_tm, path=['world', 'continent', 'Country_Region','Province_S
 fig.show()
 
 
-# In[10]:
 
 
 fig = px.treemap(df_tm, path=['world', 'continent', 'Country_Region','Province_State'], values='Fatalities',
@@ -165,7 +155,6 @@ fig = px.treemap(df_tm, path=['world', 'continent', 'Country_Region','Province_S
 fig.show()
 
 
-# In[11]:
 
 
 def add_daily_measures(df):
@@ -180,7 +169,6 @@ def add_daily_measures(df):
     return df
 
 
-# In[12]:
 
 
 df_world = df_train.copy()
@@ -188,7 +176,6 @@ df_world = df_world.groupby('Date',as_index=False)['ConfirmedCases','Fatalities'
 df_world = add_daily_measures(df_world)
 
 
-# In[13]:
 
 
 fig = go.Figure(data=[
@@ -200,7 +187,6 @@ fig.update_layout(barmode='overlay', title='Worldwide daily Case and Death count
 fig.show()
 
 
-# In[14]:
 
 
 df_map = df_train.copy()
@@ -209,20 +195,17 @@ df_map['Date'] = df_map['Date'].astype(str)
 df_map = df_map.groupby(['Date','Country_Region'], as_index=False)['ConfirmedCases','Fatalities'].sum()
 
 
-# In[15]:
 
 
 df_map['iso_alpha'] = df_map.apply(lambda x: obj.fetch_iso3(x['Country_Region']), axis=1)
 
 
-# In[16]:
 
 
 df_map['ln(ConfirmedCases)'] = np.log(df_map.ConfirmedCases + 1)
 df_map['ln(Fatalities)'] = np.log(df_map.Fatalities + 1)
 
 
-# In[17]:
 
 
 px.choropleth(df_map, 
@@ -235,7 +218,6 @@ px.choropleth(df_map,
               title='Total Confirmed Cases growth(Logarithmic Scale)')
 
 
-# In[18]:
 
 
 px.choropleth(df_map, 
@@ -248,7 +230,6 @@ px.choropleth(df_map,
               title = 'Total Deaths growth(Logarithmic Scale)')
 
 
-# In[19]:
 
 
 #Get the top 10 countries
@@ -266,37 +247,31 @@ df_trend['ln(Cases)'] = np.log(df_trend['Cases']+1)# Added 1 to remove error due
 df_trend['ln(Deaths)'] = np.log(df_trend['Deaths']+1)
 
 
-# In[20]:
 
 
 px.line(df_trend, x='Date', y='Cases', color='Country', title='COVID19 Total Cases growth for top 10 worst affected countries')
 
 
-# In[21]:
 
 
 px.line(df_trend, x='Date', y='Deaths', color='Country', title='COVID19 Total Deaths growth for top 10 worst affected countries')
 
 
-# In[22]:
 
 
 px.line(df_trend, x='Date', y='ln(Cases)', color='Country', title='COVID19 Total Cases growth for top 10 worst affected countries (Logarithmic Scale)')
 
 
-# In[23]:
 
 
 px.line(df_trend, x='Date', y='ln(Deaths)', color='Country', title='COVID19 Total Deaths growth for top 10 worst affected countries (Logarithmic Scale)')
 
 
-# In[24]:
 
 
 df_map['Mortality Rate%'] = round((df_map.Fatalities/df_map.ConfirmedCases)*100,2)
 
 
-# In[25]:
 
 
 px.choropleth(df_map, 
@@ -309,14 +284,12 @@ px.choropleth(df_map,
                     title = 'Worldwide Daily Variation of Mortality Rate%')
 
 
-# In[26]:
 
 
 df_trend['Mortality Rate%'] = round((df_trend.Deaths/df_trend.Cases)*100,2)
 px.line(df_trend, x='Date', y='Mortality Rate%', color='Country', title='Variation of Mortality Rate% \n(Top 10 worst affected countries)')
 
 
-# In[27]:
 
 
 # Dictionary to get the state codes from state names for US
@@ -380,7 +353,6 @@ us_state_abbrev = {
 }
 
 
-# In[28]:
 
 
 df_us = df_train[df_train['Country_Region']=='US']
@@ -390,7 +362,6 @@ df_us['ln(ConfirmedCases)'] = np.log(df_us.ConfirmedCases + 1)
 df_us['ln(Fatalities)'] = np.log(df_us.Fatalities + 1)
 
 
-# In[29]:
 
 
 px.choropleth(df_us,
@@ -405,7 +376,6 @@ px.choropleth(df_us,
               title = 'Total Cases growth for USA(Logarithmic Scale)')
 
 
-# In[30]:
 
 
 px.choropleth(df_us,
@@ -420,7 +390,6 @@ px.choropleth(df_us,
               title = 'Total deaths growth for USA(Logarithmic Scale)')
 
 
-# In[31]:
 
 
 df_usa = df_train.query("Country_Region=='US'")
@@ -435,14 +404,12 @@ fig.update_layout(barmode='overlay', title='Daily Case and Death count(USA)')
 fig.show()
 
 
-# In[32]:
 
 
 df_train.Province_State.fillna('NaN', inplace=True)
 df_plot = df_train.groupby(['Date','Country_Region','Province_State'], as_index=False)['ConfirmedCases','Fatalities'].sum()
 
 
-# In[33]:
 
 
 df = df_plot.query("Country_Region=='Italy'")
@@ -457,14 +424,12 @@ fig.update_layout(barmode='overlay', title='Daily Case and Death count (Italy)')
 fig.show()
 
 
-# In[34]:
 
 
 df_train.Province_State.fillna('NaN', inplace=True)
 df_plot = df_train.groupby(['Date','Country_Region','Province_State'], as_index=False)['ConfirmedCases','Fatalities'].sum()
 
 
-# In[35]:
 
 
 df = df_plot.query("Country_Region=='Spain'")
@@ -479,20 +444,17 @@ fig.update_layout(barmode='overlay', title='Daily Case and Death count (Spain)')
 fig.show()
 
 
-# In[36]:
 
 
 df = df_plot.query("Country_Region=='China'")
 px.line(df, x='Date', y='ConfirmedCases', color='Province_State', title='Total Cases growth for China')
 
 
-# In[37]:
 
 
 px.line(df, x='Date', y='Fatalities', color='Province_State', title='Total Deaths growth for China')
 
 
-# In[38]:
 
 
 df_ch = df_train.query("Country_Region=='China'")
@@ -507,27 +469,23 @@ fig.update_layout(barmode='overlay', title='Daily Case and Death count (China)')
 fig.show()
 
 
-# In[39]:
 
 
 df_train.Province_State.fillna('NaN', inplace=True)
 df_plot = df_train.groupby(['Date','Country_Region','Province_State'], as_index=False)['ConfirmedCases','Fatalities'].sum()
 
 
-# In[40]:
 
 
 df = df_plot.query("Country_Region=='Australia'")
 px.line(df, x='Date', y='ConfirmedCases', color='Province_State', title='Total Cases growth for Australia')
 
 
-# In[41]:
 
 
 px.line(df, x='Date', y='Fatalities', color='Province_State', title='Total Deaths growth for Australia')
 
 
-# In[42]:
 
 
 df_AU = df_train.query("Country_Region=='Australia'")
@@ -542,7 +500,6 @@ fig.update_layout(barmode='overlay', title='Daily Case and Death count (Australi
 fig.show()
 
 
-# In[43]:
 
 
 # set the session to pool available GPU
@@ -1089,7 +1046,6 @@ for t in TARGETS:
     dataframe_for_submission[t] = np.expm1(np.log1p(sub1[t].values)*0.5 + np.log1p(sub2[t].values)*0.5)
 
 
-# In[44]:
 
 
 # We will train XG-BOOST here
@@ -1186,7 +1142,6 @@ for i in test['Country_Region'].unique():
 xgb_sub['ForecastId']= xgb_sub['ForecastId'].astype('int')
 
 
-# In[45]:
 
 
 import pandas as pd
@@ -1200,7 +1155,6 @@ from sklearn import preprocessing
 from sklearn.model_selection import cross_val_score
 
 
-# In[46]:
 
 
 dataset_path = Path('/kaggle/input/covid19-global-forecasting-week-4')
@@ -1209,14 +1163,12 @@ test = pd.read_csv(dataset_path/'test.csv')
 dtree_sub = pd.read_csv(dataset_path/'submission.csv')
 
 
-# In[47]:
 
 
 train_profile = ProfileReport(train, title='COVID19 WEEK 4 Profiling Report', html={'style':{'full_width':True}},progress_bar=False);
 train_profile
 
 
-# In[48]:
 
 
 def fill_state(state,country):
@@ -1224,7 +1176,6 @@ def fill_state(state,country):
     return state
 
 
-# In[49]:
 
 
 train['Province_State'] = train.loc[:, ['Province_State', 'Country_Region']].apply(lambda x : fill_state(x['Province_State'], x['Country_Region']), axis=1)
@@ -1247,7 +1198,6 @@ train.drop('Date',1,inplace=True)
 test.drop('Date',1,inplace=True)
 
 
-# In[50]:
 
 
 dtree_sub=pd.DataFrame(columns=dtree_sub.columns)
@@ -1257,7 +1207,6 @@ l1.fit(train['Country_Region'])
 l2.fit(train['Province_State'])
 
 
-# In[51]:
 
 
 countries=train['Country_Region'].unique()
@@ -1291,7 +1240,6 @@ for country in countries:
             dtree_sub=dtree_sub.append(test_res)
 
 
-# In[52]:
 
 
 # ENSEMBLE .................

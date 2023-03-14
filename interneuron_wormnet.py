@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system(' wget https://www.cise.ufl.edu/research/sparse/MM/Newman/celegansneural.tar.gz')
 get_ipython().system(' tar -xvzf celegansneural.tar.gz')
 
 
-# In[2]:
 
 
 import numpy as np
@@ -20,45 +18,38 @@ celegans = scipy.io.mmread('celegansneural/celegansneural.mtx').toarray()
 celegans
 
 
-# In[3]:
 
 
 celegans.shape
 
 
-# In[4]:
 
 
 vfunc = np.vectorize(lambda a : 1 if a != 0 else 0)
 celegansbin = vfunc(celegans)
 
 
-# In[5]:
 
 
 celegans_g = nx.from_numpy_array(celegansbin)
 nx.draw(celegans_g, node_size=7)
 
 
-# In[6]:
 
 
 celegans_g.number_of_edges()
 
 
-# In[7]:
 
 
 celegans_g.number_of_nodes()
 
 
-# In[8]:
 
 
 #!pip install torchviz
 
 
-# In[9]:
 
 
 import pandas as pd, numpy as np, os, sys
@@ -82,13 +73,11 @@ from tqdm import tqdm
 #print(os.listdir("../input"))
 
 
-# In[10]:
 
 
 
 
 
-# In[10]:
 
 
 class RandomGraph(object):
@@ -192,7 +181,6 @@ def _get_graph_info(graph):
     return nodes, in_edges
 
 
-# In[11]:
 
 
 rg = RandomGraph(8, 0.75)
@@ -200,19 +188,16 @@ gf = rg.make_graph()
 rg.get_graph_info(gf)
 
 
-# In[12]:
 
 
 nodes, in_edges = _get_graph_info(celegans_g)
 
 
-# In[13]:
 
 
 #in_edges
 
 
-# In[14]:
 
 
 def weights_init(m):
@@ -355,7 +340,6 @@ class RandWire(nn.Module):
         return out
 
 
-# In[15]:
 
 
 class RandNN(nn.Module):
@@ -449,14 +433,12 @@ class RandNN(nn.Module):
         return out
 
 
-# In[16]:
 
 
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 
-# In[17]:
 
 
 def rw(f=None):
@@ -464,19 +446,16 @@ def rw(f=None):
     return m
 
 
-# In[18]:
 
 
 m = rw()
 
 
-# In[19]:
 
 
 count_parameters(m)
 
 
-# In[20]:
 
 
 tr = pd.read_csv('../input/train.csv')
@@ -484,7 +463,6 @@ tr = tr.sample(frac=0.1).reset_index(drop=True)
 te = pd.read_csv('../input/sample_submission.csv')
 
 
-# In[21]:
 
 
 import fastai
@@ -492,7 +470,6 @@ from fastai.vision import *
 path = Path('../input/')
 
 
-# In[22]:
 
 
 SZ = 128
@@ -507,7 +484,6 @@ data = (train.split_by_rand_pct(0.1, seed=42)
         .databunch(path=Path('.'), bs=BS).normalize(imagenet_stats))
 
 
-# In[23]:
 
 
 # Source: https://www.kaggle.com/c/human-protein-atlas-image-classification/discussion/78109
@@ -528,7 +504,6 @@ class FocalLoss(nn.Module):
         return loss.mean()
 
 
-# In[24]:
 
 
 learn = cnn_learner(data, 
@@ -540,21 +515,18 @@ learn = cnn_learner(data,
 learn = learn.to_fp16(loss_scale=64, dynamic=True)
 
 
-# In[25]:
 
 
 #learn.lr_find()
 #learn.recorder.plot()
 
 
-# In[26]:
 
 
 learn.unfreeze()
 learn.fit_one_cycle(8, slice(1e-3,2e-2))
 
 
-# In[27]:
 
 
 learn.recorder.plot()
@@ -562,7 +534,6 @@ learn.recorder.plot_losses()
 learn.recorder.plot_metrics()
 
 
-# In[28]:
 
 
 def find_best_fixed_threshold(preds, targs, do_plot=True):
@@ -587,7 +558,6 @@ def join_preds(preds, thr):
     return [' '.join(i2c[np.where(t==1)[0],1].astype(str)) for t in (preds[0].sigmoid()>thr).long()]
 
 
-# In[29]:
 
 
 # Validation predictions
@@ -595,7 +565,6 @@ valid_preds = learn.get_preds(DatasetType.Valid)
 best_thr = find_best_fixed_threshold(*valid_preds)
 
 
-# In[30]:
 
 
 test_preds = learn.get_preds(DatasetType.Test)
@@ -603,69 +572,58 @@ te.attribute_ids = join_preds(test_preds, best_thr)
 te.head()
 
 
-# In[31]:
 
 
 te.to_csv('submission.csv', index=False)
 
 
-# In[32]:
 
 
 x = torch.randn(2,3,64,64).half().cuda()
 make_dot(learn.model(x), params=dict(learn.model.named_parameters()))
 
 
-# In[33]:
 
 
 
 
 
-# In[33]:
 
 
 x = torch.randn(2,3,64,64).half().cuda()
 make_dot(learn.model[0][0:2](x), params=dict(learn.model[0][0:2].named_parameters()))
 
 
-# In[34]:
 
 
 
 
 
-# In[34]:
 
 
 
 
 
-# In[34]:
 
 
 
 
 
-# In[34]:
 
 
 
 
 
-# In[34]:
 
 
 
 
 
-# In[34]:
 
 
 
 
 
-# In[34]:
 
 
 

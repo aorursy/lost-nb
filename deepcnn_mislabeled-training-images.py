@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -15,7 +14,6 @@ from skimage.measure import compare_ssim as ssim
 threshold = 90 # less than 10% difference
 
 
-# In[2]:
 
 
 # Load images into dictionary where the keys
@@ -50,19 +48,16 @@ def load_cv2_images(folder):
 imgs, masks, img_ids = load_cv2_images('../input/train/')
 
 
-# In[3]:
 
 
 imgs.keys()
 
 
-# In[4]:
 
 
 imgs[1].shape, masks[1].shape
 
 
-# In[5]:
 
 
 # The function below will find any
@@ -98,7 +93,6 @@ for j in range(47):
 len(matches)
 
 
-# In[6]:
 
 
 # Print the matches, avoiding duplicates
@@ -135,14 +129,12 @@ for i, m in enumerate(matches):
         break
 
 
-# In[7]:
 
 
 # Number of cases found
 len(unique)
 
 
-# In[8]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np, pandas as pd, os
@@ -16,14 +15,12 @@ from torch.autograd import Variable
 from torch.utils.data import Dataset, DataLoader
 
 
-# In[2]:
 
 
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 
-# In[3]:
 
 
 
@@ -31,7 +28,6 @@ train = pd.read_csv('../input/train.csv')
 test = pd.read_csv('../input/test.csv')
 
 
-# In[4]:
 
 
 cols = [c for c in train.columns if c not in ['id', 'target']]
@@ -39,13 +35,11 @@ oof = np.zeros(len(train))
 skf = StratifiedKFold(n_splits=5, random_state=42)
 
 
-# In[5]:
 
 
 cols.remove('wheezy-copper-turtle-magic')
 
 
-# In[6]:
 
 
 class IGClassifier(nn.Module):
@@ -67,7 +61,6 @@ class IGClassifier(nn.Module):
         return out
 
 
-# In[7]:
 
 
 class CyclicLR(object):
@@ -154,25 +147,21 @@ class CyclicLR(object):
         return lrs
 
 
-# In[8]:
 
 
 from torch.optim.optimizer import Optimizer
 
 
-# In[9]:
 
 
 from tqdm import tqdm_notebook
 
 
-# In[10]:
 
 
 debug =False
 
 
-# In[11]:
 
 
 oof = np.zeros(len(train))
@@ -257,14 +246,12 @@ auc = roc_auc_score(train['target'],oof)
 print('NN with interactions scores CV =',round(auc,5))
 
 
-# In[12]:
 
 
 auc = roc_auc_score(train['target'],oof)
 print('NN with interactions scores CV =',round(auc,5))
 
 
-# In[13]:
 
 
 sub = pd.read_csv('../input/sample_submission.csv')

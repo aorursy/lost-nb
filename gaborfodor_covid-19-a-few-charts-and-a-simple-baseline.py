@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -17,7 +16,6 @@ from tqdm import tqdm
 import datetime as dt
 
 
-# In[2]:
 
 
 import matplotlib.pyplot as plt
@@ -30,7 +28,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 
-# In[3]:
 
 
 COMP = '../input/covid19-global-forecasting-week-2'
@@ -97,7 +94,6 @@ def to_exp(x):
     return np.exp(x) - 1
 
 
-# In[4]:
 
 
 start = dt.datetime.now()
@@ -107,7 +103,6 @@ train.head(2)
 test.head(2)
 
 
-# In[5]:
 
 
 train.describe()
@@ -122,7 +117,6 @@ TEST_END = test.Date.max()
 TRAIN_START, TRAIN_END, TEST_START, TEST_END
 
 
-# In[6]:
 
 
 train = train.sort_values(by='Date')
@@ -138,7 +132,6 @@ countries_latest_state.shape
 countries_latest_state.head()
 
 
-# In[7]:
 
 
 fig = go.Figure(data=go.Choropleth(
@@ -166,7 +159,6 @@ _ = fig.update_layout(
 fig.show()
 
 
-# In[8]:
 
 
 fig = go.Figure(data=go.Choropleth(
@@ -194,7 +186,6 @@ _ = fig.update_layout(
 fig.show()
 
 
-# In[9]:
 
 
 countries_latest_state['DeathConfirmedRatio'] = (countries_latest_state.Fatalities + 1) / (countries_latest_state.ConfirmedCases + 1)
@@ -216,7 +207,6 @@ _ = fig.update_layout(
 fig.show()
 
 
-# In[10]:
 
 
 # The source dataset is not necessary cumulative we will force it
@@ -229,7 +219,6 @@ check[check.Fatalities_x != check.Fatalities_y]
 check[check.ConfirmedCases_x != check.ConfirmedCases_y]
 
 
-# In[11]:
 
 
 train_clean = process_each_location(train)
@@ -238,7 +227,6 @@ train_clean.shape
 train_clean.tail()
 
 
-# In[12]:
 
 
 regional_progress = train_clean.groupby(['DateTime', 'continent']).sum()[['ConfirmedCases', 'Fatalities']].reset_index()
@@ -247,7 +235,6 @@ regional_progress['Log10Fatalities'] = np.log10(regional_progress.Fatalities + 1
 regional_progress = regional_progress[regional_progress.continent != '#N/A']
 
 
-# In[13]:
 
 
 fig = px.area(regional_progress, x="DateTime", y="ConfirmedCases", color="continent")
@@ -263,7 +250,6 @@ _ = fig2.update_layout(
 fig2.show()
 
 
-# In[14]:
 
 
 fig = px.area(regional_progress, x="DateTime", y="Fatalities", color="continent")
@@ -279,7 +265,6 @@ _ = fig2.update_layout(
 fig2.show()
 
 
-# In[15]:
 
 
 china = train_clean[train_clean.Location.str.startswith('China')]
@@ -293,7 +278,6 @@ _ = fig2.update_layout(
 fig2.show()
 
 
-# In[16]:
 
 
 europe = train_clean[train_clean.continent == 'Europe']
@@ -307,7 +291,6 @@ _ = fig2.update_layout(
 fig2.show()
 
 
-# In[17]:
 
 
 us = train_clean[train_clean.Country_Region == 'US']
@@ -321,7 +304,6 @@ _ = fig2.update_layout(
 fig2.show()
 
 
-# In[18]:
 
 
 africa = train_clean[train_clean.continent == 'Africa']
@@ -335,7 +317,6 @@ _ = fig2.update_layout(
 fig2.show()
 
 
-# In[19]:
 
 
 country_progress = train_clean.groupby(['Date', 'DateTime', 'Country_Region']).sum()[[
@@ -359,7 +340,6 @@ _ = fig3.update_layout(
 fig3.show()
 
 
-# In[20]:
 
 
 countries_0301 = country_progress[country_progress.Date == '2020-03-01'][[
@@ -373,7 +353,6 @@ countries_in_march = countries_in_march[countries_in_march.ConfirmedCases_0331 >
 countries_in_march.tail(15)
 
 
-# In[21]:
 
 
 selected_countries = [
@@ -394,7 +373,6 @@ _ = fig3.update_layout(
 fig3.show()
 
 
-# In[22]:
 
 
 train_clean['Geo#Country#Contintent'] = train_clean.Location + '#' + train_clean.Country_Region + '#' + train_clean.continent
@@ -408,7 +386,6 @@ daily_confirmed_deltas.head()
 daily_confirmed_deltas.to_csv('daily_confirmed_deltas.csv', index=False)
 
 
-# In[23]:
 
 
 deltas = train_clean[np.logical_and(
@@ -430,21 +407,18 @@ confirmed_deltas
 confirmed_deltas.to_csv('confirmed_deltas.csv')
 
 
-# In[24]:
 
 
 fig = px.box(deltas,  x="start", y="LogConfirmedDelta", range_y=[0, 0.35])
 fig.show()
 
 
-# In[25]:
 
 
 fig = px.box(deltas[deltas.Date >= '2020-03-01'],  x="DateTime", y="LogConfirmedDelta", range_y=[0, 0.6])
 fig.show()
 
 
-# In[26]:
 
 
 deltas = train_clean[np.logical_and(
@@ -466,7 +440,6 @@ confirmed_deltas.sort_values(by='avg').tail(10)
 confirmed_deltas.to_csv('confirmed_deltas.csv')
 
 
-# In[27]:
 
 
 DECAY = 0.93
@@ -516,7 +489,6 @@ confirmed_deltas[confirmed_deltas.DELTA != GLOBAL_DELTA]
 confirmed_deltas.describe()
 
 
-# In[28]:
 
 
 daily_log_confirmed = train_clean.pivot('Location', 'Date', 'LogConfirmed').reset_index()
@@ -532,13 +504,11 @@ for i, d in tqdm(enumerate(pd.date_range(add_days(TRAIN_END, 1), add_days(TEST_E
         daily_log_confirmed.loc[daily_log_confirmed.Location == loc, new_day] = daily_log_confirmed.loc[daily_log_confirmed.Location == loc, last_day] +             confirmed_delta * DECAY ** i
 
 
-# In[29]:
 
 
 daily_log_confirmed.head()
 
 
-# In[30]:
 
 
 confirmed_prediciton = pd.melt(daily_log_confirmed[:25], id_vars='Location')
@@ -552,7 +522,6 @@ _ = fig2.update_layout(
 fig2.show()
 
 
-# In[31]:
 
 
 train_clean['Geo#Country#Contintent'] = train_clean.Location + '#' + train_clean.Country_Region + '#' + train_clean.continent
@@ -566,7 +535,6 @@ daily_death_deltas.head()
 daily_death_deltas.to_csv('daily_death_deltas.csv', index=False)
 
 
-# In[32]:
 
 
 death_deltas = train.groupby(['Location', 'Country_Region', 'continent'])[[
@@ -619,7 +587,6 @@ death_deltas[death_deltas.DELTA != GLOBAL_DELTA]
 death_deltas.describe()
 
 
-# In[33]:
 
 
 daily_log_deaths = train_clean.pivot('Location', 'Date', 'LogFatalities').reset_index()
@@ -635,7 +602,6 @@ for i, d in tqdm(enumerate(pd.date_range(add_days(TRAIN_END, 1), add_days(TEST_E
         daily_log_deaths.loc[daily_log_deaths.Location == loc, new_day] = daily_log_deaths.loc[daily_log_deaths.Location == loc, last_day] +             death_delta * DECAY ** i
 
 
-# In[34]:
 
 
 confirmed_prediciton = pd.melt(daily_log_deaths[:25], id_vars='Location')
@@ -649,13 +615,11 @@ _ = fig2.update_layout(
 fig2.show()
 
 
-# In[35]:
 
 
 submission.head(2)
 
 
-# In[36]:
 
 
 confirmed = []
@@ -667,7 +631,6 @@ for id, d, loc in tqdm(test[['ForecastId', 'Date', 'Location']].values):
     fatalities.append(f)
 
 
-# In[37]:
 
 
 my_submission = test.copy()
@@ -678,13 +641,11 @@ my_submission.head()
 
 
 
-# In[38]:
 
 
 my_submission.groupby('Date').sum().tail()
 
 
-# In[39]:
 
 
 total = my_submission.groupby('Date')[['ConfirmedCases', 'Fatalities']].sum().reset_index()
@@ -697,7 +658,6 @@ _ = fig2.update_layout(
 fig2.show()
 
 
-# In[40]:
 
 
 my_submission[[
@@ -709,7 +669,6 @@ my_submission.tail()
 my_submission.shape
 
 
-# In[41]:
 
 
 end = dt.datetime.now()

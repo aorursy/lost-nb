@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -48,7 +46,6 @@ testing_result=False
 dateck='2020-04-03'
 
 
-# In[2]:
 
 
 def get_cpmp_sub(save_oof=False, save_public_test=False):
@@ -373,7 +370,6 @@ def get_cpmp_sub(save_oof=False, save_public_test=False):
     return sub
 
 
-# In[3]:
 
 
 sub1 = get_cpmp_sub()
@@ -381,7 +377,6 @@ sub1['ForecastId'] = sub1['ForecastId'].astype('int')
 sub1.sort_values("ForecastId", inplace=True)
 
 
-# In[4]:
 
 
 
@@ -407,7 +402,6 @@ print(RMSLE(sub1[sub1.ForecastId.isin(test1.ForecastId.values)]['ConfirmedCases'
 print(RMSLE(sub1[sub1.ForecastId.isin(test1.ForecastId.values)]['Fatalities'].values,test1['Fatalities'].values))
 
 
-# In[5]:
 
 
 
@@ -4061,13 +4055,11 @@ full_pred = pd.concat((private, public[~public.ForecastId.isin(private.ForecastI
 #full_pred.to_csv('submission.csv', index=False)
 
 
-# In[6]:
 
 
 sub1.sort_values("ForecastId", inplace=True)
 
 
-# In[7]:
 
 
 
@@ -4094,7 +4086,6 @@ print(RMSLE(sub1[sub1.ForecastId.isin(test1.ForecastId.values)]['ConfirmedCases'
 print(RMSLE(sub1[sub1.ForecastId.isin(test1.ForecastId.values)]['Fatalities'].values,test1['Fatalities'].values))
 
 
-# In[8]:
 
 
 print(RMSLE(sub1[sub1.ForecastId.isin(test1.ForecastId.values)]['ConfirmedCases'].values,test1['ConfirmedCases'].values))
@@ -4107,7 +4098,6 @@ print(RMSLE(sub4[sub4.ForecastId.isin(test1.ForecastId.values)]['ConfirmedCases'
 print(RMSLE(sub4[sub4.ForecastId.isin(test1.ForecastId.values)]['Fatalities'].values,test1['Fatalities'].values))
 
 
-# In[9]:
 
 
 sub1=sub1.reset_index(drop=True)
@@ -4127,13 +4117,11 @@ print(RMSLE(sub_df[sub_df.ForecastId.isin(test1.ForecastId.values)]['ConfirmedCa
 print(RMSLE(sub_df[sub_df.ForecastId.isin(test1.ForecastId.values)]['Fatalities'].values,test1['Fatalities'].values))
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

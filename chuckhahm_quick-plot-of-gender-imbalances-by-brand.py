@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Quick plot of gender imbalances by brand
@@ -51,7 +50,6 @@ head(train)
 table(train$english) # Something weird happens here. This works on my machine.
 
 
-# In[ ]:
 
 
 # Quick plot of gender imbalances by brand
@@ -96,7 +94,6 @@ trans <- structure(list(phone_brand = c("<U+4E09><U+661F>", "<U+5929><U+8BED>",
     ggtitle('Gender biases in phone brands')
 
 
-# In[ ]:
 
 
 # Since it works on my computer I'll cheat a bit
@@ -138,7 +135,6 @@ structure(list(english = structure(1:40, .Label = c("meitu",
     ggtitle('Gender biases in phone brands')
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -11,7 +10,6 @@ import os
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 df = pd.read_csv('../input/train.csv',index_col='id')
@@ -20,13 +18,11 @@ df['dropoff_datetime'] = pd.to_datetime(df['dropoff_datetime'])
 #df['trip_duration'] = df['trip_duration'] / 3600
 
 
-# In[3]:
 
 
 df.describe()
 
 
-# In[4]:
 
 
 df_datetime = df['pickup_datetime']
@@ -39,7 +35,6 @@ df['minute_pickup'] = df_datetime.dt.minute
 df['second_pickup'] = df_datetime.dt.second
 
 
-# In[5]:
 
 
 selected_columns = ['vendor_id','passenger_count','pickup_longitude','pickup_latitude',
@@ -54,21 +49,18 @@ y = filter_df['trip_duration']
 X.shape, y.shape
 
 
-# In[6]:
 
 
 from sklearn.ensemble import RandomForestRegressor
 rf = RandomForestRegressor()
 
 
-# In[7]:
 
 
 from sklearn.model_selection import ShuffleSplit
 shuffle = ShuffleSplit(n_splits=5, test_size=0.99, random_state=42)
 
 
-# In[8]:
 
 
 from sklearn.model_selection import GridSearchCV
@@ -84,7 +76,6 @@ gs = GridSearchCV(estimator=rf,cv=shuffle,param_grid=param_grid,scoring="neg_mea
 #print(y_predict.mean())
 
 
-# In[9]:
 
 
 from sklearn.model_selection import cross_val_score
@@ -93,7 +84,6 @@ losses = cross_val_score(rf, X, y, scoring="neg_mean_squared_log_error", cv=shuf
 np.sqrt(- losses.mean())
 
 
-# In[10]:
 
 
 df_test = pd.read_csv('../input/test.csv',index_col="id")
@@ -101,7 +91,6 @@ df_test['pickup_datetime'] = pd.to_datetime(df_test['pickup_datetime'])
 df_test.head()
 
 
-# In[11]:
 
 
 df_test_datetime = df_test['pickup_datetime']
@@ -115,13 +104,11 @@ df_test['second_pickup'] = df_test_datetime.dt.second
 df_test.head()
 
 
-# In[12]:
 
 
 rf.fit(X, y)
 
 
-# In[13]:
 
 
 X_test = df_test[selected_columns]
@@ -130,14 +117,12 @@ y_pred = rf.predict(X_test)
 y_pred.mean(), len(y_pred)
 
 
-# In[14]:
 
 
 submission = pd.read_csv('../input/sample_submission.csv') 
 submission.head()
 
 
-# In[15]:
 
 
 submission['trip_duration'] = y_pred

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -43,7 +41,6 @@ from operator import itemgetter
 from multiprocessing import Pool
 
 
-# In[3]:
 
 
 data = pd.read_csv('../input/quora-insincere-questions-classification/train.csv')
@@ -52,7 +49,6 @@ display(data.head())
 data.target.value_counts()
 
 
-# In[4]:
 
 
 stop_words = set(stopwords.words('english'))
@@ -137,7 +133,6 @@ def build_vocab(sentences):
     return vocab
 
 
-# In[5]:
 
 
 def process(data):
@@ -158,7 +153,6 @@ def process_misspells(data, filtered_nums):
     return data, no_misspells 
 
 
-# In[6]:
 
 
 import time
@@ -186,7 +180,6 @@ for _, (word,corrected_word) in tqdm_notebook(enumerate(zip(top_90k_words,correc
 print("misspell dict %s seconds" % (time.time() - start_time))
 
 
-# In[7]:
 
 
 data, no_misspells = process_misspells(data, filtered_nums)
@@ -195,20 +188,17 @@ test_data, test_no_misspells = process(test_data)
 display(test_data.head())
 
 
-# In[8]:
 
 
 display(test_data.head(50))
 
 
-# In[9]:
 
 
 data.to_csv('processed_train.csv')
 test_data.to_csv('processed_test.csv')
 
 
-# In[10]:
 
 
 '''
@@ -235,7 +225,6 @@ print(correction('becoe'))
 print(correction('become'))
 
 
-# In[11]:
 
 
 '''
@@ -250,13 +239,11 @@ data.to_csv('tokens.csv')
 ''''
 
 
-# In[12]:
 
 
 data.head(50)
 
 
-# In[13]:
 
 
 ''''
@@ -266,7 +253,6 @@ data_train, data_test = train_test_split(data,
                                     '''
 
 
-# In[14]:
 
 
 '''
@@ -278,7 +264,6 @@ print("Max sentence length is %s" % max(training_sentence_lengths))
 '''
 
 
-# In[15]:
 
 
 '''
@@ -290,7 +275,6 @@ print("Max sentence length is %s" % max(test_sentence_lengths))
 '''
 
 
-# In[16]:
 
 
 def get_average_word2vec(tokens_list, vector, generate_missing=False, k=300):
@@ -312,13 +296,11 @@ def get_word2vec_embeddings(vectors, data, generate_missing=False):
     return list(embeddings)
 
 
-# In[17]:
 
 
 #training_embeddings = get_word2vec_embeddings(word2vec, data_train, generate_missing=True)
 
 
-# In[18]:
 
 
 MAX_SEQUENCE_LENGTH = 50

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -12,7 +11,6 @@ import holoviews as hv
 hv.extension('bokeh')
 
 
-# In[2]:
 
 
 train = pd.read_csv('/kaggle/input/bigquery-geotab-intersection-congestion/train.csv', 
@@ -25,7 +23,6 @@ target_df = train[(target_cols)]
 train = train.drop(target_cols, axis=1)
 
 
-# In[3]:
 
 
 tt = pd.concat([train,test], keys=['train', 'test'], sort=False)
@@ -38,7 +35,6 @@ display(tt.head(), target_df.head())
 #del train, test
 
 
-# In[4]:
 
 
 # Optional function to change column name format from CamelCase to snake_case
@@ -53,7 +49,6 @@ def snakify(camel_list):
 # tt.columns = snakify(tt.columns)
 
 
-# In[5]:
 
 
 tt_bos = tt[tt.City == 'Boston'].drop_duplicates(['level_0','IntersectionId'])
@@ -74,7 +69,6 @@ tiles = gv.tile_sources.CartoLight()
 display(points_bos * tiles)
 
 
-# In[6]:
 
 
 tt_phi = tt[tt.City == 'Philadelphia'].drop_duplicates(['level_0','IntersectionId'])
@@ -85,7 +79,6 @@ tiles = gv.tile_sources.CartoLight()
 display(tiles*points_phi)
 
 
-# In[7]:
 
 
 index_cols = ['EntryStreetName', 'ExitStreetName', 'EntryHeading', 'ExitHeading']
@@ -109,7 +102,6 @@ phi = get_times('Philadelphia', 1824, pathlist_phi)
 display(bos, phi)
 
 
-# In[8]:
 
 
 import hvplot.pandas
@@ -138,7 +130,6 @@ fifth_cambria = make_plot(phi, 'mean').options(title="5th & Cambria") +    make_
 display(land_cambridge, fifth_cambria)
 
 
-# In[9]:
 
 
 opts = {'cmap': 'Paired',
@@ -164,7 +155,6 @@ cambplot = cambria_e.hvplot.scatter('Hour', 'TimeFromFirstStop_p80',
 display(landplot.options(title='Land_NE_thru'), cambplot.options(title='Cambria_E_thru'))
 
 
-# In[10]:
 
 
 # alternate plot with seaborn to trigger viz output on the Notebooks page

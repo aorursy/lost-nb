@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -25,76 +24,64 @@ import keras
 import keras.backend as K
 
 
-# In[2]:
 
 
 K.tensorflow_backend._get_available_gpus()
 
 
-# In[3]:
 
 
 from tensorflow.python.client import device_lib
 print(device_lib.list_local_devices())
 
 
-# In[4]:
 
 
 train_df = pd.read_csv("../input/train.csv")
 
 
-# In[5]:
 
 
 train_df.head()
 
 
-# In[6]:
 
 
 train_df.info()
 
 
-# In[7]:
 
 
 train_df["project_essay_1"].head()
 
 
-# In[8]:
 
 
 train_df["project_essay_2"].head()
 
 
-# In[9]:
 
 
 def get_proj_essay(df):
     return  df["project_essay_1"].fillna('')+" "+ df["project_essay_2"].fillna('')+ " "+ df["project_essay_3"].fillna('')+" "+ df["project_essay_4"].fillna('')+" "
 
 
-# In[10]:
 
 
 get_proj_essay(train_df)
 
 
-# In[11]:
 
 
 def get_text(df):
     return df["project_title"].fillna('')+' '+get_proj_essay(df)
 
 
-# In[12]:
 
 
 get_text(train_df)
 
 
-# In[13]:
 
 
 train, dev = train_test_split(train_df, random_state=123, shuffle=True, test_size=0.1)
@@ -102,14 +89,12 @@ print("Training data shape:", train.shape)
 print("Test data shape:", dev.shape)
 
 
-# In[14]:
 
 
 tokenizer = keras.preprocessing.text.Tokenizer()
 tokenizer.fit_on_texts(get_text(train))
 
 
-# In[15]:
 
 
 def preprocess_target(df):
@@ -121,7 +106,6 @@ def preprocess_data(df):
     return processed_df
 
 
-# In[16]:
 
 
 processed_train  = preprocess_data(train)
@@ -129,7 +113,6 @@ processed_target = preprocess_target(train)
 processed_target.shape, processed_train.shape
 
 
-# In[17]:
 
 
 processed_dev  = preprocess_data(dev)
@@ -137,19 +120,16 @@ processed_dev_target = preprocess_target(dev)
 processed_dev.shape, processed_dev_target.shape
 
 
-# In[18]:
 
 
 processed_train["project_essay"].apply(lambda x: len(x)).hist(bins=10)
 
 
-# In[19]:
 
 
 processed_train["project_essay"].apply(lambda x: max(x) if len(x) > 0 else 0)
 
 
-# In[20]:
 
 
 MAX_PROJECT_TITLE_SEQ_LEN = 12
@@ -161,13 +141,11 @@ MAX_PROJECT_ESSAY = processed_train["project_essay"].apply(lambda x: max(x) if l
 MAX_TEXT = max([MAX_PROJECT_TITLE, MAX_PROJECT_ESSAY])
 
 
-# In[21]:
 
 
 MAX_TEXT
 
 
-# In[22]:
 
 
 def get_keras_data(df):
@@ -181,7 +159,6 @@ X_train = get_keras_data(processed_train)
 X_dev = get_keras_data(processed_dev)
 
 
-# In[23]:
 
 
 def create_rnn_model():
@@ -216,7 +193,6 @@ rnn_model = create_rnn_model()
 rnn_model.summary()
 
 
-# In[24]:
 
 
 optimizer = keras.optimizers.Adam(lr=0.001)
@@ -231,7 +207,6 @@ for i in range(3):
                  validation_data=(X_dev, processed_dev_target))
 
 
-# In[25]:
 
 
 preds = rnn_model.predict(X_dev, batch_size=512)

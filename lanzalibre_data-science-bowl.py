@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 pd.set_option('display.max_columns', None)  
@@ -32,19 +30,16 @@ pd.set_option('max_colwidth', -1)
 pd.set_option("display.max_rows", 999)
 
 
-# In[3]:
 
 
 trainLabelsDF=pd.read_csv("/kaggle/input/data-science-bowl-2019/train_labels.csv")
 
 
-# In[4]:
 
 
 traindf=pd.read_csv("/kaggle/input/data-science-bowl-2019/train.csv") 
 
 
-# In[5]:
 
 
 def extract_json(data){
@@ -55,7 +50,6 @@ def extract_json(data){
 #traindf.installation_id.value_counts()
 
 
-# In[6]:
 
 
 def extract_json(data):
@@ -66,7 +60,6 @@ def extract_json(data):
 traindf.head().event_data.apply(extract_json)
 
 
-# In[7]:
 
 
 def extract_json(data):
@@ -78,7 +71,6 @@ def extract_json(data):
 traindf.head().event_data.apply(extract_json)
 
 
-# In[8]:
 
 
 installDF=traindf[traindf['installation_id']=='f9296363']
@@ -91,13 +83,11 @@ edge_list['duration']=edge_list['game_time_y']-edge_list['game_time_x']
 edge_list.head()
 
 
-# In[9]:
 
 
 installDF.head()
 
 
-# In[10]:
 
 
 edge_list_count=edge_list.groupby(['event_id_x','event_id_y'])['event_count_x'].count().reset_index()
@@ -105,13 +95,11 @@ edge_list_count.event_count_x.describe()
 #edge_list_count.head()
 
 
-# In[11]:
 
 
 node_list=edge_list.groupby(['event_id_x'])['duration','event_count_x'].sum().reset_index()
 
 
-# In[12]:
 
 
 import networkx as nx
@@ -160,32 +148,27 @@ def drawG(G,file_name):
 drawG(G,"graph.pdf")
 
 
-# In[13]:
 
 
 subgraphs=[G.subgraph(c) for c in nx.connected_components(G)]
 
 
-# In[14]:
 
 
 [drawG(subgraphs[i],'graph'+str(i)+'.pdf') for i in range(0,20)]
 
 
-# In[15]:
 
 
 get_ipython().system('ls')
 
 
-# In[16]:
 
 
 from IPython.display import FileLink
 FileLink("graph12.pdf")
 
 
-# In[17]:
 
 
 
@@ -200,13 +183,11 @@ seq_data['avg_duration']=seq_data[1]/seq_data[2]
 seq_data
 
 
-# In[18]:
 
 
 list(subgraphs[12].nodes())
 
 
-# In[19]:
 
 
 analysisDF=traindf[['event_id','event_code','type','title','world']]
@@ -214,20 +195,17 @@ labels=analysisDF.groupby('event_id')['event_code','type','title','world'].apply
 labels.head()
 
 
-# In[20]:
 
 
 labels.head()
 
 
-# In[21]:
 
 
 analysisDF=traindf[traindf['event_id'].isin(list(subgraphs[12].nodes()))][['event_id','event_code','type','title','world']]
 analysisDF.groupby('event_id')['event_code','type','title','world'].apply(lambda x: pd.unique(x.values.ravel()).tolist())
 
 
-# In[22]:
 
 
 def CustomParser(data):

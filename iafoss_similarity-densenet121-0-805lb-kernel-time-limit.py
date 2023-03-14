@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install fastai==0.7.0 --no-deps')
@@ -9,7 +8,6 @@ get_ipython().system('pip install torch==0.4.1 torchvision==0.2.1')
 get_ipython().system('pip install imgaug')
 
 
-# In[2]:
 
 
 from fastai.conv_learner import *
@@ -27,7 +25,6 @@ import imgaug as ia
 from imgaug import augmenters as iaa
 
 
-# In[3]:
 
 
 PATH = './'
@@ -43,7 +40,6 @@ sz = 224 #increase the image size at the later stage of training
 nw = 2
 
 
-# In[4]:
 
 
 def open_image(fn):
@@ -84,7 +80,6 @@ class Loader():
         return img.astype(np.float)/255
 
 
-# In[5]:
 
 
 def get_idxs0(names, df, n=64):
@@ -144,7 +139,6 @@ class Image_selection:
         return np.random.choice(self.df.loc[name].values[0],1)[0]
 
 
-# In[6]:
 
 
 class pdFilesDataset(FilesDataset):
@@ -254,7 +248,6 @@ class FilesDataset_single(FilesDataset):
     def get_n(self): return len(self.fnames)
 
 
-# In[7]:
 
 
 def get_data(sz,bs,fname_emb=None,model=None):
@@ -274,7 +267,6 @@ def get_data(sz,bs,fname_emb=None,model=None):
     return md
 
 
-# In[8]:
 
 
 md = get_data(sz,bs)
@@ -301,7 +293,6 @@ lbs = [[to_lb[idx] for idx in y_cur.tolist()] for y_cur in y]
 display_imgs((md.trn_ds.denorm(x[:,0,:,:,:]),md.trn_ds.denorm(x[:,1,:,:,:]),              md.trn_ds.denorm(x[:,2,:,:,:])),lbs)
 
 
-# In[9]:
 
 
 class Metric(nn.Module):
@@ -316,7 +307,6 @@ class Metric(nn.Module):
         return x.view(-1)
 
 
-# In[10]:
 
 
 def resnext50(pretrained=True):
@@ -372,7 +362,6 @@ class ResNeXt50Model():
         return list(split_by_idxs(c,[5])) + [m.head] + [m.metric]
 
 
-# In[11]:
 
 
 def get_densenet169(pre=True):
@@ -427,7 +416,6 @@ class DenseNet169Model():
         return list(split_by_idxs(c,[8])) + [m.head] + [m.metric]
 
 
-# In[12]:
 
 
 def get_densenet121(pre=True):
@@ -482,7 +470,6 @@ class DenseNet121Model():
         return list(split_by_idxs(c,[8])) + [m.head] + [m.metric]
 
 
-# In[13]:
 
 
 class Contrastive_loss(nn.Module):
@@ -531,7 +518,6 @@ def BH_acc(d, target):
     return torch.FloatTensor(BH).float().mean()
 
 
-# In[14]:
 
 
 #batch hard loss: https://arxiv.org/pdf/1703.07737.pdf 
@@ -562,7 +548,6 @@ class BH_loss(nn.Module):
         return loss
 
 
-# In[15]:
 
 
 learner = ConvLearner(md,DenseNet121Model(ps=0.0,emb_sz=n_embedding))
@@ -574,7 +559,6 @@ learner.freeze_to(-2) #unfreez metric and head block
 learner #click "output" to see details of the model
 
 
-# In[16]:
 
 
 lr = 1e-3
@@ -583,7 +567,6 @@ with warnings.catch_warnings():
     learner.fit(lr,1)
 
 
-# In[17]:
 
 
 learner.unfreeze() #unfreeze entire model
@@ -591,7 +574,6 @@ lrs=np.array([lr/10,lr/3,lr,lr])
 learner.half() #half precision
 
 
-# In[18]:
 
 
 with warnings.catch_warnings():
@@ -601,7 +583,6 @@ with warnings.catch_warnings():
 learner.save('model0')
 
 
-# In[19]:
 
 
 def extract_embedding(model,path):
@@ -624,7 +605,6 @@ def extract_embedding(model,path):
         return preds, [os.path.basename(name) for name in md.test_dl.dataset.fnames]
 
 
-# In[20]:
 
 
 emb, names = extract_embedding(learner.model,TRAIN)
@@ -638,7 +618,6 @@ df_test.emb = df_test.emb.map(lambda emb: ' '.join(list([str(i) for i in emb])))
 df_test.to_csv('test_emb.csv', header=True, index=False)
 
 
-# In[21]:
 
 
 def get_nbs(model,x,y,n=16):
@@ -701,14 +680,12 @@ def get_val_nbs(model,emb_df,out='val.csv',dcut=None):
         print(np.array(scores).mean(), flush=True)
 
 
-# In[22]:
 
 
 dcut = 18.0 #fit this parameter based on validation
 get_val_nbs(learner.model,df,dcut=dcut,out='val0.csv')
 
 
-# In[23]:
 
 
 def get_test_nbs(model,trn_emb,test_emb,out='test.csv',                 submission='submission.csv',dcut=None):
@@ -752,13 +729,11 @@ def get_test_nbs(model,trn_emb,test_emb,out='test.csv',                 submissi
         pd.DataFrame(pred).to_csv(submission,index=False)
 
 
-# In[24]:
 
 
 get_test_nbs(learner.model,df,df_test,dcut=dcut,out='test0.csv',    submission='submission0.csv')
 
 
-# In[25]:
 
 
 md = get_data(sz,bs,'train_emb.csv',learner.model)
@@ -772,7 +747,6 @@ lbs = [[to_lb[idx] for idx in y_cur.tolist()] for y_cur in y]
 display_imgs((md.trn_ds.denorm(x[:,0,:,:,:]),md.trn_ds.denorm(x[:,1,:,:,:]),              md.trn_ds.denorm(x[:,2,:,:,:])),lbs)
 
 
-# In[26]:
 
 
 with warnings.catch_warnings():
@@ -781,7 +755,6 @@ with warnings.catch_warnings():
 learner.save('model')
 
 
-# In[27]:
 
 
 emb, names = extract_embedding(learner.model,TRAIN)
@@ -795,7 +768,6 @@ df_test.emb = df_test.emb.map(lambda emb: ' '.join(list([str(i) for i in emb])))
 df_test.to_csv('test_emb.csv', header=True, index=False)
 
 
-# In[28]:
 
 
 dcut = 23.0 #fit this parameter based on validation

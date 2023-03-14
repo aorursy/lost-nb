@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import lightgbm as lgb
@@ -27,13 +26,11 @@ import tensorflow
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[ ]:
 
 
 toy=False
 
 
-# In[ ]:
 
 
 # This competition settings
@@ -41,25 +38,21 @@ from kaggle.competitions import twosigmanews
 env = twosigmanews.make_env()
 
 
-# In[ ]:
 
 
 (market_train_df, news_train_df) = env.get_training_data()
 
 
-# In[ ]:
 
 
 market_train_df.shape
 
 
-# In[ ]:
 
 
 news_train_df.shape
 
 
-# In[ ]:
 
 
 # We will reduce the number of samples for memory reasons
@@ -71,7 +64,6 @@ else:
     news_train_df = news_train_df.tail(1500_000)
 
 
-# In[ ]:
 
 
 news_cols_agg = {
@@ -100,7 +92,6 @@ news_cols_agg = {
 }
 
 
-# In[ ]:
 
 
 def join_market_news(market_train_df, news_train_df):
@@ -145,31 +136,26 @@ def join_market_news(market_train_df, news_train_df):
     return market_train_df
 
 
-# In[ ]:
 
 
 market_df = join_market_news(market_train_df, news_train_df)
 
 
-# In[ ]:
 
 
 market_df.tail()
 
 
-# In[ ]:
 
 
 market_df.shape
 
 
-# In[ ]:
 
 
 market_df.columns
 
 
-# In[ ]:
 
 
 # Features
@@ -225,7 +211,6 @@ feature_cols = cat_cols + time_cols + numeric_cols
 label_cols = ['returnsOpenNextMktres10']
 
 
-# In[ ]:
 
 
 print (np.unique(feature_cols).shape)
@@ -233,7 +218,6 @@ print (len(feature_cols))
 print (numeric_cols)
 
 
-# In[ ]:
 
 
 # Split to train, validation and test.
@@ -246,7 +230,6 @@ market_train_df, market_val_df = train_test_split(market_train_df, shuffle=True,
 market_train_df.describe()
 
 
-# In[ ]:
 
 
 class Prepro:
@@ -360,7 +343,6 @@ class Prepro:
         return(index_value)
 
 
-# In[ ]:
 
 
 # Preprocess and split to X_train, X_val, X_test, y_train ...
@@ -379,7 +361,6 @@ pd.concat([X_train,y_train], axis=1).describe()
 #X_train.head()
 
 
-# In[ ]:
 
 
 # Initialize the constructor
@@ -414,7 +395,6 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['mse'])
 model.summary()
 
 
-# In[ ]:
 
 
 weights_file='best_weights.h5'
@@ -444,7 +424,6 @@ training = model.fit(X_train,y_train
 model.load_weights(weights_file)
 
 
-# In[ ]:
 
 
 # f, axs = plt.subplots(1,2, figsize=(12,4))
@@ -466,7 +445,6 @@ plt.ylabel("Value")
 plt.show()
 
 
-# In[ ]:
 
 
 pred_size=100
@@ -490,7 +468,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[ ]:
 
 
 def predict_random_asset():
@@ -516,7 +493,6 @@ def predict_random_asset():
 predict_random_asset()
 
 
-# In[ ]:
 
 
 # Accuracy metric
@@ -531,7 +507,6 @@ plt.title("predicted confidence")
 plt.show()
 
 
-# In[ ]:
 
 
 def make_predictions(market_obs_df, news_obs_df, predictions_template_df):
@@ -553,7 +528,6 @@ def make_predictions(market_obs_df, news_obs_df, predictions_template_df):
     predictions_template_df.confidenceValue = pred_df.confidence
 
 
-# In[ ]:
 
 
 ##########################
@@ -588,7 +562,6 @@ for (market_obs_df, news_obs_df, predictions_template_df) in days:
     #print("Prediction completed for ", predicted_days[-1])
 
 
-# In[ ]:
 
 
 # Plot execution time 
@@ -606,7 +579,6 @@ plt.ylabel("Confidence")
 plt.show()
 
 
-# In[ ]:
 
 
 # We've got a submission file!
@@ -615,7 +587,6 @@ env.write_submission_file()
 print([filename for filename in os.listdir('.') if '.csv' in filename])
 
 
-# In[ ]:
 
 
 

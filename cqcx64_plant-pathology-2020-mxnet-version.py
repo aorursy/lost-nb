@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import mxnet as mx
@@ -20,7 +19,6 @@ epoch = 25
 num_workers = 0 if sys.platform.startswith('win32') else 4
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/plant-pathology-2020-fgvc7/train.csv')
@@ -57,7 +55,6 @@ for idx, value in enumerate(train_ids):
 print('Train data: {}, val data: {}, test data: {}.'.format(len(train_images), len(val_images), len(test_images)))
 
 
-# In[3]:
 
 
 def read_images(root=train_dir, is_train=True):
@@ -103,7 +100,6 @@ class PlantDataset(gdata.Dataset):
         return len(self.features)
 
 
-# In[4]:
 
 
 plant_train = PlantDataset(True, train_dir)
@@ -133,7 +129,6 @@ test_iter = gdata.DataLoader(plant_test.transform_first(no_aug), batch_size,
                              num_workers=num_workers, last_batch='keep')
 
 
-# In[5]:
 
 
 def get_net(netname, ctx):
@@ -225,7 +220,6 @@ def train(train_iter, val_iter, net, loss, trainer, ctx, num_epochs, verbose=0):
     return net
 
 
-# In[6]:
 
 
 ctx = mx.gpu(0)
@@ -233,7 +227,6 @@ train_loss = gloss.SoftmaxCrossEntropyLoss(axis=1, from_logits=True)
 sub_dir = "../input/plant-pathology-2020-fgvc7/sample_submission.csv"
 
 
-# In[7]:
 
 
 def use_mobile_net(epoch=30):
@@ -250,7 +243,6 @@ def use_mobile_net(epoch=30):
     return y_hat_mobile
 
 
-# In[8]:
 
 
 def use_seresnext(epoch=30):
@@ -267,7 +259,6 @@ def use_seresnext(epoch=30):
     return preds_seresnext
 
 
-# In[9]:
 
 
 def use_densenet(epoch=30):
@@ -284,7 +275,6 @@ def use_densenet(epoch=30):
     return preds_dense
 
 
-# In[10]:
 
 
 class CAM(nn.HybridBlock):
@@ -348,7 +338,6 @@ class CBAM(nn.HybridBlock):
     return Y + residual
 
 
-# In[11]:
 
 
 def use_resnet(epoch=30):
@@ -365,7 +354,6 @@ def use_resnet(epoch=30):
     return preds_res
 
 
-# In[12]:
 
 
 # preds_mobile = use_mobile_net(epoch)
@@ -374,7 +362,6 @@ preds_seresnext = use_seresnext(epoch)
 preds_dense = use_densenet(epoch)
 
 
-# In[13]:
 
 
 def weighted_ensemble(preds_a, preds_b):
@@ -395,7 +382,6 @@ def weighted_ensemble(preds_a, preds_b):
 weighted_ensemble(preds_seresnext, preds_dense)
 
 
-# In[14]:
 
 
 def average_ensemble_three(preds_a, preds_b, preds_c):

@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('ls ../input')
 
 
-# In[2]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -29,7 +27,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[3]:
 
 
 gap_development = pd.read_csv('../input/gapdataset/gap-development.tsv', delimiter='\t')
@@ -37,25 +34,21 @@ gap_test = pd.read_csv('../input/gapdataset/gap-test.tsv', delimiter='\t')
 gap_validation = pd.read_csv('../input/gapdataset/gap-validation.tsv', delimiter='\t')
 
 
-# In[4]:
 
 
 gap_development.head()
 
 
-# In[5]:
 
 
 gap_test.head()
 
 
-# In[6]:
 
 
 gap_validation.head()
 
 
-# In[7]:
 
 
 train = pd.concat((gap_test, gap_validation)).reset_index(drop=True)
@@ -72,7 +65,6 @@ test['NEITHER'] = 1.0 - (test['A-coref'] + test['B-coref'])
 train.head()
 
 
-# In[8]:
 
 
 get_ipython().system('wget https://raw.githubusercontent.com/google-research/bert/master/modeling.py ')
@@ -80,14 +72,12 @@ get_ipython().system('wget https://raw.githubusercontent.com/google-research/ber
 get_ipython().system('wget https://raw.githubusercontent.com/google-research/bert/master/tokenization.py')
 
 
-# In[9]:
 
 
 get_ipython().system('wget https://storage.googleapis.com/bert_models/2018_10_18/uncased_L-12_H-768_A-12.zip')
 get_ipython().system(' 7z x uncased_L-12_H-768_A-12.zip')
 
 
-# In[10]:
 
 
 import modeling
@@ -95,7 +85,6 @@ import extract_features
 import tokenization
 
 
-# In[11]:
 
 
 def compute_offset_no_spaces(text, offset):
@@ -119,7 +108,6 @@ def count_length_no_special(text):
     return count
 
 
-# In[12]:
 
 
 def bert_embeddings(df):
@@ -198,19 +186,16 @@ def bert_embeddings(df):
     return emb
 
 
-# In[13]:
 
 
 train_emb = bert_embeddings(train)
 
 
-# In[14]:
 
 
 test_emb =  bert_embeddings(test)
 
 
-# In[15]:
 
 
 from scipy import spatial 
@@ -228,14 +213,12 @@ def add_similarity_columns(df, df_emb):
             df.loc[i, 'sim_B_P'] = sim_B_P
 
 
-# In[16]:
 
 
 add_similarity_columns(train, train_emb)
 add_similarity_columns(test, test_emb)
 
 
-# In[17]:
 
 
 def add_additional_features(df):
@@ -252,7 +235,6 @@ add_additional_features(test)
 train.head()
 
 
-# In[18]:
 
 
 def name_replace(s, r1, r2):
@@ -268,14 +250,12 @@ test['Text'] = test.apply(lambda r: name_replace(r['Text'], r['A'], 'subjectone'
 test['Text'] = test.apply(lambda r: name_replace(r['Text'], r['B'], 'subjecttwo'), axis=1)
 
 
-# In[19]:
 
 
 import spacy 
 nlp = spacy.load('en_core_web_sm')
 
 
-# In[20]:
 
 
 tags = {}
@@ -290,14 +270,12 @@ for text in train['Text']:
                 
 
 
-# In[21]:
 
 
 sorted_tags = sorted(tags.items(), key=lambda kv: kv[1])
 sorted_tags[-5:]
 
 
-# In[22]:
 
 
 def fill_nlp_tag_empty_cols(df, tag):
@@ -363,7 +341,6 @@ def add_nlp_features(df, tags):
 #         df.loc[i, 'sim_A_P'], df.loc[i, 'sim_B_P'] = get_similarity(doc, df.loc[i, 'Pronoun'])
 
 
-# In[23]:
 
 
 add_nlp_features(train, ['poss', 'nsubj', 'pobj', 'dobj', 'conj'])
@@ -371,7 +348,6 @@ add_nlp_features(test, ['poss', 'nsubj', 'pobj', 'dobj', 'conj'])
 train
 
 
-# In[24]:
 
 
 feature_col = [
@@ -406,7 +382,6 @@ feature_col = [
 pred_col = ['A-coref', 'B-coref', 'NEITHER']
 
 
-# In[25]:
 
 
 X_train = train[feature_col].values
@@ -416,32 +391,27 @@ X_test = test[feature_col].values
 Y_test = test[pred_col].values
 
 
-# In[26]:
 
 
 # x_train, x_test, y_train, y_test = model_selection.train_test_split(train[feature_col].fillna(-1), train[pred_col], test_size=0.2, random_state=1)
 
 
-# In[27]:
 
 
 model = multiclass.OneVsRestClassifier(ensemble.RandomForestClassifier(max_depth = 7, n_estimators=2000, random_state=33))
 model.fit(X_train, Y_train)
 
 
-# In[28]:
 
 
 model.predict_proba(X_test)
 
 
-# In[29]:
 
 
 print('log_loss: ', metrics.log_loss(Y_test, model.predict_proba(X_test)))
 
 
-# In[30]:
 
 
 # gap_development['A-coref'] = train['A-coref'].astype(int)
@@ -450,7 +420,6 @@ print('log_loss: ', metrics.log_loss(Y_test, model.predict_proba(X_test)))
 # gap_development.head()
 
 
-# In[31]:
 
 
 # add_additional_features(gap_development)
@@ -460,19 +429,16 @@ print('log_loss: ', metrics.log_loss(Y_test, model.predict_proba(X_test)))
 # print('log_loss: ', metrics.log_loss(gap_development_y, gap_development_pred))
 
 
-# In[32]:
 
 
 # gap_development_y.head()
 
 
-# In[33]:
 
 
 # gap_development_pred
 
 
-# In[34]:
 
 
 test_sub1 = pd.read_csv('../input/gendered-pronoun-resolution/test_stage_1.tsv', delimiter='\t')
@@ -496,7 +462,6 @@ test_sub1[['ID', 'A', 'B', 'NEITHER']].to_csv('submission1.csv', index=False)
 test_sub1.head()
 
 
-# In[35]:
 
 
 # test_sub2 = pd.read_csv('../input/gendered-pronoun-resolution/test_stage_2.tsv', delimiter='\t')
@@ -520,7 +485,6 @@ test_sub1.head()
 # test_sub2.head()
 
 
-# In[36]:
 
 
 test_sub2

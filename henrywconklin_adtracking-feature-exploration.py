@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -37,7 +36,6 @@ train_len = len(data)
 print(train_len)
 
 
-# In[ ]:
 
 
 # Load test data, append to train
@@ -51,7 +49,6 @@ gc.collect()
 print("Total rows: {:d}".format(len(data)))
 
 
-# In[ ]:
 
 
 data['click_time'] = dd.to_datetime(data['click_time'])
@@ -63,7 +60,6 @@ data['day'] = data['click_time'].dt.day
 data = data.drop(columns=['click_time'])
 
 
-# In[ ]:
 
 
 import matplotlib.pyplot as plt
@@ -71,19 +67,16 @@ import matplotlib.pyplot as plt
 data.hist('hour', by='is_attributed', bins=24, normed=True)
 
 
-# In[ ]:
 
 
 data.hist('minute', by='is_attributed', bins=60, normed=True)
 
 
-# In[ ]:
 
 
 data.hist('second', by='is_attributed', bins=60, normed=True)
 
 
-# In[ ]:
 
 
 data['minute_0'] = (data['minute']==0)
@@ -94,13 +87,11 @@ del gp
 gc.collect()
 
 
-# In[ ]:
 
 
 data[data.minute_0_count > 10000].hist('minute_0_count', by='is_attributed', bins=10, normed=True)
 
 
-# In[ ]:
 
 
 # Smallest possible frequency this could have been scheduled for if on a repeating schedule: 60/gcd(60,x)
@@ -112,7 +103,6 @@ minInterval = {0: 1.0, 1: 60.0, 2: 30.0, 3: 20.0, 4: 15.0, 5: 12.0, 6: 10.0, 7: 
 data['minute_interval'] = data['minute'].map(minInterval)
 
 
-# In[ ]:
 
 
 gp = data[['ip','os','app','minute_interval']].groupby(by=['ip','os','app']).mean().reset_index().rename(columns={'minute_interval':'minute_interval_avg'})
@@ -121,7 +111,6 @@ del gp
 gc.collect()
 
 
-# In[ ]:
 
 
 data.hist('minute_interval', by='is_attributed')

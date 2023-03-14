@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # Load packages
@@ -13,7 +12,6 @@ get_ipython().run_line_magic('pylab', 'inline')
 pylab.rcParams['figure.figsize'] = (10, 6) 
 
 
-# In[ ]:
 
 
 # to customize the displayed area of the dataframe 
@@ -22,7 +20,6 @@ pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 
 
-# In[ ]:
 
 
 df  = pd.read_csv("../input/train_ver2.csv",
@@ -35,26 +32,22 @@ unique_id    = unique_ids.sample(n=130000)
 df           = df[df.ncodpers.isin(unique_id)]
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 df.describe()
 
 
-# In[ ]:
 
 
 # Records count
 df["ncodpers"].count()
 
 
-# In[ ]:
 
 
 # Change datatype
@@ -63,21 +56,18 @@ df["antiguedad"]   = pd.to_numeric(df["antiguedad"], errors="coerce")
 df["indrel_1mes"]   = pd.to_numeric(df["indrel_1mes"], errors="coerce") 
 
 
-# In[ ]:
 
 
 # Check how many missing values in every column
 df.isnull().sum()
 
 
-# In[ ]:
 
 
 # Drop the columns with majority of missing values
 df = df.drop(["ult_fec_cli_1t", "conyuemp"], axis=1) 
 
 
-# In[ ]:
 
 
 #Impute missing values in the income column 
@@ -93,25 +83,21 @@ df.loc[df.renta.isnull(),"renta"] = df.loc[df.renta.notnull(),"renta"].median()
 df.sort_values(by="fecha_dato",inplace=True)
 
 
-# In[ ]:
 
 
 df = df.dropna(axis=0)
 
 
-# In[ ]:
 
 
 df[df["antiguedad"]<0] = 0
 
 
-# In[ ]:
 
 
 df.loc[:,"ind_ahor_fin_ult1":"ind_recibo_ult1"].sum(axis=1)
 
 
-# In[ ]:
 
 
 # Add a new column of the total number of products per customer per month
@@ -119,31 +105,26 @@ df["tot_products"] = df.loc[:,"ind_ahor_fin_ult1":"ind_recibo_ult1"].sum(axis=1)
 df["tot_products"]   = pd.to_numeric(df["tot_products"], errors="coerce") 
 
 
-# In[ ]:
 
 
 df['pais_residencia'].describe() 
 
 
-# In[ ]:
 
 
 df = df.loc[lambda df: df.pais_residencia == "ES", :]
 
 
-# In[ ]:
 
 
 df['ind_empleado'].value_counts()
 
 
-# In[ ]:
 
 
 df = df.loc[lambda df: df.ind_empleado == "N", :]
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(18,9))
@@ -153,21 +134,18 @@ plt.xlabel("Age(years)")
 plt.ylabel("Number of customers") 
 
 
-# In[ ]:
 
 
 # Customers count by channel 
 df['canal_entrada'].value_counts().head(15)
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(18,9))
 df["canal_entrada"].value_counts().plot(x=None, y=None, kind='pie') 
 
 
-# In[ ]:
 
 
 df_a = df.loc[:, ['sexo', 'ind_actividad_cliente']].join(df.loc[:, "ind_ahor_fin_ult1": "ind_recibo_ult1"])
@@ -175,13 +153,11 @@ df_a = df_a.groupby(['sexo', 'ind_actividad_cliente']).sum()
 df_a = df_a.T
 
 
-# In[ ]:
 
 
 df_a.head()
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(18,11))
@@ -193,7 +169,6 @@ plt.legend(["Sex:H; Activity_Ind:0", "Sex:H; Activity_Ind:1", "Sex:V; Activity_I
             "Sex:V; Activity_Ind:1"], prop={'size':15}) 
 
 
-# In[ ]:
 
 
 # excluding the dominant product 
@@ -202,7 +177,6 @@ df_a = df_a.T
 df_a = df_a.drop(exclude, axis=1).T
 
 
-# In[ ]:
 
 
 df_a.plot(kind='barh', stacked=True, fontsize=14, figsize=[16,12], colormap='gist_ncar')
@@ -213,31 +187,26 @@ plt.legend(["Sex:H; Activity_Ind:0", "Sex:H; Activity_Ind:1", "Sex:V; Activity_I
             "Sex:V; Activity_Ind:1"], prop={'size':15}) 
 
 
-# In[ ]:
 
 
 df["tot_products"].value_counts()
 
 
-# In[ ]:
 
 
 df_a = df.groupby(['age'])['tot_products'].agg('sum')
 
 
-# In[ ]:
 
 
 df.groupby(['age'])['tot_products'].agg('sum')
 
 
-# In[ ]:
 
 
 df_a.sort_values(ascending=False).head(20)
 
 
-# In[ ]:
 
 
 # Number of products by age 
@@ -249,62 +218,53 @@ plt.xlabel('Age(years)')
 plt.ylabel('Number of products') 
 
 
-# In[ ]:
 
 
 df_a = df.groupby(['segmento'])['tot_products'].agg('sum') 
 df_a
 
 
-# In[ ]:
 
 
 df_a = df.groupby(['ind_nuevo'])['tot_products'].agg('count') 
 df_a
 
 
-# In[ ]:
 
 
 df_a = df.groupby(['indrel'])['tot_products'].agg('count') 
 df_a
 
 
-# In[ ]:
 
 
 df_a = df.groupby(['indrel_1mes'])['tot_products'].agg('count') 
 df_a
 
 
-# In[ ]:
 
 
 df_a = df.groupby(['tiprel_1mes'])['tot_products'].agg('count') 
 df_a
 
 
-# In[ ]:
 
 
 df_a = df.groupby(['indext'])['tot_products'].agg('count') 
 df_a
 
 
-# In[ ]:
 
 
 df_a = (df.groupby(pd.cut(df['renta'], [0,60000,120000,180000,240000, pd.np.inf], right=False))
                      .sum())
 
 
-# In[ ]:
 
 
 df_a["tot_products"]
 
 
-# In[ ]:
 
 
 # Let's drop the columns which are unnecessary for this step
@@ -312,13 +272,11 @@ df_a = df_a.loc[:, "ind_ahor_fin_ult1": "ind_recibo_ult1"]
 df_a = df_a.T
 
 
-# In[ ]:
 
 
 df_a.head(10)
 
 
-# In[ ]:
 
 
 # Plot of product share for each income group
@@ -329,7 +287,6 @@ plt.ylabel('Products_names', fontsize=17, color='black')
 plt.legend(prop={'size':15}, loc=1) 
 
 
-# In[ ]:
 
 
 # exclude the dominant product "ind_cco_fin_ult1"
@@ -338,13 +295,11 @@ df_a = df_a.T
 df_a = df_a.drop(exclude, axis=1).T
 
 
-# In[ ]:
 
 
 df_a.head()
 
 
-# In[ ]:
 
 
 # Plot of product share for each income group; excluding the dominant product 
@@ -355,7 +310,6 @@ plt.ylabel('Products_names', fontsize=17, color='black')
 plt.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.1, prop={'size':15}) 
 
 
-# In[ ]:
 
 
 # Let's create age groups
@@ -363,13 +317,11 @@ df_a = (df.groupby(pd.cut(df['age'], [0,20,40,60,80,100, pd.np.inf], right=False
                      .sum())
 
 
-# In[ ]:
 
 
 df_a
 
 
-# In[ ]:
 
 
 # Keep the products columns and discard the others
@@ -377,13 +329,11 @@ df_a = df_a.loc[:, "ind_ahor_fin_ult1": "ind_recibo_ult1"]
 df_a = df_a.T
 
 
-# In[ ]:
 
 
 df_a.head(10)
 
 
-# In[ ]:
 
 
 # Plot of customers' age distibution of each product 
@@ -394,7 +344,6 @@ plt.ylabel('Products_names', fontsize=17, color='black')
 plt.legend(prop={'size':15}, loc=1) 
 
 
-# In[ ]:
 
 
 # exclude the dominant product "ind_cco_fin_ult1"
@@ -403,7 +352,6 @@ df_a = df_a.T
 df_a = df_a.drop(exclude, axis=1).T
 
 
-# In[ ]:
 
 
 # Plot of customers' age distibution of each product (excluding the dominant product) 
@@ -414,20 +362,17 @@ plt.ylabel('Products_names', fontsize=17, color='black')
 plt.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.1, prop={'size':15}) 
 
 
-# In[ ]:
 
 
 df["canal_entrada"].value_counts().head(10)
 
 
-# In[ ]:
 
 
 # Let's extract the necessary columns for this step
 df_a = df.loc[:, ['canal_entrada']].join(df.loc[:, 'ind_ahor_fin_ult1':'ind_recibo_ult1'])
 
 
-# In[ ]:
 
 
 # Let's subset the data to keep only the records from the five major channels
@@ -435,14 +380,12 @@ subset = ["KHE", "KAT", "KFC", "KFA", "KHK"]
 df_a = df_a.loc[df_a['canal_entrada'].isin(subset)]
 
 
-# In[ ]:
 
 
 df_a = df_a.groupby("canal_entrada").agg("sum")
 df_a = df_a.T
 
 
-# In[ ]:
 
 
 # Channels used by the customer to join and the purchased products
@@ -453,7 +396,6 @@ plt.ylabel('Products names', fontsize=17, color='black')
 plt.legend(prop={'size':15}) 
 
 
-# In[ ]:
 
 
 # exclude the dominant product "ind_cco_fin_ult1"
@@ -462,7 +404,6 @@ df_a = df_a.T
 df_a = df_a.drop(exclude, axis=1).T
 
 
-# In[ ]:
 
 
 # Channels share distribution of each product, excluding the dominant product
@@ -474,14 +415,12 @@ plt.legend(["KAT", "KFA", "KFC", "KHE", "KHK"], prop={'size':15}, loc=1)
 plt.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.1, prop={'size':15}) 
 
 
-# In[ ]:
 
 
 # Let's extract the necessary columns for this step
 df_a = df.loc[:, ['antiguedad']].join(df.loc[:, 'ind_ahor_fin_ult1':'ind_recibo_ult1'])
 
 
-# In[ ]:
 
 
 # Let's create seniority groups
@@ -489,20 +428,17 @@ df_a = (df_a.groupby(pd.cut(df_a['antiguedad'], [0,50,100,150,200, pd.np.inf], r
                      .sum())
 
 
-# In[ ]:
 
 
 df_a.head()
 
 
-# In[ ]:
 
 
 exclude = ["antiguedad"]
 df_a = df_a.drop(exclude, axis=1).T
 
 
-# In[ ]:
 
 
 # Customers' seniority distribution of each product
@@ -513,7 +449,6 @@ plt.ylabel('Product names', fontsize=17, color='black')
 plt.legend([[0, 50], [50, 100], [100, 150], [150, 200], [200, inf]], prop={'size':15}) 
 
 
-# In[ ]:
 
 
 # exclude the dominant product "ind_cco_fin_ult1"
@@ -522,7 +457,6 @@ df_a = df_a.T
 df_a = df_a.drop(exclude, axis=1).T
 
 
-# In[ ]:
 
 
 # Customers' seniority distribution of each product
@@ -534,7 +468,6 @@ plt.legend([[0, 50], [50, 100], [100, 150], [150, 200], [200, inf]], prop={'size
 plt.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.1, prop={'size':15}) 
 
 
-# In[ ]:
 
 
 # Extract total number of products 
@@ -542,13 +475,11 @@ df_a = df["tot_products"].value_counts()
 df_a = pd.DataFrame(df_a)
 
 
-# In[ ]:
 
 
 df["ncodpers"].count()
 
 
-# In[ ]:
 
 
 # calculate the percentage of customers using different number of products
@@ -557,7 +488,6 @@ df_a["percentage"] = (df_a["tot_products"]/count)*100
 df_a
 
 
-# In[ ]:
 
 
 # extract those customers who purchased only one product had being current account ("ind_cco_fin_ult1") 
@@ -565,7 +495,6 @@ df_a = df[df["tot_products"]==1]
 df_a = df_a[df_a["ind_cco_fin_ult1"]==1]  
 
 
-# In[ ]:
 
 
 a = df_a["ncodpers"].count() # Observations where customers had only one product being the current account 
@@ -577,13 +506,11 @@ print("%.2f" % ((a/b)*100), "% of the customers had the current account as the o
 print("%.2f" % ((47.12/55.74)*100), "% of the customers when they have only one product, this product is the current account")
 
 
-# In[ ]:
 
 
 print("%.2f" % (55.74 - 47.12 ), "% of the customers have only one account being not the current account") 
 
 
-# In[ ]:
 
 
 # extract the necessary columns
@@ -591,14 +518,12 @@ df_a = df[df["tot_products"]==1]  # cases where the total products is one
 df_a = df_a.loc[:, ["tot_products"]].join(df_a.loc[:, "ind_ahor_fin_ult1":"ind_recibo_ult1"]) 
 
 
-# In[ ]:
 
 
 df_a = df_a.groupby("tot_products").agg("sum")
 df_a = df_a.T
 
 
-# In[ ]:
 
 
 df_a.plot(kind='barh', stacked=True, fontsize=14, figsize=[16,12], colormap='winter')
@@ -607,7 +532,6 @@ plt.xlabel('times of occurences', fontsize=17, color='black')
 plt.ylabel('products names', fontsize=17, color='black') 
 
 
-# In[ ]:
 
 
 # extract those customers who purchased two products with current account being one of them
@@ -615,27 +539,23 @@ df_a = df[df["tot_products"]==2]
 df_a = df_a[df_a["ind_cco_fin_ult1"]==1]  
 
 
-# In[ ]:
 
 
 df_a["ncodpers"].count()
 
 
-# In[ ]:
 
 
 # extract the necessary columns
 df_a = df_a.loc[:, ["tot_products"]].join(df_a.loc[:, "ind_ahor_fin_ult1":"ind_recibo_ult1"]) 
 
 
-# In[ ]:
 
 
 df_a = df_a.groupby("tot_products").agg("sum")
 df_a = df_a.T
 
 
-# In[ ]:
 
 
 df_a.plot(kind='barh', stacked=True, fontsize=14, figsize=[16,12], colormap='winter')
@@ -644,40 +564,34 @@ plt.xlabel('times of occurences', fontsize=17, color='black')
 plt.ylabel('products names', fontsize=17, color='black') 
 
 
-# In[ ]:
 
 
 # extract those customers who did not purchase any products in any month
 df_a = df[df["tot_products"]==0]
 
 
-# In[ ]:
 
 
 df_a["ind_actividad_cliente"].value_counts() 
 
 
-# In[ ]:
 
 
 # extract those customers who purchased three products in any single month
 df_a = df[df["tot_products"]==3]  
 
 
-# In[ ]:
 
 
 df_a = df_a.loc[:, ["tot_products"]].join(df_a.loc[:, "ind_ahor_fin_ult1":"ind_recibo_ult1"]) 
 
 
-# In[ ]:
 
 
 df_a = df_a.groupby("tot_products").agg("sum")
 df_a = df_a.T
 
 
-# In[ ]:
 
 
 df_a.plot(kind='barh', stacked=True, fontsize=14, figsize=[16,12], colormap='winter')
@@ -686,7 +600,6 @@ plt.xlabel('times of occurences', fontsize=17, color='black')
 plt.ylabel('products names', fontsize=17, color='black') 
 
 
-# In[ ]:
 
 
 # Categorize by total products
@@ -695,13 +608,11 @@ df_a = df_a.groupby("tot_products").agg("sum")
 df_a = df_a.T
 
 
-# In[ ]:
 
 
 df_a.head()
 
 
-# In[ ]:
 
 
 # percentage of each product contribution of those customers who only purchased one product in any month
@@ -712,19 +623,16 @@ c = c.sort_values(ascending=False)
 c
 
 
-# In[ ]:
 
 
 c[0]
 
 
-# In[ ]:
 
 
 print("Wow, about", "%.2f" % (c[0]), "% of the customers purchase only the current account in case they purchase only one product.") 
 
 
-# In[ ]:
 
 
 # percentage of each product contribution of those customers who purchased two products in any month
@@ -735,13 +643,11 @@ c = c.sort_values(ascending=False)
 c
 
 
-# In[ ]:
 
 
 print("In case of two products purchased by the customer, about", "%.2f" % (c[0]), "% of the customers have got a (current account) and in", "%.2f" %(c[1]),"% of the cases it is combined with (Particular Account) and in", "%.2f"% (c[2]),"% of the cases it is combined with (Direct Debit)") 
 
 
-# In[ ]:
 
 
 # percentage of each product contribution of those customers who purchased three products in any month
@@ -751,38 +657,32 @@ c = (a/b)*100
 c.sort_values(ascending=False)
 
 
-# In[ ]:
 
 
 df_a = df.loc[:, ['age']].join(df.loc[:, 'ind_ahor_fin_ult1':'ind_recibo_ult1'])
 
 
-# In[ ]:
 
 
 df_a = (df_a.groupby(pd.cut(df_a['age'], [0,18,25,35,45,55, pd.np.inf], right=False))
                      .sum())
 
 
-# In[ ]:
 
 
 df_a.head()
 
 
-# In[ ]:
 
 
 del df_a["age"]
 
 
-# In[ ]:
 
 
 df_a = df_a.T
 
 
-# In[ ]:
 
 
 # Customers age distribution of each product
@@ -793,32 +693,27 @@ plt.ylabel('Products names', fontsize=17, color='black')
 plt.legend([[0, 18], [18, 25], [25, 35], [35, 45], [45, 55], [55, inf]], prop={'size':15}) 
 
 
-# In[ ]:
 
 
 df_a = df.loc[:,["age"]].join(df.loc[:, 'ind_ahor_fin_ult1':'ind_recibo_ult1'])
 
 
-# In[ ]:
 
 
 fnc = {c:'sum' for c in df_a.columns.drop(['age']).tolist()}
 fnc['age'] = 'mean'
 
 
-# In[ ]:
 
 
 df_a = df_a.groupby('age').agg(fnc).reindex_axis(df_a.columns.drop('age'), 1) 
 
 
-# In[ ]:
 
 
 df_a.head()
 
 
-# In[ ]:
 
 
 # Products distribution by age
@@ -829,26 +724,22 @@ plt.ylabel('Age (years)', fontsize=17, color='black')
 plt.legend(prop={'size':15}) 
 
 
-# In[ ]:
 
 
 df_a = df.loc[:, ['segmento']].join(df.loc[:, 'ind_ahor_fin_ult1':'ind_recibo_ult1'])
 
 
-# In[ ]:
 
 
 df_a = df_a.groupby("segmento").agg("sum")
 df_a = df_a.T
 
 
-# In[ ]:
 
 
 df_a.head()
 
 
-# In[ ]:
 
 
 # Customers segment of each product
@@ -859,21 +750,18 @@ plt.ylabel('Products names', fontsize=17, color='black')
 plt.legend(prop={'size':15}) 
 
 
-# In[ ]:
 
 
 # Let's extract the necessary columns for this step
 df_a = df.loc[:, ['ind_actividad_cliente']].join(df.loc[:, 'ind_ahor_fin_ult1':'ind_recibo_ult1'])
 
 
-# In[ ]:
 
 
 df_a = df_a.groupby("ind_actividad_cliente").agg("sum")
 df_a = df_a.T
 
 
-# In[ ]:
 
 
 # Purchased products types by customer activity index
@@ -884,21 +772,18 @@ plt.ylabel('Products names', fontsize=17, color='black')
 plt.legend(["Inactive", "Active"], prop={'size':15}) 
 
 
-# In[ ]:
 
 
 # Let's extract the necessary columns for this step
 df_a= df.loc[:, ['sexo']].join(df.loc[:, 'ind_ahor_fin_ult1':'ind_recibo_ult1'])
 
 
-# In[ ]:
 
 
 df_a = df_a.groupby("sexo").agg("sum")
 df_a = df_a.T
 
 
-# In[ ]:
 
 
 # Percentage of purchased products by sex
@@ -909,13 +794,11 @@ plt.ylabel('Products names', fontsize=17, color='black')
 plt.legend(prop={'size':15}) 
 
 
-# In[ ]:
 
 
 df["sexo"].value_counts()
 
 
-# In[ ]:
 
 
 a = df["ncodpers"][df["sexo"]=="H"].count()
@@ -923,49 +806,41 @@ b = df["ncodpers"][df["sexo"]=="V"].count()
 (a/b)*100
 
 
-# In[ ]:
 
 
 df_a = df.loc[:, ['age', 'renta', 'antiguedad']].join(df.loc[:, 'ind_ahor_fin_ult1':'tot_products'])
 
 
-# In[ ]:
 
 
 df_a.head()
 
 
-# In[ ]:
 
 
 df_a = df_a.dropna(axis=0)
 
 
-# In[ ]:
 
 
 df_a = df_a.groupby("tot_products").agg("mean")
 
 
-# In[ ]:
 
 
 df_b = df_a.loc[:, ['age', 'renta', 'antiguedad']]
 
 
-# In[ ]:
 
 
 df_b.head()
 
 
-# In[ ]:
 
 
 df_a = df_b["antiguedad"][0:10]
 
 
-# In[ ]:
 
 
 # Total number of products by seniority
@@ -976,13 +851,11 @@ plt.ylabel('Average seniority', fontsize=17, color='black')
 #plt.legend(prop={'size':15}) 
 
 
-# In[ ]:
 
 
 df_a = df_b["age"]
 
 
-# In[ ]:
 
 
 # Total number of products by age
@@ -993,13 +866,11 @@ plt.ylabel('Average age', fontsize=17, color='black')
 plt.legend(prop={'size':15}) 
 
 
-# In[ ]:
 
 
 df_a = df_b["renta"]
 
 
-# In[ ]:
 
 
 # Total number of products by income
@@ -1010,7 +881,6 @@ plt.ylabel('Average income', fontsize=17, color='black')
 plt.legend(prop={'size':15}) 
 
 
-# In[ ]:
 
 
 

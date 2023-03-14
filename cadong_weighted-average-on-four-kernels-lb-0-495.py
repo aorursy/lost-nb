@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 The first is a w
 
 
-# In[2]:
 
 
 #https://www.kaggle.com/zeemeen/weighted-mean-comparisons-lb-0-497-1st
@@ -29,7 +27,6 @@ print('add decreasing weights from now')
 date_info['weight'] = ((date_info.index + 1) / len(date_info)) ** 8
 
 
-# In[3]:
 
 
 print('weighted mean visitors for each (air_store_id, day_of_week, holiday_flag) or (air_store_id, day_of_week)')
@@ -62,13 +59,11 @@ sample_submission['visitors'] = sample_submission.visitors.map(pd.np.expm1)
 print("done")
 
 
-# In[4]:
 
 
 sample_submission2 = sample_submission.copy()
 
 
-# In[5]:
 
 
 # https://www.kaggle.com/guoqiangliang/median-by-dow-lb-0-517
@@ -146,19 +141,16 @@ sub_file = final.copy()
 sub_file['visitors'] = 2/(1/final['visitors'] + 1/sample_submission['visitors'])
 
 
-# In[6]:
 
 
 new = sub_file.copy()
 
 
-# In[7]:
 
 
 new['visitors'] = sub_file['visitors']*.2 + sample_submission2['visitors']*.8
 
 
-# In[8]:
 
 
 new.to_csv("four_kernel_weighted.csv", float_format='%.4f', index=None)

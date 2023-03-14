@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('wget https://github.com/Chaogan-Yan/DPABI/raw/master/Templates/ch2better.nii')
 
 
-# In[2]:
 
 
 import numpy as np # linear algebra
@@ -48,13 +46,11 @@ num_components = subject_niimg.shape[-1]
 print("Detected {num_components} spatial maps".format(num_components=num_components))
 
 
-# In[3]:
 
 
 nlplt.plot_prob_atlas(subject_niimg, bg_img=smri_filename, view_type='filled_contours', draw_cross=False, title='All %d spatial maps' % num_components, threshold='auto')
 
 
-# In[4]:
 
 
 grid_size = int(np.ceil(np.sqrt(num_components)))
@@ -68,7 +64,6 @@ for i, cur_img in enumerate(nl.image.iter_img(subject_niimg)):
     nlplt.plot_stat_map(cur_img, bg_img=smri_filename, title="IC %d" % i, axes=axes[row, col], threshold=3, colorbar=False)
 
 
-# In[5]:
 
 
 import matplotlib.pyplot as plt
@@ -115,7 +110,6 @@ plt.legend([p_v, p_h, p_f], ["vt", "house", "face"])
 show()
 
 
-# In[6]:
 
 
 from nilearn import datasets
@@ -138,7 +132,6 @@ motor_images = datasets.fetch_neurovault_motor_task()
 stat_img = motor_images.images[0]
 
 
-# In[7]:
 
 
 from nilearn import plotting
@@ -150,7 +143,6 @@ plotting.plot_stat_map(stat_img,
                        cut_coords=[36, -27, 66])
 
 
-# In[8]:
 
 
 view = plotting.view_img(stat_img, threshold=3)
@@ -159,27 +151,23 @@ view = plotting.view_img(stat_img, threshold=3)
 view
 
 
-# In[9]:
 
 
 plotting.plot_glass_brain(stat_img, title='plot_glass_brain',
                           threshold=3)
 
 
-# In[10]:
 
 
 plotting.plot_anat(haxby_anat_filename, title="plot_anat")
 
 
-# In[11]:
 
 
 plotting.plot_roi(haxby_mask_filename, bg_img=haxby_anat_filename,
                   title="plot_roi")
 
 
-# In[12]:
 
 
 # Import image processing tool
@@ -193,7 +181,6 @@ mean_haxby_img = image.mean_img(haxby_func_filename)
 plotting.plot_epi(mean_haxby_img, title="plot_epi")
 
 
-# In[13]:
 
 
 
@@ -208,7 +195,6 @@ motor_images = datasets.fetch_neurovault_motor_task()
 stat_img = motor_images.images[0]
 
 
-# In[14]:
 
 
 plotting.plot_stat_map(stat_img, display_mode='ortho',
@@ -216,14 +202,12 @@ plotting.plot_stat_map(stat_img, display_mode='ortho',
                        title="display_mode='ortho', cut_coords=[36, -27, 60]")
 
 
-# In[15]:
 
 
 plotting.plot_stat_map(stat_img, display_mode='z', cut_coords=5,
                        title="display_mode='z', cut_coords=5")
 
 
-# In[16]:
 
 
 plotting.plot_stat_map(stat_img, display_mode='x',
@@ -231,14 +215,12 @@ plotting.plot_stat_map(stat_img, display_mode='x',
                        title="display_mode='x', cut_coords=[-36, 36]")
 
 
-# In[17]:
 
 
 plotting.plot_stat_map(stat_img, display_mode='y', cut_coords=1,
                        title="display_mode='y', cut_coords=1")
 
 
-# In[18]:
 
 
 plotting.plot_stat_map(stat_img, display_mode='z',
@@ -246,7 +228,6 @@ plotting.plot_stat_map(stat_img, display_mode='z',
                        title="display_mode='z', cut_coords=1, colorbar=False")
 
 
-# In[19]:
 
 
 plotting.plot_stat_map(stat_img, display_mode='xz',
@@ -254,7 +235,6 @@ plotting.plot_stat_map(stat_img, display_mode='xz',
                        title="display_mode='xz', cut_coords=[36, 60]")
 
 
-# In[20]:
 
 
 plotting.plot_stat_map(stat_img, display_mode='yx',
@@ -262,7 +242,6 @@ plotting.plot_stat_map(stat_img, display_mode='yx',
                        title="display_mode='yx', cut_coords=[-27, 36]")
 
 
-# In[21]:
 
 
 plotting.plot_stat_map(stat_img, display_mode='yz',
@@ -270,7 +249,6 @@ plotting.plot_stat_map(stat_img, display_mode='yz',
                        title="display_mode='yz', cut_coords=[-27, 60]")
 
 
-# In[22]:
 
 
 plotting.plot_stat_map(stat_img, display_mode='tiled',
@@ -278,7 +256,6 @@ plotting.plot_stat_map(stat_img, display_mode='tiled',
                        title="display_mode='tiled'")
 
 
-# In[23]:
 
 
 from nilearn import image
@@ -288,7 +265,6 @@ from nilearn import image
 mean_haxby_img = image.mean_img(haxby_func_filename)
 
 
-# In[24]:
 
 
 display = plotting.plot_anat(mean_haxby_img, title="add_edges")
@@ -299,7 +275,6 @@ display = plotting.plot_anat(mean_haxby_img, title="add_edges")
 display.add_edges(haxby_anat_filename)
 
 
-# In[25]:
 
 
 # As seen before, we call the `plot_anat` function with a background image
@@ -316,7 +291,6 @@ display = plotting.plot_anat(mean_haxby_img, title="add_contours",
 display.add_contours(haxby_mask_filename, levels=[0.5], colors='r')
 
 
-# In[26]:
 
 
 display = plotting.plot_anat(mean_haxby_img,
@@ -332,7 +306,6 @@ display.add_contours(haxby_mask_filename, filled=True, alpha=0.7,
                      levels=[0.5], colors='b')
 
 
-# In[27]:
 
 
 display = plotting.plot_anat(mean_haxby_img, title="add_markers",
@@ -345,7 +318,6 @@ coords = [(-34, -39, -9)]
 display.add_markers(coords, marker_color='y', marker_size=100)
 
 
-# In[28]:
 
 
 display = plotting.plot_anat(mean_haxby_img,
@@ -354,7 +326,6 @@ display = plotting.plot_anat(mean_haxby_img,
 display.annotate(scalebar=True)
 
 
-# In[29]:
 
 
 display = plotting.plot_anat(mean_haxby_img,
@@ -363,7 +334,6 @@ display = plotting.plot_anat(mean_haxby_img,
 display.annotate(scalebar=True, scale_size=25, scale_units='mm')
 
 
-# In[30]:
 
 
 from nilearn import datasets
@@ -373,7 +343,6 @@ func_filenames = rest_dataset.func
 confounds = rest_dataset.confounds
 
 
-# In[31]:
 
 
 # Import dictionary learning algorithm from decomposition module and call the
@@ -399,7 +368,6 @@ plotting.plot_prob_atlas(components_img, view_type='filled_contours',
                          title='Dictionary Learning maps')
 
 
-# In[32]:
 
 
 # Import Region Extractor algorithm from regions module
@@ -428,7 +396,6 @@ plotting.plot_prob_atlas(regions_extracted_img, view_type='filled_contours',
                          title=title)
 
 
-# In[33]:
 
 
 # First we need to do subjects timeseries signals extraction and then estimating
@@ -455,7 +422,6 @@ mean_correlations = np.mean(correlations, axis=0).reshape(n_regions_extracted,
                                                           n_regions_extracted)
 
 
-# In[34]:
 
 
 title = 'Correlation between %d regions' % n_regions_extracted
@@ -472,7 +438,6 @@ plotting.plot_connectome(mean_correlations, coords_connectome,
                          edge_threshold='90%', title=title)
 
 
-# In[35]:
 
 
 # First, we plot a network of index=4 without region extraction (left plot)
@@ -484,7 +449,6 @@ display = plotting.plot_stat_map(img, cut_coords=coords, colorbar=False,
                                  title='Showing one specific network')
 
 
-# In[36]:
 
 
 # For this, we take the indices of the all regions extracted related to original

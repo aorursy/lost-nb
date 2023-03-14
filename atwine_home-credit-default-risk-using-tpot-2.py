@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import matplotlib.pyplot as plt #this is for visualization
@@ -23,7 +22,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[ ]:
 
 
 df_test = pd.read_csv('../input/application_test.csv')
@@ -34,34 +32,29 @@ instalments = pd.read_csv('../input/installments_payments.csv')
 POS_cash = pd.read_csv('../input/POS_CASH_balance.csv')
 
 
-# In[ ]:
 
 
 #how big are our data sets?
 df_bureau.shape,df_test.shape,df_train.shape,credit_card_bal.shape,instalments.shape,POS_cash.shape
 
 
-# In[ ]:
 
 
 #I want to look at the variables in the train dataset because it is the most important dataset
 df_train.describe()
 
 
-# In[ ]:
 
 
 #how many empty values do we have
 df_train.isnull().any().sum()
 
 
-# In[ ]:
 
 
 df_train['TARGET'].value_counts()
 
 
-# In[ ]:
 
 
 #let us look at the distribution of the target
@@ -69,7 +62,6 @@ df_train['TARGET'].plot.hist()
 #so we see here that there are more defaults than those that have paid their loans back
 
 
-# In[ ]:
 
 
 #check for missing values:
@@ -92,20 +84,17 @@ def miss_val(df):
     return final_table
 
 
-# In[ ]:
 
 
 miss_val(df_train).head(20)
 
 
-# In[ ]:
 
 
 #how many data types do we have
 df_train.dtypes.value_counts()
 
 
-# In[ ]:
 
 
 #we have 16 data types that are non numeric
@@ -113,7 +102,6 @@ df_train.dtypes.value_counts()
 df_train.select_dtypes('object').apply(pd.Series.nunique, axis = 0)
 
 
-# In[ ]:
 
 
 #since we have many values that are categorical we need to encode them because they are not easily handled
@@ -137,7 +125,6 @@ df_train.select_dtypes('object').apply(pd.Series.nunique, axis = 0)
 # print('Were transformed', le_count)
 
 
-# In[ ]:
 
 
 #one hot encoding
@@ -148,7 +135,6 @@ print('Shape', df_test.shape)
 print('Shape', df_train.shape)
 
 
-# In[ ]:
 
 
 #one hot encoding creates many more columns and so the dataframes are not aligned 
@@ -166,7 +152,6 @@ print('Test Shape',df_test.shape)
 print('Train Train', df_train.shape)
 
 
-# In[ ]:
 
 
 #there is an anomaly in the number of days worked, the days are so many so we will replace them
@@ -179,7 +164,6 @@ df_train['DAYS_EMPLOYED'].replace({365243: np.nan}, inplace = True)
 df_train['DAYS_EMPLOYED'].plot.hist()
 
 
-# In[ ]:
 
 
 #from numpy we have a correlation function, using pearson's correlation
@@ -189,7 +173,6 @@ print('Least correlated', correlation.tail(10))
 print('Most correlated', correlation.head(10))
 
 
-# In[ ]:
 
 
 #there is a high correlation between target and the days birth
@@ -197,7 +180,6 @@ df_train['DAYS_BIRTH'] = abs(df_train['DAYS_BIRTH'])
 df_train['DAYS_BIRTH'].corr(df_train['TARGET'])
 
 
-# In[ ]:
 
 
 # let's plot the fig and see how it looks like
@@ -206,7 +188,6 @@ plt.style.use('fivethirtyeight')
 plt.hist(df_train['DAYS_BIRTH']/365, bins=10, color= 'blue', edgecolor = 'k')
 
 
-# In[ ]:
 
 
 #first we create a list of the variables
@@ -236,7 +217,6 @@ from sklearn.preprocessing import PolynomialFeatures
 poly_creator = PolynomialFeatures(degree=4)
 
 
-# In[ ]:
 
 
 #we fit the poly features/ train the features on the training data
@@ -251,31 +231,26 @@ print('Poly Features Shape:', poly_train_ft.shape)
 print('Poly Features Shape:', poly_test_ft.shape)
 
 
-# In[ ]:
 
 
 poly_creator.get_feature_names(input_features = ['EXT_SOURCE_1', 'EXT_SOURCE_2', 'EXT_SOURCE_3', 'DAYS_BIRTH'])[:20]
 
 
-# In[ ]:
 
 
 poly_df = pd.DataFrame(poly_train_ft)
 
 
-# In[ ]:
 
 
 poly_df.shape
 
 
-# In[ ]:
 
 
 type(poly_df)
 
 
-# In[ ]:
 
 
 #return the target column into the data created
@@ -290,90 +265,76 @@ print('-'*20)
 print(poly_corr.tail(10))
 
 
-# In[ ]:
 
 
 #we want a data frame from the info above WITH THE HIGHLY CORRELATED FEATURES
 poly_df_ft = pd.DataFrame(poly_test_ft, columns = poly_creator.get_feature_names(['EXT_SOURCE_1', 'EXT_SOURCE_2', 'EXT_SOURCE_3', 'DAYS_BIRTH']))
 
 
-# In[ ]:
 
 
 'TARGET' in poly_df
 
 
-# In[ ]:
 
 
 poly_df_ft.shape
 
 
-# In[ ]:
 
 
 'TARGET' in poly_df_ft
 
 
-# In[ ]:
 
 
 Class = pd.DataFrame(poly_target[:48744], dtype= float)
 Class.head()
 
 
-# In[ ]:
 
 
 poly_df_ft['TARGET'] = Class['TARGET']
 
 
-# In[ ]:
 
 
 'TARGET' in poly_df_ft
 
 
-# In[ ]:
 
 
 #rename the target variable in the dataframe before to class
 poly_df_ft.rename(columns= {'TARGET':'class'}, inplace=True)
 
 
-# In[ ]:
 
 
 'class' in poly_df_ft
 
 
-# In[ ]:
 
 
 poly_df_ft.info()
 
 
-# In[ ]:
 
 
 #separate the target variable
 target_class = poly_df_ft['class']
 
 
-# In[ ]:
 
 
 poly_df_ft.shape
 
 
-# In[ ]:
 
 
 from sklearn.model_selection import train_test_split
 from tpot import TPOTClassifier
 
 
-# In[ ]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(poly_df_ft, target_class,
@@ -381,20 +342,17 @@ X_train, X_test, y_train, y_test = train_test_split(poly_df_ft, target_class,
 X_train.shape, X_test.shape, y_train.shape, y_test.shape
 
 
-# In[ ]:
 
 
 # tpot = TPOTClassifier(verbosity=2, generations=50, max_time_mins=600, cv=4, n_jobs= 4, config_dict= 'TPOT sparse')
 # tpot.fit(X_train, y_train)
 
 
-# In[ ]:
 
 
 # tpot.export('10_hrs_bernouli.py')
 
 
-# In[ ]:
 
 
 # %load 10_hrs_bernouli.py
@@ -416,38 +374,32 @@ X_train.shape, X_test.shape, y_train.shape, y_test.shape
 # results = exported_pipeline.predict(testing_features)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 # from sklearn.naive_bayes import BernoulliNB
 
 
-# In[ ]:
 
 
 # model = BernoulliNB(alpha=0.1, fit_prior=True)
 
 
-# In[ ]:
 
 
 # model.fit(X_train,y_train)
 
 
-# In[ ]:
 
 
 # pred1 = model.predict(X_test)
 # pred1.shape, y_test.shape
 
 
-# In[ ]:
 
 
 #this is the tool i will use to measure how accurate the algorithm is
@@ -455,45 +407,38 @@ X_train.shape, X_test.shape, y_train.shape, y_test.shape
 # accuracy_score(pred1,y_test)
 
 
-# In[ ]:
 
 
 # pred2 = model.predict(poly_test_ft)
 # pred2
 
 
-# In[ ]:
 
 
 # submit = df_test[['SK_ID_CURR']]
 # submit['TARGET']= pred2
 
 
-# In[ ]:
 
 
 # submit.shape
 
 
-# In[ ]:
 
 
 # submit.to_csv('tpot1.csv')
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 # tpot.export('tpot_random_classifier_credit_risk.py')
 
 
-# In[ ]:
 
 
 # %load tpot_random_classifier_credit_risk.py
@@ -515,7 +460,6 @@ X_train.shape, X_test.shape, y_train.shape, y_test.shape
 # results = exported_pipeline.predict(testing_features)
 
 
-# In[ ]:
 
 
 # from sklearn.ensemble import RandomForestClassifier
@@ -523,51 +467,43 @@ X_train.shape, X_test.shape, y_train.shape, y_test.shape
 # model2.fit(X_train,y_train)
 
 
-# In[ ]:
 
 
 # pred3 = model2.predict(X_test)
 
 
-# In[ ]:
 
 
 # accuracy_score(pred3, y_test)
 
 
-# In[ ]:
 
 
 # pred4 = model2.predict(poly_test_ft)
 # pred4
 
 
-# In[ ]:
 
 
 # submit2 = df_test[['SK_ID_CURR']]
 # submit2['TARGET']= pred4
 
 
-# In[ ]:
 
 
 # submit2.to_csv('tpot2.csv')
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 tpot.export('tpot_bernouli_home_credit_risk.py')
 
 
-# In[ ]:
 
 
 # %load tpot_bernouli_home_credit_risk.py
@@ -589,40 +525,34 @@ tpot.export('tpot_bernouli_home_credit_risk.py')
 # results = exported_pipeline.predict(testing_features)
 
 
-# In[ ]:
 
 
 # tpot.score(X_test,y_test)
 
 
-# In[ ]:
 
 
 #here we export the final pipeline that was extracted by tpot
 # tpot.export('tpot_home_credit_risk.py')
 
 
-# In[ ]:
 
 
 #i need to rename the class variable to target so it can be read by tpot
 # poly_df_ft.rename(columns={'class':'target'},inplace= True)
 
 
-# In[ ]:
 
 
 poly_df_ft.shape
 
 
-# In[ ]:
 
 
 #we need to export the results into a csv file
 # poly_df_ft.to_csv('new_train_data.csv')
 
 
-# In[ ]:
 
 
 # %load tpot_home_credit_risk.py
@@ -644,7 +574,6 @@ poly_df_ft.shape
 # results = exported_pipeline.predict(testing_features)
 
 
-# In[ ]:
 
 
 

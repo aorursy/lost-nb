@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import pandas as pd
@@ -12,7 +11,6 @@ from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
 
 
-# In[ ]:
 
 
 treinoOriginal = pd.read_csv("../input/teste-com-knn/train.csv",
@@ -21,85 +19,71 @@ treinoOriginal = pd.read_csv("../input/teste-com-knn/train.csv",
             na_values="NaN")
 
 
-# In[ ]:
 
 
 treinoOriginal
 
 
-# In[ ]:
 
 
 nomes = ['escolari', 'meaneduc', 'cielorazo','eviv3', 'pisomoscer','etecho3']
 
 
-# In[ ]:
 
 
 medias = [treinoOriginal[x].mean(skipna = True) for x in nomes]
 
 
-# In[ ]:
 
 
 values = {key: value for (key, value) in zip(nomes, medias)}
 
 
-# In[ ]:
 
 
 values
 
 
-# In[ ]:
 
 
 n_treino = treinoOriginal.fillna(value = values)
 
 
-# In[ ]:
 
 
 n_treino
 
 
-# In[ ]:
 
 
 n_treino['Target'].value_counts().plot(kind='pie')
 
 
-# In[ ]:
 
 
 treinoOriginal['escolari'].value_counts(normalize=True).plot(kind='bar')
 
 
-# In[ ]:
 
 
 treinoOriginal['cielorazo'].value_counts(normalize=True).plot(kind='bar')
 
 
-# In[ ]:
 
 
 treinoOriginal['eviv3'].value_counts(normalize=True).plot(kind='bar')
 
 
-# In[ ]:
 
 
 treinoOriginal['pisomoscer'].value_counts(normalize=True).plot(kind='bar')
 
 
-# In[ ]:
 
 
 treinoOriginal['etecho3'].value_counts(normalize=True).plot(kind='bar')
 
 
-# In[ ]:
 
 
 Rodando um loop de kNN para tentar descobrir um índice ótimo. A escolha do índice foi baseada no valor
@@ -108,7 +92,6 @@ Note que guardamos os resultados para cada indice na lista performance_neighbors
 interessante verificar seu valor depois.
 
 
-# In[ ]:
 
 
 melhor = 0
@@ -125,14 +108,12 @@ for i in range (1, 60):
         indice = i
 
 
-# In[ ]:
 
 
 knn = KNeighborsClassifier(n_neighbors=indice)
 knn.fit(Xtreino, Ytreino)
 
 
-# In[ ]:
 
 
 testesOriginal = pd.read_csv("../input/teste-com-knn/test.csv",
@@ -141,44 +122,37 @@ testesOriginal = pd.read_csv("../input/teste-com-knn/test.csv",
                             na_values="?")
 
 
-# In[ ]:
 
 
 mediasTestes = [testesOriginal[x].mean(skipna = True) for x in nomes]
 valuesTestes = {key: value for (key, value) in zip(nomes, mediasTestes)}
 
 
-# In[ ]:
 
 
 valuesTestes
 
 
-# In[ ]:
 
 
 n_testes = testesOriginal.fillna(value = valuesTestes)
 
 
-# In[ ]:
 
 
 YtestPred = knn.predict(n_testes[['escolari','meaneduc', 'cielorazo','eviv3','pisomoscer','etecho3']])
 
 
-# In[ ]:
 
 
 YtestPred
 
 
-# In[ ]:
 
 
 Transformando para a formatação correta e exportando
 
 
-# In[ ]:
 
 
 ids = testesOriginal.iloc[:,0].values

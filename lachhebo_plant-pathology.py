@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -20,7 +19,6 @@ import tensorflow.keras.layers as L
 from tensorflow.keras.applications import DenseNet121
 
 
-# In[2]:
 
 
 ## Global variables
@@ -36,7 +34,6 @@ IMAGE_SIZE = 124
 BATCH_SIZE = 64
 
 
-# In[3]:
 
 
 sub = pd.read_csv(SUB_PATH)
@@ -44,19 +41,16 @@ test_data = pd.read_csv(TEST_PATH)
 train_data = pd.read_csv(TRAIN_PATH)
 
 
-# In[4]:
 
 
 train_data.shape
 
 
-# In[5]:
 
 
 train_data.head()
 
 
-# In[6]:
 
 
 def format_path(st):
@@ -88,7 +82,6 @@ def data_augment(image, label=None):
         return image, label
 
 
-# In[7]:
 
 
 test_paths = test_data.image_id.apply(format_path).values
@@ -97,13 +90,11 @@ train_labels = np.float32(train_data.loc[:, 'healthy':'scab'].values)
 train_paths, valid_paths, train_labels, valid_labels = train_test_split(train_paths, train_labels, test_size=0.15, random_state=2020)
 
 
-# In[8]:
 
 
 train_images = train_data["image_id"][:SAMPLE_LEN].apply(load_image)
 
 
-# In[9]:
 
 
 mean_x, mean_y = 0, 1
@@ -114,7 +105,6 @@ for image in train_images:
 print(mean_x/len(train_images), mean_y/len(train_images), mean_x/len(train_images) / 5, mean_y/len(train_images) / 5)
 
 
-# In[10]:
 
 
 fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(20, 20))
@@ -124,7 +114,6 @@ ax[1].imshow(cv2.resize(train_images[5], (IMAGE_SIZE, IMAGE_SIZE)))
 ax[1].set_title('Resized Image', fontsize=20)
 
 
-# In[11]:
 
 
 fig, ax = plt.subplots(nrows=1, ncols=4, figsize=(30, 10))
@@ -135,7 +124,6 @@ ax[2].imshow(cv2.resize(train_images[15][:,:,2], (IMAGE_SIZE, IMAGE_SIZE)), cmap
 ax[3].imshow(cv2.resize(train_images[15], (IMAGE_SIZE, IMAGE_SIZE)))
 
 
-# In[12]:
 
 
 red_values   = [np.mean(train_images[idx][:, :, 0]) for idx in range(len(train_images))]
@@ -143,7 +131,6 @@ green_values = [np.mean(train_images[idx][:, :, 1]) for idx in range(len(train_i
 blue_values  = [np.mean(train_images[idx][:, :, 2]) for idx in range(len(train_images))]
 
 
-# In[13]:
 
 
 red_channel   =    [np.mean(train_images[idx][:, :, 0]) for idx in range(len(train_images))] # train_df['lenght_prop'][train_df['sentiment'] == 'positive'].to_numpy()
@@ -159,14 +146,12 @@ pylab.xticks([1,2,3], BoxName)
 plt.show()
 
 
-# In[14]:
 
 
 STEPS_PER_EPOCH = train_labels.shape[0] // BATCH_SIZE 
 STEPS_PER_EPOCH
 
 
-# In[15]:
 
 
 train_dataset = (
@@ -196,7 +181,6 @@ test_dataset = (
 )
 
 
-# In[16]:
 
 
 model = tf.keras.Sequential([DenseNet121(input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3),
@@ -212,13 +196,11 @@ model.compile(optimizer='adam',
 model.summary()
 
 
-# In[17]:
 
 
 EPOCHS = 20
 
 
-# In[18]:
 
 
 history = model.fit(train_dataset,
@@ -227,7 +209,6 @@ history = model.fit(train_dataset,
                     validation_data=valid_dataset)
 
 
-# In[19]:
 
 
 fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(20, 5))
@@ -248,7 +229,6 @@ ax[1].set_ylabel('val_categorical_accuracy')
 ax[1].set_ylim(0.8, 1)
 
 
-# In[20]:
 
 
 for i in range(1,len(history.history['val_loss'])):
@@ -259,7 +239,6 @@ for i in range(1,len(history.history['val_loss'])):
         print(' we overfit at epoch ', i)
 
 
-# In[21]:
 
 
 model = tf.keras.Sequential([DenseNet121(input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3),
@@ -275,13 +254,11 @@ model.compile(optimizer='adam',
 model.summary()
 
 
-# In[22]:
 
 
 EPOCHS = 20
 
 
-# In[23]:
 
 
 history = model.fit(train_dataset,
@@ -290,7 +267,6 @@ history = model.fit(train_dataset,
                     validation_data=valid_dataset)
 
 
-# In[24]:
 
 
 fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(20, 5))
@@ -311,55 +287,46 @@ ax[1].set_ylabel('val_categorical_accuracy')
 ax[1].set_ylim(0.8, 1)
 
 
-# In[25]:
 
 
 img_val = cv2.cvtColor(cv2.imread(valid_paths[7]), cv2.COLOR_BGR2RGB)
 
 
-# In[26]:
 
 
 plt.imshow(cv2.resize(img_val, (409, 273)))
 
 
-# In[27]:
 
 
 model.layers[0].input
 
 
-# In[28]:
 
 
 model.layers
 
 
-# In[29]:
 
 
 layer_outputs = [layer.output for layer in model.layers[0].layers] 
 
 
-# In[30]:
 
 
 layer_outputs
 
 
-# In[31]:
 
 
 activation_model = models.Model(inputs=model.layers[0].input, outputs=layer_outputs)
 
 
-# In[32]:
 
 
 activations = activation_model.predict(np.array([cv2.resize(img_val, (IMAGE_SIZE, IMAGE_SIZE))]))
 
 
-# In[33]:
 
 
 fig, ax = plt.subplots(nrows=7, ncols=4, figsize=(30, 25))
@@ -370,19 +337,16 @@ for i in range(0,7):
         m = m+1
 
 
-# In[34]:
 
 
 Dispaying more advanced steps in the convnet is difficult as the more we go in depth in the convenet, the more the more the features extracted by the layers become abstract. Futhermore, 
 
 
-# In[35]:
 
 
 val_images = train_data["image_id"][:SAMPLE_LEN].apply(load_image)
 
 
-# In[36]:
 
 
 probs_dnn = model.predict(test_dataset, verbose=1)

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -38,7 +37,6 @@ from nltk import word_tokenize
 from torch import optim
 
 
-# In[ ]:
 
 
 
@@ -51,14 +49,12 @@ train = torchtext.data.TabularDataset(path='../input/train.csv', format='csv',
                                               'target': ('target',target)})
 
 
-# In[ ]:
 
 
 text.build_vocab(train, min_freq=1)
 text.vocab.load_vectors(torchtext.vocab.Vectors("../input/embeddings/glove.840B.300d/glove.840B.300d.txt"))
 
 
-# In[ ]:
 
 
 random_state = random.getstate()
@@ -77,7 +73,6 @@ val_iter = torchtext.data.BucketIterator(dataset=val,
                                          sort=False)
 
 
-# In[ ]:
 
 
 def training(epoch, model, loss_func, optimizer, train_iter, val_iter):
@@ -119,7 +114,6 @@ def training(epoch, model, loss_func, optimizer, train_iter, val_iter):
         train_record = []
 
 
-# In[ ]:
 
 
 def results(m, t):
@@ -173,7 +167,6 @@ def results(m, t):
     print('Recall: {:.4f}'.format(tp/(float(tp+fn))))
 
 
-# In[ ]:
 
 
 class LSTM(nn.Module):
@@ -200,7 +193,6 @@ class LSTM(nn.Module):
         return y
 
 
-# In[ ]:
 
 
 lstm = LSTM(text.vocab.vectors,
@@ -218,13 +210,11 @@ training(model=lstm,
          val_iter=val_iter)
 
 
-# In[ ]:
 
 
 results(lstm,t)
 
 
-# In[ ]:
 
 
 class CNN(nn.Module):
@@ -261,7 +251,6 @@ class CNN(nn.Module):
         return x
 
 
-# In[ ]:
 
 
 cnn = CNN(text.vocab.vectors,
@@ -279,13 +268,11 @@ training(model=cnn,
          val_iter=val_iter)
 
 
-# In[ ]:
 
 
 results(cnn, t)
 
 
-# In[ ]:
 
 
 class FFM(nn.Module):
@@ -336,7 +323,6 @@ class FFM(nn.Module):
         return x
 
 
-# In[ ]:
 
 
 ffm = FFM(text.vocab.vectors,
@@ -354,13 +340,11 @@ training(model=ffm,
          val_iter=val_iter)
 
 
-# In[ ]:
 
 
 results(ffm, t)
 
 
-# In[ ]:
 
 
 train_df = pd.read_csv("../input/train.csv")
@@ -369,19 +353,16 @@ print("Train shape : ",train_df.shape)
 print("Test shape : ",test_df.shape)
 
 
-# In[ ]:
 
 
 train_df['len'] = train_df['question_text'].apply(lambda x: len(x.split(' ')))
 
 
-# In[ ]:
 
 
 train_df.describe()
 
 
-# In[ ]:
 
 
 def SimpleFFModel:
@@ -403,7 +384,6 @@ def SimpleFFModel:
     return model
 
 
-# In[ ]:
 
 
 def ConvModel:
@@ -438,7 +418,6 @@ def ConvModel:
     return model
 
 
-# In[ ]:
 
 
 from scipy import spatial

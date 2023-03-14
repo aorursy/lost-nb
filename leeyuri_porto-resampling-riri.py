@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import import numpy as np
@@ -17,13 +16,11 @@ print('Proportion:', round(target_count[0] / target_count[1], 2), ': 1')
 target_count.plot(kind='bar', title='Count (target)');
 
 
-# In[2]:
 
 
 df_train.head()
 
 
-# In[3]:
 
 
 from xgboost import XGBClassifier
@@ -62,7 +59,6 @@ accuracy = accuracy_score(y_test, y_pred)
 print("Accuracy: %.2f%%" % (accuracy * 100.0))
 
 
-# In[4]:
 
 
 model = XGBClassifier()
@@ -73,7 +69,6 @@ accuracy = accuracy_score(y_test, y_pred)
 print("Accuracy: %.2f%%" % (accuracy * 100.0))
 
 
-# In[5]:
 
 
 from sklearn.metrics import confusion_matrix
@@ -94,7 +89,6 @@ plt.ylabel('Expected')
 plt.show()
 
 
-# In[6]:
 
 
 # Class count
@@ -105,7 +99,6 @@ df_class_0 = df_train[df_train['target'] == 0]
 df_class_1 = df_train[df_train['target'] == 1]
 
 
-# In[7]:
 
 
 df_class_0_under = df_class_0.sample(count_class_1)
@@ -117,7 +110,6 @@ print(df_test_under.target.value_counts())
 df_test_under.target.value_counts().plot(kind='bar', title='Count (target)');
 
 
-# In[8]:
 
 
 df_class_1_over = df_class_1.sample(count_class_0, replace=True)
@@ -129,13 +121,11 @@ print(df_test_over.target.value_counts())
 df_test_over.target.value_counts().plot(kind='bar', title='Count (target)');
 
 
-# In[9]:
 
 
 import imblearn
 
 
-# In[10]:
 
 
 from sklearn.datasets import make_classification
@@ -152,7 +142,6 @@ df['target'] = y
 df.target.value_counts().plot(kind='bar', title='Count (target)');
 
 
-# In[11]:
 
 
 def plot_2d_space(X, y, label='Classes'):   
@@ -169,7 +158,6 @@ def plot_2d_space(X, y, label='Classes'):
     plt.show()
 
 
-# In[12]:
 
 
 from sklearn.decomposition import PCA
@@ -180,7 +168,6 @@ X = pca.fit_transform(X)
 plot_2d_space(X, y, 'Imbalanced dataset (2 PCA components)')
 
 
-# In[13]:
 
 
 

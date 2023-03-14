@@ -1,20 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_cell_magic('writefile', 'score.c', '\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <math.h>\n\n#define NF 5000\nint cost[NF][101];\nint fs[NF];\n\nint cf[NF][10];\n\nint loaded=0;\n\nvoid read_fam() {\n  FILE *f;\n  char s[1000];\n  int d[101],fid,n;\n  int *c;\n\n  f=fopen("../input/santa-workshop-tour-2019/family_data.csv","r");\n  if (fgets(s,1000,f)==NULL)\n    exit(-1);\n\n  for(int i=0;i<5000;i++) {\n    c = &cf[i][0];\n    if (fscanf(f,"%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",\n               &fid,&c[0],&c[1],&c[2],&c[3],&c[4],&c[5],&c[6],&c[7],&c[8],&c[9],&fs[i])!=12)\n      exit(-1);\n\n    //    printf("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\\n",\n    //fid,c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7],c[8],c[9],fs[i]);\n    n = fs[i];\n\n    for(int j=1;j<=100;j++) {\n      if (j==c[0]) cost[i][j]=0;\n      else if (j==c[1]) cost[i][j]=50;\n      else if (j==c[2]) cost[i][j]=50 + 9 * n;\n      else if (j==c[3]) cost[i][j]=100 + 9 * n;\n      else if (j==c[4]) cost[i][j]=200 + 9 * n;\n      else if (j==c[5]) cost[i][j]=200 + 18 * n;\n      else if (j==c[6]) cost[i][j]=300 + 18 * n;\n      else if (j==c[7]) cost[i][j]=300 + 36 * n;\n      else if (j==c[8]) cost[i][j]=400 + 36 * n;\n      else if (j==c[9]) cost[i][j]=500 + 36 * n + 199 * n;\n      else cost[i][j]=500 + 36 * n + 398 * n;\n    }\n  }\n\n}\n\nfloat max_cost=1000000000;\n\nint day_occ[102];\n\nstatic inline int day_occ_ok(int d) {\n  return !(d <125 || d>300);\n}\n\nfloat score(int *pred) {\n  float r=0;\n    \n  if (!loaded) {\n      read_fam();\n      loaded = 1;\n  }\n\n  // validate day occupancy\n  memset(day_occ,0,101*sizeof(int));\n  for(int i=0;i<NF;i++)\n    day_occ[pred[i]]+=fs[i];\n  for(int i=1;i<101;i++)\n    if (!day_occ_ok(day_occ[i])) {\n      //printf("inv occ %d %d\\n",i,day_occ[i]);\n      return max_cost;\n    }\n\n  for(int i=0;i<NF;) {\n    r+=cost[i][pred[i]]+cost[i+1][pred[i+1]]+cost[i+2][pred[i+2]]+cost[i+3][pred[i+3]]+\n      cost[i+4][pred[i+4]]+cost[i+5][pred[i+5]]+cost[i+6][pred[i+6]]+cost[i+7][pred[i+7]]+\n      cost[i+8][pred[i+8]]+cost[i+9][pred[i+9]];\n    i+=10;\n    r+=cost[i][pred[i]]+cost[i+1][pred[i+1]]+cost[i+2][pred[i+2]]+cost[i+3][pred[i+3]]+\n      cost[i+4][pred[i+4]]+cost[i+5][pred[i+5]]+cost[i+6][pred[i+6]]+cost[i+7][pred[i+7]]+\n      cost[i+8][pred[i+8]]+cost[i+9][pred[i+9]];\n    i+=10;\n    r+=cost[i][pred[i]]+cost[i+1][pred[i+1]]+cost[i+2][pred[i+2]]+cost[i+3][pred[i+3]]+\n      cost[i+4][pred[i+4]]+cost[i+5][pred[i+5]]+cost[i+6][pred[i+6]]+cost[i+7][pred[i+7]]+\n      cost[i+8][pred[i+8]]+cost[i+9][pred[i+9]];\n    i+=10;\n    r+=cost[i][pred[i]]+cost[i+1][pred[i+1]]+cost[i+2][pred[i+2]]+cost[i+3][pred[i+3]]+\n      cost[i+4][pred[i+4]]+cost[i+5][pred[i+5]]+cost[i+6][pred[i+6]]+cost[i+7][pred[i+7]]+\n      cost[i+8][pred[i+8]]+cost[i+9][pred[i+9]];\n    i+=10;\n    r+=cost[i][pred[i]]+cost[i+1][pred[i+1]]+cost[i+2][pred[i+2]]+cost[i+3][pred[i+3]]+\n      cost[i+4][pred[i+4]]+cost[i+5][pred[i+5]]+cost[i+6][pred[i+6]]+cost[i+7][pred[i+7]]+\n      cost[i+8][pred[i+8]]+cost[i+9][pred[i+9]];\n    i+=10;\n\n  }\n    \n  day_occ[101]=day_occ[100];\n\n  for (int d=1;d<=100;d++)\n    r += (day_occ[d]-125.0)/400.0 * pow(day_occ[d] , 0.5 + fabs(day_occ[d]-day_occ[d+1]) / 50 );\n\n  return r;\n}  ')
 
 
-# In[2]:
 
 
 get_ipython().system('gcc -O5 -shared -Wl,-soname,score     -o score.so     -fPIC score.c')
 get_ipython().system('ls -l score.so')
 
 
-# In[3]:
 
 
 # Let's import the score function in python
@@ -28,7 +25,6 @@ score.restype = ctypes.c_float
 score.argtypes = [ndpointer(ctypes.c_int)]
 
 
-# In[4]:
 
 
 # From now on, below is pure basic python with greedy approach
@@ -42,14 +38,12 @@ pred = np.int32(sub.assigned_day.values)
 score(pred)
 
 
-# In[5]:
 
 
 # fast enough ? ;-) 
 get_ipython().run_line_magic('timeit', 'score(pred)')
 
 
-# In[6]:
 
 
 fam = pd.read_csv("../input/santa-workshop-tour-2019/family_data.csv")
@@ -59,7 +53,6 @@ n_people = fam.n_people.values
 fam_size_order = np.argsort(n_people)#[::-1]
 
 
-# In[7]:
 
 
 # First try to assign preferred days to each family, repeat 20 times
@@ -79,7 +72,6 @@ for t in tqdm(range(20)):
                 pred[i] = di
 
 
-# In[8]:
 
 
 # Then try to trade days between families by pair
@@ -105,7 +97,6 @@ opt()
             
 
 
-# In[9]:
 
 
 sub.assigned_day = pred
@@ -114,13 +105,11 @@ _score = score(pred)
 sub.to_csv(f'submission_{_score}.csv',index=False)
 
 
-# In[10]:
 
 
 get_ipython().system('ls -l')
 
 
-# In[11]:
 
 
 # Try again to assign preferred days to each family, repeat 20 times
@@ -140,7 +129,6 @@ for t in tqdm(range(20)):
                 pred[i] = di
 
 
-# In[12]:
 
 
 import random
@@ -172,7 +160,6 @@ def opt():
 opt()
 
 
-# In[13]:
 
 
 sub.assigned_day = pred

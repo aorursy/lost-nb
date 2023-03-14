@@ -1,70 +1,59 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np
 import pandas as pd
 
 
-# In[ ]:
 
 
 hdb = pd.read_csv("../input/test.csv")
 
 
-# In[ ]:
 
 
 hdb.shape
 
 
-# In[ ]:
 
 
 hdb.head()
 
 
-# In[ ]:
 
 
 hdbTrain = pd.read_csv("../input/train.csv")
 
 
-# In[ ]:
 
 
 hdbTrain.shape
 
 
-# In[ ]:
 
 
 hdbTrain.head()
 
 
-# In[ ]:
 
 
 #Apenas para visualização da distribuição das classificações na coluna 'target'
 import matplotlib.pyplot as plt
 
 
-# In[ ]:
 
 
 hdbTrain["Target"].value_counts().plot(kind="bar")
 
 
-# In[ ]:
 
 
 hdbTrain_r = hdbTrain.dropna()
 hdbTrain_r.shape
 
 
-# In[ ]:
 
 
 hdbTrain = hdbTrain.fillna(method = 'ffill')
@@ -74,13 +63,11 @@ hdb = hdb.fillna(method = 'ffill')
 hdb = hdb.fillna(0)
 
 
-# In[ ]:
 
 
 hdbTrain.head()
 
 
-# In[ ]:
 
 
 XhdbTrain = hdbTrain[['v2a1', 'hacdor', 'rooms', 'hacapo', 'v14a', 'refrig', 'v18q', 'v18q1', 'r4h1', 'r4h2', 'r4h3',
@@ -100,19 +87,16 @@ XhdbTrain = hdbTrain[['v2a1', 'hacdor', 'rooms', 'hacapo', 'v14a', 'refrig', 'v1
                       'SQBhogar_total', 'SQBedjefe', 'SQBhogar_nin', 'SQBovercrowding', 'SQBdependency', 'SQBmeaned', 'agesq']]
 
 
-# In[ ]:
 
 
 XhdbTrain.info()
 
 
-# In[ ]:
 
 
 YhdbTrain = hdbTrain.Target
 
 
-# In[ ]:
 
 
 XhdbTest = hdb[['v2a1', 'hacdor', 'rooms', 'hacapo', 'v14a', 'refrig', 'v18q', 'v18q1', 'r4h1', 'r4h2', 'r4h3',
@@ -132,19 +116,16 @@ XhdbTest = hdb[['v2a1', 'hacdor', 'rooms', 'hacapo', 'v14a', 'refrig', 'v18q', '
                       'SQBhogar_total', 'SQBedjefe', 'SQBhogar_nin', 'SQBovercrowding', 'SQBdependency', 'SQBmeaned', 'agesq']]
 
 
-# In[ ]:
 
 
 from sklearn.neighbors import KNeighborsClassifier
 
 
-# In[ ]:
 
 
 from sklearn.model_selection import cross_val_score
 
 
-# In[ ]:
 
 
 mediaMaiorK = 0.0
@@ -159,68 +140,57 @@ for k in range(1,51):
 melhorK
 
 
-# In[ ]:
 
 
 knn = KNeighborsClassifier(n_neighbors = 48)
 
 
-# In[ ]:
 
 
 knn.fit(XhdbTrain, YhdbTrain)
 
 
-# In[ ]:
 
 
 scores = cross_val_score(knn, XhdbTrain, YhdbTrain, cv=10)
 
 
-# In[ ]:
 
 
 scores
 
 
-# In[ ]:
 
 
 YtestPred = knn.predict(XhdbTrain)
 
 
-# In[ ]:
 
 
 YtestPred
 
 
-# In[ ]:
 
 
 from sklearn.metrics import accuracy_score
 
 
-# In[ ]:
 
 
 accuracy_score(YhdbTrain,YtestPred)
 
 
-# In[ ]:
 
 
 Ysubmission = knn.predict(XhdbTest)
 Ysubmission
 
 
-# In[ ]:
 
 
 Submissão dos resultados:
 
 
-# In[ ]:
 
 
 submission = pd.DataFrame()

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install keras==2.2.4')
@@ -38,7 +37,6 @@ import warnings
 warnings.filterwarnings("ignore",category=FutureWarning)
 
 
-# In[2]:
 
 
 sns.set(style="darkgrid")
@@ -180,7 +178,6 @@ def display_errors(errors_index, img_errors, pred_errors, obs_errors):
             n += 1
 
 
-# In[3]:
 
 
 # most of the data-loading code for numta-db from: https://www.kaggle.com/sharifamit19/data-augmentation-cross-validation-ensemble#Data-Concatenation
@@ -203,7 +200,6 @@ for i in range(iterator_train):
     path_label_train_all= path_label_train_all + paths_label_train
 
 
-# In[4]:
 
 
 def get_key(path):
@@ -265,7 +261,6 @@ def get_data(paths_img,path_label=None,resize_dim=None):
         return X, y
 
 
-# In[5]:
 
 
 img_size = 32
@@ -276,7 +271,6 @@ print (numtaX_train.shape)
 print (numtaY_train.shape)
 
 
-# In[6]:
 
 
 plt.figure(figsize=(10, 7))
@@ -286,7 +280,6 @@ numtaY_label = np.argmax(numtaY_train, axis=1)
 sns.countplot(numtaY_label)
 
 
-# In[7]:
 
 
 plt.figure(figsize=(10, 10))
@@ -297,7 +290,6 @@ for i in range(0,6): # how many imgs will show from the 3x3 grid
     plt.title(numtaY_label[i])
 
 
-# In[8]:
 
 
 bangalalekha_data_dir = '../input/banglalekhaisolatednumerals/'
@@ -334,7 +326,6 @@ banglalekhaX_train, banglalekhaY_train = utility(banglalekhaX_train, banglalekha
 print(banglalekhaX_train.shape, banglalekhaY_train.shape)
 
 
-# In[9]:
 
 
 plt.figure(figsize=(10, 7))
@@ -344,7 +335,6 @@ banglalekhaY_label = np.argmax(banglalekhaY_train, axis=1)
 sns.countplot(banglalekhaY_label)
 
 
-# In[10]:
 
 
 plt.figure(figsize=(10, 10))
@@ -356,7 +346,6 @@ for i in range(0,6): # how many imgs will show from the 3x3 grid
     plt.title(banglalekhaY_label[i])
 
 
-# In[11]:
 
 
 ekush_data_dir = '/kaggle/input/ekush-bangla-handwritten-data-numerals/'
@@ -393,7 +382,6 @@ ekushX_train, ekushY_train = utility(ekushX_train, ekushY_train, 28)
 print(ekushX_train.shape, ekushY_train.shape)
 
 
-# In[12]:
 
 
 plt.figure(figsize=(10, 7))
@@ -403,7 +391,6 @@ ekushY_label = np.argmax(ekushY_train, axis=1)
 sns.countplot(ekushY_label)
 
 
-# In[13]:
 
 
 plt.figure(figsize=(10, 10))
@@ -415,7 +402,6 @@ for i in range(0,6): # how many imgs will show from the 3x3 grid
     plt.title(ekushY_label[i])
 
 
-# In[14]:
 
 
 class Length(layers.Layer):
@@ -559,7 +545,6 @@ def PrimaryCap(inputs, dim_capsule, n_channels, kernel_size, strides, padding):
     return layers.Lambda(squash, name='primarycap_squash')(outputs)
 
 
-# In[15]:
 
 
 from keras import layers, models
@@ -611,7 +596,6 @@ def margin_loss(y_true, y_pred):
     return K.mean(K.sum(L, 1))
 
 
-# In[16]:
 
 
 def callback():
@@ -650,7 +634,6 @@ def callback():
     return cb
 
 
-# In[17]:
 
 
 def train_caps(model, data, epoch_size_frac=1.0, training = False, wg = None):
@@ -708,7 +691,6 @@ def train_caps(model, data, epoch_size_frac=1.0, training = False, wg = None):
     return model
 
 
-# In[18]:
 
 
 # Set the random seed
@@ -731,7 +713,6 @@ print('90% for training   ', X_train.shape, Y_train.shape)
 print('10% for validation ', X_val.shape, Y_val.shape)
 
 
-# In[19]:
 
 
 # define model
@@ -748,14 +729,12 @@ train_caps(model = model, data = ((X_train, Y_train), (X_val, Y_val)),
 model.summary()
 
 
-# In[20]:
 
 
 log_file = "../input/logsbatches/numta.csv"
 plot_log(log_file)
 
 
-# In[21]:
 
 
 # Predict the values from the validation dataset
@@ -776,7 +755,6 @@ plot_confusion_matrix(confusion_mtx, classes = range(10), normalize=False,
                       title='Confusion Matrix')
 
 
-# In[22]:
 
 
 from sklearn.metrics import classification_report
@@ -789,7 +767,6 @@ print(classification_report(Y_true, Y_pred_classes, target_names = target_names)
 print(scores)
 
 
-# In[23]:
 
 
 # encoder 
@@ -804,7 +781,6 @@ ind = np.random.randint(0, len(X_val), size = n_sample)
 imshow_group(X = X_val[ind],y = None, y_pred = predictions_prob[ind], phase='prediction')
 
 
-# In[24]:
 
 
 # Errors are difference between predicted labels and true labels
@@ -834,7 +810,6 @@ most_important_errors = sorted_dela_errors[6:]
 display_errors(most_important_errors, X_val_errors, Y_pred_classes_errors, Y_true_errors)
 
 
-# In[25]:
 
 
 del X_train, X_val, Y_train, Y_val
@@ -855,7 +830,6 @@ print('80% for training    ', X_train.shape, Y_train.shape)
 print('20% for validation  ', X_val.shape, Y_val.shape)
 
 
-# In[26]:
 
 
 # define model
@@ -872,14 +846,12 @@ train_caps(model = model, data = ((X_train, Y_train), (X_val, Y_val)),
 model.summary()
 
 
-# In[27]:
 
 
 log_file = "../input/logsbatches/banglalekha.csv"
 plot_log(log_file)
 
 
-# In[28]:
 
 
 # Predict the values from the validation dataset
@@ -900,7 +872,6 @@ plot_confusion_matrix(confusion_mtx, classes = range(10), normalize=False,
                       title='Confusion Matrix')
 
 
-# In[29]:
 
 
 from sklearn.metrics import classification_report
@@ -913,7 +884,6 @@ print(classification_report(Y_true, Y_pred_classes, target_names = target_names)
 print(scores)
 
 
-# In[30]:
 
 
 # encoder 
@@ -928,7 +898,6 @@ ind = np.random.randint(0, len(X_val), size = n_sample)
 imshow_group(X = X_val[ind],y = None, y_pred = predictions_prob[ind], phase='prediction')
 
 
-# In[31]:
 
 
 # Errors are difference between predicted labels and true labels
@@ -958,7 +927,6 @@ most_important_errors = sorted_dela_errors[6:]
 display_errors(most_important_errors, X_val_errors, Y_pred_classes_errors, Y_true_errors)
 
 
-# In[32]:
 
 
 del X_train, X_val, Y_train, Y_val
@@ -979,7 +947,6 @@ print('80% for training    ', X_train.shape, Y_train.shape)
 print('20% for validation  ', X_val.shape, Y_val.shape)
 
 
-# In[33]:
 
 
 # define model
@@ -996,14 +963,12 @@ train_caps(model = model, data = ((X_train, Y_train), (X_val, Y_val)),
 model.summary()
 
 
-# In[34]:
 
 
 log_file = "../input/logsbatches/ekush.csv"
 plot_log(log_file)
 
 
-# In[35]:
 
 
 # Predict the values from the validation dataset
@@ -1024,7 +989,6 @@ plot_confusion_matrix(confusion_mtx, classes = range(10), normalize=False,
                       title='Confusion Matrix')
 
 
-# In[36]:
 
 
 from sklearn.metrics import classification_report
@@ -1037,7 +1001,6 @@ print(classification_report(Y_true, Y_pred_classes, target_names = target_names)
 print(scores)
 
 
-# In[37]:
 
 
 # encoder 
@@ -1052,7 +1015,6 @@ ind = np.random.randint(0, len(X_val), size = n_sample)
 imshow_group(X = X_val[ind],y = None, y_pred = predictions_prob[ind], phase='prediction')
 
 
-# In[38]:
 
 
 # Errors are difference between predicted labels and true labels

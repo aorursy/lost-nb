@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 
 
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -26,7 +24,6 @@ print(check_output(["ls", "../input/train"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import theano
@@ -34,7 +31,6 @@ theano.config.device = 'gpu'
 theano.config.floatX = 'float32'
 
 
-# In[3]:
 
 
 fimport matplotlib.pyplot as plt
@@ -43,7 +39,6 @@ first = mpimg.imread('../input/train/c0/img_100026.jpg')
 plt.imshow(first)
 
 
-# In[4]:
 
 
 from __future__ import division, print_function
@@ -168,7 +163,6 @@ class Vgg16():
         return np.array(preds), idxs, classes
 
 
-# In[5]:
 
 
 vgg = Vgg16()
@@ -180,13 +174,11 @@ vgg.finetune(batches)
 vgg.fit(batches, val_batches, nb_epoch=1)
 
 
-# In[6]:
 
 
 vgg = Vgg16()
 
 
-# In[7]:
 
 
 

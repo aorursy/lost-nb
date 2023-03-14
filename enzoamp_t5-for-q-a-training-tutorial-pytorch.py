@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install transformers')
@@ -9,13 +8,11 @@ get_ipython().system('pip install transformers')
 get_ipython().system('pip install pytorch-lightning')
 
 
-# In[2]:
 
 
 ls ../input/tweet-sentiment-extraction/
 
 
-# In[3]:
 
 
 import numpy as np # linear algebra
@@ -23,7 +20,6 @@ import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 from sklearn.model_selection import train_test_split
 
 
-# In[4]:
 
 
 # Row 314 of train set is nan
@@ -34,31 +30,26 @@ test = pd.read_csv('../input/tweet-sentiment-extraction/test.csv')#.head(1000)
 train, val = train_test_split(train, test_size=0.13, random_state=42)
 
 
-# In[5]:
 
 
 train.shape, test.shape, val.shape
 
 
-# In[6]:
 
 
 set(test.textID.values).intersection(train.textID.values), set(val.textID.values).intersection(train.textID.values)
 
 
-# In[7]:
 
 
 train.head(), test.head(), val.head()
 
 
-# In[8]:
 
 
 train.columns
 
 
-# In[9]:
 
 
 # Input
@@ -66,7 +57,6 @@ for a,b,_ in zip(train.sentiment.values[:10], train.text.values[:10], train.sele
     print("sentiment:", a, "tweet:", b)
 
 
-# In[10]:
 
 
 # Target (what we're trying to predict)
@@ -74,28 +64,24 @@ for _,_,c in zip(train.sentiment.values[:10], train.text.values[:10], train.sele
     print(c)
 
 
-# In[11]:
 
 
 # Checking out the GPU we have access to
 get_ipython().system('nvidia-smi')
 
 
-# In[12]:
 
 
 import torch
 torch.cuda.is_available()
 
 
-# In[13]:
 
 
 # Checking for NaNs
 train.isna().sum().sum(), test.isna().sum().sum(), val.isna().sum().sum()
 
 
-# In[14]:
 
 
 # Append EOS token to target text
@@ -118,19 +104,16 @@ processed_input_str_val = '\n'.join(processed_input_val.values.tolist()[:500])
 selected_text_str_val = '\n'.join(val['selected_text'].values.tolist()[:500])
 
 
-# In[15]:
 
 
 processed_input_train[0], train['selected_text'][0]
 
 
-# In[16]:
 
 
 processed_input_test[0]
 
 
-# In[17]:
 
 
 # Save source files
@@ -146,25 +129,21 @@ with open('val.source', 'w') as f:
     f.write(processed_input_str_val)
 
 
-# In[18]:
 
 
 get_ipython().system('head train.source')
 
 
-# In[19]:
 
 
 get_ipython().system('head test.source')
 
 
-# In[20]:
 
 
 get_ipython().system('head val.source')
 
 
-# In[21]:
 
 
 with open('train.target', 'w') as f:
@@ -174,25 +153,21 @@ with open('val.target', 'w') as f:
     f.write(selected_text_str_val)
 
 
-# In[22]:
 
 
 get_ipython().system('head train.target')
 
 
-# In[23]:
 
 
 get_ipython().system('head val.target')
 
 
-# In[24]:
 
 
 ls
 
 
-# In[25]:
 
 
 import os
@@ -292,7 +267,6 @@ class T5Dataset(Dataset):
         return {"source_ids": source_ids, "source_mask": source_mask, "target_ids": y}
 
 
-# In[26]:
 
 
 import argparse
@@ -753,7 +727,6 @@ def generic_train(model: T5Module, args: argparse.Namespace):
     return trainer
 
 
-# In[27]:
 
 
 import argparse
@@ -792,19 +765,16 @@ def main(args):
     return trainer
 
 
-# In[28]:
 
 
 #!rm -r /content/output
 
 
-# In[29]:
 
 
 mkdir output
 
 
-# In[30]:
 
 
 # Will set gpu on as soon as at least 1 batch works on cpu
@@ -833,44 +803,37 @@ args = parser.parse_args(ARGS_STR.split())
 trainer = main(args)
 
 
-# In[31]:
 
 
 ls -l output/
 
 
-# In[32]:
 
 
 ls
 
 
-# In[33]:
 
 
 ls lightning_logs/
 
 
-# In[34]:
 
 
 #cat lightning_logs/version_0/hparams.yaml
 
 
-# In[35]:
 
 
 from transformers import T5Tokenizer, T5ForConditionalGeneration
 
 
-# In[36]:
 
 
 tokenizer = T5Tokenizer.from_pretrained('t5-base')
 t5 = T5ForConditionalGeneration.from_pretrained('output/')
 
 
-# In[37]:
 
 
 def get_span(text):
@@ -886,37 +849,31 @@ def get_span(text):
     return predicted_span
 
 
-# In[38]:
 
 
 get_span("question: negative context: I`m in VA for the weekend, my youngest son turns 2 tomorrow......it makes me kinda sad, he is getting so big, check out my twipics")
 
 
-# In[39]:
 
 
 get_span("question: negative context: Recession hit Veronique Branquinho, she has to quit her company, such a shame!")
 
 
-# In[40]:
 
 
 get_span("question: negative context: My bike was put on hold...should have known that.... argh total bummer")
 
 
-# In[41]:
 
 
 get_span("question: positive context: On the monday, so i wont be able to be with you! i love you")
 
 
-# In[42]:
 
 
 get_span("question: positive I liked it. Did you record it yourself? If so you have a very soothing voice.")
 
 
-# In[ ]:
 
 
 

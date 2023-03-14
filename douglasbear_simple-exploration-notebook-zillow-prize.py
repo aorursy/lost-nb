@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -16,27 +15,23 @@ pd.options.mode.chained_assignment = None
 pd.options.display.max_columns = 999
 
 
-# In[2]:
 
 
 from subprocess import check_output
 print(check_output(["ls", "../input"]).decode("utf8"))
 
 
-# In[3]:
 
 
 train_df = pd.read_csv("../input/train_2016.csv", parse_dates=["transactiondate"])
 train_df.shape
 
 
-# In[4]:
 
 
 train_df.head()
 
 
-# In[5]:
 
 
 plt.figure(figsize=(8,6))
@@ -46,7 +41,6 @@ plt.ylabel('logerror', fontsize=12)
 plt.show()
 
 
-# In[6]:
 
 
 ulimit = np.percentile(train_df.logerror.values, 99)
@@ -60,7 +54,6 @@ plt.xlabel('logerror', fontsize=12)
 plt.show()
 
 
-# In[7]:
 
 
 train_df['transaction_month'] = train_df['transactiondate'].dt.month
@@ -74,26 +67,22 @@ plt.ylabel('Number of Occurrences', fontsize=12)
 plt.show()
 
 
-# In[8]:
 
 
 (train_df['parcelid'].value_counts().reset_index())['parcelid'].value_counts()
 
 
-# In[9]:
 
 
 prop_df = pd.read_csv("../input/properties_2016.csv")
 prop_df.shape
 
 
-# In[10]:
 
 
 prop_df.head()
 
 
-# In[11]:
 
 
 missing_df = prop_df.isnull().sum(axis=0).reset_index()
@@ -112,7 +101,6 @@ ax.set_title("Number of missing values in each column")
 plt.show()
 
 
-# In[12]:
 
 
 plt.figure(figsize=(12,12))
@@ -122,14 +110,12 @@ plt.xlabel('Latitude', fontsize=12)
 plt.show()
 
 
-# In[13]:
 
 
 train_df = pd.merge(train_df, prop_df, on='parcelid', how='left')
 train_df.head()
 
 
-# In[14]:
 
 
 pd.options.display.max_rows = 65
@@ -139,13 +125,11 @@ dtype_df.columns = ["Count", "Column Type"]
 dtype_df
 
 
-# In[15]:
 
 
 dtype_df.groupby("Column Type").aggregate('count').reset_index()
 
 
-# In[16]:
 
 
 missing_df = train_df.isnull().sum(axis=0).reset_index()
@@ -154,7 +138,6 @@ missing_df['missing_ratio'] = missing_df['missing_count'] / train_df.shape[0]
 missing_df.ix[missing_df['missing_ratio']>0.999]
 
 
-# In[17]:
 
 
 # Let us just impute the missing values with mean values to compute correlation coefficients #
@@ -184,7 +167,6 @@ ax.set_title("Correlation coefficient of the variables")
 plt.show()
 
 
-# In[18]:
 
 
 corr_zero_cols = ['assessmentyear', 'storytypeid', 'pooltypeid2', 'pooltypeid7', 'pooltypeid10', 'poolcnt', 'decktypeid', 'buildingclasstypeid']
@@ -192,14 +174,12 @@ for col in corr_zero_cols:
     print(col, len(train_df_new[col].unique()))
 
 
-# In[19]:
 
 
 corr_df_sel = corr_df.ix[(corr_df['corr_values']>0.02) | (corr_df['corr_values'] < -0.01)]
 corr_df_sel
 
 
-# In[20]:
 
 
 cols_to_use = corr_df_sel.col_labels.tolist()
@@ -214,7 +194,6 @@ plt.title("Important variables correlation map", fontsize=15)
 plt.show()
 
 
-# In[21]:
 
 
 col = "finishedsquarefeet12"
@@ -231,7 +210,6 @@ plt.title("Finished square feet 12 Vs Log error", fontsize=15)
 plt.show()
 
 
-# In[22]:
 
 
 col = "calculatedfinishedsquarefeet"
@@ -248,7 +226,6 @@ plt.title("Calculated finished square feet Vs Log error", fontsize=15)
 plt.show()
 
 
-# In[23]:
 
 
 plt.figure(figsize=(12,8))
@@ -260,7 +237,6 @@ plt.title("Frequency of Bathroom count", fontsize=15)
 plt.show()
 
 
-# In[24]:
 
 
 plt.figure(figsize=(12,8))
@@ -272,7 +248,6 @@ plt.title("How log error changes with bathroom count?", fontsize=15)
 plt.show()
 
 
-# In[25]:
 
 
 plt.figure(figsize=(12,8))
@@ -284,7 +259,6 @@ plt.title("Frequency of Bedroom count", fontsize=15)
 plt.show()
 
 
-# In[26]:
 
 
 train_df['bedroomcnt'].ix[train_df['bedroomcnt']>7] = 7
@@ -295,7 +269,6 @@ plt.ylabel('Log Error', fontsize=12)
 plt.show()
 
 
-# In[27]:
 
 
 col = "taxamount"
@@ -312,32 +285,27 @@ plt.title("Tax Amount Vs Log error", fontsize=15)
 plt.show()
 
 
-# In[28]:
 
 
 from ggplot import *
 ggplot(aes(x='yearbuilt', y='logerror'), data=train_df) +     geom_point(color='steelblue', size=1) +     stat_smooth()
 
 
-# In[29]:
 
 
 ggplot(aes(x='latitude', y='longitude', color='logerror'), data=train_df) +     geom_point() +     scale_color_gradient(low = 'red', high = 'blue')
 
 
-# In[30]:
 
 
 ggplot(aes(x='finishedsquarefeet12', y='taxamount', color='logerror'), data=train_df) +     geom_point(alpha=0.7) +     scale_color_gradient(low = 'pink', high = 'blue')
 
 
-# In[31]:
 
 
 ggplot(aes(x='finishedsquarefeet12', y='taxamount', color='logerror'), data=train_df) +     geom_now_its_art()
 
 
-# In[32]:
 
 
 train_y = train_df['logerror'].values

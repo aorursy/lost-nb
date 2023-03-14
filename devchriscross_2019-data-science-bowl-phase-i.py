@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # !cat /proc/meminfo # Inquire system memory
@@ -9,7 +8,6 @@
 # !lscpu  # Inquire system processor
 
 
-# In[2]:
 
 
 import numpy as np 
@@ -40,7 +38,6 @@ import numexpr
 numexpr.set_num_threads(1)
 
 
-# In[3]:
 
 
 def load_dataset():
@@ -60,7 +57,6 @@ def load_dataset():
     return df_train, df_media, df_specs
 
 
-# In[4]:
 
 
 df_train, df_media, df_specs = load_dataset()
@@ -71,37 +67,31 @@ attempts_query = "type=='Assessment' & " +  assessment_attempt_event_code_query
 print_log("Finised loading datasets")
 
 
-# In[5]:
 
 
 df_train.head()
 
 
-# In[6]:
 
 
 df_specs.head()
 
 
-# In[7]:
 
 
 df_specs.query("event_id=='2b9272f4'")["info"].values
 
 
-# In[8]:
 
 
 df_specs.query("event_id=='2b9272f4'")["args"].values
 
 
-# In[9]:
 
 
 df_specs.describe()
 
 
-# In[10]:
 
 
 print_log("Encoding args column ...")
@@ -113,7 +103,6 @@ df_train = df_train.assign(**{"args_encoded": df_train["event_id"].map(eventid_t
 df_train.head()
 
 
-# In[11]:
 
 
 def generate_argstype_map(argstype_encoded, use_client=False):
@@ -129,7 +118,6 @@ def generate_argstype_map(argstype_encoded, use_client=False):
     return titles_with_args_i
 
 
-# In[12]:
 
 
 def generate_titleargs_table(titles_with_args):
@@ -161,7 +149,6 @@ def generate_titleargs_table(titles_with_args):
     return title_args_table
 
 
-# In[13]:
 
 
 def clear_figure(f):
@@ -171,7 +158,6 @@ def clear_figure(f):
     gc.collect()
 
 
-# In[14]:
 
 
 args_encoded_map = generate_argstype_map("args_encoded")
@@ -182,7 +168,6 @@ sns.heatmap(title_args_table, linewidths=.25).set_title("Encoded Args per Title"
 f.savefig("encoded_args_vs_title.png")
 
 
-# In[15]:
 
 
 clear_figure(f)
@@ -191,7 +176,6 @@ sns.heatmap(title_args_table[~title_args_table.index.str.contains("Clip")], line
 f.savefig("encoded_args_vs_title2.png")
 
 
-# In[16]:
 
 
 clear_figure(f)
@@ -239,7 +223,6 @@ for _type in type_list:
 df_train.head()
 
 
-# In[17]:
 
 
 print_log("Plotting heatmap for encoded args of type int ...")
@@ -252,7 +235,6 @@ sns.heatmap(title_args_table[~title_args_table.index.str.contains("Clip")], line
 f.savefig("int_encoded_args_vs_title.png")
 
 
-# In[18]:
 
 
 clear_figure(f)
@@ -279,7 +261,6 @@ for title in title_args_table.itertuples():
         title_singleargs_map[title.get(0)] = args_set    
 
 
-# In[19]:
 
 
 title_singleargs_table = [[1 if arg in args else 0 for arg in title_allargs] for title, args in title_singleargs_map.items()]
@@ -290,13 +271,11 @@ sns.heatmap(title_singleargs_table, linewidths=.25).set_title("Individual Int Ar
 f.savefig("individual_int_args_vs_title.png")
 
 
-# In[20]:
 
 
 df_specs.sample(10, random_state=1)["info"].values
 
 
-# In[21]:
 
 
 # Looking for phrases that contains "It contains information"
@@ -304,21 +283,18 @@ import random
 random.sample(set([info[info.find("It contains"):info.find("We")] for info in df_specs["info"].unique().tolist()]), 10)
 
 
-# In[22]:
 
 
 # Looking for phrases that contains "players feel are too difficult"
 set(info for info in df_specs["info"].unique().tolist() if "difficult" in info)
 
 
-# In[23]:
 
 
 # Looking for phrases that contains "We can answer questions like"
 set([info[info.find("We can"):] for info in df_specs["info"].unique().tolist()])
 
 
-# In[24]:
 
 
 clear_figure(f)
@@ -345,7 +321,6 @@ sns.countplot(x="is_difficult", data=df_specs, hue="contains_answer", ax=axes[3]
 f.savefig("event_id_count_per_info.png")
 
 
-# In[25]:
 
 
 clear_figure(f)
@@ -383,7 +358,6 @@ def extract_singleargs_per_infotype(args_type, title_args_table):
     return title_singleargs_map, reduced_all_args
 
 
-# In[26]:
 
 
 import math
@@ -409,26 +383,22 @@ def plot_eventids_per_infotype(title_singleargs_map, reduced_all_args, title):
     f.savefig(title)
 
 
-# In[27]:
 
 
 print_log("Plotting and processing all args type ...")
 plot_eventids_per_infotype(*extract_singleargs_per_infotype("int", title_args_table), "individual_args_vs_title_per_info_type.png")
 
 
-# In[28]:
 
 
 df_specs[df_specs.args_int.str.contains("misses")].head()
 
 
-# In[29]:
 
 
 df_specs[df_specs.args_int.str.contains("misses")]["info"].unique()
 
 
-# In[30]:
 
 
 def find_definition(args_list, info_type, args_type):
@@ -446,7 +416,6 @@ def find_definition(args_list, info_type, args_type):
     return args_list_info                
 
 
-# In[31]:
 
 
 # Context usage for Diagnosis Info Type of event_id(s)
@@ -454,7 +423,6 @@ diagnosis_args = ["round", "correct", "dwell_time"]
 find_definition(diagnosis_args, "contains_diagnosis", "args_int")              
 
 
-# In[32]:
 
 
 # Context usage for Answer Info Type of event_id(s)
@@ -462,7 +430,6 @@ answer_args = ["round", "duration", "total_duration"]
 find_definition(answer_args, "contains_answer", "args_int")
 
 
-# In[33]:
 
 
 # Context usage for Difficult Info Type of event_id(s)
@@ -470,7 +437,6 @@ difficult_args = ["round"]
 find_definition(difficult_args, "is_difficult", "args_int")
 
 
-# In[34]:
 
 
 # Context usage for None Info Type of event_id(s)
@@ -478,7 +444,6 @@ none_args = ["round", "misses", "duration"]
 find_definition(none_args, "none", "args_int")
 
 
-# In[35]:
 
 
 # Created the new Missed Info Type
@@ -488,7 +453,6 @@ missed_args = ["round", "misses", "duration"]
 find_definition(missed_args, "is_missed", "args_int")
 
 
-# In[36]:
 
 
 df_specs["current_round"] = df_specs.args.str.contains("number of the current round")
@@ -500,13 +464,11 @@ df_specs["round_duration"] = df_specs.args.str.contains("duration of the round i
 df_specs.head()
 
 
-# In[37]:
 
 
 plot_eventids_per_infotype(*extract_singleargs_per_infotype("int", title_args_table), "individual_args_vs_title_per_info_type2.png")
 
 
-# In[38]:
 
 
 argsstring_encoded_map = generate_argstype_map("argsstring_encoded")
@@ -514,38 +476,32 @@ title_args_table = generate_titleargs_table(argsstring_encoded_map)
 plot_eventids_per_infotype(*extract_singleargs_per_infotype("string", title_args_table), "individual_stringargs_vs_title_per_info_type.png")
 
 
-# In[39]:
 
 
 answer_args = ["identifier", "media_type", "description"]
 find_definition(answer_args, "contains_answer", "args_string")
 
 
-# In[40]:
 
 
 find_definition(["object"], "contains_diagnosis", "args_string")
 
 
-# In[41]:
 
 
 find_definition(["object"], "none", "args_string")
 
 
-# In[42]:
 
 
 df_specs.loc[df_specs.contains_answer & df_specs.args_string.str.contains("media_type"), df_specs.columns.str.contains("args")].head(1).args.values
 
 
-# In[43]:
 
 
 df_specs.loc[df_specs.contains_diagnosis & df_specs.args_string.str.contains("object"), df_specs.columns.str.contains("args")].head(1).args.values
 
 
-# In[44]:
 
 
 argsobject_encoded_map = generate_argstype_map("argsobject_encoded")
@@ -553,37 +509,31 @@ title_args_table = generate_titleargs_table(argsobject_encoded_map)
 plot_eventids_per_infotype(*extract_singleargs_per_infotype("object", title_args_table), "individual_objectargs_vs_title_per_info_type.png")
 
 
-# In[45]:
 
 
 find_definition(["coordinates"], "contains_diagnosis", "args_object")
 
 
-# In[46]:
 
 
 find_definition(["coordinates"], "none", "args_object")
 
 
-# In[47]:
 
 
 find_definition(["coordinates"], "is_difficult", "args_object")
 
 
-# In[48]:
 
 
 df_specs[df_specs.contains_diagnosis & df_specs.args_object.str.contains("coordinates") & df_specs.args_int.str.contains("correct")].head(1).args.values
 
 
-# In[49]:
 
 
 df_specs[df_specs.is_difficult & df_specs.args_object.str.contains("coordinates") & df_specs.args_int.str.contains("round")].head(1).args.values
 
 
-# In[50]:
 
 
 argsarray_encoded_map = generate_argstype_map("argsarray_encoded")
@@ -591,7 +541,6 @@ title_args_table = generate_titleargs_table(argsarray_encoded_map)
 plot_eventids_per_infotype(*extract_singleargs_per_infotype("array", title_args_table), "individual_arrayargs_vs_title_per_info_type.png")
 
 
-# In[51]:
 
 
 print_log("Filtering dataset based on selected event ids ...")
@@ -616,19 +565,16 @@ event_id_filter = df_specs[df_specs.filtered_id].event_id.values
 df_specs.to_parquet("df_specs.parquet")
 
 
-# In[52]:
 
 
 dask.compute(df_train.shape)
 
 
-# In[53]:
 
 
 df_train.head()
 
 
-# In[54]:
 
 
 print_log("Removing installation ids without attempts ...")
@@ -645,7 +591,6 @@ df_event_id_filter = df_train[df_train.event_id.isin(event_id_filter) & (df_trai
 df_event_id_filter.head()
 
 
-# In[55]:
 
 
 all_args_int = set()
@@ -673,13 +618,11 @@ for event_id in selected_event_ids.itertuples():
 # all_args
 
 
-# In[56]:
 
 
 len(all_args_int) + len(all_args_string)
 
 
-# In[57]:
 
 
 filter_columns = [col for col in df_train.columns if "encoded" in col]
@@ -688,7 +631,6 @@ df_train_filter = df_train_filter.assign(**{args: -1 for args in all_args_int}) 
 df_train_filter.head()
 
 
-# In[58]:
 
 
 def extract_event(df):

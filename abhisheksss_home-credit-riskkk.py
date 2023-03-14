@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import pandas as pd # package for high-performance, easy-to-use data structures and data analysis
@@ -21,14 +20,12 @@ import cufflinks as cf
 cf.go_offline()
 
 
-# In[ ]:
 
 
 import os
 print(os.listdir("../input"))
 
 
-# In[ ]:
 
 
 application_train = pd.read_csv('../input/application_train.csv')
@@ -41,7 +38,6 @@ bureau = pd.read_csv('../input/bureau.csv')
 application_test = pd.read_csv('../input/application_test.csv')
 
 
-# In[ ]:
 
 
 print('Size of application_train data', application_train.shape)
@@ -53,67 +49,56 @@ print('Size of credit_card_balance data', credit_card_balance.shape)
 print('Size of bureau data', bureau.shape)
 
 
-# In[ ]:
 
 
 application_train.head()
 
 
-# In[ ]:
 
 
 application_train.columns.values
 
 
-# In[ ]:
 
 
 POS_CASH_balance.head()
 
 
-# In[ ]:
 
 
 bureau_balance.head()
 
 
-# In[ ]:
 
 
 previous_application.head()
 
 
-# In[ ]:
 
 
 previous_application.columns.values
 
 
-# In[ ]:
 
 
 installments_payments.head()
 
 
-# In[ ]:
 
 
 credit_card_balance.head()
 
 
-# In[ ]:
 
 
 credit_card_balance.columns.values
 
 
-# In[ ]:
 
 
 bureau.head()
 
 
-# In[ ]:
 
 
 total = application_train.isnull().sum().sort_values(ascending = False)
@@ -122,7 +107,6 @@ missing_application_train_data  = pd.concat([total, percent], axis=1, keys=['Tot
 missing_application_train_data.head(20)
 
 
-# In[ ]:
 
 
 total = POS_CASH_balance.isnull().sum().sort_values(ascending = False)
@@ -131,7 +115,6 @@ missing_POS_CASH_balance_data  = pd.concat([total, percent], axis=1, keys=['Tota
 missing_POS_CASH_balance_data.head(3)
 
 
-# In[ ]:
 
 
 # checking missing data
@@ -141,7 +124,6 @@ missing_bureau_balance_data  = pd.concat([total, percent], axis=1, keys=['Total'
 missing_bureau_balance_data.head(3)
 
 
-# In[ ]:
 
 
 # checking missing data
@@ -151,7 +133,6 @@ missing_previous_application_data  = pd.concat([total, percent], axis=1, keys=['
 missing_previous_application_data.head(15)
 
 
-# In[ ]:
 
 
 # checking missing data
@@ -161,7 +142,6 @@ missing_installments_payments_data  = pd.concat([total, percent], axis=1, keys=[
 missing_installments_payments_data.head(3)
 
 
-# In[ ]:
 
 
 # checking missing data
@@ -171,7 +151,6 @@ missing_credit_card_balance_data  = pd.concat([total, percent], axis=1, keys=['T
 missing_credit_card_balance_data.head(10)
 
 
-# In[ ]:
 
 
 # checking missing data
@@ -181,7 +160,6 @@ missing_bureau_data  = pd.concat([total, percent], axis=1, keys=['Total', 'Perce
 missing_bureau_data.head(8)
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(12,5))
@@ -189,7 +167,6 @@ plt.title("Distribution of AMT_CREDIT")
 ax = sns.distplot(application_train["AMT_CREDIT"])
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(12,5))
@@ -197,7 +174,6 @@ plt.title("Distribution of AMT_INCOME_TOTAL")
 ax = sns.distplot(application_train["AMT_INCOME_TOTAL"].dropna())
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(12,5))
@@ -205,7 +181,6 @@ plt.title("Distribution of AMT_GOODS_PRICE")
 ax = sns.distplot(application_train["AMT_GOODS_PRICE"].dropna())
 
 
-# In[ ]:
 
 
 temp = application_train["NAME_TYPE_SUITE"].value_counts()
@@ -240,7 +215,6 @@ fig = go.Figure(data=data, layout=layout)
 py.iplot(fig, filename='schoolStateNames')
 
 
-# In[ ]:
 
 
 temp = application_train["TARGET"].value_counts()
@@ -250,7 +224,6 @@ df = pd.DataFrame({'labels': temp.index,
 df.iplot(kind='pie',labels='labels',values='values', title='Loan Repayed or not')
 
 
-# In[ ]:
 
 
 temp = application_train["NAME_CONTRACT_TYPE"].value_counts()
@@ -286,7 +259,6 @@ fig = {
 iplot(fig, filename='donut')
 
 
-# In[ ]:
 
 
 temp = application_train["NAME_INCOME_TYPE"].value_counts()
@@ -296,7 +268,6 @@ df = pd.DataFrame({'labels': temp.index,
 df.iplot(kind='pie',labels='labels',values='values', title='Income sources of Applicant\'s', hole = 0.5)
 
 
-# In[ ]:
 
 
 temp = application_train["NAME_FAMILY_STATUS"].value_counts()
@@ -306,14 +277,12 @@ df = pd.DataFrame({'labels': temp.index,
 df.iplot(kind='pie',labels='labels',values='values', title='Family Status of Applicant\'s', hole = 0.5)
 
 
-# In[ ]:
 
 
 temp = application_train["OCCUPATION_TYPE"].value_counts()
 temp.iplot(kind='bar', xTitle = 'Occupation', yTitle = "Count", title = 'Occupation of Applicant\'s who applied for loan', color = 'red')
 
 
-# In[ ]:
 
 
 temp = application_train["NAME_EDUCATION_TYPE"].value_counts()
@@ -323,7 +292,6 @@ df = pd.DataFrame({'labels': temp.index,
 df.iplot(kind='pie',labels='labels',values='values', title='Education of Applicant\'s', hole = 0.5)
 
 
-# In[ ]:
 
 
 temp = application_train["NAME_HOUSING_TYPE"].value_counts()
@@ -333,14 +301,12 @@ df = pd.DataFrame({'labels': temp.index,
 df.iplot(kind='pie',labels='labels',values='values', title='Type of House', hole = 0.5)
 
 
-# In[ ]:
 
 
 temp = application_train["ORGANIZATION_TYPE"].value_counts()
 temp.iplot(kind='bar', xTitle = 'Organization Name', yTitle = "Count", title = 'Types of Organizations who applied for loan ', color = 'red')
 
 
-# In[ ]:
 
 
 temp = application_train["NAME_INCOME_TYPE"].value_counts()
@@ -390,7 +356,6 @@ fig = go.Figure(data=data, layout=layout)
 iplot(fig)
 
 
-# In[ ]:
 
 
 temp = application_train["NAME_FAMILY_STATUS"].value_counts()
@@ -440,7 +405,6 @@ fig = go.Figure(data=data, layout=layout)
 iplot(fig)
 
 
-# In[ ]:
 
 
 temp = previous_application["NAME_GOODS_CATEGORY"].value_counts()
@@ -479,7 +443,6 @@ fig = go.Figure(data=data, layout=layout)
 py.iplot(fig)
 
 
-# In[ ]:
 
 
 temp = previous_application["PRODUCT_COMBINATION"].value_counts()
@@ -489,7 +452,6 @@ df = pd.DataFrame({'labels': temp.index,
 df.iplot(kind='pie',labels='labels',values='values', title='Top Detailed product combination of the previous application', hole = 0.7)
 
 
-# In[ ]:
 
 
 from sklearn import preprocessing
@@ -504,13 +466,11 @@ for col in categorical_feats:
     application_test[col] = lb.transform(list(application_test[col].values.astype('str')))
 
 
-# In[ ]:
 
 
 application_train.fillna(-999, inplace = True)
 
 
-# In[ ]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -519,7 +479,6 @@ rf.fit(application_train.drop(['SK_ID_CURR', 'TARGET'],axis=1), application_trai
 features = application_train.drop(['SK_ID_CURR', 'TARGET'],axis=1).columns.values
 
 
-# In[ ]:
 
 
 x, y = (list(x) for x in zip(*sorted(zip(rf.feature_importances_, features), 

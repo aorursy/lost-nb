@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #@title Import des librairies
@@ -65,13 +64,11 @@ else:
     os.listdir(PATH)
 
 
-# In[2]:
 
 
 get_ipython().system('pip install efficientnet-pytorch')
 
 
-# In[3]:
 
 
 import numpy as np
@@ -104,7 +101,6 @@ from torchvision import transforms, utils
 from efficientnet_pytorch import EfficientNet
 
 
-# In[4]:
 
 
 # Fonctions:
@@ -333,7 +329,6 @@ def coords2str(coords, names=['yaw', 'pitch', 'roll', 'x', 'y', 'z', 'confidence
     return ' '.join(s)
 
 
-# In[5]:
 
 
 train = pd.read_csv(PATH + 'train.csv')
@@ -341,7 +336,6 @@ test = pd.read_csv(PATH + 'sample_submission.csv')
 train.head()
 
 
-# In[6]:
 
 
 # From camera.zip
@@ -351,7 +345,6 @@ camera_matrix = np.array([[2304.5479, 0,  1686.2379],
 camera_matrix_inv = np.linalg.inv(camera_matrix)
 
 
-# In[7]:
 
 
 inp = train['PredictionString'][0]
@@ -359,7 +352,6 @@ print('Example input:\n', inp)
 print('Output:\n', str2coords(inp))
 
 
-# In[8]:
 
 
 points_df = pd.DataFrame()
@@ -374,7 +366,6 @@ print('len(points_df)', len(points_df))
 points_df.head()
 
 
-# In[9]:
 
 
 lens = [len(str2coords(s)) for s in train['PredictionString']]
@@ -386,7 +377,6 @@ plt.title('Number of cars per image')
 plt.show()
 
 
-# In[10]:
 
 
 plt.figure(figsize=(15,5))
@@ -396,7 +386,6 @@ plt.title('X distribution')
 plt.show()
 
 
-# In[11]:
 
 
 plt.figure(figsize=(15,5))
@@ -406,7 +395,6 @@ plt.title('Y distribution')
 plt.show()
 
 
-# In[12]:
 
 
 plt.figure(figsize=(15,5))
@@ -416,7 +404,6 @@ plt.title('Z distribution')
 plt.show()
 
 
-# In[13]:
 
 
 plt.figure(figsize=(15,5))
@@ -426,7 +413,6 @@ plt.title('Yaw distribution')
 plt.show()
 
 
-# In[14]:
 
 
 plt.figure(figsize=(15,5))
@@ -436,7 +422,6 @@ plt.title('Pitch distribution')
 plt.show()
 
 
-# In[15]:
 
 
 plt.figure(figsize=(15,5))
@@ -446,7 +431,6 @@ plt.title('Roll distribution')
 plt.show()
 
 
-# In[16]:
 
 
 # calculate the correlation matrix
@@ -461,7 +445,6 @@ plt.title('Correlation matrix')
 plt.show()
 
 
-# In[17]:
 
 
 # We define simple linear regression with z and y:
@@ -481,7 +464,6 @@ print('MAE with x:', mean_absolute_error(y, xzy_slope.predict(X)))
 print('\ndy/dx = {:.3f}\ndy/dz = {:.3f}'.format(*xzy_slope.coef_))
 
 
-# In[18]:
 
 
 plt.figure(figsize=(25,5))
@@ -497,7 +479,6 @@ plt.title('Correlation z and y')
 plt.show()
 
 
-# In[19]:
 
 
 name = train['ImageId'][0]
@@ -506,7 +487,6 @@ IMG_SHAPE = img.shape
 plt.imshow(img)
 
 
-# In[20]:
 
 
 plt.figure(figsize=(15, 15))
@@ -515,7 +495,6 @@ plt.scatter(*get_img_coords(train['PredictionString'][2217]), color='red', s=100
 plt.title('Sample center')
 
 
-# In[21]:
 
 
 xs, ys = [], []
@@ -532,7 +511,6 @@ plt.title('All centers distribution')
 plt.show()
 
 
-# In[22]:
 
 
 # Road points
@@ -553,7 +531,6 @@ plt.plot([-road_width/2,-road_width/2], [0,100], alpha=0.4, linewidth=4, color='
 plt.scatter(points_df['x'], np.sqrt(points_df['z']**2 + points_df['y']**2), color='red', s=10, alpha=0.1);
 
 
-# In[23]:
 
 
 n_rows = 10
@@ -567,7 +544,6 @@ for idx in range(n_rows):
     plt.show()
 
 
-# In[24]:
 
 
 IMG_WIDTH = 512
@@ -575,7 +551,6 @@ IMG_HEIGHT = IMG_WIDTH // 16 * 5
 MODEL_SCALE = 8
 
 
-# In[25]:
 
 
 img0 = imread(PATH + 'train_images/' + train['ImageId'][0] + '.jpg')
@@ -668,7 +643,6 @@ for i in range(len(regr[:,:,t])):
             print(regr[:,:,t][i][j])
 
 
-# In[26]:
 
 
 class CarDataset(Dataset):
@@ -710,7 +684,6 @@ class CarDataset(Dataset):
         return [img, mask, regr]
 
 
-# In[27]:
 
 
 DISTANCE_THRESH_CLEAR = 2
@@ -749,7 +722,6 @@ val_loader = DataLoader(dataset=val_dataset,
                         num_workers=2)
 
 
-# In[28]:
 
 
 img, mask, regr = train_dataset[0]
@@ -833,7 +805,6 @@ for i in range(len(regr[t])):
             print(regr[t][i][j])
 
 
-# In[29]:
 
 
 class double_conv(nn.Module):
@@ -895,7 +866,6 @@ def get_mesh(batch_size, shape_x, shape_y):
     return mesh
 
 
-# In[30]:
 
 
 class MyUNet(nn.Module):
@@ -939,7 +909,6 @@ class MyUNet(nn.Module):
         return x
 
 
-# In[31]:
 
 
 def criterion(prediction, mask, regr, size_average=True):
@@ -960,7 +929,6 @@ def criterion(prediction, mask, regr, size_average=True):
     return loss
 
 
-# In[32]:
 
 
 #copy from https://www.kaggle.com/its7171/metrics-evaluation-script
@@ -1093,7 +1061,6 @@ def calc_map_df(valid_df, nrows=None):
     return np.mean(ap_list)
 
 
-# In[33]:
 
 
 #For validating,we fill some fixed codes in PredictionString field when it's nan
@@ -1103,7 +1070,6 @@ def fill_str(x):
     return x
 
 
-# In[34]:
 
 
 IMG_WIDTH = 256
@@ -1126,7 +1092,6 @@ exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=n_epochs * len(train
 model
 
 
-# In[35]:
 
 
 IMG_WIDTH = 512
@@ -1291,13 +1256,11 @@ best_epoch = series[series == series.min()].index
 print('for epoch : ', best_epoch)
 
 
-# In[36]:
 
 
 torch.save(model.state_dict(), PATH + 'model.pth')
 
 
-# In[37]:
 
 
 img, mask, regr = test_dataset[0]
@@ -1326,7 +1289,6 @@ plt.imshow(logits > 0)
 plt.show()
 
 
-# In[38]:
 
 
 torch.cuda.empty_cache()
@@ -1349,7 +1311,6 @@ for idx in range(15):
     plt.show()
 
 
-# In[39]:
 
 
 predictions = []
@@ -1368,7 +1329,6 @@ for img, _, _ in tqdm(val_loader):
         predictions.append(s)
 
 
-# In[40]:
 
 
 test = pd.read_csv(PATH + 'sample_submission.csv')

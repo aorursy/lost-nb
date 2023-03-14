@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 #For later use
@@ -17,20 +16,17 @@ warnings.filterwarnings('ignore')
 G = nx.read_graphml('../input/street-network-of-new-york-in-graphml/newyork.graphml')
 
 
-# In[ ]:
 
 
 nx.info(G)
 
 
-# In[ ]:
 
 
 G_simple = nx.Graph(G)
 nx.info(G_simple)
 
 
-# In[ ]:
 
 
 from collections import Counter
@@ -48,7 +44,6 @@ plt.tick_params(axis='both', which='major', labelsize=20)
 plt.show()
 
 
-# In[ ]:
 
 
 ins = list((G.in_degree()).values())
@@ -58,26 +53,22 @@ degrees = pd.DataFrame({"in-degree": ins, "out-degree": outs})
 fig = sns.jointplot(x="in-degree",y="out-degree",data=degrees,kind="kde", color = 'darkblue',size=8)
 
 
-# In[ ]:
 
 
 nx.density(G)
 
 
-# In[ ]:
 
 
 #import osmnx 
 #ox.plot_graph(G,fig_height= 12, node_size=10, node_zorder=2, node_color = '#808080')
 
 
-# In[ ]:
 
 
 nx.draw(G, pos=nx.spring_layout(G), node_size=0.01, width=0.1)
 
 
-# In[ ]:
 
 
 # we cant not just access the nodes with G(0) orso, we must call them by their id
@@ -86,19 +77,16 @@ nx.draw(G, pos=nx.spring_layout(G), node_size=0.01, width=0.1)
 G[G.nodes()[1]]
 
 
-# In[ ]:
 
 
 nx.diameter(G_simple)
 
 
-# In[ ]:
 
 
 nx.average_shortest_path_length(G_simple)
 
 
-# In[ ]:
 
 
 from collections import Counter
@@ -138,7 +126,6 @@ plt.xlim([0,2*10**2])
 plt.show()
 
 
-# In[ ]:
 
 
 #create two simple graphs from our original directed graph
@@ -149,20 +136,17 @@ G_simple2 = nx.Graph(G)
 nx.node_connectivity(G_simple)
 
 
-# In[ ]:
 
 
 nx.algebraic_connectivity(G_simple)
 
 
-# In[ ]:
 
 
 #compute the betweeness centrality on one of the simple graphs, this can take a while
 between =  nx.betweenness_centrality(G_simple)
 
 
-# In[ ]:
 
 
 #G_projected = ox.project_graph(G)
@@ -170,13 +154,11 @@ between =  nx.betweenness_centrality(G_simple)
 #max_node, max_bc
 
 
-# In[ ]:
 
 
 G['42431099']
 
 
-# In[ ]:
 
 
 '''
@@ -231,7 +213,6 @@ plt.show()
 '''
 
 
-# In[ ]:
 
 
 import networkx as nx
@@ -244,7 +225,6 @@ G1=nx.karate_club_graph()
 nx.draw_spring(G1)
 
 
-# In[ ]:
 
 
 #convert from networkx to igraph 
@@ -254,7 +234,6 @@ G2 = ig.Graph.Adjacency((nx.to_numpy_matrix(G1) > 0).tolist())
 G2.to_undirected()
 
 
-# In[ ]:
 
 
 np.random.seed(3)
@@ -268,7 +247,6 @@ membership = clusters.membership
 nx.draw_spring(G1, cmap = plt.get_cmap('jet'), node_color = membership, node_size=120, with_labels=False)
 
 
-# In[ ]:
 
 
 np.random.seed(3)
@@ -282,7 +260,6 @@ membership = clusters.membership
 nx.draw_spring(G1, cmap = plt.get_cmap('jet'), node_color = membership, node_size=120, with_labels=False)
 
 
-# In[ ]:
 
 
 np.random.seed(3)
@@ -295,7 +272,6 @@ membership  = dendrogram.membership
 nx.draw_spring(G1, cmap = plt.get_cmap('jet'), node_color = membership, node_size=120, with_labels=False)
 
 
-# In[ ]:
 
 
 #taken from. https://github.com/gboeing/osmnx
@@ -336,7 +312,6 @@ def get_nearest_node(G, point, return_dist=False):
         return nearest_node
 
 
-# In[ ]:
 
 
 #load the training data

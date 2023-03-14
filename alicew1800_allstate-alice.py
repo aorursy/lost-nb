@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 dstrain=pd.read_csv("../input/train.csv")
@@ -30,7 +28,6 @@ print(dstrain.head())
 print(dstest.head())
 
 
-# In[3]:
 
 
 dstrain=dstrain.iloc[:,1:]
@@ -44,25 +41,21 @@ print(dstrain.head())
 print(dstest.head())
 
 
-# In[4]:
 
 
 print(dstrain.shape)
 
 
-# In[5]:
 
 
 print(dstrain.describe())
 
 
-# In[6]:
 
 
 print(dstrain.skew())
 
 
-# In[7]:
 
 
 import seaborn as sb

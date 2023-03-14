@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -37,7 +36,6 @@ sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.
 import pretrainedmodels
 
 
-# In[2]:
 
 
 def scale_radius(src, img_size, padding=False):
@@ -306,13 +304,11 @@ def validate(val_loader, model, criterion):
     return losses.avg, scores.avg
 
 
-# In[3]:
 
 
 os.makedirs('processed', exist_ok=True)
 
 
-# In[4]:
 
 
 pseudo_probs = {}
@@ -343,7 +339,6 @@ test_loader = torch.utils.data.DataLoader(
     num_workers=2)
 
 
-# In[5]:
 
 
 # create model
@@ -379,7 +374,6 @@ torch.cuda.empty_cache()
 get_ipython().system('nvidia-smi')
 
 
-# In[6]:
 
 
 # create model
@@ -416,7 +410,6 @@ torch.cuda.empty_cache()
 get_ipython().system('nvidia-smi')
 
 
-# In[7]:
 
 
 # create model
@@ -452,7 +445,6 @@ torch.cuda.empty_cache()
 get_ipython().system('nvidia-smi')
 
 
-# In[8]:
 
 
 l1_probs = {}
@@ -484,7 +476,6 @@ val_transform = transforms.Compose([
 ])
 
 
-# In[9]:
 
 
 aptos2019_df = pd.read_csv('../input/aptos2019-blindness-detection/train.csv')
@@ -504,7 +495,6 @@ for (train_idx1, val_idx1), (train_idx2, val_idx2) in zip(skf.split(aptos2019_im
     labels.append((np.hstack((aptos2019_labels[train_idx1], test_labels[val_idx2])), aptos2019_labels[val_idx1]))
 
 
-# In[10]:
 
 
 # create model
@@ -588,7 +578,6 @@ torch.cuda.empty_cache()
 get_ipython().system('nvidia-smi')
 
 
-# In[11]:
 
 
 test_df = pd.read_csv('../input/aptos2019-blindness-detection/test.csv')
@@ -645,7 +634,6 @@ torch.cuda.empty_cache()
 get_ipython().system('nvidia-smi')
 
 
-# In[12]:
 
 
 aptos2019_df = pd.read_csv('../input/aptos2019-blindness-detection/train.csv')
@@ -665,7 +653,6 @@ for (train_idx1, val_idx1), (train_idx2, val_idx2) in zip(skf.split(aptos2019_im
     labels.append((np.hstack((aptos2019_labels[train_idx1], test_labels[val_idx2])), aptos2019_labels[val_idx1]))
 
 
-# In[13]:
 
 
 # create model
@@ -749,7 +736,6 @@ torch.cuda.empty_cache()
 get_ipython().system('nvidia-smi')
 
 
-# In[14]:
 
 
 test_df = pd.read_csv('../input/aptos2019-blindness-detection/test.csv')
@@ -806,13 +792,11 @@ torch.cuda.empty_cache()
 get_ipython().system('nvidia-smi')
 
 
-# In[15]:
 
 
 preds = 0.5 * l1_probs['se_resnext50_32x4d'] + 0.5 * l1_probs['se_resnext101_32x4d']
 
 
-# In[16]:
 
 
 thrs = [0.5, 1.5, 2.5, 3.5]
@@ -827,7 +811,6 @@ test_df['diagnosis'] = preds
 test_df.to_csv('submission.csv', index=False)
 
 
-# In[17]:
 
 
 get_ipython().system('rm processed/*')

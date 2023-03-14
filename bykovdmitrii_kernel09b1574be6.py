@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import torchvision
@@ -16,37 +15,31 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
 
 
-# In[2]:
 
 
 p = pd.read_csv("../input/train.csv")
 
 
-# In[ ]:
 
 
 
 
 
-# In[3]:
 
 
 p.head()
 
 
-# In[4]:
 
 
 p.head(-1)
 
 
-# In[5]:
 
 
 dataset = []
 
 
-# In[6]:
 
 
 for row in p.iterrows():
@@ -59,55 +52,46 @@ for row in p.iterrows():
         pass
 
 
-# In[7]:
 
 
 io.imread(os.path.join("../input/test_images", "086727c22b75.png")).shape
 
 
-# In[8]:
 
 
 dataset[1201]
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[9]:
 
 
 #ds = BlindDataset(dataset)
 
 
-# In[10]:
 
 
 #ds[0]['image'].shape
 
 
-# In[11]:
 
 
 import torch.nn as nn
 
 
-# In[ ]:
 
 
 
 
 
-# In[12]:
 
 
 class Classifier(nn.Module):
@@ -125,20 +109,17 @@ class Classifier(nn.Module):
         return self.linear_layers(x)
 
 
-# In[13]:
 
 
 model = Classifier()
 
 
-# In[14]:
 
 
 #ds = BlindDataset(dataset)
 #model.forward(ds[0]['image'])
 
 
-# In[15]:
 
 
 class BlindDataset(Dataset):
@@ -182,37 +163,31 @@ class BlindDataset(Dataset):
         return idxes
 
 
-# In[16]:
 
 
 dataset[5]
 
 
-# In[17]:
 
 
 ds = BlindDataset(dataset)
 
 
-# In[18]:
 
 
 ds.get_valid_batch()
 
 
-# In[19]:
 
 
 ds.get_batch()
 
 
-# In[20]:
 
 
 a = ds[49]['target']
 
 
-# In[21]:
 
 
 def train(model, epoch, ds):
@@ -273,31 +248,26 @@ def train(model, epoch, ds):
             optim = torch.optim.SGD(model.parameters(), lr=lr/10.0)
 
 
-# In[22]:
 
 
 model.forward(ds[3]['image']).argmax() == ds[3]['target'].argmax()
 
 
-# In[23]:
 
 
 ds[2]['image']
 
 
-# In[24]:
 
 
 10 / 12
 
 
-# In[25]:
 
 
 model.forward(ds[4]['image'])
 
 
-# In[26]:
 
 
 def load_checkpoint(filepath):
@@ -312,32 +282,27 @@ def load_checkpoint(filepath):
     return model
 
 
-# In[27]:
 
 
 #model = load_checkpoint('./checkpoint.pth')
 #print(model)
 
 
-# In[28]:
 
 
 train(model, 110, ds)
 
 
-# In[29]:
 
 
 p1 = pd.read_csv("../input/test.csv")
 
 
-# In[30]:
 
 
 p1.head()
 
 
-# In[31]:
 
 
 test_dataset = []
@@ -349,26 +314,22 @@ for row in p1.iterrows():
         pass
 
 
-# In[32]:
 
 
 #test_dataset
 
 
-# In[33]:
 
 
 #sorted(os.listdir('../input/test_images'))
 
 
-# In[34]:
 
 
 #plt.imshow("../input/test_images/0005cfc8afb6.png")
             #../input/test_images/0005cfc8afb6.png
 
 
-# In[35]:
 
 
 class BlindTestDataset(Dataset):
@@ -395,25 +356,21 @@ class BlindTestDataset(Dataset):
         return sample
 
 
-# In[36]:
 
 
 tds = BlindTestDataset(test_dataset)
 
 
-# In[37]:
 
 
 tds.__getitem__(0,flip = 0)['image'].mean()
 
 
-# In[38]:
 
 
 result = []
 
 
-# In[39]:
 
 
 for i in range(len(tds)):
@@ -426,43 +383,36 @@ for i in range(len(tds)):
         print(i)
 
 
-# In[40]:
 
 
 len(result)
 
 
-# In[41]:
 
 
 len(tds)
 
 
-# In[42]:
 
 
 df = pd.DataFrame(dict(id_code=test_dataset[:], diagnosis=result[:]))
 
 
-# In[43]:
 
 
 df.head()
 
 
-# In[44]:
 
 
 df.to_csv('submission.csv', index=False)
 
 
-# In[45]:
 
 
 #os.listdir('.')
 
 
-# In[46]:
 
 
 # import the modules we'll need
@@ -490,25 +440,21 @@ create_download_link(df)
 # ↓ ↓ ↓  Yay, download link! ↓ ↓ ↓ 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[47]:
 
 
 os.listdir('../working')
 
 
-# In[48]:
 
 
 checkpoint = {'model': Classifier(),
@@ -518,7 +464,6 @@ checkpoint = {'model': Classifier(),
 torch.save(checkpoint, 'checkpoint.pth')
 
 
-# In[49]:
 
 
 #strr = ""
@@ -526,55 +471,46 @@ torch.save(checkpoint, 'checkpoint.pth')
 #    strr = i
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[50]:
 
 
 #with open(filepath, 'rb') as fp: 
@@ -584,7 +520,6 @@ torch.save(checkpoint, 'checkpoint.pth')
 #encoders.encode_base64(file) 
 
 
-# In[51]:
 
 
 #server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -594,13 +529,11 @@ torch.save(checkpoint, 'checkpoint.pth')
 #server.quit() 
 
 
-# In[ ]:
 
 
 
 
 
-# In[52]:
 
 
 # ds[0]['target']

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -27,7 +26,6 @@ import os
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 df_train_id = pd.read_csv("../input/train_identity.csv", nrows=50000)
@@ -36,7 +34,6 @@ df_train_trans = pd.read_csv("../input/train_transaction.csv", nrows=50000)
 #df_test_trans = pd.read_csv("../input/test_transaction.csv")
 
 
-# In[3]:
 
 
 def resumetable(df):
@@ -165,7 +162,6 @@ df_train_trans = reduce_mem_usage(df_train_trans)
 df_train_id = reduce_mem_usage(df_train_id)
 
 
-# In[4]:
 
 
 ## REducing memory
@@ -173,19 +169,16 @@ df_train_trans = reduce_mem_usage(df_train_trans)
 df_train_id = reduce_mem_usage(df_train_id)
 
 
-# In[5]:
 
 
 resumetable(df_train_id)
 
 
-# In[6]:
 
 
 resumetable(df_train_trans)[:25]
 
 
-# In[7]:
 
 
 print("Transactions % Fraud:")
@@ -214,13 +207,11 @@ fig = go.Figure(data=data, layout=layout)
 iplot(fig)
 
 
-# In[ ]:
 
 
 
 
 
-# In[8]:
 
 
 def print_trans(tmp, num_col='TransactionAmt'):
@@ -230,14 +221,12 @@ def print_trans(tmp, num_col='TransactionAmt'):
 print_trans(df_train_trans[['isFraud', 'TransactionAmt']], 'TransactionAmt')
 
 
-# In[9]:
 
 
 print("Transaction Amount Quantiles: ")
 print(df_train_trans['TransactionAmt'].quantile([0.01, .025, .1, .25, .5, .75, .975, .99]))
 
 
-# In[10]:
 
 
 # df_train_trans['TransactionAmt_log'] = df_train_trans['TransactionAmt'].apply(np.log)
@@ -248,13 +237,11 @@ plot_distribution(tmp[(tmp['TransactionAmt'] <= 800)], 'TransactionAmt', 'Transa
 plot_distribution(tmp[(tmp['TransactionAmt'] <= 800)], 'TransactionAmt_log', 'Transaction Amount Log Distribution', bins=0.1)
 
 
-# In[11]:
 
 
 plot_dist_churn(df_train_trans[['ProductCD', 'isFraud']], 'ProductCD', 'isFraud')
 
 
-# In[12]:
 
 
 for col in ['card4', 'card6']:
@@ -262,47 +249,40 @@ for col in ['card4', 'card6']:
     plot_dist_churn(df_train_trans, col, 'isFraud')
 
 
-# In[13]:
 
 
 print("Card Features Quantiles: ")
 print(df_train_trans[['card1', 'card2', 'card3', 'card5']].quantile([0.01, .025, .1, .25, .5, .75, .975, .99]))
 
 
-# In[14]:
 
 
 for col in ['card1', 'card2', 'card3', 'card5']:
     df_train_trans[str(col)+'_log'] = np.log(df_train_trans[col])
 
 
-# In[15]:
 
 
 ## Calling the function
 plot_distribution(df_train_trans[['isFraud','card1_log']], 'card1_log', 'Card 1 Feature Log Distribution by Target', bins=0.05,)
 
 
-# In[16]:
 
 
 ## Calling the function
 plot_distribution(df_train_trans[['isFraud','card2_log']], 'card2_log', 'Card 2 Feature Log Distribution by Target', bins=0.05)
 
 
-# In[17]:
 
 
 df_train_trans.loc[df_train_trans.card3.isin(df_train_trans['card3'].value_counts()[df_train_trans['card3'].value_counts() < 10].index), 'card3'] = -99
 
 
-# In[18]:
 
 
 plot_dist_churn(df_train_trans[['card3', 'isFraud']], 'card3', 'isFraud')
 
 
-# In[19]:
 
 
 df_train_trans.loc[df_train_trans.card5.isin(df_train_trans['card5']                                             .value_counts()                                             [df_train_trans['card5']                                              .value_counts() < 20]                                             .index), 'card5'] = -99
@@ -310,7 +290,6 @@ df_train_trans.loc[df_train_trans.card5.isin(df_train_trans['card5']            
 plot_dist_churn(df_train_trans[['card5', 'isFraud']], 'card5', 'isFraud')
 
 
-# In[20]:
 
 
 tmp = df_train_trans[['M1','M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'isFraud']]
@@ -319,7 +298,6 @@ for col in ['M1','M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9']:
     plot_dist_churn(tmp, col, 'isFraud')
 
 
-# In[ ]:
 
 
 

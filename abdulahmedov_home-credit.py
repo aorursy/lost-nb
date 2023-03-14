@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -46,7 +44,6 @@ import zipfile
 from IPython.display import Image
 
 
-# In[3]:
 
 
 path = '/kaggle/input/home-credit-default-risk/'
@@ -61,14 +58,12 @@ application_test = pd.read_csv(path+'application_test.csv')
 bureau = pd.read_csv(path+'bureau.csv')
 
 
-# In[4]:
 
 
 # Выведем изображение с моделью данных
 Image(url = "https://storage.googleapis.com/kaggle-media/competitions/home-credit/home_credit.png")
 
 
-# In[5]:
 
 
 # Выведем shape'ы тренировочных и тестовых данных
@@ -76,7 +71,6 @@ print('application_train shape: {} rows, {} columns'.format(*application_train.s
 print('application_test shape: {} rows, {} columns'.format(*application_test.shape))
 
 
-# In[6]:
 
 
 application_train.set_index('SK_ID_CURR', inplace=True)
@@ -85,7 +79,6 @@ application_test.set_index('SK_ID_CURR', inplace=True)
 y = application_train['TARGET']
 
 
-# In[7]:
 
 
 # Определим категориальные и вещественные признаки
@@ -96,7 +89,6 @@ print('Data has {} categorical features, and {} numerical features'.format(
     len(categorical_features), len(numerical_features)))
 
 
-# In[8]:
 
 
 # Запилим функцию для визуализации распределения вещественных признаков
@@ -116,19 +108,16 @@ def plot_features_hist(df, features, cols=3, bins=200, window_width=7.5, window_
     plt.show()
 
 
-# In[9]:
 
 
 plot_features_hist(application_train, numerical_features)
 
 
-# In[10]:
 
 
 plot_features_hist(application_test, numerical_features)
 
 
-# In[11]:
 
 
 print('application_test "DAYS_EMPLOYED" anomalies {}, {}%'.format(
@@ -140,7 +129,6 @@ print('application_train "DAYS_EMPLOYED" anomalies {}, {}%'.format(
     len(application_train[application_train['DAYS_EMPLOYED']==365243]) / len(application_train) * 100))
 
 
-# In[12]:
 
 
 application_train['DAYS_EMPLOYED_ANOM'] = application_train["DAYS_EMPLOYED"] == 365243
@@ -149,21 +137,18 @@ application_test['DAYS_EMPLOYED_ANOM'] = application_test["DAYS_EMPLOYED"] == 36
 application_test["DAYS_EMPLOYED"].replace({365243: np.nan}, inplace = True)
 
 
-# In[13]:
 
 
 application_train = pd.get_dummies(data=application_train, columns=categorical_features, dummy_na=True)
 application_test = pd.get_dummies(data=application_test, columns=categorical_features, dummy_na=True)
 
 
-# In[14]:
 
 
 print('application_train shape: {} rows {} columns'.format(*application_train.shape))
 print('application_test shape: {} rows {} columns'.format(*application_test.shape))
 
 
-# In[15]:
 
 
 application_train, application_test = application_train.align(application_test, join='inner', axis = 1)
@@ -172,14 +157,12 @@ print('application_train shape: ', application_train.shape)
 print('application_test shape: ', application_test.shape)
 
 
-# In[16]:
 
 
 missing_df = (application_train.isna().sum() / len(application_train)).reset_index()
 missing_df.sort_values(ascending=False, by=0)
 
 
-# In[17]:
 
 
 def missing_indicator(df, features=None, inplace=False):
@@ -193,7 +176,6 @@ def missing_indicator(df, features=None, inplace=False):
     return df
 
 
-# In[18]:
 
 
 application_train = missing_indicator(application_train)
@@ -203,7 +185,6 @@ print('application_train shape: ', application_train.shape)
 print('application_test shape: ', application_test.shape)
 
 
-# In[19]:
 
 
 application_train, application_test = application_train.align(application_test, join='inner', axis = 1)
@@ -212,7 +193,6 @@ print('application_train shape: ', application_train.shape)
 print('application_test shape: ', application_test.shape)
 
 
-# In[20]:
 
 
 binary_features_train = application_train[numerical_features].nunique()
@@ -226,20 +206,17 @@ binary_features_test = binary_features_test.index
 min(binary_features_train == binary_features_test)
 
 
-# In[21]:
 
 
 binary_features_train
 
 
-# In[22]:
 
 
 application_train[binary_features_train] = application_train[binary_features_train].fillna(0)
 application_test[binary_features_test] = application_test[binary_features_test].fillna(0)
 
 
-# In[23]:
 
 
 mean_imputer = Imputer(missing_values='NaN', strategy='mean')
@@ -247,57 +224,48 @@ application_train[numerical_features] = mean_imputer.fit_transform(application_t
 application_test[numerical_features] = mean_imputer.transform(application_test[numerical_features])
 
 
-# In[24]:
 
 
 application_train.corrwith(y).sort_values(ascending=False)
 
 
-# In[25]:
 
 
 application_train.corrwith(y).sort_values()
 
 
-# In[26]:
 
 
 get_ipython().system('rm -r /opt/conda/lib/python3.6/site-packages/lightgbm')
 get_ipython().system('git clone --recursive https://github.com/Microsoft/LightGBM')
 
 
-# In[27]:
 
 
 get_ipython().system('apt-get install -y -qq libboost-all-dev')
 
 
-# In[28]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cd LightGBM\nrm -r build\nmkdir build\ncd build\ncmake -DUSE_GPU=1 -DOpenCL_LIBRARY=/usr/local/cuda/lib64/libOpenCL.so -DOpenCL_INCLUDE_DIR=/usr/local/cuda/include/ ..\nmake -j$(nproc)')
 
 
-# In[29]:
 
 
 get_ipython().system('cd LightGBM/python-package/;python3 setup.py install --precompile')
 
 
-# In[30]:
 
 
 get_ipython().system('mkdir -p /etc/OpenCL/vendors && echo "libnvidia-opencl.so.1" > /etc/OpenCL/vendors/nvidia.icd')
 get_ipython().system('rm -r LightGBM')
 
 
-# In[31]:
 
 
 get_ipython().system('nvidia-smi')
 
 
-# In[32]:
 
 
 param = {
@@ -331,7 +299,6 @@ param = {
     }
 
 
-# In[33]:
 
 
 import lightgbm as lgb
@@ -339,39 +306,33 @@ from sklearn import metrics
 from sklearn.model_selection import StratifiedKFold
 
 
-# In[34]:
 
 
 get_ipython().run_cell_magic('time', '', 'nfold = 2\n\ntarget = \'target\'\npredictors = application_train.columns.values.tolist()\n\nskf = StratifiedKFold(n_splits=nfold, shuffle=True, random_state=2019)\n\noof = np.zeros(len(application_train))\npredictions = np.zeros(len(application_test))\n\ni = 1\nfor train_index, valid_index in skf.split(application_train, y.values):\n    print("\\nfold {}".format(i))\n    xg_train = lgb.Dataset(application_train.iloc[train_index][predictors].values,\n                           label=y.iloc[train_index].values,\n                           feature_name=predictors,\n                           free_raw_data = False\n                           )\n    xg_valid = lgb.Dataset(application_train.iloc[valid_index][predictors].values,\n                           label=y.iloc[valid_index].values,\n                           feature_name=predictors,\n                           free_raw_data = False\n                           )   \n\n    \n    clf = lgb.train(param, xg_train, 5000, valid_sets = [xg_valid], verbose_eval=50, early_stopping_rounds = 50)\n    oof[valid_index] = clf.predict(application_train.iloc[valid_index][predictors].values, num_iteration=clf.best_iteration) \n    \n    predictions += clf.predict(application_test[predictors], num_iteration=clf.best_iteration) / nfold\n    i = i + 1\n\nprint("\\n\\nCV AUC: {:<0.2f}".format(metrics.roc_auc_score(y.values, oof)))')
 
 
-# In[35]:
 
 
 sample_submission = pd.read_csv(path+'sample_submission.csv')
 sample_submission
 
 
-# In[36]:
 
 
 my_submission = pd.DataFrame({'SK_ID_CURR': application_test.index, 'TARGET': predictions})
 my_submission
 
 
-# In[37]:
 
 
 my_submission.to_csv('submission.csv', index=False)
 
 
-# In[38]:
 
 
 my_submission
 
 
-# In[39]:
 
 
 from IPython.display import FileLink

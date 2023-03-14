@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install pycountry_convert')
@@ -9,7 +8,6 @@ get_ipython().system('pip install folium')
 get_ipython().system('pip install plotly')
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -45,7 +43,6 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[3]:
 
 
 import pandas as pd
@@ -81,7 +78,6 @@ for i in range(0,len(df_worldinfor)):
     df_worldinfor['Country'].iloc[i] = df_worldinfor['Country'].iloc[i].strip()
 
 
-# In[4]:
 
 
 #df_worldinfor.to_csv('testingdataworldwide.csv')
@@ -92,14 +88,12 @@ df_worldinfor1['Total Recovers']= pd.to_numeric(df_worldinfor1['Total Recovers']
 df_worldinfor1.head()
 
 
-# In[5]:
 
 
 df_worldinfor1 = df_worldinfor1[df_worldinfor1.Country != 'Total:']
 df_worldinfor1.style.background_gradient(cmap='Wistia')
 
 
-# In[6]:
 
 
 df_worlddata = df_worldinfor1[df_worldinfor1.Country != 'World']
@@ -108,20 +102,17 @@ df_worlddata = df_worlddata.drop(['Country'],axis=1)
 df_worlddata.head()
 
 
-# In[7]:
 
 
 df_test=df_worlddata.drop(['Total Cases','Cases','Total Deaths','Deaths','Total Recovers','Active','Serious Critical',
                            'Total Cases/1M pop','Deaths/1M pop'],axis=1)
 
 
-# In[8]:
 
 
 df_test.head()
 
 
-# In[9]:
 
 
 f = plt.figure(figsize=(20,15))
@@ -135,7 +126,6 @@ plt.title("Top Countries (Tests/1M pop )",fontsize=20)
 plt.grid(alpha=0.3)
 
 
-# In[10]:
 
 
 f = plt.figure(figsize=(20,15))
@@ -149,45 +139,38 @@ plt.title("Top Countries (Total Test )",fontsize=20)
 plt.grid(alpha=0.3)
 
 
-# In[11]:
 
 
 df_test_Final=df_worldinfor1.drop(['Cases','Deaths','Total Recovers','Active','Serious Critical','Deaths/1M pop','Total Cases/1M pop'],axis=1)
 
 
-# In[12]:
 
 
 df_test_Final["MortalityRate"] = np.round(100*df_test_Final["Total Deaths"]/df_test_Final["Total Cases"],2)
 df_test_Final["Positive"] = np.round(100*df_test_Final["Total Cases"]/df_test_Final["Total Test"],2)
 
 
-# In[13]:
 
 
 df_test_Final = df_test_Final[df_test_Final.Country != 'World']
 df_test_Final.head(2)
 
 
-# In[14]:
 
 
 df_test_Final.style.background_gradient(cmap='Blues',subset=["Total Test"])                        .background_gradient(cmap='Reds',subset=["Tests/1M pop"])                        .background_gradient(cmap='Greens',subset=["Total Cases"])                        .background_gradient(cmap='Purples',subset=["Total Deaths"])                        .background_gradient(cmap='YlOrBr',subset=["MortalityRate"])                        .background_gradient(cmap='bone_r',subset=["Positive"])
 
 
-# In[15]:
 
 
 df_test_Final.corr().style.background_gradient(cmap='Blues').format("{:.2f}")
 
 
-# In[16]:
 
 
 df_test_Final_top = df_test_Final[df_test_Final['Total Test'] > 200000] 
 
 
-# In[17]:
 
 
 fig = px.bar(df_test_Final_top.sort_values("Total Test"),
@@ -203,7 +186,6 @@ fig.update_yaxes(title_text="Number of Tests (Text on bars is Mortality Rate %)"
 fig.show()
 
 
-# In[18]:
 
 
 fig = px.pie(df_test_Final_top, values='Total Test', names='Country')
@@ -212,7 +194,6 @@ fig.update_layout(uniformtext_minsize=12, uniformtext_mode='hide')
 fig.show()
 
 
-# In[19]:
 
 
 fig = px.pie(df_test_Final_top, values='Tests/1M pop', names='Country')
@@ -221,7 +202,6 @@ fig.update_layout(uniformtext_minsize=12, uniformtext_mode='hide')
 fig.show()
 
 
-# In[20]:
 
 
 f = plt.figure(figsize=(20,15))
@@ -235,7 +215,6 @@ plt.title("Top Countries (Total #)",fontsize=20)
 plt.grid(alpha=0.3)
 
 
-# In[21]:
 
 
 f = plt.figure(figsize=(20,15))
@@ -249,7 +228,6 @@ plt.title("Top Countries (Active #)",fontsize=20)
 plt.grid(alpha=0.3)
 
 
-# In[22]:
 
 
 f = plt.figure(figsize=(20,15))
@@ -263,7 +241,6 @@ plt.title("Top Countries (Critical #)",fontsize=20)
 plt.grid(alpha=0.3)
 
 
-# In[23]:
 
 
 # Retriving Dataset
@@ -275,13 +252,11 @@ df_recovered = pd.read_csv('https://raw.githubusercontent.com/CSSEGISandData/COV
 recovered = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/web-data/data/cases_country.csv")
 
 
-# In[24]:
 
 
 covid_country = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/web-data/data/cases_country.csv")
 
 
-# In[25]:
 
 
 confirmed = confirmed.rename(columns={"Province/State":"state","Country/Region": "country"})
@@ -291,19 +266,16 @@ covid_country = covid_country.rename(columns={"Country_Region": "country"})
 covid_country["Active"] = covid_country["Confirmed"]-covid_country["Recovered"]-covid_country["Deaths"]
 
 
-# In[26]:
 
 
 confirmed.head(),deaths.head(),covid_country.head(),recovered.head()
 
 
-# In[27]:
 
 
 confirmed.head()
 
 
-# In[28]:
 
 
 confirmed1=pd.melt(confirmed,id_vars=['state','country','Lat','Long'],var_name='date', value_name='Confirmed')
@@ -311,7 +283,6 @@ confirmed1['date'] = confirmed1['date'].astype('datetime64[ns]')
 confirmed1.sort_values(by="date")
 
 
-# In[29]:
 
 
 grouped = confirmed1.groupby('date')['date', 'Confirmed'].sum().reset_index()
@@ -326,7 +297,6 @@ fig = px.line(grouped, x="date", y="Confirmed",
 fig.show()
 
 
-# In[30]:
 
 
 Confirmed_US = confirmed1[confirmed1['country'] == "US"].reset_index()
@@ -352,7 +322,6 @@ World_rest = confirmed1[~confirmed1['country'].isin(['China', 'Italy', 'US','Spa
 World_rest = World_rest.groupby('date')['date', 'Confirmed'].sum().reset_index()
 
 
-# In[31]:
 
 
 plot_titles = ['China', 'Italy', 'US','Spain','Iran','France','United Kingdom','Germany', 'Rest of the World']
@@ -424,7 +393,6 @@ fig.show()
 out = "output/"
 
 
-# In[32]:
 
 
 countries=dict()
@@ -432,13 +400,11 @@ for cnt in confirmed1['country'].unique():
     countries[cnt]=confirmed1.loc[confirmed1['country']==cnt,'country'].unique()
 
 
-# In[33]:
 
 
 countries
 
 
-# In[34]:
 
 
 india_data = requests.get('https://api.rootnet.in/covid19-in/unofficial/covid19india.org/statewise').json()
@@ -446,7 +412,6 @@ india_covid = pd.io.json.json_normalize(india_data['data']['statewise'])
 india_covid = india_covid.set_index("state")
 
 
-# In[35]:
 
 
 total = india_covid.sum()
@@ -454,43 +419,36 @@ total.name = "Total"
 pd.DataFrame(total).transpose().style.background_gradient(cmap='OrRd',axis=1)
 
 
-# In[36]:
 
 
 india_covid.corr().style.background_gradient(cmap='Reds')
 
 
-# In[37]:
 
 
 india_covid.style.background_gradient(cmap='viridis')
 
 
-# In[38]:
 
 
 india_covid[india_covid['deaths'] > 5].style.background_gradient(cmap='PuBu')
 
 
-# In[39]:
 
 
 india_covid[india_covid['recovered'] > 50].style.background_gradient(cmap='PuBu')
 
 
-# In[40]:
 
 
 india_covid[india_covid['active'] > 50].style.background_gradient(cmap='afmhot')
 
 
-# In[41]:
 
 
 india_covid[india_covid['active'] < 30].style.background_gradient(cmap='gist_heat')
 
 
-# In[42]:
 
 
 
@@ -540,7 +498,6 @@ for index in india_covid.index :
     india_covid.loc[india_covid.index == index,"Long"] = locations[index][1]
 
 
-# In[43]:
 
 
 # url = "https://raw.githubusercontent.com/Subhash9325/GeoJson-Data-of-Indian-States/master/Indian_States"
@@ -568,7 +525,6 @@ for i in range(0,len(india_covid[india_covid['confirmed']>0].index)):
 india
 
 
-# In[44]:
 
 
 USA_Covid = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/04-13-2020.csv")
@@ -579,19 +535,16 @@ USA_Covid = USA_Covid.loc[USA_Covid["Country_Region"]== "US"]
 USA_Covid = USA_Covid.rename(columns={"Admin2":"County"})
 
 
-# In[45]:
 
 
 USA_Covid.loc[:,["Province_State","Confirmed","Deaths","County"]].sort_values("Confirmed",ascending=False).set_index("County")[:16].style.background_gradient(cmap='Wistia')
 
 
-# In[46]:
 
 
 USA_Covid[USA_Covid['Confirmed'] > 5000].style.background_gradient(cmap='afmhot')
 
 
-# In[47]:
 
 
 # Retriving Dataset
@@ -603,13 +556,11 @@ df_recovered = pd.read_csv('https://raw.githubusercontent.com/CSSEGISandData/COV
 recovered = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/web-data/data/cases_country.csv")
 
 
-# In[48]:
 
 
 covid_country = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/web-data/data/cases_country.csv")
 
 
-# In[49]:
 
 
 confirmed = confirmed.rename(columns={"Province/State":"state","Country/Region": "country"})
@@ -619,7 +570,6 @@ covid_country = covid_country.rename(columns={"Country_Region": "country"})
 covid_country["Active"] = covid_country["Confirmed"]-covid_country["Recovered"]-covid_country["Deaths"]
 
 
-# In[50]:
 
 
 def plot_params(ax,axis_label= None, plt_title = None,label_size=15, axis_fsize = 15, title_fsize = 20, scale = 'linear' ):
@@ -743,7 +693,6 @@ def dd(date1,date2):
 out = "output/"
 
 
-# In[51]:
 
 
 country_df = covid_country.copy().drop(['Lat','Long_','Last_Update'],axis =1)
@@ -751,13 +700,11 @@ country_df.index = country_df["country"]
 country_df = country_df.drop(['country'],axis=1)
 
 
-# In[52]:
 
 
 country_df.head()
 
 
-# In[53]:
 
 
 f = plt.figure(figsize=(20,15))
@@ -771,7 +718,6 @@ plt.title("Top Countries (Confirmed Cases)",fontsize=20)
 plt.grid(alpha=0.3)
 
 
-# In[54]:
 
 
 f = plt.figure(figsize=(20,15))
@@ -785,7 +731,6 @@ plt.title("Top Countries (Death #)",fontsize=20)
 plt.grid(alpha=0.3)
 
 
-# In[55]:
 
 
 f = plt.figure(figsize=(20,15))
@@ -799,7 +744,6 @@ plt.title("Top Countries (Active #)",fontsize=20)
 plt.grid(alpha=0.3)
 
 
-# In[56]:
 
 
 f = plt.figure(figsize=(20,15))
@@ -813,19 +757,16 @@ plt.title("Top Countries (Recovered #)",fontsize=20)
 plt.grid(alpha=0.3)
 
 
-# In[57]:
 
 
 pd.DataFrame(country_df.sum()).transpose().style.background_gradient(cmap='Wistia',axis=1)
 
 
-# In[58]:
 
 
 country_df.sort_values('Confirmed', ascending= False).style.background_gradient(cmap='PuBu')
 
 
-# In[59]:
 
 
 world_map = folium.Map(location=[10,0], tiles="cartodbpositron", zoom_start=2,max_zoom=6,min_zoom=2)
@@ -849,14 +790,12 @@ for i in range(0,len(confirmed)):
 world_map
 
 
-# In[60]:
 
 
 confirmed = confirmed.replace(np.nan, '', regex=True)
 deaths = deaths.replace(np.nan, '', regex=True)
 
 
-# In[61]:
 
 
 df_countries = confirmed.groupby(["country"]).sum()
@@ -872,7 +811,6 @@ for i,country in enumerate(countries):
 plt.show()
 
 
-# In[62]:
 
 
 temp = confirmed.groupby('country').sum().drop(["Lat","Long"],axis =1).sort_values(confirmed.columns[-1], ascending= False)
@@ -939,7 +877,6 @@ plt.grid(which="both")
 plt.show()
 
 
-# In[63]:
 
 
 temp = deaths.groupby('country').sum().drop(["Lat","Long"],axis =1).sort_values(deaths.columns[-1], ascending= False)
@@ -995,7 +932,6 @@ plt.grid(which="both")
 plt.show()
 
 
-# In[64]:
 
 
 rows = 4
@@ -1025,7 +961,6 @@ for i, stat in enumerate(stats):
 plt.show()
 
 
-# In[65]:
 
 
 import numpy as np
@@ -1045,7 +980,6 @@ def RMSLE(pred,actual):
     return np.sqrt(np.mean(np.power((np.log(pred+1)-np.log(actual+1)),2)))
 
 
-# In[66]:
 
 
 pd.set_option('mode.chained_assignment', None)
@@ -1059,13 +993,11 @@ train = train.sort_values(['Country_Region','Province_State','Date'])
 test = test.sort_values(['Country_Region','Province_State','Date'])
 
 
-# In[67]:
 
 
 train[['ConfirmedCases', 'Fatalities']] = train.groupby(['Country_Region', 'Province_State'])[['ConfirmedCases', 'Fatalities']].transform('cummax') 
 
 
-# In[68]:
 
 
 train['NewCases'] = train['ConfirmedCases'] - train['ConfirmedCases'].shift(1)
@@ -1079,19 +1011,16 @@ train['GrowthRate']= train['GrowthRate'].replace([-np.inf, np.inf],  0.0)
 train['GrowthRate']= train['GrowthRate'].fillna(0.0) 
 
 
-# In[69]:
 
 
 train.head()
 
 
-# In[70]:
 
 
 train.head()
 
 
-# In[71]:
 
 
 from sklearn.linear_model import LinearRegression, BayesianRidge
@@ -1159,19 +1088,16 @@ df_val.loc[df_val['ConfirmedCases_hat'] < 0,'ConfirmedCases_hat'] = 0
 df_val_1 = df_val.copy()
 
 
-# In[72]:
 
 
 RMSLE(df_val[(df_val['ConfirmedCases'].isnull() == False)]['ConfirmedCases'].values,df_val[(df_val['ConfirmedCases'].isnull() == False)]['ConfirmedCases_hat'].values)
 
 
-# In[73]:
 
 
 RMSLE(df_val[(df_val['Fatalities'].isnull() == False)]['Fatalities'].values,df_val[(df_val['Fatalities'].isnull() == False)]['Fatalities_hat'].values)
 
 
-# In[74]:
 
 
 val_score = []
@@ -1184,7 +1110,6 @@ df_val_score.columns = ['Country','ConfirmedCases_Scored','Fatalities_Scored']
 df_val_score.sort_values('ConfirmedCases_Scored', ascending = False)
 
 
-# In[75]:
 
 
 country = "India"
@@ -1205,7 +1130,6 @@ fig.add_scatter(x=df_country['Date'][0:idx], y=df_country['Fatalities'][0:idx], 
 fig.show()
 
 
-# In[76]:
 
 
 df_val = df_val_1
@@ -1215,13 +1139,11 @@ submission.to_csv('submission.csv', index=False)
 submission
 
 
-# In[77]:
 
 
 index_columns = ['Province/State','Country/Region','Lat','Long']
 
 
-# In[78]:
 
 
 cases = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
@@ -1232,7 +1154,6 @@ cases = pd.melt(cases,
 cases.head()
 
 
-# In[79]:
 
 
 import pandas as pd 
@@ -1261,7 +1182,6 @@ fig.update(layout_coloraxis_showscale=True)
 py.offline.iplot(fig)
 
 
-# In[ ]:
 
 
 

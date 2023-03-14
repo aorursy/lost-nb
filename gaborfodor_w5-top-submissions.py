@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -21,13 +20,11 @@ from plotly.offline import init_notebook_mode, iplot, plot
 init_notebook_mode(connected=True)
 
 
-# In[2]:
 
 
 get_ipython().run_cell_magic('javascript', '', 'IPython.OutputArea.prototype._should_scroll = function(lines) {\n    return false;\n}')
 
 
-# In[3]:
 
 
 train = pd.read_csv('/kaggle/input/covid19-global-forecasting-week-5/train.csv')
@@ -40,7 +37,6 @@ test['Location'] = test.Country_Region + '-' + test.Province_State + '-' + test.
 test = test[['Location', 'Date', 'Target', 'ForecastId']]
 
 
-# In[4]:
 
 
 train.shape, test.shape
@@ -48,13 +44,11 @@ train.head(2)
 test.head(2)
 
 
-# In[5]:
 
 
 train.Date.max()
 
 
-# In[6]:
 
 
 PRIVATE_START = '2020-05-13'
@@ -65,7 +59,6 @@ top_submission_files = [f for f in os.listdir(DATA_DIR) if f.startswith('submiss
 top_submission_files
 
 
-# In[7]:
 
 
 top_submissions = pd.concat([
@@ -81,7 +74,6 @@ top_submissions.Date.max()
 top_submissions = top_submissions.merge(train, on=['Date', 'Location', 'Target'])
 
 
-# In[8]:
 
 
 top_submissions = top_submissions[top_submissions.Date >= PRIVATE_START]
@@ -89,7 +81,6 @@ top_submissions.shape
 top_submissions.head(3)
 
 
-# In[9]:
 
 
 def loss(preds, actual, weights, qs):
@@ -97,7 +88,6 @@ def loss(preds, actual, weights, qs):
     return l * weights
 
 
-# In[10]:
 
 
 predictions = top_teams + ['blend']
@@ -109,7 +99,6 @@ for p in predictions:
 top_submissions.head(3)
 
 
-# In[11]:
 
 
 predictions = [c for c in top_submissions.columns if c.startswith('pred_')]
@@ -119,7 +108,6 @@ for c in weighted_predictions.columns:
 corr = weighted_predictions.corr()
 
 
-# In[12]:
 
 
 fig = px.imshow(corr,
@@ -132,7 +120,6 @@ _ = fig.update_xaxes(side="top", title_text='Correlation among top teams')
 fig.show()
 
 
-# In[13]:
 
 
 wp = pd.concat([weighted_predictions, top_submissions[['q', 'Location', 'Date', 'Target']]], axis=1)
@@ -147,21 +134,18 @@ mean_weighted_spread.columns = ['p', 'mean_weighted_spread']
 mean_weighted_spread.sort_values(by='mean_weighted_spread')
 
 
-# In[14]:
 
 
 losses = [c for c in top_submissions.columns if c.startswith('loss_')]
 top_submissions[losses].mean().reset_index().sort_values(by=0)
 
 
-# In[15]:
 
 
 daily_losses = top_submissions.groupby('Date')[losses].mean()
 daily_losses.tail()
 
 
-# In[16]:
 
 
 plot_data = daily_losses.reset_index().melt(id_vars='Date')
@@ -175,7 +159,6 @@ _ = fig.update_layout(title_text='Daily Prediction Performance')
 fig.show()
 
 
-# In[17]:
 
 
 loss_cols = [c for c in top_submissions.columns if c.startswith('loss_')]
@@ -187,7 +170,6 @@ locations.head(10)
 locations.head(10).relative_loss.sum()
 
 
-# In[18]:
 
 
 top = locations.head(10)
@@ -201,19 +183,16 @@ _ = fig.update_xaxes(side="top", title_text='Model Performance by Location')
 fig.show()
 
 
-# In[19]:
 
 
 top_submissions.loc[top_submissions.Location != 'Brazil--', losses].mean()
 
 
-# In[20]:
 
 
 top_submissions.loc[top_submissions.Location.str.startswith('US'), losses].mean()
 
 
-# In[21]:
 
 
 def draw_predictions(location, target):
@@ -248,7 +227,6 @@ def draw_predictions(location, target):
     return fig
 
 
-# In[22]:
 
 
 location_names = list(locations.Location.values[:50])
@@ -321,7 +299,6 @@ _ = fig.update_layout(
 fig.show()
 
 
-# In[23]:
 
 
 for location in locations.Location.values[:20]:
@@ -330,7 +307,6 @@ for location in locations.Location.values[:20]:
         fig.show()
 
 
-# In[24]:
 
 
 for location in ['Hungary--']:
@@ -339,7 +315,6 @@ for location in ['Hungary--']:
         fig.show()
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -12,7 +11,6 @@ pd.options.display.max_columns = 999
 pd.options.display.max_colwidth = 500
 
 
-# In[2]:
 
 
 train = pd.read_csv("/kaggle/input/data-science-bowl-2019/train.csv")
@@ -22,14 +20,12 @@ sample_submission = pd.read_csv("/kaggle/input/data-science-bowl-2019/sample_sub
 specs = pd.read_csv("/kaggle/input/data-science-bowl-2019/specs.csv")
 
 
-# In[3]:
 
 
 train.timestamp = pd.to_datetime(train.timestamp)
 test.timestamp = pd.to_datetime(test.timestamp)
 
 
-# In[4]:
 
 
 # Remove all users that haven't taken any assessments.
@@ -38,7 +34,6 @@ train = train[train.installation_id.isin(assessment_user)]
 train.shape
 
 
-# In[5]:
 
 
 # This is not that relevant to predicting. The code here is only used to help to make sure my understanding of how to calculate lables is consistant with the competition holders!
@@ -69,7 +64,6 @@ random_train_labels['group_diffrence'] = random_train_labels.accuracy_group - ra
 # random_train_labels.head(500)
 
 
-# In[6]:
 
 
 # Only the last assessment in the test set should be used to do the prediction. 
@@ -77,14 +71,12 @@ test.timestamp = pd.to_datetime(test.timestamp)
 test_labels = test[['game_session', 'installation_id', 'title', 'timestamp']].drop_duplicates(subset='installation_id', keep='last')
 
 
-# In[7]:
 
 
 # Use train_labels to construct training set.
 train_labels = train_labels.merge(train[['game_session', 'timestamp', 'installation_id']].drop_duplicates(                                         subset=['game_session', 'installation_id']), how='left',                                  on=['game_session', 'installation_id'])
 
 
-# In[8]:
 
 
 clip_names = list(train[train.type=='Clip'].title.unique())
@@ -93,7 +85,6 @@ game_names = list(train[train.type=='Game'].title.unique())
 assessment_names = list(train[train.type=='Assessment'].title.unique())
 
 
-# In[9]:
 
 
 event_codes_for_game = list(train[train.type=='Game'].event_code.unique())
@@ -102,21 +93,18 @@ event_codes_for_activity = list(train[train.type=='Activity'].event_code.unique(
 event_codes_for_game_uni_assessment_uni_activity = list(set(event_codes_for_game).union(set(event_codes_for_assessment)).union(set(event_codes_for_activity)))
 
 
-# In[10]:
 
 
 type_names = ['Game', 'Activity', 'Assessment', 'Clip']
 world_names = ['NONE', 'MAGMAPEAK', 'TREETOPCITY', 'CRYSTALCAVES']
 
 
-# In[11]:
 
 
 game_event_code = train[train['type']=='Game'][['title', 'event_code']].drop_duplicates()
 game_event_code.shape
 
 
-# In[12]:
 
 
 game_features_by_name = list() # For each of the game, calculate the different counts for each event code for each game.
@@ -125,14 +113,12 @@ for index, row in game_event_code.iterrows():
 # game_features_by_name
 
 
-# In[13]:
 
 
 effective_game_codes = [2000, 2020, 2030, 3010, 3020, 3021, 4020, 4070, 4090]
 summary_game_features = ['Num Give Up', 'Num Total', 'Give Up Rate', 'Mean Accuracy', 'Std Accuracy', 'Max Accuracy', 'Min Accuracy']
 
 
-# In[14]:
 
 
 game_feature_1_names = ['Total Count (Game) ' + str(code) for code in effective_game_codes]
@@ -141,14 +127,12 @@ game_feature_3_names = ['Current Group Game' + name for name in summary_game_fea
 game_feature_4_names = ['Last 3 Group Game' + name for name in summary_game_features]
 
 
-# In[15]:
 
 
 assessment_event_code = train[train['type']=='Assessment'][['title', 'event_code']].drop_duplicates()
 assessment_event_code.shape
 
 
-# In[16]:
 
 
 assessment_features_by_name = list() # For each of the game, calculate the different counts for each event code for each game.
@@ -157,7 +141,6 @@ for index, row in assessment_event_code.iterrows():
 # assessment_features_by_name
 
 
-# In[17]:
 
 
 effective_assessment_codes = event_codes_for_assessment
@@ -169,14 +152,12 @@ assessment_feature_3_names = ['Current Group Ass ' + name for name in summary_as
 assessment_feature_4_names = ['Last 3 Group Ass ' + name for name in summary_assessment_features]
 
 
-# In[18]:
 
 
 activity_event_code = train[train['type']=='Activity'][['title', 'event_code']].drop_duplicates()
 activity_event_code.shape
 
 
-# In[19]:
 
 
 activity_features_by_name = list() # For each of the game, calculate the different counts for each event code for each game.
@@ -185,7 +166,6 @@ for index, row in activity_event_code.iterrows():
 # activity_features_by_name
 
 
-# In[20]:
 
 
 effective_activity_codes = event_codes_for_activity
@@ -193,7 +173,6 @@ effective_activity_codes = event_codes_for_activity
 activity_feature_1_names = ['Total Count (Act) ' + str(code) for code in effective_activity_codes]
 
 
-# In[21]:
 
 
 clip_length = {'Welcome to Lost Lagoon!': 19, 'Magma Peak - Level 1': 20, 
@@ -205,7 +184,6 @@ clip_length = {'Welcome to Lost Lagoon!': 19, 'Magma Peak - Level 1': 20,
               'Lifting Heavy Things': 118, 'Honey Cake':  142, 'Heavy, Heavier, Heaviest': 61}
 
 
-# In[22]:
 
 
 timeFeatureName_type = [name + ' Time Total' for name in type_names]
@@ -215,13 +193,11 @@ timeFeatureName_title = [name + ' Time Total' for name in activity_names + asses
 timeFeatureName_totaltime = ['Total Time']
 
 
-# In[23]:
 
 
 feature_names = ['Have Records'] + game_features_by_name + assessment_features_by_name + activity_features_by_name +                timeFeatureName_type + timeFeatureName_world + timeFeatureName_groupstat +                 timeFeatureName_title + timeFeatureName_totaltime + game_feature_1_names + game_feature_2_names + game_feature_3_names + game_feature_4_names +                assessment_feature_1_names + assessment_feature_2_names + assessment_feature_3_names + assessment_feature_4_names +                clip_names
 
 
-# In[24]:
 
 
 # row = train_labels.iloc[3].squeeze()
@@ -504,7 +480,6 @@ def calculate_features(row):
         return pd.Series([0] * len(feature_names))
 
 
-# In[25]:
 
 
 np.random.seed(0)
@@ -512,7 +487,6 @@ idx = np.random.permutation(np.arange(len(train_labels)))
 train_labels_subset = train_labels.iloc[idx].drop_duplicates(subset=['installation_id'])
 
 
-# In[26]:
 
 
 train_labels_subset['isTrain'] = 1
@@ -520,19 +494,16 @@ test_labels['isTrain'] = 0
 train_labels['isTrain'] = 1
 
 
-# In[27]:
 
 
 train_labels_subset[feature_names] = train_labels_subset.apply(calculate_features, axis=1)
 
 
-# In[28]:
 
 
 test_labels[feature_names] = test_labels.apply(calculate_features, axis=1) 
 
 
-# In[29]:
 
 
 def add_more_features(labels_dataset):
@@ -546,31 +517,26 @@ def add_more_features(labels_dataset):
     return labels_dataset
 
 
-# In[30]:
 
 
 train_labels_subset = add_more_features(train_labels_subset)
 
 
-# In[31]:
 
 
 test_labels = add_more_features(test_labels)
 
 
-# In[32]:
 
 
 training_data = train_labels_subset.drop(['game_session', 'title', 'installation_id', 'num_correct', 'num_incorrect', 'accuracy', 'timestamp', 'isTrain'], axis=1)
 
 
-# In[33]:
 
 
 testing_data = test_labels.drop(['game_session', 'title', 'installation_id', 'timestamp', 'isTrain'], axis=1)
 
 
-# In[34]:
 
 
 import itertools
@@ -600,7 +566,6 @@ def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix'
     plt.tight_layout()
 
 
-# In[35]:
 
 
 from sklearn.model_selection import train_test_split
@@ -610,7 +575,6 @@ X = training_data.drop(['accuracy_group'], axis=1)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
 
 
-# In[36]:
 
 
 from sklearn.ensemble import RandomForestClassifier 
@@ -627,32 +591,27 @@ clf.fit(X_train, y_train)
 y_pred = clf.predict(X_test)
 
 
-# In[37]:
 
 
 value_counts = y_train.value_counts()
 q1, q2, q3 = pd.Series(y_pred).quantile([value_counts.loc[0]/np.sum(value_counts), (value_counts.loc[0]                             +value_counts.loc[1])/np.sum(value_counts),                              (value_counts.loc[0]+value_counts.loc[1]+value_counts.loc[2])/np.sum(value_counts)])
 
 
-# In[38]:
 
 
 y_final = np.where(y_pred<q1, 0, np.where(y_pred<q2,1,np.where(y_pred<q3,2,3)))
 
 
-# In[39]:
 
 
 plot_confusion_matrix(confusion_matrix(y_test, y_final), classes=['0', '1', '2', '3'])
 
 
-# In[40]:
 
 
 cohen_kappa_score(y_test, y_final, weights='quadratic')
 
 
-# In[41]:
 
 
 y_pred = clf.predict(testing_data)

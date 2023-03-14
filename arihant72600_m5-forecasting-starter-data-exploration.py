@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -20,13 +19,11 @@ color_pal = plt.rcParams['axes.prop_cycle'].by_key()['color']
 color_cycle = cycle(plt.rcParams['axes.prop_cycle'].by_key()['color'])
 
 
-# In[2]:
 
 
 get_ipython().system('ls -al ../input/m5-forecasting-accuracy')
 
 
-# In[3]:
 
 
 # Read in the data
@@ -37,31 +34,26 @@ ss = pd.read_csv(f'{INPUT_DIR}/sample_submission.csv')
 sellp = pd.read_csv(f'{INPUT_DIR}/sell_prices.csv')
 
 
-# In[4]:
 
 
 ss
 
 
-# In[5]:
 
 
 sellp
 
 
-# In[6]:
 
 
 sellp['id'] = sellp.progress_apply(lambda row: row.item_id + '_' + row.store_id + '_validation', axis = 1)
 
 
-# In[7]:
 
 
 sellp
 
 
-# In[8]:
 
 
 #calculate mean price for each item, store pair
@@ -74,7 +66,6 @@ for i, v in itemToValues.items():
 plt.hist(itemToMeanValue.values(), bins = 30) 
 
 
-# In[9]:
 
 
 # check for consistencey
@@ -93,13 +84,11 @@ allStores.sort()
 print(allStores)
 
 
-# In[10]:
 
 
 stv
 
 
-# In[11]:
 
 
 filtered = stv[list(stv)[6:]]
@@ -109,21 +98,18 @@ totalSoldLog = totalSold.apply(log)
 plt.hist(totalSoldLog, bins = 100) #histogram of log total sold by item
 
 
-# In[12]:
 
 
 totalSoldByDay = filtered.sum(axis = 0)
 totalSoldByDay.plot()
 
 
-# In[13]:
 
 
 fewSold = totalSoldByDay[totalSoldByDay < 10000]
 cal[cal.d.isin(fewSold.index)] #big decline in sales on christmas
 
 
-# In[14]:
 
 
 CAStores = allStores[:4]
@@ -140,7 +126,6 @@ for stateStores in [CAStores, TXStores, WIStores]:
     plt.show()
 
 
-# In[15]:
 
 
 itemToMeanValue = pd.Series(itemToMeanValue)
@@ -150,7 +135,6 @@ plt.title('log of total sold vs mean price')
 plt.scatter(x = itemToMeanValue, y = totalSoldLog)
 
 
-# In[16]:
 
 
 d_cols = [c for c in stv.columns if 'd_' in c] # sales data columns
@@ -167,7 +151,6 @@ plt.legend('')
 plt.show()
 
 
-# In[17]:
 
 
 # Calendar data looks like this (only showing columns we care about for now)
@@ -175,7 +158,6 @@ cal[['d','date','event_name_1','event_name_2',
      'event_type_1','event_type_2', 'snap_CA']].head()
 
 
-# In[18]:
 
 
 # Merge calendar on our items' data
@@ -200,7 +182,6 @@ example3 = example3.reset_index().rename(columns={'index': 'd'}) # make the inde
 example3 = example3.merge(cal, how='left', validate='1:1')
 
 
-# In[19]:
 
 
 examples = ['FOODS_3_090_CA_3','HOBBIES_1_234_CA_3','HOUSEHOLD_1_118_CA_3']
@@ -231,7 +212,6 @@ for i in [0, 1, 2]:
     plt.show()
 
 
-# In[20]:
 
 
 twenty_examples = stv.sample(20, random_state=529)         .set_index('id')[d_cols]     .T     .merge(cal.set_index('d')['date'],
@@ -241,7 +221,6 @@ twenty_examples = stv.sample(20, random_state=529)         .set_index('id')[d_co
     .set_index('date')
 
 
-# In[21]:
 
 
 fig, axs = plt.subplots(10, 2, figsize=(15, 20))
@@ -256,20 +235,17 @@ plt.tight_layout()
 plt.show()
 
 
-# In[22]:
 
 
 stv['cat_id'].unique()
 
 
-# In[23]:
 
 
 stv.groupby('cat_id').count()['id']     .sort_values()     .plot(kind='barh', figsize=(15, 5), title='Count of Items by Category')
 plt.show()
 
 
-# In[24]:
 
 
 past_sales = stv.set_index('id')[d_cols]     .T     .merge(cal.set_index('d')['date'],
@@ -288,7 +264,6 @@ plt.legend(stv['cat_id'].unique())
 plt.show()
 
 
-# In[25]:
 
 
 past_sales_clipped = past_sales.clip(0, 1)
@@ -303,7 +278,6 @@ plt.legend(stv['cat_id'].unique())
 plt.show()
 
 
-# In[26]:
 
 
 store_list = sellp['store_id'].unique()
@@ -316,7 +290,6 @@ plt.legend(store_list)
 plt.show()
 
 
-# In[27]:
 
 
 fig, axes = plt.subplots(5, 2, figsize=(15, 10), sharex=True)
@@ -336,7 +309,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[28]:
 
 
 # ----------------------------------------------------------------------------
@@ -393,7 +365,6 @@ def calmap(ax, year, data):
               cmap="RdYlBu_r", origin="lower", alpha=.75)
 
 
-# In[29]:
 
 
 print('The lowest sale date was:', past_sales.sum(axis=1).sort_values().index[0],
@@ -402,7 +373,6 @@ print('The lowest sale date was:', past_sales.sum(axis=1).sort_values(ascending=
      'with', past_sales.sum(axis=1).sort_values(ascending=False).values[0], 'sales')
 
 
-# In[30]:
 
 
 from sklearn.preprocessing import StandardScaler
@@ -428,7 +398,6 @@ for i in stv['cat_id'].unique():
     plt.show()
 
 
-# In[31]:
 
 
 fig, ax = plt.subplots(figsize=(15, 5))
@@ -448,7 +417,6 @@ plt.legend(stores)
 plt.show()
 
 
-# In[32]:
 
 
 sellp['Category'] = sellp['item_id'].str.split('_', expand=True)[0]
@@ -465,7 +433,6 @@ for cat, d in sellp.groupby('Category'):
 plt.tight_layout()
 
 
-# In[33]:
 
 
 thirty_day_avg_map = stv.set_index('id')[d_cols[-30:]].mean(axis=1).to_dict()
@@ -476,7 +443,6 @@ for f in fcols:
 ss.to_csv('submission.csv', index=False)
 
 
-# In[ ]:
 
 
 

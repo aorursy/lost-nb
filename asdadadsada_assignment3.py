@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -18,14 +17,12 @@ import matplotlib.pyplot as plt
 import random
 
 
-# In[2]:
 
 
 CLASS = ['Black-grass', 'Charlock', 'Cleavers', 'Common Chickweed', 'Common wheat', 'Fat Hen', 'Loose Silky-bent',
               'Maize', 'Scentless Mayweed', 'Shepherds Purse', 'Small-flowered Cranesbill', 'Sugar beet']
 
 
-# In[3]:
 
 
 train_dir = '../input/train'
@@ -52,7 +49,6 @@ random.shuffle(train_imgs)  # shuffle it randomly
 test_imgs
 
 
-# In[4]:
 
 
 import cv2
@@ -102,13 +98,11 @@ def read_and_process_image(list_of_images):
     return X, y
 
 
-# In[5]:
 
 
 X, y = read_and_process_image(train_imgs)
 
 
-# In[6]:
 
 
 plt.figure(figsize=(20,10))
@@ -118,7 +112,6 @@ for i in range(columns):
     plt.imshow(X[i])
 
 
-# In[7]:
 
 
 import seaborn as sns
@@ -131,14 +124,12 @@ sns.countplot(y)
 plt.title('Labels for seedlings')
 
 
-# In[8]:
 
 
 print("Shape of train images is:", X.shape)
 print("Shape of labels is:", y.shape)
 
 
-# In[9]:
 
 
 #Lets split the data into train and test set
@@ -157,7 +148,6 @@ print(y_train)
 print(y_val.shape)
 
 
-# In[10]:
 
 
 #get the length of the train and validation data
@@ -168,7 +158,6 @@ nval = len(X_val)
 batch_size = 32
 
 
-# In[11]:
 
 
 from keras import layers
@@ -208,20 +197,17 @@ model.add(Dense(128, activation='relu'))
 model.add(Dense(12, activation = 'softmax'))
 
 
-# In[12]:
 
 
 #Lets see our model
 model.summary()
 
 
-# In[13]:
 
 
 model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(lr=1e-4), metrics=['acc'])
 
 
-# In[14]:
 
 
 train_datagen = ImageDataGenerator(rescale=1./255,   #Scale the image between 0 and 1
@@ -235,7 +221,6 @@ train_datagen = ImageDataGenerator(rescale=1./255,   #Scale the image between 0 
 val_datagen = ImageDataGenerator(rescale=1./255)  #We do not augment validation data. we only perform rescale
 
 
-# In[15]:
 
 
 train_generator = train_datagen.flow(X_train, y_train, batch_size=batch_size)
@@ -245,7 +230,6 @@ print(ntrain)
 print(nval)
 
 
-# In[16]:
 
 
 history = model.fit_generator(train_generator,
@@ -255,7 +239,6 @@ history = model.fit_generator(train_generator,
                               validation_steps=nval // batch_size)
 
 
-# In[17]:
 
 
 #Save the model
@@ -263,7 +246,6 @@ model.save_weights('model_wieghts.h5')
 model.save('model_keras.h5')
 
 
-# In[18]:
 
 
 #lets plot the train and val curve
@@ -291,7 +273,6 @@ plt.legend()
 plt.show()
 
 
-# In[19]:
 
 
 #Now lets predict test set
@@ -300,7 +281,6 @@ x = np.array(X_test)
 test_datagen = ImageDataGenerator(rescale=1./255)
 
 
-# In[20]:
 
 
 i = 0
@@ -342,7 +322,6 @@ for batch in test_datagen.flow(x, batch_size=1):
 plt.show()
 
 
-# In[21]:
 
 
 def read_and_process_test_image(list_of_images):
@@ -367,7 +346,6 @@ x = np.array(X_test)
 test_datagen = ImageDataGenerator(rescale=1./255)
 
 
-# In[22]:
 
 
 n = 0

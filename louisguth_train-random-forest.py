@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -29,7 +28,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 df_train = pd.read_csv('../input/train.csv')
@@ -37,7 +35,6 @@ df_test = pd.read_csv('../input/test.csv')
 df_test.head()
 
 
-# In[3]:
 
 
 def encode(train, test):
@@ -55,7 +52,6 @@ def encode(train, test):
 train_features, train_target, labels, test_features,         test_ids, classes = encode(df_train, df_test)
 
 
-# In[4]:
 
 
 sss = StratifiedShuffleSplit(labels, 10, test_size=0.2, random_state=23)
@@ -65,7 +61,6 @@ for train_index, cross_index in sss:
     train_training_target, train_cross_target = labels[train_index], labels[cross_index]
 
 
-# In[5]:
 
 
 from sklearn.metrics import accuracy_score, log_loss

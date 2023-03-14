@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -24,7 +23,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 # retrieve dataset
@@ -32,7 +30,6 @@ df1 = pd.read_csv('../input/cities.csv')
 df1.head(12)
 
 
-# In[3]:
 
 
 #Visualisation of data:
@@ -41,7 +38,6 @@ plt.scatter(df1['X'],df1['Y'],marker = '.',c=(df1.CityId != 0).astype(int), cmap
 plt.show()
 
 
-# In[4]:
 
 
 # we only need 10% of the dataset. Therefore:
@@ -50,7 +46,6 @@ print(len(df2))
 df2.head(10)
 
 
-# In[5]:
 
 
 # this is a visualisation of what we have left over:
@@ -61,7 +56,6 @@ plt.grid(False)
 plt.show()
 
 
-# In[6]:
 
 
 # The first way i am going to run this dataset is a very basic algorithm which will run them in order of their Id, I'll call this the 'worst case'.
@@ -91,7 +85,6 @@ print(in_index_order(df2))
 
 
 
-# In[7]:
 
 
 # Now we know that the 'worst_case' distance is roughly, we can start to implement better algorithms for distance.
@@ -135,7 +128,6 @@ def total_distance(dfcity,path):
 
 
 
-# In[8]:
 
 
 # sorting the cities into nearest neighbour by X
@@ -157,7 +149,6 @@ print('Total distance with the sorted city by '"Y"' path is '+ "{:,}".format(tot
 
 
 
-# In[9]:
 
 
 # First 1800 plot points using sorted cities if X
@@ -167,7 +158,6 @@ fig, ax = plt.subplots(figsize=(20,20))
 ax.plot(df_path.iloc[0:1800,]['X'], df_path.iloc[0:1800,]['Y'],marker = 'o')
 
 
-# In[10]:
 
 
 # Nearest Neighbour
@@ -183,7 +173,6 @@ def sieve_eratosthenes(n):
     return primes
 
 
-# In[11]:
 
 
 
@@ -197,7 +186,6 @@ penalization = 0.1 * (1 - primes) + 1
 df2.head()
 
 
-# In[12]:
 
 
 
@@ -218,7 +206,6 @@ def get_next_city(dist, avail):
     return avail[np.argmin(dist[avail])]
 
 
-# In[13]:
 
 
 
@@ -248,7 +235,6 @@ path.append(0)
 print("Total distance traveled "+ "{:,}".format(sum(distances)))
 
 
-# In[14]:
 
 
 def plot_path(path, coordinates):

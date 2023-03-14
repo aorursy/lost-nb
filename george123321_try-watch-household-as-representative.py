@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # import libraries
@@ -27,7 +26,6 @@ import os
 print('libraries done')
 
 
-# In[ ]:
 
 
 ''' 1.get data - train/test '''
@@ -48,7 +46,6 @@ print('libraries done')
 ''' 12.make submission '''
 
 
-# In[ ]:
 
 
 ''' 1.get data - train/test '''
@@ -73,7 +70,6 @@ print(train.head(2)) # watch data
 print(train.describe()) # watch data without nas
 
 
-# In[ ]:
 
 
 ''' 2.glimpse of Data '''
@@ -101,7 +97,6 @@ train.loc[train['edjefe']=='no','edjefe']='0'
 train['edjefe']=train['edjefe'].astype(float)
 
 
-# In[ ]:
 
 
 
@@ -116,7 +111,6 @@ print(hm.corr())
 ''' 'rez_esc' is bad - so omit by other reason - see further '''
 
 
-# In[ ]:
 
 
 ''' 3.Data Exploration '''
@@ -150,7 +144,6 @@ concrete_dum_vars=l0.copy()
 print(concrete_dum_vars)
 
 
-# In[ ]:
 
 
 # plot id unique variables on train set
@@ -174,7 +167,6 @@ for v in l0[1:3]:
     plt.show()
 
 
-# In[ ]:
 
 
 ''' concrete not dummy vars '''
@@ -190,13 +182,11 @@ sns.jointplot(dtrain['escolari'], dtrain[target], kind="kde")
 # with education level target variance increases
 
 
-# In[ ]:
 
 
 'edjefa'  in train.columns
 
 
-# In[ ]:
 
 
 ''' general variables '''
@@ -229,7 +219,6 @@ print(general_categ_vars)
 
 
 
-# In[ ]:
 
 
 
@@ -237,7 +226,6 @@ print(general_categ_vars)
 train=train.drop(['edjefa','edjefe'],axis=1)
 
 
-# In[ ]:
 
 
 # general dummy variables
@@ -257,7 +245,6 @@ for v in l0:
     plt.show()
 
 
-# In[ ]:
 
 
 ''' general not dummy variables '''
@@ -268,7 +255,6 @@ sns.jointplot(gra['overcrowding'], gra['meaneduc'], kind="kde")
 sns.jointplot(gra['v2a1'], gra['qmobilephone'], kind="kde")
 
 
-# In[ ]:
 
 
 # watch dependency to target relation
@@ -278,7 +264,6 @@ sns.factorplot(x=target,y='dependency', data=gra, kind="bar", palette="muted", a
 fig.show()
 
 
-# In[ ]:
 
 
 # smoother normal distribution
@@ -292,7 +277,6 @@ plt.figure()
 stats.probplot(bed_t, dist='norm', fit=True, plot=plt.subplot(111))
 
 
-# In[ ]:
 
 
 # pair plot of continious variables
@@ -302,7 +286,6 @@ paircol=['v2a1', 'rooms', 'v18q', 'v18q1', 'tamhog',
 sns.pairplot(gra[paircol].dropna(how='any'))
 
 
-# In[ ]:
 
 
 # find some more correlated variables
@@ -311,21 +294,18 @@ print(gra[['tamhog','hhsize']].corr() )
 print('We will choose only on of them- hhsize seems more representable')
 
 
-# In[ ]:
 
 
 # plot frequency of cross variables *(age - hogar_total)
 sns.heatmap(pd.crosstab(train['age'], train['hogar_total']))
 
 
-# In[ ]:
 
 
 # plot frequency of cross variables *(v18q - area2)
 sns.heatmap(pd.crosstab(train['v18q'], train['area2']))
 
 
-# In[ ]:
 
 
 ''' 4.many missing rows '''
@@ -346,7 +326,6 @@ train=pd.concat([con.loc[prp ,:],train.loc[train['stage']=='test',:]],axis=0)
 print('done')
 
 
-# In[ ]:
 
 
 ''' 5.manage missings '''
@@ -402,7 +381,6 @@ d=pd.merge(contin_vars,categ_vars,left_index=True, right_index=True)
 print('done')
 
 
-# In[ ]:
 
 
 ''' 6.Flattern id by idhogar within (house mates form rows to columns) '''
@@ -428,7 +406,6 @@ sns.heatmap(paren_heat1)
 print('We see that mates 1,2,3 are most met - 8000 cases')
 
 
-# In[ ]:
 
 
 
@@ -459,7 +436,6 @@ d['par']=d[concrete_dum_vars[0]].idxmax(axis=1)
 d['par']=d['par'].map(lambda x: int(x.replace('parentesco','') ))
 
 
-# In[ ]:
 
 
 v=d.copy()
@@ -469,7 +445,6 @@ v['stage']=train['stage']
 v=v.loc[v['stage']=='train',:]
 
 
-# In[ ]:
 
 
 # check  how mates1,2,3 are though representative
@@ -484,7 +459,6 @@ print(g.head(3))
 print('There are only {0} outlier households which dont follow my assumptions'.format(g.shape[0]) )
 
 
-# In[ ]:
 
 
 # one more check of mates to concrete variables dependencies
@@ -508,7 +482,6 @@ for h in ['instlevel','sex','estadocivil','instlevel']:
     plt.close()
 
 
-# In[ ]:
 
 
 ''' 7.aggregate by idhogar '''
@@ -554,7 +527,6 @@ print(dd.index.nunique())
 print(dd.columns)
 
 
-# In[ ]:
 
 
 ''' 8.watch outliers '''
@@ -611,7 +583,6 @@ dtrain=dtrain.astype(float)
 print('done')
 
 
-# In[ ]:
 
 
 ''' 9.get training and testing sets ''' 
@@ -620,7 +591,6 @@ train_m=dtrain
 test_m=dd.loc[dd['stage']=='test'].drop(target,axis=1)
 
 
-# In[ ]:
 
 
 ''' 10.get models and thier parameters '''
@@ -666,7 +636,6 @@ def param_mods(parameters):
             )
 
 
-# In[ ]:
 
 
 ''' 11.train models '''
@@ -707,7 +676,6 @@ cl_param={'scoring' :'f1_macro'}
 modd=['nbc', 'adc', 'gbc']
 
 
-# In[ ]:
 
 
 print(X_train.head(3) )
@@ -715,7 +683,6 @@ print(X_train.shape)
 print(Y_train.head(3) )
 
 
-# In[ ]:
 
 
 # grid search
@@ -741,13 +708,11 @@ cv_results = {k:np.round(np.mean(v)-3*np.std(v),2) for k,v in cv_results.items()
 print('done')
 
 
-# In[ ]:
 
 
 print(cv_results)
 
 
-# In[ ]:
 
 
 # plot training results
@@ -798,7 +763,6 @@ y_pred=modf.predict(X_val)
 print(f1_score(y_true, y_pred,average='macro'))
 
 
-# In[ ]:
 
 
 ''' 12.make submission '''
@@ -815,7 +779,6 @@ print(X_test.head())
 print(X_test.shape)
 
 
-# In[ ]:
 
 
 #  predict by id
@@ -836,7 +799,6 @@ print(Y_test.head(2))
 print(Y_test.shape) 
 
 
-# In[ ]:
 
 
 

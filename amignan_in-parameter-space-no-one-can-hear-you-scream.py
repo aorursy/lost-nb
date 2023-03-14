@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import numpy as np
@@ -61,7 +59,6 @@ from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from catboost import CatBoostRegressor
 
 
-# In[3]:
 
 
 train = pd.read_csv('../input/train.csv')
@@ -69,13 +66,11 @@ test = pd.read_csv('../input/test.csv')
 train.shape, test.shape
 
 
-# In[4]:
 
 
 train.dtypes
 
 
-# In[5]:
 
 
 # sanity check: target column
@@ -84,13 +79,11 @@ y = list(test.columns.values)
 [item for item in x if item not in y]
 
 
-# In[6]:
 
 
 train.head(2)
 
 
-# In[7]:
 
 
 fig = plt.figure(figsize=(15, 5))
@@ -98,7 +91,6 @@ plt.title("Distribution of NAN values")
 train.isna().sum().sort_values(ascending = True).plot(kind = 'barh')
 
 
-# In[8]:
 
 
 # reformat strings into dictionaries
@@ -114,14 +106,12 @@ dict_columns = ['belongs_to_collection', 'genres', 'production_companies', 'prod
 train = refmt_str2dict(train, dict_columns)
 
 
-# In[9]:
 
 
 # path found here: https://www.kaggle.com/artgor/eda-feature-engineering-and-model-interpretation
 TMDB_path = 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/'
 
 
-# In[10]:
 
 
 nrow = 3
@@ -135,7 +125,6 @@ for i in np.random.randint(train.shape[0], size=nrow*7):
     k += 1
 
 
-# In[11]:
 
 
 def display_posters(movies, nrow=1):
@@ -152,7 +141,6 @@ def display_posters(movies, nrow=1):
         ax.set_title(f"{movies['title'][i][0:22]}")
 
 
-# In[12]:
 
 
 # correct 'release_date' year
@@ -167,7 +155,6 @@ train['release_date'] = train['release_date'].apply(lambda x: fix_date(x))
 train['release_date'] = pd.to_datetime(train['release_date'])
 
 
-# In[13]:
 
 
 def process_date(df):
@@ -180,14 +167,12 @@ def process_date(df):
 train = process_date(train)
 
 
-# In[14]:
 
 
 oldies = train[train['release_date_year'] < 1930].reset_index()
 display_posters(oldies)
 
 
-# In[15]:
 
 
 def WordCloud_fromDict(dict_name, key='name'):
@@ -199,7 +184,6 @@ def WordCloud_fromDict(dict_name, key='name'):
     return wordcloud
 
 
-# In[16]:
 
 
 fig = plt.figure(figsize = (20, 10))
@@ -214,7 +198,6 @@ ax.axis('off')
 plt.show()
 
 
-# In[17]:
 
 
 list_genres = list(train['genres'].apply(lambda x: [i['name'] for i in x] if x != {} else []).values)
@@ -224,14 +207,12 @@ keywords = set([y for x in list_keywords for y in x])
 len(genres), len(keywords)
 
 
-# In[18]:
 
 
 timeTravelMovies = train[train['Keywords'].apply(lambda x: 'time travel' in [i['name'] for i in x])].reset_index()
 display_posters(timeTravelMovies)
 
 
-# In[19]:
 
 
 nrow = 2
@@ -250,21 +231,18 @@ for i in top_cast:
     k += 1
 
 
-# In[20]:
 
 
 BillMurrayMovies = train[train['cast'].apply(lambda x: 'Bill Murray' in [i['name'] for i in x])].reset_index()
 display_posters(BillMurrayMovies)
 
 
-# In[21]:
 
 
 NolanMovies = train[train['crew'].apply(lambda x: 'Christopher Nolan' in [i['name'] for i in x if                                                                          i['job'] == 'Director'])].reset_index()
 display_posters(NolanMovies)
 
 
-# In[22]:
 
 
 list_crew = list(train['crew'].apply(lambda x: [i['name'] for i in x] if x != {} else []).values)
@@ -273,7 +251,6 @@ crew = set([y for x in list_crew for y in x])
 len(cast), len(crew)
 
 
-# In[23]:
 
 
 fig = plt.figure(figsize = (20, 10))
@@ -288,7 +265,6 @@ ax.axis('off')
 plt.show()
 
 
-# In[24]:
 
 
 list_prodCompanies = list(train['production_companies'].apply(
@@ -300,7 +276,6 @@ prodCountries = set([y for x in list_prodCountries for y in x])
 len(prodCompanies), len(prodCountries)
 
 
-# In[25]:
 
 
 AmblinMovies = train[train['production_companies'].apply(
@@ -308,13 +283,11 @@ AmblinMovies = train[train['production_companies'].apply(
 display_posters(AmblinMovies)
 
 
-# In[26]:
 
 
 train[['budget', 'revenue', 'runtime', 'popularity']].describe()
 
 
-# In[27]:
 
 
 plt.figure(figsize=(20,8))
@@ -328,7 +301,6 @@ plt.subplots_adjust(hspace=0.5)
 plt.show()
 
 
-# In[28]:
 
 
 yr_release = train['release_date_year'].value_counts().sort_index()
@@ -351,7 +323,6 @@ plt.subplots_adjust(hspace=0.3)
 plt.show()
 
 
-# In[29]:
 
 
 OneMovie = train[train['title'] == 'The Terminator']
@@ -361,7 +332,6 @@ text_merged = list(OneMovie['overview'])[0] + ' | ' + list(OneMovie['tagline'])[
 text_merged
 
 
-# In[30]:
 
 
 # The following will not be used, as removing stopwords, getting stem, etc. will be done via TfidfVectorizer...
@@ -406,63 +376,53 @@ for id in train['id']:
 train['text_merged'] = text_merged2train
 
 
-# In[31]:
 
 
 #check
 #list(train[train['title'] == 'The Terminator']['text_merged'])
 
 
-# In[32]:
 
 
 train['belongs_to_collection'].head(5)
 
 
-# In[33]:
 
 
 train['belongs_to_collection'].apply(lambda x: 1 if x != {} else 0).value_counts()
 
 
-# In[34]:
 
 
 train['belongs2coll_yn'] = train['belongs_to_collection'].apply(lambda x: len(x) if x != {} else 0)
 train['homepage'].head(5)
 
 
-# In[35]:
 
 
 train['homepage'].apply(lambda x: 1 if pd.isnull(x) == False else 0).value_counts()
 
 
-# In[36]:
 
 
 train['homepage_yn'] = train['homepage'].apply(lambda x: 1 if pd.isnull(x) == False else 0)
 
 
-# In[37]:
 
 
 train['imdb_id'].head(5)
 
 
-# In[38]:
 
 
 ' '.join(set(train['original_language'])), len(set(train['original_language']))
 
 
-# In[39]:
 
 
 train['original_title'][0:5], train['title'][0:5]
 
 
-# In[40]:
 
 
 list_languages = list(train['spoken_languages'].apply(lambda x: [i['name'] for i in x] if x != {} else []).values)
@@ -470,20 +430,17 @@ languages = set([y for x in list_languages for y in x])
 len(languages), Counter([i for j in list_languages for i in j]).most_common(5)
 
 
-# In[41]:
 
 
 train['status'].apply(lambda x: 1 if x == 'Released' else 0).value_counts(), set(train['status'])
 
 
-# In[42]:
 
 
 # strings to dictionaries
 test = refmt_str2dict(test, dict_columns)
 
 
-# In[43]:
 
 
 # One release date missing for the test set, for movie 'Jails, Hospitals & Hip-Hop'
@@ -497,7 +454,6 @@ test['release_date'] = pd.to_datetime(test['release_date'])
 test = process_date(test)
 
 
-# In[44]:
 
 
 text_merged2test = []
@@ -528,20 +484,17 @@ for id in test['id']:
 test['text_merged'] = text_merged2test
 
 
-# In[45]:
 
 
 #list(test[test['title'] == 'Transcendence']['text_merged'])
 
 
-# In[46]:
 
 
 test['belongs2coll_yn'] = test['belongs_to_collection'].apply(lambda x: len(x) if x != {} else 0)
 test['homepage_yn'] = test['homepage'].apply(lambda x: 1 if pd.isnull(x) == False else 0)
 
 
-# In[47]:
 
 
 yr_release_test = test['release_date_year'].value_counts().sort_index()
@@ -560,7 +513,6 @@ plt.subplots_adjust(hspace=0.3)
 plt.show()
 
 
-# In[48]:
 
 
 test[test['release_date_year'] == 1927]
@@ -570,7 +522,6 @@ test[test['release_date_year'] == 1927]
 #production, which would be about $12 million at 2009 prices
 
 
-# In[49]:
 
 
 nrow = 2
@@ -589,7 +540,6 @@ for i in top_cast_INtest:
     k += 1
 
 
-# In[50]:
 
 
 cols2drop = ['id','belongs_to_collection', 'homepage', 'imdb_id', 'original_title', 'overview',
@@ -601,13 +551,11 @@ test = test.drop(cols2drop, axis=1)
 train.columns, test.columns
 
 
-# In[51]:
 
 
 df4corr = train[['budget', 'popularity', 'runtime', 'release_date_year', 'release_date_month', 'release_date_day',                    'release_date_weekday', 'release_date_weekofyear', 'release_date_quarter', 'revenue']]
 
 
-# In[52]:
 
 
 correlation = df4corr.corr()
@@ -615,7 +563,6 @@ plt.figure(figsize=(12, 12))
 sns.heatmap(correlation, annot=True, square=True, cmap='coolwarm')
 
 
-# In[53]:
 
 
 _, axes = plt.subplots(2, 4, figsize=(20, 8))
@@ -632,7 +579,6 @@ sns.stripplot(x = 'release_date_weekday', y = 'revenue', data = train, ax=axes[1
 sns.stripplot(x = 'release_date_month', y = 'revenue', data = train, ax=axes[1,2])
 
 
-# In[54]:
 
 
 train['budget_yn'] = train['budget'].apply(lambda x: 0 if x == 0 else 1)
@@ -641,7 +587,6 @@ train['budget_per_year'] = train['budget']/train['release_date_year']
 #train['popularity_clipped'] = np.where(train['popularity'] < 40, train['popularity'], 40)
 
 
-# In[55]:
 
 
 _, axes = plt.subplots(1, 3, figsize=(20, 8))
@@ -650,7 +595,6 @@ sns.stripplot(x = 'homepage_yn', y = 'revenue', data = train, ax=axes[1])
 sns.stripplot(x = 'budget_yn', y = 'revenue', data = train, ax=axes[2])
 
 
-# In[56]:
 
 
 train['n_genres'] = train['genres'].apply(lambda x: len(x) if x != {} else 0)
@@ -660,7 +604,6 @@ train['n_cast'] = train['cast'].apply(lambda x: len(x) if x != {} else 0)
 train['n_crew'] = train['crew'].apply(lambda x: len(x) if x != {} else 0)
 
 
-# In[57]:
 
 
 _, axes = plt.subplots(2, 3, figsize=(20, 8))
@@ -671,7 +614,6 @@ sns.regplot(x = 'n_cast', y = 'revenue', data = train, marker='+', ax=axes[1,0])
 sns.regplot(x = 'n_crew', y = 'revenue', data = train, marker='+', ax=axes[1,1])
 
 
-# In[58]:
 
 
 train['genres_collapsed'] = train['genres'].apply(lambda x: ' '.                                                  join(sorted([i['name'] for i in x])) if x != {} else '')
@@ -681,14 +623,12 @@ for g in genres:
 keys_genre = ['genre_' + g for g in genres]
 
 
-# In[59]:
 
 
 n_prodCompanies = 30
 Counter([i for j in list_prodCompanies for i in j]).most_common(n_prodCompanies)
 
 
-# In[60]:
 
 
 train['production_companies_collapsed'] = train['production_companies'].apply(lambda x: ' '.                                                    join(sorted([i['name'] for i in x])) if x != {} else '')
@@ -699,14 +639,12 @@ for comp in top_prodCompanies:
 keys_production_company = ['production_company_' + comp for comp in top_prodCompanies]
 
 
-# In[61]:
 
 
 n_prodCountries = 30
 Counter([i for j in list_prodCountries for i in j]).most_common(n_prodCountries)
 
 
-# In[62]:
 
 
 train['production_countries_collapsed'] = train['production_countries'].apply(lambda x: ' '.                                                    join(sorted([i['name'] for i in x])) if x != {} else '')
@@ -717,7 +655,6 @@ for comp in top_prodCountries:
 keys_production_country = ['production_country_' + comp for comp in top_prodCountries]
 
 
-# In[63]:
 
 
 #train['EnglishLead_yn'] = train['original_language'].apply(lambda x: 1 if x == 'en' else 0)
@@ -728,7 +665,6 @@ for l in top_languages:
 keys_language = ['language_' + l for l in top_languages]
 
 
-# In[64]:
 
 
 # use lead actor for top_cast
@@ -737,7 +673,6 @@ list_lead = list(train['cast'].apply(lambda x: [i['name'] for i in x if i['cast_
 Counter([i for j in list_lead for i in j]).most_common(n_lead)
 
 
-# In[65]:
 
 
 # different top leads in training and test sets - used combined set
@@ -747,7 +682,6 @@ list_lead = list(fullset['cast'].apply(lambda x: [i['name'] for i in x if i['cas
 Counter([i for j in list_lead for i in j]).most_common(n_lead)
 
 
-# In[66]:
 
 
 # find top_lead even if not lead in movie
@@ -759,7 +693,6 @@ for lead in top_lead:
 keys_cast = ['cast_' + lead for lead in top_lead]
 
 
-# In[67]:
 
 
 n_directors = 50
@@ -768,7 +701,6 @@ list_directors = list(train['crew'].apply(
 Counter([i for j in list_directors for i in j]).most_common(n_directors)
 
 
-# In[68]:
 
 
 #same as cast - use combined set
@@ -777,7 +709,6 @@ list_directors = list(fullset['crew'].apply(
 Counter([i for j in list_directors for i in j]).most_common(n_directors)
 
 
-# In[69]:
 
 
 train['directors_collapsed'] = train['crew'].apply(lambda x: ' '.        join(sorted([i['name'] for i in x if i['job'] == 'Director'])) if x != {} else '')
@@ -788,7 +719,6 @@ for d in top_directors:
 keys_director = ['director_' + d for d in top_directors]
 
 
-# In[70]:
 
 
 # deprecated: was used when text transformation was already performed on 'text_merged'
@@ -802,7 +732,6 @@ keys_director = ['director_' + d for d in top_directors]
 #lexicon10
 
 
-# In[71]:
 
 
 vectorizer = TfidfVectorizer(
@@ -816,21 +745,18 @@ overview_transf = vectorizer.fit_transform(train['text_merged'])
 overview_transf
 
 
-# In[72]:
 
 
 lexicon = list(vectorizer.vocabulary_.keys())
 #lexicon
 
 
-# In[73]:
 
 
 linreg = LinearRegression()
 linreg.fit(overview_transf, train['revenue'])
 
 
-# In[74]:
 
 
 top = 100   #500: 2.06288, 100 : 2.01548, 50: 2.01763 (test set result)
@@ -838,7 +764,6 @@ negcorrTop = np.argsort(linreg.coef_)[0:top]
 poscorrTop = np.argsort(linreg.coef_)[len(linreg.coef_)-top:]
 
 
-# In[75]:
 
 
 keywords_newPos = [lexicon[i] for i in poscorrTop]
@@ -847,7 +772,6 @@ keywords_new = keywords_newPos + keywords_newNeg
 keywords_new[0:10]
 
 
-# In[76]:
 
 
 for k in keywords_new:
@@ -856,7 +780,6 @@ for k in keywords_new:
 keys_txt = ['txt_' + s for s in keywords_new]
 
 
-# In[77]:
 
 
 test['budget_yn'] = test['budget'].apply(lambda x: 0 if x == 0 else 1)
@@ -896,7 +819,6 @@ for k in keywords_new:
     test['txt_' + k] =  test['text_merged'].apply(lambda x: 1 if k in x else 0)
 
 
-# In[78]:
 
 
 cols2drop = ['genres', 'production_companies', 'production_countries', 'genres_collapsed',
@@ -906,7 +828,6 @@ train = train.drop(cols2drop, axis=1)
 test = test.drop(cols2drop, axis=1)
 
 
-# In[79]:
 
 
 def RMSE(y_obs, y_pred):
@@ -927,7 +848,6 @@ def LinearRegression(X, y):
     return coeffs
 
 
-# In[80]:
 
 
 x = train['budget'].values
@@ -938,7 +858,6 @@ y = np.reshape(y, (len(y),1))
 np.shape(X), np.shape(y)
 
 
-# In[81]:
 
 
 model_baseline_coeffs = LinearRegression(X, y)
@@ -946,7 +865,6 @@ model_baseline_pred_train = model_baseline_coeffs[0] + model_baseline_coeffs[1]*
 model_baseline_coeffs
 
 
-# In[82]:
 
 
 plt.figure(figsize=(10,5))
@@ -955,7 +873,6 @@ plt.scatter(X, y)
 plt.plot(X, model_baseline_pred_train, c = 'black')
 
 
-# In[83]:
 
 
 #x=budget: 2.6656031635747532
@@ -963,7 +880,6 @@ plt.plot(X, model_baseline_pred_train, c = 'black')
 RMSLE(y, model_baseline_pred_train)
 
 
-# In[84]:
 
 
 train_selected = train[['budget', 'popularity', 'runtime',
@@ -980,7 +896,6 @@ X = train_selected.drop(['revenue'], axis=1)
 y = train_selected['revenue']
 
 
-# In[85]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4)
@@ -992,7 +907,6 @@ model_RF_pred_valset = model_RF.predict(X_test)
 RMSLE(y_test, model_RF_pred_valset)
 
 
-# In[86]:
 
 
 model_RF.fit(X, y)
@@ -1000,7 +914,6 @@ model_RF_pred_train = model_RF.predict(X)
 RMSLE(y, model_RF_pred_train)
 
 
-# In[87]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(X, np.log1p(y), test_size=0.4)
@@ -1012,7 +925,6 @@ model_CatBoost_pred_valset = model_CatBoost.predict(X_test)
 RMSE(y_test, model_CatBoost_pred_valset)
 
 
-# In[88]:
 
 
 model_CatBoost.fit(X, np.log1p(y))
@@ -1020,7 +932,6 @@ model_CatBoost_pred_train = model_CatBoost.predict(X)
 RMSE(np.log1p(y), model_CatBoost_pred_train)
 
 
-# In[89]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(X, np.log1p(y), test_size=0.4)
@@ -1032,7 +943,6 @@ model_gboost_pred_valset = model_gboost.predict(X_test)
 RMSE(y_test, model_gboost_pred_valset)
 
 
-# In[90]:
 
 
 model_gboost.fit(X, np.log1p(y))
@@ -1040,14 +950,12 @@ model_gboost_pred_train = model_gboost.predict(X)
 RMSE(np.log1p(y), model_gboost_pred_train)
 
 
-# In[91]:
 
 
 model_ensemble_pred_train = (model_CatBoost_pred_train+model_gboost_pred_train)/2
 RMSE(np.log1p(y), model_ensemble_pred_train)
 
 
-# In[92]:
 
 
 x = test['budget'].values
@@ -1055,13 +963,11 @@ X = np.reshape(x, (len(x),1))     #len(x) samples, 1 dimension
 np.shape(X)
 
 
-# In[93]:
 
 
 model_baseline_pred_test = model_baseline_coeffs[0] + model_baseline_coeffs[1]*X
 
 
-# In[94]:
 
 
 submission = pd.read_csv('../input/sample_submission.csv')
@@ -1069,7 +975,6 @@ submission['revenue'] = model_baseline_pred_test
 submission.to_csv('submission_baseline.csv', index = False)
 
 
-# In[95]:
 
 
 test_features = test[['budget', 'popularity', 'runtime',
@@ -1083,25 +988,21 @@ X = test_features
 test_features.columns[test_features.isna().any()].tolist()
 
 
-# In[96]:
 
 
 test_features['runtime'][test_features['runtime'].isna() == True]
 
 
-# In[97]:
 
 
 test_features['runtime'][test_features['runtime'].isna() == True] = test_features['runtime'].median()
 
 
-# In[98]:
 
 
 model_RF_pred_test = model_RF.predict(X)
 
 
-# In[99]:
 
 
 submission = pd.read_csv('../input/sample_submission.csv')
@@ -1109,14 +1010,12 @@ submission['revenue'] = model_RF_pred_test
 submission.to_csv('submission_RF.csv', index = False)
 
 
-# In[100]:
 
 
 model_CatBoost_pred_test = model_CatBoost.predict(X)
 model_CatBoost_pred_test = np.expm1(model_CatBoost_pred_test)
 
 
-# In[101]:
 
 
 submission = pd.read_csv('../input/sample_submission.csv')
@@ -1124,14 +1023,12 @@ submission['revenue'] = model_CatBoost_pred_test
 submission.to_csv('submission_CatBoost.csv', index = False)
 
 
-# In[102]:
 
 
 model_gboost_pred_test = model_gboost.predict(X)
 model_gboost_pred_test = np.expm1(model_gboost_pred_test)
 
 
-# In[103]:
 
 
 submission = pd.read_csv('../input/sample_submission.csv')
@@ -1139,13 +1036,11 @@ submission['revenue'] = model_gboost_pred_test
 submission.to_csv('submission_gboost.csv', index = False)
 
 
-# In[104]:
 
 
 model_ensemble_pred_test = (model_CatBoost_pred_test + model_gboost_pred_test)/2
 
 
-# In[105]:
 
 
 submission = pd.read_csv('../input/sample_submission.csv')

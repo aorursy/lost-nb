@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -24,7 +23,6 @@ test['ps_reg_02_d'] = pd.cut(test['ps_reg_02'], bins2)
 train.head(4)
 
 
-# In[2]:
 
 
 # Now calculate the each factor associated with each feature, (fi): p( feature_i | target)
@@ -47,7 +45,6 @@ f7 = train.groupby('ps_ind_17_bin')['target'].agg([('p_f7','mean')]).reset_index
 f3.head(10)
 
 
-# In[3]:
 
 
 sol1 = pd.DataFrame()
@@ -73,7 +70,6 @@ del sol6
 sol.head(5)
 
 
-# In[4]:
 
 
 # f is the product of factors of feaures
@@ -86,7 +82,6 @@ sol[['id', 'target']].to_csv('bn_5_output_7_nodes.csv', index = False, float_for
 sol.shape
 
 
-# In[5]:
 
 
 # thanks to cpmpml for : https://www.kaggle.com/cpmpml/extremely-fast-gini-computation

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -21,7 +20,6 @@ from torch.utils.data import Dataset,TensorDataset, DataLoader,RandomSampler
 import time,datetime
 
 
-# In[2]:
 
 
 def Get_nowtime(fmat='%Y-%m-%d %H:%M:%S'):
@@ -77,7 +75,6 @@ def weights_init(m):
                  nn.init.orthogonal_(param)
 
 
-# In[3]:
 
 
 token2int = {x:i for i, x in enumerate('().ACGUBEHIMSX')}
@@ -108,7 +105,6 @@ def preprocess_inputs(df, cols=['sequence', 'structure', 'predicted_loop_type'])
     return np.concatenate([base_fea,bpps_sum_fea,bpps_max_fea,bpps_nb_fea], 2)
 
 
-# In[4]:
 
 
 
@@ -320,7 +316,6 @@ def train_and_predict(type = 0, FOLD_N = 5):
     return oof[['id_seqpos']+['reactivity','deg_Mg_pH10','deg_pH10','deg_Mg_50C','deg_50C']+['label_reactivity','label_deg_Mg_pH10','label_deg_pH10','label_deg_Mg_50C','label_deg_50C']],           sub[['id_seqpos']+['reactivity','deg_Mg_pH10','deg_pH10','deg_Mg_50C','deg_50C']]
 
 
-# In[5]:
 
 
 from sklearn.cluster import KMeans
@@ -329,7 +324,6 @@ kmeans_model = KMeans(n_clusters=200, random_state=110).fit(preprocess_inputs(tr
 train['cluster_id'] = kmeans_model.labels_
 
 
-# In[6]:
 
 
 oof,sub = train_and_predict()
@@ -337,7 +331,6 @@ oof.to_csv('./oof.csv',index=False)
 sub.to_csv('./submission.csv',index=False)
 
 
-# In[ ]:
 
 
 

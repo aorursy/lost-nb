@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -12,43 +11,32 @@ import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 
 
-# In[ ]:
 
 
-pip install pydicom
 
 
-# In[ ]:
 
 
-pip install SimpleITK
 
 
-# In[ ]:
 
 
-pip install fastai2
 
 
-# In[ ]:
 
 
-pip install kornia 
 
 
-# In[ ]:
 
 
 get_ipython().system('pip install torch==1.5.0+cu101 torchvision==0.6.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html')
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 import os
@@ -58,7 +46,6 @@ for dirname, _, filenames in os.walk('input/osic-pulmonary-fibrosis-progression/
         scans_samples.append(os.path.join(dirname, filename))
 
 
-# In[ ]:
 
 
 import logging
@@ -73,19 +60,16 @@ def get_input_image(path):
     return input_image
 
 
-# In[ ]:
 
 
 im = get_input_image(scans_samples[10])
 
 
-# In[ ]:
 
 
 get_ipython().system('pip install git+https://github.com/JoHof/lungmask')
 
 
-# In[ ]:
 
 
 from lungmask import mask
@@ -94,14 +78,12 @@ input_image = im
 segmentation = mask.apply(input_image)  # default model is U-net(R231)
 
 
-# In[ ]:
 
 
 result_out= sitk.GetImageFromArray(segmentation)
 result_out.CopyInformation(input_image)
 
 
-# In[ ]:
 
 
 from matplotlib import pyplot as plt
@@ -152,7 +134,6 @@ def myshow(img, title=None, margin=0.05, dpi=80):
         plt.title(title)
 
 
-# In[ ]:
 
 
 def processed_show(nda, title=None, margin=0.05, dpi=80):
@@ -198,26 +179,22 @@ def processed_show(nda, title=None, margin=0.05, dpi=80):
         plt.title(title)
 
 
-# In[ ]:
 
 
 myshow(get_input_image("/kaggle/input/osic-pulmonary-fibrosis-progression/train/ID00027637202179689871102/258.dcm"))
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 from fastai2.basics           import *
 from fastai2.medical.imaging  import *
 
 
-# In[ ]:
 
 
 fname = Path('/kaggle/input/osic-pulmonary-fibrosis-progression/train/ID00027637202179689871102/258.dcm')
@@ -225,7 +202,6 @@ dcom = fname.dcmread()
 dcom.show(scale=dicom_windows.lungs)
 
 
-# In[ ]:
 
 
 
@@ -517,7 +493,6 @@ mpl_data_r = RGBToPyCmap(turbo_colormap_data[::-1,:])
 plt.register_cmap(name='turbo_r', data=mpl_data_r, lut=turbo_colormap_data.shape[0])
 
 
-# In[ ]:
 
 
 def fix_pxrepr(dcm):
@@ -529,7 +504,6 @@ def fix_pxrepr(dcm):
     dcm.RescaleIntercept = -1000
 
 
-# In[ ]:
 
 
 def read_dcom(path):
@@ -544,19 +518,16 @@ def read_dcom(path):
     return TensorImage(px.to_3chan(dicom_windows.lungs,dicom_windows.lungs, bins=None))
 
 
-# In[ ]:
 
 
 tensor = read_dcom('/kaggle/input/osic-pulmonary-fibrosis-progression/train/ID00027637202179689871102/134.dcm')
 
 
-# In[ ]:
 
 
 _ = show_image(tensor)
 
 
-# In[ ]:
 
 
 def plot_dicom(patient_id="ID00019637202178323708467", cmap='jet'):
@@ -574,28 +545,24 @@ def plot_dicom(patient_id="ID00019637202178323708467", cmap='jet'):
         plt.imshow(image.pixel_array, cmap=cmap)
 
 
-# In[ ]:
 
 
 # model = mask.get_model('unet', 'R231CovidWeb')
 # segmentation = mask.apply_fused(input_image)
 
 
-# In[ ]:
 
 
 # result_out= sitk.GetImageFromArray(segmentation)
 # result_out.CopyInformation(input_image)
 
 
-# In[ ]:
 
 
 # myshow(im)
 # myshow(result_out)
 
 
-# In[ ]:
 
 
 import matplotlib.animation as animation
@@ -603,7 +570,6 @@ from matplotlib.widgets import Slider
 from IPython.display import HTML
 
 
-# In[ ]:
 
 
 # %%capture
@@ -625,13 +591,11 @@ from IPython.display import HTML
 # ani = animation.ArtistAnimation(fig, ims, interval=100, blit=False, repeat_delay=1000)
 
 
-# In[ ]:
 
 
 # HTML(ani.to_jshtml())
 
 
-# In[ ]:
 
 
 
@@ -760,7 +724,6 @@ class VAE(nn.Module):
        return self.decoder(z)
 
 
-# In[ ]:
 
 
 class Loss(nn.Module):
@@ -774,7 +737,6 @@ class Loss(nn.Module):
 loss_ce = Loss()
 
 
-# In[ ]:
 
 
 from torch.utils.data import Dataset, DataLoader
@@ -817,57 +779,48 @@ class MRIDataset(Dataset):
         return img
 
 
-# In[ ]:
 
 
 dataset = MRIDataset("/kaggle/input/osic-pulmonary-fibrosis-progression/train")
 
 
-# In[ ]:
 
 
 print(dataset[3241].numpy().shape)
 
 
-# In[ ]:
 
 
 processed_show(dataset[13])
 
 
-# In[ ]:
 
 
 show_image(dataset[13])
 
 
-# In[ ]:
 
 
 dataloader = DataLoader(dataset, batch_size=2,
                         shuffle=True, num_workers=1)
 
 
-# In[ ]:
 
 
 import torch
 device = torch.device("cuda:0")
 
 
-# In[ ]:
 
 
 from tqdm import tqdm
 
 
-# In[ ]:
 
 
 get_ipython().system('nvidia-smi')
 
 
-# In[ ]:
 
 
 import torch.nn.functional as F
@@ -902,25 +855,21 @@ for epoch in range(100):
     
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

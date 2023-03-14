@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import gc
@@ -36,7 +35,6 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import fbeta_score
 
 
-# In[2]:
 
 
 #!mkdir -p /tmp/.torch/models/
@@ -45,7 +43,6 @@ from sklearn.metrics import fbeta_score
 torch.cuda.is_available()
 
 
-# In[3]:
 
 
 @contextmanager
@@ -89,13 +86,11 @@ def seed_torch(seed=1029):
     torch.backends.cudnn.deterministic = True
 
 
-# In[4]:
 
 
 logger = get_logger(name="Main", tag="Pytorch-VGG16")
 
 
-# In[5]:
 
 
 @contextmanager
@@ -139,7 +134,6 @@ def seed_torch(seed=1029):
     torch.backends.cudnn.deterministic = True
 
 
-# In[6]:
 
 
 get_ipython().system('ls ../input')
@@ -153,7 +147,6 @@ tags = [x for x in labels.attribute_name.values if x.startswith("tag")]
 len(cultures), len(tags)
 
 
-# In[7]:
 
 
 import cv2
@@ -273,7 +266,6 @@ data_transforms = {
 data_transforms["test"] = data_transforms["val"]
 
 
-# In[8]:
 
 
 class IMetDataset(data.Dataset):
@@ -300,7 +292,6 @@ class IMetDataset(data.Dataset):
             return [tensor]
 
 
-# In[9]:
 
 
 class Classifier(nn.Module):
@@ -392,7 +383,6 @@ class MultiLayerPerceptron2(nn.Module):
         return self.sigmoid(self.linear2(x))
 
 
-# In[10]:
 
 
 train_dataset = ImageDataLoader(
@@ -413,7 +403,6 @@ test_loader = data.DataLoader(dataset=test_dataset,
                               batch_size=64)
 
 
-# In[11]:
 
 
 from torchvision import models
@@ -430,14 +419,12 @@ def get_feature_vector(df, loader, device):
     return matrix
 
 
-# In[12]:
 
 
 train_tensor = get_feature_vector(train, train_loader, "cuda:0")
 test_tensor = get_feature_vector(sample, test_loader, "cuda:0")
 
 
-# In[13]:
 
 
 del train_dataset, train_loader
@@ -445,7 +432,6 @@ del test_dataset, test_loader
 gc.collect()
 
 
-# In[14]:
 
 
 from numpy.random import beta
@@ -662,13 +648,11 @@ class Trainer:
         return preds1, preds2
 
 
-# In[15]:
 
 
 trainer = Trainer(MultiLayerPerceptron1, MultiLayerPerceptron2, logger, train_batch=64, kwargs={})
 
 
-# In[16]:
 
 
 from sklearn.model_selection import train_test_split
@@ -676,7 +660,6 @@ y = train.attribute_ids.map(lambda x: x.split()).values
 valid_preds1, valid_preds2 = trainer.fit(train_tensor, y, n_epochs=40)
 
 
-# In[17]:
 
 
 def threshold_search(y_pred, y_true):
@@ -691,7 +674,6 @@ def threshold_search(y_pred, y_true):
     return best_th, best_score
 
 
-# In[18]:
 
 
 y_true = np.zeros((train.shape[0], 1103)).astype(int)
@@ -700,7 +682,6 @@ for i, row in enumerate(y):
         y_true[i, int(idx)] = 1
 
 
-# In[19]:
 
 
 best_threshold1, best_score1 = threshold_search(valid_preds1, targets_c)
@@ -709,20 +690,17 @@ best_threshold2, best_score2 = threshold_search(valid_preds2, targets_t)
 best_score2
 
 
-# In[20]:
 
 
 test_preds1, test_preds2  = trainer.predict(test_tensor)
 
 
-# In[21]:
 
 
 preds1 = (test_preds1 > best_threshold1).astype(int)
 preds2 = (test_preds2 > best_threshold2).astype(int)
 
 
-# In[22]:
 
 
 prediction = []
@@ -737,7 +715,6 @@ sample.to_csv("submission.csv", index=False)
 sample.head()
 
 
-# In[23]:
 
 
 

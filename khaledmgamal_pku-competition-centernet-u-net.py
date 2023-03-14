@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,14 +22,12 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 #!pip install -U git+https://github.com/albu/albumentations
 get_ipython().system('pip install -U albumentations --user ')
 
 
-# In[3]:
 
 
 import numpy as np # linear algebra
@@ -61,7 +58,6 @@ PATH = '../input/pku-autonomous-driving/'
 os.listdir(PATH)
 
 
-# In[4]:
 
 
 train = pd.read_csv(PATH + 'train.csv')
@@ -76,7 +72,6 @@ camera_matrix_inv = np.linalg.inv(camera_matrix)
 train.head()
 
 
-# In[5]:
 
 
 def imread(path, fast_mode=False):
@@ -92,7 +87,6 @@ plt.figure(figsize=(15,8))
 plt.imshow(img);
 
 
-# In[6]:
 
 
 def str2coords(s, names=['id', 'yaw', 'pitch', 'roll', 'x', 'y', 'z']):
@@ -111,7 +105,6 @@ def str2coords(s, names=['id', 'yaw', 'pitch', 'roll', 'x', 'y', 'z']):
     return coords
 
 
-# In[7]:
 
 
 lens = [len(str2coords(s)) for s in train['PredictionString']]
@@ -121,7 +114,6 @@ sns.countplot(lens);
 plt.xlabel('Number of cars in image');
 
 
-# In[8]:
 
 
 points_df = pd.DataFrame()
@@ -136,7 +128,6 @@ print('len(points_df)', len(points_df))
 points_df.head()
 
 
-# In[9]:
 
 
 plt.figure(figsize=(15,6))
@@ -145,7 +136,6 @@ plt.xlabel('x')
 plt.show()
 
 
-# In[10]:
 
 
 plt.figure(figsize=(15,6))
@@ -154,7 +144,6 @@ plt.xlabel('y')
 plt.show()
 
 
-# In[11]:
 
 
 plt.figure(figsize=(15,6))
@@ -163,7 +152,6 @@ plt.xlabel('z')
 plt.show()
 
 
-# In[12]:
 
 
 plt.figure(figsize=(15,6))
@@ -172,7 +160,6 @@ plt.xlabel('yaw')
 plt.show()
 
 
-# In[13]:
 
 
 plt.figure(figsize=(15,6))
@@ -181,7 +168,6 @@ plt.xlabel('pitch')
 plt.show()
 
 
-# In[14]:
 
 
 plt.figure(figsize=(15,6))
@@ -190,7 +176,6 @@ plt.xlabel('roll rotated by pi')
 plt.show()
 
 
-# In[15]:
 
 
 def rotate(x, angle):
@@ -204,7 +189,6 @@ plt.xlabel('roll rotated by pi')
 plt.show()
 
 
-# In[16]:
 
 
 def get_img_coords(s):
@@ -235,7 +219,6 @@ plt.imshow(imread(PATH + 'train_images/' + train['ImageId'][500] + '.jpg'))
 plt.scatter(*get_img_coords(train['PredictionString'][500]), color='red', s=100);
 
 
-# In[17]:
 
 
 xs, ys = [], []
@@ -250,7 +233,6 @@ plt.imshow(imread(PATH + 'train_images/' + train['ImageId'][500] + '.jpg'), alph
 plt.scatter(xs, ys, color='red', s=10, alpha=0.2);
 
 
-# In[18]:
 
 
 zy_slope = LinearRegression()
@@ -269,7 +251,6 @@ print('MAE with x:', mean_absolute_error(y, xzy_slope.predict(X)))
 print('\ndy/dx = {:.3f}\ndy/dz = {:.3f}'.format(*xzy_slope.coef_))
 
 
-# In[19]:
 
 
 plt.figure(figsize=(16,16))
@@ -283,7 +264,6 @@ plt.xlabel('z coordinate')
 plt.ylabel('y coordinate');
 
 
-# In[20]:
 
 
 from math import sin, cos
@@ -318,7 +298,6 @@ def draw_points(image, points):
     return image
 
 
-# In[21]:
 
 
 def visualize(img, coords):
@@ -355,7 +334,6 @@ def visualize(img, coords):
     return img
 
 
-# In[22]:
 
 
 n_rows = 6
@@ -369,7 +347,6 @@ for idx in range(n_rows):
     plt.show()
 
 
-# In[23]:
 
 
 IMG_WIDTH = 1024
@@ -443,7 +420,6 @@ def get_mask_and_regr(img, labels, flip=False):
     return mask, regr
 
 
-# In[24]:
 
 
 img0 = imread(PATH + 'train_images/' + train['ImageId'][500] + '.jpg')
@@ -477,7 +453,6 @@ plt.imshow(regr[:,:,-2])
 plt.show()
 
 
-# In[25]:
 
 
 DISTANCE_THRESH_CLEAR = 2
@@ -538,7 +513,6 @@ def coords2str(coords, names=['yaw', 'pitch', 'roll', 'x', 'y', 'z', 'confidence
     return ' '.join(s)
 
 
-# In[26]:
 
 
 for idx in range(2):
@@ -559,7 +533,6 @@ for idx in range(2):
     plt.show()
 
 
-# In[27]:
 
 
 import albumentations as A
@@ -642,7 +615,6 @@ def get_training_augmentation():
     return A.Compose(train_transform) 
 
 
-# In[28]:
 
 
 train_images_dir = PATH + 'train_images/{}.jpg'
@@ -657,7 +629,6 @@ dev_dataset = CarDataset(df_dev, train_images_dir, training=False)
 test_dataset = CarDataset(df_test, test_images_dir, training=False)
 
 
-# In[29]:
 
 
 img, mask, regr = train_dataset[500]
@@ -675,7 +646,6 @@ plt.imshow(regr[-2])
 plt.show()
 
 
-# In[30]:
 
 
 BATCH_SIZE = 4
@@ -686,19 +656,16 @@ dev_loader = DataLoader(dataset=dev_dataset, batch_size=BATCH_SIZE, shuffle=Fals
 test_loader = DataLoader(dataset=test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
 
 
-# In[31]:
 
 
 get_ipython().system('pip install efficientnet-pytorch')
 
 
-# In[32]:
 
 
 from efficientnet_pytorch import EfficientNet
 
 
-# In[33]:
 
 
 class double_conv(nn.Module):
@@ -760,7 +727,6 @@ def get_mesh(batch_size, shape_x, shape_y):
     return mesh
 
 
-# In[34]:
 
 
 class MyUNet(nn.Module):
@@ -804,7 +770,6 @@ class MyUNet(nn.Module):
         return x
 
 
-# In[35]:
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -817,7 +782,6 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=max(n_epochs, 10) * len(train_loader) // 3, gamma=0.1)
 
 
-# In[36]:
 
 
 def criterion(prediction, mask, regr, size_average=True):
@@ -839,7 +803,6 @@ def criterion(prediction, mask, regr, size_average=True):
     return loss
 
 
-# In[37]:
 
 
 def train_model(epoch, history=None):
@@ -888,7 +851,6 @@ def evaluate_model(epoch, history=None):
     print('Dev loss: {:.4f}'.format(loss))
 
 
-# In[38]:
 
 
 checkpoint = torch.load('/kaggle/input/trained-model-pku-competition/model_06.pth')
@@ -898,7 +860,6 @@ exp_lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
 epoch = checkpoint['epoch']
 
 
-# In[39]:
 
 
 '''
@@ -921,20 +882,17 @@ for epoch in range(n_epochs):
 '''    
 
 
-# In[40]:
 
 
 #history['train_loss'].iloc[100:].plot();
 
 
-# In[41]:
 
 
 #series = history.dropna()['dev_loss']
 #plt.scatter(series.index, series);
 
 
-# In[42]:
 
 
 
@@ -963,7 +921,6 @@ plt.imshow(logits > 0)
 plt.show()
 
 
-# In[43]:
 
 
 import gc
@@ -987,7 +944,6 @@ for idx in range(8):
     plt.show()
 
 
-# In[44]:
 
 
 '''
@@ -1008,7 +964,6 @@ for img, _, _ in tqdm(test_loader):
 '''        
 
 
-# In[45]:
 
 
 '''

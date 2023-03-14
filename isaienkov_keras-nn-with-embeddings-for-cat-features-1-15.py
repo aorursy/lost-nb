@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -35,7 +34,6 @@ from keras.optimizers import RMSprop, Adam
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 
 
-# In[2]:
 
 
 def average_imputation(df, column_name):
@@ -46,7 +44,6 @@ def average_imputation(df, column_name):
     return df
 
 
-# In[3]:
 
 
 building_df = pd.read_csv("../input/ashrae-energy-prediction/building_metadata.csv")
@@ -75,7 +72,6 @@ for item in beaufort:
 del train["timestamp"]
 
 
-# In[4]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -93,7 +89,6 @@ numericals = ["square_feet", "year_built", "air_temperature", "cloud_coverage",
 feat_cols = categoricals + numericals
 
 
-# In[5]:
 
 
 target = np.log1p(train["meter_reading"])
@@ -103,7 +98,6 @@ del train["meter_reading"]
 train = train.drop(drop_cols, axis = 1)
 
 
-# In[6]:
 
 
 #Based on this great kernel https://www.kaggle.com/arjanso/reducing-dataframe-memory-size-by-65
@@ -169,13 +163,11 @@ def reduce_mem_usage(df):
     return df, NAlist
 
 
-# In[7]:
 
 
 train, NAlist = reduce_mem_usage(train)
 
 
-# In[8]:
 
 
 def model(dense_dim_1=64, dense_dim_2=32, dense_dim_3=32, dense_dim_4=16, 
@@ -259,7 +251,6 @@ def root_mean_squared_error(y_true, y_pred):
     return K.sqrt(K.mean(K.square(y_pred - y_true), axis=0))
 
 
-# In[9]:
 
 
 def get_keras_data(df, num_cols, cat_cols):
@@ -281,7 +272,6 @@ def train_model(keras_model, X_t, y_train, batch_size, epochs, X_v, y_valid, fol
     return keras_model
 
 
-# In[10]:
 
 
 from sklearn.model_selection import KFold, StratifiedKFold
@@ -311,7 +301,6 @@ for fold_n, (train_index, valid_index) in enumerate(kf.split(train, train['build
     
 
 
-# In[11]:
 
 
 import gc
@@ -319,7 +308,6 @@ del train, target, X_train, X_valid, y_train, y_valid, X_t, X_v, kf
 gc.collect()
 
 
-# In[12]:
 
 
 test = pd.read_csv("../input/ashrae-energy-prediction/test.csv")
@@ -334,7 +322,6 @@ test = test.merge(weather_test, left_on = ["site_id", "timestamp"], right_on = [
 del weather_test
 
 
-# In[13]:
 
 
 test["timestamp"] = pd.to_datetime(test["timestamp"])
@@ -351,7 +338,6 @@ test = test[feat_cols]
 test, NAlist = reduce_mem_usage(test)
 
 
-# In[14]:
 
 
 from tqdm import tqdm
@@ -364,7 +350,6 @@ for j in tqdm(range(int(np.ceil(test.shape[0]/step_size)))):
     i+=step_size
 
 
-# In[15]:
 
 
 submission = pd.read_csv('/kaggle/input/ashrae-energy-prediction/sample_submission.csv')

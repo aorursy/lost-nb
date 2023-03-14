@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -23,20 +22,17 @@ from sklearn.ensemble import RandomForestClassifier
 pd.set_option('display.max_columns', 50)
 
 
-# In[2]:
 
 
 df_input = pd.read_csv("../input/data.csv")
 
 
-# In[3]:
 
 
 print( "There are ", len(df_input.columns.values), " columns")
 df_input.head()
 
 
-# In[4]:
 
 
 untreated_variables = df_input.columns.values.tolist()
@@ -44,7 +40,6 @@ untreated_variables.remove("shot_made_flag")
 untreated_variables.remove("shot_id")
 
 
-# In[5]:
 
 
 cols_print = ('variable', 'type', 'unique values', 'missing values [%]')
@@ -57,7 +52,6 @@ for col in df_input.columns.values:
     print('{: <20} {: >20} {: >20} {: >20}'.format(*cols_print))
 
 
-# In[6]:
 
 
 print(df_input.at[0, "team_id"], df_input.at[0, "team_name"])
@@ -67,7 +61,6 @@ untreated_variables.remove("team_name")
 print(len(untreated_variables), "variables to go!")
 
 
-# In[7]:
 
 
 upper_number_branches = 1
@@ -77,7 +70,6 @@ for col in df_input.columns.values:
 print("There are up to", "{:.0e}".format(upper_number_branches), "combinations")    
 
 
-# In[8]:
 
 
 def draw_court(ax=None, color='black', lw=2, outer_lines=False, deg=0):
@@ -154,7 +146,6 @@ def color_map():
     my_cmap = matplotlib.colors.LinearSegmentedColormap('my_colormap',cdict,256)
 
 
-# In[9]:
 
 
 fig = plt.figure(figsize=(18, 8))
@@ -167,7 +158,6 @@ plt.title("Latitude vs Longitude")
 plt.show()
 
 
-# In[10]:
 
 
 df_input = df_input.drop(["lat", "lon"], 1)
@@ -178,7 +168,6 @@ plt.title("Efficiency as a function of shot distance")
 plt.show()
 
 
-# In[11]:
 
 
 def color_scatter_plot(var):
@@ -203,7 +192,6 @@ plt.title("Shot zone basic")
 plt.show()
 
 
-# In[12]:
 
 
 cmap = mpl.cm.get_cmap('viridis')
@@ -216,7 +204,6 @@ ax.set_ylim(422.5, -47.5)
 plt.show()
 
 
-# In[13]:
 
 
 def make_kobe_vs_kobe_plots(seasons, df_input):    
@@ -301,21 +288,18 @@ def make_kobe_vs_kobe_plots(seasons, df_input):
     plt.show()   
 
 
-# In[14]:
 
 
 seasons = ["1999-00", "2009-10"] #first and last championship
 make_kobe_vs_kobe_plots(seasons, df_input)
 
 
-# In[15]:
 
 
 seasons = ["2009-10", "2014-15"] #last championship and last healthy season
 make_kobe_vs_kobe_plots(seasons, df_input)
 
 
-# In[16]:
 
 
 numGaussians = 20
@@ -335,7 +319,6 @@ for i in range(0, num_elem):
 plt.show()     
 
 
-# In[17]:
 
 
 def prob_independence(df, var_compar, var_ref):
@@ -363,7 +346,6 @@ plt.subplot(1,3,3); plt.bar(x_x, y_d); plt.title("Chi2/ndf vs distance");
 plt.show()
 
 
-# In[18]:
 
 
 fig = plt.figure(figsize=(18, 8))
@@ -383,7 +365,6 @@ for i in range(0,len(bad_clusters)):
 plt.show()
 
 
-# In[19]:
 
 
 bad_clusters = [1, 2, 15]
@@ -402,7 +383,6 @@ for ie in range(0, len(df_input.index)):
                 df_input.at[ie, 'LocCluster'] = bin_ref + bins_pos[ic] + len(bins_clusters[ic])-1
 
 
-# In[20]:
 
 
 x_x=[]; y_x=[]; y_y=[]; y_d=[]
@@ -419,7 +399,6 @@ plt.subplot(1,3,3); plt.bar(x_x, y_d); plt.title("Chi2/ndf vs distance");
 plt.show()
 
 
-# In[21]:
 
 
 df_input = df_input.drop(["shot_zone_basic", "shot_zone_range", "shot_zone_area", 
@@ -431,13 +410,11 @@ untreated_variables.remove("shot_distance"); untreated_variables.remove("loc_y")
 print("Decreased from spatial dimensionality of", 457*457*489*489*74*2*6*7*5, "to", 30)
 
 
-# In[22]:
 
 
 print(untreated_variables)
 
 
-# In[23]:
 
 
 fig = plt.figure(figsize=(15, 6))
@@ -450,7 +427,6 @@ pl2.set(xticklabels=[])
 plt.show()
 
 
-# In[24]:
 
 
 df_input = df_input.drop("combined_shot_type", 1)
@@ -458,13 +434,11 @@ untreated_variables.remove("combined_shot_type");
 print(df_input["action_type"].unique())
 
 
-# In[25]:
 
 
 
 
 
-# In[25]:
 
 
 df_shot = df_input.copy()
@@ -519,7 +493,6 @@ def make_pretty_corr_plot(df_shot):
 make_pretty_corr_plot(df_shot)
 
 
-# In[26]:
 
 
 df_shot["has_Pullup"] = df_shot["has_Pullup"] + df_shot["has_Pull-up"]
@@ -539,7 +512,6 @@ df_shot = df_shot.drop(["has_Dunk", "has_Slam"],1)
 make_pretty_corr_plot(df_shot)
 
 
-# In[27]:
 
 
 df_shot.drop("shot_made_flag", 1)
@@ -554,7 +526,6 @@ untreated_variables.remove("action_type");
 print(untreated_variables)
 
 
-# In[28]:
 
 
 df_input["Home_game"] = 1
@@ -587,13 +558,11 @@ df_input = df_input.drop(["matchup", "opponent"], 1);
 untreated_variables.remove("matchup"); untreated_variables.remove("opponent"); 
 
 
-# In[29]:
 
 
 print(untreated_variables)
 
 
-# In[30]:
 
 
 df_input = df_input.drop("game_id", 1) 
@@ -628,7 +597,6 @@ plt.title("Efficiency vs season")
 plt.show()
 
 
-# In[31]:
 
 
 df_input["days_between_games"] = 7
@@ -645,7 +613,6 @@ sb.barplot("days_between_games", "shot_made_flag", data=df_input)
 plt.show()
 
 
-# In[32]:
 
 
 df_input["days_between_games"] = 7
@@ -662,7 +629,6 @@ sb.barplot("days_between_games", "shot_made_flag", data=df_input)
 plt.show()
 
 
-# In[33]:
 
 
 for i in range(0, len(df_input.index)):
@@ -701,7 +667,6 @@ plt.title("Efficiency by game in series (reg. season = 0)")
 plt.show()
 
 
-# In[34]:
 
 
 untreated_variables.remove("playoffs"); untreated_variables.remove("season"); untreated_variables.remove("game_date"); 
@@ -710,7 +675,6 @@ df_input = df_input.drop(["playoffs", "game_date", "game_date_N", "game_month_da
 print(untreated_variables)
 
 
-# In[35]:
 
 
 df_input["seconds_remaining"] = df_input["seconds_remaining"] + 60*df_input["minutes_remaining"]
@@ -731,7 +695,6 @@ plt.title("Efficiency vs period")
 plt.show()
 
 
-# In[36]:
 
 
 df_input["made_in_a_row"]=np.nan
@@ -767,7 +730,6 @@ plt.show()
 df_input = df_input.drop(["made_last", "made_in_a_row"], 1)
 
 
-# In[37]:
 
 
 df_input = df_input.drop(["loc_x_0", "loc_x_1", "loc_y_0", "loc_y_1", "eff_shot_made_flag"], 1)
@@ -779,7 +741,6 @@ print("Possible combinations decreased from 4e+35 to", "{:.0e}".format(upper_num
 make_pretty_corr_plot(df_input)
 
 
-# In[38]:
 
 
 unknown_mask = df_input['shot_made_flag'].isnull()

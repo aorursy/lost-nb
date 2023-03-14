@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -39,7 +38,6 @@ for dirname, _, filenames in os.walk('..'):
        print(os.path.join(dirname, filename))
 
 
-# In[2]:
 
 
 import matplotlib.pyplot as plt
@@ -50,7 +48,6 @@ plt.rc('ytick', labelsize=13)
 input_dir = '/kaggle/input/cat-in-the-dat-ii/'
 
 
-# In[3]:
 
 
 df_train_raw = pd.read_csv(input_dir + 'train.csv')
@@ -59,7 +56,6 @@ df_test_raw = pd.read_csv(input_dir + 'test.csv')
 df_train_raw.head()
 
 
-# In[4]:
 
 
 df_train_raw_transformed = df_train_raw.    assign(bin_3 = df_train_raw['bin_3'].map(lambda X: 0 if (X == 'F') else                                             (1 if (X == 'T') else np.nan))).    assign(bin_4 = df_train_raw['bin_4'].map(lambda X: 0 if (X == 'N') else                                             (1 if (X == 'Y') else np.nan)))
@@ -67,13 +63,11 @@ df_train_raw_transformed = df_train_raw.    assign(bin_3 = df_train_raw['bin_3']
 df_train_raw_transformed.head()
 
 
-# In[5]:
 
 
 df_test_raw_transformed = df_test_raw.    assign(bin_3 = df_test_raw['bin_3'].map(lambda X: 0 if (X == 'F') else                                             (1 if (X == 'T') else np.nan))).    assign(bin_4 = df_test_raw['bin_4'].map(lambda X: 0 if (X == 'N') else                                             (1 if (X == 'Y') else np.nan)))
 
 
-# In[6]:
 
 
 print("ORD_0:")
@@ -90,7 +84,6 @@ print("---\nORD5:")
 print(df_train_raw_transformed['ord_5'].unique())
 
 
-# In[7]:
 
 
 def apply_dict(X, dict_in):
@@ -113,25 +106,21 @@ for i in range(ord('a'), (ord('z') + 1)):
 df_train = df_train_raw_transformed.    assign(ord_1 = df_train_raw_transformed['ord_1'].map(lambda X: apply_dict(X, dict_ord_1))).    assign(ord_2 = df_train_raw_transformed['ord_2'].map(lambda X: apply_dict(X, dict_ord_2))).    assign(ord_3 = df_train_raw_transformed['ord_3'].map(lambda X: apply_dict(X, dict_ord_3))).    assign(ord_4 = df_train_raw_transformed['ord_4'].map(lambda X: apply_dict(X, dict_ord_4)))
 
 
-# In[8]:
 
 
 df_test = df_test_raw_transformed.    assign(ord_1 = df_test_raw_transformed['ord_1'].map(lambda X: apply_dict(X, dict_ord_1))).    assign(ord_2 = df_test_raw_transformed['ord_2'].map(lambda X: apply_dict(X, dict_ord_2))).    assign(ord_3 = df_test_raw_transformed['ord_3'].map(lambda X: apply_dict(X, dict_ord_3))).    assign(ord_4 = df_test_raw_transformed['ord_4'].map(lambda X: apply_dict(X, dict_ord_4)))
 
 
-# In[9]:
 
 
 df_train.head()
 
 
-# In[10]:
 
 
 len(list(df_train_raw_transformed.index))
 
 
-# In[11]:
 
 
 df_count_per_col = pd.DataFrame(df_train.nunique())
@@ -145,7 +134,6 @@ ggplot(df_count_per_col[df_count_per_col['Feature'] != 'id'],
     ggtitle('Different Features per Column') + ylab('Count')
 
 
-# In[12]:
 
 
 df_missing_col = pd.DataFrame(dict(PercMissing = df_train.isnull().sum() / 
@@ -158,7 +146,6 @@ ggplot(df_missing_col[df_missing_col['Feature'] != 'id'],
     ggtitle('Different Features per Column') + ylab('Count')
 
 
-# In[13]:
 
 
 df_missing_row = pd.DataFrame(dict(PercMissing = df_train.isnull().sum(axis=1) / 
@@ -168,7 +155,6 @@ df_missing_row.columns = ['Index', 'PercMissing']
 print(str(100 * max(df_missing_row['PercMissing'])) + ' %')
 
 
-# In[14]:
 
 
 binary_features = ['bin_' + str(i) for i in range(0, 5)]
@@ -179,7 +165,6 @@ ordinal_features_high_count = ['ord_5']
 date_features = ['day', 'month']
 
 
-# In[15]:
 
 
 class SimpleImputerCorrected(BaseEstimator, TransformerMixin):
@@ -217,7 +202,6 @@ class SimpleImputerCorrected(BaseEstimator, TransformerMixin):
         return self.preprocessor.transform(X)
 
 
-# In[16]:
 
 
 pass_features = binary_features + ordinal_features_low_count
@@ -250,38 +234,32 @@ encoder = ColumnTransformer(
 print(one_hot_features)
 
 
-# In[17]:
 
 
 df_train.iloc[1:5, 1:-2]
 
 
-# In[18]:
 
 
 array_train = encoder.fit_transform(df_train.iloc[:, 1:-2], df_train['target'])
 print(array_train)
 
 
-# In[19]:
 
 
 data_pca = PCA().fit_transform(array_train) 
 
 
-# In[20]:
 
 
 data_pca
 
 
-# In[21]:
 
 
 data_pca.shape
 
 
-# In[22]:
 
 
 var_pca = data_pca.var(axis = 0)
@@ -301,19 +279,16 @@ df_pca = pd.DataFrame(dict(
 df_pca.head()
 
 
-# In[23]:
 
 
 ggplot(aes(x = 'Index', y = 'Value')) +    geom_bar(aes(fill = 'IndexStr'), color = 'black', stat = 'identity', data = df_pca[df_pca['Variable'] == 'Importance']) +    theme(legend_position = 'none') + ggtitle('Cumulative Variables Importance') +    geom_line(data = df_pca[df_pca['Variable'] == 'Cumulative_Importance'], color = 'blue') +    geom_point(data = df_pca[df_pca['Variable'] == 'Cumulative_Importance'], color = 'blue') +    geom_point(data = df_pca[(df_pca['Variable'] == 'Cumulative_Importance') &                             (df_pca['Value'] > 0.9999999999)], color = 'red', shape = 'x', size = 5)
 
 
-# In[24]:
 
 
 imp_pca[35:-1]
 
 
-# In[25]:
 
 
 def get_preprocessor(pass_features=binary_features + ordinal_features_low_count, 
@@ -349,7 +324,6 @@ def get_preprocessor(pass_features=binary_features + ordinal_features_low_count,
     return preprocessor
 
 
-# In[26]:
 
 
 pass_list = [pass_features, pass_features, pass_features]
@@ -375,7 +349,6 @@ hyper_pipe_dict = {
 }
 
 
-# In[27]:
 
 
 y_train = df_train['target']
@@ -403,13 +376,11 @@ for t_name, t_pass, t_one_hot, t_avg in hyper_pipe_dict['preprocessor__transform
                                               target_smoothing, solver, penalty, pca_threshold])
 
 
-# In[28]:
 
 
 cross_validate = False
 
 
-# In[29]:
 
 
 if cross_validate:
@@ -477,32 +448,27 @@ else:
     df_cv = pd.read_csv('../input/cv-results-cat-challenge/df_cv.csv')
 
 
-# In[30]:
 
 
 df_cv.sort_values(by='Test_AUC', ascending=False).iloc[0:10, :]
 
 
-# In[31]:
 
 
 df_cv_grouped = df_cv.groupby(['C', 'L1', 'T', 'Smooth', 'Solver', 'Penalty']).mean().sort_values(by='Test_AUC', ascending=False)
 df_cv_grouped.iloc[0:10, :]
 
 
-# In[32]:
 
 
 ggplot(df_cv, aes(x='Test_AUC')) + geom_histogram(bins = 50, fill = 'lightblue') +    ggtitle('CV Test AUC Distribution (Before Grouping)') + xlab('ROC-AUC') + ylab('Count - 50 Bins')
 
 
-# In[33]:
 
 
 ggplot(df_cv_grouped, aes(x='Test_AUC')) + geom_histogram(bins = 50, fill = 'lightgreen') +    ggtitle('CV Test AUC Distribution (After Grouping)') + xlab('ROC-AUC') + ylab('Count - 50 Bins')
 
 
-# In[34]:
 
 
 # C 	L1 	    T 	        Smooth 	Solver 	Penalty
@@ -525,14 +491,12 @@ opt_model_A.fit(x_pipe_A, y_train)
 opt_model_B.fit(x_pipe_B, y_train)
 
 
-# In[35]:
 
 
 target_A = opt_model_A.predict_proba(opt_pipe_A.transform(df_test.iloc[:, 1:-1]))[:, 1]
 target_B = opt_model_B.predict_proba(opt_pipe_B.transform(df_test.iloc[:,1:-1]))[:, 1]
 
 
-# In[36]:
 
 
 pd.DataFrame({
@@ -546,7 +510,6 @@ pd.DataFrame({
 }).to_csv('/kaggle/working/df_out_logistic_model_B.csv', index=False)
 
 
-# In[37]:
 
 
 default_pipeline = get_preprocessor(pass_features=binary_features, 
@@ -558,13 +521,11 @@ x_test = default_pipeline.transform(df_test.iloc[:, 1:-1])
 x_train
 
 
-# In[38]:
 
 
 x_train.shape
 
 
-# In[39]:
 
 
 def auc(y_true, y_pred):
@@ -597,32 +558,27 @@ def get_wide_and_deep(use_montecarlo=False):
     return model_nn
 
 
-# In[40]:
 
 
 model_nn = get_wide_and_deep()
 model_nn.summary()
 
 
-# In[41]:
 
 
 plot_model(model_nn, to_file='model.png', show_shapes=True, show_layer_names=True)
 
 
-# In[42]:
 
 
 df_train['target'].mean()
 
 
-# In[43]:
 
 
 train_idx.shape
 
 
-# In[44]:
 
 
 es = EarlyStopping(monitor='val_auc', min_delta=0.001, patience=5,verbose=1, mode='max', baseline=None, restore_best_weights=True)
@@ -650,7 +606,6 @@ for train_idx, val_idx in sfk.split(x_train, y_train):
     hist_list.append(history_nn)
 
 
-# In[45]:
 
 
 pred_list = [list(X) for X in pred_list]
@@ -658,25 +613,21 @@ pred_list_formatted = [np.array([Y[0] for Y in X]) for X in pred_list]
 target_nn = list(np.mean(pred_list_formatted, axis=0))
 
 
-# In[46]:
 
 
 out_nn = model_nn.predict(x_test)
 
 
-# In[47]:
 
 
 history_nn.history.keys()
 
 
-# In[48]:
 
 
 history_nn.history.keys()
 
 
-# In[49]:
 
 
 list_val = history_nn.history['val_loss'] +           history_nn.history['val_accuracy'] +           history_nn.history['val_auc'] +           history_nn.history['loss'] +           history_nn.history['accuracy'] +           history_nn.history['auc']
@@ -693,20 +644,17 @@ df_nn_history = pd.DataFrame(dict(Step=list_steps, Value=list_val, Metric=list_m
 df_nn_history.head()
 
 
-# In[50]:
 
 
 ggplot(df_nn_history[df_nn_history['Step'] > 5], aes(x='Step', y='Value', colour='Kind')) +    geom_line(aes(group='Kind')) +    facet_grid('Metric ~ .', scales='free') +    ggtitle('Training / Validation Metrics') + geom_point(aes(shape = 'Kind'))
 
 
-# In[51]:
 
 
 target_nn = [X[0] for X in out_nn.tolist()]
 target_nn[1:5]
 
 
-# In[52]:
 
 
 pd.DataFrame({
@@ -715,7 +663,6 @@ pd.DataFrame({
 }).to_csv('/kaggle/working/df_out_wide_and_deep.csv', index=False)
 
 
-# In[53]:
 
 
 pd.DataFrame({
@@ -724,14 +671,12 @@ pd.DataFrame({
 }).to_csv('/kaggle/working/df_out_models_avg.csv', index=False)
 
 
-# In[54]:
 
 
 model_nn_mc = get_wide_and_deep(use_montecarlo=True)
 model_nn_mc.set_weights(model_nn.get_weights())
 
 
-# In[55]:
 
 
 predictions_list = []
@@ -742,14 +687,12 @@ for i in range(n_montecarlo_sims):
     predictions_list.append([X[0] for X in model_nn_mc.predict(x_test)])
 
 
-# In[56]:
 
 
 predictions_list = [np.array(X) for X in predictions_list]
 target_nn_mc = sum(predictions_list) / n_montecarlo_sims
 
 
-# In[57]:
 
 
 pd.DataFrame({
@@ -758,7 +701,6 @@ pd.DataFrame({
 }).to_csv('/kaggle/working/df_out_models_mc.csv', index=False)
 
 
-# In[58]:
 
 
 pd.DataFrame({

@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install hyperas')
 get_ipython().system('pip install hyperopt')
 
 
-# In[2]:
 
 
 import numpy as np
@@ -25,7 +23,6 @@ from hyperas import optim
 from hyperas.distributions import choice, uniform
 
 
-# In[3]:
 
 
 # Import data
@@ -44,7 +41,6 @@ Y_train = to_categorical(Y_train.values,num_classes)
 print('Y_train shape:', Y_train.shape)
 
 
-# In[4]:
 
 
 def model_FCN(input_shape=X_train.shape[1:], filters=1, kernel_size=1, s=1, units=num_classes):
@@ -85,7 +81,6 @@ def model_FCN(input_shape=X_train.shape[1:], filters=1, kernel_size=1, s=1, unit
     return model
 
 
-# In[5]:
 
 
 def model_ResNet(input_shape=X_train.shape[1:], filters=1, kernel_size=1, s=1, units=num_classes):
@@ -123,7 +118,6 @@ def model_ResNet(input_shape=X_train.shape[1:], filters=1, kernel_size=1, s=1, u
     return model
 
 
-# In[6]:
 
 
 # Define model parameters
@@ -137,7 +131,6 @@ folds=2
 model_Name = "model_FCN"
 
 
-# In[7]:
 
 
 # define 10-fold cross validation test harness
@@ -180,7 +173,6 @@ print("Avg loss: ", np.mean(cvloss), "Avg acc: ", np.mean(cvacc))
 print("Avg val_loss: ", np.mean(cvloss_val), "Avg val_acc: ", np.mean(cvacc_val))
 
 
-# In[8]:
 
 
 def data():
@@ -189,7 +181,6 @@ def data():
     return X_train,Y_train,X_train, Y_train,
 
 
-# In[9]:
 
 
 def create_model(x_train, y_train, x_test, y_test):
@@ -204,7 +195,6 @@ def create_model(x_train, y_train, x_test, y_test):
     return {'loss': -validation_acc, 'status': STATUS_OK, 'model': model}
 
 
-# In[10]:
 
 
 best_run, best_model = optim.minimize(model=create_model,
@@ -219,7 +209,6 @@ print("Best performing model chosen hyper-parameters:")
 print(best_run)
 
 
-# In[ ]:
 
 
 

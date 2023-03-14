@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -11,7 +10,6 @@ from collections import Counter
 from numba import jit 
 
 
-# In[2]:
 
 
 gift_pref = pd.read_csv('../input/child_wishlist_v2.csv',header=None).drop(0, 1).values
@@ -19,7 +17,6 @@ child_pref = pd.read_csv('../input/gift_goodkids_v2.csv',header=None).drop(0, 1)
 random_sub = pd.read_csv('../input/sample_submission_random_v2.csv').values.tolist()
 
 
-# In[3]:
 
 
 # parameters 
@@ -34,7 +31,6 @@ ratio_gift_happiness = 2
 ratio_child_happiness = 2
 
 
-# In[4]:
 
 
 def lcm(a, b):
@@ -105,7 +101,6 @@ def avg_normalized_happiness(pred, child_pref, gift_pref):
     # return math.pow(float(total_child_happiness)/(float(n_children)*float(max_child_happiness)),2) + math.pow(np.mean(total_gift_happiness) / float(max_gift_happiness*n_gift_quantity),2)
 
 
-# In[5]:
 
 
 @jit(nopython=True) 
@@ -193,31 +188,26 @@ def anh(pred, child_pref, gift_pref):
     return float(math.pow(total_child_happiness*multiplier,3) + math.pow(np.sum(total_gift_happiness),3)) / float(math.pow(common_denom,3))    
 
 
-# In[6]:
 
 
 time_original = get_ipython().run_line_magic('timeit', '-r 10 -o avg_normalized_happiness(random_sub, child_pref, gift_pref)')
 
 
-# In[7]:
 
 
 time_fast = get_ipython().run_line_magic('timeit', '-r 10 -o anh(np.array(random_sub), child_pref, gift_pref)')
 
 
-# In[8]:
 
 
 avg_normalized_happiness(np.array(random_sub), child_pref, gift_pref)
 
 
-# In[9]:
 
 
 anh(np.array(random_sub), child_pref, gift_pref)
 
 
-# In[10]:
 
 
 

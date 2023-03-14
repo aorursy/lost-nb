@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -43,7 +41,6 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator)
 
 
-# In[3]:
 
 
 train_data = pd.read_csv('/kaggle/input/covid19-global-forecasting-week-4/train.csv')
@@ -53,7 +50,6 @@ population_data = pd.read_csv('/kaggle/input/covid19-global-forecasting-location
 parameter_data = pd.read_csv('/kaggle/input/covid19-global-forecast-sir-jhu-timeseries-fit/per_location_fitted_params.csv') # External resources 
 
 
-# In[4]:
 
 
 display(train_data.head())
@@ -63,13 +59,11 @@ print('Training data are from', min(train_data['Date']), 'to', max(train_data['D
 print("Total number of days: ", train_data['Date'].nunique())
 
 
-# In[5]:
 
 
 train_data.shape, test_data.shape,submission_file.shape
 
 
-# In[6]:
 
 
 display(test_data.head())
@@ -77,7 +71,6 @@ print('Test data are from', test_data['Date'].min(), 'to', test_data['Date'].max
 print("Number of days", pd.date_range(test_data['Date'].min(),test_data['Date'].max()).shape[0])
 
 
-# In[7]:
 
 
 print(train_data.isna().any().any(), test_data.isna().any().any())
@@ -85,7 +78,6 @@ display(train_data.isna().any())
 display(test_data.isna().any())
 
 
-# In[8]:
 
 
 train_data_covid = train_data.copy()
@@ -94,14 +86,12 @@ test_data_covid = test_data_covid.fillna('NA')
 train_data_covid = train_data_covid.fillna('NA')
 
 
-# In[9]:
 
 
 train_series_cc = train_data_covid.fillna('NA').groupby(['Country_Region','Province_State','Date'])['ConfirmedCases'].sum()             .groupby(['Country_Region','Province_State']).max().sort_values()             .groupby('Country_Region').sum().sort_values(ascending = False)
 train_series_fatal = train_data_covid.fillna('NA').groupby(['Country_Region','Province_State','Date'])['Fatalities'].sum()             .groupby(['Country_Region','Province_State']).max().sort_values()             .groupby('Country_Region').sum().sort_values(ascending = False)
 
 
-# In[10]:
 
 
 train_large10_cc = pd.DataFrame(train_series_cc).head(10)
@@ -112,7 +102,6 @@ print("Toal number of people infected by Coronavirus in the world from", min(tra
 print("Toal number of people deceased by cronavirus in the world from", min(train_data['Date']),                                    "to", max(train_data['Date']), 'are:',                                                 int(sum(train_series_fatal))) 
 
 
-# In[11]:
 
 
 fig, (ax1, ax2) = plt.subplots(1,2, figsize = (24,8))
@@ -136,7 +125,6 @@ plt.rcParams["font.size"] = "20"
 plt.show()
 
 
-# In[12]:
 
 
 train_series_date = train_data_covid.groupby(['Date'])[['ConfirmedCases']].sum().                      sort_values('ConfirmedCases')
@@ -145,7 +133,6 @@ train_series_date_fata = train_data_covid.groupby(['Date'])[['Fatalities']].sum(
 display(train_series_date_fata.head())
 
 
-# In[13]:
 
 
 fig, (ax1, ax2) = plt.subplots(1,2, figsize = (24,8))
@@ -171,7 +158,6 @@ plt.rcParams["font.size"] = "16"
 plt.show()
 
 
-# In[14]:
 
 
 def country_fun(country_name):
@@ -182,7 +168,6 @@ def country_fun(country_name):
     return df_confirmed_fatal
 
 
-# In[15]:
 
 
 def country_plot_fun(country_name):
@@ -209,7 +194,6 @@ def country_plot_fun(country_name):
     plt.show()    
 
 
-# In[16]:
 
 
 country_plot_fun('China')
@@ -218,7 +202,6 @@ country_plot_fun('Italy')
 country_plot_fun('Spain')
 
 
-# In[17]:
 
 
 fig, (ax1, ax2) = plt.subplots(1,2, figsize = (22,8))
@@ -252,7 +235,6 @@ plt.rcParams["font.size"] = "20"
 plt.show()
 
 
-# In[18]:
 
 
 def country_state_fun(country_name, state_name):
@@ -264,7 +246,6 @@ def country_state_fun(country_name, state_name):
     return state_confirmed_fatal
 
 
-# In[19]:
 
 
 fig, (ax1, ax2) = plt.subplots(1,2, figsize = (22,8))
@@ -302,7 +283,6 @@ plt.rcParams["font.size"] = "20"
 plt.show()
 
 
-# In[20]:
 
 
 #Using population dataset from kaggle
@@ -313,7 +293,6 @@ all_countries = list(train_data["Country_Region"].unique())
 display(len(all_countries))
 
 
-# In[21]:
 
 
 def population_country(country_name, state_name):
@@ -324,7 +303,6 @@ def population_country(country_name, state_name):
 print(population_country('Botswana', 'NA'))    
 
 
-# In[22]:
 
 
 def country_state_fun(country_name, state_name):
@@ -336,31 +314,26 @@ def country_state_fun(country_name, state_name):
     return state_confirmed_fatal
 
 
-# In[23]:
 
 
 display(country_state_fun("US", "Illinois"))
 
 
-# In[24]:
 
 
 display(country_state_fun("Afghanistan", 'NA'))
 
 
-# In[25]:
 
 
 get_ipython().system('ls ../input/sir-model/')
 
 
-# In[26]:
 
 
 Image("../input/sir-model/sir_model_image.png")
 
 
-# In[27]:
 
 
 param_data_new = parameter_data.copy()
@@ -374,7 +347,6 @@ para_state_list = param_data_new['Province'].unique()
 para_country_list = param_data_new['Country'].unique()
 
 
-# In[28]:
 
 
 def parameter_extract(country_name, state_name):
@@ -385,7 +357,6 @@ def parameter_extract(country_name, state_name):
     return beta_in, gamma_in
 
 
-# In[29]:
 
 
 # SIR Model 
@@ -430,20 +401,17 @@ for cout in all_countries:
         df_final = df_final_all
 
 
-# In[30]:
 
 
 print(df_final.head())
 display(len(df_final))
 
 
-# In[31]:
 
 
 len(submission_file), len(df_final)
 
 
-# In[32]:
 
 
 submission_file['ConfirmedCases'] = df_final['ConfirmedCases'].values
@@ -452,7 +420,6 @@ display(submission_file.head())
 display(submission_file.tail())
 
 
-# In[33]:
 
 
 submission_file.to_csv('submission.csv', index=False)

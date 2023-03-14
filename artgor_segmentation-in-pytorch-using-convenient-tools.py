@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install catalyst')
@@ -11,7 +10,6 @@ get_ipython().system('pip install pytorch_toolbelt')
 get_ipython().system('pip install torchvision==0.4')
 
 
-# In[2]:
 
 
 import os
@@ -56,7 +54,6 @@ from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, InferCall
 import segmentation_models_pytorch as smp
 
 
-# In[3]:
 
 
 def get_img(x, folder: str='train_images'):
@@ -269,27 +266,23 @@ def dice(img1, img2):
     return 2. * intersection.sum() / (img1.sum() + img2.sum())
 
 
-# In[4]:
 
 
 path = '../input/understanding_cloud_organization'
 os.listdir(path)
 
 
-# In[5]:
 
 
 train = pd.read_csv(f'{path}/train.csv')
 sub = pd.read_csv(f'{path}/sample_submission.csv')
 
 
-# In[6]:
 
 
 train.head()
 
 
-# In[7]:
 
 
 n_train = len(os.listdir(f'{path}/train_images'))
@@ -298,25 +291,21 @@ print(f'There are {n_train} images in train dataset')
 print(f'There are {n_test} images in test dataset')
 
 
-# In[8]:
 
 
 train['Image_Label'].apply(lambda x: x.split('_')[1]).value_counts()
 
 
-# In[9]:
 
 
 train.loc[train['EncodedPixels'].isnull() == False, 'Image_Label'].apply(lambda x: x.split('_')[1]).value_counts()
 
 
-# In[10]:
 
 
 train.loc[train['EncodedPixels'].isnull() == False, 'Image_Label'].apply(lambda x: x.split('_')[0]).value_counts().value_counts()
 
 
-# In[11]:
 
 
 train['label'] = train['Image_Label'].apply(lambda x: x.split('_')[1])
@@ -327,7 +316,6 @@ sub['label'] = sub['Image_Label'].apply(lambda x: x.split('_')[1])
 sub['im_id'] = sub['Image_Label'].apply(lambda x: x.split('_')[0])
 
 
-# In[12]:
 
 
 fig = plt.figure(figsize=(25, 16))
@@ -345,7 +333,6 @@ for j, im_id in enumerate(np.random.choice(train['im_id'].unique(), 4)):
         ax.set_title(f"Image: {row['Image_Label'].split('_')[0]}. Label: {row['label']}")
 
 
-# In[13]:
 
 
 id_mask_count = train.loc[train['EncodedPixels'].isnull() == False, 'Image_Label'].apply(lambda x: x.split('_')[0]).value_counts().reset_index().rename(columns={'index': 'img_id', 'Image_Label': 'count'})
@@ -353,7 +340,6 @@ train_ids, valid_ids = train_test_split(id_mask_count['img_id'].values, random_s
 test_ids = sub['Image_Label'].apply(lambda x: x.split('_')[0]).drop_duplicates().values
 
 
-# In[14]:
 
 
 image_name = '8242ba0.jpg'
@@ -361,49 +347,41 @@ image = get_img(image_name)
 mask = make_mask(train, image_name)
 
 
-# In[15]:
 
 
 visualize(image, mask)
 
 
-# In[16]:
 
 
 plot_with_augmentation(image, mask, albu.HorizontalFlip(p=1))
 
 
-# In[17]:
 
 
 plot_with_augmentation(image, mask, albu.VerticalFlip(p=1))
 
 
-# In[18]:
 
 
 plot_with_augmentation(image, mask, albu.RandomRotate90(p=1))
 
 
-# In[19]:
 
 
 plot_with_augmentation(image, mask, albu.ElasticTransform(p=1, alpha=120, sigma=120 * 0.05, alpha_affine=120 * 0.03))
 
 
-# In[20]:
 
 
 plot_with_augmentation(image, mask, albu.GridDistortion(p=1))
 
 
-# In[21]:
 
 
 plot_with_augmentation(image, mask, albu.OpticalDistortion(p=1, distort_limit=2, shift_limit=0.5))
 
 
-# In[22]:
 
 
 class CloudDataset(Dataset):
@@ -438,7 +416,6 @@ class CloudDataset(Dataset):
         return len(self.img_ids)
 
 
-# In[23]:
 
 
 ENCODER = 'resnet50'
@@ -455,7 +432,6 @@ model = smp.Unet(
 preprocessing_fn = smp.encoders.get_preprocessing_fn(ENCODER, ENCODER_WEIGHTS)
 
 
-# In[24]:
 
 
 num_workers = 0
@@ -472,7 +448,6 @@ loaders = {
 }
 
 
-# In[25]:
 
 
 num_epochs = 19
@@ -488,7 +463,6 @@ criterion = smp.utils.losses.BCEDiceLoss(eps=1.)
 runner = SupervisedRunner()
 
 
-# In[26]:
 
 
 runner.train(
@@ -504,7 +478,6 @@ runner.train(
 )
 
 
-# In[27]:
 
 
 utils.plot_metrics(
@@ -514,7 +487,6 @@ utils.plot_metrics(
 )
 
 
-# In[28]:
 
 
 encoded_pixels = []
@@ -544,7 +516,6 @@ for i, (batch, output) in enumerate(tqdm.tqdm(zip(
         probabilities[i * 4 + j, :, :] = probability
 
 
-# In[29]:
 
 
 class_params = {}
@@ -580,20 +551,17 @@ for class_id in range(4):
     class_params[class_id] = (best_threshold, best_size)
 
 
-# In[30]:
 
 
 print(class_params)
 
 
-# In[31]:
 
 
 sns.lineplot(x='threshold', y='dice', hue='size', data=attempts_df);
 plt.title('Threshold and min size vs dice for one of the classes');
 
 
-# In[32]:
 
 
 for i, (input, output) in enumerate(zip(
@@ -615,7 +583,6 @@ for i, (input, output) in enumerate(zip(
         break
 
 
-# In[33]:
 
 
 import gc
@@ -623,7 +590,6 @@ torch.cuda.empty_cache()
 gc.collect()
 
 
-# In[34]:
 
 
 test_dataset = CloudDataset(df=sub, datatype='test', img_ids=test_ids, transforms = get_validation_augmentation(), preprocessing=get_preprocessing(preprocessing_fn))
@@ -632,7 +598,6 @@ test_loader = DataLoader(test_dataset, batch_size=8, shuffle=False, num_workers=
 loaders = {"test": test_loader}
 
 
-# In[35]:
 
 
 encoded_pixels = []
@@ -654,7 +619,6 @@ for i, test_batch in enumerate(tqdm.tqdm(loaders['test'])):
             image_id += 1
 
 
-# In[36]:
 
 
 sub['EncodedPixels'] = encoded_pixels

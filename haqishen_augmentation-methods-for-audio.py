@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -15,7 +14,6 @@ import IPython.display as ipd
 EPS = 1e-8
 
 
-# In[2]:
 
 
 def get_spectrogram(wav):
@@ -25,7 +23,6 @@ def get_spectrogram(wav):
     return spect
 
 
-# In[3]:
 
 
 file_path = '../input/train/audio/yes/0a7c2a8d_nohash_0.wav'
@@ -33,13 +30,11 @@ wav, sr = librosa.load(file_path, sr=None)
 print(wav.shape, wav.max(), wav.min())
 
 
-# In[4]:
 
 
 ipd.Audio(wav, rate=sr)
 
 
-# In[5]:
 
 
 log_spect = np.log(get_spectrogram(wav))
@@ -49,7 +44,6 @@ plt.title('spectrogram of origin audio')
 plt.show()
 
 
-# In[6]:
 
 
 start_ = int(np.random.uniform(-4800,4800))
@@ -61,7 +55,6 @@ else:
 ipd.Audio(wav_time_shift, rate=sr)
 
 
-# In[7]:
 
 
 log_spect = np.log(get_spectrogram(wav_time_shift)+EPS)
@@ -71,7 +64,6 @@ plt.title('spectrogram of time shifted audio')
 plt.show()
 
 
-# In[8]:
 
 
 speed_rate = np.random.uniform(0.7,1.3)
@@ -89,7 +81,6 @@ print('wav length: ', wav_speed_tune.shape[0])
 ipd.Audio(wav_speed_tune, rate=sr)
 
 
-# In[9]:
 
 
 log_spect = np.log(get_spectrogram(wav_speed_tune)+EPS)
@@ -99,7 +90,6 @@ plt.title('spectrogram of speed tuned audio')
 plt.show()
 
 
-# In[10]:
 
 
 bg_files = os.listdir('../input/train/audio/_background_noise_/')
@@ -110,7 +100,6 @@ print(chosen_bg_file,'|', bg.shape[0], bg.max(), bg.min())
 ipd.Audio(bg, rate=sr) # !! be prepared when playing the noise, bacause it's so ANNOYING !!
 
 
-# In[11]:
 
 
 start_ = np.random.randint(bg.shape[0]-16000)
@@ -119,7 +108,6 @@ wav_with_bg = wav * np.random.uniform(0.8, 1.2) +               bg_slice * np.ra
 ipd.Audio(wav_with_bg, rate=sr) 
 
 
-# In[12]:
 
 
 log_spect = np.log(get_spectrogram(wav_with_bg)+EPS)
@@ -129,7 +117,6 @@ plt.title('spectrogram of audio with background noise')
 plt.show()
 
 
-# In[13]:
 
 
 

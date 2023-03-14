@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -16,14 +15,12 @@ import os
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 df_cities = pd.read_csv('../input/cities.csv')
 df_cities.head()
 
 
-# In[3]:
 
 
 plt.figure(figsize=(16,10))
@@ -39,7 +36,6 @@ plt.title('All cities (North Pole = Blue X)', fontsize=18)
 plt.show()
 
 
-# In[4]:
 
 
 from sympy import isprime
@@ -60,7 +56,6 @@ plt.title('All cities (Primes = Red Dots, North Pole = Blue X)', fontsize=18)
 plt.show()
 
 
-# In[5]:
 
 
 # seive of eratosthenes
@@ -81,7 +76,6 @@ prime_cities = seive_of_eratosthenes(max(df_cities.CityId))
 print(len(prime_cities))
 
 
-# In[6]:
 
 
 # path : list of city_id
@@ -102,7 +96,6 @@ basic_path = list(df_cities.CityId[:].append(pd.Series([0])))
 print(f"Total distance with the dumbest path is {total_distance(df_cities, basic_path)}")
 
 
-# In[7]:
 
 
 df_path = pd.merge_ordered(pd.DataFrame({'CityId':basic_path}),df_cities,on=['CityId'])
@@ -112,7 +105,6 @@ for i, txt in enumerate(df_path.iloc[0:100,]['CityId']):
     ax.annotate(txt, (df_path.iloc[0:100,]['X'][i], df_path.iloc[0:100,]['Y'][i]),size = 10)
 
 
-# In[8]:
 
 
 df_cities['Ycuts'] = pd.cut(df_cities.Y,300)
@@ -124,7 +116,6 @@ grid_sorted_cities = [0] + grid_sorted_cities + [0]
 print('Total distance with the sorted cities with a grid path is '+ "{:,}".format(total_distance(df_cities,grid_sorted_cities)))
 
 
-# In[9]:
 
 
 # creating a new dataframe based on the sorted cityId
@@ -136,7 +127,6 @@ fig, ax = plt.subplots(figsize=(20,20))
 ax.plot(df_path.iloc[0:1000,]['X'], df_path.iloc[0:1000,]['Y'],marker = 'o')
 
 
-# In[10]:
 
 
 zigzag_sorted_cities1 = list(df_cities.iloc[1:].sort_values(['Xcuts','Ycuts','X','Y'])['CityId'])
@@ -148,7 +138,6 @@ zigzag_cities =  [0] + zigzag_cities + [0]
 print('Total distance with the Zig-Zag with grid city path is '+ "{:,}".format(total_distance(df_cities,zigzag_cities)))
 
 
-# In[11]:
 
 
 # creating a new dataframe based on the sorted cityId
@@ -159,7 +148,6 @@ fig, ax = plt.subplots(figsize=(20,20))
 ax.plot(df_path.iloc[0:1000,]['X'], df_path.iloc[0:1000,]['Y'],marker = 'o')
 
 
-# In[12]:
 
 
 for i in range(100,700,100):
@@ -175,7 +163,6 @@ for i in range(100,700,100):
         print('Total distance with the Zig-Zag with grid city path ith grid size ('+ str(i) +','+ str(j) +')'+ "{:,}".format(total_distance(df_cities,zigzag_cities)))
 
 
-# In[13]:
 
 
 df_path = pd.DataFrame({'CityId':zigzag_cities}).merge(df_cities,how = 'left')
@@ -183,7 +170,6 @@ fig, ax = plt.subplots(figsize=(20,20))
 ax.plot(df_path['X'], df_path['Y'])
 
 
-# In[14]:
 
 
 def nearest_neighbour():
@@ -215,7 +201,6 @@ nnpath = nearest_neighbour()
 print('Total distance with the Nearest Neighbor path '+  "is {:,}".format(total_distance(df_cities,nnpath)))
 
 
-# In[15]:
 
 
 df_path = pd.DataFrame({'CityId':nnpath}).merge(df_cities,how = 'left')
@@ -223,7 +208,6 @@ fig, ax = plt.subplots(figsize=(20,20))
 ax.plot(df_path['X'], df_path['Y'])
 
 
-# In[16]:
 
 
 nnpath_with_primes = nnpath.copy()
@@ -240,13 +224,11 @@ for index in range(20,len(nnpath_with_primes)-30):
 print('Total distance with the Nearest Neighbor With Prime Swaps '+  "is {:,}".format(total_distance(df_cities,nnpath_with_primes)))
 
 
-# In[17]:
 
 
 pd.DataFrame({'Path':nnpath_with_primes}).to_csv('nnpath_with_primes.csv',index  = False)
 
 
-# In[18]:
 
 
 from sympy import isprime, primerange
@@ -255,7 +237,6 @@ from concorde.tsp import TSPSolver
 import time
 
 
-# In[19]:
 
 
 def make_submission(name, path):
@@ -278,7 +259,6 @@ def score_path(path):
     return path_df.step_adj.sum()
 
 
-# In[20]:
 
 
 def concorde_tsp(seed=42):
@@ -295,14 +275,12 @@ def concorde_tsp(seed=42):
 path_cc = concorde_tsp()
 
 
-# In[21]:
 
 
 path_cc = path_cc.tolist()
 print('Total distance with the Nearest Neighbor With Prime Swaps '+  "is {:,}".format(total_distance(df_cities,path_cc)))
 
 
-# In[22]:
 
 
 df_path = pd.DataFrame({'CityId':path_cc}).merge(df_cities,how = 'left')
@@ -310,7 +288,6 @@ fig, ax = plt.subplots(figsize=(20,20))
 ax.plot(df_path['X'], df_path['Y'])
 
 
-# In[23]:
 
 
 

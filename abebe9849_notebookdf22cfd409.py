@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 class CFG:
@@ -18,7 +17,6 @@ class CFG:
     device=1
 
 
-# In[2]:
 
 
 import time
@@ -69,7 +67,6 @@ LOG_FILE = 'train{}.log'.format(dt_now)
 LOGGER = init_logger(LOG_FILE)
 
 
-# In[3]:
 
 
 def seed_torch(seed=42):
@@ -85,7 +82,6 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("device:",device)
 
 
-# In[4]:
 
 
 #データの居場所を確認
@@ -93,7 +89,6 @@ import os
 os.listdir("../input/siim-acr-pneumothorax-segmentation")
 
 
-# In[5]:
 
 
 import pandas as pd
@@ -101,7 +96,6 @@ train = pd.read_csv("../input/siim-acr-pneumothorax-segmentation/stage_2_train.c
 train.head()
 
 
-# In[6]:
 
 
 image_id = train['ImageId'].values[0]
@@ -117,13 +111,11 @@ plt.imshow(image[100:1024-100,100:1024-100])
 plt.show()
 
 
-# In[7]:
 
 
 image.shape
 
 
-# In[8]:
 
 
 import numpy as np
@@ -142,7 +134,6 @@ def rle2mask(rle, width, height):
     return mask.reshape(width, height)
 
 
-# In[9]:
 
 
 #mask
@@ -151,7 +142,6 @@ annotations = train["EncodedPixels"].values[0]
 mask = rle2mask(annotations,1024,1024)
 
 
-# In[10]:
 
 
 import pydicom as dcm
@@ -163,7 +153,6 @@ plt.imshow(dcm_image,cmap="bone")
 plt.show()
 
 
-# In[11]:
 
 
 plt.imshow(image[100:1024-100,100:1024-100])
@@ -172,7 +161,6 @@ plt.imshow(mask.T[100:1024-100,100:1024-100])
 plt.show()
 
 
-# In[12]:
 
 
 import torch
@@ -190,7 +178,6 @@ labels = torch.ones((1,), dtype=torch.int64)
 masks = torch.as_tensor(mask, dtype=torch.uint8)
 
 
-# In[13]:
 
 
 exist = []
@@ -208,7 +195,6 @@ train["has_mask"].values[negative_idx]=0
 train.head()
 
 
-# In[14]:
 
 
 import torchvision
@@ -250,7 +236,6 @@ class SIIMDataset(torch.utils.data.Dataset):
         
 
 
-# In[15]:
 
 
 import torch.nn as nn
@@ -270,7 +255,6 @@ class mask_r_cnn_model(nn.Module):
 #targetもいれないといけない...mask bboxなどを含むもの、不明　
 
 
-# In[16]:
 
 
 get_ipython().system('pip install git+https://github.com/qubvel/segmentation_models.pytorch > /dev/null 2>&1 # Install segmentations_models.pytorch, with no bash output.')
@@ -279,7 +263,6 @@ model = smp.Unet('efficientnet-b0', encoder_weights='imagenet', classes=2)
 print(model)
 
 
-# In[17]:
 
 
 if CFG.debug:
@@ -289,13 +272,11 @@ else:
     folds = train.copy()
 
 
-# In[18]:
 
 
 folds.head()
 
 
-# In[19]:
 
 
 from sklearn.model_selection import StratifiedKFold,GroupKFold
@@ -306,13 +287,11 @@ for fold, (train_index, val_index) in enumerate(kf.split(folds.values, folds["ha
 folds['fold'] = folds['fold'].astype(int)
 
 
-# In[20]:
 
 
 folds.head()
 
 
-# In[21]:
 
 
 from torch.nn import functional as F
@@ -332,7 +311,6 @@ class FocalLoss(nn.Module):
         return loss.mean()
 
 
-# In[22]:
 
 
 def dice_loss(input, target):
@@ -344,7 +322,6 @@ def dice_loss(input, target):
     return ((2.0 * intersection + smooth) / (iflat.sum() + tflat.sum() + smooth))
 
 
-# In[23]:
 
 
 def dice_score(prob, truth, threshold=0.5):
@@ -364,7 +341,6 @@ def dice_score(prob, truth, threshold=0.5):
     return score
 
 
-# In[24]:
 
 
 #SIIM2019の3rdで紹介されていた　https://github.com/bestfitting/kaggle/blob/master/siim_acr/src/layers/loss_funcs/loss.py
@@ -469,7 +445,6 @@ class SymmetricLovaszLoss(nn.Module):
         return ((lovasz_hinge(logits, targets, per_image=True))                 + (lovasz_hinge(-logits, 1-targets, per_image=True))) / 2
 
 
-# In[25]:
 
 
 def weighted_bce_loss(logit_pixel, truth_pixel):
@@ -535,13 +510,11 @@ class Soft_Dice_Loss(nn.Module):
         return soft_dice_loss(logits, targets)
 
 
-# In[ ]:
 
 
 
 
 
-# In[26]:
 
 
 def train_fn(fold):
@@ -652,13 +625,11 @@ def train_fn(fold):
     return best_preds, valid_masks
 
 
-# In[27]:
 
 
 len(folds)
 
 
-# In[28]:
 
 
 preds = []
@@ -669,13 +640,11 @@ for fold in range(CFG.n_fold):
     valid_masks.append(_valid_masks)
 
 
-# In[29]:
 
 
 del _preds, _valid_masksdel 
 
 
-# In[30]:
 
 
 preds = torch.cat(preds)
@@ -684,7 +653,6 @@ score = dice_score(preds,valid_masks)
 print("DICE:",score)
 
 
-# In[ ]:
 
 
 

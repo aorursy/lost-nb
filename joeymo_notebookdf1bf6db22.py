@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,19 +19,16 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 ls ../input/b
 
 
-# In[3]:
 
 
 import dicom
 
 
-# In[4]:
 
 
 lung = dicom.read_file('../input/sample_images/00cba091fa4ad62cc3200a657aeb957e/38c4ff5d36b5a6b6dc025435d62a143d.dcm')
@@ -40,19 +36,16 @@ lung = dicom.read_file('../input/sample_images/00cba091fa4ad62cc3200a657aeb957e/
 slice = lung.pixel_array
 
 
-# In[5]:
 
 
 slice.shape
 
 
-# In[6]:
 
 
 
 
 
-# In[6]:
 
 
 slice[slice == -2000] = 0

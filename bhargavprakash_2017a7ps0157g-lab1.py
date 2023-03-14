@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import warnings
@@ -16,52 +15,44 @@ import seaborn as sns
 sns.set() # for plot styling
 
 
-# In[2]:
 
 
 df = pd.read_csv('../input/dmassign1/data.csv')
 
 
-# In[3]:
 
 
 df.shape
 
 
-# In[4]:
 
 
 df.head()
 
 
-# In[5]:
 
 
 df = df.drop_duplicates()
 df.info()
 
 
-# In[6]:
 
 
 X = df.iloc[0:1300, 1:198]
 X.shape
 
 
-# In[7]:
 
 
 y = df.iloc[0:1300,198:199]
 y.shape
 
 
-# In[8]:
 
 
 y['Class'].value_counts()
 
 
-# In[9]:
 
 
 for i in range(0,197):
@@ -71,13 +62,11 @@ for i in range(0,197):
 X.dtypes
 
 
-# In[10]:
 
 
 X.tail()
 
 
-# In[11]:
 
 
 from sklearn.preprocessing import MinMaxScaler
@@ -89,7 +78,6 @@ X_scaled = scaler.fit_transform(X)
 X_scaled
 
 
-# In[12]:
 
 
 from sklearn.decomposition import PCA
@@ -100,7 +88,6 @@ X_principal = pd.DataFrame(X_pca)
 X_principal.columns = ['P1', 'P2'] 
 
 
-# In[13]:
 
 
 from sklearn.cluster import KMeans
@@ -118,7 +105,6 @@ plt.ylabel('WCSS')
 plt.show()
 
 
-# In[14]:
 
 
 from sklearn.cluster import KMeans
@@ -213,7 +199,6 @@ for n_clusters in range_n_clusters:
 plt.show()
 
 
-# In[15]:
 
 
 from matplotlib import pyplot as plt
@@ -234,7 +219,6 @@ for i in range(2, 11):
     plt.plot(centroids[:, 0], centroids[:, 1], 'b+', markersize=30, color = 'brown', markeredgewidth = 3)
 
 
-# In[16]:
 
 
 kmean = KMeans(n_clusters = 35, random_state = 400)
@@ -244,7 +228,6 @@ unique, counts =np.unique(pred, return_counts=True)
 print(np.asarray((unique, counts)))
 
 
-# In[17]:
 
 
 from matplotlib import pyplot as plt
@@ -271,7 +254,6 @@ LABEL_COLOR_MAP = {0 : 'r',
 plt.scatter(X_pca[:,0], X_pca[:,1], c=labels, cmap='rainbow', alpha=1, edgecolors='b')
 
 
-# In[18]:
 
 
 #label identification for each cluster
@@ -293,7 +275,6 @@ for k in range(0,35):
     print("")
 
 
-# In[19]:
 
 
 
@@ -315,7 +296,6 @@ accuracy = accuracy_score(y, res)
 print("Accuracy: %.2f%%" % (accuracy * 100.0))
 
 
-# In[20]:
 
 
 LABEL_COLOR_MAP = {1 : 'r',
@@ -327,14 +307,12 @@ label_color = [LABEL_COLOR_MAP[l] for l in res]
 plt.scatter(X_pca[:,0], X_pca[:,1], c=label_color, cmap='rainbow', alpha=0.7, edgecolors='b')
 
 
-# In[21]:
 
 
 X_pred = df.iloc[1300:, 1:198]
 X_pred.shape
 
 
-# In[22]:
 
 
 for i in range(0,197):
@@ -343,7 +321,6 @@ for i in range(0,197):
     X_pred[X_pred.columns[i]] = X_pred[X_pred.columns[i]].astype('float64')
 
 
-# In[23]:
 
 
 from sklearn.preprocessing import MinMaxScaler
@@ -355,7 +332,6 @@ X_pred_scaled = scaler.fit_transform(X_pred)
 X_pred_scaled
 
 
-# In[24]:
 
 
 from sklearn.decomposition import PCA
@@ -364,7 +340,6 @@ pca1.fit(X_pred_scaled)
 X_pred_pca = pca1.transform(X_pred_scaled)
 
 
-# In[25]:
 
 
 pred = brc.predict(X_pred_scaled)
@@ -372,7 +347,6 @@ unique, counts =np.unique(pred, return_counts=True)
 print(np.asarray((unique, counts)))
 
 
-# In[26]:
 
 
 labels = pred
@@ -390,14 +364,12 @@ for i in range(len(labels)):
         res1.append(1)
 
 
-# In[27]:
 
 
 submission = pd.DataFrame({'ID':df.iloc[1300:, 0], 'Class':res1})
 submission.shape
 
 
-# In[28]:
 
 
 filename = 'predictions18.csv'
@@ -405,7 +377,6 @@ filename = 'predictions18.csv'
 submission.to_csv(filename,index=False)
 
 
-# In[29]:
 
 
 from IPython.display import HTML 

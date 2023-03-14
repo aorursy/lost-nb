@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Basic packages
@@ -38,7 +37,6 @@ tqdm.pandas()
 import tensorflow as tf
 
 
-# In[2]:
 
 
 # System Setup
@@ -50,7 +48,6 @@ np.set_printoptions(suppress=True)
 pd.set_option("display.precision", 15)
 
 
-# In[3]:
 
 
 #LOAD DATA
@@ -70,7 +67,6 @@ df_train = df_all[0:len_train]
 df_test = df_all[len_train:]
 
 
-# In[4]:
 
 
 def augment_train(df_train, y_train):   
@@ -90,7 +86,6 @@ def augment_train(df_train, y_train):
    return df_train, y_train
 
 
-# In[5]:
 
 
 features = [c for c in df_train.columns if c not in ["ID_code","target"]]
@@ -130,7 +125,6 @@ def generate_fe(trn, tst):
     return trn_fe, tst_fe
 
 
-# In[6]:
 
 
 def generate_fe_test(tst):
@@ -150,7 +144,6 @@ def generate_fe_test(tst):
 test_fe = generate_fe_test(df_test[features])
 
 
-# In[7]:
 
 
 # MODEL DEF
@@ -182,7 +175,6 @@ def _Model():
     return model
 
 
-# In[8]:
 
 
 # LOGGER
@@ -236,7 +228,6 @@ class Logger(callbacks.Callback):
         return
 
 
-# In[9]:
 
 
 #RUN

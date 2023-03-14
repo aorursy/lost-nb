@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import gc
@@ -34,14 +33,12 @@ from matplotlib.pyplot import show
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 SEED = 148
 np.random.seed(SEED)
 
 
-# In[3]:
 
 
 def build_train():
@@ -75,7 +72,6 @@ def build_train():
     return df, y, df.columns
 
 
-# In[4]:
 
 
 xtrain, ytrain, columns = build_train()
@@ -85,14 +81,12 @@ xtrain, xtest, ytrain, ytest = train_test_split(xtrain,
                                                 random_state=SEED)
 
 
-# In[5]:
 
 
 # this plot requires mlens 0.1.3, Kaggle is currently on 0.1.2
 #corr_X_y(xtrain, ytrain, figsize=(16, 10), label_rotation=80, hspace=1, fontsize=14)
 
 
-# In[6]:
 
 
 # We consider the following models (or base learners)
@@ -108,7 +102,6 @@ base_learners = [('ls', ls),
                 ]
 
 
-# In[7]:
 
 
 P = np.zeros((xtest.shape[0], len(base_learners)))
@@ -121,14 +114,12 @@ for est_name, est in base_learners:
     print("%3s : %.4f" % (est_name, mean_absolute_error(ytest, p)))
 
 
-# In[8]:
 
 
 ax = corrmat(P.corr())
 show()
 
 
-# In[9]:
 
 
 # Put their parameter dictionaries in a dictionary with the
@@ -158,7 +149,6 @@ param_dicts = {'ls':
               }
 
 
-# In[10]:
 
 
 scorer = make_scorer(mean_absolute_error, greater_is_better=False)
@@ -170,7 +160,6 @@ evl = Evaluator(scorer,
                )
 
 
-# In[11]:
 
 
 evl.fit(xtrain.values,  # you can pass DataFrames from mlens>=0.1.3 
@@ -181,19 +170,16 @@ evl.fit(xtrain.values,  # you can pass DataFrames from mlens>=0.1.3
         n_iter=2)  # bump this up to do a larger grid search
 
 
-# In[12]:
 
 
 pd.DataFrame(evl.summary)
 
 
-# In[13]:
 
 
 evl.summary["params"][('sc', 'gb')]
 
 
-# In[14]:
 
 
 for case_name, params in evl.summary["params"].items():
@@ -202,7 +188,6 @@ for case_name, params in evl.summary["params"].items():
             est.set_params(**params)
 
 
-# In[15]:
 
 
 # We will compare a GBM and an elastic net as the meta learner
@@ -223,7 +208,6 @@ param_dicts = {'el':
               }
 
 
-# In[16]:
 
 
 # Here, we but the base learners in an EnsembleTransformer class
@@ -239,7 +223,6 @@ in_layer.add('stack', base_learners)
 preprocess = [in_layer]
 
 
-# In[17]:
 
 
 evl.fit(xtrain.values,
@@ -251,13 +234,11 @@ evl.fit(xtrain.values,
        )
 
 
-# In[18]:
 
 
 pd.DataFrame(evl.summary)
 
 
-# In[19]:
 
 
 # Let's pick the linear meta learner with the above tuned
@@ -268,7 +249,6 @@ meta_learner = meta_learners[1][1]
 meta_learner.set_params(**evl.summary["params"][("meta", "el")])
 
 
-# In[20]:
 
 
 # Instantiate the ensemble by adding layers to it. Finalize with a meta layer
@@ -278,19 +258,16 @@ ens.add(base_learners)
 ens.add_meta(meta_learner)
 
 
-# In[21]:
 
 
 ens.fit(xtrain, ytrain)
 
 
-# In[22]:
 
 
 pred = ens.predict(xtest)
 
 
-# In[23]:
 
 
 print("ensemble score: %.4f" % mean_absolute_error(ytest, pred))

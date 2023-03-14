@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np # linear algebra
@@ -22,46 +21,39 @@ import os
 print(os.listdir("../input"))
 
 
-# In[ ]:
 
 
 plt.figure(figsize=(8, 5), dpi=80)
 sns.set_style("darkgrid")
 
 
-# In[ ]:
 
 
 test_dataset = pd.read_csv('../input/test.csv')
 train_dataset = pd.read_csv('../input/train.csv', nrows=2_000_000)
 
 
-# In[ ]:
 
 
 train_dataset.head(5)
 
 
-# In[ ]:
 
 
 train_dataset.tail(5)
 
 
-# In[ ]:
 
 
 train_dataset.dtypes
 
 
-# In[ ]:
 
 
 # lets check current memory usage status
 train_dataset.info(memory_usage='deep')
 
 
-# In[ ]:
 
 
 for dtype in ['float','int','object']:
@@ -71,27 +63,23 @@ for dtype in ['float','int','object']:
     print("Average memory usage for {} columns: {:03.2f} MB".format(dtype,mean_usage_mb))
 
 
-# In[ ]:
 
 
 train_dataset.drop(labels='key', axis=1, inplace=True)
 test_dataset.drop(labels='key', axis=1, inplace=True)
 
 
-# In[ ]:
 
 
 # Let's again check the memory usage.
 train_dataset.info(memory_usage='deep')
 
 
-# In[ ]:
 
 
 train_dataset.passenger_count = train_dataset.passenger_count.astype(dtype = 'uint8')
 
 
-# In[ ]:
 
 
 train_dataset.pickup_longitude = train_dataset.pickup_longitude.astype(dtype = 'float32')
@@ -101,20 +89,17 @@ train_dataset.dropoff_latitude = train_dataset.dropoff_latitude.astype(dtype = '
 train_dataset.fare_amount = train_dataset.fare_amount.astype(dtype = 'float32')
 
 
-# In[ ]:
 
 
 # let's again check the memory_usage report
 train_dataset.info(memory_usage='deep')
 
 
-# In[ ]:
 
 
 train_dataset.isnull().sum()
 
 
-# In[ ]:
 
 
 print(f'Row count before drop-null operation - {train_dataset.shape[0]}')
@@ -122,20 +107,17 @@ train_dataset.dropna(inplace = True)
 print(f'Row count after drop-null operation - {train_dataset.shape[0]}')
 
 
-# In[ ]:
 
 
 train_dataset['pickup_datetime'] = pd.to_datetime(arg=train_dataset['pickup_datetime'], infer_datetime_format=True)
 test_dataset['pickup_datetime'] = pd.to_datetime(arg=test_dataset['pickup_datetime'], infer_datetime_format=True)
 
 
-# In[ ]:
 
 
 train_dataset.dtypes
 
 
-# In[ ]:
 
 
 def add_new_date_time_features(dataset):
@@ -151,13 +133,11 @@ train_dataset = add_new_date_time_features(train_dataset)
 test_dataset = add_new_date_time_features(test_dataset)
 
 
-# In[ ]:
 
 
 train_dataset.describe()
 
 
-# In[ ]:
 
 
 print(f'Rows before removing coordinate outliers - {train_dataset.shape[0]}')
@@ -170,19 +150,16 @@ train_dataset = train_dataset[train_dataset.dropoff_latitude.between(test_datase
 print(f'Rows after removing coordinate outliers - {train_dataset.shape[0]}')
 
 
-# In[ ]:
 
 
 train_dataset.describe()
 
 
-# In[ ]:
 
 
 train_dataset.fare_amount[(train_dataset.fare_amount <= 0) | (train_dataset.fare_amount >= 350)].count()
 
 
-# In[ ]:
 
 
 # Let's eliminate these rows
@@ -191,13 +168,11 @@ train_dataset = train_dataset[train_dataset.fare_amount.between(0, 350, inclusiv
 print(f'Row count after elimination - {train_dataset.shape[0]}')
 
 
-# In[ ]:
 
 
 train_dataset.passenger_count[(train_dataset.passenger_count < 1) | (train_dataset.passenger_count > 8)].count()
 
 
-# In[ ]:
 
 
 # Let's eliminate these rows
@@ -206,7 +181,6 @@ train_dataset = train_dataset[train_dataset.passenger_count.between(0, 8, inclus
 print(f'Row count after elimination - {train_dataset.shape[0]}')
 
 
-# In[ ]:
 
 
 def degree_to_radion(degree):
@@ -230,26 +204,22 @@ def calculate_distance(pickup_latitude, pickup_longitude, dropoff_latitude, drop
     return radius * c
 
 
-# In[ ]:
 
 
 train_dataset['distance'] = calculate_distance(train_dataset.pickup_latitude, train_dataset.pickup_longitude, train_dataset.dropoff_latitude, train_dataset.dropoff_longitude)
 test_dataset['distance'] = calculate_distance(test_dataset.pickup_latitude, test_dataset.pickup_longitude, test_dataset.dropoff_latitude, test_dataset.dropoff_longitude)
 
 
-# In[ ]:
 
 
 train_dataset.sort_values(by='distance')
 
 
-# In[ ]:
 
 
 train_dataset.distance[(train_dataset.distance == 0)].count()
 
 
-# In[ ]:
 
 
 train_dataset[(train_dataset.pickup_latitude != train_dataset.dropoff_latitude) &
@@ -257,7 +227,6 @@ train_dataset[(train_dataset.pickup_latitude != train_dataset.dropoff_latitude) 
               (train_dataset.distance == 0)].count()
 
 
-# In[ ]:
 
 
 def add_distances_from_airport(dataset):
@@ -282,19 +251,16 @@ train_dataset = add_distances_from_airport(train_dataset)
 test_dataset = add_distances_from_airport(test_dataset)
 
 
-# In[ ]:
 
 
 sns.distplot(a=train_dataset.fare_amount)
 
 
-# In[ ]:
 
 
 sns.jointplot(x='distance', y='fare_amount', data=train_dataset)
 
 
-# In[ ]:
 
 
 g = sns.FacetGrid(train_dataset, col="year", hue="passenger_count")
@@ -302,39 +268,33 @@ g.map(plt.scatter, "distance", "fare_amount")
 g.add_legend()
 
 
-# In[ ]:
 
 
 train_dataset[(train_dataset.distance>90) & (train_dataset.fare_amount<70)]
 
 
-# In[ ]:
 
 
 sns.countplot(x='day_of_week', data=train_dataset)
 
 
-# In[ ]:
 
 
 tc = train_dataset.pivot_table(index='day_of_week', columns='month', values='fare_amount')
 sns.heatmap(data = tc)
 
 
-# In[ ]:
 
 
 train_dataset['fare_amount'].skew()
 
 
-# In[ ]:
 
 
 train_dataset['fare_amount'] = np.log1p(train_dataset['fare_amount'])
 sns.distplot(train_dataset['fare_amount'], color='blue')
 
 
-# In[ ]:
 
 
 selected_predictors = [
@@ -362,7 +322,6 @@ X_test_dataset = test_dataset.loc[:, selected_predictors].values
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1/20)
 
 
-# In[ ]:
 
 
 rand_forest_regressor = RandomForestRegressor()
@@ -373,7 +332,6 @@ random_forest_model_error = sqrt(mean_squared_error(np.expm1(y_test), np.expm1(y
 print(f' Random Forest Mean Squared Error - {random_forest_model_error}')
 
 
-# In[ ]:
 
 
 # parameters = {
@@ -385,7 +343,6 @@ print(f' Random Forest Mean Squared Error - {random_forest_model_error}')
 # XGB_hyper_params = GridSearchCV(estimator=XGB_regressor, param_grid=parameters, n_jobs=-1, cv=5)
 
 
-# In[ ]:
 
 
 # XGB_hyper_params.fit(X_train[:50_000], y_train[:50_000])
@@ -393,7 +350,6 @@ print(f' Random Forest Mean Squared Error - {random_forest_model_error}')
 # XGB_hyper_params.best_params_
 
 
-# In[ ]:
 
 
 XGB_model = XGBRegressor(learning_rate=0.3, max_depth=6, n_estimators=500)
@@ -405,14 +361,12 @@ XGB_model_error = sqrt(mean_squared_error(np.expm1(y_test), np.expm1(y_XGB_predi
 print(f'XGBoost Mean Squared Error - {XGB_model_error}')
 
 
-# In[ ]:
 
 
 # let's plot feature_importance again and check if there is any difference or not.
 sns.barplot(y=list(train_dataset.loc[:, selected_predictors].columns), x=list(XGB_model.feature_importances_))
 
 
-# In[ ]:
 
 
 lgb_model = lgb.LGBMRegressor(objective='regression',num_leaves=35, n_estimators=300)
@@ -425,7 +379,6 @@ LGB_model_error = sqrt(mean_squared_error(np.expm1(y_test), np.expm1(y_LGB_predi
 print(f'LGBM Mean Squared Error - {LGB_model_error}')
 
 
-# In[ ]:
 
 
 # ensembled prediction over splitted test data
@@ -435,7 +388,6 @@ ensembled_prediction_error = sqrt(mean_squared_error(np.expm1(y_test), ensembled
 print(f'Ensembled Mean Squared Error - {ensembled_prediction_error}')
 
 
-# In[ ]:
 
 
 # making prediction using test_dataset predictors
@@ -448,7 +400,6 @@ submission.to_csv('xgb_submission.csv', index=False)
 submission.head(10)
 
 
-# In[ ]:
 
 
 # making prediction using test_dataset predictors
@@ -461,7 +412,6 @@ submission.to_csv('lgbm_submission.csv', index=False)
 submission.head(10)
 
 
-# In[ ]:
 
 
 # making prediction using test_dataset predictors
@@ -474,7 +424,6 @@ submission.head(10)
 # submission.head(10)
 
 
-# In[ ]:
 
 
 # submitting our predictions

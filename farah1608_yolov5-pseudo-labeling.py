@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 
@@ -12,7 +11,6 @@ from tqdm.auto import tqdm
 import shutil as sh
 
 
-# In[2]:
 
 
 #!git clone https://github.com/ultralytics/yolov5
@@ -21,7 +19,6 @@ import shutil as sh
 get_ipython().system('cp -r ../input/yolov5train/* .')
 
 
-# In[3]:
 
 
 # f = open("../input/valdata/val4.txt", "r")
@@ -32,13 +29,11 @@ content = [x.strip().split('/')[-1].split('.')[0] for x in content]
 content
 
 
-# In[4]:
 
 
 get_ipython().system("pip install --no-deps '../input/weightedboxesfusion/' > /dev/null")
 
 
-# In[5]:
 
 
 def convertTrainLabel():
@@ -80,7 +75,6 @@ def convertTrainLabel():
                 sh.copy("../input/global-wheat-detection/{}/{}.jpg".format(source,name),'convertor/fold{}/images/{}/{}.jpg'.format(fold,path2save,name))
 
 
-# In[6]:
 
 
 from ensemble_boxes import *
@@ -157,7 +151,6 @@ def detect1Image(im0, imgsz, model, device, conf_thres, iou_thres):
     return np.array(boxes), np.array(scores) 
 
 
-# In[7]:
 
 
 from utils.datasets import *
@@ -232,38 +225,32 @@ def makePseudolabel():
             
 
 
-# In[8]:
 
 
 
 convertTrainLabel()
 
 
-# In[9]:
 
 
 get_ipython().system('ls convertor/fold0/images/val2017')
 
 
-# In[10]:
 
 
 makePseudolabel()
 
 
-# In[11]:
 
 
 get_ipython().system('ls')
 
 
-# In[12]:
 
 
 get_ipython().system('ls ../input/yolov5yaml/')
 
 
-# In[13]:
 
 
 
@@ -283,25 +270,21 @@ else:
 get_ipython().system('rm -rf convertor')
 
 
-# In[14]:
 
 
 get_ipython().system('ls weights')
 
 
-# In[15]:
 
 
 get_ipython().system("cp 'weights/best.pt' 'best_psuedolblf4.pt'")
 
 
-# In[ ]:
 
 
 
 
 
-# In[16]:
 
 
 def format_prediction_string(boxes, scores):
@@ -312,7 +295,6 @@ def format_prediction_string(boxes, scores):
     return " ".join(pred_strings)
 
 
-# In[17]:
 
 
 def detect():
@@ -394,7 +376,6 @@ def detect():
     return results
 
 
-# In[18]:
 
 
 results = detect()

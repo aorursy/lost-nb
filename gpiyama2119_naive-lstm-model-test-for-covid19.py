@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 data_dir = "/kaggle/input/covid19-global-forecasting-week-1/"
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -18,7 +16,6 @@ import tensorflow as tf
 import math
 
 
-# In[3]:
 
 
 train_df_raw = pd.read_csv(data_dir+"train.csv")
@@ -27,7 +24,6 @@ all_df = train_df_raw
 test_df = test_df_raw
 
 
-# In[4]:
 
 
 # paramerers
@@ -40,7 +36,6 @@ epochs = 50
 lr = 0.001
 
 
-# In[5]:
 
 
 def map_datetime(date):
@@ -50,7 +45,6 @@ def to_datetime(date):
     return datetime.datetime.strptime(date, "%Y-%m-%d")
 
 
-# In[6]:
 
 
 test_df = test_df.fillna({"Province/State": "NAN"})
@@ -76,7 +70,6 @@ val_df = all_df[all_df["Date"] > (all_df["Date"].max() - datetime.timedelta(days
 train_df = all_df.drop(all_df[all_df["Date_num"] == all_df["Date_num"].max()].index)
 
 
-# In[7]:
 
 
 test_df["Lat"] = test_df["Lat"]/180.
@@ -86,7 +79,6 @@ test_df["Date_num"] = test_df["Date"].map(map_datetime)
 test_df["Date_num"] = test_df["Date_num"] / date_max
 
 
-# In[8]:
 
 
 def make_sequences(train_df):
@@ -99,14 +91,12 @@ def make_sequences(train_df):
     return inputs, targets
 
 
-# In[9]:
 
 
 train_inputs, train_targets = make_sequences(train_df)
 val_inputs, val_targets = make_sequences(val_df)
 
 
-# In[10]:
 
 
 model = tf.keras.Sequential()
@@ -118,7 +108,6 @@ optimizer = tf.keras.optimizers.Adam(lr=lr)
 model.compile(loss="mean_squared_error", optimizer=optimizer)
 
 
-# In[11]:
 
 
 early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='auto', patience=5)
@@ -130,7 +119,6 @@ history = model.fit(train_inputs, train_targets,
                       )
 
 
-# In[12]:
 
 
 results = []
@@ -150,19 +138,16 @@ for idx in test_df.groupby(["Province/State", "Country/Region"]).count().index:
         results.append([10**(result[0]*cases_max), result[1]*fatal_max])
 
 
-# In[13]:
 
 
 submit_df = pd.read_csv(data_dir+"submission.csv", index_col=0)
 
 
-# In[14]:
 
 
 submit_df
 
 
-# In[15]:
 
 
 cases = []
@@ -181,20 +166,17 @@ for i in range(len(results)):
         fatals.append(0)
 
 
-# In[16]:
 
 
 submit_df["ConfirmedCases"] = cases
 submit_df["Fatalities"] = fatals
 
 
-# In[17]:
 
 
 submit_df.to_csv("submission.csv")
 
 
-# In[ ]:
 
 
 

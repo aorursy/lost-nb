@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np 
@@ -15,28 +14,24 @@ from sklearn.linear_model import LogisticRegression
 os.listdir('../input')
 
 
-# In[2]:
 
 
 oof = pd.read_csv('../input/kaggleportosegurocnoof/stacker_oof_1.csv')
 oof.head()
 
 
-# In[3]:
 
 
 train = pd.read_csv('../input/porto-seguro-safe-driver-prediction/train.csv')
 train[['id','target']].head()
 
 
-# In[4]:
 
 
 df = pd.merge(train[['id','target']], oof, on='id')
 df.head(10)
 
 
-# In[5]:
 
 
 # Compute gini
@@ -59,7 +54,6 @@ def eval_gini(y_true, y_prob):
     return gini
 
 
-# In[6]:
 
 
 # Set up folds
@@ -69,13 +63,11 @@ np.random.seed(0)
 y_valid_pred = 0*df['target']
 
 
-# In[7]:
 
 
 stacker = LogisticRegression()
 
 
-# In[8]:
 
 
 for i, (train_index, test_index) in enumerate(kf.split(df)):
@@ -92,14 +84,12 @@ for i, (train_index, test_index) in enumerate(kf.split(df)):
     y_valid_pred.iloc[test_index] = pred
 
 
-# In[9]:
 
 
 print( "\nGini for full training set:" )
 eval_gini(df['target'], y_valid_pred)
 
 
-# In[10]:
 
 
 val = pd.DataFrame()
@@ -108,7 +98,6 @@ val['target'] = y_valid_pred.values
 val.to_csv('stacker_oof_preds_1.csv', float_format='%.6f', index=False)
 
 
-# In[11]:
 
 
 val.head()

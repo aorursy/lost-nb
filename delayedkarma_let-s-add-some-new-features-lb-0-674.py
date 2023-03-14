@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 def reduce_mem_usage(df, verbose=True):
@@ -33,7 +32,6 @@ def reduce_mem_usage(df, verbose=True):
     return df
 
 
-# In[ ]:
 
 
 import numpy as np 
@@ -62,7 +60,6 @@ pd.set_option('display.max_columns', 500)
 from tqdm import tqdm
 
 
-# In[ ]:
 
 
 dtypes = {
@@ -152,7 +149,6 @@ dtypes = {
         }
 
 
-# In[ ]:
 
 
 numerics = ['int8', 'int16', 'int32', 'float16', 'float32']
@@ -160,13 +156,11 @@ numerical_columns = [c for c,v in dtypes.items() if v in numerics]
 categorical_columns = [c for c,v in dtypes.items() if v not in numerics]
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', "nrows = 4000000\n#_______________________________________________________________________________\nretained_columns = numerical_columns + categorical_columns\ntrain = pd.read_csv('../input/reduced-train-test-msft-malware-comp/train_reduced.csv',\n                    nrows = nrows,\n                    usecols = retained_columns,\n                    dtype = dtypes)\n#_______________________________________________________________\nretained_columns += ['MachineIdentifier']\nretained_columns.remove('HasDetections')\ntest = pd.read_csv('../input/reduced-train-test-msft-malware-comp/test_reduced.csv',\n                   usecols = retained_columns,\n                   dtype = dtypes)")
 
 
-# In[ ]:
 
 
 # true_numerical_columns = [
@@ -181,7 +175,6 @@ get_ipython().run_cell_magic('time', '', "nrows = 4000000\n#____________________
 # ]
 
 
-# In[ ]:
 
 
 train['new_num_1'] = train['Census_TotalPhysicalRAM'] * train['Census_InternalPrimaryDiagonalDisplaySizeInInches']
@@ -200,7 +193,6 @@ train['new_num_5'] = train['Census_SystemVolumeTotalCapacity'] * train['Census_I
 test['new_num_5'] = test['Census_SystemVolumeTotalCapacity'] * test['Census_InternalPrimaryDiagonalDisplaySizeInInches']
 
 
-# In[ ]:
 
 
 true_numerical_columns = [
@@ -216,20 +208,17 @@ true_numerical_columns = [
 ]
 
 
-# In[ ]:
 
 
 binary_variables = [c for c in train.columns if train[c].nunique() == 2]
 
 
-# In[ ]:
 
 
 categorical_columns = [c for c in train.columns 
                        if (c not in true_numerical_columns) & (c not in binary_variables)]
 
 
-# In[ ]:
 
 
 
@@ -244,14 +233,12 @@ fig = dict(data=[pie_trace], layout=layout)
 iplot(fig)
 
 
-# In[ ]:
 
 
 for col in categorical_columns:
     print(col, len(train[col].value_counts().unique()))
 
 
-# In[ ]:
 
 
 def frequency_encoding(variable):
@@ -264,7 +251,6 @@ def frequency_encoding(variable):
     return t.to_dict()['level_0']
 
 
-# In[ ]:
 
 
 frequency_encoded_variables = [
@@ -278,7 +264,6 @@ frequency_encoded_variables = [
 ]
 
 
-# In[ ]:
 
 
 for variable in tqdm(frequency_encoded_variables):
@@ -288,7 +273,6 @@ for variable in tqdm(frequency_encoded_variables):
     categorical_columns.remove(variable)
 
 
-# In[ ]:
 
 
 indexer = {}
@@ -302,20 +286,17 @@ for col in tqdm(categorical_columns):
     test[col] = indexer[col].get_indexer(test[col])
 
 
-# In[ ]:
 
 
 get_ipython().run_cell_magic('time', '', 'train = reduce_mem_usage(train)\ntest = reduce_mem_usage(test)')
 
 
-# In[ ]:
 
 
 target = train['HasDetections']
 del train['HasDetections']
 
 
-# In[ ]:
 
 
 param = {'num_leaves': 60,
@@ -334,19 +315,16 @@ param = {'num_leaves': 60,
          "verbosity": -1}
 
 
-# In[ ]:
 
 
 max_iter = 5
 
 
-# In[ ]:
 
 
 gc.collect()
 
 
-# In[ ]:
 
 
 folds = KFold(n_splits=10, shuffle=True, random_state=15)
@@ -407,7 +385,6 @@ else:
      print("CV score: {:<8.5f}".format(sum(score) / max_iter))
 
 
-# In[ ]:
 
 
 cols = (feature_importance_df[["feature", "importance"]]
@@ -427,7 +404,6 @@ plt.tight_layout()
 plt.savefig('lgbm_importances.png')
 
 
-# In[ ]:
 
 
 sub_df = pd.DataFrame({"MachineIdentifier": test["MachineIdentifier"].values})
@@ -435,7 +411,6 @@ sub_df["HasDetections"] = predictions
 sub_df[:10]
 
 
-# In[ ]:
 
 
 sub_df.to_csv("submit.csv", index=False)

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Upgrade tensorflow and efficientnet and W&B
@@ -10,7 +9,6 @@ get_ipython().system('pip install --upgrade efficientnet')
 get_ipython().system('pip install --upgrade wandb')
 
 
-# In[2]:
 
 
 # Obfuscated WANDB API Key
@@ -18,7 +16,6 @@ from kaggle_secrets import UserSecretsClient
 WANDB_KEY = UserSecretsClient().get_secret("WANDB_API_KEY")
 
 
-# In[3]:
 
 
 import os
@@ -59,7 +56,6 @@ LABELS = ['healthy', 'multiple_diseases', 'rust', 'scab']
 N_CLASSES = len(LABELS)
 
 
-# In[4]:
 
 
 # Import custom GhostNet architecture made by sunnyyeah
@@ -67,7 +63,6 @@ sys.path.append("../input/ghostnet/GhostNet-Keras-master/")
 from ghostNet import GhostNet
 
 
-# In[5]:
 
 
 # Initialize Weights and Biases
@@ -76,7 +71,6 @@ from wandb.keras import WandbCallback
 wandb.login(key=WANDB_KEY);
 
 
-# In[6]:
 
 
 # Load annotations and labels
@@ -89,7 +83,6 @@ train['filename'] = IMG_PATH + train['image_id'] + ".jpg"
 test['filename'] = IMG_PATH + test['image_id'] + ".jpg"
 
 
-# In[7]:
 
 
 # Split into train and validation
@@ -97,7 +90,6 @@ X_train, X_val, y_train, y_val = train_test_split(train['filename'], train[LABEL
 X_test = test['filename']
 
 
-# In[8]:
 
 
 def decode_image(filename, label=None):
@@ -124,7 +116,6 @@ def decode_image_2(filename, label=None):
         return image, label
 
 
-# In[9]:
 
 
 def data_augment(image, label=None):
@@ -137,7 +128,6 @@ def data_augment(image, label=None):
         return image, label
 
 
-# In[10]:
 
 
 def build_model(backbone: tf.keras.Model, n_classes: int = 4) -> tf.keras.Model:
@@ -160,7 +150,6 @@ def build_model(backbone: tf.keras.Model, n_classes: int = 4) -> tf.keras.Model:
     return model
 
 
-# In[11]:
 
 
 def build_lrfn(lr_start=0.00001, lr_max=0.00005, 
@@ -180,7 +169,6 @@ def build_lrfn(lr_start=0.00001, lr_max=0.00005,
     return lrfn
 
 
-# In[12]:
 
 
 AUTO = tf.data.experimental.AUTOTUNE
@@ -192,7 +180,6 @@ model_dict = {"GhostNet": GhostNet,
               "EfficientNetB0": EfficientNetB0}
 
 
-# In[13]:
 
 
 metrics = []
@@ -260,14 +247,12 @@ for name, net in model_dict.items():
     wandb.join()
 
 
-# In[14]:
 
 
 eval_df = pd.DataFrame(metrics, columns=['Name', 'Validation Accuracy', 'Inference Speed', 'Parameters'])
 eval_df
 
 
-# In[15]:
 
 
 test_dataset = (tf.data.Dataset

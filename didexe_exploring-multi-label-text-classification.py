@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 import numpy as np
@@ -27,7 +25,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[3]:
 
 
 train_set = pd.read_csv('../input/jigsaw-toxic-comment-classification-challenge/train.csv')
@@ -35,7 +32,6 @@ test_set = pd.read_csv('../input/jigsaw-toxic-comment-classification-challenge/t
 test_labels = pd.read_csv('../input/jigsaw-toxic-comment-classification-challenge/test_labels.csv')
 
 
-# In[4]:
 
 
 print('train set', train_set.head(10))
@@ -43,7 +39,6 @@ print('test set', test_set.head(10))
 print('test labels', test_labels.head(10))
 
 
-# In[5]:
 
 
 print(train_set.isna().sum())
@@ -51,7 +46,6 @@ print(test_set.isna().sum())
 print(test_labels.isna().sum())
 
 
-# In[6]:
 
 
 test_set = test_set[test_labels['toxic'] != -1]
@@ -64,7 +58,6 @@ test_labels = test_labels.drop(['id'], axis = 1)
 labels = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
 
 
-# In[7]:
 
 
 def clean_text(text):
@@ -88,7 +81,6 @@ test_features_cleaned = test_features.map(lambda com : clean_text(com))
 train_features_cleaned = train_features.map(lambda com : clean_text(com))
 
 
-# In[8]:
 
 
 print('Percentage of comments without labels: ')
@@ -97,13 +89,11 @@ print('Percentage of comments with one or more labels: ')
 print(len(train_set[(train_set.toxic == 1) | (train_set.severe_toxic == 1) | (train_set.obscene == 1) | (train_set.insult == 1) | (train_set.insult == 1) | (train_set.identity_hate == 1)]) / len(train_set)*100)
 
 
-# In[9]:
 
 
 test_labels.describe()
 
 
-# In[10]:
 
 
 fig = plt.figure(figsize=(8,6))
@@ -124,7 +114,6 @@ plt.ylabel('Number of comments')
 plt.show()
 
 
-# In[11]:
 
 
 NB_pipeline = Pipeline([('tfidf', TfidfVectorizer(stop_words='english')),
@@ -177,38 +166,32 @@ def plot_pipeline_roc_curve(pipeline, train_feats, train_lbls, test_feats, test_
         plot_roc_curve(test_lbls[label], pred_proba)
 
 
-# In[12]:
 
 
 run_pipeline(NB_pipeline, train_features, train_labels, test_features, test_labels)
 
 
-# In[13]:
 
 
 run_pipeline(LR_pipeline, train_features, train_labels, test_features, test_labels)
 
 
-# In[14]:
 
 
 # run_pipeline(SVM_pipeline, train_features, train_labels, test_features, test_labels)
 run_SVM_pipeline(SVM_pipeline, train_features, train_labels, test_features, test_labels)
 
 
-# In[15]:
 
 
 plot_pipeline_roc_curve(LR_pipeline, train_features, train_labels, test_features, test_labels)
 
 
-# In[16]:
 
 
 plot_pipeline_roc_curve(NB_pipeline, train_features, train_labels, test_features, test_labels)
 
 
-# In[17]:
 
 
 # TAKES ABOUT 40min to run
@@ -223,34 +206,29 @@ plot_pipeline_roc_curve(NB_pipeline, train_features, train_labels, test_features
 # gsearch_cv.fit(train_features, train_labels)
 
 
-# In[18]:
 
 
 gsearch_cv.best_score_
 # 0.919784923325667
 
 
-# In[19]:
 
 
 gsearch_cv.best_params_
 # {'lr_model__estimator__C': 10, 'tfidf__ngram_range': (1, 2)}
 
 
-# In[20]:
 
 
 LR_pipeline = Pipeline([('tfidf', TfidfVectorizer(stop_words='english', ngram_range=(1, 2))),
                        ('lr_model', OneVsRestClassifier(LogisticRegression(C=10), n_jobs=-1))])
 
 
-# In[21]:
 
 
 run_pipeline(LR_pipeline, train_features, train_labels, test_features, test_labels)
 
 
-# In[22]:
 
 
 # change parameters manually to get the results above
@@ -258,7 +236,6 @@ LR_pipeline = Pipeline([('tfidf', TfidfVectorizer(stop_words='english', ngram_ra
                        ('lr_model', OneVsRestClassifier(LogisticRegression(C=10), n_jobs=-1))])
 
 
-# In[23]:
 
 
 run_pipeline(LR_pipeline, train_features_cleaned, train_labels, test_features_cleaned, test_labels)

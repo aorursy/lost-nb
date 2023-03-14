@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import sys
@@ -11,7 +10,6 @@ sys.path.insert(0, "../input/weightedboxesfusion/")
 gc.collect()
 
 
-# In[2]:
 
 
 import glob
@@ -47,7 +45,6 @@ from albumentations.pytorch.transforms import ToTensorV2
 from tqdm import tqdm
 
 
-# In[3]:
 
 
 def visualize(**images):
@@ -63,7 +60,6 @@ def visualize(**images):
        plt.show()
 
 
-# In[4]:
 
 
 class Metrics:
@@ -219,7 +215,6 @@ class Metrics:
         return image_precision
 
 
-# In[5]:
 
 
 class Averager:
@@ -312,7 +307,6 @@ class TrainUtils:
             torch.save(model.state_dict(), 'faster_rrcnn_' + str(model.__name__) + '_' + str(time.time()) + '.pth')
 
 
-# In[6]:
 
 
 class BaseWheatTTA:
@@ -398,7 +392,6 @@ class TTACompose(BaseWheatTTA):
         return self.prepare_boxes(boxes)
 
 
-# In[7]:
 
 
 class FpnResenet50:
@@ -416,7 +409,6 @@ class FpnResenet50:
         return fpn_resnet
 
 
-# In[8]:
 
 
 class DatasetUtils:
@@ -442,7 +434,6 @@ class DatasetUtils:
         return train_df, valid_df
 
 
-# In[9]:
 
 
 # Functions to visualize bounding boxes and class labels on an image. 
@@ -476,7 +467,6 @@ def get_aug(aug, min_area=0., min_visibility=0.):
                                                min_visibility=min_visibility, label_fields=['labels']))
 
 
-# In[10]:
 
 
 class WheatDataset(Dataset):
@@ -534,7 +524,6 @@ class WheatDataset(Dataset):
         return self.image_ids.shape[0]
 
 
-# In[11]:
 
 
 DATA_ROOT_PATH = '../input/global-wheat-detection'
@@ -544,21 +533,18 @@ all_wheat_dataset_train = pd.read_csv('../input/global-wheat-detection/train.csv
 all_wheat_dataset_train.head()
 
 
-# In[12]:
 
 
 DatasetUtils.preprocessing_csv(all_wheat_dataset_train)
 all_wheat_dataset_train.head()
 
 
-# In[13]:
 
 
 train_df,valid_df = DatasetUtils.splitData(all_data_records=all_wheat_dataset_train)
 train_df.shape,valid_df.shape
 
 
-# In[14]:
 
 
 aug_trans = get_aug([HorizontalFlip(p=0.5),
@@ -571,28 +557,24 @@ aug_trans = get_aug([HorizontalFlip(p=0.5),
                      ToTensorV2(p=1)])
 
 
-# In[15]:
 
 
 #train_dataset = WheatDataset(train_df,DATA_ROOT_PATH+"/train",transforms=aug_trans)
 valid_dataset = WheatDataset(valid_df,DATA_ROOT_PATH+"/train",transforms=aug_trans)
 
 
-# In[16]:
 
 
 #train_dataloader = DataLoader(train_dataset,batch_size=8,collate_fn=DatasetUtils.collate_fn,num_workers=8)
 valid_dataloader = DataLoader(valid_dataset,batch_size=8,collate_fn=DatasetUtils.collate_fn,num_workers=8)
 
 
-# In[17]:
 
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 device
 
 
-# In[18]:
 
 
 for data in valid_dataloader:
@@ -608,31 +590,26 @@ for data in valid_dataloader:
     break
 
 
-# In[19]:
 
 
 resnet50 = FpnResenet50.getNet()
 
 
-# In[20]:
 
 
 #%time TrainUtils.trainModels([resnet50], train_dataloader, valid_dataloader, device, num_epochs=20, valid_pred_min=0.55)
 
 
-# In[21]:
 
 
 #torch.save(resnet50.state_dict(), 'resnet_taa_finish_20_full_data_v1_' + str(resnet50.__name__) + '_' + str(time.time()) + '.pth')
 
 
-# In[22]:
 
 
 resnet50.load_state_dict(torch.load('../input/resnet50-tta/resnet_taa_finish_20_full_data_v1_fpn_resnet_1593370667.8672676.pth'))
 
 
-# In[23]:
 
 
 class TestDataset(Dataset):
@@ -654,7 +631,6 @@ class TestDataset(Dataset):
         return len(self.image_paths)
 
 
-# In[24]:
 
 
 def run_wbf(predictions,weights=None,image_size=512,iou_thr=0.5,skip_box_thr=0.43):
@@ -666,7 +642,6 @@ def run_wbf(predictions,weights=None,image_size=512,iou_thr=0.5,skip_box_thr=0.4
     return boxes, scores, labels
 
 
-# In[25]:
 
 
 # create array of tta_transforms randomly 
@@ -683,7 +658,6 @@ for tta_combination in product([TTAHorizontalFlip(), None],
     tta_transforms.append(TTACompose([tta_transform for tta_transform in tta_combination if tta_transform]))
 
 
-# In[26]:
 
 
 resnet50.cuda()
@@ -765,19 +739,16 @@ for image_path in tqdm(test_images_paths):
 test_df = pd.DataFrame(test_df,columns=["image_id","width","height","x","y","w","h"])
 
 
-# In[27]:
 
 
 test_dataset = WheatDataset(test_df,DATA_ROOT_PATH+"/test",transforms=aug_trans)
 
 
-# In[28]:
 
 
 test_dataloader = DataLoader(test_dataset,batch_size=8,collate_fn=DatasetUtils.collate_fn,num_workers=8)
 
 
-# In[29]:
 
 
 # for data in test_dataloader:
@@ -792,13 +763,11 @@ test_dataloader = DataLoader(test_dataset,batch_size=8,collate_fn=DatasetUtils.c
 #             visualize(image =img)
 
 
-# In[30]:
 
 
 get_ipython().run_line_magic('time', 'TrainUtils.trainModels([resnet50], test_dataloader, valid_dataloader, device, num_epochs=3, valid_pred_min=0.55)')
 
 
-# In[31]:
 
 
 # scores :
@@ -818,7 +787,6 @@ get_ipython().run_line_magic('time', 'TrainUtils.trainModels([resnet50], test_da
 
 
 
-# In[32]:
 
 
 resnet50.cuda()
@@ -910,7 +878,6 @@ for image_path in tqdm(test_images_paths):
  
 
 
-# In[33]:
 
 
 SUBMISSION_PATH = '/kaggle/working'
@@ -921,31 +888,26 @@ sample_submission.to_csv(cur_submission_path, index=False)
 submission_df = pd.read_csv(cur_submission_path)
 
 
-# In[34]:
 
 
 submission_df
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

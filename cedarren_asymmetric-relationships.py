@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,43 +19,36 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 ls ../input
 
 
-# In[3]:
 
 
 train_df = pd.read_csv("../input/train_relationships.csv")
 
 
-# In[4]:
 
 
 s1 = set((p1, p2) for i,(p1,p2) in train_df.iterrows())
 
 
-# In[5]:
 
 
 s2 = set((p2, p1) for i,(p1,p2) in train_df.iterrows())
 
 
-# In[6]:
 
 
 s1 == s2
 
 
-# In[7]:
 
 
 len(s1), len(s2), len(s1.union(s2))
 
 
-# In[8]:
 
 
 3598*2 == 7196

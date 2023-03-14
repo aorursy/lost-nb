@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 trn_x, val_x, trn_y, val_y = cross_validation.train_test_split(x, y, 
@@ -214,7 +213,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import numpy as np
@@ -222,7 +220,6 @@ import numpy as np
 np.where([[True, False], [True, True]], [[1, 2], [3, 4]], [[9, 8], [7, 6]])
 
 
-# In[3]:
 
 
 import numpy as np
@@ -231,97 +228,81 @@ x = np.random.randn(20, 3)
 x_new = x[np.sum(x, axis=1) > .5]
 
 
-# In[4]:
 
 
 arr = np.array([[1,2,3,4], [5,6,7,8], [9,10,11,12]])
 
 
-# In[5]:
 
 
 arr.shape
 
 
-# In[6]:
 
 
 d = np.random.randint(100, 300, size=(350,300,150))
 
 
-# In[7]:
 
 
 d.shape
 
 
-# In[8]:
 
 
 d
 
 
-# In[9]:
 
 
 x_new = d[np.sum(d, axis=1) > 100]
 
 
-# In[10]:
 
 
 np.sum([[0, 1], [0, 5], [0, 6]], axis=1)
 
 
-# In[11]:
 
 
 test = np.array([[0, 1], [0, 5], [0, 6]])
 
 
-# In[12]:
 
 
 test.shape
 
 
-# In[13]:
 
 
 d = np.random.randint(100, 300, size=(350,300,150))
 
 
-# In[14]:
 
 
 d.shape
 
 
-# In[15]:
 
 
 test=np.sum(d, axis=2)
 
 
-# In[16]:
 
 
 d[ (3>d[:,1,:]) & (d[:,1,:]>-6) ]
 
 
-# In[17]:
 
 
 test=d[np.std(d[:,:,:])==57.605366674526657]
 
 
-# In[18]:
 
 
 test.shape
 
 
-# In[19]:
 
 
 # we need a table of the imgs_resampled the std and we can remove the imgs_resampled which equal zero.

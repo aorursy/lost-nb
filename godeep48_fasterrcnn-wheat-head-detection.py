@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -34,7 +33,6 @@ from torch.utils.data import DataLoader, Dataset
 from torch.utils.data.sampler import SequentialSampler
 
 
-# In[2]:
 
 
 INPUT_DATA = "../input/global-wheat-detection/"
@@ -42,14 +40,12 @@ TRAIN_DIR = os.path.join(INPUT_DATA, "train")
 TEST_DIR = os.path.join(INPUT_DATA, "test")
 
 
-# In[3]:
 
 
 df = pd.read_csv(os.path.join(INPUT_DATA, "train.csv"))
 df.head(5)
 
 
-# In[4]:
 
 
 ## Shape of Dataframe
@@ -58,7 +54,6 @@ print(f"Shape of train DataFrame: {df.shape}")
 print(f'Unique Images in train DataFrame: {len(df["image_id"].value_counts())}')
 
 
-# In[5]:
 
 
 ## Extract x,y,w,h from bbox
@@ -70,14 +65,12 @@ def extract_bbox(DataFrame):
     DataFrame["h"] = [np.float(ast.literal_eval(i)[3]) for i in DataFrame["bbox"]]
 
 
-# In[6]:
 
 
 extract_bbox(df)
 df.head()
 
 
-# In[7]:
 
 
 train_ratio = 0.8
@@ -90,7 +83,6 @@ print(f"Number of training images: {len(train_ids)}")
 print(f"Number of Valid images: {len(valid_ids)}")
 
 
-# In[8]:
 
 
 train_df = df[df["image_id"].isin(train_ids)]
@@ -100,7 +92,6 @@ print(f"Shape of train_df: {train_df.shape}")
 print(f"Shape of valid_df: {valid_df.shape}")
 
 
-# In[9]:
 
 
 # Data Transform - Albumentation
@@ -116,7 +107,6 @@ def get_valid_transform():
     ], bbox_params={'format': 'pascal_voc', 'label_fields': ['labels']})
 
 
-# In[10]:
 
 
 class WheatDataset(Dataset):
@@ -177,14 +167,12 @@ class WheatDataset(Dataset):
         return len(self.image_ids)
 
 
-# In[11]:
 
 
 def collate_fn(batch):
     return tuple(zip(*batch))
 
 
-# In[12]:
 
 
 train_dataset = WheatDataset(train_df, TRAIN_DIR, get_train_transform())
@@ -194,7 +182,6 @@ print(f"Length of train_dataset: {len(train_dataset)}")
 print(f"Length of test_dataset: {len(valid_dataset)}")
 
 
-# In[13]:
 
 
 ##DataLoader
@@ -217,7 +204,6 @@ valid_data_loader = DataLoader(
 )
 
 
-# In[14]:
 
 
 #PLot images
@@ -244,26 +230,22 @@ def plot_images(n_num, random_selection=True):
         fig_no+=1
 
 
-# In[15]:
 
 
 plot_images(4)
 
 
-# In[16]:
 
 
 # load a model; pre-trained on COCO
 model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
 
 
-# In[17]:
 
 
 print(model)
 
 
-# In[18]:
 
 
 num_classes = 2  # 1 class (wheat) + background
@@ -275,7 +257,6 @@ in_features = model.roi_heads.box_predictor.cls_score.in_features
 model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
 
-# In[19]:
 
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -288,7 +269,6 @@ lr_scheduler = None
 num_epochs = 8
 
 
-# In[20]:
 
 
 #from engine import evaluate
@@ -351,7 +331,6 @@ for epoch in range(num_epochs):
     print(f"Epoch Completed: {epoch+1}/{num_epochs}, Time: {time.time()-start_time},    Train Loss: {epoch_train_loss}, Valid Loss: {epoch_valid_loss}")    
 
 
-# In[21]:
 
 
 import seaborn as sns
@@ -364,7 +343,6 @@ plt.ylabel("Loss")
 plt.show()
 
 
-# In[22]:
 
 
 torch.save(model.state_dict(), 'fasterrcnn_best_resnet50.pth')

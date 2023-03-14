@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -16,7 +15,6 @@ df_seeds = pd.read_csv(os.path.join(data_directory,'NCAATourneySeeds.csv'))
 df_seeds.head()
 
 
-# In[2]:
 
 
 # Merge the seeds file with itself on Season.  This creates every combination of two teams by season.
@@ -31,7 +29,6 @@ df_sub = df_sub[df_sub['TeamID_x'] < df_sub['TeamID_y']]
 df_sub.head()
 
 
-# In[3]:
 
 
 df_sub['ID'] = df_sub['Season'].astype(str) + '_'               + df_sub['TeamID_x'].astype(str) + '_'               + df_sub['TeamID_y'].astype(str)
@@ -44,7 +41,6 @@ df_sub['Pred'] = 0.5 + 0.03*(df_sub['SeedInt_y'] - df_sub['SeedInt_x'])
 df_sub.head()
 
 
-# In[4]:
 
 
 # save out the 2014-2018 predictions for later submission
@@ -55,14 +51,12 @@ df_sub = df_sub[['ID','Pred']]
 df_sub.head()
 
 
-# In[5]:
 
 
 df_tc = pd.read_csv(os.path.join(data_directory,'NCAATourneyCompactResults.csv'))
 df_tc.head()
 
 
-# In[6]:
 
 
 df_tc['ID'] = df_tc['Season'].astype(str) + '_'               + (np.minimum(df_tc['WTeamID'],df_tc['LTeamID'])).astype(str) + '_'               + (np.maximum(df_tc['WTeamID'],df_tc['LTeamID'])).astype(str)
@@ -71,7 +65,6 @@ df_tc['Result'] = 1*(df_tc['WTeamID'] < df_tc['LTeamID'])
 df_tc.head(10)
 
 
-# In[7]:
 
 
 df_tc = df_tc.merge(df_seeds.rename(columns={'Seed':'WSeed','TeamID':'WTeamID'}), 
@@ -81,21 +74,18 @@ df_tc = df_tc.merge(df_seeds.rename(columns={'Seed':'LSeed','TeamID':'LTeamID'})
 df_tc.head()
 
 
-# In[8]:
 
 
 df_playin = df_tc[df_tc['WSeed'].str[0:3] == df_tc['LSeed'].str[0:3]]
 df_playin.head()
 
 
-# In[9]:
 
 
 df_tc = df_tc[df_tc['WSeed'].str[0:3] != df_tc['LSeed'].str[0:3]]
 df_tc.head()
 
 
-# In[10]:
 
 
 def kaggle_clip_log(x):
@@ -164,40 +154,34 @@ def score_submission(df_sub, df_results, on_season=None, return_df_analysis=True
     
 
 
-# In[11]:
 
 
 df_score, df_analysis =     score_submission(df_sub, df_tc, on_season = np.arange(2014,2019), return_df_analysis=True)
 df_score
 
 
-# In[12]:
 
 
 df_score.mean()
 
 
-# In[13]:
 
 
 df_score, df_analysis =     score_submission(df_sub, df_tc, on_season = np.arange(2010,2018), return_df_analysis=True)
 df_score
 
 
-# In[14]:
 
 
 df_score, df_analysis =     score_submission(df_sub.sample(frac=0.5), df_tc, on_season = np.arange(2010,2018), return_df_analysis=True)
 df_score
 
 
-# In[15]:
 
 
 df_analysis[df_analysis['ObviousError']==1].head()
 
 
-# In[16]:
 
 
 df_score, df_analysis =     score_submission(df_sub, df_tc, on_season = None, return_df_analysis=True)
@@ -205,32 +189,27 @@ df_score, df_analysis =     score_submission(df_sub, df_tc, on_season = None, re
 df_score
 
 
-# In[17]:
 
 
 df_score.mean()
 
 
-# In[18]:
 
 
 df_score.reset_index().plot('Season','LogLoss')
 
 
-# In[19]:
 
 
 df_score.hist('LogLoss',bins='auto')
 
 
-# In[20]:
 
 
 df_analysis.hist('LogLoss',bins=10)
 df_analysis.sort_values('LogLoss',ascending=False).head(20)
 
 
-# In[21]:
 
 
 

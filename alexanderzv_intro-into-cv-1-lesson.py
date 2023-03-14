@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from __future__ import print_function
@@ -9,34 +8,29 @@ import torch
 import numpy as np
 
 
-# In[2]:
 
 
 x = torch.zeros(5, 3)
 print(x)
 
 
-# In[3]:
 
 
 x = torch.zeros(5, 3, 2)
 print(x)
 
 
-# In[4]:
 
 
 x = torch.rand(5, 3)
 print(x)
 
 
-# In[ ]:
 
 
 
 
 
-# In[5]:
 
 
 a = torch.ones(5)
@@ -44,7 +38,6 @@ b = a.numpy()
 print(b)
 
 
-# In[6]:
 
 
 a = np.ones(5)
@@ -54,13 +47,11 @@ print(a)
 print(b)
 
 
-# In[ ]:
 
 
 
 
 
-# In[7]:
 
 
 # let us run this cell only if CUDA is available
@@ -74,27 +65,23 @@ if torch.cuda.is_available():
     print(z.to("cpu", torch.double))       # ``.to`` can also change dtype together!
 
 
-# In[8]:
 
 
 x = torch.ones(2, 2, requires_grad=True)
 print(x)
 
 
-# In[9]:
 
 
 y = x + 2
 print(y)
 
 
-# In[10]:
 
 
 print(y.grad_fn)
 
 
-# In[11]:
 
 
 z = y * y * 3
@@ -103,19 +90,16 @@ out = z.mean()
 print(z, out)
 
 
-# In[12]:
 
 
 out.backward()
 
 
-# In[13]:
 
 
 print(x.grad) #Print gradients d(out)/dx
 
 
-# In[14]:
 
 
 import torch
@@ -160,7 +144,6 @@ net = Net()
 print(net)
 
 
-# In[15]:
 
 
 params = list(net.parameters())
@@ -168,14 +151,12 @@ print(len(params))
 print(params[0].size())  # conv1's .weight
 
 
-# In[16]:
 
 
 input = torch.randn(1, 1, 32, 32)
 print(input)
 
 
-# In[17]:
 
 
 
@@ -183,7 +164,6 @@ out = net(input)
 print(out)
 
 
-# In[18]:
 
 
 # Zero the gradient buffers of all parameters and backprops with random gradients:
@@ -191,7 +171,6 @@ net.zero_grad()
 out.backward(torch.randn(1, 10))
 
 
-# In[19]:
 
 
 output = net(input)
@@ -203,7 +182,6 @@ loss = criterion(output, target)
 print(loss)
 
 
-# In[20]:
 
 
 net.zero_grad()     # zeroes the gradient buffers of all parameters
@@ -217,13 +195,11 @@ print('conv1.bias.grad after backward')
 print(net.conv1.bias.grad)
 
 
-# In[ ]:
 
 
 
 
 
-# In[21]:
 
 
 learning_rate = 0.01
@@ -231,7 +207,6 @@ for f in net.parameters():
     f.data.sub_(f.grad.data * learning_rate)
 
 
-# In[22]:
 
 
 import torch.optim as optim
@@ -247,13 +222,11 @@ loss.backward()
 optimizer.step()    # Does the update
 
 
-# In[ ]:
 
 
 
 
 
-# In[23]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -274,7 +247,6 @@ import os
 # Any results you write to the current directory are saved as output.
 
 
-# In[24]:
 
 
 DATA_FOLDER = '../input'
@@ -283,7 +255,6 @@ TRAIN_IMAGES_FOLDER = f'{DATA_FOLDER}/train'
 USE_GPU = torch.cuda.is_available()
 
 
-# In[25]:
 
 
 def read_labels(path_to_file):
@@ -309,7 +280,6 @@ def train_valid_split(df):
     return train, valid
 
 
-# In[26]:
 
 
 class MainDataset(Dataset):
@@ -354,7 +324,6 @@ class LabelDataset(Dataset):
         return self.labels[index]
 
 
-# In[27]:
 
 
 labels = read_labels(LABELS)
@@ -375,7 +344,6 @@ train_dataset = MainDataset(train_images_dataset, train_labels_dataset, x_tfms)
 valid_dataset = MainDataset(valid_images_dataset, valid_labels_dataset, x_tfms)
 
 
-# In[ ]:
 
 
 

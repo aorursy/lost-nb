@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 def show(_df, count=2):
@@ -37,7 +35,6 @@ def show(_df, count=2):
     display(_df.tail(count))
 
 
-# In[3]:
 
 
 import numpy as np
@@ -50,7 +47,6 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 
-# In[4]:
 
 
 test_file = '/test.csv'
@@ -59,7 +55,6 @@ train_df = pd.read_csv(dirname + train_file)
 test_df = pd.read_csv(dirname + test_file)
 
 
-# In[5]:
 
 
 #define variables 
@@ -73,7 +68,6 @@ cty = 'County'
 lcn='Location'
 
 
-# In[6]:
 
 
 
@@ -89,7 +83,6 @@ ppd = pd.DataFrame(
 ppd.tail(2)
 
 
-# In[7]:
 
 
 
@@ -122,51 +115,43 @@ moretest = pd.concat([cc,ff])
 moretest[(moretest[ctry]=='India') & (moretest['Date']== '2020-06-10')]
 
 
-# In[8]:
 
 
 test_df =pd.concat([test_df, moretest])
 #test_df.drop_duplicates()
 
 
-# In[9]:
 
 
 test_df[(test_df[ctry]=='India') & (test_df['Date']== '2020-06-10')]
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[10]:
 
 
 show(test_df)
 
 
-# In[11]:
 
 
 df_all = pd.concat([train_df, test_df], sort=False)
 show(df_all, 5)
 
 
-# In[12]:
 
 
 df_all[lcn] = df_all[ctry] + '_' +  df_all[ste].fillna('NA') + '_' + df_all[cty].fillna('NA')
 
 
-# In[13]:
 
 
 country = ["US", "India","China", "Spain", "Italy", "Pakistan", "Mexico", "United Kingdom", "France", "Japan", "South Korea", "Russia", "Cananda", "Peru", "Turkey"]
@@ -174,7 +159,6 @@ country =[x + "_NA_NA" for x in country]
 print(country)
 
 
-# In[14]:
 
 
 
@@ -184,14 +168,12 @@ if len(country) >0 :
 show(df_all, 2)
 
 
-# In[15]:
 
 
 locMin = df_all[df_all[predCol]>0 | df_all[predCol].notnull()].groupby([lcn])['Date'].min()
 locMin
 
 
-# In[16]:
 
 
 def replace_startdate(_ctry, _dt):
@@ -212,14 +194,12 @@ replace_startdate('Turkey', '03-15-2020')
 replace_startdate('Canada_NA_NA', '02-05-2020')
 
 
-# In[17]:
 
 
 df_all= pd.merge(df_all, locMin, on=[lcn,lcn])
 show(df_all)
 
 
-# In[18]:
 
 
 import time
@@ -227,20 +207,17 @@ df_all['Date_x'] = pd.to_datetime(df_all['Date_x'], infer_datetime_format=True)
 df_all['Date_y'] = pd.to_datetime(df_all['Date_y'], infer_datetime_format=True)
 
 
-# In[19]:
 
 
 df_all = df_all[df_all['Date_x']>=df_all['Date_y']]
 
 
-# In[20]:
 
 
 df_all['Days'] = df_all.apply(lambda x: ((x['Date_x'] -  x['Date_y']).days +1) ,axis=1)
 df_all
 
 
-# In[21]:
 
 
 from datetime import timedelta
@@ -378,104 +355,87 @@ def topCharts(_dg, _n=[0,1], _s=0, _d=0, _w=18, _h=5, _m=400,_dif=2, _l=''):
 #topCharts(dfv1, _dif=10000, _l='India')
 
 
-# In[22]:
 
 
 topCharts(df_all, _n=[0,2], _d=10)
 
 
-# In[23]:
 
 
 topCharts(df_all, _n=[2,1], _d=90)
 
 
-# In[24]:
 
 
 topCharts(df_all, _n=[3,1], _d=40)
 
 
-# In[25]:
 
 
 topCharts(df_all, _n=[4,1], _d=40)
 
 
-# In[26]:
 
 
 topCharts(df_all, _n=[5,1], _d=20, _dif=1)
 
 
-# In[27]:
 
 
 topCharts(df_all, _n=[6,4], _d=15,_dif=0)
 
 
-# In[28]:
 
 
 topCharts(df_all, _n=[10,4], _d=15,_dif=0)
 
 
-# In[29]:
 
 
 topCharts(df_all, _n=[14,1], _d=30,_dif=0)
 
 
-# In[30]:
 
 
 topCharts(df_all, _n=[16,1], _d=30,_dif=0)
 
 
-# In[31]:
 
 
 topCharts(df_all, _n=[17,2], _d=30,_dif=0)
 
 
-# In[32]:
 
 
 topCharts(df_all, _n=[19,2], _d=30,_dif=1)
 
 
-# In[33]:
 
 
 topCharts(df_all, _n=[21,4], _d=10,_dif=5)
 
 
-# In[34]:
 
 
 topCharts(df_all, _n=[25,4], _d=10,_dif=5)
 
 
-# In[35]:
 
 
 topCharts(df_all, _n=[29,4], _d=10,_dif=0)
 
 
-# In[36]:
 
 
 topCharts(df_all, _n=[33,16], _d=30,_dif=0)
 
 
-# In[37]:
 
 
 ecol = df_all.isna().sum().sort_values(ascending=False)[df_all.isna().sum()>0].index;
 print(ecol)
 
 
-# In[38]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -489,13 +449,11 @@ dflcn['code'] = df_all[lcn]
 show(dflcn)
 
 
-# In[39]:
 
 
 df_all['Target'] = df_all['Target'].apply(lambda s: 1 if s== "ConfirmedCases" else 2 )
 
 
-# In[40]:
 
 
 from sklearn import svm
@@ -517,7 +475,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import ExtraTreesRegressor
 
 
-# In[41]:
 
 
 models = [
@@ -532,7 +489,6 @@ models = [
 ]
 
 
-# In[42]:
 
 
 
@@ -543,7 +499,6 @@ test = df_all[df_all[predCol].isna()].drop([predCol], axis=1).drop(columns=['Id'
 test.rename(columns={'ForecastId':'Id'}, inplace=True)
 
 
-# In[43]:
 
 
 cols = ['Id', 'Population', 'Weight', 'Location', 'Days', 'Target']
@@ -552,13 +507,11 @@ test= test[cols]
 train= train[cols + ['TargetValue']]
 
 
-# In[44]:
 
 
 Xtrn, Xtest, Ytrn, Ytest = train_test_split(train.drop([predCol], axis=1), train[[predCol]], test_size=0.2, random_state=42)
 
 
-# In[45]:
 
 
 def handle_predictions (predictions):
@@ -566,7 +519,6 @@ def handle_predictions (predictions):
     return predictions
 
 
-# In[46]:
 
 
 TestModels = pd.DataFrame()
@@ -595,7 +547,6 @@ TestModels.set_index('Model', inplace=True)
 TestModels
 
 
-# In[47]:
 
 
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
@@ -623,14 +574,12 @@ axes.plot(range(len(accuracy)),allmet, color='red' , marker='.')
 plt.show()
 
 
-# In[48]:
 
 
 bestModel = models[allmet.argmin()]
 TestModels.iloc[allmet.argmin():allmet.argmin()+1].index[0]
 
 
-# In[49]:
 
 
 bestModelName = TestModels.iloc[allmet.argmin():allmet.argmin()+1].index[0]
@@ -639,20 +588,17 @@ print('Best Score : ' + str(bestScore))
 selectedModel = models[allmet.argmin()]
 
 
-# In[50]:
 
 
 show(test)
 
 
-# In[51]:
 
 
 selectedModel.fit(train.drop([predCol], axis=1), train[predCol])
 prediction =selectedModel.predict(test)
 
 
-# In[52]:
 
 
 test[predCol] = prediction
@@ -662,7 +608,6 @@ print(test.shape)
 print(train.shape)
 
 
-# In[53]:
 
 
 cols = [lcn, 'Days','Target']
@@ -696,7 +641,6 @@ test = test1.drop_duplicates()
 #print(test1[(test1['Date_x']=='2020-05-17') & (test1[ctry]=='India')])
 
 
-# In[54]:
 
 
 dflcn = dflcn.drop_duplicates()
@@ -707,7 +651,6 @@ dfv = pd.merge(dfv, dflcn, left_on=lcn, right_on='code',how='left')
 dfv.rename(columns={'Location_y':lcn}, inplace=True)
 
 
-# In[55]:
 
 
 dfv['Date_x'] = dfv.apply(lambda x: pd.to_datetime(locMin.at[x[lcn],]) + timedelta(x['Days']) , axis=1)
@@ -715,14 +658,12 @@ dfv['Date_y'] = dfv.apply(lambda x: pd.to_datetime(locMin.at[x[lcn],]) , axis=1)
 dfv
 
 
-# In[56]:
 
 
 dfv['Target'] = dfv['Target'].apply(lambda s: "ConfirmedCases" if s == 1 else "Fatalities" )
 dfv
 
 
-# In[57]:
 
 
 dfv1= dfv
@@ -742,13 +683,11 @@ dfv1['q50'] = dfv1.groupby([lcn, 'Target'])[predCol].apply(lambda x: x.shift().r
 dfv1[dfv1['Target']=='ConfirmedCases'].tail(20)
 
 
-# In[58]:
 
 
 dfv1[dfv1[lcn]=='India_NA_NA']
 
 
-# In[59]:
 
 
 from datetime import date
@@ -761,7 +700,6 @@ dfv1.loc[(dfv1['Date_x'] < offset), 'q50'] = 0
 dfv1.loc[(dfv1['Date_x'] < offset), 'q95'] = 0
 
 
-# In[60]:
 
 
 test_r = dfv1[dfv1['istrain']==0]
@@ -775,7 +713,6 @@ sub.reset_index(drop=True,inplace=True)
 sub
 
 
-# In[61]:
 
 
 dfc = dfv[dfv[lcn]=='Italy_NA_NA']
@@ -785,139 +722,116 @@ dfc[dfc['Date_x']=='2020-04-28']
 #dfc[dfc['code']!=1]
 
 
-# In[62]:
 
 
 topCharts(dfv1, _n=[0,1], _s=10, _d=180, _dif=0)
 
 
-# In[63]:
 
 
 topCharts(dfv1, _n=[1,1])
 
 
-# In[64]:
 
 
 topCharts(dfv1, _n=[2,1], _s=10, _d=180, _dif=0)
 
 
-# In[65]:
 
 
 topCharts(dfv1, _n=[3,4], _s=10, _d=180, _dif=0)
 
 
-# In[66]:
 
 
 topCharts(dfv1, _n=[7,3], _s=10, _d=180, _dif=0)
 
 
-# In[67]:
 
 
 topCharts(dfv1, _n=[10,3], _s=10, _d=180, _dif=0)
 
 
-# In[68]:
 
 
 topCharts(dfv1, _n=[13,3], _s=10, _d=180, _dif=0)
 
 
-# In[69]:
 
 
 topCharts(dfv1, _n=[16,3], _s=10, _d=180, _dif=0)
 
 
-# In[70]:
 
 
 topCharts(dfv1, _n=[19,3], _s=10, _d=180, _dif=0)
 
 
-# In[71]:
 
 
 topCharts(dfv1, _n=[22,3], _s=10, _d=180, _dif=0)
 
 
-# In[72]:
 
 
 topCharts(dfv1, _n=[25,3], _s=10, _d=180, _dif=0)
 
 
-# In[ ]:
 
 
 
 
 
-# In[73]:
 
 
 topCharts(dfv1, _l='US')
 
 
-# In[74]:
 
 
 topCharts(dfv1, _l='Bra',  _dif=10000)
 
 
-# In[75]:
 
 
 topCharts(dfv1, _dif=10000, _l='India')
 
 
-# In[76]:
 
 
 topCharts(dfv1, _dif=10000, _l='Russia')
 
 
-# In[77]:
 
 
 topCharts(dfv1, _dif=10000, _l='United K')
 
 
-# In[78]:
 
 
 topCharts(dfv1, _dif=10000, _l='Spain')
 
 
-# In[79]:
 
 
 topCharts(dfv1, _dif=10000, _l='Italy')
 
 
-# In[80]:
 
 
 topCharts(dfv1, _dif=10000, _l='China')
 
 
-# In[81]:
 
 
 topCharts(dfv1, _dif=10000, _l='Mexi')
 
 
-# In[82]:
 
 
 topCharts(dfv1, _dif=10000, _l='Pak')
 
 
-# In[83]:
 
 
 topcc = pd.DataFrame(dfv[(dfv[ste].isnull()) & (dfv['Target']=='ConfirmedCases')].groupby(lcn)[predCol].sum())
@@ -926,7 +840,6 @@ topcc['fatals'] = dfv[(dfv[ste].isnull()) & (dfv['Target']=='Fatalities')].group
 topcc.sort_values(by=predCol, ascending=False).head(20)
 
 
-# In[ ]:
 
 
 

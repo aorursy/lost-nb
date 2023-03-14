@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install --quiet cupy-cuda100==5.4.0')
@@ -10,7 +9,6 @@ get_ipython().system('pip install --quiet chaineripy')
 get_ipython().system('conda install -y --quiet -c rdkit rdkit')
 
 
-# In[2]:
 
 
 # Check correctly installed, and modules can be imported.
@@ -26,7 +24,6 @@ print('chainer-chemistry version: ', chainer_chemistry.__version__)
 print('rdkit version: ', rdkit.__version__)
 
 
-# In[3]:
 
 
 from contextlib import contextmanager
@@ -47,7 +44,6 @@ import rdkit
 from rdkit import Chem
 
 
-# In[4]:
 
 
 # util functions...
@@ -60,7 +56,6 @@ def timer(name):
     print('[{}] done in {:.3f} s'.format(name, t1-t0))
 
 
-# In[5]:
 
 
 """
@@ -480,7 +475,6 @@ def xyz2mol(atomicNumList, charge, xyz_coordinates, charged_fragments, quick):
     return new_mol
 
 
-# In[6]:
 
 
 def mol_from_xyz(filepath, to_canonical=False):
@@ -502,7 +496,6 @@ def mol_from_xyz(filepath, to_canonical=False):
     return mol
 
 
-# In[7]:
 
 
 # This script is referred from http://rdkit.blogspot.jp/2015/02/new-drawing-code.html
@@ -536,14 +529,12 @@ def render_svg(svg):
     return SVG(svg.replace('svg:',''))
 
 
-# In[8]:
 
 
 # Input data files are available in the "../input/" directory.
 print(os.listdir("../input"))
 
 
-# In[9]:
 
 
 # Load each data...
@@ -561,73 +552,61 @@ potential_energy_df = pd.read_csv(input_dir/'potential_energy.csv')
 scalar_coupling_contributions_df = pd.read_csv(input_dir/'scalar_coupling_contributions.csv')
 
 
-# In[10]:
 
 
 train_df.head()
 
 
-# In[11]:
 
 
 test_df.head()
 
 
-# In[12]:
 
 
 structures_df.head()
 
 
-# In[13]:
 
 
 sample_submission_df.head()
 
 
-# In[14]:
 
 
 dipole_moments_df.head()
 
 
-# In[15]:
 
 
 potential_energy_df.head()
 
 
-# In[16]:
 
 
 potential_energy_df['potential_energy'].hist()
 
 
-# In[17]:
 
 
 magnetic_shielding_tensors_df.head()
 
 
-# In[18]:
 
 
 mulliken_charges_df.head()
 
 
-# In[19]:
 
 
 mulliken_charges_df['mulliken_charge'].hist()
 
 
-# In[20]:
 
 
 scalar_coupling_contributions_df.head()
 
 
-# In[21]:
 
 
 # Atom pair wise info
@@ -649,7 +628,6 @@ print(f'magnetic_shielding_tensors_df {magnetic_shielding_tensors_df.shape}')  #
 print(f'mulliken_charges_df {mulliken_charges_df.shape}')  # only contain train info
 
 
-# In[22]:
 
 
 del dipole_moments_df
@@ -661,7 +639,6 @@ del scalar_coupling_contributions_df
 gc.collect()
 
 
-# In[23]:
 
 
 train_mol_names = train_df['molecule_name'].unique()
@@ -671,58 +648,49 @@ print(f'Number of molecules: train {len(train_mol_names)}, test {len(test_mol_na
 print(f'Number of total atoms: train+test {len(structures_df)}')
 
 
-# In[24]:
 
 
 print('name of molecues in train', train_mol_names)
 print('name of molecues in test', test_mol_names)
 
 
-# In[25]:
 
 
 structures_df['atom'].unique()
 
 
-# In[26]:
 
 
 mol_name_counts = structures_df['molecule_name'].value_counts()
 mol_name_counts.head()
 
 
-# In[27]:
 
 
 mol_name_counts.hist()
 
 
-# In[28]:
 
 
 heavy_atoms_in_mol = structures_df[structures_df['atom'] != 'H']['molecule_name'].value_counts()
 
 
-# In[29]:
 
 
 heavy_atoms_in_mol.hist()
 
 
-# In[30]:
 
 
 # Histogram of heavy atoms
 heavy_atoms_in_mol.value_counts()
 
 
-# In[31]:
 
 
 heavy_atoms_in_mol.sort_index()
 
 
-# In[32]:
 
 
 plt.figure()
@@ -733,7 +701,6 @@ plt.show()
 plt.close()
 
 
-# In[33]:
 
 
 for mol_id in ['000001', '001000', '010000', '133885']:
@@ -744,14 +711,12 @@ for mol_id in ['000001', '001000', '010000', '133885']:
     display(mol)
 
 
-# In[34]:
 
 
 coupling_tyes = train_df['type'].unique()
 print('coupling_tyes', coupling_tyes)
 
 
-# In[35]:
 
 
 plt.figure()
@@ -760,14 +725,12 @@ plt.show()
 plt.close()
 
 
-# In[36]:
 
 
 grid = sns.FacetGrid(train_df[['type', 'scalar_coupling_constant']], col='type', hue='type', col_wrap=4)
 grid.map(sns.distplot, 'scalar_coupling_constant')
 
 
-# In[37]:
 
 
 # Calculate distance feature...
@@ -802,39 +765,33 @@ train_df['dist_speedup'] = np.linalg.norm(train_p_0 - train_p_1, axis=1)
 test_df['dist_speedup'] = np.linalg.norm(test_p_0 - test_p_1, axis=1)
 
 
-# In[38]:
 
 
 # dist_speedup and atom positions are added to both train_df and test_df
 train_df.head()
 
 
-# In[39]:
 
 
 grid = sns.FacetGrid(train_df[['type', 'dist_speedup']], col='type', hue='type', col_wrap=4)
 grid.map(sns.distplot, 'dist_speedup')
 
 
-# In[40]:
 
 
 len(train_df)
 
 
-# In[41]:
 
 
 train_df_sampled = train_df.sample(10000)
 
 
-# In[42]:
 
 
 sns.scatterplot(x="dist_speedup", y="scalar_coupling_constant", hue='type', data=train_df_sampled)
 
 
-# In[43]:
 
 
 train_test_df = pd.concat([train_df, test_df], axis=0, sort=True)
@@ -842,7 +799,6 @@ train_test_df['coupling_type_id'] = train_test_df['type'].map(
     {'1JHC': 0, '1JHN': 1, '2JHH': 2, '2JHN': 3, '2JHC': 4, '3JHH': 5, '3JHC': 6, '3JHN': 7})
 
 
-# In[44]:
 
 
 import chainer
@@ -858,7 +814,6 @@ import numpy
 from tqdm import tqdm_notebook as tqdm
 
 
-# In[45]:
 
 
 num_max_atoms = 29
@@ -878,14 +833,12 @@ hydrogen_bonding = construct_hydrogen_bonding(mol, num_max_atoms)
 aromaticity_vec = construct_aromaticity_vec(mol, num_max_atoms)
 
 
-# In[46]:
 
 
 # Each feature is in shape (atom_id, feature_dim), where atom_id is padded to "num_max_atoms" size when atom is not exist.
 atom_type_vec.shape, formal_charge_vec.shape, partial_charge_vec.shape, atom_ring_vec.shape, hybridization_vec.shape, hydrogen_bonding.shape, aromaticity_vec.shape
 
 
-# In[47]:
 
 
 WEAVE_DEFAULT_NUM_MAX_ATOMS=20
@@ -942,20 +895,17 @@ def construct_atom_feature(mol, add_Hs,
     return feature
 
 
-# In[48]:
 
 
 pair_feature = construct_pair_feature(mol, num_max_atoms=num_max_atoms)
 
 
-# In[49]:
 
 
 # Each feature is in shape (atom_id*atom_id, feature_dim).
 pair_feature.shape
 
 
-# In[50]:
 
 
 
@@ -1004,7 +954,6 @@ def create_features(mol_names):
     return tuple(map(to_ndarray, [atom_array_list, adj_array_list, from_array_list, to_array_list, coupling_type_id_array_list, label_array_list]))
 
 
-# In[51]:
 
 
 # For debugging
@@ -1012,13 +961,11 @@ def create_features(mol_names):
 k = create_features(train_mol_names[:2])
 
 
-# In[52]:
 
 
 
 
 
-# In[52]:
 
 
 def load_dataset(filepath):
@@ -1042,25 +989,21 @@ with timer('test'):
     test = load_dataset('../input/champs-weave-dataset/test_data_v2.npz')
 
 
-# In[53]:
 
 
 atom_array, dist_array, from_array, to_array, coupling_type_id_array, label_array = train[0]
 
 
-# In[54]:
 
 
 atom_array.shape, dist_array.shape
 
 
-# In[55]:
 
 
 from_array, to_array, label_array, coupling_type_id_array
 
 
-# In[56]:
 
 
 from chainer.dataset.convert import _concat_arrays, to_device
@@ -1095,7 +1038,6 @@ class EdgeConverter:
             return atom, adj, from_array, to_array, coupling_type, batch_indices
 
 
-# In[57]:
 
 
 converter = EdgeConverter()
@@ -1108,7 +1050,6 @@ atom, adj, from_array, to_array, coupling_type, batch_indices, label = input_dat
 print('input_data:', atom.shape, adj.shape, from_array.shape, to_array.shape, coupling_type.shape, batch_indices.shape, label.shape)
 
 
-# In[58]:
 
 
 class CouplingTypeScaler(chainer.Link):
@@ -1133,7 +1074,6 @@ class CouplingTypeScaler(chainer.Link):
         return x
 
 
-# In[59]:
 
 
 # scale each scalar couplint constant
@@ -1156,7 +1096,6 @@ coupling_type_scaler.set_param(
     np.array(mean_list, dtype=np.float32), np.array(std_list, dtype=np.float32))
 
 
-# In[60]:
 
 
 import chainer
@@ -1221,7 +1160,6 @@ class WeaveNet(chainer.Chain):
         return pair_x
 
 
-# In[61]:
 
 
 import chainer
@@ -1266,7 +1204,6 @@ class EdgePredictor(chainer.Chain):
         return h
 
 
-# In[62]:
 
 
 import copy
@@ -1367,7 +1304,6 @@ class LogMAEEvaluator(Evaluator):
         return observation
 
 
-# In[63]:
 
 
 import numpy
@@ -1389,7 +1325,6 @@ from chainer_chemistry.models.prediction import Regressor
 from chainer_chemistry.dataset.splitters.random_splitter import RandomSplitter
 
 
-# In[64]:
 
 
 num_max_atoms = 29
@@ -1401,7 +1336,6 @@ graph_conv = WeaveNet(
 predictor = EdgePredictor(graph_conv, coupling_type_scaler)
 
 
-# In[65]:
 
 
 
@@ -1462,7 +1396,6 @@ except ImportError:
 trainer.run()
 
 
-# In[66]:
 
 
 # Prediction for test label
@@ -1471,13 +1404,11 @@ converter.return_label = False
 test_pred = regressor.predict(test, batchsize=128, converter=converter)
 
 
-# In[67]:
 
 
 test_pred.shape, test_pred.dtype
 
 
-# In[68]:
 
 
 # Check test prediction distribution
@@ -1485,38 +1416,32 @@ test_pred.shape, test_pred.dtype
 sns.distplot(test_pred)
 
 
-# In[69]:
 
 
 sample_submission_df.head()
 
 
-# In[70]:
 
 
 np.alltrue(test_df.id.values == sample_submission_df.id.values)
 
 
-# In[71]:
 
 
 sample_submission_df.shape
 
 
-# In[72]:
 
 
 # Assign test prediction to submit format.
 sample_submission_df['scalar_coupling_constant'] = test_pred
 
 
-# In[73]:
 
 
 sample_submission_df.head()
 
 
-# In[74]:
 
 
 # Save to csv file and we are ready to submit!
@@ -1525,13 +1450,11 @@ sample_submission_df.to_csv('submission.csv', index=False)
 print('saved to submission.csv')
 
 
-# In[75]:
 
 
 
 
 
-# In[75]:
 
 
 

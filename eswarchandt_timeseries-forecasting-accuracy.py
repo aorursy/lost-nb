@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -44,7 +43,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[2]:
 
 
 def get_memory_usage():
@@ -58,7 +56,6 @@ def sizeof_fmt(num, suffix='B'):
     return "%.1f%s%s" % (num, 'Yi', suffix)
 
 
-# In[3]:
 
 
 ## Memory Reducer
@@ -93,7 +90,6 @@ def reduce_mem_usage(df, verbose=True):
     return df
 
 
-# In[4]:
 
 
 def merge_by_concat(df1, df2, merge_on):
@@ -104,7 +100,6 @@ def merge_by_concat(df1, df2, merge_on):
     return df1
 
 
-# In[5]:
 
 
 TARGET = 'sales'         # Our main target
@@ -112,7 +107,6 @@ END_TRAIN = 1913         # Last day in train set
 MAIN_INDEX = ['id','d']  # We can identify item by these columns
 
 
-# In[6]:
 
 
 sales_train_val = pd.read_csv('../input/m5-forecasting-accuracy/sales_train_validation.csv')
@@ -120,25 +114,21 @@ selling_prices= pd.read_csv('../input/m5-forecasting-accuracy/sell_prices.csv')
 calendar= pd.read_csv('../input/m5-forecasting-accuracy/calendar.csv')
 
 
-# In[7]:
 
 
 sales_train_val.sample(6)
 
 
-# In[8]:
 
 
 selling_prices.sample(6)
 
 
-# In[9]:
 
 
 calendar.sample(6)
 
 
-# In[10]:
 
 
 ids = sorted(list(set(sales_train_val['id'])))
@@ -149,7 +139,6 @@ x_3 = sales_train_val.loc[sales_train_val['id'] == ids[3]].set_index('id')[d_col
 x_4 = sales_train_val.loc[sales_train_val['id'] == ids[4]].set_index('id')[d_cols].values[0]
 
 
-# In[11]:
 
 
 print(x_1)
@@ -158,7 +147,6 @@ print(x_3)
 print(x_4)
 
 
-# In[12]:
 
 
 #ids[1],ids[2],ids[3] are random samples , you can choose any number
@@ -187,7 +175,6 @@ fig.update_layout(height=1200, width=800, title_text="Sample sales")
 fig.show()
 
 
-# In[13]:
 
 
 #ids[1],ids[2],ids[3] are random samples , you can choose any number
@@ -221,7 +208,6 @@ fig.update_layout(height=1200, width=800, title_text="Sample sales snippets")
 fig.show()
 
 
-# In[14]:
 
 
 def maddest(d, axis=None):
@@ -237,7 +223,6 @@ def denoise_signal(x, wavelet='db4', level=1):
     return pywt.waverec(coeff, wavelet, mode='per')
 
 
-# In[15]:
 
 
 y_w1 = denoise_signal(x_1)
@@ -246,7 +231,6 @@ y_w3 = denoise_signal(x_3)
 y_w4= denoise_signal(x_4)
 
 
-# In[16]:
 
 
 fig = make_subplots(rows=4, cols=1)
@@ -295,7 +279,6 @@ fig.update_layout(height=1200, width=800, title_text="Sample sales snippets")
 fig.show()
 
 
-# In[17]:
 
 
 fig, ax = plt.subplots(nrows=4, ncols=2, figsize=(30, 20))
@@ -323,7 +306,6 @@ ax[3, 1].set_title('After Wavelet Denoising', fontsize=24)
 plt.show()
 
 Here the green graphs represents original sales and red graphs represents denoised sales
-# In[18]:
 
 
 def average_smoothing(signal, kernel_size=3, stride=1):
@@ -337,7 +319,6 @@ def average_smoothing(signal, kernel_size=3, stride=1):
     return np.array(sample)
 
 
-# In[19]:
 
 
 y_a1 = average_smoothing(x_1)
@@ -346,7 +327,6 @@ y_a3 = average_smoothing(x_3)
 y_a4= average_smoothing(x_4)
 
 
-# In[20]:
 
 
 fig = make_subplots(rows=4, cols=1)
@@ -395,7 +375,6 @@ fig.update_layout(height=1200, width=800, title_text="Sample sales snippets")
 fig.show()
 
 
-# In[21]:
 
 
 fig, ax = plt.subplots(nrows=4, ncols=2, figsize=(30, 20))
@@ -423,7 +402,6 @@ ax[3, 1].set_title('After Wavelet Denoising', fontsize=24)
 plt.show()
 
 
-# In[22]:
 
 
 past_sales = sales_train_val.set_index('id')[d_cols]     .T     .merge(calendar.set_index('d')['date'],
@@ -444,7 +422,6 @@ for s in store_list:
 fig.update_layout(yaxis_title="Sales", xaxis_title="Time", title="Rolling Average Sales vs. Time (per store)")
 
 
-# In[23]:
 
 
 df = pd.DataFrame(np.transpose([means, store_list]))
@@ -452,7 +429,6 @@ df.columns = ["Mean sales", "Store name"]
 px.bar(df, y="Mean sales", x="Store name", color="Store name", title="Mean sales vs. Store name")
 
 
-# In[24]:
 
 
 greens = ["mediumaquamarine", "mediumseagreen", "seagreen", "green"]
@@ -471,7 +447,6 @@ for i, s in enumerate(store_list):
 fig.update_layout(yaxis_title="Sales", xaxis_title="Time", title="Rolling Average Sales vs. Time (California)")
 
 
-# In[25]:
 
 
 df = pd.DataFrame(np.transpose([means, stores]))
@@ -487,14 +462,12 @@ fig.update_layout(barmode='group')
 fig.show()
 
 
-# In[26]:
 
 
 train_dataset = sales_train_val[d_cols[-100:-30]]
 val_dataset = sales_train_val[d_cols[-30:]]
 
 
-# In[27]:
 
 
 fig = make_subplots(rows=3, cols=1)
@@ -535,7 +508,6 @@ fig.update_layout(height=1200, width=800, title_text="Train (blue) vs. Validatio
 fig.show()
 
 
-# In[28]:
 
 
 predictions = []
@@ -546,7 +518,6 @@ predictions = np.array(predictions).reshape((-1, 30))
 error_arima = np.linalg.norm(predictions[:3] - val_dataset.values[:3])/len(predictions[0])
 
 
-# In[29]:
 
 
 pred_1 = predictions[0]

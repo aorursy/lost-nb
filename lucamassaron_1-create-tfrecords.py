@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import cv2
@@ -66,7 +65,6 @@ def main():
 main()
 
 
-# In[2]:
 
 
 # Copyright 2020 Google LLC
@@ -206,25 +204,21 @@ def main():
 main()
 
 
-# In[3]:
 
 
 get_ipython().system('du -sh images')
 
 
-# In[4]:
 
 
 get_ipython().system('rm -rf images')
 
 
-# In[5]:
 
 
 get_ipython().system('ls records')
 
 
-# In[ ]:
 
 
 

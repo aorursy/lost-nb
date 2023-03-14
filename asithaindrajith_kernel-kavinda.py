@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -98,7 +97,6 @@ dfObj = pd.DataFrame(M, columns = ["ID","Revenue"])
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 def handle_command_line():
@@ -114,7 +112,6 @@ def handle_command_line():
             flag = False
 
 
-# In[3]:
 
 
 import numpy as np # linear algebra
@@ -146,7 +143,6 @@ Trainset  = Trainset.replace(to_replace=['Returning_Visitor', 'New_Visitor'], va
 print(Trainset)
 
 
-# In[4]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -241,13 +237,11 @@ dfObj = pd.DataFrame(M, columns = ["ID","Revenue"])
 #print("Writing complete")
 
 
-# In[ ]:
 
 
 
 
 
-# In[5]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -342,7 +336,6 @@ dfObj = pd.DataFrame(M, columns = ["ID","Revenue"])
 #print("Writing complete")
 
 
-# In[6]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -405,7 +398,6 @@ pd.crosstab(Test['Revenue'], preds, rownames = ['Actual Revenue'], colnames = ['
 #scores.mean() 
 
 
-# In[7]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -487,25 +479,21 @@ df.to_csv("submission.csv", index=False)
 #scores.mean() 
 
 
-# In[8]:
 
 
 df
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

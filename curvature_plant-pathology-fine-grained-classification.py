@@ -1,20 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from IPython.display import HTML
 HTML('<center><iframe width="700" height="400" src="https://www.youtube.com/embed/NlpS-DhayQA?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe></center>')
 
 
-# In[2]:
 
 
 get_ipython().system('pip install -q efficientnet')
 
 
-# In[3]:
 
 
 import os
@@ -59,7 +56,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[4]:
 
 
 EPOCHS = 20
@@ -74,19 +70,16 @@ test_data = pd.read_csv(TEST_PATH)
 train_data = pd.read_csv(TRAIN_PATH)
 
 
-# In[5]:
 
 
 train_data.head()
 
 
-# In[6]:
 
 
 test_data.head()
 
 
-# In[7]:
 
 
 def load_image(image_id):
@@ -97,14 +90,12 @@ def load_image(image_id):
 train_images = train_data["image_id"][:SAMPLE_LEN].progress_apply(load_image)
 
 
-# In[8]:
 
 
 fig = px.imshow(cv2.resize(train_images[0], (205, 136)))
 fig.show()
 
 
-# In[9]:
 
 
 red_values = [np.mean(train_images[idx][:, :, 0]) for idx in range(len(train_images))]
@@ -113,7 +104,6 @@ blue_values = [np.mean(train_images[idx][:, :, 2]) for idx in range(len(train_im
 values = [np.mean(train_images[idx]) for idx in range(len(train_images))]
 
 
-# In[10]:
 
 
 fig = ff.create_distplot([values], group_labels=["Channels"], colors=["purple"])
@@ -124,7 +114,6 @@ fig.data[0].marker.line.width = 0.5
 fig
 
 
-# In[11]:
 
 
 fig = ff.create_distplot([red_values], group_labels=["R"], colors=["red"])
@@ -135,7 +124,6 @@ fig.data[0].marker.line.width = 0.5
 fig
 
 
-# In[12]:
 
 
 fig = ff.create_distplot([green_values], group_labels=["G"], colors=["green"])
@@ -146,7 +134,6 @@ fig.data[0].marker.line.width = 0.5
 fig
 
 
-# In[13]:
 
 
 fig = ff.create_distplot([blue_values], group_labels=["B"], colors=["blue"])
@@ -157,7 +144,6 @@ fig.data[0].marker.line.width = 0.5
 fig
 
 
-# In[14]:
 
 
 fig = go.Figure()
@@ -175,7 +161,6 @@ fig.update_layout(yaxis_title="Mean value", xaxis_title="Color channel",
                   title="Mean value vs. Color channel", template="plotly_white")
 
 
-# In[15]:
 
 
 fig = ff.create_distplot([red_values, green_values, blue_values],
@@ -191,7 +176,6 @@ fig.data[2].marker.line.width = 0.5
 fig
 
 
-# In[16]:
 
 
 def visualize_leaves(cond=[0, 0, 0, 0], cond_cols=["healthy"], is_cond=True):
@@ -233,38 +217,32 @@ def visualize_leaves(cond=[0, 0, 0, 0], cond_cols=["healthy"], is_cond=True):
     plt.show()
 
 
-# In[17]:
 
 
 visualize_leaves(cond=[1, 0, 0, 0], cond_cols=["healthy"])
 
 
-# In[18]:
 
 
 visualize_leaves(cond=[0, 1, 0, 0], cond_cols=["scab"])
 
 
-# In[19]:
 
 
 visualize_leaves(cond=[0, 0, 1, 0], cond_cols=["rust"])
 
 
-# In[20]:
 
 
 visualize_leaves(cond=[0, 0, 0, 1], cond_cols=["multiple_diseases"])
 
 
-# In[21]:
 
 
 fig = px.parallel_categories(train_data[["healthy", "scab", "rust", "multiple_diseases"]], color="healthy", color_continuous_scale="sunset",                             title="Parallel categories plot of targets")
 fig
 
 
-# In[22]:
 
 
 fig = go.Figure([go.Pie(labels=train_data.columns[1:],
@@ -275,7 +253,6 @@ fig.data[0].marker.line.width = 0.5
 fig.show()
 
 
-# In[23]:
 
 
 train_data["Healthy"] = train_data["healthy"].apply(bool).apply(str)
@@ -290,7 +267,6 @@ fig.data[1].marker.line.width = 0.5
 fig
 
 
-# In[24]:
 
 
 train_data["Scab"] = train_data["scab"].apply(bool).apply(str)
@@ -305,7 +281,6 @@ fig.data[1].marker.line.width = 0.5
 fig
 
 
-# In[25]:
 
 
 train_data["Rust"] = train_data["rust"].apply(bool).apply(str)
@@ -320,7 +295,6 @@ fig.data[1].marker.line.width = 0.5
 fig
 
 
-# In[26]:
 
 
 train_data["Multiple diseases"] = train_data["multiple_diseases"].apply(bool).apply(str)
@@ -335,7 +309,6 @@ fig.data[1].marker.line.width = 0.5
 fig
 
 
-# In[27]:
 
 
 def edge_and_cut(img):
@@ -368,7 +341,6 @@ def edge_and_cut(img):
     plt.show()
 
 
-# In[28]:
 
 
 edge_and_cut(train_images[3])
@@ -376,7 +348,6 @@ edge_and_cut(train_images[4])
 edge_and_cut(train_images[5])
 
 
-# In[29]:
 
 
 def invert(img):
@@ -390,7 +361,6 @@ def invert(img):
     plt.show()
 
 
-# In[30]:
 
 
 invert(train_images[3])
@@ -398,7 +368,6 @@ invert(train_images[4])
 invert(train_images[5])
 
 
-# In[31]:
 
 
 def conv(img):
@@ -412,7 +381,6 @@ def conv(img):
     plt.show()
 
 
-# In[32]:
 
 
 conv(train_images[3])
@@ -420,7 +388,6 @@ conv(train_images[4])
 conv(train_images[5])
 
 
-# In[33]:
 
 
 def blur(img):
@@ -432,7 +399,6 @@ def blur(img):
     plt.show()
 
 
-# In[34]:
 
 
 blur(train_images[3])
@@ -440,7 +406,6 @@ blur(train_images[4])
 blur(train_images[5])
 
 
-# In[35]:
 
 
 AUTO = tf.data.experimental.AUTOTUNE
@@ -454,7 +419,6 @@ BATCH_SIZE = 16 * strategy.num_replicas_in_sync
 GCS_DS_PATH = KaggleDatasets().get_gcs_path()
 
 
-# In[36]:
 
 
 def format_path(st):
@@ -467,7 +431,6 @@ train_labels = np.float32(train_data.loc[:, 'healthy':'scab'].values)
 train_paths, valid_paths, train_labels, valid_labels =train_test_split(train_paths, train_labels, test_size=0.15, random_state=2020)
 
 
-# In[37]:
 
 
 def decode_image(filename, label=None, image_size=(512, 512)):
@@ -491,7 +454,6 @@ def data_augment(image, label=None):
         return image, label
 
 
-# In[38]:
 
 
 train_dataset = (
@@ -522,7 +484,6 @@ test_dataset = (
 )
 
 
-# In[39]:
 
 
 def build_lrfn(lr_start=0.00001, lr_max=0.00005, 
@@ -541,7 +502,6 @@ def build_lrfn(lr_start=0.00001, lr_max=0.00005,
     return lrfn
 
 
-# In[40]:
 
 
 lrfn = build_lrfn()
@@ -549,7 +509,6 @@ STEPS_PER_EPOCH = train_labels.shape[0] // BATCH_SIZE
 lr_schedule = tf.keras.callbacks.LearningRateScheduler(lrfn, verbose=1)
 
 
-# In[41]:
 
 
 with strategy.scope():
@@ -566,19 +525,16 @@ with strategy.scope():
     model.summary()
 
 
-# In[42]:
 
 
 SVG(tf.keras.utils.model_to_dot(Model(model.layers[0].input, model.layers[0].layers[13].output), dpi=70).create(prog='dot', format='svg'))
 
 
-# In[43]:
 
 
 SVG(tf.keras.utils.model_to_dot(model, dpi=70).create(prog='dot', format='svg'))
 
 
-# In[44]:
 
 
 history = model.fit(train_dataset,
@@ -588,7 +544,6 @@ history = model.fit(train_dataset,
                     validation_data=valid_dataset)
 
 
-# In[45]:
 
 
 def display_training_curves(training, validation, yaxis):
@@ -613,7 +568,6 @@ def display_training_curves(training, validation, yaxis):
     fig.show()
 
 
-# In[46]:
 
 
 display_training_curves(
@@ -622,7 +576,6 @@ display_training_curves(
     'accuracy')
 
 
-# In[47]:
 
 
 acc_df = pd.DataFrame(np.transpose([[*np.arange(1, EPOCHS+1).tolist()*3], ["Train"]*EPOCHS + ["Val"]*EPOCHS + ["Benchmark"]*EPOCHS,
@@ -641,7 +594,6 @@ fig.update_layout(
 fig.update_layout(template="plotly_white")
 
 
-# In[48]:
 
 
 def process(img):
@@ -723,7 +675,6 @@ fig.add_trace(go.Bar(x=["Healthy", "Multiple diseases", "Rust", "Scab"], y=preds
 fig.update_layout(template="plotly_white")
 
 
-# In[49]:
 
 
 probs_dnn = model.predict(test_dataset, verbose=1)
@@ -732,7 +683,6 @@ sub.to_csv('submission_dnn.csv', index=False)
 sub.head()
 
 
-# In[50]:
 
 
 with strategy.scope():
@@ -751,19 +701,16 @@ with strategy.scope():
     model.summary()
 
 
-# In[51]:
 
 
 SVG(tf.keras.utils.model_to_dot(Model(model.layers[0].input, model.layers[0].layers[11].output), dpi=70).create(prog='dot', format='svg'))
 
 
-# In[52]:
 
 
 SVG(tf.keras.utils.model_to_dot(model, dpi=70).create(prog='dot', format='svg'))
 
 
-# In[53]:
 
 
 history = model.fit(train_dataset,
@@ -773,7 +720,6 @@ history = model.fit(train_dataset,
                     validation_data=valid_dataset)
 
 
-# In[54]:
 
 
 display_training_curves(
@@ -782,7 +728,6 @@ display_training_curves(
     'accuracy')
 
 
-# In[55]:
 
 
 acc_df = pd.DataFrame(np.transpose([[*np.arange(1, EPOCHS+1).tolist()*3], ["Train"]*EPOCHS + ["Val"]*EPOCHS + ["Benchmark"]*EPOCHS,
@@ -801,7 +746,6 @@ fig.update_layout(
 fig.update_layout(template="plotly_white")
 
 
-# In[56]:
 
 
 def process(img):
@@ -882,7 +826,6 @@ fig.add_trace(go.Bar(x=["Healthy", "Multiple diseases", "Rust", "Scab"], y=preds
 fig.update_layout(template="plotly_white")
 
 
-# In[57]:
 
 
 probs_efn = model.predict(test_dataset, verbose=1)
@@ -891,7 +834,6 @@ sub.to_csv('submission_efn.csv', index=False)
 sub.head()
 
 
-# In[58]:
 
 
 with strategy.scope():
@@ -910,19 +852,16 @@ with strategy.scope():
     model.summary()
 
 
-# In[59]:
 
 
 SVG(tf.keras.utils.model_to_dot(Model(model.layers[0].input, model.layers[0].layers[11].output), dpi=70).create(prog='dot', format='svg'))
 
 
-# In[60]:
 
 
 SVG(tf.keras.utils.model_to_dot(model, dpi=70).create(prog='dot', format='svg'))
 
 
-# In[61]:
 
 
 history = model.fit(train_dataset,
@@ -932,7 +871,6 @@ history = model.fit(train_dataset,
                     validation_data=valid_dataset)
 
 
-# In[62]:
 
 
 display_training_curves(
@@ -941,7 +879,6 @@ display_training_curves(
     'accuracy')
 
 
-# In[63]:
 
 
 acc_df = pd.DataFrame(np.transpose([[*np.arange(1, EPOCHS+1).tolist()*3], ["Train"]*EPOCHS + ["Val"]*EPOCHS + ["Benchmark"]*EPOCHS,
@@ -960,7 +897,6 @@ fig.update_layout(
 fig.update_layout(template="plotly_white")
 
 
-# In[64]:
 
 
 def process(img):
@@ -1041,7 +977,6 @@ fig.add_trace(go.Bar(x=["Healthy", "Multiple diseases", "Rust", "Scab"], y=preds
 fig.update_layout(template="plotly_white")
 
 
-# In[65]:
 
 
 probs_efnns = model.predict(test_dataset, verbose=1)
@@ -1050,7 +985,6 @@ sub.to_csv('submission_efnns.csv', index=False)
 sub.head()
 
 
-# In[66]:
 
 
 ensemble_1, ensemble_2, ensemble_3 = [sub]*3

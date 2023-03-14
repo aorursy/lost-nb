@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -15,13 +14,11 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 os.getcwd()
 
 
-# In[3]:
 
 
 train_variants_df = pd.read_csv("../input/training_variants")
@@ -30,7 +27,6 @@ train_text_df = pd.read_csv("../input/training_text", sep="\|\|", engine="python
 test_text_df = pd.read_csv("../input/test_text", sep="\|\|", engine="python", skiprows=1, names=["ID", "Text"])
 
 
-# In[4]:
 
 
 print("Train Variant".ljust(15), train_variants_df.shape)
@@ -39,73 +35,61 @@ print("Test Variant".ljust(15), test_variants_df.shape)
 print("Test Text".ljust(15), test_text_df.shape)
 
 
-# In[5]:
 
 
 train_variants_df.head()
 
 
-# In[6]:
 
 
 train_variants_df.info()
 
 
-# In[7]:
 
 
 train_text_df.head()
 
 
-# In[8]:
 
 
 train_text_df.info()
 
 
-# In[9]:
 
 
 train_variants_df.columns
 
 
-# In[10]:
 
 
 train_variants_df.describe()
 
 
-# In[11]:
 
 
 #train_variants_df.Gene = train_variants_df.Gene.astype('category')
 
 
-# In[12]:
 
 
 #len(train_variants_df.Gene.cat.categories)
 
 
-# In[13]:
 
 
 train_variants_df.Class = train_variants_df.Class.astype('category')
 
 
-# In[14]:
 
 
 len(train_variants_df.Class.cat.categories)
 
 
-# In[15]:
 
 
 train_variants_df.info()
 
 
-# In[16]:
 
 
 print("For training data, there are a total of",
@@ -115,7 +99,6 @@ print(len(train_variants_df.Variation.unique()), "unique variations and ", end='
 print(len(train_variants_df.Class.unique()),  "classes")
 
 
-# In[17]:
 
 
 plt.figure(figsize=(12,8))
@@ -126,7 +109,6 @@ plt.title('Distribution of genetic mutation classes', fontsize=18)
 plt.show()
 
 
-# In[18]:
 
 
 gene_group = train_variants_df.groupby("Gene")['Gene'].count()
@@ -136,7 +118,6 @@ print("Genes with maximal occurances\n",
 print("\nGenes with minimal occurances\n", minimal_occ_genes)
 
 
-# In[19]:
 
 
 fig, axs = plt.subplots(ncols=3, nrows=3, figsize=(15,15))
@@ -149,59 +130,50 @@ for i in range(3):
         sns.barplot(x="Gene", y="ID", data=sorted_gene_group_top_7,                    ax=axs[i][j])
 
 
-# In[20]:
 
 
 train_text_df.head()
 
 
-# In[21]:
 
 
 train_text_df.loc[:, 'Text Count'] = train_text_df["Text"].apply(lambda x: len(x.split()))
 train_text_df.head()
 
 
-# In[22]:
 
 
 train_full = train_variants_df.merge(train_text_df, how='inner',                                     left_on='ID', right_on='ID')
 train_full[train_full['Class']==1].head()
 
 
-# In[23]:
 
 
 for i in list(range(1,10)):
     print(train_full[train_full['Class']==i].head())
 
 
-# In[24]:
 
 
 count_grp = train_full.groupby('Class')['Text Count']
 count_grp.describe()
 
 
-# In[25]:
 
 
 #Some entries have text count 1.
 
 
-# In[26]:
 
 
 train_full[train_full["Text Count"]==1.0]
 
 
-# In[27]:
 
 
 train_full[train_full["Text Count"]<500.0]
 
 
-# In[28]:
 
 
 plt.figure(figsize=(12,8))
@@ -214,7 +186,6 @@ plt.title("Text length distribution", fontsize=18)
 plt.show()
 
 
-# In[29]:
 
 
 fog, axs = plt.subplots(ncols=3, nrows=3, figsize=(15,15))
@@ -227,7 +198,6 @@ for i in range(3):
         sns.barplot(x="Gene", y="Text Count", data=sorted_gene_group_top_7,                    ax=axs[i][j])
 
 
-# In[30]:
 
 
 def top_tfidf_feats(row, features, top_n=10):
@@ -284,7 +254,6 @@ def plot_tfidf_classfeats_h(dfs):
     plt.show()
 
 
-# In[31]:
 
 
 tfidf = TfidfVectorizer(min_df=5, max_features=16000, strip_accents='unicode',lowercase =True,
@@ -297,13 +266,11 @@ features = tfidf.get_feature_names()
 top_dfs = top_feats_by_class(Xtr, y, features)
 
 
-# In[32]:
 
 
 plot_tfidf_classfeats_h(top_dfs)
 
 
-# In[33]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -312,7 +279,6 @@ from wordcloud import WordCloud, STOPWORDS
 import matplotlib.pyplot as plt
 
 
-# In[34]:
 
 
 STOPWORDS.add('et')
@@ -354,7 +320,6 @@ STOPWORDS.add('gene')
 STOPWORDS.add('mutant')
 
 
-# In[35]:
 
 
 class1DF = train_full[train_full.Class == 1]
@@ -368,7 +333,6 @@ class8DF = train_full[train_full.Class == 8]
 class9DF = train_full[train_full.Class == 9]
 
 
-# In[36]:
 
 
 class1 = class1DF['Text'].tolist()
@@ -417,7 +381,6 @@ for i in range(len(class9)):
     string9 += class9[i]
 
 
-# In[37]:
 
 
 wordcloud1 = WordCloud(   stopwords=STOPWORDS,
@@ -483,7 +446,6 @@ wordcloud9 = WordCloud(
                          ).generate(string9)
 
 
-# In[38]:
 
 
 print("Class 1")
@@ -532,7 +494,6 @@ plt.axis('off')
 plt.show()
 
 
-# In[39]:
 
 
 import numpy as np
@@ -554,7 +515,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.decomposition import TruncatedSVD
 
 
-# In[40]:
 
 
 train_variants_df = pd.read_csv("../input/training_variants")
@@ -563,32 +523,27 @@ train_text_df = pd.read_csv("../input/training_text", sep="\|\|", engine="python
 test_text_df = pd.read_csv("../input/test_text", sep="\|\|", engine="python", skiprows=1, names=["ID", "Text"])
 
 
-# In[41]:
 
 
 train_variants_df.head()
 
 
-# In[42]:
 
 
 train_text_df.head()
 
 
-# In[43]:
 
 
 print(train_text_df['Text'][0][:100], '  ', len(train_text_df['Text'][0]))
 
 
-# In[44]:
 
 
 varsGeneCount = Counter(train_variants_df.Gene)
 print(len(varsGeneCount))
 
 
-# In[45]:
 
 
 plt.figure(figsize=(12,8))
@@ -599,21 +554,18 @@ plt.title('Freq. of classes in training variants')
 plt.show()
 
 
-# In[46]:
 
 
 varsVariationCount = Counter(train_variants_df.Variation)
 print('Number of unique variaitons in training data\n', len(varsVariationCount))
 
 
-# In[47]:
 
 
 fig, ax = plt.subplots(1,1,figsize=(12,8))
 ax = sns.distplot(pd.factorize(train_variants_df['Variation'])[0]/                  len(train_variants_df), bins=150, color='r')
 
 
-# In[48]:
 
 
 def textClean(text):
@@ -654,7 +606,6 @@ def textClean(text):
     return(text)
 
 
-# In[49]:
 
 
 trainText = []
@@ -667,13 +618,11 @@ for it in test_text_df['Text']:
     testText.append(newText)
 
 
-# In[50]:
 
 
 trainText[0][:100]
 
 
-# In[51]:
 
 
 for i in range(10):
@@ -682,7 +631,6 @@ for i in range(10):
     print(stopCheck.most_common()[:10])
 
 
-# In[52]:
 
 
 tops = Counter(str(trainText).split()).most_common()[:20]
@@ -697,20 +645,17 @@ plt.title('Top twenty counts of most-common words among text')
 plt.show()
 
 
-# In[53]:
 
 
 gc.collect()
 
 
-# In[54]:
 
 
 topInc = Counter(str(trainText).split()).most_common()[:30]
 labsInc, valsInc = zip(*topInc)
 
 
-# In[55]:
 
 
 def stopCheck(text, stops):
@@ -721,7 +666,6 @@ def stopCheck(text, stops):
     return text
 
 
-# In[56]:
 
 
 trainText2 = []
@@ -734,19 +678,16 @@ for it in testText:
     testText2.append(newText)
 
 
-# In[57]:
 
 
 gc.collect()
 
 
-# In[58]:
 
 
 trainText2[2][:100]
 
 
-# In[59]:
 
 
 tops = Counter(str(trainText2).split()).most_common()[:20]
@@ -761,32 +702,27 @@ plt.title('Top Twenty Counts of Most-Common Words Among Text')
 plt.show()
 
 
-# In[60]:
 
 
 gc.collect()
 
 
-# In[61]:
 
 
 maxFeats=500
 
 
-# In[62]:
 
 
 tfidf = TfidfVectorizer(min_df=5, max_features=maxFeats, ngram_range=(1,3),                        strip_accents='unicode', lowercase = True,                        analyzer='word', token_pattern=r'\w+',                        use_idf=True, smooth_idf=True, sublinear_tf=True,
                         stop_words='english')
 
 
-# In[63]:
 
 
 tfidf.fit(trainText2)
 
 
-# In[64]:
 
 
 countVec = CountVectorizer(min_df=5, ngram_range=(1,3), max_features=maxFeats, 
@@ -795,26 +731,22 @@ countVec = CountVectorizer(min_df=5, ngram_range=(1,3), max_features=maxFeats,
                            stop_words = 'english')
 
 
-# In[65]:
 
 
 countVec.fit(trainText2)
 
 
-# In[66]:
 
 
 len(trainText2)
 
 
-# In[67]:
 
 
 svd = TruncatedSVD(n_components=390)
 svdFit = svd.fit_transform(tfidf.transform(trainText2))
 
 
-# In[68]:
 
 
 def buildFeats(texts, variations):
@@ -851,13 +783,11 @@ def buildFeats(texts, variations):
     return temp, tempc
 
 
-# In[69]:
 
 
 #temp = train_variants_df.copy()
 
 
-# In[70]:
 
 
 #temp['Gene']=pd.factorize(train_variants_df['Gene'])[0]
@@ -865,45 +795,38 @@ def buildFeats(texts, variations):
 #temp['Gene_to_Variation_Ratio']=temp['Gene']/temp['Variation']
 
 
-# In[71]:
 
 
 #temp['doc_len'] = [len(x) for x in trainText2]
 #temp['unique_words'] = [len(set(x))  for x in trainText2]
 
 
-# In[72]:
 
 
 #temp_tfidf = tfidf.transform(trainText2)
 
 
-# In[73]:
 
 
 #temp['tfidf_sum'] = temp_tfidf.sum(axis=1)
 #temp_tfidf.sum(axis=1)
 
 
-# In[74]:
 
 
 #temp['tfidf_mean'] = temp_tfidf.mean(axis=1)
 
 
-# In[75]:
 
 
 #temp['tfidf_len'] =  (temp_tfidf != 0).sum(axis = 1)
 
 
-# In[76]:
 
 
 #temp_cvec = countVec.transform(trainText2)
 
 
-# In[77]:
 
 
 #temp['cvec_sum'] = temp_cvec.sum(axis=1)
@@ -911,19 +834,16 @@ def buildFeats(texts, variations):
 #temp['cvec_len'] =  (temp_cvec != 0).sum(axis = 1)
 
 
-# In[78]:
 
 
 #tempc = list(temp.columns)
 
 
-# In[79]:
 
 
 #temp_lsa = svd.transform(temp_tfidf)
 
 
-# In[80]:
 
 
 #for i in range(np.shape(temp_lsa)[1]):
@@ -931,65 +851,55 @@ def buildFeats(texts, variations):
 #temp = pd.concat([temp, pd.DataFrame(temp_lsa, index=temp.index)], axis=1)
 
 
-# In[81]:
 
 
 #type(temp_lsa)
 
 
-# In[82]:
 
 
 #plt.plot(temp_lsa)
 #plt.show()
 
 
-# In[83]:
 
 
 #temp.head()
 
 
-# In[84]:
 
 
 trainDF, trainCol = buildFeats(trainText2, train_variants_df)
 testDF, testCol = buildFeats(testText2, test_variants_df)
 
 
-# In[85]:
 
 
 testDF.head()
 
 
-# In[86]:
 
 
 type(trainCol)
 
 
-# In[87]:
 
 
 trainDF.columns = trainCol
 testDF.columns = testCol
 
 
-# In[88]:
 
 
 trainDF.head()
 
 
-# In[89]:
 
 
 classes = train_variants_df.Class - 1 #python indexing starts from 0
 print('Original:', Counter(train_variants_df.Class), '\n ReHashed: ', Counter(classes))
 
 
-# In[90]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(trainDF.drop(['ID','Class'],                                                                 axis=1),
@@ -999,7 +909,6 @@ X_train, X_test, y_train, y_test = train_test_split(trainDF.drop(['ID','Class'],
 print(np.shape(X_train))
 
 
-# In[91]:
 
 
 print('Format a Train and Test Set for LGB')
@@ -1009,7 +918,6 @@ d_val = lgb.Dataset(X_test, label=y_test)
 gc.collect()
 
 
-# In[92]:
 
 
 parms = {'task': 'train',
@@ -1033,62 +941,52 @@ mod = lgb.train(parms, train_set=d_train, num_boost_round=rnds,
                early_stopping_rounds=20)
 
 
-# In[93]:
 
 
 lgb.plot_importance(mod, max_num_features=30, figsize=(14,10))
 
 
-# In[94]:
 
 
 pred = mod.predict(testDF.drop(['ID'],axis=1))
 
 
-# In[95]:
 
 
 mod.best_score
 
 
-# In[96]:
 
 
 mod.best_iteration
 
 
-# In[97]:
 
 
 sub = pd.DataFrame(pred, index=testDF.index)
 sub.head()
 
 
-# In[98]:
 
 
 sub.shape
 
 
-# In[99]:
 
 
 #sub.to_csv('submission.csv', index=False)
 
 
-# In[100]:
 
 
 sub['ID'] = sub.index
 
 
-# In[101]:
 
 
 cols = sub.columns.tolist()
 
 
-# In[102]:
 
 
 cols = cols[-1:] + cols[:-1]
@@ -1096,25 +994,21 @@ cols
 sub = sub[cols]
 
 
-# In[103]:
 
 
 sub.columns = ['ID', 'class1', 'class2', 'class3', 'class4','class5','class6','class7','class8','class9']
 
 
-# In[104]:
 
 
 sub.head()
 
 
-# In[105]:
 
 
 sub.to_csv('submission.csv', index=False)
 
 
-# In[106]:
 
 
 

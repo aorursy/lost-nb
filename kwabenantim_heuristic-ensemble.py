@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import random
@@ -41,7 +40,6 @@ for f in range(N_FAMILIES):
         C_COSTS[f, d] = COST_PER_FAMILY[c] + F_COUNTS[f] * COST_PER_MEMBER[c]
 
 
-# In[2]:
 
 
 @njit(fastmath=True)
@@ -106,7 +104,6 @@ def fix_schedule(schedule):
     return schedule
 
 
-# In[3]:
 
 
 model = Solver('SantaLinear', Solver.GLOP_LINEAR_PROGRAMMING)
@@ -166,7 +163,6 @@ score = cost_function(schedule)
 print(sum(score), '|', score)
 
 
-# In[4]:
 
 
 def choice_search(schedule):
@@ -189,7 +185,6 @@ def choice_search(schedule):
     return schedule
 
 
-# In[5]:
 
 
 def min_cost_flow(schedule):
@@ -241,7 +236,6 @@ def min_cost_flow(schedule):
     return schedule
 
 
-# In[6]:
 
 
 def swap_search(schedule):
@@ -274,7 +268,6 @@ def swap_search(schedule):
     return schedule
 
 
-# In[7]:
 
 
 def random_climb(schedule, repeats=100000):
@@ -298,7 +291,6 @@ def random_climb(schedule, repeats=100000):
     return schedule
 
 
-# In[8]:
 
 
 best_score = cost_function(schedule)
@@ -348,7 +340,6 @@ while no_improvement < 5:
     no_improvement = 0 if improved else no_improvement + 1
 
 
-# In[9]:
 
 
 submission = pd.read_csv('/kaggle/input/santa-workshop-tour-2019/sample_submission.csv')

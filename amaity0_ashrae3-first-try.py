@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import sys, warnings, math
@@ -37,7 +35,6 @@ sns.set()
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[3]:
 
 
 with open("../input/ashrae-energy-prediction/train.csv") as f:
@@ -45,7 +42,6 @@ with open("../input/ashrae-energy-prediction/train.csv") as f:
 print(head)
 
 
-# In[4]:
 
 
 #https://hackersandslackers.com/downcast-numerical-columns-python-pandas/
@@ -100,7 +96,6 @@ del train, test, weather_train, weather_test, building_metadata, sample_submissi
 gc.collect()
 
 
-# In[5]:
 
 
 weather_train = pd.read_feather('weather_train.feather')
@@ -111,7 +106,6 @@ print(weather_train.isnull().sum())
 #weather_train.groupby('site_id').apply(lambda group: group.isna().sum())
 
 
-# In[6]:
 
 
 train = pd.read_feather('train.feather')
@@ -127,7 +121,6 @@ print(train.isnull().sum())
 train.tail()
 
 
-# In[7]:
 
 
 #taken from here:https://www.kaggle.com/kaushal2896/ashrae-eda-fe-lightgbm-1-12
@@ -148,14 +141,12 @@ for key in train.loc[:, missing_values > 0.0].keys():
 train.isnull().sum()
 
 
-# In[8]:
 
 
 #Frequency of primary_use
 train.groupby(['primary_use']).agg({'site_id':'nunique'}).rename(columns={'site_id':'N'}) 
 
 
-# In[9]:
 
 
 train['square_feet'].hist(bins=32) #is this is wrong?
@@ -163,21 +154,18 @@ plt.xlabel("square_feet")
 plt.ylabel("Frequency")
 
 
-# In[10]:
 
 
 get_mean = train.groupby(['primary_use']).agg({'meter_reading':'mean'}).rename(columns={'meter_reading':'mr_mean'}) 
 get_mean.sort_values(by='mr_mean')
 
 
-# In[11]:
 
 
 da = (train['timestamp'].iloc[-1] - train['timestamp'].iloc[0])
 print("Number of hours between start and end dates: ", da.total_seconds()/3600 + 1)
 
 
-# In[12]:
 
 
 count_full = train.groupby('building_id')['timestamp'].nunique()
@@ -187,53 +175,45 @@ count_full = count_full[count_full==count_full.max()]
 print(count_full.index)
 
 
-# In[13]:
 
 
 trfull = train[train['building_id'].isin(count_full.index)]
 trfull.head()
 
 
-# In[14]:
 
 
 del train
 gc.collect()
 
 
-# In[15]:
 
 
 num_date = trfull[trfull['building_id']==0].groupby(trfull['timestamp'].dt.floor('d')).count()
 num_date.tail()
 
 
-# In[16]:
 
 
 num_date['timestamp'].value_counts()
 
 
-# In[17]:
 
 
 trfull.groupby('site_id').apply(lambda x: x['meter'].nunique())
 
 
-# In[18]:
 
 
 trfull.groupby('site_id').apply(lambda x: x['building_id'].nunique())
 
 
-# In[19]:
 
 
 #sns.set(rc={"lines.linewidth": 0.5})
 trfull[((trfull['site_id']==3) & (trfull['meter']==0))]              .plot(x='timestamp',y='meter_reading',figsize=(12,6))
 
 
-# In[20]:
 
 
 site14 = trfull[trfull['site_id']==14]
@@ -245,7 +225,6 @@ for i in range(4):
 plt.tight_layout()
 
 
-# In[21]:
 
 
 fig, axes = plt.subplots(4,1,figsize=(14, 18))
@@ -256,19 +235,16 @@ for i in range(4):
 plt.tight_layout()
 
 
-# In[22]:
 
 
 trfull = trfull[~((trfull['meter'] == 2) & (trfull['building_id'] == 1099))]
 
 
-# In[23]:
 
 
 trfull = trfull.query('not (building_id <= 104 & meter == 0 & timestamp <= "2016-05-20")')
 
 
-# In[24]:
 
 
 fig, axes = plt.subplots(4,1,figsize=(14, 18))
@@ -278,7 +254,6 @@ for i in range(4):
 plt.tight_layout()
 
 
-# In[25]:
 
 
 from sklearn.preprocessing import LabelEncoder
@@ -299,7 +274,6 @@ def getFrames(dftrn, dftst, idx):
     return dftrn[cols], dftrn['meter_reading'], dftst[cols], dftst['index1']
 
 
-# In[26]:
 
 
 #error metrics
@@ -334,7 +308,6 @@ from sklearn.model_selection import TimeSeriesSplit, cross_val_score
 tscv = TimeSeriesSplit(n_splits=5)
 
 
-# In[27]:
 
 
 weather_test = pd.read_feather('weather_test.feather')
@@ -344,14 +317,12 @@ weather_test = weather_test.groupby('site_id')                            .apply
 weather_test.groupby('site_id').apply(lambda group: group.isna().sum())
 
 
-# In[28]:
 
 
 print(weather_test.isnull().sum())
 weather_test.tail()
 
 
-# In[29]:
 
 
 test = pd.read_feather('test.feather')
@@ -366,7 +337,6 @@ print(test.isnull().sum())
 test.tail()
 
 
-# In[30]:
 
 
 missing_values = (100-test.count() / len(test) * 100).sort_values(ascending=False)
@@ -382,7 +352,6 @@ for key in test.loc[:, missing_values > 0.0].keys():
 test.isnull().sum()
 
 
-# In[31]:
 
 
 for i in range(4):
@@ -391,7 +360,6 @@ for i in range(4):
     print("Meter-{0:d} Loss: {1:.3f} (+/- {2:.3f})".format(i, scores.mean(), scores.std()))
 
 
-# In[32]:
 
 
 from sklearn.model_selection import GridSearchCV
@@ -415,7 +383,6 @@ for i in range(4):
     predict_list.append(np.vstack((ref.values,yp)))
 
 
-# In[33]:
 
 
 p = np.hstack(predict_list)
@@ -432,7 +399,6 @@ sub.tail()
 #print([item for item, count in Counter(p).items() if count > 1])
 
 
-# In[34]:
 
 
 sub.to_csv('submission.csv',index=False, float_format='%.4f')

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os 
@@ -19,7 +18,6 @@ import pandas as pd
 import glob 
 
 
-# In[2]:
 
 
 DATA_DIR = '/kaggle/input'
@@ -30,7 +28,6 @@ ROOT_DIR = '/kaggle/working'
 print(ROOT_DIR)
 
 
-# In[3]:
 
 
 get_ipython().system('git clone https://www.github.com/matterport/Mask_RCNN.git')
@@ -38,7 +35,6 @@ os.chdir('Mask_RCNN')
 #!python setup.py -q install
 
 
-# In[4]:
 
 
 # Import Mask RCNN
@@ -50,14 +46,12 @@ from mrcnn import visualize
 from mrcnn.model import log
 
 
-# In[5]:
 
 
 train_dicom_dir = os.path.join(DATA_DIR, 'stage_2_train_images')
 test_dicom_dir = os.path.join(DATA_DIR, 'stage_2_test_images')
 
 
-# In[6]:
 
 
 def get_dicom_fps(dicom_dir):
@@ -73,7 +67,6 @@ def parse_dataset(dicom_dir, anns):
     return image_fps, image_annotations 
 
 
-# In[7]:
 
 
 # The following parameters have been selected to reduce running time for demonstration purposes 
@@ -111,7 +104,6 @@ config = DetectorConfig()
 config.display()
 
 
-# In[8]:
 
 
 class DetectorDataset(utils.Dataset):
@@ -167,7 +159,6 @@ class DetectorDataset(utils.Dataset):
         return mask.astype(np.bool), class_ids.astype(np.int32)
 
 
-# In[9]:
 
 
 # training dataset
@@ -175,34 +166,29 @@ anns = pd.read_csv(os.path.join(DATA_DIR, 'stage_2_train_labels.csv'))
 anns.head()
 
 
-# In[10]:
 
 
 image_fps, image_annotations = parse_dataset(train_dicom_dir, anns=anns)
 
 
-# In[11]:
 
 
 ds = pydicom.read_file(image_fps[0]) # read dicom image from filepath 
 image = ds.pixel_array # get image array
 
 
-# In[12]:
 
 
 # show dicom fields 
 ds
 
 
-# In[13]:
 
 
 # Original DICOM image size: 1024 x 1024
 ORIG_SIZE = 1024
 
 
-# In[14]:
 
 
 ######################################################################
@@ -226,7 +212,6 @@ image_fps_val = image_fps_list[split_index:]
 print(len(image_fps_train), len(image_fps_val))
 
 
-# In[15]:
 
 
 # prepare the training dataset
@@ -234,7 +219,6 @@ dataset_train = DetectorDataset(image_fps_train, image_annotations, ORIG_SIZE, O
 dataset_train.prepare()
 
 
-# In[16]:
 
 
 # Show annotation(s) for a DICOM image 
@@ -242,7 +226,6 @@ test_fp = random.choice(image_fps_train)
 image_annotations[test_fp]
 
 
-# In[17]:
 
 
 # prepare the validation dataset
@@ -250,7 +233,6 @@ dataset_val = DetectorDataset(image_fps_val, image_annotations, ORIG_SIZE, ORIG_
 dataset_val.prepare()
 
 
-# In[18]:
 
 
 # Load and display random samples and their bounding boxes
@@ -279,13 +261,11 @@ print(image_fp)
 print(class_ids)
 
 
-# In[19]:
 
 
 model = modellib.MaskRCNN(mode='training', config=config, model_dir=ROOT_DIR)
 
 
-# In[20]:
 
 
 # Image augmentation 
@@ -301,7 +281,6 @@ augmentation = iaa.SomeOf((0, 1), [
 ])
 
 
-# In[21]:
 
 
 NUM_EPOCHS = 1
@@ -316,7 +295,6 @@ model.train(dataset_train, dataset_val,
             augmentation=augmentation)
 
 
-# In[22]:
 
 
 # select trained model 
@@ -350,7 +328,6 @@ model_path = sorted(fps)[-1]
 print('Found model {}'.format(model_path))
 
 
-# In[23]:
 
 
 class InferenceConfig(DetectorConfig):
@@ -370,7 +347,6 @@ print("Loading weights from ", model_path)
 model.load_weights(model_path, by_name=True)
 
 
-# In[24]:
 
 
 # set color for class
@@ -382,7 +358,6 @@ def get_colors_for_class_ids(class_ids):
     return colors
 
 
-# In[25]:
 
 
 # Show few example of ground truth vs. predictions on the validation dataset 
@@ -410,14 +385,12 @@ for i in range(4):
                                 colors=get_colors_for_class_ids(r['class_ids']), ax=fig.axes[-1])
 
 
-# In[26]:
 
 
 # Get filenames of test dataset DICOM images
 test_image_fps = get_dicom_fps(test_dicom_dir)
 
 
-# In[27]:
 
 
 # Make predictions on test images, write out sample submission 
@@ -473,7 +446,6 @@ def predict(image_fps, filepath='submission.csv', min_conf=0.95):
         file.write(out_str+"\n")
 
 
-# In[28]:
 
 
 # predict only the first 50 entries
@@ -482,14 +454,12 @@ print(submission_fp)
 predict(test_image_fps, filepath=submission_fp)
 
 
-# In[29]:
 
 
 output = pd.read_csv(submission_fp, names=['patientId', 'PredictionString'])
 output.head(100)
 
 
-# In[30]:
 
 
 ## show submission.csv content
@@ -497,13 +467,11 @@ os.chdir(ROOT_DIR)
 get_ipython().system('cat submission.csv')
 
 
-# In[31]:
 
 
 get_ipython().system('ls')
 
 
-# In[32]:
 
 
 # show a few test image detection example
@@ -548,7 +516,6 @@ def visualize():
 visualize()
 
 
-# In[33]:
 
 
 # remove files to allow committing (hit files limit otherwise)

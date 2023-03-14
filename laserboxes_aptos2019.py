@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from __future__ import absolute_import
@@ -445,7 +444,6 @@ def se_resnext50_32x4d(num_classes=1000, pretrained='imagenet'):
     return model
 
 
-# In[2]:
 
 
 def get_modified_model(model_name='se_resnext50_32x4d', num_outputs=None, pretrained=True, 
@@ -468,7 +466,6 @@ def get_modified_model(model_name='se_resnext50_32x4d', num_outputs=None, pretra
     return model
 
 
-# In[3]:
 
 
 def scale_radius(src, img_size, padding=False):
@@ -530,7 +527,6 @@ class Dataset(torch.utils.data.Dataset):
         return len(self.img_paths)
 
 
-# In[4]:
 
 
 class RAdam(Optimizer):
@@ -678,7 +674,6 @@ def compute_accuracy(y_pred,y_true):
     return metrics.accuracy_score(y_true, y_pred, normalize=True)
 
 
-# In[5]:
 
 
 def my_train(train_loader, model, criterion, optimizer, epoch):
@@ -739,13 +734,11 @@ def my_validate(val_loader, model, criterion):
     return losses.avg, scores.avg, ac_scores.avg
 
 
-# In[6]:
 
 
 os.makedirs('processed', exist_ok=True)
 
 
-# In[7]:
 
 
 pseudo_probs = {}
@@ -776,7 +769,6 @@ test_loader = torch.utils.data.DataLoader(
     num_workers=2)
 
 
-# In[8]:
 
 
 # create model
@@ -808,7 +800,6 @@ torch.cuda.empty_cache()
 get_ipython().system('nvidia-smi')
 
 
-# In[9]:
 
 
 result = np.mean(probs,axis=0)
@@ -816,7 +807,6 @@ result = np.argmax(result,axis=1)
 pseudo_probs['se_resnext50_32x4d'] = result
 
 
-# In[10]:
 
 
 l1_probs = {}
@@ -848,7 +838,6 @@ val_transform = transforms.Compose([
 ])
 
 
-# In[11]:
 
 
 aptos2019_df = pd.read_csv('../input/aptos2019-blindness-detection/train.csv')
@@ -868,7 +857,6 @@ for (train_idx1, val_idx1), (train_idx2, val_idx2) in zip(skf.split(aptos2019_im
     labels.append((np.hstack((aptos2019_labels[train_idx1], test_labels[val_idx2])), aptos2019_labels[val_idx1]))
 
 
-# In[12]:
 
 
 # create model
@@ -954,7 +942,6 @@ torch.cuda.empty_cache()
 get_ipython().system('nvidia-smi')
 
 
-# In[13]:
 
 
 test_df = pd.read_csv('../input/aptos2019-blindness-detection/test.csv')
@@ -1011,7 +998,6 @@ torch.cuda.empty_cache()
 get_ipython().system('nvidia-smi')
 
 
-# In[14]:
 
 
 preds = l1_probs['se_resnext50_32x4d']
@@ -1021,7 +1007,6 @@ test_df['diagnosis'] = preds
 test_df.to_csv('submission.csv', index=False)
 
 
-# In[15]:
 
 
 get_ipython().system('rm processed/*')

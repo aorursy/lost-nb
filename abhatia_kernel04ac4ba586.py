@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -19,7 +18,6 @@ np.random.seed(100)
 LEVEL = 'level_1'
 
 
-# In[2]:
 
 
 class SigmoidNeuron:
@@ -107,7 +105,6 @@ class SigmoidNeuron:
     return np.array(Y_pred)
 
 
-# In[3]:
 
 
 def read_all(folder_path, key_prefix=""):
@@ -127,7 +124,6 @@ def read_all(folder_path, key_prefix=""):
     return images
 
 
-# In[4]:
 
 
 languages = ['ta', 'hi', 'en']
@@ -141,13 +137,11 @@ images_test = read_all("../input/level_2_test/kaggle_level_2", key_prefix='') # 
 print(len(images_test))
 
 
-# In[5]:
 
 
 list(images_test.keys())[:5]
 
 
-# In[6]:
 
 
 X_train = []
@@ -174,7 +168,6 @@ print(X_train.shape, Y_train.shape)
 print(X_test.shape)
 
 
-# In[7]:
 
 
 scaler = StandardScaler()
@@ -182,21 +175,18 @@ X_scaled_train = scaler.fit_transform(X_train)
 X_scaled_test = scaler.transform(X_test)
 
 
-# In[8]:
 
 
 sn_mse = SigmoidNeuron()
 sn_mse.fit(X_scaled_train, Y_train, epochs=100, learning_rate=0.015, loss_fn="mse", display_loss=True)
 
 
-# In[9]:
 
 
 sn_ce = SigmoidNeuron()
 sn_ce.fit(X_scaled_train, Y_train, epochs=350, learning_rate=0.005, loss_fn="ce", display_loss=True)
 
 
-# In[10]:
 
 
 def print_accuracy(sn):
@@ -207,14 +197,12 @@ def print_accuracy(sn):
   print("-"*50)
 
 
-# In[11]:
 
 
 # print_accuracy(sn_mse)
 print_accuracy(sn_ce)
 
 
-# In[12]:
 
 
 Y_pred_test = sn_ce.predict(X_scaled_test)
@@ -230,25 +218,21 @@ submission = submission.sort_values(['ImageId'])
 submission.to_csv("submisision.csv", index=False)
 
 
-# In[ ]:
 
 
 y_prev = Y_pred_binarised_test
 
 
-# In[ ]:
 
 
 print accuracy_score(y_prev, Y_pred_binarised_test)
 
 
-# In[ ]:
 
 
 print(y_prev[:15],Y_pred_binarised_test[:15])
 
 
-# In[ ]:
 
 
 

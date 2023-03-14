@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import copy
@@ -24,7 +23,6 @@ from tqdm.notebook import trange
 from time import time
 
 
-# In[2]:
 
 
 root_dir = Path('/kaggle/input/osic-pulmonary-fibrosis-progression')
@@ -39,7 +37,6 @@ model_name ='descartes'
 tensorboard_dir = Path('/kaggle/working/runs')
 
 
-# In[3]:
 
 
 class ClinicalDataset(Dataset):
@@ -130,7 +127,6 @@ class ClinicalDataset(Dataset):
         return train, val
 
 
-# In[4]:
 
 
 class QuantModel(nn.Module):
@@ -158,7 +154,6 @@ def quantile_loss(preds, target, quantiles):
     return loss
 
 
-# In[5]:
 
 
 # Helper class that monitors training
@@ -239,7 +234,6 @@ class Monitor:
         return -np.sqrt(2) * delta / sigma - torch.log(np.sqrt(2) * sigma)
 
 
-# In[6]:
 
 
 models = []
@@ -324,7 +318,6 @@ for fold, (trainset, valset) in enumerate(folds):
 print(f'Training complete! Time: {timedelta(seconds=time() - t0)}')
 
 
-# In[7]:
 
 
 data = ClinicalDataset(root_dir, mode='test')
@@ -352,14 +345,12 @@ df = df.drop(columns=list(quantiles))
 df.to_csv('submission.csv', index=False)
 
 
-# In[8]:
 
 
 print(len(df))
 df.head()
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -33,7 +32,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 # Memory reduction helper function:
@@ -66,7 +64,6 @@ def reduce_mem_usage(df, verbose=True):
     return df
 
 
-# In[3]:
 
 
 data_pass = '/kaggle/input/m5-forecasting-accuracy/'
@@ -83,25 +80,21 @@ sales_prices= pd.read_csv(data_pass+'sell_prices.csv')
 sales_prices = reduce_mem_usage(sales_prices)
 
 
-# In[4]:
 
 
 sales_train_validation.head()
 
 
-# In[5]:
 
 
 sales_prices.head()
 
 
-# In[6]:
 
 
 calendar.head()
 
 
-# In[7]:
 
 
 item_sold=sales_prices.groupby('item_id').count()
@@ -110,7 +103,6 @@ item_sold['category']=item_sold['item_id'].apply(lambda x:re.findall("[a-zA-Z]+"
 item_sold.groupby('category')['item_sold'].count().plot(kind='bar')
 
 
-# In[8]:
 
 
 overall_pattern_sales=sales_prices.groupby('wm_yr_wk').count()
@@ -118,7 +110,6 @@ overall_pattern_sales=overall_pattern_sales.reset_index().rename(columns={'wm_yr
 sns.lineplot(x="Time", y="Sales", data=overall_pattern_sales)
 
 
-# In[9]:
 
 
 revenue_per_item=sales_prices.groupby('item_id')['sell_price'].agg({'Price':np.mean})
@@ -129,20 +120,17 @@ revenue_per_item['category']=revenue_per_item['item_id'].apply(lambda x:re.finda
 revenue_per_item.groupby('category')['revene'].sum().plot(kind='bar')
 
 
-# In[10]:
 
 
 sales_count_d=sales_train_validation.drop(['id','dept_id','cat_id','store_id','state_id'],1).groupby('item_id').sum().T
 sales_count_d.head()
 
 
-# In[11]:
 
 
 sales_unit_dates=sales_count_d.merge(calendar.set_index('d'),left_index=True,right_index=True,how='inner')
 
 
-# In[12]:
 
 
 import random
@@ -175,43 +163,36 @@ def random_product_plot():
         ax.grid(True)
 
 
-# In[13]:
 
 
 random_product_plot()
 
 
-# In[14]:
 
 
 random_product_plot()
 
 
-# In[15]:
 
 
 random_product_plot()
 
 
-# In[16]:
 
 
 states_sales=sales_train_validation.drop(['id','dept_id','cat_id','store_id','item_id'],1).groupby('state_id').sum().T
 
 
-# In[17]:
 
 
 states_sales=states_sales.merge(calendar.set_index('d'),left_index=True,right_index=True,how='inner')
 
 
-# In[18]:
 
 
 states_sales.head()
 
 
-# In[19]:
 
 
 def state_sales_plot():
@@ -244,27 +225,23 @@ def state_sales_plot():
         
 
 
-# In[20]:
 
 
 state_sales_plot()
 
 
-# In[21]:
 
 
 mean_prices=sales_prices.groupby('item_id')['sell_price'].mean()
 mean_prices.head()
 
 
-# In[22]:
 
 
 revene_data_product=sales_unit_dates.drop(sales_unit_dates.columns.tolist()[3049:],1).T.merge(mean_prices,right_index=True,left_index=True
                                                                          ,how='inner')
 
 
-# In[23]:
 
 
 columns_d_list=revene_data_product.columns.tolist()
@@ -272,13 +249,11 @@ for column_index in range(len(columns_d_list)-1):
     revene_data_product['{}'.format(columns_d_list[column_index])]=revene_data_product['sell_price']*revene_data_product[columns_d_list[column_index]]
 
 
-# In[24]:
 
 
 revene_data_product.head()
 
 
-# In[25]:
 
 
 columns=revene_data_product.T.columns.tolist()
@@ -286,13 +261,11 @@ columns.append('date')
 revene_data_product=revene_data_product.drop('sell_price',1).T.merge(calendar.set_index('d'),right_index=True,left_index=True,how='inner')[columns]
 
 
-# In[26]:
 
 
 revene_data_product.head()
 
 
-# In[27]:
 
 
 def random_product_revenue_plot():
@@ -324,25 +297,21 @@ def random_product_revenue_plot():
         ax.grid(True)
 
 
-# In[28]:
 
 
 random_product_revenue_plot()
 
 
-# In[29]:
 
 
 random_product_revenue_plot()
 
 
-# In[30]:
 
 
 random_product_revenue_plot()
 
 
-# In[31]:
 
 
 #Create date index
@@ -363,7 +332,6 @@ DF_Sales.index = pd.to_datetime(DF_Sales.index)
 DF_Sales.head()
 
 
-# In[32]:
 
 
 series=np.array(DF_Sales.loc[:,'FOODS_3_825_WI_3'].values.tolist())
@@ -371,13 +339,11 @@ time=np.array(DF_Sales.index.tolist())
 series.shape
 
 
-# In[33]:
 
 
 sns.distplot(series, kde=False, rug=True);
 
 
-# In[34]:
 
 
 split_time=1850
@@ -401,7 +367,6 @@ def windowed_dataset(series, window_size, batch_size, shuffle_buffer):
     return ds.batch(batch_size).prefetch(1)
 
 
-# In[35]:
 
 
 tf.keras.backend.clear_session()
@@ -435,7 +400,6 @@ model.compile(loss=tf.keras.losses.Huber(),
 history = model.fit(train_set, epochs=100, callbacks=[lr_schedule]) 
 
 
-# In[36]:
 
 
 def model_forecast(model, series, window_size):
@@ -447,7 +411,6 @@ def model_forecast(model, series, window_size):
     return forecast
 
 
-# In[37]:
 
 
 rnn_forecast = model_forecast(model, series[..., np.newaxis], window_size)
@@ -455,7 +418,6 @@ rnn_forecast = rnn_forecast[:, -1, 0]
 rnn_forecast.shape
 
 
-# In[38]:
 
 
 rnn_forecast_valid = model_forecast(model, series[..., np.newaxis], window_size)
@@ -463,14 +425,12 @@ rnn_forecast_valid = rnn_forecast_valid[split_time - window_size:-1, -1, 0]
 tf.keras.metrics.mean_absolute_error(x_valid, rnn_forecast_valid).numpy()
 
 
-# In[39]:
 
 
 dates=dates_list[window_size-1:]
 orginal_sales=series[window_size-1:]
 
 
-# In[40]:
 
 
 figure=plt.figure(figsize=(20,20))
@@ -493,13 +453,11 @@ plt.legend()
 ax.set_title('Real Vs Predicted Sales Over Time')
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

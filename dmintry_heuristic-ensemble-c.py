@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # https://www.kaggle.com/vipito/santa-ip
@@ -10,7 +9,6 @@
 # https://www.kaggle.com/inversion/santa-s-2019-starter-notebook
 
 
-# In[2]:
 
 
 import random
@@ -50,7 +48,6 @@ for f in range(N_FAMILIES):
         C_COSTS[f, d] = COST_PER_FAMILY[c] + F_COUNTS[f] * COST_PER_MEMBER[c]
 
 
-# In[3]:
 
 
 @njit(fastmath=True)
@@ -115,7 +112,6 @@ def fix_schedule(schedule):
     return schedule
 
 
-# In[4]:
 
 
 model = Solver('SantaLinear', Solver.GLOP_LINEAR_PROGRAMMING)
@@ -175,7 +171,6 @@ score = cost_function(schedule)
 print(sum(score), '|', score)
 
 
-# In[5]:
 
 
 def choice_search(schedule):
@@ -198,7 +193,6 @@ def choice_search(schedule):
     return schedule
 
 
-# In[6]:
 
 
 def min_cost_flow(schedule):
@@ -250,7 +244,6 @@ def min_cost_flow(schedule):
     return schedule
 
 
-# In[7]:
 
 
 def swap_search(schedule):
@@ -283,7 +276,6 @@ def swap_search(schedule):
     return schedule
 
 
-# In[8]:
 
 
 def random_climb(schedule, repeats=100000):
@@ -307,7 +299,6 @@ def random_climb(schedule, repeats=100000):
     return schedule
 
 
-# In[9]:
 
 
 best_score = cost_function(schedule)
@@ -357,7 +348,6 @@ while no_improvement < 5:
     no_improvement = 0 if improved else no_improvement + 1
 
 
-# In[10]:
 
 
 submission = pd.read_csv('/kaggle/input/santa-workshop-tour-2019/sample_submission.csv')
@@ -365,44 +355,37 @@ submission['assigned_day'] = schedule + 1
 submission.to_csv('submission.csv', index=False)
 
 
-# In[ ]:
 
 
 
 
 
-# In[11]:
 
 
 #https://www.kaggle.com/golubev/c-stochastic-product-search-65ns
 #https://www.kaggle.com/hengzheng/santa-s-seed-seeker
 
 
-# In[12]:
 
 
 get_ipython().run_cell_magic('writefile', 'main.cpp', '#include <array>\n#include <cassert>\n#include <algorithm>\n#include <cmath>\n#include <fstream>\n#include <iostream>\n#include <vector>\n#include <thread>\n#include <atomic>\n#include <random>\n#include <string.h>\nusing namespace std;\n#include <chrono>\nusing namespace std::chrono;\n\nconstexpr array<uint8_t, 21> DISTRIBUTION{2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5};\n// {2, 5} it\'s mean the first random family will brute force for choices 1-2 and the second random family will brute force for choices 1-5\n\nconstexpr int MAX_OCCUPANCY = 300;\nconstexpr int MIN_OCCUPANCY = 125;\nconstexpr int BEST_N = 10;\narray<uint8_t, 5000> n_people;\narray<array<uint8_t, 10>, 5000> choices;\narray<array<uint16_t, 10>, 5000> PCOSTM;\narray<array<double, 176>, 176> ACOSTM;\n\nstatic std::atomic<bool> flag(false);\nstatic array<uint8_t, 5000> global_assigned_days = {};\n\nauto START_TIME = high_resolution_clock::now();\nint END_TIME = 515; //475\n\nint N_JOBS = 4;\n\nstruct Index {\n    Index(array<uint8_t, 5000> assigned_days_) : assigned_days(assigned_days_)  {\n        setup();\n    }\n    array<uint8_t, 5000> assigned_days;\n    array<uint16_t, 100> daily_occupancy_{};\n    int preference_cost_ = 0;\n    void setup() {\n        preference_cost_ = 0;\n        daily_occupancy_.fill(0);\n        for (int j = 0; j < assigned_days.size(); ++j) {\n            daily_occupancy_[choices[j][assigned_days[j]]] += n_people[j];\n            preference_cost_ += PCOSTM[j][assigned_days[j]];\n        }\n    }\n    double calc(const array<uint16_t, 5000>& indices, const array<uint8_t, DISTRIBUTION.size()>& change) {\n        double accounting_penalty = 0.0;\n        auto daily_occupancy = daily_occupancy_;\n        int preference_cost = preference_cost_;\n        for (int i = 0; i < DISTRIBUTION.size(); ++i) {\n            int j = indices[i];\n            daily_occupancy[choices[j][assigned_days[j]]] -= n_people[j];\n            daily_occupancy[choices[j][       change[i]]] += n_people[j];\n\n            preference_cost += PCOSTM[j][change[i]] - PCOSTM[j][assigned_days[j]];\n        }\n\n        for (auto occupancy : daily_occupancy)\n            if (occupancy < MIN_OCCUPANCY)\n                return 1e12 * (MIN_OCCUPANCY - occupancy);\n            else if (occupancy > MAX_OCCUPANCY)\n                return 1e12 * (occupancy - MAX_OCCUPANCY);\n\n        for (int day = 0; day < 99; ++day)\n            accounting_penalty += ACOSTM[daily_occupancy[day] - 125][daily_occupancy[day + 1] - 125];\n\n        accounting_penalty += ACOSTM[daily_occupancy[99] - 125][daily_occupancy[99] - 125];\n        return preference_cost + accounting_penalty;\n    }\n    void reindex(const array<uint16_t, DISTRIBUTION.size()>& indices, const array<uint8_t, DISTRIBUTION.size()>& change) {\n        for (int i = 0; i < DISTRIBUTION.size(); ++i) {\n            assigned_days[indices[i]] = change[i];\n        }\n        setup();\n    }\n};\n\n\nvoid init_data() {\n    ifstream in("/kaggle/input/santa-workshop-tour-2019/family_data.csv");\n\n    assert(in && "family_data.csv");\n    string header;\n    int n, x;\n    char comma;\n    getline(in, header);\n    for (int j = 0; j < choices.size(); ++j) {\n        in >> x >> comma;\n        for (int i = 0; i < 10; ++i) {\n            in >> x >> comma;\n            choices[j][i] = x - 1;\n        }\n        in >> n;\n        n_people[j] = n;\n    }\n    array<int, 10> pc{0, 50, 50, 100, 200, 200, 300, 300, 400, 500};\n    array<int, 10> pn{0,  0,  9,   9,   9,  18,  18,  36,  36, 235};\n    for (int j = 0; j < PCOSTM.size(); ++j)\n        for (int i = 0; i < 10; ++i)\n            PCOSTM[j][i] = pc[i] + pn[i] * n_people[j];\n\n    for (int i = 0; i < 176; ++i)\n        for (int j = 0; j < 176; ++j)\n            ACOSTM[i][j] = i * pow(i + 125, 0.5 + abs(i - j) / 50.0) / 400.0;\n}\narray<uint8_t, 5000> read_submission(string filename) {\n    ifstream in(filename);\n    assert(in && "submission.csv");\n    array<uint8_t, 5000> assigned_day{};\n    string header;\n    int id, x;\n    char comma;\n    getline(in, header);\n    for (int j = 0; j < choices.size(); ++j) {\n        in >> id >> comma >> x;\n        assigned_day[j] = x - 1;\n        auto it = find(begin(choices[j]), end(choices[j]), assigned_day[j]);\n        if (it != end(choices[j]))\n            assigned_day[j] = distance(begin(choices[j]), it);\n    }\n    return assigned_day;\n}\n\n\ndouble calc(const array<uint8_t, 5000>& assigned_days, bool print = false) {\n    int preference_cost = 0;\n    double accounting_penalty = 0.0;\n    array<uint16_t, 100> daily_occupancy{};\n    for (int j = 0; j < assigned_days.size(); ++j) {\n        preference_cost += PCOSTM[j][assigned_days[j]];\n        daily_occupancy[choices[j][assigned_days[j]]] += n_people[j];\n    }\n    for (auto occupancy : daily_occupancy)\n        if (occupancy < MIN_OCCUPANCY)\n            return 1e12 * (MIN_OCCUPANCY - occupancy);\n        else if (occupancy > MAX_OCCUPANCY)\n            return 1e12 * (occupancy - MAX_OCCUPANCY);\n\n    for (int day = 0; day < 99; ++day)\n        accounting_penalty += ACOSTM[daily_occupancy[day] - 125][daily_occupancy[day + 1] - 125];\n\n    accounting_penalty += ACOSTM[daily_occupancy[99] - 125][daily_occupancy[99] - 125];\n    if (print) {\n        cout << preference_cost << " " << accounting_penalty << " " << preference_cost + accounting_penalty << endl;\n    }\n    return preference_cost + accounting_penalty;\n}\n\nbool time_exit_fn(){\n    return duration_cast<minutes>(high_resolution_clock::now()-START_TIME).count() < END_TIME;\n}\n\nconst vector<array<uint8_t, DISTRIBUTION.size()>> changes = []() {\n    vector<array<uint8_t, DISTRIBUTION.size()>> arr;\n    array<uint8_t, DISTRIBUTION.size()> tmp{};\n    \n    for (int i = 0; true; ++i) {\n        arr.push_back(tmp);\n\n        tmp[0] += 1;\n        for (int j = 0; j < DISTRIBUTION.size(); ++j)\n            if (tmp[j] >= DISTRIBUTION[j]) {\n                if (j >= DISTRIBUTION.size() - 1)\n                    return arr;\n                tmp[j] = 0;\n                ++tmp[j + 1];\n            }\n    }\n    return arr;\n}();\n\n\nvoid stochastic_product_search(array<uint8_t, 5000> assigned_days, double best_local_score) { // 15\'360\'000it/s  65ns/it  0.065µs/it\n    Index index(assigned_days);\n    thread_local std::mt19937 gen(std::random_device{}());\n    uniform_int_distribution<> dis(0, 4999);\n    array<uint16_t, 5000> indices;\n    iota(begin(indices), end(indices), 0);\n    array<uint16_t, DISTRIBUTION.size()> best_indices{};\n    array<uint8_t, DISTRIBUTION.size()> best_change{};\n    for (;time_exit_fn();) {\n        bool found_better = false;\n\n        for (int k = 0; k < BEST_N; ++k) {\n            for (int i = 0; i < DISTRIBUTION.size(); ++i) //random swap\n                swap(indices[i], indices[dis(gen)]);\n\n            for (const auto& change : changes) {\n                auto score = index.calc(indices, change);\n                if (score < best_local_score) {\n                    found_better = true;\n                    best_local_score = score;\n                    best_change = change;\n                    copy_n(begin(indices), DISTRIBUTION.size(), begin(best_indices));\n                }\n            }\n        }\n\n        if (flag.load() == true) {\n            return;\n        }\n\n        if (found_better && flag.load() == false) { // reindex from N best if found better\n            flag = true;\n\n            index.reindex(best_indices, best_change);\n            global_assigned_days = index.assigned_days;\n            return;\n        }\n    }\n}\n\n\n\narray<uint16_t, 5000> sort_indexes(const array<uint8_t, 5000> v) {\n\n    // initialize original index locations\n    array<uint16_t, 5000> idx;\n    iota(idx.begin(), idx.end(), 0);\n\n    // sort indexes based on comparing values in v\n    sort(idx.begin(), idx.end(),\n    [v](size_t i1, size_t i2) {return v[i1] > v[i2];});\n\n    return idx;\n}\n\n\nvoid seed_finding(array<uint8_t, 5000> assigned_days, double best_local_score, int order) { // 15\'360\'000it/s  65ns/it  0.065µs/it\n    thread_local std::mt19937 gen(std::random_device{}());\n    uniform_real_distribution<> dis(0.0, 1.0);\n\n    auto original_score = best_local_score;\n\n    auto indices = sort_indexes(n_people); // sort by descending\n\n    if (order == 0) { // sort by ascending\n        reverse(begin(indices), end(indices));\n    }\n\n    for (;time_exit_fn();) {\n        auto local_assigned_days = assigned_days;\n\n        if (order == 1) { // sort by random\n            unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();\n            shuffle (indices.begin(), indices.end(), std::default_random_engine(seed));\n        }\n\n        for (int t = 0; t < 700; t++) {\n            for (auto& i : indices) {\n                for (int j = 0; j < 10; j++) {\n                    auto di = local_assigned_days[i];\n                    local_assigned_days[i] = j;\n                    auto cur_score = calc(local_assigned_days, false);\n\n                    double KT = 1;\n                    if (t < 5) {\n                        KT = 1.5;\n                    }\n                    else if ( t < 10) {\n                        KT = 4.5;\n                    }\n                    else {\n                        if (cur_score > best_local_score + 100) {\n                            KT = 3;\n                        }\n                        else if (cur_score > best_local_score + 50) {\n                            KT = 2.75;\n                        }\n                        else if (cur_score > best_local_score + 20) {\n                            KT = 2.5;\n                        }\n                        else if (cur_score > best_local_score + 10) {\n                            KT = 2;\n                        }\n                        else if (cur_score > best_local_score) {\n                            KT = 1.5;\n                        }\n                        else {\n                            KT = 1;\n                        }\n                    }\n\n                    if (cur_score <= best_local_score) {\n                        best_local_score = cur_score;\n                    }\n                    else {\n                        auto prob = exp(-(cur_score - best_local_score) / KT);\n                        if (dis(gen) < prob) {\n                            best_local_score = cur_score;\n                        }\n                        else {\n                            local_assigned_days[i] = di;\n                        }\n                    }\n                }\n            }\n\n            if (flag.load() == true) {\n                return;\n            }\n\n            if (best_local_score < original_score && flag.load() == false) {\n                flag = true;\n\n                global_assigned_days = local_assigned_days;\n\n                return;\n\n            }\n        }\n\n        if (best_local_score <= original_score && flag.load() == false) {\n            flag = true;\n\n            global_assigned_days = local_assigned_days;\n\n            return;\n        }\n    }\n}\n\nvoid save_sub(const array<uint8_t, 5000>& assigned_day) {\n    ofstream out("submission.csv");\n    out << "family_id,assigned_day" << endl;\n    for (int i = 0; i < assigned_day.size(); ++i)\n        out << i << "," << choices[i][assigned_day[i]] + 1 << endl;\n}\n\n\nint main() {\n    init_data();\n    auto assigned_days = read_submission("submission.csv");\n\n    double best_score = calc(assigned_days, true);\n\n    for (;time_exit_fn();) {\n\n        std::thread threads[N_JOBS];\n        for (int i = 0; i < N_JOBS; i++) {\n            //threads[i] = std::thread(stochastic_product_search, assigned_days, best_score);\n\n            if (i < 2) {\n                threads[i] = std::thread(stochastic_product_search, assigned_days, best_score);\n            }\n            else {\n                int order = i % 3;\n                threads[i] = std::thread(seed_finding, assigned_days, best_score, order);\n            }\n\n            //int order = i % 3;\n            //threads[i] = std::thread(seed_finding, assigned_days, best_score, order);\n        }\n        for (int i = 0; i < N_JOBS; i++) {\n            threads[i].join();\n        }\n\n        // global_assigned_days return from threads\n        best_score = calc(global_assigned_days, true);\n        save_sub(global_assigned_days);\n\n        flag = false;\n        assigned_days = global_assigned_days;\n    }\n\n\n    return 0;\n}')
 
 
-# In[13]:
 
 
 get_ipython().system('g++ -pthread -lpthread -O3 -std=c++17 -o main main.cpp')
 
 
-# In[14]:
 
 
 get_ipython().system('./main')
 
 
-# In[15]:
 
 
 #https://www.kaggle.com/golubev/mip-optimization-preference-cost
 
 
-# In[16]:
 
 
 # import numpy as np
@@ -505,7 +488,6 @@ get_ipython().system('./main')
 #     return penalty, accounting_cost, penalty + accounting_cost
 
 
-# In[17]:
 
 
 # %%time
@@ -541,14 +523,12 @@ get_ipython().system('./main')
 #     print(cost_function(assigned_days))
 
 
-# In[18]:
 
 
 # submission['assigned_day'] = assigned_days
 # submission.to_csv('submission.csv', index=False)
 
 
-# In[19]:
 
 
 from ortools.linear_solver import pywraplp
@@ -651,7 +631,6 @@ def cost_function(prediction):
     return penalty, sum(accounting_costs), penalty + sum(accounting_costs)
 
 
-# In[20]:
 
 
 from ortools.linear_solver import pywraplp

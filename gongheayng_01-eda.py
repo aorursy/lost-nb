@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np
@@ -10,33 +9,28 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[ ]:
 
 
 x = 2
 f'{x} is a number'
 
 
-# In[ ]:
 
 
 x = 2
 '{} is a number'.format(x)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 tmp = pd.read_csv('../input/train.csv', nrows=2)
@@ -44,19 +38,16 @@ print(tmp.shape)
 tmp
 
 
-# In[ ]:
 
 
 tmp['device']
 
 
-# In[ ]:
 
 
 # json_normalize(tmp['device']) # 此时会报错，因为读入的方式不对
 
 
-# In[ ]:
 
 
 import json
@@ -72,7 +63,6 @@ df = pd.read_csv(csv_path,
                      nrows=nrows)
 
 
-# In[ ]:
 
 
 dc = json_normalize(df['device'])
@@ -80,7 +70,6 @@ dc.columns = [f"{column}.{subcolumn}" for subcolumn in dc.columns]
 dc
 
 
-# In[ ]:
 
 
 import os
@@ -105,7 +94,6 @@ def load_df(csv_path='../input/train.csv', nrows=None):
 print(os.listdir("../input"))
 
 
-# In[ ]:
 
 
 train = load_df(nrows=100000)
@@ -113,31 +101,26 @@ test =load_df('../input/test.csv', nrows=100000)
 train.head()
 
 
-# In[ ]:
 
 
 train.shape
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 train.tail()
 
 
-# In[ ]:
 
 
 np.log1p(0)
 
 
-# In[ ]:
 
 
 train["totals.transactionRevenue"] = train["totals.transactionRevenue"].astype('float')
@@ -150,13 +133,11 @@ plt.ylabel('TransactionRevenue', fontsize=12)
 plt.show()
 
 
-# In[ ]:
 
 
 gdf.describe()
 
 
-# In[ ]:
 
 
 ids = train[["fullVisitorId", "sessionId", "visitId", "visitNumber"]]
@@ -164,13 +145,11 @@ ids.sort_values(by='sessionId')
 ids.isnull().sum()
 
 
-# In[ ]:
 
 
 ids['sessionId'].unique().shape, ids.shape, ids['fullVisitorId'].unique().shape
 
 
-# In[ ]:
 
 
 gong = ids.groupby(by='sessionId')['sessionId'].count()
@@ -180,25 +159,21 @@ gong3 = train.loc[gong2].sort_values(by='sessionId')
 gong3
 
 
-# In[ ]:
 
 
 gong3.columns
 
 
-# In[ ]:
 
 
 gong3['date'].unique().shape[0] == 1
 
 
-# In[ ]:
 
 
 gong3[[c for c in gong3.columns if gong3[c].unique().shape[0] != 1]]
 
 
-# In[ ]:
 
 
 nzi = pd.notnull(train["totals.transactionRevenue"]).sum()
@@ -207,7 +182,6 @@ print("Number of instances in train set with non-zero revenue : ", nzi, " and ra
 print("Number of unique customers with non-zero revenue : ", nzr, "and the ratio is : ", nzr / gdf.shape[0])
 
 
-# In[ ]:
 
 
 print("Number of unique visitors in train set : ",train.fullVisitorId.nunique(), " out of rows : ",train.shape[0])
@@ -215,19 +189,16 @@ print("Number of unique visitors in test set : ",test.fullVisitorId.nunique(), "
 print("Number of common visitors in train and test set : ",len(set(train.fullVisitorId.unique()).intersection(set(test.fullVisitorId.unique())) ))
 
 
-# In[ ]:
 
 
 [c for c in train.columns if train[c].nunique()==1]
 
 
-# In[ ]:
 
 
 train.shape
 
 
-# In[ ]:
 
 
 

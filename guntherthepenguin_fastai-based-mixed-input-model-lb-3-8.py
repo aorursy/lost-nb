@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -11,26 +10,22 @@ from fastai.structured import *
 from fastai.column_data import *
 
 
-# In[ ]:
 
 
 path='../input/'
 
 
-# In[ ]:
 
 
 new_transactions = pd.read_csv(f'{path}new_merchant_transactions.csv')
 new_transactions.head()
 
 
-# In[ ]:
 
 
 new_transactions['authorized_flag'] = new_transactions['authorized_flag']=='Y'
 
 
-# In[ ]:
 
 
 def aggregate_new_transactions(new_trans):    
@@ -59,26 +54,22 @@ new_trans = aggregate_new_transactions(new_transactions)
 new_trans.head()
 
 
-# In[ ]:
 
 
 del new_transactions
 
 
-# In[ ]:
 
 
 historical_transactions = pd.read_csv('../input/historical_transactions.csv')
 historical_transactions.head()
 
 
-# In[ ]:
 
 
 historical_transactions['authorized_flag'] = historical_transactions['authorized_flag']=='Y'
 
 
-# In[ ]:
 
 
 def aggregate_historical_transactions(history):
@@ -111,13 +102,11 @@ history = aggregate_historical_transactions(historical_transactions)
 history.head()
 
 
-# In[ ]:
 
 
 del historical_transactions
 
 
-# In[ ]:
 
 
 def read_data(input_file):
@@ -130,7 +119,6 @@ test = read_data('../input/test.csv')
 target='target'
 
 
-# In[ ]:
 
 
 train = pd.merge(train, history, on='card_id', how='left')
@@ -140,42 +128,36 @@ train = pd.merge(train, new_trans, on='card_id', how='left')
 test = pd.merge(test, new_trans, on='card_id', how='left')
 
 
-# In[ ]:
 
 
 train=train.set_index('card_id')
 test=test.set_index('card_id')
 
 
-# In[ ]:
 
 
 cat_vars = [col  for col in train.columns if('feature' in col or 'first_active_month' in col)]
 contin_vars = [col  for col in train.columns if ('feature' not in col and 'first_active_month' not in col) and target not in col]
 
 
-# In[ ]:
 
 
 train = train[cat_vars+contin_vars+[target]].copy()
 n = len(train); n
 
 
-# In[ ]:
 
 
 test[target] = 0
 test = test[cat_vars+contin_vars+[target]].copy()
 
 
-# In[ ]:
 
 
 for v in cat_vars: train[v] = train[v].astype('category').cat.as_ordered()
 apply_cats(test, train)
 
 
-# In[ ]:
 
 
 for v in contin_vars:
@@ -183,21 +165,18 @@ for v in contin_vars:
     test[v] = test[v].fillna(0).astype('float32')
 
 
-# In[ ]:
 
 
 df, y, nas, mapper = proc_df(train, target, do_scale=True)
 n=len(df);n
 
 
-# In[ ]:
 
 
 df_test, _, nas, mapper = proc_df(test, target, do_scale=True, 
                                   mapper=mapper, na_dict=nas)
 
 
-# In[ ]:
 
 
 train_ratio = 0.75
@@ -206,14 +185,12 @@ train_size = int(n * train_ratio); train_size
 val_idx = list(range(train_size, len(df)))
 
 
-# In[ ]:
 
 
 model_data = ColumnarModelData.from_data_frame('.', val_idx, df, y.astype(np.float32), cat_flds=cat_vars, bs=64,
                                        test_df=df_test)
 
 
-# In[ ]:
 
 
 cat_sz = [(c, len(train[c].cat.categories)+1) for c in cat_vars]
@@ -221,7 +198,6 @@ emb_szs = [(c, min(50, (c+1)//2)) for _,c in cat_sz]
 y_range=(np.min(y),np.max(y))
 
 
-# In[ ]:
 
 
 def rmse(y_pred, targ):
@@ -229,72 +205,61 @@ def rmse(y_pred, targ):
     return math.sqrt(var.mean())
 
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('pinfo2', 'model_data.get_learner')
 
 
-# In[ ]:
 
 
 learn = model_data.get_learner(emb_szs, len(df.columns)-len(cat_vars),
                    0.20, 1, [1000,500], [0.2,0.2], y_range=y_range,metrics=[rmse])
 
 
-# In[ ]:
 
 
 learn.lr_find()
 learn.sched.plot()
 
 
-# In[ ]:
 
 
 learn.fit(1e-3, 1,cycle_len=5,use_clr_beta=(10,10,0.95,0.85))
 learn.sched.plot_loss()
 
 
-# In[ ]:
 
 
 learn.sched.plot_lr()
 
 
-# In[ ]:
 
 
 x,y=learn.predict_with_targs()
 rmse(x,y)
 
 
-# In[ ]:
 
 
 preds=learn.predict(is_test=True)
 
 
-# In[ ]:
 
 
 submission=pd.read_csv(f'{path}/sample_submission.csv',index_col='card_id')
 submission.loc[df_test.index]=preds
 
 
-# In[ ]:
 
 
 submission.to_csv('submission.csv')
 
 
-# In[ ]:
 
 
 get_ipython().system('head submission.csv')
 
 
-# In[ ]:
 
 
 

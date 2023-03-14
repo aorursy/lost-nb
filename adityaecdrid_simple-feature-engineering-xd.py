@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #libraries
@@ -40,7 +39,6 @@ import os
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 #https://www.kaggle.com/theoviel/load-the-totality-of-the-data
@@ -179,14 +177,12 @@ def add_datepart(df, fldname, drop=True, time=False):
     if drop: df.drop(fldname, axis=1, inplace=True)
 
 
-# In[3]:
 
 
 cnt = np.load('../input/malware/ver_updated_defs_count.npy').item()
 max(dict(cnt).values())
 
 
-# In[4]:
 
 
 # IMPORT TIMESTAMP DICTIONARY 
@@ -212,7 +208,6 @@ del final_OS_, final_OS
 gc.collect()
 
 
-# In[5]:
 
 
 all_dates = np.load('../input/malware/all_dates_v2.npy').item()
@@ -220,7 +215,6 @@ months={'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'Jun':6,'Jul':7,'Aug':8,'Sep':9,
 temp = pd.read_csv('../input/microsoft-malware-prediction/train.csv', usecols=['AvSigVersion', 'HasDetections'], dtype={'HasDetections':'uint8','AvSigVersion':'str'})
 
 
-# In[6]:
 
 
 temp['release_dates'] = temp['AvSigVersion'].map(all_dates)
@@ -229,7 +223,6 @@ temp.drop('release_dates', axis=1, inplace=True)
 gc.collect()
 
 
-# In[7]:
 
 
 sig_2018 = np.asarray(list(set(temp[(temp['year'] == '2017') | (temp['year'] == '2018')]['AvSigVersion'].values)))
@@ -238,13 +231,11 @@ gc.collect()
 print(len(sig_2018)) #needs to be improved as we have many in which we couldn't find versions released..
 
 
-# In[8]:
 
 
 get_ipython().run_cell_magic('time', '', "train = pd.read_csv('../input/microsoft-malware-prediction/train.csv', dtype=dtypes, nrows= 1500000)\ntrain.loc[train[train['OsBuildLab'].isnull()]['OsBuildLab'].index, 'OsBuildLab'] = '17134.1.amd64fre.rs4_release.180410-1804'")
 
 
-# In[9]:
 
 
 numerics = ['int8', 'int16', 'int32', 'int64', 'float16', 'float32', 'float64']
@@ -264,7 +255,6 @@ categorical_columns = [c for c in train.columns
                        if (c not in true_numerical_columns) & (c not in binary_variables)]
 
 
-# In[10]:
 
 
 # @cpmp https://www.kaggle.com/c/microsoft-malware-prediction/discussion/76013
@@ -299,7 +289,6 @@ def my_key(item):
 items = dict(sorted(datedict.items(), key=my_key))
 
 
-# In[11]:
 
 
 stats= []
@@ -312,7 +301,6 @@ del stats_df, stats
 gc.collect()
 
 
-# In[12]:
 
 
 good_cols = list(train.columns)
@@ -327,13 +315,11 @@ gc.collect()
 len(good_cols)
 
 
-# In[13]:
 
 
 get_ipython().run_cell_magic('time', '', "test_dtypes = {k: v for k, v in dtypes.items() if k in good_cols}\ntest = pd.read_csv('../input/microsoft-malware-prediction/test.csv', dtype=test_dtypes, usecols=good_cols[:-1])\ndel test_dtypes , good_cols\ntest.loc[6529507, 'OsBuildLab'] = '17134.1.amd64fre.rs4_release.180410-1804' #17134.1*amd64fre.rs4_release.180410-1804\ntest.loc[test[test['OsBuildLab'].isnull()]['OsBuildLab'].index, 'OsBuildLab'] = '17134.1.amd64fre.rs4_release.180410-1804'\ngc.collect()")
 
 
-# In[14]:
 
 
 new_map, cnt = {}, 0
@@ -376,13 +362,11 @@ del first, datedict, datedict2
 gc.collect()
 
 
-# In[15]:
 
 
 train.head()
 
 
-# In[16]:
 
 
 frequency_encoded_variables = [
@@ -397,7 +381,6 @@ frequency_encoded_variables = [
 ]
 
 
-# In[17]:
 
 
 #public kernel (will fix the link)
@@ -424,7 +407,6 @@ test.SmartScreen.replace({"promt":"prompt",
 test.SmartScreen = test.SmartScreen.astype("category")
 
 
-# In[18]:
 
 
 # print('grouping combination...')
@@ -478,7 +460,6 @@ test['fe_avsig_gamer_freq']      = test[['AvSigVersion','Wdft_IsGamer', 'OsBuild
 test['fe_cpucores_region_freq']  = test[['Census_ProcessorCoreCount','Wdft_RegionIdentifier','OsBuild']].groupby(['Census_ProcessorCoreCount','Wdft_RegionIdentifier'])['OsBuild'].transform('count') / test.shape[0]
 
 
-# In[19]:
 
 
 print(gc.collect())
@@ -497,7 +478,6 @@ train['AvSigVersion_build'] = train['AvSigVersion'].apply(lambda x: x.split('.')
 train['AvSigVersion_minor_build'] = train['AvSigVersion'].apply(lambda x: float((x.split('.')[1]) +'.'+(x.split('.')[2]))).astype('float32')
 
 
-# In[20]:
 
 
 test['AvSigVersion'] = test['AvSigVersion'].replace(r'[^\.|0-9]','1.273.1826.0')
@@ -515,7 +495,6 @@ test['AvSigVersion_build'] = test['AvSigVersion'].apply(lambda x: x.split('.')[2
 test['AvSigVersion_minor_build'] = test['AvSigVersion'].apply(lambda x: float((x.split('.')[1]) +'.'+(x.split('.')[2]))).astype('float32')
 
 
-# In[21]:
 
 
 train = reduce_mem_usage(train)
@@ -560,7 +539,6 @@ del top_20
 gc.collect()
 
 
-# In[22]:
 
 
 train = reduce_mem_usage(train)
@@ -595,7 +573,6 @@ train['one_less_AVproductInstalled'] = train['AVProductsInstalled'] - 1
 test['one_less_AVproductInstalled'] = test['AVProductsInstalled'] - 1
 
 
-# In[23]:
 
 
 def frequency_encoding(variable):
@@ -623,7 +600,6 @@ test = reduce_mem_usage(test)
 gc.collect()
 
 
-# In[24]:
 
 
 '''
@@ -660,14 +636,12 @@ gc.collect()
 ''';
 
 
-# In[25]:
 
 
 train['Census_ProcessorModelIdentifier'] = train['Census_ProcessorModelIdentifier'].astype('category')
 test['Census_ProcessorModelIdentifier']  = test['Census_ProcessorModelIdentifier'].astype('category')
 
 
-# In[26]:
 
 
 top_10 = train['Census_TotalPhysicalRAM'].value_counts(dropna=False, normalize=True).cumsum().index[:10]
@@ -676,7 +650,6 @@ test.loc[test['Census_TotalPhysicalRAM'].isin(top_10) == False, 'Census_TotalPhy
 del top_10
 
 
-# In[27]:
 
 
 train['Census_InternalPrimaryDiagonalDisplaySizeInInches'] = train['Census_InternalPrimaryDiagonalDisplaySizeInInches'].astype('category')
@@ -687,14 +660,12 @@ train['Census_InternalPrimaryDisplayResolutionVertical'] = train['Census_Interna
 test['Census_InternalPrimaryDisplayResolutionVertical'] = test['Census_InternalPrimaryDisplayResolutionVertical'].astype('category')
 
 
-# In[28]:
 
 
 train['OsBuild'] = train['OsBuild'].astype('category')
 test['OsBuild'] = test['OsBuild'].astype('category')
 
 
-# In[29]:
 
 
 # https://www.kaggle.com/youhanlee/my-eda-i-want-to-see-all
@@ -710,7 +681,6 @@ train['Census_InternalBatteryType'] = train['Census_InternalBatteryType'].apply(
 test['Census_InternalBatteryType'] = test['Census_InternalBatteryType'].apply(group_battery)
 
 
-# In[30]:
 
 
 def rename_edition(x):
@@ -733,7 +703,6 @@ def rename_edition(x):
         return x
 
 
-# In[31]:
 
 
 train['Census_OSEdition'] = train['Census_OSEdition'].astype(str)
@@ -744,7 +713,6 @@ train['Census_OSEdition'] = train['Census_OSEdition'].astype('category')
 test['Census_OSEdition'] = test['Census_OSEdition'].astype('category')
 
 
-# In[32]:
 
 
 train['Census_OSSkuName'] = train['Census_OSSkuName'].astype(str)
@@ -755,55 +723,47 @@ train['Census_OSSkuName'] = train['Census_OSSkuName'].astype('category')
 test['Census_OSSkuName'] = test['Census_OSSkuName'].astype('category')
 
 
-# In[33]:
 
 
 train['Census_OSInstallLanguageIdentifier'] = train['Census_OSInstallLanguageIdentifier'].astype('category')
 test['Census_OSInstallLanguageIdentifier'] = test['Census_OSInstallLanguageIdentifier'].astype('category')
 
 
-# In[34]:
 
 
 train['Census_OSUILocaleIdentifier'] = train['Census_OSUILocaleIdentifier'].astype('category')
 test['Census_OSUILocaleIdentifier'] = test['Census_OSUILocaleIdentifier'].astype('category')
 
 
-# In[35]:
 
 
 train['OsSuite'] = train['OsSuite'].astype('category')
 test['OsSuite'] = test['OsSuite'].astype('category')
 
 
-# In[36]:
 
 
 train.head()
 
 
-# In[37]:
 
 
 cat_cols = [col for col in train.columns if col not in (['MachineIdentifier', 'Census_SystemVolumeTotalCapacity', 'HasDetections'] + frequency_encoded_variables)  and str(train[col].dtype) == 'category']
 len(cat_cols)
 
 
-# In[38]:
 
 
 print(train.shape, test.shape)
 assert(train.shape[1] == test.shape[1]+1)
 
 
-# In[39]:
 
 
 train = reduce_mem_usage(train, True)
 test  = reduce_mem_usage(test, True)
 
 
-# In[40]:
 
 
 for col in cat_cols:
@@ -814,7 +774,6 @@ for col in cat_cols:
         cat_cols.remove(col)
 
 
-# In[41]:
 
 
 train = reduce_mem_usage(train, True)
@@ -822,13 +781,11 @@ test  = reduce_mem_usage(test, True)
 gc.collect()
 
 
-# In[42]:
 
 
 get_ipython().run_cell_magic('time', '', 'indexer = {}\nfor col in cat_cols:\n    # print(col)\n    _, indexer[col] = pd.factorize(train[col])\n    \nfor col in tqdm(cat_cols):\n    \n    gc.collect()\n    train[col] = indexer[col].get_indexer(train[col])\n    test[col] = indexer[col].get_indexer(test[col])\n    \n    train = reduce_mem_usage(train, False)\n    test  = reduce_mem_usage(test, False)')
 
 
-# In[43]:
 
 
 y = train['HasDetections']
@@ -838,7 +795,6 @@ del cnt, sig_2018, all_dates
 gc.collect()
 
 
-# In[44]:
 
 
 #no neeed though
@@ -846,7 +802,6 @@ train = reduce_mem_usage(train)
 test = reduce_mem_usage(test)
 
 
-# In[45]:
 
 
 n_fold = 3
@@ -854,13 +809,11 @@ folds = StratifiedKFold(n_splits=n_fold, shuffle=True, random_state=17)
 gc.collect()
 
 
-# In[46]:
 
 
 cat_cols.pop(4)
 
 
-# In[47]:
 
 
 def train_model(X=train, X_test=test, y=y, params=None, folds=folds, model_type='lgb', plot_feature_importance=False):
@@ -938,7 +891,6 @@ def train_model(X=train, X_test=test, y=y, params=None, folds=folds, model_type=
         return _, prediction
 
 
-# In[48]:
 
 
 params = {'num_leaves': 40,
@@ -958,13 +910,11 @@ params = {'num_leaves': 40,
          "drop_rate": 0.01}
 
 
-# In[49]:
 
 
 _ , prediction_lgb_1, feats_imp, model_lgb = train_model(params=params, model_type='lgb', plot_feature_importance=True)
 
 
-# In[50]:
 
 
 feats_imp = feats_imp[feats_imp['fold'] == 3]
@@ -973,14 +923,12 @@ feats_imp[['feature','importance','importance_split']].sort_values(by='importanc
 #this makes a lot more sense now (Imp by Gain) (Thanks tp cpmp and satian)
 
 
-# In[51]:
 
 
 import joblib
 joblib.dump(model_lgb, 'model_lgb.model');
 
 
-# In[52]:
 
 
 feats_imp.to_csv('feats_imp_max_depth.csv', index=None)
@@ -992,7 +940,6 @@ del prediction_lgb_1, submission
 gc.collect()
 
 
-# In[53]:
 
 
 train['HasDetections'] = y

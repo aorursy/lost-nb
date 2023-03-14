@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -31,26 +29,22 @@ import warnings
 warnings.simplefilter(action="ignore",category=FutureWarning)
 
 
-# In[3]:
 
 
 train= pd.read_csv("../input/train.csv",dtype={"acoustic_data":np.int16, "time_ro_failure": np.float64},nrows=1500000)
 train.head()
 
 
-# In[4]:
 
 
 train.isna().sum()
 
 
-# In[5]:
 
 
 train.describe()
 
 
-# In[6]:
 
 
 plt.figure(figsize=(8,6))
@@ -58,13 +52,11 @@ plt.title("Distribution of Acoustic data")
 ax= sns.distplot(train.acoustic_data,label="acustic_data")
 
 
-# In[7]:
 
 
 This shows most of the signal data centred around mean value of the signals
 
 
-# In[8]:
 
 
 plt.figure(figsize=(12,8))

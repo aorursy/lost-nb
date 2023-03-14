@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 ###############################################################################
@@ -149,7 +148,6 @@ def get_params(booll, rl = [1], al = [1], cl = [1], hcl = [.5]):
         return r_s, a_s, c_s, hc_s
 
 
-# In[2]:
 
 
 ###############################################################################
@@ -165,7 +163,6 @@ dfp  = pd.read_csv('/kaggle/input/population/' + 'population.csv')
 print(train.shape, dfp.shape)
 
 
-# In[3]:
 
 
 train.loc[train['Province/State'].isnull(), 'Province/State'] = 'NARF'
@@ -200,7 +197,6 @@ test['day_from_jan_first'] = (da.apply(int)
 print('done')
 
 
-# In[4]:
 
 
 test['wg'] = np.NaN
@@ -214,7 +210,6 @@ for country in test['Country/Region'].unique():
 print('done', train.shape)
 
 
-# In[5]:
 
 
 ###############################################################################
@@ -245,7 +240,6 @@ weather_df = twenty_twenty_df[cols_1].join(stations_df[cols_2].set_index('STN'),
 weather_df.tail(10)
 
 
-# In[6]:
 
 
 ###############################################################################
@@ -276,7 +270,6 @@ train.sort_values(by=['Id'], inplace=True)
 train.head()
 
 
-# In[7]:
 
 
 ###############################################################################
@@ -308,7 +301,6 @@ test.sort_values(by=['ForecastId'], inplace=True)
 test.head()
 
 
-# In[8]:
 
 
 ###############################################################################
@@ -322,14 +314,12 @@ test["fog"] = pd.to_numeric(test["fog"])
 print('done')
 
 
-# In[9]:
 
 
 train.loc[train['Province/State']=='NARF', 'Province/State'] = np.NaN
 test.loc[  test['Province/State']=='NARF', 'Province/State'] = np.NaN
 
 
-# In[10]:
 
 
 X_train = train.drop(["ConfirmedCases"], axis=1)
@@ -377,7 +367,6 @@ X_test  = pd.merge( X_test,  dfw, on=['Country/Region', 'Lat', 'Long'], how='lef
 print('done', X_train.shape)
 
 
-# In[11]:
 
 
 #One hot encode the Provice/State and the Country/Region columns
@@ -394,7 +383,6 @@ X_test.drop(['Country/Region'],axis=1, inplace=True)
 print(X_train.shape, X_test.shape)
 
 
-# In[12]:
 
 
 ###############################################################################
@@ -402,14 +390,12 @@ print(X_train.shape, X_test.shape)
 ###############################################################################
 
 
-# In[13]:
 
 
 y_train    = train["Fatalities"]
 y_train_cc = train["ConfirmedCases"]
 
 
-# In[14]:
 
 
 X_TRAIN = X_train.values
@@ -448,13 +434,11 @@ if isTraining:
     print('done', np.mean(acc))# Best run: 168.26412715647604 #30.2019242771957
 
 
-# In[15]:
 
 
 print('done', np.mean(acc))# Best run: 168.26412715647604 #30.2019242771957
 
 
-# In[16]:
 
 
 ## Fit fatalities
@@ -476,7 +460,6 @@ y_hat_xgb_f = model_xgb_f.predict(X_test.drop('wg',axis=1))
 print(np.mean(y_hat_xgb_f))
 
 
-# In[17]:
 
 
 ## Fit confirmed cases
@@ -499,7 +482,6 @@ y_hat_xgb_cc = model_xgb_cc.predict(X_test.drop('wg',axis=1))
 print(np.mean(y_hat_xgb_cc))
 
 
-# In[18]:
 
 
 ###############################################################################
@@ -509,13 +491,11 @@ print(np.mean(y_hat_xgb_cc))
 plot = plot_importance(model_xgb_cc, height=0.9, max_num_features=20)
 
 
-# In[19]:
 
 
 test[test.wg.isnull()].shape
 
 
-# In[20]:
 
 
 test['y_hat_cc']                = y_hat_xgb_cc
@@ -525,25 +505,21 @@ test['y_hat_ens']   = .75 * test.y_hat_cc + .25 * test.wg
 print('done')
 
 
-# In[21]:
 
 
 test['y_hat_ens'] = test.y_hat_ens.astype(float)
 
 
-# In[ ]:
 
 
 
 
 
-# In[22]:
 
 
 print(test[test.wg.isnull()].shape, np.mean(test.wg), np.mean(y_hat_xgb_cc), np.mean(test.y_hat_ens))
 
 
-# In[23]:
 
 
 ###############################################################################
@@ -551,7 +527,6 @@ print(test[test.wg.isnull()].shape, np.mean(test.wg), np.mean(y_hat_xgb_cc), np.
 ###############################################################################
 
 
-# In[24]:
 
 
 submissionOrig = pd.read_csv("../input/covid19-global-forecasting-week-1/submission.csv")
@@ -559,7 +534,6 @@ submissionOrig["ConfirmedCases"]= pd.Series( test.y_hat_ens)#pd.Series(y_hat_xgb
 submissionOrig["Fatalities"]    = pd.Series(y_hat_xgb_f)
 
 
-# In[25]:
 
 
 submissionOrig.to_csv('submission.csv',index=False)

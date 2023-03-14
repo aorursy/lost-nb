@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -25,7 +24,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 # change plot style and default figure size
@@ -35,13 +33,11 @@ plt.rc("figure", figsize=(14.4, 8.1), dpi=72)
 # plt.rc("savefig", dpi=72)
 
 
-# In[3]:
 
 
 get_ipython().run_cell_magic('time', '', 'train_df = pd.read_csv("../input/train.csv", dtype={\'acoustic_data\': \'int16\', \'time_to_failure\': \'float64\'})\ngc.collect()\n# print(len(train_df))  # >> length of full_dataframe: 629,145,480')
 
 
-# In[4]:
 
 
 # plot slice in dataframe
@@ -119,7 +115,6 @@ def plot_transformed(signals):
     print("Std in real: {:f}, in image: {:.16f}".format(zc.real.std(), zc.imag.std()))
 
 
-# In[5]:
 
 
 train_df.time_to_failure.iloc[:50_000].plot(kind='line', title="time_to_failure within a lab earthquake (stairs-like)")
@@ -141,7 +136,6 @@ plt.show()
 gc.collect()
 
 
-# In[6]:
 
 
 # Down sampling is risky to loss peak in huge fluctuations about 0.31sec before next laboratory earthquake (compared with fig1 and fig4)
@@ -151,7 +145,6 @@ df_slice_plot(train_df, 30_000_000, 60_000_000)  # fig3
 df_slice_plot(train_df, step=20, figsize=(24, 10))  # fig4
 
 
-# In[7]:
 
 
 slice_signal = train_df.acoustic_data.iloc[4_435_000:4_445_000]
@@ -163,7 +156,6 @@ plot_transformed(slice_signal)
 gc.collect()
 
 
-# In[8]:
 
 
 before_next_lab_earthquake(train_df, 4_000_000, 6_000_000)
@@ -172,7 +164,6 @@ before_next_lab_earthquake(train_df, 47_500_000, 51_000_000)
 gc.collect()
 
 
-# In[9]:
 
 
 seg_lst = list(os.listdir("../input/test/"))
@@ -187,7 +178,6 @@ for f in seg_lst[:5]:
 gc.collect()
 
 
-# In[10]:
 
 
 c = 0
@@ -207,7 +197,6 @@ for f in seg_lst:
 gc.collect()
 
 
-# In[11]:
 
 
 # drop the dataframe
@@ -215,7 +204,6 @@ del train_df
 gc.collect()
 
 
-# In[12]:
 
 
 derived_trn = pd.DataFrame()
@@ -294,7 +282,6 @@ for chunk in train_rd:
     gc.collect()
 
 
-# In[13]:
 
 
 derived_trn.to_csv("derived_train.csv", index=False)
@@ -303,7 +290,6 @@ display(derived_trn.loc[(derived_trn.target <= 0.33) & (derived_trn.target >= 0.
 features = [col for col in derived_trn.columns if col != "target"]
 
 
-# In[14]:
 
 
 test_seg_list = list(os.listdir("../input/test/"))
@@ -320,21 +306,18 @@ for csv_file in test_seg_list:
     gc.collect()
 
 
-# In[15]:
 
 
 derived_test.to_csv("derived_test.csv", index=False)
 display(derived_test.head())
 
 
-# In[16]:
 
 
 display(derived_trn.describe())
 display(derived_test.describe())
 
 
-# In[17]:
 
 
 nbins=None
@@ -356,7 +339,6 @@ for col in features:
     gc.collect()
 
 
-# In[18]:
 
 
 fig, axes = plt.subplots(2, 1, figsize=(22, 40))
@@ -367,7 +349,6 @@ axes[1].set_title("Correlation coefficients in derived_test")
 plt.show()
 
 
-# In[19]:
 
 
 from lightgbm import LGBMRegressor
@@ -404,7 +385,6 @@ def augment(df, threshold=None, repeat_times=1):
     return df
 
 
-# In[20]:
 
 
 param_grid = dict(
@@ -430,7 +410,6 @@ def search_params(estimator, param_grid, params):
 # params = search_params(LGBMRegressor(**params), param_grid, params)  # No output if this line is commented
 
 
-# In[21]:
 
 
 n_splits = 5
@@ -471,7 +450,6 @@ for nf, (trn_idx, val_idx) in enumerate(rskf.split(derived_trn, (derived_trn['ta
     predictions[f"pred_{nf}"] = curr_test_pred
 
 
-# In[22]:
 
 
 print("OOF's mae: {}".format(mean_absolute_error(derived_trn.target, oof.mean(axis=1))))
@@ -479,7 +457,6 @@ feature_importances.groupby("feature").mean().sort_values(by="importance", ascen
 plt.show()
 
 
-# In[23]:
 
 
 submission_y = predictions.mean(axis=1).values

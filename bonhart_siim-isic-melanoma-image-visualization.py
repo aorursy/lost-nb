@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -18,7 +17,6 @@ print("default backend: ", matplotlib.get_backend())
 matplotlib.use('Agg')
 
 
-# In[2]:
 
 
 # path
@@ -40,7 +38,6 @@ N_CHANNELS = 3
 FRAMERATE = 2
 
 
-# In[3]:
 
 
 def plot(img_path, img_name, annotate,
@@ -80,19 +77,16 @@ def plot(img_path, img_name, annotate,
     return plt.close()
 
 
-# In[4]:
 
 
 get_ipython().run_cell_magic('time', '', '\ntrain_video_name = \'train_data.avi\'\ntest_video_name = \'test_data.avi\'\n\ndef make_video(df, data_path, \n               video_name, framerate=FRAMERATE,\n               width=WIDTH, height=HEIGHT):\n    \n    # Define the codec and create VideoWrite object\n    fourcc = cv2.VideoWriter_fourcc(*\'XVID\')\n    video = cv2.VideoWriter(video_name, fourcc, framerate, (width, height))\n\n    for i in range(len(df)):\n            \n        meta_data = df.iloc[i, :].to_dict()\n        img_path = data_path + meta_data["image_name"] + ".dcm"\n\n        img_name = "skin.png"\n\n        # create image file\n        plot(img_path, img_name, meta_data)\n        \n        # write as np array remove as image\n        video.write(cv2.imread(img_name))\n        os.remove(img_name)\n        \n\n    cv2.destroyAllWindows()\n    return video.release()\n\nmake_video(df, TRAIN_IMG_PATH, train_video_name)\n#make_video(test_df, TEST_IMG_PATH, test_video_name)')
 
 
-# In[5]:
 
 
 get_ipython().system('pip install youtube_dl -qq ')
 
 
-# In[6]:
 
 
 # https://stackoverflow.com/questions/27473526/download-only-audio-from-youtube-video-using-youtube-dl-in-python-script
@@ -112,7 +106,6 @@ with youtube_dl.YoutubeDL(ydl_opts) as ydl:
     ydl.download(['https://www.youtube.com/watch?v=DnCJBZVTiJ4']);
 
 
-# In[7]:
 
 
 # convert from avi to mp4 
@@ -125,7 +118,6 @@ get_ipython().system('ffmpeg  -stream_loop -1 -i "Deus Ex - Human Revolution - D
 #!ffmpeg -ss 00:00:00 -i stats_with_sound.mp4 -to 00:01:00 -c copy stats_clip.mp4   
 
 
-# In[8]:
 
 
 # from num_images to timecode
@@ -148,19 +140,16 @@ with open('timecodes.txt', 'w') as f:
         f.write(f"\n\n{item}")        
 
 
-# In[9]:
 
 
 get_ipython().run_cell_magic('HTML', '', '<video width="800" height="600" controls>\n  <source src="train_data_with_sound.mp4" type="video/mp4">\n</video>')
 
 
-# In[10]:
 
 
 get_ipython().system('head -n 20 timecodes.txt')
 
 
-# In[11]:
 
 
 get_ipython().system('cat timecodes.txt')

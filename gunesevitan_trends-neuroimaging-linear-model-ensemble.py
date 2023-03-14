@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import sys
@@ -20,7 +19,6 @@ import cuml
 print(f'cuDF Version: {cudf.__version__}\ncuPY Version: {cp.__version__}\ncuML Version: {cuml.__version__}')
 
 
-# In[2]:
 
 
 import warnings
@@ -41,7 +39,6 @@ from sklearn.linear_model import Ridge
 SEED = 7021991
 
 
-# In[3]:
 
 
 df = pd.read_pickle('../input/trends-neuroimaging-data-analysis-3d-features/trends_tabular_data.pkl')
@@ -70,7 +67,6 @@ print(f'TReNDS Neuroimaging - Tabular Data Memory Usage = {df.memory_usage().sum
 del df_fnc, df_loading, shifted_loading_features
 
 
-# In[4]:
 
 
 df_train = df[df['is_train'] == 1].copy(deep=True).drop(columns=utility_features).reset_index(drop=True)
@@ -91,7 +87,6 @@ print(f'Test Data Memory Usage = {df_test.memory_usage().sum() / 1024 ** 2:.2f} 
 del df, filtered_idx, utility_features
 
 
-# In[5]:
 
 
 class LinearModelEnsemble:
@@ -387,7 +382,6 @@ class LinearModelEnsemble:
         self.plot_regression()
 
 
-# In[6]:
 
 
 X_train = df_train[(loading_features + spatial_features)].copy(deep=True)
@@ -447,7 +441,6 @@ linear_model_ensemble.run(X_train, y_train, X_test)
 del X_train, y_train, X_test, model_features, model_parameters, linear_model_ensemble_parameters, linear_model_ensemble
 
 
-# In[7]:
 
 
 X_train = df_train[(loading_features + spatial_features)].copy(deep=True)
@@ -517,7 +510,6 @@ linear_model_ensemble.run(X_train, y_train, X_test)
 del X_train, y_train, X_test, model_features, model_parameters, linear_model_ensemble_parameters, linear_model_ensemble
 
 
-# In[8]:
 
 
 X_train = df_train[(loading_features + fnc_features + spatial_features)].copy(deep=True)
@@ -578,7 +570,6 @@ linear_model_ensemble.run(X_train, y_train, X_test)
 del X_train, y_train, X_test, model_features, model_parameters, linear_model_ensemble_parameters, linear_model_ensemble
 
 
-# In[9]:
 
 
 X_train = df_train[(loading_features + fnc_features + spatial_features)].copy(deep=True)
@@ -649,7 +640,6 @@ linear_model_ensemble.run(X_train, y_train, X_test)
 del X_train, y_train, X_test, model_features, model_parameters, linear_model_ensemble_parameters
 
 
-# In[10]:
 
 
 def normalized_absolute_error(y_true, y_pred):
@@ -812,7 +802,6 @@ print(f'SVR All Weighted NAE {svr_all_weighted_nae:.6}')
 print(f'Blend Global Weighted NAE {blend_weighted_nae:.6}')
 
 
-# In[11]:
 
 
 fig, axes = plt.subplots(nrows=5, ncols=2, figsize=(25, 50))
@@ -840,7 +829,6 @@ for i, target in enumerate(['age', 'domain1_var1', 'domain1_var2', 'domain2_var1
 plt.show()
 
 
-# In[12]:
 
 
 def get_score_by_deciles(target, predictions):
@@ -867,7 +855,6 @@ for target in target_features:
     get_score_by_deciles(target, f'blend_{target}')
 
 
-# In[13]:
 
 
 column_mapping = {'blend_age': 'age', 

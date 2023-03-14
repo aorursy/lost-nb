@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -13,7 +12,6 @@ import re
 from collections import defaultdict
 
 
-# In[2]:
 
 
 #Constants
@@ -24,7 +22,6 @@ SEED = 42
 np.random.seed(seed=SEED)
 
 
-# In[3]:
 
 
 ## Use version from github
@@ -37,7 +34,6 @@ np.random.seed(seed=SEED)
 get_ipython().system(' cp -a /kaggle/input/global-wheat-detection-models/darknet_gpu_prebuilt/darknet_gpu_prebuilt/. /kaggle/darknet/')
 
 
-# In[4]:
 
 
 # %cd /kaggle/darknet
@@ -57,20 +53,17 @@ get_ipython().system(' cp -a /kaggle/input/global-wheat-detection-models/darknet
 # ! make --silent
 
 
-# In[5]:
 
 
 get_ipython().system(' mkdir /kaggle/darknet/weights')
 get_ipython().system(' cp -a /kaggle/input/global-wheat-detection-models/yolov4.weights /kaggle/darknet/weights')
 
 
-# In[6]:
 
 
 get_ipython().run_cell_magic('capture', '', '%cd /kaggle/darknet\n! chmod 777 ./darknet\n! ./darknet detect cfg/yolov4.cfg weights/yolov4.weights data/dog.jpg -dont_show')
 
 
-# In[7]:
 
 
 sample_preds = cv2.imread('predictions.jpg')
@@ -79,13 +72,11 @@ ax.imshow(sample_preds)
 fig.show()
 
 
-# In[8]:
 
 
 get_ipython().system(' ls /kaggle/input/global-wheat-detection-models/competition_files/competition_files')
 
 
-# In[9]:
 
 
 get_ipython().system(' mkdir /kaggle/darknet/my_files')
@@ -95,31 +86,26 @@ get_ipython().system(' cp -a /kaggle/input/global-wheat-detection-models/competi
 get_ipython().system(' cp -a /kaggle/input/global-wheat-detection-models/yolov4_naive.weights /kaggle/darknet/weights')
 
 
-# In[10]:
 
 
 get_ipython().system('mv /kaggle/darknet/my_files/yolov4-custom.cfg /kaggle/darknet/my_files/yolov4.cfg ')
 
 
-# In[11]:
 
 
 get_ipython().run_line_magic('cd', '/kaggle/darknet/my_files')
 
 
-# In[12]:
 
 
 get_ipython().run_cell_magic('writefile', 'obj.names', 'Wheat head')
 
 
-# In[13]:
 
 
 get_ipython().run_cell_magic('writefile', 'yolo.data', '#classses = 1\nnames = /kaggle/darknet/my_files/obj.names')
 
 
-# In[14]:
 
 
 def create_path_file(files_dir, save_dir):
@@ -134,32 +120,27 @@ def create_path_file(files_dir, save_dir):
     file.close()
 
 
-# In[15]:
 
 
 create_path_file(files_dir='/kaggle/input/global-wheat-detection/test', 
                  save_dir='/kaggle/darknet/my_files/')
 
 
-# In[16]:
 
 
 get_ipython().system(' head /kaggle/darknet/my_files/predict.txt ')
 
 
-# In[17]:
 
 
 get_ipython().system(' ls /kaggle/darknet')
 
 
-# In[18]:
 
 
 get_ipython().run_cell_magic('capture', '', '%cd /kaggle/darknet\n\n! ./darknet detector test \\\nmy_files/yolo.data \\\nmy_files/yolov4.cfg \\\nweights/yolov4_naive.weights \\\n/kaggle/input/global-wheat-detection/test/2fd875eaa.jpg -dont_show')
 
 
-# In[19]:
 
 
 sample_preds = cv2.imread('predictions.jpg')
@@ -168,20 +149,17 @@ ax.imshow(sample_preds)
 fig.show()
 
 
-# In[20]:
 
 
 get_ipython().run_cell_magic('capture', '', '%cd /kaggle/darknet\n\n! ./darknet detector test \\\nmy_files/yolo.data \\\nmy_files/yolov4.cfg \\\nweights/yolov4_naive.weights \\\n-dont_show -ext_output < my_files/predict.txt > log.txt')
 
 
-# In[21]:
 
 
 # # Uncomment to see result log file
 # ! cat log.txt
 
 
-# In[22]:
 
 
 def txt2json(file_path):
@@ -207,19 +185,16 @@ def txt2json(file_path):
     return table_dict
 
 
-# In[23]:
 
 
 data = txt2json('/kaggle/darknet/log.txt')
 
 
-# In[24]:
 
 
 # data['empty_sample'] = list()  #ONLY FOR NEGATIVE TEST, DON'T UNCOMMENT
 
 
-# In[25]:
 
 
 img_id, proba, left_x, top_y, width, height = list([]), [], [], [], [], []
@@ -245,20 +220,17 @@ result_df = pd.DataFrame(list(zip(img_id, proba, left_x, top_y, width, height)),
 result_df.head()
 
 
-# In[26]:
 
 
 sample_submission = pd.read_csv('/kaggle/input/global-wheat-detection/sample_submission.csv')
 sample_submission.head().T
 
 
-# In[27]:
 
 
 result_df['proba_ratio'] = result_df['proba_%'] / 100
 
 
-# In[28]:
 
 
 def format_list(confidence, x, y, width, height):
@@ -269,7 +241,6 @@ def format_list(confidence, x, y, width, height):
         return np.nan
 
 
-# In[29]:
 
 
 result_df['sub_list'] = result_df.apply(lambda x: format_list(x.proba_ratio, 
@@ -279,7 +250,6 @@ result_df['sub_list'] = result_df.apply(lambda x: format_list(x.proba_ratio,
                                                               x.height), axis = 1)
 
 
-# In[30]:
 
 
 filter_condition = (result_df['proba_ratio'] > CONFIDENCE_THRESHOLD) | (result_df['proba_ratio'].isna())
@@ -297,19 +267,16 @@ submission = pd.DataFrame(zip(img_names, img_pred_list),
                           columns = ['image_id', 'PredictionString'])
 
 
-# In[31]:
 
 
 submission.head()
 
 
-# In[32]:
 
 
 submission.to_csv('/kaggle/working/submission.csv', index=False)
 
 
-# In[ ]:
 
 
 

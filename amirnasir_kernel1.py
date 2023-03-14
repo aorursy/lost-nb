@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -25,7 +24,6 @@ import librosa.display
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 INPUT_FOLDER = "../input/"
@@ -33,7 +31,6 @@ train_files = glob.glob("../input/train_curated/*.wav")
 print(os.listdir(INPUT_FOLDER))
 
 
-# In[3]:
 
 
 
@@ -49,20 +46,17 @@ train_noisy = pd.read_csv(TRAIN_NOISY_PATH)
 test = pd.read_csv(SAMPLE_SUBMISSION_PATH)
 
 
-# In[4]:
 
 
 
 
 
-# In[4]:
 
 
 print("Number of train examples=", train_curated.shape[0], "  Number of classes=", len(set(train_curated.labels)))
 print("Number of test examples=", test.shape[0], "  Number of classes=", len(set(test.columns[1:])))
 
 
-# In[5]:
 
 
 #load both train_curated and noisy
@@ -73,7 +67,6 @@ print("Number of test examples=", test.shape[0], "  Number of classes=", len(set
 #del train_noisy
 
 
-# In[6]:
 
 
 #get only the lables that are in the testing file
@@ -84,7 +77,6 @@ category_group = train.groupby(['labels']).count()['fname']
 category_group.columns = ['counts']
 
 
-# In[7]:
 
 
 plot = category_group.sort_values(ascending=True).plot(
@@ -95,14 +87,12 @@ plot.set_xlabel("Category")
 plot.set_ylabel("Number of Samples");
 
 
-# In[8]:
 
 
 print('Minimum samples per category = ', min(train.labels.value_counts()))
 print('Maximum samples per category = ', max(train.labels.value_counts()))
 
 
-# In[9]:
 
 
 # Using wave library
@@ -114,7 +104,6 @@ print("Total samples (frames) = ", wav.getnframes())
 print("Duration = ", wav.getnframes()/wav.getframerate())
 
 
-# In[10]:
 
 
 def one_hot(labels, src_dict):
@@ -128,14 +117,12 @@ def one_hot(labels, src_dict):
     return ar
 
 
-# In[11]:
 
 
 #chacking the multilables
 [label.split(',') for i, label in enumerate(train['labels']) if len(label.split(',')) >=2] 
 
 
-# In[12]:
 
 
 #get target names from test 
@@ -143,7 +130,6 @@ target_names = test.columns[1:]
 target_names.shape
 
 
-# In[13]:
 
 
 num_targets = len(target_names)
@@ -152,7 +138,6 @@ src_dict = {target_names[i]:i for i in range(num_targets)}
 src_dict_inv = {i:target_names[i] for i in range(num_targets)}
 
 
-# In[14]:
 
 
 # train['nframes'] = train['fname'].apply(lambda f: wave.open('../input/train_curated/' + f).getnframes())
@@ -160,14 +145,12 @@ src_dict_inv = {i:target_names[i] for i in range(num_targets)}
 # test1['nframes'] = test1['fname'].apply(lambda f: wave.open('../input/test/' + f).getnframes())
 
 
-# In[15]:
 
 
 print('maximum track duration: ', train['nframes'].max()/44100)
 print('minimum track duration: ', train['nframes'].min()/44100)
 
 
-# In[16]:
 
 
 #distribution of top 25 categories
@@ -180,7 +163,6 @@ plt.title('Distribution of audio frames, per label', fontsize=16)
 plt.show()
 
 
-# In[17]:
 
 
 fig, ax = plt.subplots(2, 1, figsize=(16,8))
@@ -191,13 +173,11 @@ ax[1].set_xlim(0, 2700000)
 plt.suptitle('Frame Length Distribution in train and test', ha='center', fontsize='large');
 
 
-# In[18]:
 
 
 train.query("nframes > 2500000")
 
 
-# In[19]:
 
 
 import IPython.display as ipd  # To play sound in the notebook
@@ -205,28 +185,24 @@ fname = '../input/train_curated/77b925c2.wav'   # Abnormal
 ipd.Audio(fname)
 
 
-# In[20]:
 
 
 # get all the files with label "Stream" and compare to abnormal
 train[train["labels"]=="Stream"]
 
 
-# In[21]:
 
 
 # one hot encoding
 y_proc_tmp = one_hot(train_curated['labels'], src_dict)
 
 
-# In[22]:
 
 
 song='../input/train_curated/ca5c5f2c.wav'
 audio, sample_rate=lbr.load(song,sr=44100)
 
 
-# In[23]:
 
 
 n_fft = int(0.025 * sample_rate) #25ms window length
@@ -241,14 +217,12 @@ lbr.display.specshow(S, sr=44100, hop_length=hop_length, x_axis='time',cmap='mag
 plt.colorbar(format='%+2.0f dB')
 
 
-# In[24]:
 
 
 signal = audio[0:int(1 * sample_rate)] #5 secs of audio
 plt.plot(signal)
 
 
-# In[25]:
 
 
 WINDOW_SIZE = int(0.025 * sample_rate) #window size 25ms             
@@ -276,7 +250,6 @@ def load_track(filename, enforce_shape=None):
     return (features, float(new_input.shape[0]) / sample_rate)
 
 
-# In[26]:
 
 
 from sklearn.model_selection import StratifiedKFold
@@ -295,7 +268,6 @@ from keras.utils import Sequence
 import shutil
 
 
-# In[27]:
 
 
 class Config(object):
@@ -321,7 +293,6 @@ class Config(object):
             self.dim = (self.audio_length)
 
 
-# In[28]:
 
 
 #lwrap implementation for keras
@@ -403,7 +374,6 @@ def tf_lwlrap(y_true, y_pred):
     return out
 
 
-# In[29]:
 
 
 def audio_norm(data):
@@ -416,13 +386,11 @@ def audio_norm(data):
     return data
 
 
-# In[30]:
 
 
 config = Config(sampling_rate=44100, audio_duration=3, n_folds=1, learning_rate=0.001, use_mfcc=True, n_mfcc=128,max_epochs=30)
 
 
-# In[31]:
 
 
 def build_model(config):
@@ -468,7 +436,6 @@ def build_model(config):
   
 
 
-# In[32]:
 
 
 def prepare_data(df, config, data_dir):
@@ -524,14 +491,12 @@ def prepare_data(df, config, data_dir):
     
 
 
-# In[33]:
 
 
 train_curated.set_index("fname", inplace=True)
 test.set_index('fname',inplace=True)
 
 
-# In[34]:
 
 
 get_ipython().run_line_magic('time', '')
@@ -540,7 +505,6 @@ X_test = prepare_data(test, config, '../input/test/')
 y = one_hot(train_curated['labels'], src_dict)
 
 
-# In[35]:
 
 
 
@@ -548,14 +512,12 @@ X = audio_norm(X_train)
 X_test = audio_norm(X_test)
 
 
-# In[36]:
 
 
 from sklearn.model_selection import train_test_split
 X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
 
 
-# In[37]:
 
 
 PREDICTION_FOLDER = "predictions_1d_conv"
@@ -588,13 +550,11 @@ history = model.fit(X, y, callbacks=callbacks_list,batch_size=128, epochs=50)
 # test[['label']].to_csv(PREDICTION_FOLDER + "/predictions.csv") 
 
 
-# In[38]:
 
 
 submission= model.predict(X_test, batch_size=64, verbose=1)
 
 
-# In[39]:
 
 
 # Output all random to see a baseline
@@ -603,47 +563,40 @@ sample_sub.iloc[:,1:] = submission
 sample_sub.to_csv('submission.csv', index=False)
 
 
-# In[40]:
 
 
 
 
 
-# In[40]:
 
 
 working_dir='../working/predictions_1d_conv/'
 os.listdir(working_dir)
 
 
-# In[41]:
 
 
 submission=pd.read_csv(working_dir+'sample_submission.csv')
 submission.head()
 
 
-# In[42]:
 
 
 
 
 
-# In[42]:
 
 
 pred1=pd.read_csv(working_dir+'predictions.csv')
 pred1.head()
 
 
-# In[43]:
 
 
 pred=np.load(working_dir+'test_predictions.npy')
 pred.shape
 
 
-# In[44]:
 
 
 #https://stanford.edu/~shervine/blog/keras-how-to-generate-data-on-the-fly
@@ -712,28 +665,24 @@ class DataGenerator(Sequence):
             return X
 
 
-# In[45]:
 
 
 working_dir='../working/predictions_1d_conv/'
 os.listdir(working_dir)
 
 
-# In[46]:
 
 
 pred1=pd.read_csv(working_dir+'predictions_1.csv')
 pred1.head()
 
 
-# In[47]:
 
 
 pred=np.load(working_dir+'test_predictions_0.npy')
 pred
 
 
-# In[48]:
 
 
 train_generator = DataGenerator(config, '../input/train_curated/', train_set.index, 
@@ -770,7 +719,6 @@ train_generator = DataGenerator(config, '../input/train_curated/', train_set.ind
     
 
 
-# In[49]:
 
 
 pred_list = []
@@ -788,13 +736,11 @@ test['label'] = predicted_labels
 test[['fname', 'label']].to_csv("1d_conv_ensembled_submission.csv", index=False)
 
 
-# In[50]:
 
 
 
 
 
-# In[50]:
 
 
 PREDICTION_FOLDER = "predictions_2d_conv"
@@ -833,7 +779,6 @@ for i, (train_split, val_split) in enumerate(skf.split(train.index, train.label_
     test[['label']].to_csv(PREDICTION_FOLDER + "/predictions_%d.csv"%i)
 
 
-# In[51]:
 
 
 pred_list = []
@@ -851,26 +796,22 @@ test['label'] = predicted_labels
 test[['fname', 'label']].to_csv("2d_conv_ensembled_submission.csv", index=False)
 
 
-# In[52]:
 
 
 working_dir='../working/predictions_2d_conv/'
 os.listdir(working_dir)
 
 
-# In[53]:
 
 
 pred=np.load(working_dir+'test_predictions_1.npy')
 
 
-# In[54]:
 
 
 target_names
 
 
-# In[55]:
 
 
 

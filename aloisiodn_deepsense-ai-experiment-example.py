@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from keras.preprocessing.image import Iterator
@@ -37,7 +36,6 @@ print(check_output(["ls", "/input"]).decode("utf8"))
 print(keras.__version__, tf.__version__)
 
 
-# In[2]:
 
 
 class NeptuneCallback(Callback):
@@ -71,7 +69,6 @@ class NeptuneCallback(Callback):
         ctx.job.channel_send('Accuracy mon ph'+str(self.phase), self.batch_id, logs['acc'])
 
 
-# In[3]:
 
 
 ctx = neptune.Context()
@@ -103,7 +100,6 @@ predictions = Dense(CLASSES, activation='softmax', name='NEW_Predictions_5270')(
 model = Model(inputs=base_model.input, outputs=predictions)
 
 
-# In[4]:
 
 
 ################################################
@@ -177,7 +173,6 @@ val_gen = BinFileIterator('/input/val_sample.bin', img_generator=val_img_gen,  s
                  batch_size=BATCH_SIZE)
 
 
-# In[5]:
 
 
 ################################################
@@ -201,13 +196,11 @@ model.fit_generator(train_gen,
                     epochs=5, callbacks=[NeptuneCallback(images_per_epoch=n_train_images//BATCH_SIZE, phase=1)])
 
 
-# In[6]:
 
 
 Fine Tune some inception modules:
 
 
-# In[7]:
 
 
 ################################################

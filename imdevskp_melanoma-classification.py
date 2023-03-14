@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -24,48 +23,41 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout
 
 
-# In[2]:
 
 
 get_ipython().system(' ls ../input/siim-isic-melanoma-classification')
 
 
-# In[3]:
 
 
 train = pd.read_csv('../input/siim-isic-melanoma-classification/train.csv')
 train.head()
 
 
-# In[4]:
 
 
 test = pd.read_csv('../input/siim-isic-melanoma-classification/test.csv')
 test.head()
 
 
-# In[5]:
 
 
 sample_submission = pd.read_csv('../input/siim-isic-melanoma-classification/sample_submission.csv')
 sample_submission.head()
 
 
-# In[6]:
 
 
 print('No. of images in the train dataset :', train.shape[0])
 print('No. of unique patients in train dataset :', train['patient_id'].nunique())
 
 
-# In[7]:
 
 
 print('No. of images in the test dataset :', test.shape[0])
 print('No. of unique patients in test dataset :', test['patient_id'].nunique())
 
 
-# In[8]:
 
 
 def count_hbar(col, title, pal='Dark2'):
@@ -86,31 +78,26 @@ def count_hbar(col, title, pal='Dark2'):
     plt.show()
 
 
-# In[9]:
 
 
 count_hbar('sex', 'Gender', ['royalblue', 'deeppink'])
 
 
-# In[10]:
 
 
 count_hbar('anatom_site_general_challenge', 'Anatomy site of the mole')
 
 
-# In[11]:
 
 
 count_hbar('diagnosis', 'Diagnosis  of the mole')
 
 
-# In[12]:
 
 
 count_hbar('benign_malignant', 'Benign or Malignant', ['dimgray', 'orangered'])
 
 
-# In[13]:
 
 
 temp = train.groupby('patient_id').agg({'sex':max, 'age_approx':np.mean}).reset_index()
@@ -123,7 +110,6 @@ plt.title('Age distribution Male and Female patients',
 plt.show()
 
 
-# In[14]:
 
 
 df = pd.DataFrame(train.groupby(['anatom_site_general_challenge'])['target'].mean())         .sort_values('target', ascending=False)         .reset_index() 
@@ -145,7 +131,6 @@ plt.ylabel('')
 plt.show()
 
 
-# In[15]:
 
 
 def plot_images(diagnosis, title, n):
@@ -161,7 +146,6 @@ def plot_images(diagnosis, title, n):
         plt.imshow(image)
 
 
-# In[16]:
 
 
 def plot_image(diagnosis, title):
@@ -176,49 +160,41 @@ def plot_image(diagnosis, title):
     plt.show()
 
 
-# In[17]:
 
 
 plot_images('melanoma', 'Melanoma', 5)
 
 
-# In[18]:
 
 
 plot_images('seborrheic keratosis', 'Seborrheic Keratosis', 5)
 
 
-# In[19]:
 
 
 plot_images('lichenoid keratosis', 'Lichenoid Keratosis', 5)
 
 
-# In[20]:
 
 
 plot_images('lentigo NOS', 'Lentigo NOS', 5)
 
 
-# In[21]:
 
 
 plot_images('solar lentigo', 'Solar Lentigo', 5)
 
 
-# In[22]:
 
 
 plot_image('cafe-au-lait macule', 'Cafe-au-lait Macule')
 
 
-# In[23]:
 
 
 plot_image('atypical melanocytic proliferation', 'Atypical Melanocytic Proliferation')
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,20 +19,17 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import sys
 get_ipython().system('conda install --yes --prefix {sys.prefix} -c rdkit rdkit')
 
 
-# In[3]:
 
 
 get_ipython().run_cell_magic('bash', '-e', 'if ! [[ -f ./xyz2mol.py ]]; then\n  wget https://raw.githubusercontent.com/jensengroup/xyz2mol/master/xyz2mol.py\nfi')
 
 
-# In[4]:
 
 
 # only reading 10% of data for debug
@@ -41,7 +37,6 @@ train = pd.read_csv('../input/train.csv')[::10]
 test = pd.read_csv('../input/test.csv')[::10]
 
 
-# In[5]:
 
 
 # rdkit & xyz2mol
@@ -114,7 +109,6 @@ with Pool(n_cpu) as p:
             pbar.update()
 
 
-# In[6]:
 
 
 # highlight the bond given in train/test
@@ -133,7 +127,6 @@ svg = drawer.GetDrawingText().replace('svg:','')
 #SVG(svg)
 
 
-# In[7]:
 
 
 # 3JHH
@@ -152,7 +145,6 @@ svg = drawer.GetDrawingText().replace('svg:','')
 #SVG(svg)
 
 
-# In[8]:
 
 
 from pathlib import Path
@@ -164,7 +156,6 @@ train = pd.read_csv(PATH/'train.csv')[::10]
 test = pd.read_csv(PATH/'test.csv')[::10]
 
 
-# In[9]:
 
 
 # https://www.kaggle.com/jazivxt/all-this-over-a-dog
@@ -174,7 +165,6 @@ test['atom1'] = test['type'].map(lambda x: str(x)[2])
 test['atom2'] = test['type'].map(lambda x: str(x)[3])
 
 
-# In[10]:
 
 
 lbl = preprocessing.LabelEncoder()
@@ -183,7 +173,6 @@ for i in range(4):
     test['type'+str(i)] = lbl.transform(test['type'].map(lambda x: str(x)[i]))
 
 
-# In[11]:
 
 
 structures = pd.read_csv(PATH/'structures.csv').rename(columns={'atom_index':'atom_index_0', 'x':'x0', 'y':'y0', 'z':'z0', 'atom':'atom1'})
@@ -192,7 +181,6 @@ test = pd.merge(test, structures, how='left', on=['molecule_name', 'atom_index_0
 del structures
 
 
-# In[12]:
 
 
 structures = pd.read_csv(PATH/'structures.csv').rename(columns={'atom_index':'atom_index_1', 'x':'x1', 'y':'y1', 'z':'z1', 'atom':'atom2'})
@@ -201,7 +189,6 @@ test = pd.merge(test, structures, how='left', on=['molecule_name', 'atom_index_1
 del structures
 
 
-# In[13]:
 
 
 def feature_atom(atom):
@@ -229,7 +216,6 @@ def feature_atom(atom):
     return prop
 
 
-# In[14]:
 
 
 # atom feature of dsgdb9nsd_002129 atom_index_0
@@ -242,7 +228,6 @@ a0 = m.GetAtomWithIdx(atom_index_0)
 #feature_atom(a0)
 
 
-# In[15]:
 
 
 # extract some simple atomic feature for atom_index_0 and atom_index_1
@@ -343,7 +328,6 @@ def features(df):
 train = features(train)
 
 
-# In[16]:
 
 
 #https://www.kaggle.com/artgor/molecular-properties-eda-and-models
@@ -354,7 +338,6 @@ train['dist_to_type_mean'] = train['dist'] / train.groupby('type')['dist'].trans
 del train_p0, train_p1
 
 
-# In[17]:
 
 
 import matplotlib.pyplot as plt

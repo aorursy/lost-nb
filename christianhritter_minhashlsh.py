@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[50]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -27,67 +26,56 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[3]:
 
 
 qa_pairs = pd.read_csv('/kaggle/input/quora-question-pairs/train.csv.zip')
 
 
-# In[4]:
 
 
 qa_pairs.head()
 
 
-# In[5]:
 
 
 qa_pairs.sample(10, random_state=42)
 
 
-# In[6]:
 
 
 qa_pairs.info()
 
 
-# In[14]:
 
 
 qa_pairs[~qa_pairs['question1'].apply(lambda question: type(question) == str)]
 
 
-# In[17]:
 
 
 qa_pairs = qa_pairs.dropna(subset=['question1'])
 
 
-# In[ ]:
 
 
 
 
 
-# In[32]:
 
 
 qa_pairs['is_duplicate'].value_counts()
 
 
-# In[33]:
 
 
 sns.countplot(qa_pairs['is_duplicate'])
 
 
-# In[19]:
 
 
 token_len_q1 = qa_pairs['question1'].apply(lambda question: len(set(question)))
 
 
-# In[27]:
 
 
 fig, ax = plt.subplots(figsize=(16,4))
@@ -95,32 +83,26 @@ sns.distplot(token_len_q1, ax=ax)
 ax.set_xlabel('token lenght per question')
 
 
-# In[28]:
 
 
 sns.boxplot(token_len_q1)
 plt.xlabel('token lenght per question')
 
 
-# In[60]:
 
 
-pip install datasketch[scipy]
 
 
-# In[61]:
 
 
 import datasketch
 
 
-# In[29]:
 
 
 qa_pairs.head()
 
 
-# In[44]:
 
 
 sents_pairs = pd.concat([qa_pairs[qa_pairs['is_duplicate'] == 0].sample(100, random_state=42), 
@@ -128,14 +110,12 @@ sents_pairs = pd.concat([qa_pairs[qa_pairs['is_duplicate'] == 0].sample(100, ran
 sents_pairs.shape
 
 
-# In[46]:
 
 
 sents = pd.concat([sents_pairs['question1'], sents_pairs['question2']])
 sents.head()
 
 
-# In[54]:
 
 
 from nltk.corpus import stopwords
@@ -143,7 +123,6 @@ stop_words = stopwords.words('english')
 print(stop_words)
 
 
-# In[55]:
 
 
 # Set Representation
@@ -170,13 +149,11 @@ for question in tqdm([x for x in sents]):
    count +=1
 
 
-# In[57]:
 
 
 set_dict['m1']
 
 
-# In[62]:
 
 
 # Create minHash signatures
@@ -199,20 +176,17 @@ for val in tqdm(set_dict.values()):
    count2+=1
 
 
-# In[63]:
 
 
 min_dict['m1']
 
 
-# In[88]:
 
 
 elem_test = next(iter(set_dict['m1']))
 elem_test
 
 
-# In[94]:
 
 
 m1 = datasketch.MinHash(num_perm=num_perm)
@@ -221,32 +195,27 @@ m2 = datasketch.MinHash(num_perm=num_perm)
 m2.update(elem_test.encode('utf8'))
 
 
-# In[95]:
 
 
 m1 == m2
 
 
-# In[96]:
 
 
 m1.jaccard(m2)
 
 
-# In[97]:
 
 
 first_digest = m1.digest()
 first_digest.shape
 
 
-# In[99]:
 
 
 first_digest
 
 
-# In[100]:
 
 
 iter_text = iter(set_dict['m1'])
@@ -255,25 +224,21 @@ elem_test2 = next(iter_text)
 elem_test2
 
 
-# In[101]:
 
 
 m1.update(elem_test2.encode('utf8'))
 
 
-# In[103]:
 
 
 (m1.digest() == first_digest).all()
 
 
-# In[69]:
 
 
 list(set_dict['m1']
 
 
-# In[77]:
 
 
 # Create LSH index
@@ -291,7 +256,6 @@ for key in tqdm(min_dict.keys()):
    lsh.insert(key,min_dict[key]) # insert minhash data structure
 
 
-# In[104]:
 
 
 big_list = []
@@ -300,25 +264,21 @@ for query in min_dict.keys():
  
 
 
-# In[105]:
 
 
 big_list[0]
 
 
-# In[109]:
 
 
 big_list[5]
 
 
-# In[112]:
 
 
 norm_dict[big_list[5][0]], norm_dict[big_list[5][1]]
 
 
-# In[ ]:
 
 
 

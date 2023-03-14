@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # General imports
@@ -15,13 +14,11 @@ from sklearn.preprocessing import LabelEncoder
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
 
 
 pd.__version__
 
 
-# In[3]:
 
 
 # :seed to make all processes deterministic     # type: int
@@ -32,7 +29,6 @@ def seed_everything(seed=0):
 ## ------------------- 
 
 
-# In[4]:
 
 
 SEED = 42
@@ -40,7 +36,6 @@ seed_everything(SEED)
 LOCAL_TEST = False
 
 
-# In[5]:
 
 
 ## Memory Reducer
@@ -82,13 +77,11 @@ def reduce_mem_usage(df, verbose=True):
 ## -------------------
 
 
-# In[6]:
 
 
 ls ../input/ieee-fraud-detection/
 
 
-# In[7]:
 
 
 print('Load Data')
@@ -100,31 +93,26 @@ train_identity = pd.read_csv('../input/ieee-fraud-detection/train_identity.csv')
 test_identity = pd.read_csv('../input/ieee-fraud-detection/test_identity.csv')
 
 
-# In[8]:
 
 
 print('Memory usage:', round(train_df.memory_usage(deep=True).sum()/1024/1024, 2), 'MB')
 
 
-# In[9]:
 
 
 print('Memory usage:', round(test_df.memory_usage(deep=True).sum()/1024/1024, 2), 'MB')
 
 
-# In[10]:
 
 
 print('Memory usage:', round(train_identity.memory_usage(deep=True).sum()/1024/1024, 2), 'MB')
 
 
-# In[11]:
 
 
 print('Memory usage:', round(test_identity.memory_usage(deep=True).sum()/1024/1024, 2), 'MB')
 
 
-# In[12]:
 
 
 if LOCAL_TEST:
@@ -137,7 +125,6 @@ if LOCAL_TEST:
                 print('Bad transformation', col)
 
 
-# In[13]:
 
 
 ########################### Base Minification ########################### 
@@ -149,19 +136,16 @@ train_identity = reduce_mem_usage(train_identity)
 test_identity  = reduce_mem_usage(test_identity)
 
 
-# In[14]:
 
 
 print('Memory usage:', round(train_df.memory_usage(deep=True).sum()/1024/1024, 2), 'MB')
 
 
-# In[15]:
 
 
 train_df.dtypes.value_counts()
 
 
-# In[16]:
 
 
 def find_types(df,col_name , type_name):
@@ -172,14 +156,12 @@ def find_types(df,col_name , type_name):
     return ls
 
 
-# In[17]:
 
 
 encode_cols = find_types(train_df, train_df.columns ,'object' )
 print(encode_cols)
 
 
-# In[18]:
 
 
 for col in encode_cols:
@@ -187,7 +169,6 @@ for col in encode_cols:
     print(col , '-----' ,  ((temp_df[col]).unique()).shape)
 
 
-# In[19]:
 
 
 for col in ['ProductCD', 'card4', 'card6' ,'M4']:
@@ -201,7 +182,6 @@ for col in ['ProductCD', 'card4', 'card6' ,'M4']:
     print(col_encoded)    
 
 
-# In[20]:
 
 
 for col in ['M1','M2','M3','M5','M6','M7','M8','M9']:
@@ -210,7 +190,6 @@ for col in ['M1','M2','M3','M5','M6','M7','M8','M9']:
     print(temp_df[col].value_counts())
 
 
-# In[21]:
 
 
 for col in ['M1','M2','M3','M5','M6','M7','M8','M9']:
@@ -218,20 +197,17 @@ for col in ['M1','M2','M3','M5','M6','M7','M8','M9']:
     test_df[col]  = test_df[col].map({'T':1, 'F':0})
 
 
-# In[22]:
 
 
 train_identity.dtypes.value_counts()
 
 
-# In[23]:
 
 
 encode_cols = find_types(train_identity, train_identity.columns ,'object' )
 print(encode_cols)
 
 
-# In[24]:
 
 
 for col in encode_cols:
@@ -239,13 +215,11 @@ for col in encode_cols:
     print(col , '-----',  ((temp_df[col]).unique()).shape)
 
 
-# In[25]:
 
 
 encode_cols = list(set(encode_cols) - set(['DeviceInfo', 'id_30', 'id_31', 'id_33']))
 
 
-# In[26]:
 
 
 for col in encode_cols:
@@ -254,7 +228,6 @@ for col in encode_cols:
     print(temp_df[col].value_counts())
 
 
-# In[27]:
 
 
 mapper = {'New':2, 'Found':1, 'Unknown':0 ,'NotFound':0}
@@ -267,7 +240,6 @@ encode_cols = list(set(encode_cols) - set(['id_12','id_15', 'id_16','id_27','id_
 encode_cols
 
 
-# In[28]:
 
 
 mapper = {'T':1, 'F':0}
@@ -280,7 +252,6 @@ encode_cols = list(set(encode_cols) - set(['id_35','id_36', 'id_37','id_38']))
 encode_cols
 
 
-# In[29]:
 
 
 mapper = {'TRANSPARENT':4, 'IP_PROXY':3, 'IP_PROXY:ANONYMOUS':2, 'IP_PROXY:HIDDEN':1}
@@ -293,7 +264,6 @@ encode_cols = list(set(encode_cols) - set(['id_23']))
 encode_cols
 
 
-# In[30]:
 
 
 mapper = {'desktop':1, 'mobile':0}
@@ -306,7 +276,6 @@ encode_cols = list(set(encode_cols) - set(['DeviceType']))
 encode_cols
 
 
-# In[31]:
 
 
 for df in [train_identity , test_identity ]:
@@ -316,7 +285,6 @@ for df in [train_identity , test_identity ]:
     df['id_33']   = np.where(df['id_33']=='0x0', np.nan, df['id_33'])
 
 
-# In[32]:
 
 
 for col in ['id_33']:
@@ -329,7 +297,6 @@ for col in ['id_33']:
     test_identity[col]  = le.transform(test_identity[col])
 
 
-# In[33]:
 
 
 for df in [train_identity , test_identity ]:
@@ -338,7 +305,6 @@ for df in [train_identity , test_identity ]:
     df['id_34'] = np.where(df['id_34']==0, np.nan, df['id_34'])
 
 
-# In[34]:
 
 
 train_df = reduce_mem_usage(train_df)
@@ -348,7 +314,6 @@ train_identity = reduce_mem_usage(train_identity)
 test_identity  = reduce_mem_usage(test_identity)
 
 
-# In[35]:
 
 
 train_df.to_pickle('train_transaction.pkl')

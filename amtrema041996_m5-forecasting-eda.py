@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -26,7 +25,6 @@ for dirname, _, filenames in os.walk('/kaggle/input/m5-forecasting-accuracy'):
         print(os.path.join(dirname, filename))
 
 
-# In[2]:
 
 
 # Load data
@@ -45,7 +43,6 @@ dt_complementary = dt_prices_s.merge(dt_calendar, how='left', on='wm_yr_wk')
 dt_sales_s = shuffle(dt_sales, n_samples = 1000)
 
 
-# In[3]:
 
 
 # Melt sales data
@@ -58,7 +55,6 @@ dt_sales_melt = pd.melt(dt_sales_s,
 dt_sales_melt['day'] = dt_sales_melt['day_key'].apply(lambda x: x[2:]).astype(int)
 
 
-# In[4]:
 
 
 # Data to work with
@@ -67,42 +63,36 @@ dt_work = dt_sales_melt.merge(dt_complementary[columns], how = 'left', left_on=[
 print(dt_work.shape)
 
 
-# In[5]:
 
 
 #General glimpse
 msno.matrix(dt_work)
 
 
-# In[6]:
 
 
 # NA's as bar plot
 msno.bar(dt_work)
 
 
-# In[7]:
 
 
 # NA's by department
 msno.matrix(dt_work.sort_values(by=['dept_id']))
 
 
-# In[8]:
 
 
 # Dendogram of NA's values
 msno.dendrogram(dt_work)
 
 
-# In[9]:
 
 
 # Distribution of d variable
 sns.distplot(dt_work[dt_work.d.isna()].sales_day, color='b')
 
 
-# In[10]:
 
 
 print(dt_work.shape)
@@ -110,7 +100,6 @@ dt_work = dt_work.dropna(how='any', subset=['d'])
 print(dt_work.shape)
 
 
-# In[11]:
 
 
 def timeseries_global(data:'pd.DataFrame',level:str):
@@ -136,21 +125,18 @@ def timeseries_global(data:'pd.DataFrame',level:str):
         break
 
 
-# In[12]:
 
 
 # State level
 timeseries_global(dt_work,'state_id')
 
 
-# In[13]:
 
 
 # Store level
 timeseries_global(dt_work,'store_id')
 
 
-# In[14]:
 
 
 def timeseries_particular(data:'pd.DataFrame',level_1:str, level_2:str):
@@ -178,21 +164,18 @@ def timeseries_particular(data:'pd.DataFrame',level_1:str, level_2:str):
         break
 
 
-# In[15]:
 
 
 # Level: Categories of each store 
 timeseries_particular(dt_work,'store_id', 'cat_id')
 
 
-# In[16]:
 
 
 # Level: departments by store
 timeseries_particular(dt_work, 'store_id', 'dept_id')
 
 
-# In[17]:
 
 
 def timeseries_range_slider(data:'pd.DataFrame',level_1:str, level_2:str):
@@ -235,14 +218,12 @@ def timeseries_range_slider(data:'pd.DataFrame',level_1:str, level_2:str):
         break
 
 
-# In[18]:
 
 
 # Timeseries with a range slider 
 timeseries_range_slider(dt_work, 'store_id', 'dept_id')
 
 
-# In[19]:
 
 
 def timeseries_range_slider_event(data:'pd.DataFrame',level_1:str, level_2:str, level_3:str, level_4:str):
@@ -306,14 +287,12 @@ def timeseries_range_slider_event(data:'pd.DataFrame',level_1:str, level_2:str, 
         break
 
 
-# In[20]:
 
 
 # Mark special events as annotation in the time series
 timeseries_range_slider_event(dt_work,'store_id','dept_id','date','event_name_1')
 
 
-# In[21]:
 
 
 def timeseries_range_slider_snap(data:'pd.DataFrame',level_1:str, level_2:str, level_3:str):
@@ -384,7 +363,6 @@ def timeseries_range_slider_snap(data:'pd.DataFrame',level_1:str, level_2:str, l
         break
 
 
-# In[22]:
 
 
 # Timeseries annotated with SNAP days

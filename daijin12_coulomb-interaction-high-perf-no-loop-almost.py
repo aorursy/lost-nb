@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 structure = pd.read_csv('../input/structures.csv')
@@ -28,7 +26,6 @@ traindf = pd.read_csv('../input/train.csv')
 testdf = pd.read_csv('../input/test.csv')
 
 
-# In[3]:
 
 
 def compute_all_dist(x):   
@@ -36,7 +33,6 @@ def compute_all_dist(x):
     return x.apply(compute_all_dist2,axis=1,x2=x)
 
 
-# In[4]:
 
 
 def compute_all_dist2(x,x2):
@@ -65,7 +61,6 @@ def compute_all_dist2(x,x2):
     return s
 
 
-# In[5]:
 
 
 def merge_with_struc(df, structure):
@@ -78,49 +73,41 @@ def merge_with_struc(df, structure):
     return df
 
 
-# In[6]:
 
 
 get_ipython().run_cell_magic('time', '', '# 10 times faster than the parallelized kernel\nsmallstruct = pd.concat([structure[structure.molecule_name.isin(structure.molecule_name.unique()[:100])][["molecule_name","atom_index","atom"]],\n                         structure[structure.molecule_name.isin(structure.molecule_name.unique()[:100])].groupby("molecule_name").apply(compute_all_dist)],\n                         axis=1).fillna(0)')
 
 
-# In[7]:
 
 
 smallstruct.head()
 
 
-# In[8]:
 
 
 get_ipython().run_cell_magic('time', '', 'merge_with_struc(traindf,smallstruct).head()')
 
 
-# In[9]:
 
 
 get_ipython().run_cell_magic('time', '', 'structure = \\\n    pd.concat([structure[["molecule_name","atom_index","atom"]],\n               structure.groupby("molecule_name",sort=False).apply(compute_all_dist)], axis=1) \\\n    .fillna(0)')
 
 
-# In[10]:
 
 
 structure.head()
 
 
-# In[11]:
 
 
 get_ipython().run_cell_magic('time', '', 'traindf = merge_with_struc(traindf,structure)\ntestdf = merge_with_struc(testdf,structure)')
 
 
-# In[12]:
 
 
 traindf.head()
 
 
-# In[13]:
 
 
 

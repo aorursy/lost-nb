@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install -U cufflinks')
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -18,7 +16,6 @@ cf.go_offline(connected=False)  # to make it works without plotly account
 from os.path import join as pjoin
 
 
-# In[3]:
 
 
 RAW_DATA_DIR = '/kaggle/input/ashrae-energy-prediction/'
@@ -85,7 +82,6 @@ print(weather.isnull().sum())
 weather.head()
 
 
-# In[4]:
 
 
 def get_nan_sequences(series: pd.Series, thld_nan: int = 2):
@@ -180,7 +176,6 @@ def plot_series_and_consequtive_nans(
     )
 
 
-# In[5]:
 
 
 # let's see what percentage of missing values do we have in full 2016-2018 weather range
@@ -193,7 +188,6 @@ nulls_by_site_id.style.format("{:.2%}").highlight_max(axis=0).highlight_min(axis
 # (0, 8) and (7, 11)
 
 
-# In[6]:
 
 
 # let's explore some missing data
@@ -206,7 +200,6 @@ index_slice = slice(st, end)
 plot_series_and_consequtive_nans(weather, column=c, site_id=site_id, index_slice=index_slice)
 
 
-# In[7]:
 
 
 # let's fill shorter blocks (of len 1-2) with handy interpolation
@@ -246,7 +239,6 @@ for col in cols_to_fill:
 print(f'Nans filled: {nans_filled}/{nans_total}:   {np.round(nans_filled/nans_total*100, 2)}%')
 
 
-# In[8]:
 
 
 # define simple imputer for longer missing sequences
@@ -335,7 +327,6 @@ for tcol in tcols:
     restored = nan_imputer(data=restored, tcol=tcol, window=24)
 
 
-# In[9]:
 
 
 # check the sample of imputation results

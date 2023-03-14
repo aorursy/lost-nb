@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -30,7 +29,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 train = pd.read_feather("../input/ion-switching-expriment-lag-and-lead-features/train_lag30.feather")
@@ -38,20 +36,17 @@ test = pd.read_feather("../input/ion-switching-expriment-lag-and-lead-features/t
 sample_submission = pd.read_csv("../input/liverpool-ion-switching/sample_submission.csv")
 
 
-# In[3]:
 
 
 print(train.shape)
 print(test.shape)
 
 
-# In[4]:
 
 
 train.columns
 
 
-# In[5]:
 
 
 ## Preparation
@@ -74,7 +69,6 @@ del test
 gc.collect()
 
 
-# In[6]:
 
 
 #--------------------------------------------------------
@@ -118,7 +112,6 @@ params2 = {
 params.update(params2)
 
 
-# In[7]:
 
 
 #--------------------------------------------------------
@@ -185,7 +178,6 @@ for i, (train_index, valid_index) in enumerate(fold.split(X, y)):
     break # <- !!! fold1 only, add 5/2
 
 
-# In[8]:
 
 
 # Only fold1 calculation, so commented out here.
@@ -194,7 +186,6 @@ for i, (train_index, valid_index) in enumerate(fold.split(X, y)):
 #print(f'f1_score_oof = {oof_f1:0.5f}')
 
 
-# In[9]:
 
 
 def plot_feature_importance_by3(df_feature_importance, null_imp = False):
@@ -222,7 +213,6 @@ def plot_feature_importance_by3(df_feature_importance, null_imp = False):
     plt.tight_layout()
 
 
-# In[10]:
 
 
 #Name shortening
@@ -232,21 +222,18 @@ df_feature_importance.loc[df_feature_importance['feature'].str.contains("_10s"),
 plot_feature_importance_by3(df_feature_importance)
 
 
-# In[11]:
 
 
 df_lags = df_feature_importance[df_feature_importance['feature']                      .str.startswith("lag")]
 plot_feature_importance_by3(df_lags)
 
 
-# In[12]:
 
 
 df_leads = df_feature_importance[df_feature_importance['feature']                      .str.startswith("lead")]
 plot_feature_importance_by3(df_leads)
 
 
-# In[13]:
 
 
 #--------------------------------------------------------
@@ -274,7 +261,6 @@ if flg_submit:
             float_format='%0.4f')
 
 
-# In[14]:
 
 
 #dir()
@@ -282,7 +268,6 @@ del df_lags, df_leads, fold_importance, models, sample_submission, oof_pred
 gc.collect()
 
 
-# In[15]:
 
 
 #--------------------------------------
@@ -345,7 +330,6 @@ st1 = df_null_importance[df_null_importance['feature'].str.contains("_10s")]['fe
 df_null_importance.loc[df_null_importance['feature'].str.contains("_10s"), 'feature'] = st1
 
 
-# In[16]:
 
 
 def plot_null_dist(df_feature_importance, df_null_importance, X_cols, imp):
@@ -376,7 +360,6 @@ def plot_null_dist(df_feature_importance, df_null_importance, X_cols, imp):
     plt.show()
 
 
-# In[17]:
 
 
 X_cols = df_feature_importance[df_feature_importance['feature'].str.contains("mean|sd")]['feature'].unique()
@@ -384,7 +367,6 @@ imp = "split_importance"
 plot_null_dist(df_feature_importance, df_null_importance, X_cols, imp)
 
 
-# In[18]:
 
 
 X_cols = df_feature_importance[df_feature_importance['feature'].str.contains("lag")]['feature'].unique()
@@ -392,7 +374,6 @@ imp = "split_importance"
 plot_null_dist(df_feature_importance, df_null_importance, X_cols, imp)
 
 
-# In[19]:
 
 
 X_cols = df_feature_importance[df_feature_importance['feature'].str.contains("lead")]['feature'].unique()
@@ -400,7 +381,6 @@ imp = "split_importance"
 plot_null_dist(df_feature_importance, df_null_importance, X_cols, imp)
 
 
-# In[20]:
 
 
 X_cols = df_feature_importance[df_feature_importance['feature'].str.contains("mean|sd")]['feature'].unique()
@@ -408,7 +388,6 @@ imp = "gain_importance"
 plot_null_dist(df_feature_importance, df_null_importance, X_cols, imp)
 
 
-# In[21]:
 
 
 X_cols = df_feature_importance[df_feature_importance['feature'].str.contains("lag")]['feature'].unique()
@@ -416,7 +395,6 @@ imp = "gain_importance"
 plot_null_dist(df_feature_importance, df_null_importance, X_cols, imp)
 
 
-# In[22]:
 
 
 X_cols = df_feature_importance[df_feature_importance['feature'].str.contains("lead")]['feature'].unique()
@@ -424,7 +402,6 @@ imp = "gain_importance"
 plot_null_dist(df_feature_importance, df_null_importance, X_cols, imp)
 
 
-# In[23]:
 
 
 ## evaluation of null_importance
@@ -455,21 +432,18 @@ df_null_summary['p_by_gain_distribution'] = norm.cdf(x = df_null_summary['z_gain
 #df_null_summary.columns
 
 
-# In[24]:
 
 
 df_null_summary_tmp =df_null_summary[~df_null_summary['feature'].str.contains("lag2[0-9]|lead2[0-9]|lag3[0-9]|lead3[0-9]")]
 plot_feature_importance_by3(df_null_summary_tmp, null_imp = True)
 
 
-# In[25]:
 
 
 df_null_summary_tmp = df_null_summary[df_null_summary['feature'].str.contains("lag")]
 plot_feature_importance_by3(df_null_summary_tmp, null_imp = True)
 
 
-# In[26]:
 
 
 df_null_summary_tmp = df_null_summary[df_null_summary['feature'].str.contains("lead")]

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -24,14 +23,12 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 X_train = np.load('/kaggle/input/rcmemulators/X_train.dat', allow_pickle=True)
 X_train.shape
 
 
-# In[3]:
 
 
 for t,i in zip(['500 hPa', '700 hPa','850 hPa'],range(3)):
@@ -41,7 +38,6 @@ for t,i in zip(['500 hPa', '700 hPa','850 hPa'],range(3)):
     plt.show()
 
 
-# In[4]:
 
 
 for t,i in zip(['500 hPa', '700 hPa','850 hPa'],range(3,7)):
@@ -51,7 +47,6 @@ for t,i in zip(['500 hPa', '700 hPa','850 hPa'],range(3,7)):
     plt.show()
 
 
-# In[5]:
 
 
 plt.imshow(X_train[0,:,:,15])
@@ -59,14 +54,12 @@ plt.colorbar()
 plt.show()
 
 
-# In[6]:
 
 
 temp_mpl_gcm=X_train[:,4,6,15]
 plt.plot(temp_mpl_gcm[0:365])
 
 
-# In[7]:
 
 
 
@@ -84,7 +77,6 @@ def standardize2(data):
     return (ndata)
 
 
-# In[8]:
 
 
 X_test=np.load('/kaggle/input/rcmemulators/X_test.dat', allow_pickle=True)
@@ -93,7 +85,6 @@ Xtrain = standardize2(X_train)
 Xtest  =  standardize2(X_test)
 
 
-# In[9]:
 
 
 Y_train = pd.read_csv('/kaggle/input/rcmemulators/Y_train_mpl.csv')
@@ -101,13 +92,11 @@ Y_train.head()
 Y_train_temp=np.asarray(Y_train.tempé)
 
 
-# In[10]:
 
 
 plt.plot(Y_train_temp[0:365])
 
 
-# In[11]:
 
 
 import seaborn as sn
@@ -115,7 +104,6 @@ import seaborn as sn
 sn.distplot(Y_train_temp)
 
 
-# In[12]:
 
 
 def rmse(A,B):
@@ -123,7 +111,6 @@ def rmse(A,B):
 rmse(Y_train_temp,temp_mpl_gcm)
 
 
-# In[13]:
 
 
 import keras
@@ -132,7 +119,6 @@ import keras.layers as kl
 import tensorflow as tf
 
 
-# In[14]:
 
 
 model=km.Sequential()
@@ -146,13 +132,11 @@ model.compile(loss='mse', optimizer='adadelta')
 model.summary()
 
 
-# In[15]:
 
 
 Ytrain=np.asarray(Y_train.tempé) - temp_mpl_gcm ## I use the temperature series given by the low resolution model to standardize the data
 
 
-# In[16]:
 
 
 yrs=[i for i in range(2006,2101)]
@@ -168,7 +152,6 @@ Y_train2 , Y_val = Ytrain[ech_train],Ytrain[ech_val]
 print(X_train2.shape)
 
 
-# In[17]:
 
 
 
@@ -178,7 +161,6 @@ batch_size = 10
 history = model.fit(X_train2,Y_train2, batch_size=batch_size, validation_data=(X_val, Y_val), epochs=epochs)
 
 
-# In[18]:
 
 
 previ = model.predict(Xtest)
@@ -186,13 +168,11 @@ pred = previ[:,0]+ X_test[:,4,6,15] ## we add again
 pred.shape
 
 
-# In[19]:
 
 
 plt.plot(pred)
 
 
-# In[20]:
 
 
 res = pd.read_csv('/kaggle/input/rcmemulators/samplesub.csv')
@@ -200,20 +180,17 @@ res = pd.read_csv('/kaggle/input/rcmemulators/samplesub.csv')
 res.tempé = pred
 
 
-# In[21]:
 
 
 res.to_csv('submission.csv', index=False)
 
 
-# In[22]:
 
 
 Y_train_2d = np.load('/kaggle/input/rcmemulators/Y_train_box.dat', allow_pickle=True)
 Y_train_2d.shape
 
 
-# In[23]:
 
 
 plt.imshow(Y_train_2d[0,:,:])
@@ -221,7 +198,6 @@ plt.colorbar()
 plt.show()
 
 
-# In[24]:
 
 
 temp_2d_gcm=X_train[:,4:6,4:7,15]
@@ -229,14 +205,12 @@ plt.imshow(temp_2d_gcm[0,:,:])
 plt.colorbar()
 
 
-# In[25]:
 
 
 mean_box_gcm = temp_2d_gcm.mean(axis=(1,2),keepdims=True)
 mean_box_gcm.shape
 
 
-# In[26]:
 
 
 model2=km.Sequential()
@@ -254,7 +228,6 @@ model2.compile(loss='mse', optimizer='adadelta')
 model2.summary()
 
 
-# In[27]:
 
 
 Y_train_2d_diff = Y_train_2d - mean_box_gcm ## We can try to predict the difference the region average in the GCM output
@@ -262,14 +235,12 @@ print(Y_train_2d_diff.shape)
 Y_train2_2d , Y_val_2d = Y_train_2d_diff[ech_train,:,:,None],Y_train_2d_diff[ech_val,:,:,None] 
 
 
-# In[28]:
 
 
 plt.imshow(Y_train_2d_diff[0,:,:])
 plt.colorbar()
 
 
-# In[29]:
 
 
 epochs = 5
@@ -278,7 +249,6 @@ batch_size = 10
 history2 = model2.fit(X_train2,Y_train2_2d, batch_size=batch_size, validation_data=(X_val, Y_val_2d), epochs=epochs)
 
 
-# In[30]:
 
 
 temp_2d_gcm_test=X_test[:,4:6,4:7,15]
@@ -287,7 +257,6 @@ mean_box_gcm_test = temp_2d_gcm_test.mean(axis=(1,2),keepdims=True)
 pred_2d = model2.predict(Xtest) + mean_box_gcm_test[:,:,:,None]
 
 
-# In[31]:
 
 
 
@@ -295,7 +264,6 @@ predictions = pred_2d[:,:,:,0]
 predictions.shape
 
 
-# In[32]:
 
 
 plt.imshow(pred_2d[10,:,:,0],vmin=260)
@@ -303,7 +271,6 @@ plt.colorbar()
 plt.show()
 
 
-# In[33]:
 
 
 def create_submission(predictions):

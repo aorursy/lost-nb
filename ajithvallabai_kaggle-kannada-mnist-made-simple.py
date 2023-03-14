@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -9,7 +8,6 @@ import pandas as pd
 import tensorflow as tf
 
 
-# In[2]:
 
 
 from tensorflow.keras.models import Sequential
@@ -24,20 +22,17 @@ from sklearn.model_selection import train_test_split
 import random
 
 
-# In[3]:
 
 
 train_datas=pd.read_csv("../input/Kannada-MNIST/train.csv")
 val_datas = pd.read_csv("../input/Kannada-MNIST/Dig-MNIST.csv")
 
 
-# In[4]:
 
 
 datas_X.shape
 
 
-# In[5]:
 
 
 datas = pd.concat([train_datas,val_datas],axis=0)
@@ -47,13 +42,11 @@ datas_Y = np.array(datas[["label"]],dtype=np.int32)
 train_X,val_X,train_Y,val_Y = train_test_split(datas_X,datas_Y,test_size=0.2,shuffle=True)
 
 
-# In[6]:
 
 
 train_X.shape
 
 
-# In[7]:
 
 
 train_X = train_X  / 255.0
@@ -63,13 +56,11 @@ train_X = np.reshape(train_X,(-1,28,28,1))
 val_X = np.reshape(val_X,(-1,28,28,1))
 
 
-# In[8]:
 
 
 from tensorflow.keras.layers import Activation,GlobalAveragePooling2D
 
 
-# In[9]:
 
 
 
@@ -114,7 +105,6 @@ model.compile(optimizer='adam', loss="sparse_categorical_crossentropy",metrics=[
 print(model.summary())
 
 
-# In[10]:
 
 
 datagen = ImageDataGenerator(
@@ -126,7 +116,6 @@ datagen = ImageDataGenerator(
     horizontal_flip = False)
 
 
-# In[11]:
 
 
 annealer = LearningRateScheduler(lambda x: 0.008 * 0.95 ** x)
@@ -134,7 +123,6 @@ epochs = 10
 batch_size = 128
 
 
-# In[12]:
 
 
 model.fit_generator(datagen.flow(train_X,train_Y, batch_size=batch_size),
@@ -142,26 +130,22 @@ model.fit_generator(datagen.flow(train_X,train_Y, batch_size=batch_size),
         validation_data = (val_X,val_Y), callbacks=[annealer],verbose=1)
 
 
-# In[ ]:
 
 
 
 
 
-# In[13]:
 
 
 
 test_csv = pd.read_csv("../input/Kannada-MNIST/test.csv")
 
 
-# In[14]:
 
 
 test_csv.shape
 
 
-# In[15]:
 
 
 
@@ -173,7 +157,6 @@ X_test = data_test / 255.0
 print(X_test.shape,X_test.dtype)
 
 
-# In[16]:
 
 
 results = np.zeros( (X_test.shape[0],10))
@@ -181,7 +164,6 @@ results = model.predict(X_test)
 results = np.argmax(results,axis = 1)
 
 
-# In[17]:
 
 
 submission = pd.read_csv("../input/Kannada-MNIST/sample_submission.csv")

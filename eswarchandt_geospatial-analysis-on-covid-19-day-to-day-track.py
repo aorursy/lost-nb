@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system(' pip install calmap')
 
 
-# In[2]:
 
 
 # essential libraries
@@ -65,32 +63,27 @@ T = 0.05
 PX = 1
 
 
-# In[3]:
 
 
 details= pd.read_csv('../input/corona-virus-report/covid_19_clean_complete.csv', parse_dates=['Date'])
 details.sample(6)
 
 
-# In[4]:
 
 
 details.describe()
 
 
-# In[5]:
 
 
 details.info()
 
 
-# In[6]:
 
 
 details.isna().sum()
 
 
-# In[7]:
 
 
 cases = ['Confirmed', 'Deaths', 'Recovered', 'Active']
@@ -110,7 +103,6 @@ details['Recovered'] = details['Recovered'].astype(int)
 details.sample(6)
 
 
-# In[8]:
 
 
 temp = details.groupby('Date')['Confirmed', 'Deaths', 'Recovered', 'Active'].sum().reset_index()
@@ -120,7 +112,6 @@ temp['Deaths per 100 Confirmed Cases'] = temp['Global Moratality']*100
 temp.style.background_gradient(cmap='Pastel1')
 
 
-# In[9]:
 
 
 full_latest = details[details['Date'] == max(details['Date'])].reset_index()
@@ -132,7 +123,6 @@ temp_f = temp_f.reset_index(drop=True)
 temp_f.style.background_gradient(cmap="Blues", subset=['Confirmed', 'Active'])            .background_gradient(cmap="Greens", subset=['Recovered'])            .background_gradient(cmap="Reds", subset=['Deaths'])
 
 
-# In[10]:
 
 
 temp_flg = temp_f[temp_f['Deaths']>0][['Country/Region', 'Deaths']]
@@ -140,7 +130,6 @@ temp_flg['Deaths / 100 Cases'] = round((temp_f['Deaths']/temp_f['Confirmed'])*10
 temp_flg.sort_values('Deaths', ascending=False).reset_index(drop=True).style.background_gradient(cmap='Reds')
 
 
-# In[11]:
 
 
 # Confirmed
@@ -153,7 +142,6 @@ fig.update(layout_coloraxis_showscale=False)
 fig.show()
 
 
-# In[12]:
 
 
 # Deaths
@@ -167,7 +155,6 @@ fig.update(layout_coloraxis_showscale=False)
 fig.show()
 
 
-# In[13]:
 
 
 formated_gdf = details.groupby(['Date', 'Country/Region'])['Confirmed', 'Deaths'].max()
@@ -184,7 +171,6 @@ fig.update(layout_coloraxis_showscale=False)
 fig.show()
 
 
-# In[14]:
 
 
 formated_gdf = details.groupby(['Date', 'Country/Region'])['Recovered', 'Deaths'].max()
@@ -201,19 +187,16 @@ fig.update(layout_coloraxis_showscale=False)
 fig.show()
 
 
-# In[15]:
 
 
 full_latest_grouped = full_latest.groupby('Country/Region')[ 'Confirmed', 'Deaths', 'Recovered','Active','Lat','Long'].sum().reset_index()
 
 
-# In[16]:
 
 
 full_latest_grouped.head()
 
 
-# In[17]:
 
 
 # Create a map
@@ -227,7 +210,6 @@ for idx, row in full_latest_grouped.iterrows():
 m
 
 
-# In[18]:
 
 
 # Create a map
@@ -241,7 +223,6 @@ for idx, row in full_latest_grouped.iterrows():
 m
 
 
-# In[19]:
 
 
 # Create a map
@@ -255,7 +236,6 @@ for idx, row in full_latest_grouped.iterrows():
 m
 
 
-# In[20]:
 
 
 # Create map with release incidents and monitoring stations
@@ -266,7 +246,6 @@ HeatMap(data=full_latest_grouped[['Lat', 'Long']], radius=15).add_to(m)
 m
 
 
-# In[21]:
 
 
 import math
@@ -283,7 +262,6 @@ m.add_child(mc)
 m
 
 
-# In[22]:
 
 
 # Create map with overall cases registered
@@ -294,7 +272,6 @@ HeatMap(data=details[['Lat', 'Long']], radius=15).add_to(m)
 m
 
 
-# In[23]:
 
 
 import math

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -21,7 +20,6 @@ aaa.head()
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 from sklearn import datasets
@@ -72,7 +70,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# In[3]:
 
 
 def gini(solution, submission):
@@ -93,7 +90,6 @@ def normalized_gini(solution, submission):
 gini_scorer = metrics.make_scorer(normalized_gini, greater_is_better = True)
 
 
-# In[4]:
 
 
 trainDF = pd.read_csv('../input/kaggle-seguro/train/train.csv', sep=',')
@@ -101,7 +97,6 @@ testDF = pd.read_csv('../input/dataset/test/test.csv', sep=',')
 target = trainDF.pop('target')
 
 
-# In[5]:
 
 
 plt.figure(figsize=(10,3))
@@ -110,7 +105,6 @@ plt.xlabel('Target')
 trainDF['target'].value_counts()
 
 
-# In[6]:
 
 
 cor = trainDF.corr()
@@ -118,13 +112,11 @@ plt.figure(figsize=(16,10))
 sns.heatmap(cor)
 
 
-# In[7]:
 
 
 ps_cal = trainDF.columns[trainDF.columns.str.startswith('ps_calc')] 
 
 
-# In[8]:
 
 
 id_test = testDF['id'].values
@@ -134,7 +126,6 @@ testDF = testDF.drop(ps_cal,axis =1)
 testDF = testDF.drop(['id'],axis =1)
 
 
-# In[9]:
 
 
 cor = trainDF.corr()
@@ -142,7 +133,6 @@ plt.figure(figsize=(16,10))
 sns.heatmap(cor)
 
 
-# In[10]:
 
 
 # def missing_value(df):
@@ -153,14 +143,12 @@ sns.heatmap(cor)
 # missing_value(trainDF)
 
 
-# In[11]:
 
 
 trainDF = trainDF.fillna(999)
 testDF = testDF.fillna(999)
 
 
-# In[12]:
 
 
 for c in trainDF.select_dtypes(include=['float64']).columns:
@@ -171,7 +159,6 @@ for c in trainDF.select_dtypes(include=['int64']).columns[2:]:
     testDF[c]=testDF[c].astype(np.int8)  
 
 
-# In[13]:
 
 
 from catboost import CatBoostClassifier, Pool
@@ -183,7 +170,6 @@ train_data = Pool(x_train, y_train)
 test_data = Pool(x_test)
 
 
-# In[14]:
 
 
 props = {
@@ -198,7 +184,6 @@ props = {
         }
 
 
-# In[15]:
 
 
 from tqdm import tqdm
@@ -220,13 +205,11 @@ sub['target'] = y_pred
 sub.to_csv('cat_predicts.csv', index=False)
 
 
-# In[16]:
 
 
 print('done')
 
 
-# In[17]:
 
 
 cat_col = [col for col in trainDF.columns if '_cat' in col]
@@ -236,7 +219,6 @@ for c in cat_col:
 #     test[c] = test[c].astype('uint8') 
 
 
-# In[18]:
 
 
 bin_col = [col for col in trainDF.columns if 'bin' in col]
@@ -246,14 +228,12 @@ for c in bin_col:
 #     test[c] = test[c].astype('uint8') 
 
 
-# In[19]:
 
 
 train_X = trainDF.loc[:,trainDF.columns[:len(trainDF.columns)-1]]
 train_y = trainDF.loc[:,['target']].values.ravel()
 
 
-# In[20]:
 
 
 model = GradientBoostingClassifier(n_estimators=200)
@@ -261,7 +241,6 @@ score = cross_val_score(model,train_X,train_y,cv=5, scoring="accuracy")
 print(score.mean())
 
 
-# In[21]:
 
 
 def runXGB(xtrain,xvalid,ytrain,yvalid,xtest,eta=0.1,num_rounds=100,max_depth=4):
@@ -293,7 +272,6 @@ def runXGB(xtrain,xvalid,ytrain,yvalid,xtest,eta=0.1,num_rounds=100,max_depth=4)
     
 
 
-# In[22]:
 
 
 from catboost import CatBoostClassifier, Pool

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import warnings
@@ -18,34 +17,29 @@ test  = pd.read_csv('../input/test.csv' , header = 0, dtype={'Age': np.float64})
 full_data = [train, test] # for Data Preprocessing
 
 
-# In[2]:
 
 
 from IPython.display import Image
 Image(url= "https://static1.squarespace.com/static/5006453fe4b09ef2252ba068/t/5090b249e4b047ba54dfd258/1351660113175/TItanic-Survival-Infographic.jpg?format=1500w")
 
 
-# In[3]:
 
 
 get_ipython().run_line_magic('pinfo', 'train.describe')
 
 
-# In[4]:
 
 
 print (train[['Pclass', 'Survived']].groupby(['Pclass'], as_index=True).mean())
 # 1등칸에 탄사람들의 생존률이 높으며, 3등칸 탑승객들은 대부분 죽었다.
 
 
-# In[5]:
 
 
 print (train[["Sex", "Survived"]].groupby(['Sex'], as_index=True).mean())
 # 남성보다 여성이 상대적으로 많이 살아남았다.
 
 
-# In[6]:
 
 
 for dataset in full_data:
@@ -55,7 +49,6 @@ print (train[['FamilySize', 'Survived']].groupby(['FamilySize'], as_index=False)
 # 생존이 0이 었다면, 1-value
 
 
-# In[7]:
 
 
 for dataset in full_data:
@@ -64,20 +57,17 @@ for dataset in full_data:
 print (train[['IsAlone', 'Survived']].groupby(['IsAlone'], as_index=False).mean())
 
 
-# In[8]:
 
 
 total_df_ = pd.concat([train, test])
 total_df_['Embarked'].value_counts()
 
 
-# In[9]:
 
 
 train['Embarked'].isnull().sum(), test['Embarked'].isnull().sum()
 
 
-# In[10]:
 
 
 for dataset in full_data:
@@ -85,38 +75,32 @@ for dataset in full_data:
 print (train[['Embarked', 'Survived']].groupby(['Embarked'], as_index=False).mean())
 
 
-# In[11]:
 
 
 fare_series = train['Fare'].copy()
 
 
-# In[12]:
 
 
 fare_series.sort_values(inplace=True)
 fare_series.reset_index(inplace=True, drop=True)
 
 
-# In[13]:
 
 
 fare_series[int(len(fare_series)/2)]
 
 
-# In[14]:
 
 
 fare_series.median()
 
 
-# In[15]:
 
 
 fare_series.plot()
 
 
-# In[16]:
 
 
 for dataset in full_data:
@@ -125,7 +109,6 @@ train['CategoricalFare'] = pd.qcut(train['Fare'], 4)
 print (train[['CategoricalFare', 'Survived']].groupby(['CategoricalFare'], as_index=False).mean())
 
 
-# In[17]:
 
 
 for dataset in full_data:
@@ -142,7 +125,6 @@ train['CategoricalAge'] = pd.cut(train['Age'], 5)
 print (train[['CategoricalAge', 'Survived']].groupby(['CategoricalAge'], as_index=False).mean())
 
 
-# In[18]:
 
 
 def get_title(name):
@@ -158,7 +140,6 @@ for dataset in full_data:
 print(pd.crosstab(train['Title'], train['Sex']))
 
 
-# In[19]:
 
 
 for dataset in full_data:
@@ -171,7 +152,6 @@ for dataset in full_data:
 print (train[['Title', 'Survived']].groupby(['Title'], as_index=False).mean())
 
 
-# In[20]:
 
 
 for dataset in full_data:
@@ -213,13 +193,11 @@ train_y = train['Survived'].values
 test_x = test.values
 
 
-# In[21]:
 
 
 train_x[0,:], train_y[0]
 
 
-# In[22]:
 
 
 from sklearn.linear_model import SGDClassifier
@@ -228,13 +206,11 @@ sgd_clf = SGDClassifier(max_iter=5, random_state=42)
 sgd_clf.fit(train_x,train_y)
 
 
-# In[23]:
 
 
 sgd_clf.predict([test_x[0]])
 
 
-# In[24]:
 
 
 from sklearn.model_selection import cross_val_score
@@ -243,7 +219,6 @@ print(fold_score)
 print(np.mean(fold_score))
 
 
-# In[25]:
 
 
 # 모두 살았다고 내벹는 모델
@@ -256,7 +231,6 @@ class MyClassifier(BaseEstimator):
         return np.zeros((len(X), 1),dtype=bool) # 모두 살았다고 내벹는 모델
 
 
-# In[26]:
 
 
 my_classifier = MyClassifier()
@@ -265,7 +239,6 @@ print(fold_score)
 print(np.mean(fold_score))
 
 
-# In[27]:
 
 
 from sklearn.model_selection import cross_val_predict
@@ -274,19 +247,16 @@ train_pred = cross_val_predict(sgd_clf, train_x, train_y, cv=5)
 train_pred[:10]
 
 
-# In[28]:
 
 
 train_pred.sum(), train_y.size, train_y.sum()
 
 
-# In[29]:
 
 
 import time
 
 
-# In[30]:
 
 
 from sklearn.metrics import confusion_matrix
@@ -297,20 +267,17 @@ get_ipython().run_line_magic('time', 'confusion_matrix(train_y, train_pred)')
 # 177 : 산사람을 살았다고 예측 ( TP )
 
 
-# In[31]:
 
 
 import numpy as np
 get_ipython().run_line_magic('time', 'np.bincount(train_y * 2 + train_pred)')
 
 
-# In[32]:
 
 
 get_ipython().run_line_magic('time', 'np.bincount(train_y * 2 + train_pred).reshape(2,2)')
 
 
-# In[33]:
 
 
 from sklearn.metrics import precision_score, recall_score, f1_score
@@ -320,7 +287,6 @@ print("recall : {:.2f}%".format(recall_score(*score_info)))
 print("f1-score : {:.2f}%".format(f1_score(*score_info)))
 
 
-# In[34]:
 
 
 y_scores = sgd_clf.decision_function(test_x)
@@ -328,21 +294,18 @@ y_scores_df = pd.DataFrame(y_scores,columns=['Threshold'])
 y_scores_df.describe() # min -77 / max 32 / mean -31
 
 
-# In[35]:
 
 
 y_scores = cross_val_predict(sgd_clf, train_x, train_y, cv=5, method="decision_function")
 y_scores
 
 
-# In[36]:
 
 
 from sklearn.metrics import precision_recall_curve
 precisions, recalls, thresholds  = precision_recall_curve(train_y, y_scores)
 
 
-# In[37]:
 
 
 import matplotlib.pyplot as plt
@@ -354,21 +317,18 @@ def plot_precision_recall_vs_threshold(precisions, recalls, thresholds):
     plt.ylim([0,1])
 
 
-# In[38]:
 
 
 plot_precision_recall_vs_threshold(precisions, recalls, thresholds)
 plt.show()
 
 
-# In[39]:
 
 
 from sklearn.metrics import average_precision_score
 average_precision = average_precision_score(train_y, y_scores)
 
 
-# In[40]:
 
 
 from sklearn.metrics import precision_recall_curve
@@ -390,7 +350,6 @@ plt.xlim([0.0, 1.0])
 plt.title('2-class Precision-Recall curve: AP={0:0.2f}'.format(average_precision))
 
 
-# In[41]:
 
 
 pd.DataFrame({
@@ -400,38 +359,32 @@ pd.DataFrame({
 plt.show()
 
 
-# In[42]:
 
 
 train_y_90 = ( y_scores > 40 )
 
 
-# In[43]:
 
 
 train_y_90
 
 
-# In[44]:
 
 
 precision_score(train_y, train_y_90)
 
 
-# In[45]:
 
 
 recall_score(train_y, train_y_90)
 
 
-# In[46]:
 
 
 from sklearn.metrics import roc_curve
 fpr, tpr, thresholds = roc_curve(train_y, y_scores)
 
 
-# In[47]:
 
 
 def plot_roc_curve(fpr, tpr, label=None):
@@ -444,7 +397,6 @@ plot_roc_curve(fpr, tpr)
 plt.show()
 
 
-# In[48]:
 
 
 pd.DataFrame({
@@ -453,7 +405,6 @@ pd.DataFrame({
 }).plot(x="fpr",y="tpr")
 
 
-# In[49]:
 
 
 from sklearn.metrics import average_precision_score
@@ -461,7 +412,6 @@ average_precision = average_precision_score(train_y, y_scores)
 average_precision
 
 
-# In[50]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -470,20 +420,17 @@ y_probas_forest = cross_val_predict(forest_clf, train_x, train_y, cv=5, method="
 # An array containing the probabilities of belonging to a given class
 
 
-# In[51]:
 
 
 y_probas_forest
 
 
-# In[52]:
 
 
 y_probas_forest = y_probas_forest[:,-1] # Use probability for positive class as score
 fpr_forest, tpr_forest, thresholds_forest = roc_curve(train_y, y_probas_forest)
 
 
-# In[53]:
 
 
 plt.plot(fpr, tpr, "b:", label="SGD")
@@ -492,7 +439,6 @@ plt.legend(loc="lower right")
 plt.show()
 
 
-# In[54]:
 
 
 from sklearn.metrics import roc_auc_score
@@ -500,67 +446,56 @@ print("SGD : {:.2f}".format(roc_auc_score(train_y,y_scores)))
 print("RandomForest : {:.2f}".format(roc_auc_score(train_y,y_probas_forest)))
 
 
-# In[55]:
 
 
 
 
 
-# In[55]:
 
 
 
 
 
-# In[55]:
 
 
 
 
 
-# In[55]:
 
 
 
 
 
-# In[55]:
 
 
 
 
 
-# In[55]:
 
 
 
 
 
-# In[55]:
 
 
 
 
 
-# In[55]:
 
 
 
 
 
-# In[55]:
 
 
 
 
 
-# In[55]:
 
 
 
 
 
-# In[55]:
 
 
 

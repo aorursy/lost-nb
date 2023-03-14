@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #===========================================================
@@ -38,13 +37,11 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[2]:
 
 
 os.listdir('../input/trends-assessment-prediction/')
 
 
-# In[3]:
 
 
 #===========================================================
@@ -94,7 +91,6 @@ def load_df(path, df_name, debug=False):
     return df
 
 
-# In[4]:
 
 
 #===========================================================
@@ -110,7 +106,6 @@ seed_everything(seed=SEED)
 N_FOLD = 5
 
 
-# In[5]:
 
 
 train = pd.read_csv('../input/trends-assessment-prediction/train_scores.csv', dtype={'Id':str})
@@ -121,7 +116,6 @@ fnc = pd.read_csv('../input/trends-assessment-prediction/fnc.csv', dtype={'Id':s
 sample_submission = pd.read_csv('../input/trends-assessment-prediction/sample_submission.csv', dtype={'Id':str})
 
 
-# In[6]:
 
 
 sample_submission['ID_num'] = sample_submission[ID].apply(lambda x: int(x.split('_')[0]))
@@ -130,7 +124,6 @@ del sample_submission['ID_num']; gc.collect()
 test.head()
 
 
-# In[7]:
 
 
 Fold = KFold(n_splits=N_FOLD, shuffle=True, random_state=SEED)
@@ -140,13 +133,11 @@ train['fold'] = train['fold'].astype(int)
 train.head()
 
 
-# In[8]:
 
 
 train.isnull().sum()
 
 
-# In[9]:
 
 
 full = pd.concat([train, test], axis=0, sort=False)
@@ -155,7 +146,6 @@ full = full.set_index([ID, 'fold'])     .stack(dropna=False).reset_index().renam
 full['full_Id'] = [f'{i}_{j}' for i, j in zip(full['Id'], full['feature'])]
 
 
-# In[10]:
 
 
 # merge
@@ -164,7 +154,6 @@ full = full.merge(fnc, on=ID, how='left')
 full.head()
 
 
-# In[11]:
 
 
 # category
@@ -177,7 +166,6 @@ full['feature_cat'] = full['feature'].map(feature_dict)
 full.head()
 
 
-# In[12]:
 
 
 train = full.loc[full['target'].notnull()].reset_index(drop=True)
@@ -185,13 +173,11 @@ train['fold'] = train['fold'].astype(int)
 test = full.loc[full['target'].isnull()].reset_index(drop=True)       
 
 
-# In[13]:
 
 
 train.shape, test.shape
 
 
-# In[14]:
 
 
 # metric
@@ -240,7 +226,6 @@ class Metric():
         return scores_dict, score
 
 
-# In[15]:
 
 
 #===========================================================
@@ -339,7 +324,6 @@ def show_feature_importance(feature_importance_df):
     plt.savefig(OUTPUT_DICT+f'feature_importance.png')
 
 
-# In[16]:
 
 
 TARGET_COLS = ['target']
@@ -368,7 +352,6 @@ feature_importance_df, predictions, oof = run_kfold_lightgbm(lgb_param, train, t
 show_feature_importance(feature_importance_df)
 
 
-# In[17]:
 
 
 metric = Metric(folds['feature'])
@@ -378,13 +361,11 @@ logger.info(f'Local Score: {scores[1]}')
 logger.info(f'Local Score: {scores[0]}')
 
 
-# In[18]:
 
 
 sample_submission.head()
 
 
-# In[19]:
 
 
 sample_submission.set_index(ID, inplace=True)

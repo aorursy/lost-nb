@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd 
@@ -16,7 +15,6 @@ from random import sample
 np.random.seed(0)
 
 
-# In[2]:
 
 
 def read_data():
@@ -80,7 +78,6 @@ train, test, train_labels, specs, sample_submission = read_data()
 train, test, train_labels, win_code, list_of_user_activities, list_of_event_code, activities_labels, assess_titles, list_of_event_id, all_title_event_code = encode_title(train, test, train_labels)
 
 
-# In[3]:
 
 
 if 'start_installation' in train.columns:
@@ -131,13 +128,11 @@ train = pd.merge(
     right_index=True)
 
 
-# In[4]:
 
 
 train.head()
 
 
-# In[5]:
 
 
 SESSION_CUTOFF=15*60  # seconds
@@ -152,7 +147,6 @@ train = pd.merge(train,
                  right_index=True)
 
 
-# In[6]:
 
 
 def duration(x):
@@ -164,7 +158,6 @@ sessions = train    .groupby(['installation_id' , 'session_id'])     .agg({'seco
 sessions.head()
 
 
-# In[7]:
 
 
 train     .groupby(['installation_id'])     .session_id.nunique()     .value_counts(normalize=True, sort=True)     .head(10)     .apply(lambda x: x*100)     .plot(kind='bar')
@@ -172,21 +165,18 @@ plt.xlabel('Number of Sessions')
 plt.ylabel('Percent of Installations')
 
 
-# In[8]:
 
 
 print('Cummulative Installations with Session Count')
 train     .groupby(['installation_id'])     .session_id.nunique()     .value_counts(normalize=True, sort=True)     .cumsum()     .head(10)
 
 
-# In[9]:
 
 
 print('Game Session Counts')
 sessions.game_session['nunique'].describe()
 
 
-# In[10]:
 
 
 sessions.game_session['nunique']     .plot('box', vert=False, sym='')
@@ -194,14 +184,12 @@ plt.xlabel('Game Session Count')
 plt.title('Boxplot of Game Session Counts')
 
 
-# In[11]:
 
 
 print('Sessions Description')
 sessions.seconds_since_installation.duration.describe()
 
 
-# In[12]:
 
 
 sessions.seconds_since_installation.duration     .plot('box', vert=False, sym='')
@@ -209,7 +197,6 @@ plt.xlabel('Session Duration (seconds)')
 plt.title('Boxplot of Session Durations')
 
 
-# In[13]:
 
 
 results ={}
@@ -247,7 +234,6 @@ plt.ylabel('Installations')
 plt.title('Daily Session Counts per Installation')
 
 
-# In[14]:
 
 
 results ={}
@@ -265,7 +251,6 @@ results = pd.DataFrame.from_dict(results,
                                  columns=division[:-1])
 
 
-# In[15]:
 
 
 sns.heatmap(
@@ -288,19 +273,16 @@ plt.xlabel('Days since installation')
 plt.ylabel('Installations')
 
 
-# In[16]:
 
 
 sessions.head()
 
 
-# In[17]:
 
 
 sessions.loc['0006a69f', :]['seconds_since_installation']['min'].diff()
 
 
-# In[18]:
 
 
 results = {}
@@ -311,7 +293,6 @@ frequencies = pd.DataFrame.from_dict(results, orient='index', columns=['mean', '
 frequencies[frequencies['mean'].notnull()].head()
 
 
-# In[19]:
 
 
 frequencies.plot(kind='box', sym='')

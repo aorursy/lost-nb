@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import matplotlib.pyplot as plt
@@ -34,14 +32,12 @@ pd.options.display.float_format = '{:,.2f}'.format
 plt.rcParams.update({'font.size': 18})
 
 
-# In[3]:
 
 
 ##changing directory
 os.chdir('../input/')
 
 
-# In[4]:
 
 
 ###  INVENTORY TERMS
@@ -52,7 +48,6 @@ all_aisles.head(5)
 all_aisles.describe(include = 'all')
 
 
-# In[5]:
 
 
 ###  INVENTORY TERMS
@@ -63,7 +58,6 @@ all_depts.head(5)
 all_depts.describe(include = 'all')
 
 
-# In[6]:
 
 
 ###  INVENTORY TERMS
@@ -75,7 +69,6 @@ all_products.describe(include = 'all')
 ##134 aisle_ids, 21 dept_ids, 49688 products, ids - All descriptions are unique
 
 
-# In[7]:
 
 
 ###  ORDER TERMS
@@ -90,7 +83,6 @@ print("No. of users : ",all_orders.user_id.nunique())
 all_orders.describe()
 
 
-# In[8]:
 
 
 ### PRIOR ORDERS
@@ -99,7 +91,6 @@ print(prior_orders.shape)
 prior_orders.head(5)
 
 
-# In[9]:
 
 
 ### TRAINING ORDERS
@@ -108,38 +99,32 @@ print(train_set.shape)
 train_set.head(5)
 
 
-# In[10]:
 
 
 sample = pd.read_csv('sample_submission.csv')
 sample.head()
 
 
-# In[11]:
 
 
 all_orders.head(5)
 
 
-# In[12]:
 
 
 all_orders.eval_set.value_counts()
 
 
-# In[13]:
 
 
 all_orders[['user_id','eval_set']].groupby('eval_set').nunique('user_id')['user_id']
 
 
-# In[14]:
 
 
 set(all_orders.loc[all_orders['eval_set'] == 'train','user_id']) & set(all_orders.loc[all_orders['eval_set'] == 'test','user_id'])
 
 
-# In[15]:
 
 
 t = all_orders[['user_id','order_id']].groupby('user_id').nunique('order_id')['order_id']
@@ -147,7 +132,6 @@ print(t.max())
 print(t.min())
 
 
-# In[16]:
 
 
 plt.figure(figsize=(12,8))
@@ -156,7 +140,6 @@ plt.xticks(range(min(t), max(t)+1, 3))
 plt.show()
 
 
-# In[17]:
 
 
 t1 = all_orders.loc[all_orders['eval_set']=='prior',['user_id','order_id']].groupby('user_id').nunique('order_id')['order_id']
@@ -166,33 +149,28 @@ print("No. of users in prior with maximum number of orders :" + str(sum(t1==t1.m
 print("No. of users in prior with minimum number of orders :" + str(sum(t1==t1.min())))
 
 
-# In[18]:
 
 
 all_orders.head(5)
 
 
-# In[19]:
 
 
 plt.figure(figsize=(12,5))
 sns.countplot(x="order_dow", data=all_orders,palette = sns.color_palette("ch:2.5,-.2,dark=.3"))
 
 
-# In[20]:
 
 
 plt.figure(figsize=(12,4))
 sns.countplot(x="order_hour_of_day", data=all_orders)
 
 
-# In[21]:
 
 
 sns.catplot(x='order_hour_of_day',col="order_dow", data=all_orders,kind="count")
 
 
-# In[22]:
 
 
 t = all_orders.groupby(['order_hour_of_day',"order_dow"])["order_id"].count().reset_index()
@@ -201,14 +179,12 @@ plt.figure(figsize=(12,6))
 sns.heatmap(x,cmap="YlGnBu")
 
 
-# In[23]:
 
 
 plt.figure(figsize=(12,4))
 sns.countplot(x="days_since_prior_order", data=all_orders)
 
 
-# In[24]:
 
 
 first_orders = all_orders[all_orders.days_since_prior_order != all_orders.days_since_prior_order]
@@ -218,13 +194,11 @@ print(first_orders.eval_set.unique())
 first_orders.head()
 
 
-# In[25]:
 
 
 print(prior_orders.columns) # Just for reference
 
 
-# In[26]:
 
 
 t = prior_orders.groupby('order_id')['product_id'].count().reset_index()
@@ -235,7 +209,6 @@ plt.show()
 print(t['product_id'].max())
 
 
-# In[27]:
 
 
 t = train_set.groupby('order_id')['product_id'].count().reset_index()
@@ -246,7 +219,6 @@ plt.show()
 print(t['product_id'].max())
 
 
-# In[28]:
 
 
 fig, ax = plt.subplots(nrows = 1, ncols = 2 ,figsize=(20,6))
@@ -256,7 +228,6 @@ print("Reordered distribution in prior orders : \n",prior_orders.reordered.value
 print("Reordered distribution in train orders : \n",train_set.reordered.value_counts(normalize=True))
 
 
-# In[29]:
 
 
 t = prior_orders.groupby('order_id')['reordered'].sum().reset_index()
@@ -270,7 +241,6 @@ print("No. of orders with no reordered products in prior: ", t.loc[t['reordered'
 print("% of orders with no reordered products in prior: ",(t.loc[t['reordered'] == 0,'order_id'].size*100)/t['order_id'].size)
 
 
-# In[30]:
 
 
 t = train_set.groupby('order_id')['reordered'].sum().reset_index()
@@ -278,7 +248,6 @@ print("No. of orders with no reordered products in train: ",t.loc[t['reordered']
 print("% of orders with no reordered products in train: ",(t.loc[t['reordered'] == 0,'order_id'].size*100)/t['order_id'].size)
 
 
-# In[31]:
 
 
 prior_orders_extended = prior_orders.merge(all_products[['product_id','aisle_id','department_id']], on='product_id', how='left').    merge(all_orders,on='order_id',how='left')
@@ -288,7 +257,6 @@ prior_orders_extended = prior_orders.merge(all_products[['product_id','aisle_id'
 prior_orders_extended.head()
 
 
-# In[32]:
 
 
 tab = pd.crosstab(prior_orders_extended['department_id'],prior_orders_extended['reordered'],values=prior_orders_extended['order_id'],aggfunc='count')
@@ -300,7 +268,6 @@ tab.sum(axis=1).plot(kind='bar',ax=ax[0])
 tab_prop.plot(kind="bar", stacked=True, ax = ax[1],color = ['lightcoral','lightgreen'] )
 
 
-# In[33]:
 
 
 tab = pd.crosstab(prior_orders_extended['department_id'],prior_orders_extended['reordered'],values=prior_orders_extended['order_id'],aggfunc='nunique')
@@ -312,7 +279,6 @@ tab.sum(axis=1).plot(kind='bar',ax=ax[0])
 tab_prop.plot(kind="bar", stacked=True, ax = ax[1],color = ['lightcoral','lightgreen'] )
 
 
-# In[34]:
 
 
 tab = pd.crosstab(prior_orders_extended['aisle_id'],prior_orders_extended['reordered'],values=prior_orders_extended['order_id'],aggfunc='count')
@@ -322,7 +288,6 @@ tab.sum(axis=1).plot(kind='bar',ax=ax[0])
 tab_prop.plot(kind="bar", stacked=True, ax = ax[1],color = ['lightcoral','lightgreen'] )
 
 
-# In[35]:
 
 
 prod_repeatability = prior_orders_extended.groupby('product_id').agg(    {'add_to_cart_order':'mean','reordered':['count','sum']})
@@ -331,7 +296,6 @@ prod_repeatability = prod_repeatability.reset_index().rename(columns=    {'add_t
 prod_repeatability['%_repeated'] = prod_repeatability['Repeat_Purchases']/prod_repeatability['Total_Purchases']
 
 
-# In[36]:
 
 
 plt.figure(figsize=(20,6))
@@ -340,7 +304,6 @@ ax.set(xlabel='Repeatability of product', ylabel='Number of products')
 plt.show()
 
 
-# In[37]:
 
 
 prod_cart_pos = prior_orders_extended.groupby('add_to_cart_order').agg({'reordered':['count','sum']}).reset_index()
@@ -349,13 +312,11 @@ prod_cart_pos = prod_cart_pos.reset_index().rename(columns=    {'reordered_count
 prod_cart_pos['%_repeated'] = prod_cart_pos['Repeat_Purchases']/prod_cart_pos['Total_Purchases']
 
 
-# In[38]:
 
 
 prod_cart_pos.head()
 
 
-# In[39]:
 
 
 fig,ax = plt.subplots(nrows=2,ncols=1,figsize=(20,10))
@@ -366,7 +327,6 @@ ax[1].set(xlabel='Position of product in cart', ylabel='Number of orders')
 plt.show()
 
 
-# In[40]:
 
 
 product_frequency = prior_orders_extended.groupby('product_id').agg({'order_id':'count','reordered':'sum'})
@@ -375,13 +335,11 @@ product_frequency = product_frequency.merge(all_products,how='left',on='product_
 product_frequency['reorder_%'] = product_frequency['No_reorders']/product_frequency['Total_Orders']
 
 
-# In[41]:
 
 
 product_frequency.sort_values(by=['Total_Orders','reorder_%'],ascending=False).head(15)
 
 
-# In[42]:
 
 
 from wordcloud import WordCloud
@@ -392,7 +350,6 @@ plt.axis("off")
 plt.show()
 
 
-# In[43]:
 
 
 aisle_frequency = product_frequency.groupby(['department_id','aisle_id'])['Total_Orders','No_reorders'].sum().reset_index()
@@ -400,20 +357,17 @@ aisle_frequency = aisle_frequency.merge(all_aisles,how='left',on='aisle_id').   
 aisle_frequency['reorder_%'] = aisle_frequency['No_reorders']/aisle_frequency['Total_Orders']
 
 
-# In[44]:
 
 
 aisle_frequency.sort_values(by=['Total_Orders','reorder_%'],ascending=False).head(10)
 
 
-# In[45]:
 
 
 department_frequency = product_frequency.groupby(['department_id'])['Total_Orders','No_reorders'].sum().reset_index()
 department_frequency = department_frequency.merge(all_depts,how='left',on='department_id')
 
 
-# In[46]:
 
 
 import squarify

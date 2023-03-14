@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Some concepts borrowed from other kernels (will )
@@ -20,21 +19,18 @@ from sklearn.feature_selection import mutual_info_classif
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
 
 
 train = pd.read_csv("train.csv")
 #train.head()
 
 
-# In[3]:
 
 
 train_copy = train
 train_copy = train_copy.replace(-1, np.NaN)
 
 
-# In[4]:
 
 
 import missingno as msno
@@ -44,7 +40,6 @@ msno.matrix(df=train_copy.iloc[:,2:39], figsize=(20, 14), color=(0.42, 0.1, 0.05
 #ps_reg_03, ps_car_03_cat and ps_car_05_cat has many missing values, hence we need to be carefull while doing NA. For the time being we will just do na, but later try different things
 
 
-# In[5]:
 
 
 data = [go.Bar(
@@ -64,21 +59,18 @@ py.iplot(fig, filename='basic-bar')
 #Skewed target, Hence F1 score is more important than accuracy
 
 
-# In[6]:
 
 
 #Remove colums if contains all NULL (none so here)
 train = train.dropna(axis=1, how='all')
 
 
-# In[7]:
 
 
 cols = train.columns.tolist()
 print cols
 
 
-# In[8]:
 
 
 target = train.target
@@ -89,7 +81,6 @@ train.dtypes
 #float64 are continuous variable , int64 are either binary or categorical
 
 
-# In[9]:
 
 
 cols = train.columns.tolist()
@@ -98,14 +89,12 @@ print(train.skew())
 # May require transformaion of the skewed variables
 
 
-# In[10]:
 
 
 train.describe()
 # Different stastical figures
 
 
-# In[11]:
 
 
 from sklearn import preprocessing
@@ -133,27 +122,23 @@ draw_histograms(train, train.columns, 8, 8)
 #looking at the histogram of the input variable, some type of normalization of feature scaling may be required for some variables
 
 
-# In[12]:
 
 
 train.plot.box(return_type='axes', figsize=(90,70))
 #Box plot of all varibales https://www.wellbeingatschool.org.nz/information-sheet/understanding-and-interpreting-box-plots
 
 
-# In[13]:
 
 
 Counter(train.dtypes.values)
 
 
-# In[14]:
 
 
 train_float = train.select_dtypes(include=['float64'])
 train_int = train.select_dtypes(include=['int64'])
 
 
-# In[15]:
 
 
 colormap = plt.cm.inferno
@@ -164,14 +149,12 @@ sns.heatmap(train_float.corr(),linewidths=0.1,vmax=1.0, square=True, cmap=colorm
 #pearson correlation of continuous varibales shows some strong correlation between variables, we may have to drop some correlated varibales or have to transform them to new variables
 
 
-# In[16]:
 
 
 cat_features = [a for a in train.columns if a.endswith('cat')]
 print cat_features
 
 
-# In[17]:
 
 
 import scipy 
@@ -179,41 +162,35 @@ from scipy.stats import spearmanr
 from pylab import rcParams
 
 
-# In[18]:
 
 
 train_cat = train[cat_features]
 train_cat.head()
 
 
-# In[19]:
 
 
 bin_features = [a for a in train.columns if a.endswith('bin')]
 print bin_features
 
 
-# In[20]:
 
 
 bin_train = train[bin_features]
 bin_train.head()
 
 
-# In[21]:
 
 
 #rcParams['figure.figsize'] = 5, 4
 #sns.set_style("whitegrid")
 
 
-# In[22]:
 
 
 #sns.pairplot(train_cat)
 
 
-# In[23]:
 
 
 from scipy.stats import chi2_contingency
@@ -229,7 +206,6 @@ for x in range(len(cat_features)):
 #chisquare test show heavy correlation between categorical vribales, not sure about it
 
 
-# In[24]:
 
 
 #from scipy.stats import chi2_contingency
@@ -245,13 +221,11 @@ for x in range(len(bin_features)):
 #chisquare test of binary variables
 
 
-# In[25]:
 
 
 #sns.pairplot(bin_train)
 
 
-# In[26]:
 
 
 from sklearn.feature_selection import VarianceThreshold
@@ -263,7 +237,6 @@ print train_bin_copy.columns
 print bin_train.columns
 
 
-# In[27]:
 
 
 from sklearn.feature_selection import VarianceThreshold
@@ -275,7 +248,6 @@ print train_cat_copy.columns
 print train_cat.columns
 
 
-# In[28]:
 
 
 from sklearn.feature_selection import SelectKBest
@@ -289,13 +261,11 @@ X_new.shape
 # K is number of most important features
 
 
-# In[29]:
 
 
 print X_new
 
 
-# In[30]:
 
 
 #Tree based feature selection, I would first do the hyperparameter tuning usig GBM and then use SelectFromModel to choose the best features
@@ -306,7 +276,6 @@ from sklearn import cross_validation, metrics   #Additional scklearn functions
 from sklearn.grid_search import GridSearchCV   #Perforing grid search
 
 
-# In[31]:
 
 
 #I ran following gridsearch method to come up with best parameters, hence commenting them
@@ -317,13 +286,11 @@ from sklearn.grid_search import GridSearchCV   #Perforing grid search
 #gsearch1.fit(train, target)
 
 
-# In[32]:
 
 
 #gsearch1.grid_scores_, gsearch1.best_params_, gsearch1.best_score_
 
 
-# In[33]:
 
 
 #param_test2 = {'max_depth':range(5,16,2), 'min_samples_split':range(200,1001,200)}
@@ -333,7 +300,6 @@ from sklearn.grid_search import GridSearchCV   #Perforing grid search
 #gsearch2.grid_scores_, gsearch2.best_params_, gsearch2.best_score_
 
 
-# In[34]:
 
 
 #param_test3 = {'min_samples_leaf':range(30,71,10)}
@@ -343,7 +309,6 @@ from sklearn.grid_search import GridSearchCV   #Perforing grid search
 #gsearch3.grid_scores_, gsearch3.best_params_, gsearch3.best_score_
 
 
-# In[35]:
 
 
 #param_test4 = {'max_features':range(30,46,2)}
@@ -353,7 +318,6 @@ from sklearn.grid_search import GridSearchCV   #Perforing grid search
 #gsearch4.grid_scores_, gsearch4.best_params_, gsearch4.best_score_
 
 
-# In[36]:
 
 
 #param_test5 = {'subsample':[0.6,0.7,0.75,0.8,0.85,0.9]}
@@ -363,7 +327,6 @@ from sklearn.grid_search import GridSearchCV   #Perforing grid search
 #gsearch5.grid_scores_, gsearch5.best_params_, gsearch5.best_score_
 
 
-# In[37]:
 
 
 import xgboost as xgb
@@ -372,7 +335,6 @@ from sklearn import cross_validation, metrics   #Additional scklearn functions
 from sklearn.grid_search import GridSearchCV   #Perforing grid search
 
 
-# In[38]:
 
 
 #param_test1 = {
@@ -387,7 +349,6 @@ from sklearn.grid_search import GridSearchCV   #Perforing grid search
 #gsearch1.grid_scores_, gsearch1.best_params_, gsearch1.best_score_
 
 
-# In[39]:
 
 
 #param_test2 = {
@@ -402,7 +363,6 @@ from sklearn.grid_search import GridSearchCV   #Perforing grid search
 #gsearch2.grid_scores_, gsearch2.best_params_, gsearch2.best_score_
 
 
-# In[40]:
 
 
 #param_test2b = {
@@ -415,13 +375,11 @@ from sklearn.grid_search import GridSearchCV   #Perforing grid search
 #gsearch2b.fit(train,target)
 
 
-# In[41]:
 
 
 #gsearch2b.grid_scores_, gsearch2b.best_params_, gsearch2b.best_score_
 
 
-# In[42]:
 
 
 #param_test3 = {
@@ -435,7 +393,6 @@ from sklearn.grid_search import GridSearchCV   #Perforing grid search
 #gsearch3.grid_scores_, gsearch3.best_params_, gsearch3.best_score_
 
 
-# In[43]:
 
 
 #param_test4 = {
@@ -450,7 +407,6 @@ from sklearn.grid_search import GridSearchCV   #Perforing grid search
 #gsearch4.grid_scores_, gsearch4.best_params_, gsearch4.best_score_
 
 
-# In[44]:
 
 
 #param_test5 = {
@@ -464,13 +420,11 @@ from sklearn.grid_search import GridSearchCV   #Perforing grid search
 #gsearch5.fit(train,target)
 
 
-# In[45]:
 
 
 #gsearch5.grid_scores_, gsearch5.best_params_, gsearch5.best_score_
 
 
-# In[46]:
 
 
 #param_test7 = {
@@ -484,7 +438,6 @@ from sklearn.grid_search import GridSearchCV   #Perforing grid search
 #gsearch7.grid_scores_, gsearch7.best_params_, gsearch7.best_score_
 
 
-# In[ ]:
 
 
 from matplotlib.pylab import rcParams
@@ -531,7 +484,6 @@ xgb4 = XGBClassifier(
 modelfit(xgb4, train, target)
 
 
-# In[51]:
 
 
 from sklearn.feature_selection import SelectFromModel
@@ -559,7 +511,6 @@ X_new.shape
 #This is choosing 23 features out of 50 features
 
 
-# In[50]:
 
 
 from matplotlib.pylab import rcParams
@@ -597,7 +548,6 @@ gbm_tuned_2 = GradientBoostingClassifier(learning_rate=0.01, n_estimators=600,ma
 modelfit(gbm_tuned_2, train, target)
 
 
-# In[ ]:
 
 
 from sklearn.feature_selection import SelectFromModel
@@ -611,7 +561,6 @@ X_new = model.transform(train)
 X_new.shape 
 
 
-# In[ ]:
 
 
 

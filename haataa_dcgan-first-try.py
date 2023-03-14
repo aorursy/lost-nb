@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from __future__ import print_function
@@ -26,7 +25,6 @@ from torchvision.utils import save_image
 from torch.optim.lr_scheduler import StepLR, ReduceLROnPlateau, CosineAnnealingLR
 
 
-# In[2]:
 
 
 def seed_everything(seed=42):
@@ -39,13 +37,11 @@ def seed_everything(seed=42):
 seed_everything()
 
 
-# In[3]:
 
 
 len(os.listdir('../input/all-dogs/all-dogs'))
 
 
-# In[4]:
 
 
 # Setting parameters
@@ -73,7 +69,6 @@ beta1 = 0.5
 ngpu = 2
 
 
-# In[5]:
 
 
 dataset = dset.ImageFolder(root=dataroot,
@@ -94,7 +89,6 @@ dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size,
 device = torch.device("cuda" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
 
 
-# In[6]:
 
 
 real_batch = next(iter(dataloader))
@@ -106,7 +100,6 @@ plt.imshow(np.transpose(vutils.make_grid(real_batch[0].to(device)[:64],
                                          padding=2, normalize=True).cpu(),(1,2,0)));
 
 
-# In[7]:
 
 
 def weights_init(m):
@@ -118,7 +111,6 @@ def weights_init(m):
         nn.init.constant_(m.bias.data, 0)
 
 
-# In[8]:
 
 
 class Generator(nn.Module):
@@ -151,7 +143,6 @@ netG = Generator(ngpu).to(device);
 netG.apply(weights_init)
 
 
-# In[9]:
 
 
 class Discriminator(nn.Module):
@@ -182,7 +173,6 @@ netD = Discriminator(ngpu).to(device);
 netD.apply(weights_init);
 
 
-# In[10]:
 
 
 # Initialize BCELoss function
@@ -201,7 +191,6 @@ scheduler = ReduceLROnPlateau(optimizerD, factor=0.5, patience=2)
 scheduler = StepLR(optimizerD, gamma=0.5, step_size=8)
 
 
-# In[11]:
 
 
 # Training Loop
@@ -284,7 +273,6 @@ for epoch in range(num_epochs):
              errD.item(), errG.item(), D_x, D_G_z1, D_G_z2))
 
 
-# In[12]:
 
 
 plt.figure(figsize=(10,5))
@@ -297,7 +285,6 @@ plt.legend()
 plt.show()
 
 
-# In[13]:
 
 
 if not os.path.exists('../output_images'):
@@ -317,7 +304,6 @@ import shutil
 shutil.make_archive('images', 'zip', '../output_images')
 
 
-# In[14]:
 
 
 fig = plt.figure(figsize=(25, 16))

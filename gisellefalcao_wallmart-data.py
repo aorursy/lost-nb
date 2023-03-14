@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 ## Importe as bilbiotecas##
@@ -49,13 +47,11 @@ import statsmodels.api as sm
 from statsmodels.formula.api import ols
 
 
-# In[3]:
 
 
 pwd
 
 
-# In[4]:
 
 
 tt=pd.read_csv("/kaggle/input/walmart-recruiting-store-sales-forecasting/train.csv.zip", parse_dates=["Date"])
@@ -64,14 +60,12 @@ lj=pd.read_csv("/kaggle/input/walmart-recruiting-store-sales-forecasting/stores.
 fat = pd.read_csv("/kaggle/input/walmart-recruiting-store-sales-forecasting/features.csv.zip", parse_dates=["Date"])
 
 
-# In[5]:
 
 
 #viasualiza previamente 5 linha do arquivo 'features.csv'
 tt.head (5)
 
 
-# In[6]:
 
 
 #Converte date to object do arquivo 'features.csv'# 
@@ -79,14 +73,12 @@ fat['Date'] = pd.to_datetime(fat['Date']) #indica o titulo da coluna que quer co
 fat.head(2)
 
 
-# In[7]:
 
 
 #viasualiza previamente 5 linha do arquivo 'test.csv'
 tst.head (5)
 
 
-# In[8]:
 
 
 #Converte date to object do arquivo 'test.csv'# 
@@ -94,21 +86,18 @@ tst['Date'] = pd.to_datetime(tst['Date']) #indica o titulo da coluna que quer co
 tst.head(2)
 
 
-# In[9]:
 
 
 #viasualiza previamente 5 linha do arquivo 'store.csv'
 lj.head (5)
 
 
-# In[10]:
 
 
 #viasualiza previamente 5 linha do arquivo 'train.csv'
 tt.head (5)
 
 
-# In[11]:
 
 
 #Converte date to object do arquivo 'train.csv'# 
@@ -116,19 +105,16 @@ tt['Date'] = pd.to_datetime(tt['Date']) #indica o titulo da coluna que quer conv
 tt.head(2)
 
 
-# In[12]:
 
 
 fat['IsHoliday'] . value_counts ()
 
 
-# In[13]:
 
 
 tt['IsHoliday'] . value_counts ()
 
 
-# In[14]:
 
 
 print("A estrutura dos dados de treinamento é:", tt.shape)
@@ -136,14 +122,12 @@ print("A estrutura dos dados de treinamento é:", tst.shape)
 print("A proporção entre os dados de treinamento e os dados de teste é:", (round(tt.shape[0]*100/(tt.shape[0]+tst.shape[0])),100-round(tt.shape[0]*100/(tt.shape[0]+tst.shape[0]))))
 
 
-# In[15]:
 
 
 tt=tt.merge(lj, on='Store', how='left')
 tt.head()
 
 
-# In[16]:
 
 
 tt['Ano']=tt['Date'].dt.year
@@ -153,7 +137,6 @@ tt['Dia']=tt['Date'].dt.day
 tt['n_dias']=(tt['Date'].dt.date-tt['Date'].dt.date.min()).apply(lambda x:x.days)
 
 
-# In[17]:
 
 
 Ano=pd.Series(tt['Ano'].unique())
@@ -163,7 +146,6 @@ Dia=pd.Series(tt['Dia'].unique())
 n_dias=pd.Series(tt['n_dias'].unique())
 
 
-# In[18]:
 
 
 tst['Ano']=tst['Date'].dt.year
@@ -173,7 +155,6 @@ tst['Dia']=tst['Date'].dt.day
 tst['n_dias']=(tst['Date'].dt.date-tst['Date'].dt.date.min()).apply(lambda x:x.days)
 
 
-# In[19]:
 
 
 Ano=pd.Series(tst['Ano'].unique())
@@ -183,7 +164,6 @@ Dia=pd.Series(tst['Dia'].unique())
 n_dias=pd.Series(tst['n_dias'].unique())
 
 
-# In[20]:
 
 
 print("O formato do conjunto de dados 'store.csv' é: ", lj.shape)
@@ -191,7 +171,6 @@ print("Os numeros das lojas são: ", lj['Store'].unique())
 print("Os tipos de lojas são:", lj['Type'].unique())
 
 
-# In[21]:
 
 
 fat['Ano']=fat['Date'].dt.year
@@ -201,7 +180,6 @@ fat['Dia']=fat['Date'].dt.day
 #tt['n_dias']=(tt['Date'].dt.date-tt['Date'].dt.date.min()).apply(lambda x:x.days)
 
 
-# In[22]:
 
 
 Ano=pd.Series(fat['Ano'].unique())
@@ -211,13 +189,11 @@ Dia=pd.Series(fat['Dia'].unique())
 #n_dias=pd.Series(fat['n_dias'].unique())
 
 
-# In[23]:
 
 
 fat.head()
 
 
-# In[24]:
 
 
 fat_1 = fat.loc[(fat['Ano'] > 2012)
@@ -226,13 +202,11 @@ tfat = fat.drop(fat_1.index)
 tfat.head()
 
 
-# In[25]:
 
 
 tfat.shape
 
 
-# In[26]:
 
 
 fatext = ['Store','Date', 'Temperature','Fuel_Price','CPI','Unemployment','IsHoliday']
@@ -240,7 +214,6 @@ fat_tt = tfat.filter(items=fatext)
 fat_tt.head()
 
 
-# In[27]:
 
 
 fatext = ['Store','Date', 'Temperature','Fuel_Price','CPI','Unemployment','IsHoliday']
@@ -248,13 +221,11 @@ fat_tst = fat_1.filter(items=fatext)
 fat_tst.head()
 
 
-# In[28]:
 
 
 fat_tt.shape
 
 
-# In[29]:
 
 
 fatext = ['Store','Date', 'Temperature','Fuel_Price','CPI','Unemployment','IsHoliday']
@@ -262,13 +233,11 @@ fat_2 = tfat.filter(items=fatext)
 fat_2.head()
 
 
-# In[30]:
 
 
 fat_tst.shape
 
 
-# In[31]:
 
 
 tfat = tt.groupby(['Store','Date']).agg({'Weekly_Sales': np.mean})
@@ -276,14 +245,12 @@ tfat.index_col=0
 tfat.head()
 
 
-# In[32]:
 
 
 tst=tst.merge(lj, on='Store', how='left')
 tst.head()
 
 
-# In[33]:
 
 
 tstfat = tst.groupby(['Store','Date']).agg({'Size':np.mean})
@@ -291,13 +258,11 @@ tstfat.index_col=0
 tstfat.head()
 
 
-# In[34]:
 
 
 tstfat.shape
 
 
-# In[35]:
 
 
 tt_1 = tfat.reset_index(level=['Store', 'Date'])
@@ -305,20 +270,17 @@ tst_1 = tstfat.reset_index(level=['Store', 'Date'])
 tt_1.head()
 
 
-# In[36]:
 
 
 tst_1.head()
 
 
-# In[37]:
 
 
 tt_1['Date'] = pd.to_datetime(tt_1['Date'])
 tst_1['Date'] = pd.to_datetime(tst_1['Date'])
 
 
-# In[38]:
 
 
 New_fat=pd.merge(fat_tt, tt_1,
@@ -326,26 +288,22 @@ New_fat=pd.merge(fat_tt, tt_1,
 New_fat.head()
 
 
-# In[39]:
 
 
 New_fat_tst=pd.merge(fat_tst, tst_1,
                       on=['Date', 'Store'])
 
 
-# In[40]:
 
 
 New_fat_tst.head()
 
 
-# In[41]:
 
 
 print(New_fat.describe()['Weekly_Sales'].round(2))
 
 
-# In[42]:
 
 
 print(lj.head())
@@ -353,7 +311,6 @@ grouped=lj.groupby('Type')
 print(grouped.describe()['Size'].round(2))
 
 
-# In[43]:
 
 
 print(tt_1.head())
@@ -361,7 +318,6 @@ grouped=tt_1.groupby('Store')
 print(grouped.describe()['Weekly_Sales'].round(2))
 
 
-# In[44]:
 
 
 data = pd.concat([lj['Type'], lj['Size']], axis=1)
@@ -373,7 +329,6 @@ plt.ylabel('Tamanho da loja')
 fig = sns.boxplot(x='Type', y='Size', data=data)
 
 
-# In[45]:
 
 
 data = pd.concat([tt['Type'], tt['Weekly_Sales']], axis=1)
@@ -383,7 +338,6 @@ plt.ylabel('Venda semanal')
 fig = sns.boxplot(x='Type', y='Weekly_Sales', data=data, showfliers=False)
 
 
-# In[46]:
 
 
 plt.style.use('ggplot')
@@ -397,7 +351,6 @@ ax.scatter(tt['Size'],tt['Weekly_Sales'], alpha=0.5)
 plt.show()
 
 
-# In[47]:
 
 
 types=lj['Type'].unique()
@@ -423,7 +376,6 @@ plt.style.use('classic')
 plt.show()
 
 
-# In[48]:
 
 
 data = pd.concat([tt['Store'], tt['Weekly_Sales'], tt['Type']], axis=1)
@@ -431,7 +383,6 @@ f, ax = plt.subplots(figsize=(20, 8))
 fig = sns.boxplot(x='Store', y='Weekly_Sales', data=data, showfliers=False, hue="Type")
 
 
-# In[49]:
 
 
 ####### alterar no dataframe Store (str) to Store (int) 
@@ -441,13 +392,11 @@ fig = sns.boxplot(x='Store', y='Weekly_Sales', data=data, showfliers=False, hue=
 # print (aov_tab)
 
 
-# In[50]:
 
 
 New_fat.head()
 
 
-# In[51]:
 
 
 ##############################     Verificar (gráfico ruim)
@@ -457,7 +406,6 @@ plt.title('Relação entre Desemprego e vendas')
 fig = sns.boxplot(x='Temperature', y='Weekly_Sales', data=data, showfliers=False, hue="IsHoliday")
 
 
-# In[52]:
 
 
 data = pd.concat([New_fat['Fuel_Price'], New_fat['Weekly_Sales'], New_fat['IsHoliday']], axis=1)
@@ -466,7 +414,6 @@ plt.title('Relação entre Preço da gasolina e vendas')
 fig = sns.boxplot(x='Fuel_Price', y='Weekly_Sales', data=data, showfliers=False, hue="IsHoliday")
 
 
-# In[53]:
 
 
 data = pd.concat([New_fat['Unemployment'], New_fat['Weekly_Sales'], New_fat['IsHoliday']], axis=1)
@@ -475,7 +422,6 @@ plt.title('Relação entre Desemprego e vendas')
 fig = sns.boxplot(x='Unemployment', y='Weekly_Sales', data=data, showfliers=False, hue="IsHoliday")
 
 
-# In[54]:
 
 
 def plota_bar_dupla_1():
@@ -498,7 +444,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[55]:
 
 
 #Tentar colocar verdadeiro e falso para feriado ao lado e todas as lojas no eixo x
@@ -511,7 +456,6 @@ g.axes[-1].legend()
 plt.show()
 
 
-# In[56]:
 
 
 ##Correlaçao
@@ -528,7 +472,6 @@ plt.title('Correlação entre os dados')
 plot_corr(corr)
 
 
-# In[57]:
 
 
 data = pd.concat([tt['Store'], tt['Weekly_Sales'], tt['IsHoliday']], axis=1)
@@ -537,7 +480,6 @@ fig = sns.boxplot(x='Store', y='Weekly_Sales', data=data, showfliers=False, hue=
 plt.title('Relação entre as lojas, vendas semanais e feriados') 
 
 
-# In[58]:
 
 
 data = pd.concat([tt['Dept'], tt['Weekly_Sales'], tt['Type']], axis=1)
@@ -546,7 +488,6 @@ plt.title('Relação entre as Departamento e vendas semanais')
 fig = sns.boxplot(x='Dept', y='Weekly_Sales', data=data, showfliers=False)
 
 
-# In[59]:
 
 
 data = pd.concat([tt['Dept'], tt['Weekly_Sales'], tt['Type']], axis=1)
@@ -554,7 +495,6 @@ f, ax = plt.subplots(figsize=(10, 50))
 fig = sns.boxplot(y='Dept', x='Weekly_Sales', data=data, showfliers=False, hue="Type",orient="h") 
 
 
-# In[60]:
 
 
 data = pd.concat([tt['Dept'], tt['Weekly_Sales'], tt['IsHoliday']], axis=1)
@@ -562,7 +502,6 @@ f, ax = plt.subplots(figsize=(25, 10))
 fig = sns.boxplot(x='Dept', y='Weekly_Sales', data=data, showfliers=False, hue="IsHoliday")
 
 
-# In[61]:
 
 
 plt.style.use('ggplot')
@@ -609,14 +548,12 @@ axes[1].set_ylim(-6000,80000)
 plt.show()
 
 
-# In[62]:
 
 
 print(tt[tt['IsHoliday']==True]['Weekly_Sales'].describe().round(1))
 print(tt[tt['IsHoliday']==False]['Weekly_Sales'].describe().round(1))
 
 
-# In[63]:
 
 
 data = pd.concat([tt['Mês'], tt['Weekly_Sales']], axis=1)
@@ -625,7 +562,6 @@ fig = sns.boxplot(x='Mês', y="Weekly_Sales", data=data, showfliers=False)
 plt.title('Relação vendas semanais por mes') 
 
 
-# In[64]:
 
 
 data = pd.concat([tt['Mês'], tt['Weekly_Sales'],tt['IsHoliday']], axis=1)
@@ -634,7 +570,6 @@ fig = sns.boxplot(x='Mês', y="Weekly_Sales", data=data, showfliers=False, hue='
 plt.title('Relação entre vendas semanais, meses e feriados') 
 
 
-# In[65]:
 
 
 data = pd.concat([tt['Mês'], tt['Weekly_Sales'],tt['Type']], axis=1)
@@ -643,7 +578,6 @@ fig = sns.boxplot(x='Mês', y="Weekly_Sales", data=data, showfliers=False, hue='
 plt.title('Relação entre vendas semanais, meses e tipos de lojas')
 
 
-# In[66]:
 
 
 data = pd.concat([tt['Ano'], tt['Weekly_Sales']], axis=1)
@@ -652,7 +586,6 @@ fig = sns.boxplot(x='Ano', y="Weekly_Sales", data=data, showfliers=False)
 plt.title('Relação entre vendas semanais e Anos')
 
 
-# In[67]:
 
 
 data = pd.concat([tt['Semana'], tt['Weekly_Sales']], axis=1)
@@ -661,7 +594,6 @@ fig = sns.boxplot(x='Semana', y="Weekly_Sales", data=data, showfliers=False)
 plt.title('Relação entre vendas semanais, Semanas')
 
 
-# In[68]:
 
 
 f, ax = plt.subplots(figsize=(8, 6))
@@ -669,7 +601,6 @@ sns.distplot(tt['Weekly_Sales'])
 plt.title('Distribuição de vendas semanais')
 
 
-# In[69]:
 
 
 f, ax = plt.subplots(figsize=(8, 6))
@@ -678,7 +609,6 @@ sns.distplot(grouped)
 plt.title('Distribuição de vendas semanais por departamentto no feriado')
 
 
-# In[70]:
 
 
 print("Skewness: ", tt['Weekly_Sales'].skew()) #skewness
@@ -686,7 +616,6 @@ print("Kurtosis: ", tt['Weekly_Sales'].kurt()) #kurtosis
 tt['Weekly_Sales'].min()
 
 
-# In[71]:
 
 
 fig.add_subplot(1,2,1)
@@ -696,13 +625,11 @@ fig.add_subplot(1,2,2)
 res = stats.probplot(np.log1p(tt.loc[tt['Weekly_Sales']>0,'Weekly_Sales']), plot=plt)
 
 
-# In[72]:
 
 
 tt.describe()['Weekly_Sales']
 
 
-# In[73]:
 
 
 tt_over_zero=tt[tt['Weekly_Sales']>0]
@@ -713,14 +640,12 @@ f, ax = plt.subplots(figsize=(8, 6))
 sns.distplot(sales_over_zero)
 
 
-# In[74]:
 
 
 print("Skewness: ", sales_over_zero.skew()) #skewness
 print("Kurtosis: ", sales_over_zero.kurt()) #kurtosis
 
 
-# In[75]:
 
 
 grouped=tt.groupby(['Dept','Date']).mean().round(0).reset_index()
@@ -775,7 +700,6 @@ ax[1,1].set_xlabel('Date')
 plt.show()
 
 
-# In[76]:
 
 
 grouped=tt.groupby(['Store','Date']).mean().round(0).reset_index()
@@ -876,7 +800,6 @@ ax[4,0].set_xlabel('Date')
 plt.show()
 
 
-# In[77]:
 
 
 grouped=tt.groupby(['Store','Dept'])['Weekly_Sales'].max().reset_index()
@@ -898,7 +821,6 @@ grouped_2=train_2.groupby(['Date_2','Store','Dept']).count().reset_index()
 grouped_2.sort_values('Weekly_Sales',ascending=False,inplace=True)
 
 
-# In[78]:
 
 
 grouped_2['key_2']=grouped_2['Date_2'].astype(str) + grouped_2['Store'].astype(str) + grouped_2['Dept'].astype(str)
@@ -921,31 +843,26 @@ train.loc[train['Count'].isnull(),'Count']=0
 #train.head(150)
 
 
-# In[79]:
 
 
 grouped.head()
 
 
-# In[80]:
 
 
 train_2.head()
 
 
-# In[81]:
 
 
 grouped_2.head()
 
 
-# In[82]:
 
 
 train_2.head()
 
 
-# In[83]:
 
 
 data = pd.concat([train['Count'], train['Weekly_Sales'], train['Store']], axis=1)
@@ -953,7 +870,6 @@ f, ax = plt.subplots(figsize=(5, 5))
 fig=sns.boxplot(x='Count', y="Weekly_Sales", data=data, showfliers=False)
 
 
-# In[84]:
 
 
 from sklearn import svm 
@@ -965,7 +881,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
 
-# In[85]:
 
 
 tt.data = tt[['Store','Dept','Weekly_Sales','Size','Ano','Mês','Semana','Dia','n_dias']]
@@ -982,26 +897,22 @@ X_test = tst.data
 Y_test = tst.targed
 
 
-# In[86]:
 
 
 sns.pairplot(tt[['Store','Dept','IsHoliday','Weekly_Sales']], hue='IsHoliday')
 
 
-# In[87]:
 
 
 model = svm.SVC(kernel='poly')
 model.fit(X_train, Y_train)
 
 
-# In[88]:
 
 
 print(X_train)
 
 
-# In[89]:
 
 
 from matplotlib import style
@@ -1009,20 +920,17 @@ style.use("seaborn-colorblind")
 tt.data.plot(x='Dept', y='Weekly_Sales', c=tt.targed, kind='scatter',colormap='Accent_r')
 
 
-# In[90]:
 
 
 type(X_train)
 
 
-# In[91]:
 
 
 ## predict case
 sns.lmplot('X_test', 'Y_test', data=X_train, hue='Types', palette='Set1' )
 
 
-# In[92]:
 
 
 def acuracia(model,X_train,Y_train):
@@ -1031,7 +939,6 @@ def acuracia(model,X_train,Y_train):
 acuracia
 
 
-# In[ ]:
 
 
 

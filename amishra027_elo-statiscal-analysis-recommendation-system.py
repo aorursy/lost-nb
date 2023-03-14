@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from sklearn import model_selection, preprocessing, metrics
@@ -27,7 +26,6 @@ import csv
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 #Loading Train and Test Data
@@ -38,25 +36,21 @@ df_new_merchant_transactions=pd.read_csv('../input/new_merchant_transactions.csv
 df_historical_transactions = pd.read_csv("../input/historical_transactions.csv")
 
 
-# In[3]:
 
 
 sample_submission = pd.read_csv("../input/sample_submission.csv")
 
 
-# In[4]:
 
 
 sample_submission.head()
 
 
-# In[5]:
 
 
 print(df_train.info())
 
 
-# In[6]:
 
 
 print("Shape of train set                 : ",df_train.shape)
@@ -66,7 +60,6 @@ print("Shape of merchants                 : ",df_merchants.shape)
 print("Shape of new_merchant_transactions : ",df_new_merchant_transactions.shape)
 
 
-# In[7]:
 
 
 #Missing Data Analysis on train set
@@ -76,7 +69,6 @@ missing_data  = pd.concat([total, percent], axis=1, keys=['Total', 'Percentage']
 missing_data.head(20)
 
 
-# In[8]:
 
 
 #Missing Data Analysis on test set
@@ -86,13 +78,11 @@ missing_data  = pd.concat([total, percent], axis=1, keys=['Total', 'Percentage']
 missing_data.head(20)
 
 
-# In[9]:
 
 
 df_train.target.plot.hist()
 
 
-# In[10]:
 
 
 # Code reference from https://www.kaggle.com/sudalairajkumar/simple-exploration-notebook-elo
@@ -121,13 +111,11 @@ plt.title("First active month count in test set")
 plt.show()
 
 
-# In[11]:
 
 
 df_train.corr()
 
 
-# In[12]:
 
 
 df_train = pd.get_dummies(df_train, columns=['feature_1', 'feature_2'])
@@ -135,89 +123,76 @@ df_test = pd.get_dummies(df_test, columns=['feature_1', 'feature_2'])
 df_train.head()
 
 
-# In[13]:
 
 
 df_card_history  = df_historical_transactions['card_id'].value_counts().head(10)
 df_card_history
 
 
-# In[14]:
 
 
 df_card_history_authorized  = df_historical_transactions['authorized_flag'].value_counts()
 df_card_history_authorized
 
 
-# In[15]:
 
 
 df_non_authorized = df_historical_transactions[df_historical_transactions['authorized_flag'] == "N"]
 df_non_authorized
 
 
-# In[16]:
 
 
 df_card_unauth  = df_non_authorized['card_id'].value_counts()
 df_card_unauth.head(10)
 
 
-# In[17]:
 
 
 df_card_1_unauth= df_non_authorized[df_non_authorized['card_id']=="C_ID_5ea401d358"]
 df_card_2_unauth = df_non_authorized[df_non_authorized['card_id']=="C_ID_3d3dfdc692"]
 
 
-# In[18]:
 
 
 df_card_1_merch = df_card_1_unauth['merchant_id'].value_counts()
 df_card_1_merch.head(10)
 
 
-# In[19]:
 
 
 df_card_1_merch = df_card_2_unauth['merchant_id'].value_counts()
 df_card_1_merch.head(10)
 
 
-# In[20]:
 
 
 df_card_new  = df_new_merchant_transactions['card_id'].value_counts().head(10)
 df_card_new
 
 
-# In[21]:
 
 
 df_non_authorized = df_new_merchant_transactions[df_new_merchant_transactions['authorized_flag'] == "N"]
 df_non_authorized
 
 
-# In[22]:
 
 
 df_new_merchant_transactions.head()
 
 
-# In[23]:
 
 
 df_new_merchant_transactions['purchase_amount_integer'] = df_new_merchant_transactions.purchase_amount.apply(lambda x: x == np.round(x))
 print(df_new_merchant_transactions.groupby('purchase_amount_integer')['card_id'].count())
 
 
-# In[24]:
 
 
 df_new_merchant_transactions['purchase_amount_new'] = np.round(df_new_merchant_transactions['purchase_amount'] / 0.00150265118 + 497.06,8)
 
 
-# In[25]:
 
 
 #rounding off two decimal places
@@ -227,13 +202,11 @@ df_new_merchant_transactions['purchase_amount_integer'] = df_new_merchant_transa
 print(df_new_merchant_transactions.groupby('purchase_amount_integer')['card_id'].count())
 
 
-# In[26]:
 
 
 df_new_merchant_transactions.groupby('purchase_amount_new')['card_id'].count().reset_index(name='count').sort_values('count',ascending=False).head(100)
 
 
-# In[27]:
 
 
 df_historical_transactions = pd.get_dummies(df_historical_transactions, columns=['category_2', 'category_3'])
@@ -243,14 +216,12 @@ df_historical_transactions['category_1'] = df_historical_transactions['category_
 df_historical_transactions.head()
 
 
-# In[28]:
 
 
 df_historical_transactions['purchase_amount_integer'] = df_historical_transactions.purchase_amount.apply(lambda x: x == np.round(x))
 print(df_historical_transactions.groupby('purchase_amount_integer')['card_id'].count())
 
 
-# In[29]:
 
 
 #df_historical_transactions['purchase_amount_new'] = np.round(df_historical_transactions['purchase_amount'] / 0.00150265118 + 497.06,8)
@@ -259,25 +230,21 @@ df_historical_transactions['purchase_amount_integer'] = df_historical_transactio
 print(df_historical_transactions.groupby('purchase_amount_integer')['card_id'].count())
 
 
-# In[30]:
 
 
 df_historical_transactions.groupby('purchase_amount_new')['card_id'].count().reset_index(name='count').sort_values('count',ascending=False).head(100)
 
 
-# In[31]:
 
 
 del df_historical_transactions['purchase_amount_integer']
 
 
-# In[32]:
 
 
 df_historical_transactions.dtypes
 
 
-# In[33]:
 
 
 ####
@@ -316,7 +283,6 @@ def aggregate_transactions(trans, prefix):
     return agg_trans
 
 
-# In[34]:
 
 
 ###### Aggregate transaction function on the historical transaction ######
@@ -334,7 +300,6 @@ gc.collect()
 df_train.head()
 
 
-# In[35]:
 
 
 df_new_merchant_transactions = pd.get_dummies(df_new_merchant_transactions, columns=['category_2', 'category_3'])
@@ -344,7 +309,6 @@ df_new_merchant_transactions['category_1'] = df_new_merchant_transactions['categ
 df_new_merchant_transactions.head()
 
 
-# In[36]:
 
 
 ######Aggregate transaction function on the new merchant transaction ######
@@ -360,7 +324,6 @@ gc.collect()
 df_train.head()
 
 
-# In[37]:
 
 
 ###### Dropping 3 columns ######
@@ -372,7 +335,6 @@ features = list(df_train[use_cols].columns)
 df_train[features].head()
 
 
-# In[38]:
 
 
 
@@ -381,13 +343,11 @@ print(df_train[features].shape)
 print(df_test[features].shape)
 
 
-# In[39]:
 
 
 df_train.corr()
 
 
-# In[40]:
 
 
 #### Utilizing KFold Cross Validator ####
@@ -395,7 +355,6 @@ df_train.corr()
 from sklearn.model_selection import KFold
 
 
-# In[41]:
 
 
 ###LGB model detals for different parameters referenced from  the below notebook
@@ -437,13 +396,11 @@ for fold_, (trn_idx, val_idx) in enumerate(folds.split(df_train.values, target.v
     predictions += clf.predict(df_test[features], num_iteration=clf.best_iteration) / folds.n_splits
 
 
-# In[42]:
 
 
 print('5 Fold Cross Validation - lgb - ', np.sqrt(mean_squared_error(oof_5, target)))
 
 
-# In[43]:
 
 
 ###LGB model detals for different parameters referenced from  the below notebook
@@ -488,13 +445,11 @@ for fold_, (trn_idx, val_idx) in enumerate(folds.split(df_train.values, target.v
     predictions += clf.predict(df_test[features], num_iteration=clf.best_iteration) / folds.n_splits
 
 
-# In[44]:
 
 
 print('10 Fold Cross Validation - lgb - ', np.sqrt(mean_squared_error(oof_10, target)))
 
 
-# In[45]:
 
 
 sub_df = pd.read_csv('../input/sample_submission.csv')
@@ -502,7 +457,6 @@ sub_df["target"] =  predictions #0.5 * predictions_lgb + 0.5 * predictions_xgb
 sub_df.to_csv("submission.csv", index=False)
 
 
-# In[46]:
 
 
 sub_df.tail(5)

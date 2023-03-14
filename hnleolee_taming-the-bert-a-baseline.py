@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ import time
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 #downloading weights and cofiguration file for the model
@@ -33,7 +31,6 @@ with zipfile.ZipFile("uncased_L-12_H-768_A-12.zip","r") as zip_ref:
 get_ipython().system("ls 'uncased_L-12_H-768_A-12'")
 
 
-# In[3]:
 
 
 get_ipython().system('wget https://raw.githubusercontent.com/google-research/bert/master/modeling.py ')
@@ -41,7 +38,6 @@ get_ipython().system('wget https://raw.githubusercontent.com/google-research/ber
 get_ipython().system('wget https://raw.githubusercontent.com/google-research/bert/master/tokenization.py')
 
 
-# In[4]:
 
 
 import modeling
@@ -50,7 +46,6 @@ import tokenization
 import tensorflow as tf
 
 
-# In[5]:
 
 
 get_ipython().system('wget https://raw.githubusercontent.com/google-research-datasets/gap-coreference/master/gap-development.tsv')
@@ -59,7 +54,6 @@ get_ipython().system('wget https://raw.githubusercontent.com/google-research-dat
 get_ipython().system('ls')
 
 
-# In[6]:
 
 
 def compute_offset_no_spaces(text, offset):
@@ -83,7 +77,6 @@ def count_length_no_special(text):
 	return count
 
 
-# In[7]:
 
 
 def run_bert(data):
@@ -174,7 +167,6 @@ def run_bert(data):
 	return emb
 
 
-# In[8]:
 
 
 print("Started at ", time.ctime())
@@ -192,7 +184,6 @@ development_emb.to_json("contextual_embeddings_gap_development.json", orient = '
 print("Finished at ", time.ctime())
 
 
-# In[9]:
 
 
 from keras import backend, models, layers, initializers, regularizers, constraints, optimizers
@@ -215,7 +206,6 @@ patience = 100
 lambd = 0.1 # L2 regularization
 
 
-# In[10]:
 
 
 def build_mlp_model(input_shape):
@@ -242,7 +232,6 @@ def build_mlp_model(input_shape):
 	return model
 
 
-# In[11]:
 
 
 def parse_json(embeddings):
@@ -282,7 +271,6 @@ def parse_json(embeddings):
 	return X, Y
 
 
-# In[12]:
 
 
 # Read development embeddigns from json file - this is the output of Bert
@@ -296,7 +284,6 @@ test = pd.read_json("contextual_embeddings_gap_test.json")
 X_test, Y_test = parse_json(test)
 
 
-# In[13]:
 
 
 # There may be a few NaN values, where the offset of a target word is greater than the max_seq_length of BERT.
@@ -314,7 +301,6 @@ remove_development = [row for row in range(len(X_development)) if np.sum(np.isna
 X_development[remove_development] = np.zeros(3*768)
 
 
-# In[14]:
 
 
 # Will train on data from the gap-test and gap-validation files, in total 2454 rows
@@ -325,7 +311,6 @@ Y_train = np.concatenate((Y_test, Y_validation), axis = 0)
 prediction = np.zeros((len(X_development),3)) # testing predictions
 
 
-# In[15]:
 
 
 # Training and cross-validation
@@ -360,7 +345,6 @@ print(scores)
 print("Test score:", log_loss(Y_development,prediction))
 
 
-# In[16]:
 
 
 # Write the prediction to file for submission

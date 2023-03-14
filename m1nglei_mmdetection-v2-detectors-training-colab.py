@@ -1,19 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 get_ipython().system(' nvidia-smi')
 
 
-# In[ ]:
 
 
 get_ipython().system(' pip install --upgrade --force-reinstall --no-deps albumentations')
 
 
-# In[ ]:
 
 
 get_ipython().system(' git clone https://github.com/open-mmlab/mmcv.git /content/mmcv/')
@@ -21,7 +18,6 @@ get_ipython().run_line_magic('cd', '/content/mmcv')
 get_ipython().system(' pip install -e .')
 
 
-# In[ ]:
 
 
 get_ipython().system(' git clone https://github.com/WangLibo1995/mmdetection-v2-with-mosaic-data-augmentation.git /content/mmdetection/  ')
@@ -31,25 +27,21 @@ get_ipython().system(' pip install "git+https://github.com/open-mmlab/cocoapi.gi
 get_ipython().system(' python setup.py develop')
 
 
-# In[ ]:
 
 
 #!wget -c https://www.cs.jhu.edu/~syqiao/DetectoRS/DetectoRS_X101-ed983634.pth -O /content/DetectoRS_x101.pth
 
 
-# In[ ]:
 
 
 # !wget -c http://cs.jhu.edu/~syqiao/DetectoRS/DetectoRS_R50-0f1c8080.pth -O /content/DetectoRS_50.pth
 
 
-# In[ ]:
 
 
 get_ipython().system('wget -c https://open-mmlab.s3.ap-northeast-2.amazonaws.com/mmdetection/v2.0/detectors/detectors_cascade_rcnn_r50_1x_coco/detectors_cascade_rcnn_r50_1x_coco-0db1ab6a.pth -O /content/DetectoRS_box_50.pth')
 
 
-# In[ ]:
 
 
 from mmdet.apis import init_detector, inference_detector, show_result_pyplot
@@ -72,7 +64,6 @@ import matplotlib.pyplot as plt
 import torch
 
 
-# In[ ]:
 
 
 def expand_bbox(x):
@@ -111,7 +102,6 @@ def marking_pre(csv_file, debug=False):
     return df
 
 
-# In[ ]:
 
 
 import glob
@@ -292,7 +282,6 @@ def with_5fold_to_coco(csv_file,image_dir,saved_coco_path,fold_number,debug):
     l2c_val.save_coco_json(val_instance, f'{annotations_path}instances_val2017.json')
 
 
-# In[ ]:
 
 
 csv_file = '/content/global-wheat-detection/train.csv'
@@ -302,20 +291,17 @@ fold_number = 0
 debug = False
 
 
-# In[ ]:
 
 
 with_5fold_to_coco(csv_file,image_dir,saved_coco_path,fold_number,debug)
 
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('cd', "'/content/mmdetection'")
 get_ipython().system('python tools/browse_dataset.py /content/mmdetection/configs/detectors/detectors_cascade_rcnn_r50_1x_coco.py --output-dir /content/fig --not-show')
 
 
-# In[ ]:
 
 
 import os
@@ -330,14 +316,12 @@ for image_id in image_list[:5]:
   ax.imshow(img)
 
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('cd', "'/content/mmdetection'")
 get_ipython().system('python tools/train.py /content/mmdetection/configs/detectors/detectors_cascade_rcnn_r50_1x_coco.py --work-dir "/content/drive/My Drive/Global_Wheat_Detection/mmdetv2-resnet50_ft" --gpus 1 --seed 42 --load-from /content/DetectoRS_box_50.pth ')
 
 
-# In[ ]:
 
 
 # %cd /content/mmdetection
@@ -348,7 +332,6 @@ get_ipython().system('python tools/train.py /content/mmdetection/configs/detecto
 # --out "/content/drive/My Drive/Global_Wheat_Detection/mmdet-resnet101/result.pkl" 
 
 
-# In[ ]:
 
 
 # cfg_path = '/content/mmdetection/configs/DetectoRS/My_DetectoRS_resnet101_from_x.py'
@@ -358,7 +341,6 @@ get_ipython().system('python tools/train.py /content/mmdetection/configs/detecto
 # model = init_detector(cfg_path, cp_path, device='cuda:0')
 
 
-# In[ ]:
 
 
 # img = '/content/mmdetection/data/coco/train2017/00333207f.jpg'

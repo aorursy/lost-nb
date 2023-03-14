@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os, time
@@ -12,7 +11,6 @@ from kaggle_datasets import KaggleDatasets
 print(tf.version.VERSION)
 
 
-# In[2]:
 
 
 # Detect hardware, return appropriate distribution strategy
@@ -35,7 +33,6 @@ else:
 print("REPLICAS: ", strategy.num_replicas_in_sync)
 
 
-# In[3]:
 
 
 SEQUENCE_LENGTH = 128
@@ -47,7 +44,6 @@ BERT_GCS_PATH = KaggleDatasets().get_gcs_path('bert-multi')
 BERT_GCS_PATH_SAVEDMODEL = BERT_GCS_PATH + "/bert_multi_from_tfhub"
 
 
-# In[4]:
 
 
 def multilingual_bert_model(max_seq_length=SEQUENCE_LENGTH, trainable_bert=True):
@@ -76,7 +72,6 @@ def multilingual_bert_model(max_seq_length=SEQUENCE_LENGTH, trainable_bert=True)
                           outputs=output)
 
 
-# In[5]:
 
 
 def parse_string_list_into_ints(strlist):
@@ -125,7 +120,6 @@ def make_sentence_dataset_from_csv(filename, label='toxic', language_to_filter=N
     return preprocessed_sentences_dataset
 
 
-# In[6]:
 
 
 def make_dataset_pipeline(dataset, repeat_and_shuffle=True):
@@ -165,7 +159,6 @@ nonenglish_val_datasets['Combined'] = tf.data.experimental.sample_from_datasets(
          nonenglish_val_datasets['Turkish']))
 
 
-# In[7]:
 
 
 with strategy.scope():
@@ -180,7 +173,6 @@ with strategy.scope():
 multilingual_bert.summary()
 
 
-# In[8]:
 
 
 # Test the model's performance on non-English comments before training.
@@ -214,7 +206,6 @@ results = multilingual_bert.evaluate(english_train_dataset,
 print('\nEnglish loss, AUC after training:', results)
 
 
-# In[9]:
 
 
 import numpy as np
@@ -242,7 +233,6 @@ np.savetxt('submission.csv', np.rec.fromarrays([test_ids, probabilities]),
 get_ipython().system('head submission.csv')
 
 
-# In[10]:
 
 
 import numpy as np
@@ -255,152 +245,127 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-# In[11]:
 
 
 df=pd.read_csv('../input/jigsaw-multilingual-toxic-comment-classification/jigsaw-toxic-comment-train-processed-seqlen128.csv',sep='\t',names=['toxic','comment_text'])
 
 
-# In[12]:
 
 
 df.head()
 
 
-# In[13]:
 
 
 len(df)
 
 
-# In[14]:
 
 
 len(df[df.toxic=='1'])
 
 
-# In[15]:
 
 
 df_x=df['comment_text']
 df_y=df['toxic']
 
 
-# In[16]:
 
 
 df_x
 
 
-# In[17]:
 
 
 cv=CountVectorizer()
 
 
-# In[18]:
 
 
 x_train, x_test, y_train, y_test=train_test_split(df_x,df_y,test_size=0.2,random_state=101)
 
 
-# In[19]:
 
 
 x_traincv=cv.fit_transform(['Hi how are you, how are you doing?',"Hey what's up"])
 
 
-# In[20]:
 
 
 x_traincv.toarray()
 
 
-# In[21]:
 
 
 cv.get_feature_names()
 
 
-# In[22]:
 
 
 cv1=CountVectorizer()
 
 
-# In[23]:
 
 
 x_traincv=cv1.fit_transform(x_train.values.astype('U'))
 
 
-# In[24]:
 
 
 a=x_traincv.toarray()
 
 
-# In[25]:
 
 
 cv=TfidfVectorizer(min_df=1,stop_words='english')
 
 
-# In[26]:
 
 
 cv1=TfidfVectorizer(min_df=1,stop_words='english')
 
 
-# In[27]:
 
 
 x_traincv=cv1.fit_transform(x_train.values.astype('U'))
 
 
-# In[28]:
 
 
 a=x_traincv.toarray()
 
 
-# In[29]:
 
 
 cv1.inverse_transform(a[0])
 
 
-# In[30]:
 
 
 a
 
 
-# In[31]:
 
 
 a[0]
 
 
-# In[32]:
 
 
 len(a[0])
 
 
-# In[33]:
 
 
 mnb=MultinomialNB()
 
 
-# In[34]:
 
 
 y_train=y_train.astype('int')
 
 
-# In[35]:
 
 
 import pandas as pd
@@ -408,32 +373,27 @@ messages=pd.read_csv("../input/new-jigsaw/trainnew.csv")
 messages2=pd.read_csv("../input/new-jigsaw/validationnew.csv")
 
 
-# In[36]:
 
 
 print(len(messages))
 
 
-# In[37]:
 
 
 messages.head()
 
 
-# In[38]:
 
 
 messages_x=messages['comment_text']
 messages_y=messages['toxic']
 
 
-# In[39]:
 
 
 messages_x
 
 
-# In[40]:
 
 
 import numpy as np
@@ -447,20 +407,17 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 cv=CountVectorizer()
 
 
-# In[41]:
 
 
 x_train, x_test, y_train, y_test=train_test_split(messages_x,messages_y,test_size=0.01,random_state=101)
 
 
-# In[42]:
 
 
 x_traincv=cv.fit_transform(x_train)
 x_traincv
 
 
-# In[43]:
 
 
 # a=x_traincv.toarray()
@@ -469,170 +426,142 @@ a=x_traincv.toarray()
 a
 
 
-# In[44]:
 
 
 cv=TfidfVectorizer(min_df=1,stop_words='english')
 
 
-# In[45]:
 
 
 x_traincv=cv.fit_transform(x_train)
 
 
-# In[46]:
 
 
 a=x_traincv.toarray()
 
 
-# In[47]:
 
 
 cv.inverse_transform(a[0])
 
 
-# In[48]:
 
 
 a
 
 
-# In[49]:
 
 
 mnb=MultinomialNB()
 
 
-# In[50]:
 
 
 y_train=messages2.astype('int')
 
 
-# In[51]:
 
 
 mnb.fit(x_traincv,messages2)
 
 
-# In[52]:
 
 
 mnb=MultinomialNB()
 
 
-# In[53]:
 
 
 y_train=y_train.astype('int')
 
 
-# In[54]:
 
 
 mnb.fit(x_traincv,y_train)
 
 
-# In[55]:
 
 
 messages2.shape
 
 
-# In[56]:
 
 
 messages.shape
 
 
-# In[57]:
 
 
 messages3=messages[['id','comment_text','toxic']]
 
 
-# In[58]:
 
 
 messages4=messages2[['id','comment_text','toxic']]
 
 
-# In[59]:
 
 
 messages3.head()
 
 
-# In[60]:
 
 
 messages4.head()
 
 
-# In[61]:
 
 
 messages3_x=messages['comment_text']
 messages3_y=messages['toxic']
 
 
-# In[62]:
 
 
 x_train, x_test, y_train, y_test=train_test_split(messages3_x,messages3_y,test_size=.01,random_state=101)
 
 
-# In[63]:
 
 
 cv=TfidfVectorizer(min_df=1,stop_words='english')
 
 
-# In[64]:
 
 
 k=cv.fit_transform(x_train)
 
 
-# In[65]:
 
 
 a=k.toarray()
 
 
-# In[66]:
 
 
 cv.inverse_transform(a[0])
 
 
-# In[67]:
 
 
 a
 
 
-# In[68]:
 
 
 b=cv.fit_transform(messages4)
 
 
-# In[69]:
 
 
 mnb=MultinomialNB()
 
 
-# In[ ]:
 
 
 
 
 
-# In[70]:
 
 
 one_hot_encoded_training_predictors = pd.get_dummies(messages3)
@@ -642,7 +571,6 @@ final_train, final_test = one_hot_encoded_training_predictors.align(one_hot_enco
                                                                     axis=1)
 
 
-# In[71]:
 
 
 # X, y = check_X_y(
@@ -650,25 +578,20 @@ final_train, final_test = one_hot_encoded_training_predictors.align(one_hot_enco
 mnb.fit()
 
 
-# In[72]:
 
 
-pip install -r requirements.txt
 
 
-# In[73]:
 
 
 messages3.shape
 
 
-# In[74]:
 
 
 messages4.shape
 
 
-# In[ ]:
 
 
 

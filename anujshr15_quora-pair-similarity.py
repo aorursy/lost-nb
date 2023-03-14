@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import numpy as np
@@ -44,53 +42,45 @@ from nltk.stem import PorterStemmer
 from bs4 import BeautifulSoup
 
 
-# In[3]:
 
 
 import os
 print(os.listdir("../input"))
 
 
-# In[4]:
 
 
 df=pd.read_csv('../input/quora-question-pairs/train.csv.zip')
 df.shape
 
 
-# In[5]:
 
 
 df.head()
 
 
-# In[6]:
 
 
 df.info()
 
 
-# In[7]:
 
 
 df.groupby('is_duplicate')['id'].count().plot.bar()
 
 
-# In[8]:
 
 
 dup_0=df[df['is_duplicate']==0].shape[0]
 dup_1=df.shape[0]-dup_0
 
 
-# In[9]:
 
 
 print("Percentage of 0's or not duplicates in dataset: {0:.2f}".format(dup_0*100/(dup_0+dup_1)))
 print("Percentage of 1's or duplicates in dataset: {0:.2f}".format(dup_1*100/(dup_0+dup_1)))
 
 
-# In[10]:
 
 
 #number of unique questions in the dataset
@@ -101,7 +91,6 @@ q_list1.extend(q_list2)
 c=Counter(q_list1)
 
 
-# In[11]:
 
 
 print("Number of unique questions in dataset: ",len(c.values()))
@@ -114,7 +103,6 @@ for i in c.values():
 print("Number of unique questions that are repeated: ",t)
 
 
-# In[12]:
 
 
 #checking whether there are any duplicate pairs
@@ -122,7 +110,6 @@ group_df_count=df.groupby(['qid1','qid2']).count().shape[0]
 print("Number of duplicate pairs: ",group_df_count-df.shape[0])
 
 
-# In[13]:
 
 
 plt.figure(figsize=(20,10))
@@ -134,25 +121,21 @@ plt.ylabel('total number of questions')
 plt.show()
 
 
-# In[14]:
 
 
 df[df.isnull().any(axis=1)]
 
 
-# In[15]:
 
 
 df.fillna(' ',inplace=True)
 
 
-# In[16]:
 
 
 df[df.isnull().any(1)]
 
 
-# In[17]:
 
 
 df['freq_qid1'] = df.groupby('qid1')['qid1'].transform('count') 
@@ -180,13 +163,11 @@ df['freq_q1+q2'] = df['freq_qid1']+df['freq_qid2']
 df['freq_q1-q2'] = abs(df['freq_qid1']-df['freq_qid2'])
 
 
-# In[18]:
 
 
 df.head()
 
 
-# In[19]:
 
 
 print("minimum length of question 1: ",df['q1_n_words'].min())
@@ -195,14 +176,12 @@ t1=df['q1_n_words'].min()
 t2=df['q2_n_words'].min()
 
 
-# In[20]:
 
 
 print("number of question 1 with minimum length: ",df[df['q1_n_words']==t1].shape[0])
 print("number of question 2 with minimum length: ",df[df['q2_n_words']==t2].shape[0])
 
 
-# In[21]:
 
 
 plt.figure(figsize=(12,8))
@@ -217,7 +196,6 @@ plt.legend()
 plt.show()
 
 
-# In[22]:
 
 
 plt.figure(figsize=(12,8))
@@ -232,7 +210,6 @@ plt.legend()
 plt.show()
 
 
-# In[23]:
 
 
 plt.figure(figsize=(12,8))
@@ -247,7 +224,6 @@ plt.legend()
 plt.show()
 
 
-# In[24]:
 
 
 plt.figure(figsize=(12,8))
@@ -262,7 +238,6 @@ plt.legend()
 plt.show()
 
 
-# In[25]:
 
 
 plt.figure(figsize=(12,8))
@@ -277,7 +252,6 @@ plt.legend()
 plt.show()
 
 
-# In[26]:
 
 
 plt.figure(figsize=(12,8))
@@ -292,7 +266,6 @@ plt.legend()
 plt.show()
 
 
-# In[27]:
 
 
 plt.figure(figsize=(12,8))
@@ -307,7 +280,6 @@ plt.legend()
 plt.show()
 
 
-# In[28]:
 
 
 plt.figure(figsize=(12,8))
@@ -322,7 +294,6 @@ plt.legend()
 plt.show()
 
 
-# In[29]:
 
 
 # To get the results in 4 decemal points
@@ -355,19 +326,16 @@ def preprocess(x):
     
 
 
-# In[30]:
 
 
 get_ipython().run_cell_magic('bash', '', 'pip install distance')
 
 
-# In[31]:
 
 
 import distance
 
 
-# In[32]:
 
 
 def get_token_features(q1, q2):
@@ -462,32 +430,27 @@ def extract_features(df):
     return df
 
 
-# In[33]:
 
 
 get_ipython().run_cell_magic('bash', '', 'pip install fuzzywuzzy')
 
 
-# In[34]:
 
 
 from fuzzywuzzy import fuzz
 
 
-# In[35]:
 
 
 df=extract_features(df)
 df.head()
 
 
-# In[36]:
 
 
 df.to_csv("nlp_features_train.csv", index=False)
 
 
-# In[ ]:
 
 
 

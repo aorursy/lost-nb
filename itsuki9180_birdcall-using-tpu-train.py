@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd, numpy as np, gc
@@ -12,7 +11,6 @@ from sklearn.model_selection import KFold
 import matplotlib.pyplot as plt
 
 
-# In[2]:
 
 
 DEVICE = "TPU" # "TPU" or "GPU"
@@ -23,7 +21,6 @@ EPOCHS = [50]*FOLDS
 AUG_BATCH = BATCH_SIZE
 
 
-# In[3]:
 
 
 if DEVICE == "TPU":
@@ -60,7 +57,6 @@ REPLICAS = strategy.num_replicas_in_sync
 print(f'REPLICAS: {REPLICAS}')
 
 
-# In[4]:
 
 
 GCS_PATH = [None]*FOLDS; GCS_PATH2 = [None]*FOLDS; GCS_PATH3 = [None]*FOLDS; GCS_PATH4 = [None]*FOLDS; GCS_PATH5 = [None]*FOLDS
@@ -74,7 +70,6 @@ for i in range(FOLDS):
 files_train = np.sort(np.array(tf.io.gfile.glob(GCS_PATH[0] + '/*.tfrec')))
 
 
-# In[5]:
 
 
 def decode_image(image_data):
@@ -161,7 +156,6 @@ STEPS_PER_EPOCH = NUM_TRAINING_IMAGES // BATCH_SIZE
 #print('Dataset: {} training images, {} validation images, {} unlabeled test images'.format(NUM_TRAINING_IMAGES, NUM_VALIDATION_IMAGES, NUM_TEST_IMAGES))
 
 
-# In[6]:
 
 
 def onehot(image,label):
@@ -169,7 +163,6 @@ def onehot(image,label):
     return image,tf.one_hot(label,CLASSES)
 
 
-# In[7]:
 
 
 def mixup(image, label, PROBABILITY = 1.0):
@@ -209,7 +202,6 @@ def mixup(image, label, PROBABILITY = 1.0):
     return image2,label2
 
 
-# In[8]:
 
 
 def augmentation(img):
@@ -217,7 +209,6 @@ def augmentation(img):
     return img
 
 
-# In[9]:
 
 
 def transform(image,label):
@@ -239,7 +230,6 @@ def transform(image,label):
     return image4,label4
 
 
-# In[10]:
 
 
 
@@ -259,7 +249,6 @@ for (img,label) in augmented_element:
     break
 
 
-# In[11]:
 
 
 from keras.callbacks import Callback
@@ -301,13 +290,11 @@ def F1(y_true, y_pred):
     return  (TP * 2) / (TPFN + TPFP + K.epsilon())
 
 
-# In[12]:
 
 
 f1cb = F1Callback()
 
 
-# In[13]:
 
 
 def binary_loss(y_true, y_pred):
@@ -315,7 +302,6 @@ def binary_loss(y_true, y_pred):
     return K.sum(bce, axis=-1)
 
 
-# In[14]:
 
 
 from tensorflow.keras import backend as K
@@ -397,7 +383,6 @@ def categorical_focal_loss(gamma=2., alpha=.25):
     return categorical_focal_loss_fixed
 
 
-# In[15]:
 
 
 # Copyright 2019 The TensorFlow Authors. All Rights Reserved.
@@ -1079,7 +1064,6 @@ def decode_predictions(preds, top=5):
   return imagenet_utils.decode_predictions(preds, top=top)
 
 
-# In[16]:
 
 
 def build_model():
@@ -1098,7 +1082,6 @@ def build_model():
     return model
 
 
-# In[17]:
 
 
 def get_lr_callback(batch_size=8):
@@ -1125,7 +1108,6 @@ def get_lr_callback(batch_size=8):
     return lr_callback
 
 
-# In[18]:
 
 
 skf = KFold(n_splits=FOLDS,shuffle=True,random_state=12)
@@ -1136,7 +1118,6 @@ for fold,(idxT,idxV) in enumerate(skf.split(np.arange(5))):
     print('Fold',fold,'has TRAIN:',idxT,'VALID:',idxV)
 
 
-# In[19]:
 
 
 for fold in range(FOLDS):
@@ -1203,13 +1184,11 @@ for fold in range(FOLDS):
     del model; z = gc.collect()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

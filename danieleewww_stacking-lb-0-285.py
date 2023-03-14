@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 base_path = '../input/' # your folder
@@ -56,13 +55,11 @@ train.to_csv(base_path + 'train_p.csv', index = False)
 test.to_csv(base_path + 'test_p.csv', index = False)
 
 
-# In[2]:
 
 
 base_path = '../input/' # your folder
 
 
-# In[3]:
 
 
 import pandas as pd
@@ -172,7 +169,6 @@ gc.collect()
 sub.head(2)
 
 
-# In[4]:
 
 
 import numpy as np
@@ -269,7 +265,6 @@ _ = df.plot(kind='barh', x='col', y='imp', figsize=(7,12))
 plt.savefig('catboost_feature_importance.png')
 
 
-# In[5]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -525,7 +520,6 @@ sub_df[["target"]].to_csv(base_path + "test_submission.csv", index=True, float_f
 trn_df[["target"]].to_csv(base_path + "train_submission.csv", index=True, float_format="%.9f")
 
 
-# In[6]:
 
 
 import numpy as np 
@@ -1476,7 +1470,6 @@ if __name__ == "__main__":
     main()
 
 
-# In[7]:
 
 
 import pandas as pd
@@ -1551,7 +1544,6 @@ sub['target'] = [x[1] for x in list(dnn_y_pred_train)]
 sub.to_csv(base_path + 'train_dnn_predictions.csv', index=False, float_format='%.4f')
 
 
-# In[8]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -1692,7 +1684,6 @@ params = {'eta': 0.02, 'max_depth': 4, 'subsample': 0.9, 'colsample_bytree': 0.9
 x1, x2, y1, y2 = model_selection.train_test_split(train, train['target'], test_size=0.25, random_state=99)
 
 
-# In[9]:
 
 
 #keep dist
@@ -1712,19 +1703,16 @@ print(gini_xgb(model.predict(xgb.DMatrix(x2), ntree_limit=model.best_ntree_limit
 test['target'] = model.predict(xgb.DMatrix(test[col]), ntree_limit=model.best_ntree_limit)
 
 
-# In[10]:
 
 
 test[['id','target']].to_csv(base_path + 'test_uberKinetics.csv', index=False, float_format='%.5f')
 
 
-# In[11]:
 
 
 train = transform_df(train)
 
 
-# In[12]:
 
 
 train['target'] = model.predict(xgb.DMatrix(train[col]), ntree_limit=model.best_ntree_limit)
@@ -1732,7 +1720,6 @@ train['target'] = model.predict(xgb.DMatrix(train[col]), ntree_limit=model.best_
 train[['id','target']].to_csv(base_path + 'train_uberKinetics.csv', index=False, float_format='%.5f')
 
 
-# In[13]:
 
 
 
@@ -1765,13 +1752,11 @@ test = pd.concat([test,
 train_cols = ['xgb', 'lgb', 'dnn', 'up', 'cat', 'kin', 'gp']
 
 
-# In[14]:
 
 
 ### preprocess
 
 
-# In[15]:
 
 
 for t in train_cols:
@@ -1781,7 +1766,6 @@ for t in train_cols:
 test['target'] = (test['xgb_rank'] + test['lgb_rank'] + test['dnn_rank'] + test['up_rank'] +                  test['cat_rank'] + test['kin_rank'] + test['gp_rank']) / (7 * test.shape[0])
 
 
-# In[16]:
 
 
 test[['id', 'target']].to_csv(base_path + 'rank_avg.csv.gz', index = False, compression = 'gzip') 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # System
@@ -105,7 +104,6 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 print(os.listdir("../input/"))
 
 
-# In[2]:
 
 
 def date_time(x):
@@ -119,7 +117,6 @@ def date_time(x):
         return 'Date today: %s' % datetime.date.today()  
 
 
-# In[3]:
 
 
 input_directory = r"../input/dog-breed-identification/"
@@ -139,7 +136,6 @@ file_name_pred_batch = figure_directory+r"/result"
 file_name_pred_sample = figure_directory+r"/sample"
 
 
-# In[4]:
 
 
 train_df = pd.read_csv(input_directory + "/labels.csv")
@@ -148,14 +144,12 @@ train_df["id"] = train_df["id"].apply(lambda x: x+"."+"jpg")
 train_df.head()
 
 
-# In[5]:
 
 
 classes = list(train_df["label"].unique())
 classes.sort()
 
 
-# In[6]:
 
 
 test_files = os.listdir(testing_dir)
@@ -165,13 +159,11 @@ test_df = pd.DataFrame({"id": test_files, "label": "boston_bull"})
 test_df.head()
 
 
-# In[7]:
 
 
 len(train_df), len(test_df)
 
 
-# In[8]:
 
 
 def plot_image(file, directory=None, sub=False, aspect=None, title=False):
@@ -289,13 +281,11 @@ def plot_img_dir_main(directory=training_dir, count=5):
         
 
 
-# In[9]:
 
 
 plot_img_df(directory=training_dir, df=train_df, filename="id", label = "label", count=5, num_cat=5)
 
 
-# In[10]:
 
 
 train_df2 = train_df.copy()
@@ -308,7 +298,6 @@ classes2.sort()
 rows = (len(classes) - 1)/4
 
 
-# In[11]:
 
 
 plt.figure(figsize=(18, rows))
@@ -318,7 +307,6 @@ plt.tight_layout()
 plt.show() 
 
 
-# In[12]:
 
 
 plt.figure(figsize=(18, rows))
@@ -328,7 +316,6 @@ plt.tight_layout()
 plt.show() 
 
 
-# In[13]:
 
 
 def get_data(batch_size=32, target_size=(299, 299), class_mode="categorical", training_dir=training_dir, testing_dir=testing_dir, x_col="id", y_col="label"):
@@ -423,7 +410,6 @@ def get_weight(y, binary=True, n_samples=-1):
     return class_weights
 
 
-# In[14]:
 
 
 def get_model(model_name, input_shape=(96, 96, 3), num_class=2, weights='imagenet', dense_units=1024):
@@ -481,7 +467,6 @@ def get_model(model_name, input_shape=(96, 96, 3), num_class=2, weights='imagene
     return model
 
 
-# In[15]:
 
 
 def get_conv_model(num_class=2, input_shape=(150,150, 3)):
@@ -517,7 +502,6 @@ def get_conv_model(num_class=2, input_shape=(150,150, 3)):
     return model
 
 
-# In[16]:
 
 
 main_model_dir = output_directory + r"models/"
@@ -552,7 +536,6 @@ except:
 model_file = model_dir + "{epoch:02d}-val_acc-{val_acc:.2f}-val_loss-{val_loss:.2f}.hdf5"
 
 
-# In[17]:
 
 
 print("Settting Callbacks")
@@ -600,7 +583,6 @@ callbacks = [reduce_lr, early_stopping]
 print("Set Callbacks at ", date_time(1))
 
 
-# In[18]:
 
 
 # dim = 96
@@ -615,7 +597,6 @@ weights = 'imagenet'
 dense_units = 256
 
 
-# In[19]:
 
 
 print("Getting Base Model", date_time(1))
@@ -625,7 +606,6 @@ model = get_model(model_name="InceptionV3", input_shape=input_shape, num_class=n
 print("Loaded Base Model", date_time(1))
 
 
-# In[20]:
 
 
 batch_size = 64
@@ -637,7 +617,6 @@ target_size = (dim, dim)
 y_col = "label"
 
 
-# In[21]:
 
 
 train_generator, validation_generator, test_generator, class_weights, steps_per_epoch, validation_steps = get_data(batch_size=batch_size,
@@ -646,7 +625,6 @@ train_generator, validation_generator, test_generator, class_weights, steps_per_
                                                                                                                    y_col=y_col)    
 
 
-# In[22]:
 
 
 print("Compliling Model ...")
@@ -668,7 +646,6 @@ model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
 print("Completed Model Compilation.\n")
 
 
-# In[23]:
 
 
 steps_per_epoch = len(train_generator)
@@ -678,14 +655,12 @@ verbose = 1
 epochs = 30
 
 
-# In[24]:
 
 
 # batch_size = 32
 # train_generator, validation_generator, test_generator, class_weights, steps_per_epoch, validation_steps = get_data(batch_size=batch_size)
 
 
-# In[25]:
 
 
 print("Starting Trainning ...\n")
@@ -717,7 +692,6 @@ print("\nElapsed Time: " + elapsed_time)
 print("Completed Model Trainning", date_time(1))
 
 
-# In[26]:
 
 
 def plot_performance(history=None, figure_directory=None):
@@ -783,45 +757,38 @@ def plot_performance(history=None, figure_directory=None):
     plt.show()
 
 
-# In[27]:
 
 
 plot_performance(history=history)
 
 
-# In[28]:
 
 
 model.evaluate_generator(generator=validation_generator, steps=len(validation_generator), verbose=1)
 
 
-# In[29]:
 
 
 label_map = (train_generator.class_indices)
 label_map_inv = {v: k for k, v in label_map.items()}
 
 
-# In[30]:
 
 
 ypreds = model.predict_generator(generator=test_generator, steps = len(test_generator),  verbose=1)
 
 
-# In[31]:
 
 
 # ypreds
 
 
-# In[32]:
 
 
 ypred = ypreds.argmax(axis=-1)
 # ypred
 
 
-# In[33]:
 
 
 def get_rand_test_img(test_generator=None, labels_test=None, count=5):
@@ -861,7 +828,6 @@ def get_rand_test_img(test_generator=None, labels_test=None, count=5):
     return selected_file_names, selected_file_names, selected_labels
 
 
-# In[34]:
 
 
 test_img_count = 10
@@ -869,7 +835,6 @@ labels_test = ypred
 selected_file_names, selected_file_names, selected_labels = get_rand_test_img(test_generator=test_generator, labels_test=labels_test, count=test_img_count)
 
 
-# In[35]:
 
 
 count = test_img_count
@@ -906,7 +871,6 @@ plt.tight_layout()
 plt.show()     
 
 
-# In[36]:
 
 
 # count = 5
@@ -947,14 +911,12 @@ plt.show()
         
 
 
-# In[37]:
 
 
 sample_submission = pd.read_csv(input_directory+"sample_submission.csv")
 sample_submission.head()
 
 
-# In[38]:
 
 
 test_dir_files = os.listdir(testing_dir)
@@ -963,7 +925,6 @@ sample_submission_files = sample_submission["id"]
 len(test_dir_files), len(test_gen_files), len(sample_submission_files)
 
 
-# In[39]:
 
 
 m = {}
@@ -972,14 +933,12 @@ for i in range(l):
     m[test_gen_files[i]] = ypreds[i] 
 
 
-# In[40]:
 
 
 labels = (train_generator.class_indices)
 labels = list(labels.keys())
 
 
-# In[41]:
 
 
 ypreds_sync = []
@@ -987,14 +946,12 @@ for f in sample_submission_files:
     ypreds_sync.append(m[f+".jpg"]) 
 
 
-# In[42]:
 
 
 test_df = pd.DataFrame(data=ypreds_sync, columns=labels)
 test_df.head()
 
 
-# In[43]:
 
 
 test_df["id"]  = sample_submission_files
@@ -1007,7 +964,6 @@ test_df.to_csv('submission.csv', index=False)
 test_df.head()
 
 
-# In[ ]:
 
 
 

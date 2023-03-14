@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np, pandas as pd
@@ -20,7 +19,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
 
 
 train = pd.read_csv('../input/train.csv')
@@ -29,7 +27,6 @@ test = pd.read_csv('../input/test.csv')
 cols = [c for c in train.columns if c not in ['id', 'target', 'wheezy-copper-turtle-magic']]
 
 
-# In[3]:
 
 
 class MyGM(GaussianMixture):
@@ -102,14 +99,12 @@ class MyGM(GaussianMixture):
     
 
 
-# In[4]:
 
 
 oof_preds = np.zeros(train.shape[0])
 test_preds = np.zeros(test.shape[0])
 
 
-# In[5]:
 
 
 
@@ -171,13 +166,11 @@ for i in tqdm_notebook(range(512)):
         test_preds[idx2] += test_pred6[:, 1::2].sum(axis=1) / test_pred6.sum(axis=1)
 
 
-# In[6]:
 
 
 roc_auc_score(train["target"], oof_preds)
 
 
-# In[7]:
 
 
 sub = pd.read_csv('../input/sample_submission.csv')

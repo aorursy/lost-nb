@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -36,7 +35,6 @@ import torchvision
 from torchvision import transforms, datasets, models
 
 
-# In[2]:
 
 
 data_dir = '/kaggle/input/dog-breed-identification'
@@ -44,13 +42,11 @@ labels = pd.read_csv(join(data_dir, 'labels.csv'))
 Test_submission=pd.read_csv(join(data_dir, 'sample_submission.csv'))
 
 
-# In[3]:
 
 
 np.random.seed(0)
 
 
-# In[4]:
 
 
 ls /kaggle/input/pretrained-pytorch-models/

@@ -1,21 +1,18 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Downgrade tf to prevent errors in mrcnn
 get_ipython().system('pip install tensorflow==1.14')
 
 
-# In[2]:
 
 
 # Downgrade keras to prevent errors in mrcnn
 get_ipython().system('pip install keras==2.2.4')
 
 
-# In[3]:
 
 
 import numpy as np
@@ -49,7 +46,6 @@ tf.__version__
 keras.__version__
 
 
-# In[4]:
 
 
 # Root and data directory of the project
@@ -63,7 +59,6 @@ get_ipython().system('rm -rf .git # to prevent an error when the kernel is commi
 get_ipython().system('rm -rf images assets # to prevent displaying images at the bottom of a kernel')
 
 
-# In[5]:
 
 
 # Import Mask RCNN
@@ -75,7 +70,6 @@ from mrcnn.model import log
 import mrcnn.model as modellib
 
 
-# In[6]:
 
 
 # Local path to trained weights file
@@ -84,7 +78,6 @@ COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 utils.download_trained_weights(COCO_MODEL_PATH)
 
 
-# In[7]:
 
 
 # Define config class
@@ -117,7 +110,6 @@ config = MyConfig()
 config.display()
 
 
-# In[8]:
 
 
 # Load label json
@@ -128,7 +120,6 @@ with open(train_dir+'label_descriptions.json') as f:
 label_names = [x['name'] for x in label_descriptions['categories']]
 
 
-# In[9]:
 
 
 # Load train table
@@ -137,7 +128,6 @@ df = pd.read_csv(train_dir+'train.csv')
 df['labels'] = df['ClassId'].apply(lambda x: x.split('_')[0])
 
 
-# In[10]:
 
 
 # Group by image id and concatenate EncodedPixels and labels
@@ -147,14 +137,12 @@ g2_df = df.groupby('ImageId')['Height', 'Width'].mean()
 train_df = g1_df.join(g2_df, on='ImageId')
 
 
-# In[11]:
 
 
 # Train and validation split
 df_train,df_val = train_test_split(train_df,train_size=config.TRAIN_SIZE ,test_size=config.VAL_SIZE)
 
 
-# In[12]:
 
 
 # Extend the Dataset class and add load_data() to load the training data. 
@@ -213,7 +201,6 @@ class MyDataset(utils.Dataset):
         return mask, np.array(labels)
 
 
-# In[13]:
 
 
 # Create dataset for later use in the model
@@ -235,7 +222,6 @@ for i in range(2):
     visualize.display_top_masks(image, mask, class_ids, train_dataset.class_names, limit=4)
 
 
-# In[14]:
 
 
 # Create model in training mode
@@ -246,7 +232,6 @@ model.load_weights(COCO_MODEL_PATH, by_name=True, exclude=[
     'mrcnn_class_logits', 'mrcnn_bbox_fc', 'mrcnn_bbox', 'mrcnn_mask'])
 
 
-# In[15]:
 
 
 # Train the heads
@@ -257,7 +242,6 @@ model.train(train_dataset, valid_dataset,
 history = model.keras_model.history.history
 
 
-# In[16]:
 
 
 # Fine tune all layers
@@ -270,7 +254,6 @@ for k in new_history:
     history[k] = history[k] + new_history[k]
 
 
-# In[17]:
 
 
 # Create a configuration for inference
@@ -295,7 +278,6 @@ print("Loading weights from ", model_path)
 model.load_weights(model_path, by_name=True)
 
 
-# In[18]:
 
 
 # Test on a random image
@@ -316,7 +298,6 @@ visualize.display_instances(original_image, gt_bbox, gt_mask, gt_class_id,
                             train_dataset.class_names, figsize=(8, 8))
 
 
-# In[19]:
 
 
 # Predict and visualize on the same image
@@ -327,7 +308,6 @@ visualize.display_instances(original_image, r['rois'], r['masks'], r['class_ids'
                             valid_dataset.class_names, r['scores'],figsize=(8, 8))
 
 
-# In[20]:
 
 
 
@@ -351,7 +331,6 @@ for image_id in image_ids:
 print("mAP: ", np.mean(APs))
 
 
-# In[ ]:
 
 
 

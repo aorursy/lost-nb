@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os, sys, math, time
@@ -22,14 +21,12 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[2]:
 
 
 INPUT_SIZE = (300,300)
 data = pd.read_csv('../input/imet-2019-fgvc6/train.csv')
 
 
-# In[3]:
 
 
 # unique labels - for sigmoid predict (1103 class)
@@ -39,7 +36,6 @@ pd.DataFrame(
     columns=['label', 'count'])[:3]
 
 
-# In[4]:
 
 
 # unique labels group - for softmax predict (9280 class)
@@ -49,7 +45,6 @@ pd.DataFrame(
     columns=['group labels', 'count'])[:3]
 
 
-# In[5]:
 
 
 import torch
@@ -61,7 +56,6 @@ from torchvision import models
 torch.manual_seed(42)
 
 
-# In[6]:
 
 
 class train_dataset(Dataset):
@@ -126,7 +120,6 @@ class train_dataset(Dataset):
         return augment_img.augment_image(image)
 
 
-# In[7]:
 
 
 from torchvision.models.resnet import conv3x3
@@ -250,7 +243,6 @@ class ResNet(nn.Module):
         return sigmoid_output, softmax_output
 
 
-# In[8]:
 
 
 def fbeta_score(prob, label, threshold=0.5, beta=2):
@@ -268,7 +260,6 @@ def fbeta_score(prob, label, threshold=0.5, beta=2):
     return fscore.mean(0)
 
 
-# In[9]:
 
 
 def train_epoch(model, train_loader, sigmoid_criterion, softmax_criterion, loss_blender, optimizer):
@@ -303,7 +294,6 @@ def train_epoch(model, train_loader, sigmoid_criterion, softmax_criterion, loss_
         return history
 
 
-# In[10]:
 
 
 def model_eval(model, valid_loader, sigmoid_criterion, softmax_criterion, loss_blender):
@@ -328,7 +318,6 @@ def model_eval(model, valid_loader, sigmoid_criterion, softmax_criterion, loss_b
         return total_loss/len(valid_loader), total_sigmoid_loss/len(valid_loader), softmax_loss/len(valid_loader), total_eval/len(valid_loader)
 
 
-# In[11]:
 
 
 def model_train(model, train_loader, valid_loader, sigmoid_criterion, softmax_criterion, loss_blender,
@@ -351,7 +340,6 @@ def model_train(model, train_loader, valid_loader, sigmoid_criterion, softmax_cr
     return train_history
 
 
-# In[12]:
 
 
 def show_history(history, figsize=(10,4)):
@@ -363,7 +351,6 @@ def show_history(history, figsize=(10,4)):
                ('total_loss', 'softmax_loss', 'sigmoid_loss'), fontsize=12)
 
 
-# In[13]:
 
 
 from sklearn.model_selection import train_test_split
@@ -371,7 +358,6 @@ train_idx, valid_idx, train_targets, valid_target = train_test_split(
     np.arange(data.shape[0]), data['attribute_ids'], test_size=0.1, random_state=42)
 
 
-# In[14]:
 
 
 trainloader = DataLoader(
@@ -383,7 +369,6 @@ validloader = DataLoader(
     batch_size=32, shuffle=False, num_workers=4, pin_memory=True)
 
 
-# In[15]:
 
 
 donor = models.resnet18()
@@ -399,7 +384,6 @@ model.layer3.load_state_dict(donor.layer3.state_dict())
 model.layer4.load_state_dict(donor.layer4.state_dict())
 
 
-# In[16]:
 
 
 history = model_train(
@@ -411,13 +395,11 @@ history = model_train(
     n_epoch=25)
 
 
-# In[17]:
 
 
 show_history(history)
 
 
-# In[18]:
 
 
 scores = []
@@ -441,7 +423,6 @@ print('best score', sigmoid_best_score)
 print('best conf', sigmoid_best_conf)
 
 
-# In[19]:
 
 
 td = train_dataset(data.iloc[valid_idx], '../input/imet-2019-fgvc6/train/')
@@ -449,7 +430,6 @@ softmax_label_decoder = {v:k for (k,v) in zip(
     td.labels_group_encoder.keys(), td.labels_group_encoder.values())}
 
 
-# In[20]:
 
 
 submit = pd.read_csv('../input/imet-2019-fgvc6/sample_submission.csv')

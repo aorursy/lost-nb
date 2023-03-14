@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 try:
@@ -39,87 +37,73 @@ import os
 import pandas as pd
 
 
-# In[3]:
 
 
 tf.__version__
 
 
-# In[4]:
 
 
 train=pd.read_csv('/kaggle/input/covid19-global-forecasting-week-2/train.csv')
 
 
-# In[5]:
 
 
 train.head()
 
 
-# In[6]:
 
 
 train=train[['Date','ConfirmedCases']]
 
 
-# In[7]:
 
 
 train.head()
 
 
-# In[8]:
 
 
 # train['Date'] = pd.to_datetime(train['Date'])
 train.Date.unique().shape
 
 
-# In[9]:
 
 
 train=train.groupby(train['Date']).sum()
 
 
-# In[10]:
 
 
 train.tail()
 
 
-# In[11]:
 
 
 train.shape
 
 
-# In[12]:
 
 
 train.plot(subplots=True)
 
 
-# In[13]:
 
 
 train = train.values
 
 
-# In[14]:
 
 
 uni_train_mean = train[:].mean()
 uni_train_std = train[:].std()
 
 
-# In[15]:
 
 
 train = (train-uni_train_mean)/uni_train_std
 
 
-# In[16]:
 
 
 def univariate_data(dataset, start_index, end_index, history_size, target_size):
@@ -138,7 +122,6 @@ def univariate_data(dataset, start_index, end_index, history_size, target_size):
   return np.array(data), np.array(labels)
 
 
-# In[17]:
 
 
 univariate_past_history = 3
@@ -153,13 +136,11 @@ x_val_uni, y_val_uni = univariate_data(train, 55, None,
                                        univariate_future_target)
 
 
-# In[ ]:
 
 
 
 
 
-# In[18]:
 
 
 print ('Single window of past history')
@@ -168,14 +149,12 @@ print ('\n Target cases to predict')
 print (y_train_uni[-1])
 
 
-# In[19]:
 
 
 def create_time_steps(length):
   return list(range(-length, 0))
 
 
-# In[20]:
 
 
 def show_plot(plot_data, delta, title):
@@ -200,27 +179,23 @@ def show_plot(plot_data, delta, title):
   return plt
 
 
-# In[21]:
 
 
 show_plot([x_train_uni[0], y_train_uni[0]], 0, 'Sample Example')
 
 
-# In[22]:
 
 
 def baseline(history):
   return np.mean(history)
 
 
-# In[23]:
 
 
 show_plot([x_train_uni[0], y_train_uni[0], baseline(x_train_uni[0])], 0,
            'Baseline Prediction Example')
 
 
-# In[24]:
 
 
 BATCH_SIZE = 4
@@ -233,7 +208,6 @@ val_univariate = tf.data.Dataset.from_tensor_slices((x_val_uni, y_val_uni))
 val_univariate = val_univariate.batch(BATCH_SIZE).repeat()
 
 
-# In[25]:
 
 
 model_1 = tf.keras.models.Sequential([
@@ -245,13 +219,11 @@ model_1 = tf.keras.models.Sequential([
 model_1.compile(optimizer='adam', loss='mae')
 
 
-# In[26]:
 
 
 get_ipython().system('mkdir cp')
 
 
-# In[27]:
 
 
 from tensorflow.keras.callbacks import ModelCheckpoint
@@ -259,7 +231,6 @@ filepath="cp/model1.hdf5"
 checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 
 
-# In[28]:
 
 
 import math
@@ -282,14 +253,12 @@ lrate = LearningRateScheduler(step_decay)
 callbacks_list = [checkpoint,lrate]
 
 
-# In[29]:
 
 
 for x, y in val_univariate.take(1):
     print(model_1.predict(x).shape)
 
 
-# In[30]:
 
 
 EVALUATION_INTERVAL = 10
@@ -300,14 +269,12 @@ model_1.fit(train_univariate, epochs=EPOCHS,
                       validation_data=val_univariate, validation_steps=7,callbacks= callbacks_list)
 
 
-# In[31]:
 
 
 from tensorflow.keras.models import load_model
 model_1=load_model('cp/model1.hdf5')
 
 
-# In[32]:
 
 
 for x, y in val_univariate.take(3):
@@ -316,55 +283,46 @@ for x, y in val_univariate.take(3):
   plot.show()
 
 
-# In[ ]:
 
 
 
 
 
-# In[33]:
 
 
 train=pd.read_csv('/kaggle/input/covid19-global-forecasting-week-2/train.csv')
 
 
-# In[34]:
 
 
 train.head()
 
 
-# In[35]:
 
 
 train=train[['Date','ConfirmedCases','Fatalities']]
 
 
-# In[36]:
 
 
 train.plot(subplots=True)
 
 
-# In[37]:
 
 
 train=train.groupby(train['Date']).sum()
 
 
-# In[38]:
 
 
 train.tail()
 
 
-# In[39]:
 
 
 train.plot(subplots=True)
 
 
-# In[40]:
 
 
 dataset = train.values
@@ -372,13 +330,11 @@ data_mean = dataset[:].mean(axis=0)
 data_std = dataset[:].std(axis=0)
 
 
-# In[41]:
 
 
 dataset = (dataset-data_mean)/data_std
 
 
-# In[42]:
 
 
 def multivariate_data(dataset, target, start_index, end_index, history_size,
@@ -402,7 +358,6 @@ def multivariate_data(dataset, target, start_index, end_index, history_size,
   return np.array(data), np.array(labels)
 
 
-# In[43]:
 
 
 past_history = 3
@@ -419,7 +374,6 @@ x_val_single, y_val_single = multivariate_data(dataset, dataset[:, 0],
                                                single_step=True)
 
 
-# In[44]:
 
 
 print ('Single window of past history')
@@ -428,7 +382,6 @@ print ('\n Target cases to predict')
 print (y_train_single[-1])
 
 
-# In[45]:
 
 
 train_data_single = tf.data.Dataset.from_tensor_slices((x_train_single, y_train_single))
@@ -438,7 +391,6 @@ val_data_single = tf.data.Dataset.from_tensor_slices((x_val_single, y_val_single
 val_data_single = val_data_single.batch(BATCH_SIZE).repeat()
 
 
-# In[46]:
 
 
 model_2 = tf.keras.models.Sequential([
@@ -448,13 +400,11 @@ model_2 = tf.keras.models.Sequential([
 ])
 
 
-# In[47]:
 
 
 model_2.compile(optimizer='adam', loss='mae')
 
 
-# In[48]:
 
 
 from tensorflow.keras.callbacks import ModelCheckpoint
@@ -462,7 +412,6 @@ filepath="cp/model2.hdf5"
 checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 
 
-# In[49]:
 
 
 import math
@@ -485,14 +434,12 @@ lrate = LearningRateScheduler(step_decay)
 callbacks_list = [checkpoint,lrate]
 
 
-# In[50]:
 
 
 for x, y in val_data_single.take(1):
   print(model_2.predict(x).shape)
 
 
-# In[51]:
 
 
 single_step_history = model_2.fit(train_data_single, epochs=EPOCHS,
@@ -501,13 +448,11 @@ single_step_history = model_2.fit(train_data_single, epochs=EPOCHS,
                                             validation_steps=7,callbacks= callbacks_list)
 
 
-# In[52]:
 
 
 model_2=load_model('cp/model2.hdf5')
 
 
-# In[53]:
 
 
 def plot_train_history(history, title):
@@ -526,14 +471,12 @@ def plot_train_history(history, title):
   plt.show()
 
 
-# In[54]:
 
 
 plot_train_history(single_step_history,
                    'Single Step Training and validation loss')
 
 
-# In[55]:
 
 
 for x, y in val_data_single.take(3):
@@ -543,7 +486,6 @@ for x, y in val_data_single.take(3):
   plot.show()
 
 
-# In[56]:
 
 
 future_target = 3
@@ -555,14 +497,12 @@ x_val_multi, y_val_multi = multivariate_data(dataset, dataset[:, 0],
                                              future_target, STEP)
 
 
-# In[57]:
 
 
 print ('Single window of past history : {}'.format(x_train_multi[0]))
 print ('\n Target cases to predict : {}'.format(y_train_multi[0]))
 
 
-# In[58]:
 
 
 train_data_multi = tf.data.Dataset.from_tensor_slices((x_train_multi, y_train_multi))
@@ -572,7 +512,6 @@ val_data_multi = tf.data.Dataset.from_tensor_slices((x_val_multi, y_val_multi))
 val_data_multi = val_data_multi.batch(BATCH_SIZE).repeat()
 
 
-# In[59]:
 
 
 def multi_step_plot(history, true_future, prediction):
@@ -590,14 +529,12 @@ def multi_step_plot(history, true_future, prediction):
   plt.show()
 
 
-# In[60]:
 
 
 for x, y in train_data_multi.take(1):
   multi_step_plot(x[0], y[0], np.array([0]))
 
 
-# In[61]:
 
 
 model_3 = tf.keras.models.Sequential([
@@ -607,13 +544,11 @@ model_3 = tf.keras.models.Sequential([
 ])
 
 
-# In[62]:
 
 
 model_3.compile(optimizer='adam', loss='mae')
 
 
-# In[63]:
 
 
 from tensorflow.keras.callbacks import ModelCheckpoint
@@ -621,7 +556,6 @@ filepath="cp/model3.hdf5"
 checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 
 
-# In[64]:
 
 
 import math
@@ -644,13 +578,11 @@ lrate = LearningRateScheduler(step_decay)
 callbacks_list = [checkpoint,lrate]
 
 
-# In[ ]:
 
 
 
 
 
-# In[65]:
 
 
 multi_step_history = model_3.fit(train_data_multi, epochs=EPOCHS,
@@ -659,26 +591,22 @@ multi_step_history = model_3.fit(train_data_multi, epochs=EPOCHS,
                                             validation_steps=7,callbacks= callbacks_list)
 
 
-# In[66]:
 
 
 model_3=load_model('cp/model3.hdf5')
 
 
-# In[67]:
 
 
 plot_train_history(multi_step_history, 'Multi-Step Training and validation loss')
 
 
-# In[68]:
 
 
 for x, y in val_data_multi.take(3):
   multi_step_plot(x[0], y[0], model_3.predict(x)[0])
 
 
-# In[ ]:
 
 
 

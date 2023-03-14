@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[3]:
 
 
 from IPython.core.interactiveshell import InteractiveShell
@@ -61,7 +60,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[4]:
 
 
 train = pd.read_csv('../input/tweet-sentiment-extraction/train.csv')
@@ -70,57 +68,48 @@ print('Training data shape: ', train.shape)
 print('Testing data shape: ', test.shape)
 
 
-# In[5]:
 
 
 print("There are {} percentage of test data proportion compared to train data".format(round(test.shape[0]/train.shape[0]*100,2)))
 
 
-# In[6]:
 
 
 # First few rows of the training dataset
 train.head()
 
 
-# In[7]:
 
 
 # First few rows of the testing dataset
 test.head()
 
 
-# In[8]:
 
 
 train.info()
 
 
-# In[9]:
 
 
 train.isnull().sum()
 
 
-# In[10]:
 
 
 train.dropna(inplace = True)
 
 
-# In[11]:
 
 
 test.info()
 
 
-# In[12]:
 
 
 test.isnull().sum()
 
 
-# In[13]:
 
 
 print('Positive tweet example :', train[train['sentiment'] == 'positive']['text'].values[1])
@@ -130,25 +119,21 @@ print()
 print('Negative tweet example :', train[train['sentiment'] == 'negative']['text'].values[1])
 
 
-# In[14]:
 
 
 train['sentiment'].value_counts()
 
 
-# In[15]:
 
 
 train['sentiment'].value_counts(normalize = True)
 
 
-# In[16]:
 
 
 test['sentiment'].value_counts(normalize = True)
 
 
-# In[17]:
 
 
 def jaccard(str1,str2):
@@ -158,7 +143,6 @@ def jaccard(str1,str2):
     return float(len(c)/ (len(a) + len(b) - len(c)))
 
 
-# In[18]:
 
 
 results_jaccard=[]
@@ -171,50 +155,42 @@ for ind,row in train.iterrows():
     results_jaccard.append([sentence1,sentence2,jaccard_score])
 
 
-# In[19]:
 
 
 jaccard = pd.DataFrame(results_jaccard, columns = ["text", "selected_text", "jaccard_score"])
 
 
-# In[20]:
 
 
 jaccard.head()
 
 
-# In[21]:
 
 
 train = train.merge(jaccard, how = 'outer')
 train.head()
 
 
-# In[22]:
 
 
 train['Num_Word_ST'] = train['selected_text'].apply(lambda x: len(str(x).split()))
 
 
-# In[23]:
 
 
 train['Num_Word_Text'] = train['text'].apply(lambda x: len(str(x).split()))
 
 
-# In[24]:
 
 
 train['diff_in_word'] = train['Num_Word_Text'] - train['Num_Word_ST']
 
 
-# In[25]:
 
 
 train.head()
 
 
-# In[26]:
 
 
 plt.figure(figsize = (8,6))
@@ -222,7 +198,6 @@ plt.hist(train['Num_Word_ST'], bins = 30)
 plt.title('Distribution of Number Of words for selected_text');
 
 
-# In[27]:
 
 
 plt.figure(figsize = (8,6))
@@ -230,7 +205,6 @@ plt.hist(train['Num_Word_Text'], bins = 30)
 plt.title('Distribution of Number Of words for text');
 
 
-# In[28]:
 
 
 plt.figure(figsize = (8,6))
@@ -238,7 +212,6 @@ plt.hist(train['diff_in_word'], bins = 30)
 plt.title('Distribution of Number Of words for diff_in_word');
 
 
-# In[29]:
 
 
 plt.figure(figsize = (8,6))
@@ -247,7 +220,6 @@ p = sns.kdeplot(train['Num_Word_Text'], shade = True, color = 'g')
 plt.title('Kernel Distribution of Number Of words');
 
 
-# In[30]:
 
 
 plt.figure(figsize = (10,8))
@@ -255,7 +227,6 @@ sns.kdeplot(train['diff_in_word'], shade = True, color = 'b', legend = False)
 plt.title('Kernel Distribution of diff_in_word');
 
 
-# In[31]:
 
 
 plt.figure(figsize = (10,8))
@@ -263,7 +234,6 @@ sns.kdeplot(train[train['sentiment'] == 'positive']['diff_in_word'], shade = Tru
 plt.title('Kernel Distribution of diff_in_word for positive sentiment');
 
 
-# In[32]:
 
 
 plt.figure(figsize = (10,8))
@@ -271,7 +241,6 @@ sns.kdeplot(train[train['sentiment'] == 'negative']['diff_in_word'], shade = Tru
 plt.title('Kernel Distribution of diff_in_word for negative sentiment');
 
 
-# In[33]:
 
 
 plt.figure(figsize = (10,8))
@@ -279,21 +248,18 @@ plt.hist(train[train['sentiment'] == 'neutral']['diff_in_word'], bins = 20)
 plt.title('Distribution of diff_in_word for neutral sentiment');
 
 
-# In[34]:
 
 
 plt.figure(figsize = (10,8))
 sns.kdeplot(train[train['sentiment'] == 'positive']['jaccard_score'], shade = True, color = 'r', legend = False).set_title('Distribution of jaccard_score for positive sentiment');
 
 
-# In[35]:
 
 
 plt.figure(figsize = (10,8))
 sns.kdeplot(train[train['sentiment'] == 'negative']['jaccard_score'], shade = True, color = 'b', legend = False).set_title('Distribution of jaccard_score for negative sentiment');
 
 
-# In[36]:
 
 
 plt.figure(figsize = (10,8))
@@ -301,31 +267,26 @@ plt.hist(train[train['sentiment'] == 'neutral']['jaccard_score'], bins = 20)
 plt.title('Distribution of jaccard_score for neutral sentiment');
 
 
-# In[37]:
 
 
 j = train[train['Num_Word_Text'] < 3]
 
 
-# In[38]:
 
 
 train.head()
 
 
-# In[39]:
 
 
 j.groupby('sentiment').mean()['jaccard_score']
 
 
-# In[40]:
 
 
 j[['text', 'selected_text']].head(15)
 
 
-# In[41]:
 
 
 stop_words = stopwords.words("english")
@@ -354,26 +315,22 @@ def clean_text(text):
     return final_text
 
 
-# In[42]:
 
 
 train['text_clean'] = train['text'].apply(lambda x: clean_text(x))
 train['selected_text_clean'] = train['selected_text'].apply(lambda x : clean_text(x))
 
 
-# In[43]:
 
 
 train[['text', 'text_clean']].head()
 
 
-# In[44]:
 
 
 train[['selected_text', 'selected_text_clean']].head()
 
 
-# In[45]:
 
 
 train['list'] = train['selected_text_clean'].apply(lambda x: str(x).split())
@@ -385,7 +342,6 @@ mostcommon.columns = ['Common Word', 'Count']
 mostcommon.head(20)
 
 
-# In[46]:
 
 
 train['list'] = train['text_clean'].apply(lambda x: str(x).split())
@@ -400,7 +356,6 @@ def top(corpus, n = None):
 top(train)
 
 
-# In[47]:
 
 
 positive = train[train['sentiment'] == 'positive']
@@ -408,34 +363,29 @@ negative = train[train['sentiment'] == 'negative']
 neutral = train[train['sentiment'] == 'neutral']
 
 
-# In[48]:
 
 
 print('The most common word in positive tweets')
 top(positive)
 
 
-# In[49]:
 
 
 print('The most common word in negative tweets')
 top(negative)
 
 
-# In[50]:
 
 
 print('The most common word in neutral tweets')
 top(neutral)
 
 
-# In[51]:
 
 
 raw_text = [word for word_list in train['list'] for word in word_list]
 
 
-# In[52]:
 
 
 def words_unique(sentiment,numwords,raw_words):
@@ -472,7 +422,6 @@ def words_unique(sentiment,numwords,raw_words):
     return Unique_words
 
 
-# In[53]:
 
 
 Unique_Positive= words_unique('positive', 20, raw_text)
@@ -480,7 +429,6 @@ print("The top 20 unique words in Positive Tweets are:")
 Unique_Positive.style.background_gradient(cmap='Greens')
 
 
-# In[54]:
 
 
 Unique_Negative= words_unique('negative', 10, raw_text)
@@ -488,7 +436,6 @@ print("The top 10 unique words in Negative Tweets are:")
 Unique_Negative.style.background_gradient(cmap='Reds')
 
 
-# In[55]:
 
 
 Unique_Neutral= words_unique('neutral', 10, raw_text)
@@ -496,7 +443,6 @@ print("The top 10 unique words in Neutral Tweets are:")
 Unique_Neutral.style.background_gradient(cmap='Oranges')
 
 
-# In[56]:
 
 
 wc = WordCloud(stopwords = stop_words)
@@ -506,7 +452,6 @@ plt.imshow(wc)
 plt.title('WordCloud of positive tweets');
 
 
-# In[57]:
 
 
 wc = WordCloud(stopwords = stop_words)
@@ -516,7 +461,6 @@ plt.imshow(wc)
 plt.title('WordCloud of neutral tweets');
 
 
-# In[58]:
 
 
 wc = WordCloud(stopwords = stop_words)
@@ -526,7 +470,6 @@ plt.imshow(wc)
 plt.title('WordCloud of negative tweets');
 
 
-# In[59]:
 
 
 def get_top_n_gram(corpus,ngram_range,n=None):
@@ -538,7 +481,6 @@ def get_top_n_gram(corpus,ngram_range,n=None):
     return words_freq[:n]
 
 
-# In[60]:
 
 
 positive_bigram = get_top_n_gram(positive['text_clean'], (2,2), 20)
@@ -546,7 +488,6 @@ negative_bigram = get_top_n_gram(negative['text_clean'], (2,2), 20)
 neutral_bigram = get_top_n_gram(neutral['text_clean'], (2,2), 20)
 
 
-# In[61]:
 
 
 def process(corpus):
@@ -554,7 +495,6 @@ def process(corpus):
     return corpus
 
 
-# In[62]:
 
 
 positive_bigram = process(positive_bigram)
@@ -562,7 +502,6 @@ negative_bigram = process(negative_bigram)
 neutral_bigram = process(neutral_bigram)
 
 
-# In[63]:
 
 
 plt.figure(figsize = (10,8))
@@ -570,7 +509,6 @@ plt.barh(positive_bigram['Text'], positive_bigram['count'])
 plt.title('Top 20 Bigrams in positive text');
 
 
-# In[64]:
 
 
 plt.figure(figsize = (10,8))
@@ -578,7 +516,6 @@ plt.barh(negative_bigram['Text'], negative_bigram['count'])
 plt.title('Top 20 Bigrams in negative text');
 
 
-# In[65]:
 
 
 plt.figure(figsize = (10,8))
@@ -586,7 +523,6 @@ plt.barh(neutral_bigram['Text'], neutral_bigram['count'])
 plt.title('Top 20 Bigrams in neutral text');
 
 
-# In[66]:
 
 
 positive_trigram = get_top_n_gram(positive['text_clean'], (3,3), 20)
@@ -594,7 +530,6 @@ negative_trigram = get_top_n_gram(negative['text_clean'], (3,3), 20)
 neutral_trigram = get_top_n_gram(neutral['text_clean'], (3,3), 20)
 
 
-# In[67]:
 
 
 positive_trigram = process(positive_trigram)
@@ -602,7 +537,6 @@ negative_trigram = process(negative_trigram)
 neutral_trigram = process(neutral_trigram)
 
 
-# In[68]:
 
 
 plt.figure(figsize = (10,8))
@@ -610,7 +544,6 @@ plt.barh(positive_trigram['Text'], positive_trigram['count'])
 plt.title('Top 20 Trigrams in positive text');
 
 
-# In[69]:
 
 
 plt.figure(figsize = (10,8))
@@ -618,7 +551,6 @@ plt.barh(negative_trigram['Text'], negative_trigram['count'])
 plt.title('Top 20 Trigrams in negative text');
 
 
-# In[70]:
 
 
 plt.figure(figsize = (10,8))
@@ -626,13 +558,11 @@ plt.barh(neutral_trigram['Text'], neutral_trigram['count'])
 plt.title('Top 20 Trigrams in neutral text');
 
 
-# In[71]:
 
 
 get_ipython().run_cell_magic('HTML', '', '<iframe width="560" height="315" src="https://www.youtube.com/embed/XaQ0CBlQ4cY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
 
 
-# In[ ]:
 
 
 

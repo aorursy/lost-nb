@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import re
@@ -33,7 +32,6 @@ from tqdm import tqdm
 tqdm.pandas()
 
 
-# In[2]:
 
 
 NROWS = None  # read count: None = all
@@ -50,7 +48,6 @@ N_EPOCH = 8
 SEED = 1031
 
 
-# In[3]:
 
 
 def seed_torch(seed=1029):
@@ -62,7 +59,6 @@ def seed_torch(seed=1029):
     torch.backends.cudnn.deterministic = True
 
 
-# In[4]:
 
 
 puncts = [',', '.', '"', ':', ')', '(', '-', '!', '?', '|', ';', "'", '$', '&', '/', '[', ']', '>', '%', '=', '#', '*', '+', '\\', '•',  '~', '@', '£', 
@@ -85,7 +81,6 @@ def clean_numbers(x):
     return x
 
 
-# In[5]:
 
 
 mispell_dict = {"aren't" : "are not",
@@ -159,7 +154,6 @@ def replace_typical_misspell(text):
     return mispellings_re.sub(replace, text)
 
 
-# In[6]:
 
 
 def load_and_prec():
@@ -202,7 +196,6 @@ def load_and_prec():
     return train_X, test_X, train_y, tokenizer.word_index, test_id
 
 
-# In[7]:
 
 
 def load_glove(word_index):
@@ -258,7 +251,6 @@ def load_para(word_index):
     return embedding_matrix
 
 
-# In[8]:
 
 
 class CyclicLR(object):
@@ -345,7 +337,6 @@ class CyclicLR(object):
         return lrs
 
 
-# In[9]:
 
 
 class Attention(nn.Module):
@@ -390,7 +381,6 @@ class Attention(nn.Module):
         return torch.sum(weighted_input, 1)
 
 
-# In[10]:
 
 
 class NeuralNet(nn.Module):
@@ -436,14 +426,12 @@ class NeuralNet(nn.Module):
         return out
 
 
-# In[11]:
 
 
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 
-# In[12]:
 
 
 def threshold_search(y_true, y_proba):
@@ -458,7 +446,6 @@ def threshold_search(y_true, y_proba):
     return search_result
 
 
-# In[13]:
 
 
 start_time = time.time()
@@ -481,13 +468,11 @@ del glove_embeddings, fasttext_embeddings, paragram_embeddings
 gc.collect()
 
 
-# In[14]:
 
 
 splits = list(StratifiedKFold(n_splits=N_SPLITS, shuffle=True, random_state=SEED).split(train_X, train_y))
 
 
-# In[15]:
 
 
 train_preds = np.zeros((len(train_X)))
@@ -557,14 +542,12 @@ for i, (train_idx, valid_idx) in enumerate(splits):
     test_preds += test_preds_fold / len(splits)
 
 
-# In[16]:
 
 
 # search_result = threshold_search(train_y, train_preds)
 # search_result
 
 
-# In[17]:
 
 
 # output = pd.DataFrame(data={"qid": test_id, "prediction":  test_preds > search_result['threshold']})

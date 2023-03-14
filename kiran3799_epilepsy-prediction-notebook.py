@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 """
@@ -18,20 +17,17 @@ from scipy.signal import resample
 import matplotlib.pyplot as plt
 
 
-# In[2]:
 
 
 preictal_tst = '../input/seizure-prediction/Patient_1/Patient_1/Patient_1_preictal_segment_0001.mat'
 preictal_data = scipy.io.loadmat(preictal_tst)
 
 
-# In[3]:
 
 
 preictal_data
 
 
-# In[4]:
 
 
 preictal_array = preictal_data['preictal_segment_1'][0][0][0]
@@ -39,32 +35,27 @@ preictal_array = preictal_data['preictal_segment_1'][0][0][0]
 print(type(preictal_data['preictal_segment_1']) , preictal_data['preictal_segment_1'][0][0][0].shape)
 
 
-# In[5]:
 
 
 preictal_array
 
 
-# In[6]:
 
 
 # five decomposition coefficients
 cA,cD4,cD3,cD2,cD1 = pywt.wavedec(preictal_array, pywt.Wavelet('db4'), level = 4)
 
 
-# In[7]:
 
 
 tot_data = [cA, cD4, cD3, cD2, cD1]
 
 
-# In[8]:
 
 
 list(set(tot_data[1][1]))
 
 
-# In[9]:
 
 
 import math
@@ -95,14 +86,12 @@ def renyi_entropy(d1):
     return(rend1)
 
 
-# In[ ]:
 
 
 for i in range(len(tot_data)):
     renyi_ent[i] = renyi_entropy(tot_data[i])
 
 
-# In[ ]:
 
 
 # permutation entropy
@@ -115,14 +104,12 @@ def permu(d1):
     return(pd1)
 
 
-# In[ ]:
 
 
 for i in range(len(tot_data)):
     perm_ent[i] = permu(tot_data[i])
 
 
-# In[ ]:
 
 
 from scipy.special import gamma,psi
@@ -150,14 +137,12 @@ def kraskov_entropy(d1):
     return(kd1)
 
 
-# In[ ]:
 
 
 for i in range(len(tot_data)):
     krak_ent[i] = kraskov_entropy(tot_data[i])
 
 
-# In[ ]:
 
 
 sample entropy
@@ -171,14 +156,12 @@ def sampl(d1):
    return(sa1)
 
 
-# In[ ]:
 
 
 for i in range(len(tot_data)):
     sample_ent[i] = sampl(tot_data[i])
 
 
-# In[ ]:
 
 
 # shannon entropy
@@ -191,14 +174,12 @@ def shan(d1):
     return(sh1)
 
 
-# In[ ]:
 
 
 for i in range(len(tot_data)):
     shan_ent[i] = shan(tot_data[i])
 
 
-# In[ ]:
 
 
 # stack to have shape (sample count, number of features)

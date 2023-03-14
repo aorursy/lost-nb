@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 ##### decorators.py #####
@@ -27,7 +26,6 @@ class DecoratorInputOutputExceptionTime(object):
         return decorated
 
 
-# In[2]:
 
 
 ##### myio.py #####
@@ -110,7 +108,6 @@ def load_pickle(file_path: str) -> object:
         return pickle.load(pk)
 
 
-# In[3]:
 
 
 ##### featurization.py #####
@@ -179,7 +176,6 @@ def generate_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-# In[4]:
 
 
 ##### modeling.py #####
@@ -267,7 +263,6 @@ def apply_model(cat_df: pd.DataFrame, ctx_df: pd.DataFrame, tl_df: pd.DataFrame,
     return pd.DataFrame(list(zip(Y_pred[0].ravel().tolist(), Y_pred[1].ravel().tolist())), columns=['ConfirmedCases', 'Fatalities'])
 
 
-# In[5]:
 
 
 ##### main.py #####
@@ -326,7 +321,6 @@ def msle(y_true: np.array, y_pred: np.array):
     return np.mean((np.log(y_true + 1) - np.log(y_pred_clip + 1)) ** 2)
 
 
-# In[6]:
 
 
 train_dataset = get_train_subset()
@@ -341,7 +335,6 @@ test_tl = create_start_timelines_for_val_test(train_dataset, test_dataset, LOOKB
 contextual_feats = create_contextual_features(enrichment_dataset)
 
 
-# In[7]:
 
 
 location_le = location_label_encoder_dict(sorted(list(train_tl.keys())))
@@ -350,7 +343,6 @@ cat_features_train, ctx_features_train, tl_feats_train, labels_train = create_fe
 model, ctx_ss, tl_ss = create_model(cat_features_train, ctx_features_train, tl_feats_train, labels_train)
 
 
-# In[8]:
 
 
 
@@ -372,7 +364,6 @@ val_MSLE_fatalities = msle(validation_dataset.Fatalities.values, validation_data
 print('L1={:.3f}, L2={:.3f} -> L1+L2={:.3f}'.format(val_MSLE_confirmed_cases, val_MSLE_fatalities, val_MSLE_confirmed_cases+val_MSLE_fatalities))
 
 
-# In[9]:
 
 
 
@@ -392,7 +383,6 @@ submission_df = test_dataset.rename(columns={"predict_ConfirmedCases": "Confirme
 submission_df.to_csv('submission.csv', header=True, index=False)
 
 
-# In[ ]:
 
 
 

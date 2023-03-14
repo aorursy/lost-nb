@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd, numpy as np, gc
@@ -12,7 +11,6 @@ from sklearn.model_selection import KFold
 import matplotlib.pyplot as plt
 
 
-# In[2]:
 
 
 DEVICE = "TPU" # "TPU" or "GPU"
@@ -23,7 +21,6 @@ EPOCHS = [50]*FOLDS
 AUG_BATCH = BATCH_SIZE
 
 
-# In[3]:
 
 
 if DEVICE == "TPU":
@@ -60,7 +57,6 @@ REPLICAS = strategy.num_replicas_in_sync
 print(f'REPLICAS: {REPLICAS}')
 
 
-# In[4]:
 
 
 GCS_PATH = [None]*FOLDS; GCS_PATH2 = [None]*FOLDS; GCS_PATH3 = [None]*FOLDS; GCS_PATH4 = [None]*FOLDS; GCS_PATH5 = [None]*FOLDS
@@ -74,7 +70,6 @@ for i in range(FOLDS):
 files_train = np.sort(np.array(tf.io.gfile.glob(GCS_PATH[0] + '/*.tfrec')))
 
 
-# In[5]:
 
 
 def decode_image(image_data):
@@ -161,7 +156,6 @@ STEPS_PER_EPOCH = NUM_TRAINING_IMAGES // BATCH_SIZE
 #print('Dataset: {} training images, {} validation images, {} unlabeled test images'.format(NUM_TRAINING_IMAGES, NUM_VALIDATION_IMAGES, NUM_TEST_IMAGES))
 
 
-# In[6]:
 
 
 def onehot(image,label):
@@ -169,7 +163,6 @@ def onehot(image,label):
     return image,tf.one_hot(label,CLASSES)
 
 
-# In[7]:
 
 
 def mixup(image, label, PROBABILITY = 1.0):
@@ -209,7 +202,6 @@ def mixup(image, label, PROBABILITY = 1.0):
     return image2,label2
 
 
-# In[8]:
 
 
 def transform(image,label):
@@ -231,7 +223,6 @@ def transform(image,label):
     return image4,label4
 
 
-# In[9]:
 
 
 row = 2; col = 2;
@@ -250,7 +241,6 @@ for (img,label) in augmented_element:
     break
 
 
-# In[10]:
 
 
 from keras.callbacks import Callback
@@ -286,13 +276,11 @@ def predicted_positives(y_true, y_pred):
     return K.sum(K.round(K.clip(y_pred, 0, 1)))
 
 
-# In[11]:
 
 
 f1cb = F1Callback()
 
 
-# In[12]:
 
 
 def binary_loss(y_true, y_pred):
@@ -300,7 +288,6 @@ def binary_loss(y_true, y_pred):
     return K.sum(bce, axis=-1)
 
 
-# In[13]:
 
 
 from tensorflow.keras import backend as K
@@ -382,13 +369,11 @@ def categorical_focal_loss(gamma=2., alpha=.25):
     return categorical_focal_loss_fixed
 
 
-# In[14]:
 
 
 # !pip install -q efficientnet
 
 
-# In[15]:
 
 
 # import efficientnet.keras as efn 
@@ -396,13 +381,11 @@ def categorical_focal_loss(gamma=2., alpha=.25):
 # model = efn.EfficientNetB0(weights='imagenet')  # or weights='noisy-student'
 
 
-# In[ ]:
 
 
 
 
 
-# In[16]:
 
 
 # #!pip uninstall tensorflow
@@ -418,7 +401,6 @@ def categorical_focal_loss(gamma=2., alpha=.25):
 # !pip install Keras-Preprocessing==1.1.0
 
 
-# In[17]:
 
 
 # # import efficientnet.tfkeras as efn
@@ -455,13 +437,11 @@ def categorical_focal_loss(gamma=2., alpha=.25):
 # # model.summary()
 
 
-# In[ ]:
 
 
 
 
 
-# In[18]:
 
 
 
@@ -484,7 +464,6 @@ def build_model():
     return model
 
 
-# In[19]:
 
 
 def get_lr_callback(batch_size=8):
@@ -511,7 +490,6 @@ def get_lr_callback(batch_size=8):
     return lr_callback
 
 
-# In[20]:
 
 
 skf = KFold(n_splits=FOLDS,shuffle=True,random_state=12)
@@ -522,7 +500,6 @@ for fold,(idxT,idxV) in enumerate(skf.split(np.arange(5))):
     print('Fold',fold,'has TRAIN:',idxT,'VALID:',idxV)
 
 
-# In[21]:
 
 
 for fold in range(FOLDS):
@@ -589,19 +566,16 @@ for fold in range(FOLDS):
     del model; z = gc.collect()
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

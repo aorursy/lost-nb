@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -25,32 +24,27 @@ test_data = pd.read_csv('../input/test.csv')
 submission_data = pd.read_csv('../input/sample_submission.csv')
 
 
-# In[2]:
 
 
 #Size of training data
 train_data.shape
 
 
-# In[3]:
 
 
 train_data['target'].head(5)
 
 
-# In[4]:
 
 
 train_data.describe()
 
 
-# In[5]:
 
 
 X_train, X_val, y_train, y_val = train_test_split(feature_train_data, train_data['target'], test_size = 0.20, random_state = 25)
 
 
-# In[6]:
 
 
 from sklearn.model_selection import KFold, StratifiedKFold
@@ -58,14 +52,12 @@ from sklearn.metrics import roc_auc_score
 import lightgbm as lgb
 
 
-# In[7]:
 
 
 df_train = pd.read_csv('../input/train.csv')
 df_test = pd.read_csv('../input/test.csv')
 
 
-# In[8]:
 
 
 random_state = 42
@@ -92,20 +84,17 @@ lgb_params = {
 }
 
 
-# In[9]:
 
 
 df_train.head()
 
 
-# In[10]:
 
 
 skf = StratifiedKFold(n_splits = 5, shuffle=True, random_state=random_state)
 skf.get_n_splits(X_train, y_train)
 
 
-# In[11]:
 
 
 features = [col for col in df_train.columns if col not in ['target', 'ID_code']]
@@ -147,13 +136,11 @@ for fold, (trn_idx, val_idx) in enumerate(skf.split(df_train, df_train['target']
     predictions['fold{}'.format(fold+1)] = yp/N
 
 
-# In[12]:
 
 
 X_train.head()
 
 
-# In[13]:
 
 
 predictions['target'] = np.mean(predictions[[col for col in predictions.columns if col not in ['ID_code', 'target']]].values, axis=1)
@@ -164,7 +151,6 @@ sub_df.to_csv("lgb_submission.csv", index=False)
 oof.to_csv('lgb_oof.csv', index=False)
 
 
-# In[14]:
 
 
 dfa = pd.DataFrame(np.random.randn(5, 4),
@@ -172,139 +158,116 @@ dfa = pd.DataFrame(np.random.randn(5, 4),
                    index=pd.date_range('20130101', periods=5))
 
 
-# In[15]:
 
 
 dfa
 
 
-# In[16]:
 
 
 dfa.columns
 
 
-# In[17]:
 
 
 dfa.iloc[0:2][[col for col in dfa.columns if col not in ['B', 'C']] ]
 
 
-# In[18]:
 
 
 col for col in df_train.columns if col not in ['target', 'ID_code']
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 
 
 
-# In[19]:
 
 
 

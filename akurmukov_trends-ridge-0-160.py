@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import h5py
@@ -15,7 +14,6 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 # Age and 4 anonymized targets, 443 partially missed observations
@@ -45,27 +43,23 @@ icn_nums = pd.read_csv('/kaggle/input/trends-assessment-prediction/ICN_numbers.c
 # *.mat
 
 
-# In[3]:
 
 
 loadings.head(3)
 
 
-# In[4]:
 
 
 # 53 * 52 / 2 = 1378 + Id column
 fnc.head(3)
 
 
-# In[5]:
 
 
 import re
 from tqdm import tqdm
 
 
-# In[6]:
 
 
 r = re.compile('\d+')
@@ -76,7 +70,6 @@ for col in fnc.columns:
         col_dict[col] = [int(i) for i in ind]
 
 
-# In[7]:
 
 
 def get_matrix(df_row, return_idx=False):
@@ -95,7 +88,6 @@ def get_matrix(df_row, return_idx=False):
     return matrix[:, idx][idx, :]
 
 
-# In[8]:
 
 
 degrees = []
@@ -104,7 +96,6 @@ for row in tqdm(fnc.iterrows()):
     degrees.append(mat.sum(axis=1))
 
 
-# In[9]:
 
 
 _, idx = get_matrix(fnc.iloc[0], return_idx=True)
@@ -112,13 +103,11 @@ degrees = pd.DataFrame(degrees, columns=idx)
 degrees['Id'] = fnc['Id']
 
 
-# In[10]:
 
 
 len(glob('/kaggle/input/trends-assessment-prediction/fMRI_train/*.mat')), len(glob('/kaggle/input/trends-assessment-prediction/fMRI_test/*.mat'))
 
 
-# In[11]:
 
 
 sbj = glob('/kaggle/input/trends-assessment-prediction/fMRI_train/*.mat')[10]
@@ -130,7 +119,6 @@ with h5py.File(sbj, 'r') as f:
 print(mat.shape)
 
 
-# In[12]:
 
 
 from sklearn.ensemble import RandomForestRegressor
@@ -139,7 +127,6 @@ from sklearn.svm import SVR
 from sklearn.model_selection import GridSearchCV, KFold, cross_val_predict
 
 
-# In[13]:
 
 
 # train/test Ids
@@ -165,7 +152,6 @@ X_test = pd.merge(loadings[loadings.Id.isin(test_ids)], fnc, on='Id')
 X_test = pd.merge(X_test, degrees, on='Id').drop('Id', axis=1)
 
 
-# In[14]:
 
 
 from sklearn.metrics import make_scorer
@@ -177,7 +163,6 @@ def MAPE(y_true, y_pred, **kwargs):
 mape_scorer = make_scorer(MAPE, greater_is_better=False)
 
 
-# In[15]:
 
 
 # Setting up the model
@@ -213,7 +198,6 @@ grid = {
 gs = GridSearchCV(model, grid, n_jobs=-1, cv=cv, verbose=0, scoring=mape_scorer)
 
 
-# In[16]:
 
 
 # age 0.1446
@@ -227,7 +211,6 @@ gs = GridSearchCV(model, grid, n_jobs=-1, cv=cv, verbose=0, scoring=mape_scorer)
 # domain2_var2 0.1763
 
 
-# In[17]:
 
 
 # Training the model
@@ -252,7 +235,6 @@ total_score = np.array(total_score)
 print(f'Total score: {np.sum(total_score*[.3, .175, .175, .175, .175])}')
 
 
-# In[18]:
 
 
 def get_pred(col, model):
@@ -265,7 +247,6 @@ def get_pred(col, model):
     return y_pred
 
 
-# In[19]:
 
 
 # Predicting test
@@ -275,7 +256,6 @@ for col in target_columns:
     test_prediction[col] = best_models[col].predict(X_test)
 
 
-# In[20]:
 
 
 # Evaluate the lb metric on local cv
@@ -289,7 +269,6 @@ for col in target_columns:
 #     return np.sum(weights * np.abs(y_pred.values - y_true.values).sum(axis=0) / y_train.values.sum(axis=0))
 
 
-# In[21]:
 
 
 # train_prediction_cv = {}
@@ -300,7 +279,6 @@ for col in target_columns:
 # lb_metric(y_train, train_prediction_cv)
 
 
-# In[22]:
 
 
 def make_sub(test_prediction):
@@ -318,7 +296,6 @@ def make_sub(test_prediction):
     return tst.sort_values(by=['Id', 'variable'])              .drop(['Id', 'variable', 'target_type'],axis=1)              .rename(columns={'Id_':'Id'})              .reset_index(drop=True)              [['Id', 'Predicted']]
 
 
-# In[23]:
 
 
 sub = make_sub(test_prediction)
@@ -326,13 +303,11 @@ sub = make_sub(test_prediction)
 sub.head()
 
 
-# In[24]:
 
 
 sub.to_csv('ridge_mape_500.csv', index=False)
 
 
-# In[ ]:
 
 
 

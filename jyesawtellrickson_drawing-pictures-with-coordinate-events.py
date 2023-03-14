@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -23,7 +22,6 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 np.random.seed(0)
 
 
-# In[2]:
 
 
 def read_data():
@@ -58,7 +56,6 @@ def read_data():
 train, test, train_labels, specs, sample_submission = read_data()
 
 
-# In[3]:
 
 
 titles = [["Welcome to Lost Lagoon!"], ["Tree Top City - Level 1"], ["Ordering Spheres"], ["All Star Sorting"], ["Costume Box"], ["Fireworks (Activity)"], ["12 Monkeys"], ["Tree Top City - Level 2"], ["Flower Waterer (Activity)"], ["Pirate's Tale"], ["Mushroom Sorter (Assessment)"], ["Air Show"], ["Treasure Map"], ["Tree Top City - Level 3"], ["Crystals Rule"], ["Rulers"], ["Bug Measurer (Activity)"], ["Bird Measurer (Assessment)"], ["Magma Peak - Level 1"], ["Sandcastle Builder (Activity)"], ["Slop Problem"], ["Scrub-A-Dub"], ["Watering Hole (Activity)"], ["Magma Peak - Level 2"], ["Dino Drink"], ["Bubble Bath"], ["Bottle Filler (Activity)"], ["Dino Dive"], ["Cauldron Filler (Assessment)"], ["Crystal Caves - Level 1"], ["Chow Time"], ["Balancing Act"], ["Chicken Balancer (Activity)"], ["Lifting Heavy Things"], ["Crystal Caves - Level 2"], ["Honey Cake"], ["Happy Camel"], ["Cart Balancer (Assessment)"], ["Leaf Leader"], ["Crystal Caves - Level 3"], ["Heavy, Heavier, Heaviest"], ["Pan Balance"], ["Egg Dropper (Activity)"], ["Chest Sorter (Assessment)"]]
@@ -67,7 +64,6 @@ ordered_titles = ordered_titles.reset_index().rename(columns={'index': 'order'})
 ordered_titles.head()
 
 
-# In[4]:
 
 
 train = train[(train["event_data"].notnull())]
@@ -90,33 +86,28 @@ event_data = pd.merge(
 del train
 
 
-# In[5]:
 
 
 print("Total of {} rows and {} features.".format(*event_data.shape))
 
 
-# In[6]:
 
 
 event_data.head()
 
 
-# In[7]:
 
 
 msno.matrix(event_data.iloc[:, :50].sample(250))
 fig = plt.gcf()
 
 
-# In[8]:
 
 
 event_data = event_data[['title', 'world', 'type', 'coordinates']]
 event_data.head()
 
 
-# In[9]:
 
 
 event_data = pd.merge(pd.DataFrame.from_records(
@@ -127,7 +118,6 @@ event_data = pd.merge(pd.DataFrame.from_records(
 event_data.head()
 
 
-# In[10]:
 
 
 event_data['scale'] = 100 / event_data.stage_width
@@ -135,19 +125,16 @@ event_data['scale'] = 100 / event_data.stage_width
 event_data[['x', 'y', 'stage_width', 'stage_height']] =     event_data[['x', 'y', 'stage_width', 'stage_height']]     .multiply(event_data['scale'], axis=0)
 
 
-# In[11]:
 
 
 event_data.head()
 
 
-# In[12]:
 
 
 print(f'{event_data.title.nunique()} unique maps to plot')
 
 
-# In[13]:
 
 
 event_data = pd.merge(
@@ -157,13 +144,11 @@ event_data = pd.merge(
     right_index=True)
 
 
-# In[14]:
 
 
 event_data.query('title == "Welcome to Lost Lagoon!"')
 
 
-# In[15]:
 
 
 def plot_heatmaps(event_data):
@@ -209,7 +194,6 @@ def plot_heatmaps(event_data):
     plt.show()
 
 
-# In[16]:
 
 
 event_data = event_data.sort_values(by=['order'])
@@ -217,7 +201,6 @@ event_data = event_data.sort_values(by=['order'])
 plot_heatmaps(event_data)
 
 
-# In[17]:
 
 
 event_data = event_data.sort_values(by=['type', 'order'])

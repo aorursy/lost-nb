@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -30,7 +29,6 @@ df = pd.read_csv('../input/liverpool-ion-switching-ds/train.csv')
 PERIODS = [1 , 2]
 
 
-# In[2]:
 
 
 PERIODS = [1]
@@ -151,7 +149,6 @@ def one_versus_all(X, y):
     return cv
 
 
-# In[3]:
 
 
 ## Take a look at the columns we are working with
@@ -159,19 +156,16 @@ for col in df.columns:
     print(col)
 
 
-# In[4]:
 
 
 cv = single_decision_tree(df.drop(['open_channels'], axis = 1), df['open_channels'])
 
 
-# In[5]:
 
 
 one_v_all_oof = one_versus_all(df.drop(['open_channels'], axis = 1), df['open_channels'])
 
 
-# In[6]:
 
 
 plt.figure(figsize=(24,8))
@@ -184,7 +178,6 @@ for class_ in range(0,11):
 sns.heatmap(one_v_all_oof[one_v_all_oof['actual'] != one_v_all_oof['predict']].groupby(['actual']).agg(aggs), cmap='Blues', annot=True)
 
 
-# In[7]:
 
 
 misclassified = one_v_all_oof[one_v_all_oof['actual'] != one_v_all_oof['predict']]
@@ -202,26 +195,22 @@ for class_, axs in zip(misclassified_classes, axes_list):
     sns.barplot(mis_graph['predict'], mis_graph['count'], ax=axs, order=order,palette='Blues').set_title(f'Misclassifications for class {class_}')
 
 
-# In[8]:
 
 
 orig_misclassified_index = misclassified.index.copy() 
 
 
-# In[9]:
 
 
 df = signal_shifts(df, 'signal_sans_drift_avg_center')
 df.columns
 
 
-# In[10]:
 
 
 one_v_all_oof = one_versus_all(df.drop(['open_channels'], axis = 1).fillna(0), df['open_channels'])
 
 
-# In[11]:
 
 
 plt.figure(figsize=(24,8))
@@ -234,7 +223,6 @@ for class_ in range(0,11):
 sns.heatmap(one_v_all_oof[one_v_all_oof.isin(orig_misclassified_index)].groupby(['actual']).agg(aggs), cmap='Blues', annot=True)
 
 
-# In[ ]:
 
 
 

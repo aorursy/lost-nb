@@ -1,19 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
-
-pip install pydicom
-
-
-# In[ ]:
 
 
 
 
 
-# In[2]:
+
+
+
+
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -34,7 +30,6 @@ patients = os.listdir(INPUT_FOLDER)
 patients.sort()
 
 
-# In[3]:
 
 
 # Load the scans in given folder path
@@ -52,7 +47,6 @@ def load_scan(path):
     return slices
 
 
-# In[4]:
 
 
 def get_pixels_hu(slices):
@@ -80,7 +74,6 @@ def get_pixels_hu(slices):
     return np.array(image, dtype=np.int16)
 
 
-# In[5]:
 
 
 first_patient = load_scan(INPUT_FOLDER + patients[0])
@@ -95,7 +88,6 @@ plt.imshow(first_patient_pixels[80], cmap=plt.cm.gray)
 plt.show()
 
 
-# In[6]:
 
 
 def resample(image, scan, new_spacing=[1,1,1]):
@@ -113,7 +105,6 @@ def resample(image, scan, new_spacing=[1,1,1]):
     return image, new_spacing
 
 
-# In[7]:
 
 
 pix_resampled, spacing = resample(first_patient_pixels, first_patient, [1,1,1])
@@ -121,7 +112,6 @@ print("Shape before resampling\t", first_patient_pixels.shape)
 print("Shape after resampling\t", pix_resampled.shape)
 
 
-# In[8]:
 
 
 def plot_3d(image, threshold=-300):
@@ -148,13 +138,11 @@ def plot_3d(image, threshold=-300):
     plt.show()
 
 
-# In[9]:
 
 
 plot_3d(pix_resampled, 400)
 
 
-# In[10]:
 
 
 def largest_label_volume(im, bg=-1):
@@ -210,32 +198,27 @@ def segment_lung_mask(image, fill_lung_structures=True):
     return binary_image
 
 
-# In[11]:
 
 
 segmented_lungs = segment_lung_mask(pix_resampled, False)
 segmented_lungs_fill = segment_lung_mask(pix_resampled, True)
 
 
-# In[12]:
 
 
 plot_3d(segmented_lungs, 0)
 
 
-# In[13]:
 
 
 plot_3d(segmented_lungs_fill, 0)
 
 
-# In[14]:
 
 
 plot_3d(segmented_lungs_fill - segmented_lungs, 0)
 
 
-# In[15]:
 
 
 MIN_BOUND = -1000.0
@@ -248,7 +231,6 @@ def normalize(image):
     return image
 
 
-# In[16]:
 
 
 PIXEL_MEAN = 0.25
@@ -258,7 +240,6 @@ def zero_center(image):
     return image
 
 
-# In[17]:
 
 
 import pandas as pd

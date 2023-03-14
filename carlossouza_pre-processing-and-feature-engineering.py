@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from datetime import timedelta
@@ -31,7 +30,6 @@ from functools import partial
 from tqdm import tqdm
 
 
-# In[2]:
 
 
 class CTScansDataset(Dataset):
@@ -120,7 +118,6 @@ class CTScansDataset(Dataset):
         return image, metadata, msbs
 
 
-# In[3]:
 
 
 class CropBoundingBox:
@@ -160,7 +157,6 @@ class CropBoundingBox:
         return {'image': image, 'metadata': data, 'msbs': sample['msbs']}
 
 
-# In[4]:
 
 
 class ConvertToHU:
@@ -179,7 +175,6 @@ class ConvertToHU:
         return {'image': image, 'metadata': data, 'msbs': sample['msbs']}
 
 
-# In[5]:
 
 
 class Resample:
@@ -204,7 +199,6 @@ class Resample:
         return {'image': image, 'metadata': data}
 
 
-# In[6]:
 
 
 class Clip:
@@ -219,7 +213,6 @@ class Clip:
         return {'image': image, 'metadata': data}
 
 
-# In[7]:
 
 
 class MaskWatershed:
@@ -317,7 +310,6 @@ class MaskWatershed:
         return marker_internal, marker_external, marker_watershed
 
 
-# In[8]:
 
 
 class LungVolume:
@@ -341,7 +333,6 @@ class LungVolume:
         return sample
 
 
-# In[9]:
 
 
 class ChestCircumference:
@@ -378,7 +369,6 @@ class ChestCircumference:
         return sample
 
 
-# In[10]:
 
 
 class LungHeight:
@@ -391,7 +381,6 @@ class LungHeight:
         return sample
 
 
-# In[11]:
 
 
 class HUHistogram:
@@ -422,7 +411,6 @@ class HUHistogram:
         return sample
 
 
-# In[12]:
 
 
 def gennerate_row(dataset, i):
@@ -445,7 +433,6 @@ def gennerate_row(dataset, i):
     return df
 
 
-# In[13]:
 
 
 t0 = time()
@@ -477,13 +464,11 @@ features.to_csv('features.csv', index=False)
 print(f'\nDone! Time: {timedelta(seconds=time() - t0)}')
 
 
-# In[14]:
 
 
 features
 
 
-# In[15]:
 
 
 pd.read_csv('../input/osic-pulmonary-fibrosis-progression/sample_submission.csv').to_csv('submission.csv', index=False)

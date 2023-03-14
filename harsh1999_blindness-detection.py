@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # Importing the libraries
@@ -35,7 +34,6 @@ SEED = 77
 TRAIN_NUM = -1
 
 
-# In[2]:
 
 
 import os
@@ -45,14 +43,12 @@ sys.path.append(os.path.abspath('../input/efficientnet/efficientnet-master/effic
 from efficientnet import EfficientNetB5
 
 
-# In[3]:
 
 
 import os
 print(os.listdir("../input"))
 
 
-# In[4]:
 
 
 # Loading the dataframe
@@ -64,7 +60,6 @@ print(test_df.shape)
 train_df.head()
 
 
-# In[5]:
 
 
 # Seeing the number of labels we have for different classes in our distribution
@@ -72,7 +67,6 @@ train_df.head()
 train_df['diagnosis'].value_counts()
 
 
-# In[6]:
 
 
 # Plotting the distribution of different labels we have
@@ -103,7 +97,6 @@ ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 plt.show()
 
 
-# In[7]:
 
 
 # Let us display some sample images to see how our input images are
@@ -126,14 +119,12 @@ def display_samples(df, columns = 4, rows = 3):
 display_samples(train_df)
 
 
-# In[8]:
 
 
 train_y = train_df['diagnosis']
 train_y.shape
 
 
-# In[9]:
 
 
 def crop_image_from_gray(img, tol = 7):
@@ -157,7 +148,6 @@ def crop_image_from_gray(img, tol = 7):
         return img
 
 
-# In[10]:
 
 
 def circle_crop_v2(img):
@@ -183,7 +173,6 @@ def circle_crop_v2(img):
         return img
 
 
-# In[11]:
 
 
 def ben_color2(image_path, sigmaX = 10, scale = 270):
@@ -220,7 +209,6 @@ def ben_color2(image_path, sigmaX = 10, scale = 270):
    return image
 
 
-# In[12]:
 
 
 # Defining the function to resize the images
@@ -230,7 +218,6 @@ def preprocess_image(image_path, desired_size = 300):
     return image
 
 
-# In[13]:
 
 
 # Let us display some processed sample images to see how our input images are
@@ -254,7 +241,6 @@ def display_samples(df, columns = 4, rows = 3):
 display_samples(train_df)
 
 
-# In[14]:
 
 
 #### Processing the training images
@@ -268,7 +254,6 @@ for i, image_id in enumerate(tqdm(train_df['id_code'])):
     )
 
 
-# In[15]:
 
 
 # Resizing the test images
@@ -282,7 +267,6 @@ for i, image_id in enumerate(tqdm(test_df['id_code'])):
     )
 
 
-# In[16]:
 
 
 # Forming the target labels
@@ -294,7 +278,6 @@ print(y_train.shape)
 print(x_test.shape)
 
 
-# In[17]:
 
 
 # Converting our target labels into multi-labels
@@ -309,14 +292,12 @@ print("Original y_train:", y_train.sum(axis = 0))
 print("Multilabel version:", y_train_multi.sum(axis = 0))
 
 
-# In[18]:
 
 
 from sklearn.utils import class_weight
 wts = class_weight.compute_class_weight('balanced', np.unique(train_y),train_y)
 
 
-# In[19]:
 
 
 # Splitting our data into training and cross-validations sets
@@ -324,7 +305,6 @@ wts = class_weight.compute_class_weight('balanced', np.unique(train_y),train_y)
 x_train_NN, x_val_NN, y_train_NN, y_val_NN = train_test_split(x_train, y_train_multi, test_size = 0.15, random_state = 77) 
 
 
-# In[20]:
 
 
 # Defining the data generator function
@@ -344,7 +324,6 @@ def create_datagen():
               )
 
 
-# In[21]:
 
 
 # Using original generator
@@ -352,7 +331,6 @@ def create_datagen():
 data_generator = create_datagen().flow(x_train_NN, y_train_NN, batch_size = BATCH_SIZE, seed = 77)
 
 
-# In[22]:
 
 
 
@@ -487,7 +465,6 @@ class RAdam(keras.optimizers.Optimizer):
         return dict(list(base_config.items()) + list(config.items()))
 
 
-# In[23]:
 
 
 from __future__ import absolute_import
@@ -540,7 +517,6 @@ class FractionalPooling2D(Layer):
 		self.input_spec = [InputSpec(shape=input_shape)]
 
 
-# In[24]:
 
 
 from efficientnet import EfficientNetB5
@@ -552,7 +528,6 @@ effnet = EfficientNetB5(
 )
 
 
-# In[25]:
 
 
 def build_model2():
@@ -581,13 +556,11 @@ def build_model2():
 model2 = build_model2()
 
 
-# In[26]:
 
 
 model2.summary()
 
 
-# In[27]:
 
 
 # Creating the Metrics class
@@ -620,7 +593,6 @@ class Metrics2(Callback):
         return
 
 
-# In[28]:
 
 
 # Training our model
@@ -638,13 +610,11 @@ history2 = model2.fit_generator(
 )
 
 
-# In[29]:
 
 
 model2.load_weights('model2.h5')
 
 
-# In[30]:
 
 
 # Plotting the graph to show our training and cross-validation loss
@@ -657,13 +627,11 @@ history_df[['loss', 'val_loss']].plot()
 history_df[['acc', 'val_acc']].plot()
 
 
-# In[31]:
 
 
 predict = model2.predict(x_val_NN)
 
 
-# In[32]:
 
 
 # Plotting the trend for our kappa values
@@ -671,7 +639,6 @@ predict = model2.predict(x_val_NN)
 plt.plot(kappa_metrics2.val_kappas)
 
 
-# In[33]:
 
 
 model2.load_weights('model2.h5')
@@ -692,7 +659,6 @@ simplex = scipy.optimize.minimize(
 best_threshold = simplex['x'][0]
 
 
-# In[34]:
 
 
 y1 = predict > 0.5
@@ -702,7 +668,6 @@ score = cohen_kappa_score(y1, y2, weights='quadratic')
 print(score)
 
 
-# In[35]:
 
 
 # Finding the predictions:

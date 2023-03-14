@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install cufflinks')
 
 
-# In[2]:
 
 
 from os.path import join as pjoin
@@ -17,7 +15,6 @@ import cufflinks as cf
 cf.go_offline(connected=False)  # to make it works without plotly account
 
 
-# In[3]:
 
 
 RAW_DATA_DIR = '/kaggle/input/ashrae-energy-prediction/'
@@ -59,7 +56,6 @@ del weather_train, weather_test
 weather.head()
 
 
-# In[4]:
 
 
 weather_key = ['site_id', 'timestamp']
@@ -68,7 +64,6 @@ temp_skeleton = weather[weather_key + ['air_temperature']].drop_duplicates(subse
 temp_skeleton.head()
 
 
-# In[5]:
 
 
 # calculate ranks of hourly temperatures within date/site_id chunks
@@ -103,7 +98,6 @@ df_2d.T.iplot(
 )
 
 
-# In[6]:
 
 
 # check what offsets (in hours) we have
@@ -111,7 +105,6 @@ site_ids_offsets.index.name = 'site_id'
 site_ids_offsets.sort_values()
 
 
-# In[7]:
 
 
 temp_skeleton['offset'] = temp_skeleton.site_id.map(site_ids_offsets)
@@ -125,7 +118,6 @@ temp_skeleton['timestamp_aligned'] = (
 temp_skeleton.head()
 
 
-# In[8]:
 
 
 # check difference now
@@ -148,7 +140,6 @@ df_2d.T.iplot(
 )
 
 
-# In[9]:
 
 
 # load train data
@@ -195,7 +186,6 @@ print(train.shape)
 train.head()
 
 
-# In[10]:
 
 
 # construct df with initial timestamps
@@ -207,7 +197,6 @@ df_init = pd.merge(
 df_init.head()
 
 
-# In[11]:
 
 
 from tqdm import tqdm_notebook as tqdm
@@ -231,7 +220,6 @@ df_corr_init = df_corr_init.unstack(level=[0])
 df_corr_init.style.highlight_null().format("{:.2%}")
 
 
-# In[12]:
 
 
 # let's move to aligned timestamps
@@ -244,7 +232,6 @@ df_aligned = pd.merge(
 df_aligned.head()
 
 
-# In[13]:
 
 
 # do the same for aligned timestamps
@@ -262,7 +249,6 @@ df_corr_aligned = df_corr_aligned.unstack(level=[0])
 df_corr_aligned.style.highlight_null().format("{:.2%}")
 
 
-# In[14]:
 
 
 def color_values(val):

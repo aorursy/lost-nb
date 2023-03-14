@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
-pip install "/kaggle/input/kornia020/kornia-0.2.0e110f3b-py2.py3-none-any.whl"
 
 
-# In[2]:
 
 
 import torch
@@ -19,7 +16,6 @@ import cv2
 import numpy as np
 
 
-# In[3]:
 
 
 from matplotlib import pyplot as plt
@@ -31,7 +27,6 @@ def imshow(input: torch.Tensor):
     plt.imshow(out_np); plt.axis('off');
 
 
-# In[4]:
 
 
 # load video and preprocess
@@ -65,7 +60,6 @@ def load_video(video_path: str, num_frames: int) -> torch.Tensor:
     return kornia.image_to_tensor(frames_np)
 
 
-# In[5]:
 
 
 # define data augmentation pipeline
@@ -79,7 +73,6 @@ transforms = nn.Sequential(
 )
 
 
-# In[6]:
 
 
 import os

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 # for the EDA I only use 20% of the training data, randomly sampled from original dataset, I have saved this in a different .csv file to make
@@ -32,13 +30,11 @@ original_feat_dim = train_data.shape[1]
 train_data.info()
 
 
-# In[3]:
 
 
 train_data.head(10)
 
 
-# In[4]:
 
 
 # looking at categorical columns
@@ -46,7 +42,6 @@ categorical = train_data.select_dtypes(include=[np.object]).columns
 categorical, len(categorical)
 
 
-# In[5]:
 
 
 # looking at numerical columns
@@ -54,33 +49,28 @@ numerical = train_data.select_dtypes(include=[np.number]).columns
 numerical, len(numerical)
 
 
-# In[6]:
 
 
 plt.hist(train_data["target"])
 
 
-# In[7]:
 
 
 print("Ratio of positive samples (target == 1) to negative samples (target == 0) is {}"          .format(len(train_data[train_data["target"] == 1]) / len(train_data[train_data["target"] == 0])))
 
 
-# In[8]:
 
 
 null_count = train_data.isnull().sum(axis=0).sort_values(ascending=False)
 null_count.head(30)
 
 
-# In[9]:
 
 
 # figuring out how many features have more than 10% of data missing them
 np.sum(null_count > 0.1 * train_data.shape[0])
 
 
-# In[10]:
 
 
 # I think its safe to remove these features, I will create a to_remove list to store all features that need to be dropped
@@ -88,7 +78,6 @@ missing = [feature for feature in train_data.columns if null_count[feature] > 0.
 train_data.drop(missing, axis=1, inplace=True)
 
 
-# In[11]:
 
 
 # taking a second look
@@ -98,7 +87,6 @@ missing_data = pd.concat([total, percent], axis=1, keys=['Total', 'Percent'])
 missing_data.head(20)
 
 
-# In[12]:
 
 
 remove_missing_examples = [feat for feat in percent.index if percent[feat] < 0.01]
@@ -117,21 +105,18 @@ for col in fill_missing_examples:
 train_data.dropna(axis=0, inplace=True)
 
 
-# In[13]:
 
 
 # final check for missing data
 train_data.isnull().sum().max()
 
 
-# In[14]:
 
 
 values_count = train_data.nunique(dropna=False).sort_values()
 np.sum(values_count == 1)
 
 
-# In[15]:
 
 
 # noting features with constant values for removal
@@ -139,7 +124,6 @@ constants = [feature for feature in train_data.columns if values_count[feature] 
 train_data.drop(constants, axis=1, inplace=True)
 
 
-# In[16]:
 
 
 enc_data =  pd.DataFrame(index=train_data.index)
@@ -147,7 +131,6 @@ for col in train_data.columns:
     enc_data[col] = train_data[col].factorize()[0]
 
 
-# In[17]:
 
 
 # noting and dropping duplicated features 
@@ -162,7 +145,6 @@ train_data.drop(duplicates, axis=1, inplace=True)
 len(duplicates)
 
 
-# In[18]:
 
 
 print("Dimension of feature space before data cleaning : %d" % original_feat_dim)
@@ -170,32 +152,27 @@ print("Dimension of feature space after data cleaning : %d" % train_data.shape[1
 print("Number of features removed : %d" % (original_feat_dim - train_data.shape[1]))
 
 
-# In[19]:
 
 
 categorical = train_data.select_dtypes(include=[np.object]).columns
 numerical = train_data.select_dtypes(include=[np.number]).columns
 
 
-# In[20]:
 
 
 train_data[categorical].describe()
 
 
-# In[21]:
 
 
 potential_to_remove = ['VAR_0226', 'VAR_0230', 'VAR_0236']
 
 
-# In[22]:
 
 
 train_data[categorical].head(20)
 
 
-# In[23]:
 
 
 dates = ['VAR_0075', 'VAR_0204', 'VAR_0217']
@@ -206,25 +183,21 @@ date2 = pd.to_datetime(train_data["VAR_0217"],format = '%d%b%y:%H:%M:%S')
 np.all(date2 > date1)
 
 
-# In[24]:
 
 
 train_data[['VAR_0404', 'VAR_0466', 'VAR_0467', 'VAR_0493']].nunique(dropna=False)
 
 
-# In[25]:
 
 
 train_data['VAR_0466'].value_counts() / train_data.shape[0]
 
 
-# In[26]:
 
 
 train_data['VAR_0467'].value_counts() / train_data.shape[0]
 
 
-# In[27]:
 
 
 # converting categorical features to encoded variables first, 
@@ -253,7 +226,6 @@ corrmat = enc_data.corr()
 corrmat["target"].sort_values(ascending=False)
 
 
-# In[28]:
 
 
 enc_data.drop(['VAR_0075_hour', 'VAR_0075_minute', 'VAR_0204_year', 'VAR_0217_hour', 'VAR_0217_minute'], axis=1, inplace=True)
@@ -262,7 +234,6 @@ f, ax = plt.subplots(figsize=(12, 9))
 sns.heatmap(corrmat, vmax=1, square=True)
 
 
-# In[29]:
 
 
 numerical = train_data.select_dtypes(include=[np.number]).columns
@@ -270,7 +241,6 @@ corrmat2 = pd.concat([train_data[numerical], train_data['target']], axis = 0).co
 corrmat2["target"].sort_values(ascending=False)
 
 
-# In[30]:
 
 
 # getting more important features
@@ -287,7 +257,6 @@ for i in range(len(sample_feats)):
     sns.distplot(train_data[sample_feats[i]])
 
 
-# In[31]:
 
 
 f, ax = plt.subplots(figsize=(20, 10))
@@ -297,7 +266,6 @@ for i in range(len(sample_feats)):
     sns.boxplot(x='target', y=sample_feats[i], data=train_data)
 
 
-# In[32]:
 
 
 high_corrs = []
@@ -308,14 +276,12 @@ for i, c1 in enumerate(corrmat2.columns):
 len(high_corrs)
 
 
-# In[33]:
 
 
 np.savez('./prep_info.npz', missing, fill_missing_examples, remove_missing_examples, constants, duplicates,
          dates, locations, potential_to_remove, expanded_categoricals)
 
 
-# In[34]:
 
 
 from sklearn.manifold import TSNE
@@ -323,7 +289,6 @@ from sklearn.manifold import SpectralEmbedding
 from sklearn.decomposition import PCA, KernelPCA, FastICA
 
 
-# In[35]:
 
 
 # first step, separating features and targets, remember that we have already encoded categorical data and stored the result in enc_data 
@@ -336,14 +301,12 @@ to_transform = pd.concat([positive_samples, negative_samples]).sample(frac=1).re
 to_transform.head(20)
 
 
-# In[36]:
 
 
 features = to_transform.drop(['target'], axis=1, inplace=False)
 labels = to_transform['target']
 
 
-# In[37]:
 
 
 pca_embedding =  PCA(n_components=2) 
@@ -354,7 +317,6 @@ plt.scatter(pca_emb_data[labels == 0, 0], pca_emb_data[labels == 0, 1], color='b
 plt.legend()
 
 
-# In[38]:
 
 
 kpca_embedding =  KernelPCA(n_components=2, kernel='rbf')
@@ -366,7 +328,6 @@ plt.scatter(kpca_emb_data[labels == 0, 0], kpca_emb_data[labels == 0, 1], color=
 plt.legend()
 
 
-# In[39]:
 
 
 tsne_embedding =  TSNE(n_components=2) 
@@ -378,7 +339,6 @@ plt.scatter(tsne_emb_data[labels == 0, 0], tsne_emb_data[labels == 0, 1], color=
 plt.legend()
 
 
-# In[40]:
 
 
 spec_embedding = SpectralEmbedding(n_components=2, affinity='rbf')
@@ -396,7 +356,6 @@ plt.scatter(transformed_data2[labels == 0, 0], transformed_data2[labels == 0, 1]
 plt.legend()
 
 
-# In[41]:
 
 
 spec_embedding2 = SpectralEmbedding(n_components=2, affinity='nearest_neighbors', n_neighbors=30)

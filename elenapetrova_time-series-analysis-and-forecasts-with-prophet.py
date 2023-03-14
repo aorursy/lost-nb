@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import warnings
@@ -29,7 +28,6 @@ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from fbprophet import Prophet
 
 
-# In[2]:
 
 
 # importing train data to learn
@@ -43,7 +41,6 @@ store = pd.read_csv("../input/store.csv",
 train.index
 
 
-# In[3]:
 
 
 # first glance at the train set: head and tail
@@ -51,7 +48,6 @@ print("In total: ", train.shape)
 train.head(5)
 
 
-# In[4]:
 
 
 # data extraction
@@ -65,7 +61,6 @@ train['SalePerCustomer'] = train['Sales']/train['Customers']
 train['SalePerCustomer'].describe()
 
 
-# In[5]:
 
 
 sns.set(style = "ticks")# to format into seaborn 
@@ -90,14 +85,12 @@ plt.plot(cdf.x, cdf.y, label = "statmodels", color = c);
 plt.xlabel('Sale per Customer');
 
 
-# In[6]:
 
 
 # closed stores
 train[(train.Open == 0) & (train.Sales == 0)].head()
 
 
-# In[7]:
 
 
 # opened stores with zero sales
@@ -106,7 +99,6 @@ print("In total: ", zero_sales.shape)
 zero_sales.head(5)
 
 
-# In[8]:
 
 
 print("Closed stores and days which didn't have any sales won't be counted into the forecasts.")
@@ -115,35 +107,30 @@ train = train[(train["Open"] != 0) & (train['Sales'] != 0)]
 print("In total: ", train.shape)
 
 
-# In[9]:
 
 
 # additional information about the stores
 store.head()
 
 
-# In[10]:
 
 
 # missing values?
 store.isnull().sum()
 
 
-# In[11]:
 
 
 # missing values in CompetitionDistance
 store[pd.isnull(store.CompetitionDistance)]
 
 
-# In[12]:
 
 
 # fill NaN with a median value (skewed distribuion)
 store['CompetitionDistance'].fillna(store['CompetitionDistance'].median(), inplace = True)
 
 
-# In[13]:
 
 
 # no promo = no information about the promo?
@@ -151,14 +138,12 @@ _ = store[pd.isnull(store.Promo2SinceWeek)]
 _[_.Promo2 != 0].shape
 
 
-# In[14]:
 
 
 # replace NA's by 0
 store.fillna(0, inplace = True)
 
 
-# In[15]:
 
 
 print("Joining train set with an additional store information.")
@@ -171,19 +156,16 @@ print("In total: ", train_store.shape)
 train_store.head()
 
 
-# In[16]:
 
 
 train_store.groupby('StoreType')['Sales'].describe()
 
 
-# In[17]:
 
 
 train_store.groupby('StoreType')['Customers', 'Sales'].sum()
 
 
-# In[18]:
 
 
 # sales trends
@@ -195,7 +177,6 @@ sns.factorplot(data = train_store, x = 'Month', y = "Sales",
                color = c) 
 
 
-# In[19]:
 
 
 # sales trends
@@ -207,7 +188,6 @@ sns.factorplot(data = train_store, x = 'Month', y = "Customers",
                color = c) 
 
 
-# In[20]:
 
 
 # sale per customer trends
@@ -219,7 +199,6 @@ sns.factorplot(data = train_store, x = 'Month', y = "SalePerCustomer",
                color = c) 
 
 
-# In[21]:
 
 
 # customers
@@ -231,14 +210,12 @@ sns.factorplot(data = train_store, x = 'Month', y = "Sales",
                color = c) 
 
 
-# In[22]:
 
 
 # stores which are opened on Sundays
 train_store[(train_store.Open == 1) & (train_store.DayOfWeek == 7)]['Store'].unique()
 
 
-# In[23]:
 
 
 # competition open time (in months)
@@ -254,7 +231,6 @@ train_store.fillna(0, inplace = True)
 train_store.loc[:, ['StoreType', 'Sales', 'Customers', 'PromoOpen', 'CompetitionOpen']].groupby('StoreType').mean()
 
 
-# In[24]:
 
 
 # Compute the correlation matrix 
@@ -274,7 +250,6 @@ sns.heatmap(corr_all, mask = mask,
 plt.show()
 
 
-# In[25]:
 
 
 # sale per customer trends
@@ -285,7 +260,6 @@ sns.factorplot(data = train_store, x = 'DayOfWeek', y = "Sales",
                palette = 'RdPu') 
 
 
-# In[26]:
 
 
 # preparation: input should be float type
@@ -306,7 +280,6 @@ sales_c.resample('W').sum().plot(color = c, ax = ax3)
 sales_d.resample('W').sum().plot(color = c, ax = ax4)
 
 
-# In[27]:
 
 
 f, (ax1, ax2, ax3, ax4) = plt.subplots(4, figsize = (12, 13))
@@ -325,7 +298,6 @@ decomposition_d = seasonal_decompose(sales_d, model = 'additive', freq = 365)
 decomposition_d.trend.plot(color = c, ax = ax4)
 
 
-# In[28]:
 
 
 # figure for subplots
@@ -350,7 +322,6 @@ plt.subplot(428); plot_pacf(sales_d, lags = 50, ax = plt.gca(), color = c)
 plt.show()
 
 
-# In[29]:
 
 
 # importing data
@@ -371,7 +342,6 @@ sales['Date'] = pd.DatetimeIndex(sales['Date'])
 sales.dtypes
 
 
-# In[30]:
 
 
 # from the prophet documentation every variables should have specific names
@@ -380,7 +350,6 @@ sales = sales.rename(columns = {'Date': 'ds',
 sales.head()
 
 
-# In[31]:
 
 
 # plot daily sales
@@ -390,7 +359,6 @@ ax.set_xlabel('Date')
 plt.show()
 
 
-# In[32]:
 
 
 # create holidays dataframe
@@ -406,7 +374,6 @@ holidays = pd.concat((state, school))
 holidays.head()
 
 
-# In[33]:
 
 
 # set the uncertainty interval to 95% (the Prophet default is 80%)
@@ -421,7 +388,6 @@ print("First week to forecast.")
 future_dates.tail(7)
 
 
-# In[34]:
 
 
 # predictions
@@ -431,20 +397,17 @@ forecast = my_model.predict(future_dates)
 forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(7)
 
 
-# In[35]:
 
 
 fc = forecast[['ds', 'yhat']].rename(columns = {'Date': 'ds', 'Forecast': 'yhat'})
 
 
-# In[36]:
 
 
 # visualizing predicions
 my_model.plot(forecast);
 
 
-# In[37]:
 
 
 my_model.plot_components(forecast);

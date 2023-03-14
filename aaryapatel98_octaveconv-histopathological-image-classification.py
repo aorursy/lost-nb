@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from sklearn.utils import shuffle
@@ -16,14 +15,12 @@ df = pd.read_csv("../input/train_labels.csv")
 df = shuffle(df)
 
 
-# In[2]:
 
 
 # For demonstration only
 #df = df[:10000]
 
 
-# In[3]:
 
 
 # Split data set  to train and validation sets
@@ -41,7 +38,6 @@ print("True positive in validation data: " +  str(len(df_val[df_val["label"] == 
 print("True negative in validation data: " +  str(len(df_val[df_val["label"] == 0])))
 
 
-# In[4]:
 
 
 # Train List
@@ -57,7 +53,6 @@ val_list = ['../input/train/'+ name + ".tif" for name in val_list]
 id_label_map = {k:v for k,v in zip(df.id.values, df.label.values)}
 
 
-# In[5]:
 
 
 # Functions for generators
@@ -68,14 +63,12 @@ def chunker(seq, size):
     return (seq[pos:pos + size] for pos in range(0, len(seq), size))
 
 
-# In[6]:
 
 
 get_ipython().system('pip install albumentations')
 import albumentations
 
 
-# In[7]:
 
 
 # train_list = df['id'].tolist()
@@ -83,7 +76,6 @@ import albumentations
 # id_label_map = {k:v for k,v in zip(df.id.values, df.label.values)}
 
 
-# In[8]:
 
 
 # Import Pretrained Models
@@ -126,7 +118,6 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[9]:
 
 
 from keras.callbacks import Callback
@@ -439,7 +430,6 @@ class LRFinder(Callback):
         return np.array(self.history['running_loss_'])
 
 
-# In[10]:
 
 
 def do_train_augmentations():
@@ -479,7 +469,6 @@ def data_gen(list_files,id_label_map,batch_size,aug_func):
             yield np.array(x),np.array(y)
 
 
-# In[11]:
 
 
 from keras.layers import BatchNormalization
@@ -957,7 +946,6 @@ def OctaveResNet152(include_top=True,
 
 
 
-# In[12]:
 
 
 def densenet_model(input_shape,batch_size = 1024):
@@ -985,14 +973,12 @@ def densenet_model(input_shape,batch_size = 1024):
     return model
 
 
-# In[13]:
 
 
 res_model = densenet_model((96,96,3))
 print(res_model.summary())
 
 
-# In[14]:
 
 
 import os
@@ -1196,7 +1182,6 @@ class OneCycleLR(Callback):
 
 
 
-# In[15]:
 
 
 # Define Ony Cycle Policy parameters and train model
@@ -1244,7 +1229,6 @@ plt.legend(["train", "valid"], loc="upper left")
 plt.savefig('acc_performance.png')
 
 
-# In[16]:
 
 
 def do_inference_aug():
@@ -1268,7 +1252,6 @@ def data_gen(list_files,batch_size,aug_func):
 preds = res_model.predict_generator(data_gen(val_list,1,do_inference_aug),steps = len(val_list))
 
 
-# In[17]:
 
 
 y_preds = np.array(preds)
@@ -1277,14 +1260,12 @@ y_preds[preds < 0.5] = 0
 true = df_val['label'].values
 
 
-# In[18]:
 
 
 from sklearn.metrics import roc_auc_score,confusion_matrix,classification_report
 roc_auc_score(true,preds)
 
 
-# In[19]:
 
 
 import sklearn.metrics as metrics
@@ -1307,13 +1288,11 @@ plt.show()
 plt.savefig('octresnet_auc_roc.png')
 
 
-# In[20]:
 
 
 cm = confusion_matrix(true,y_preds)
 
 
-# In[21]:
 
 
 def plot_confusion_matrix(cm, classes,
@@ -1349,26 +1328,22 @@ def plot_confusion_matrix(cm, classes,
     plt.savefig('octresnet_cm.png')
 
 
-# In[22]:
 
 
 plot_confusion_matrix(cm,['no_tumor_tissue', 'has_tumor_tissue'])
 
 
-# In[23]:
 
 
 report = classification_report(true,y_preds,target_names=['no_tumor_tissue', 'has_tumor_tissue'])
 print(report)
 
 
-# In[24]:
 
 
 # lr_callback.plot_schedule(clip_beginning=200, clip_endding=50)
 
 
-# In[25]:
 
 
 # # Define Ony Cycle Policy parameters and train model

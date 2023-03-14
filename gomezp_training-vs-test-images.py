@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #Load necessary modules
@@ -14,7 +13,6 @@ from tqdm import tqdm_notebook,trange
 import matplotlib.pyplot as plt
 
 
-# In[2]:
 
 
 def load_data(N,df):
@@ -36,7 +34,6 @@ def load_data(N,df):
     return X,y
 
 
-# In[3]:
 
 
 #set paths to training and test data
@@ -52,7 +49,6 @@ df = df.merge(labels, on = "id") # merge labels and filepaths
 df.head(3) # print the first three entrys
 
 
-# In[4]:
 
 
 #shuffle the dataframes to a representative sample
@@ -68,7 +64,6 @@ X_test,_ = load_data(N=N,df=df_test)
 print("Done.")
 
 
-# In[5]:
 
 
 nr_of_bins = 256
@@ -87,7 +82,6 @@ axs[0].set_ylabel("Relative frequency")
 axs[1].set_ylabel("Relative frequency");
 
 
-# In[6]:
 
 
 fig = plt.figure(figsize=(6,3),dpi=150)
@@ -101,7 +95,6 @@ plt.ylabel("Cumulative frequency")
 plt.show()
 
 
-# In[7]:
 
 
 nr_of_bins = 256 #each possible pixel value will get a bin in the following histograms
@@ -135,7 +128,6 @@ axs[3,1].set_xlabel("Pixel value")
 fig.tight_layout()
 
 
-# In[8]:
 
 
 #first count pixels with value 255 in train and test data per image
@@ -143,7 +135,6 @@ bright_pixels_train = (X == 255).sum(axis=(1,2,3))
 bright_pixels_test = (X_test == 255).sum(axis=(1,2,3))
 
 
-# In[9]:
 
 
 N_bright_train,N_bright_test,N_bright_positive_labels = [],[],[]
@@ -166,7 +157,6 @@ plt.ylabel("Relative frequency")
 plt.show()
 
 
-# In[10]:
 
 
 #let's take those images where between 1475 and 1525 pixels have values of 255
@@ -190,7 +180,6 @@ for plotNr,idx in enumerate(np.random.randint(0,bright_test_imgs.shape[0],8)):
     plt.imshow(bright_test_imgs[idx]) #plot image
 
 
-# In[11]:
 
 
 #let's take those images where between 2400 and 2600 pixels have values of 255
@@ -214,7 +203,6 @@ for plotNr,idx in enumerate(np.random.randint(0,bright_test_imgs.shape[0],8)):
     plt.imshow(bright_test_imgs[idx]) #plot image
 
 
-# In[12]:
 
 
 #calculate relative and absolute incidence of 255 pixels
@@ -226,7 +214,6 @@ freq_test = nr_test*100 / (96*96*3)
 print("Nr of pixels with value 255 per image \nTraining data - {:.4f}% ; avg. Nr = {:.0f}; maxval = {} \nTest - {:.4f}% ; avg. Nr = {:.0f}; maxval = {}".format(freq_train,nr_train,np.max(bright_pixels_train),freq_test,nr_test,np.max(bright_pixels_test)))
 
 
-# In[13]:
 
 
 #let's take those images with high mean values (> 220)
@@ -250,7 +237,6 @@ for plotNr,idx in enumerate(np.random.randint(0,bright_test_imgs.shape[0],8)):
     plt.imshow(bright_test_imgs[idx]) #plot image
 
 
-# In[14]:
 
 
 training_brightness = np.mean(X,axis=(1,2,3))

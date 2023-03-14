@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -11,7 +10,6 @@ import time
 from tqdm import tqdm
 
 
-# In[2]:
 
 
 import json
@@ -31,7 +29,6 @@ def load_data(path):
     return tasks
 
 
-# In[3]:
 
 
 train_tasks = load_data('../input/abstraction-and-reasoning-challenge/training/')
@@ -41,7 +38,6 @@ test_tasks = load_data('../input/abstraction-and-reasoning-challenge/test/')
 train_tasks.head()
 
 
-# In[4]:
 
 
 class Box():
@@ -80,7 +76,6 @@ class Box():
                    
 
 
-# In[5]:
 
 
 class ACRObject():
@@ -169,7 +164,6 @@ class ACRObject():
         return (min_y,max_y)
 
 
-# In[6]:
 
 
 class Grid():
@@ -339,7 +333,6 @@ class Grid():
                         obj2.links.add(obj1)            
 
 
-# In[7]:
 
 
 class Single_Object_Action():
@@ -352,7 +345,6 @@ class Single_Object_Action():
         result = eval("self.grid."  + self.action + "(self.params,self.object)")    
 
 
-# In[8]:
 
 
 class PlanningGraph(): 
@@ -438,7 +430,6 @@ class PlanningGraph():
             return best_grid
 
 
-# In[9]:
 
 
 sample_pic = train_tasks[10]['train'][1]["input"]
@@ -461,7 +452,6 @@ for box_co, box in sample_grid.box_dict.items():
     grid_image[box_co[0],box_co[1]] = box.parent_object.object_no
 
 
-# In[10]:
 
 
 import matplotlib.pyplot as plt
@@ -488,7 +478,6 @@ def plot_sample(sample, predict=None):
         plot_pictures([sample['input'], sample['output'], predict], ['Input', 'Output', 'Predict'])
 
 
-# In[11]:
 
 
 print("objects and links")
@@ -503,13 +492,11 @@ for obj_no in sample_grid.object_dict.keys():
         print("linked obj centroid ", linked_obj.get_centroid())    
 
 
-# In[12]:
 
 
 plot_pictures([sample_pic, grid_image], ['sample_input','grid_image'])
 
 
-# In[13]:
 
 
 def solve_train(train_task):
@@ -536,7 +523,6 @@ def solve_train(train_task):
         
 
 
-# In[14]:
 
 
 def find_changes(train_task):
@@ -564,14 +550,12 @@ def find_changes(train_task):
     plot_pictures([input_pic, output_pic], ['sample_input','sample_output'])
 
 
-# In[15]:
 
 
 for train_task in train_tasks:
     find_changes(train_task)
 
 
-# In[16]:
 
 
 seconds = time.time()

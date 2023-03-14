@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -48,7 +47,6 @@ else:
     print("Setting strategy to MirroredStrategy()")
 
 
-# In[2]:
 
 
 config = {
@@ -66,7 +64,6 @@ config = {
 }
 
 
-# In[3]:
 
 
 def read_submission_file(input_path, alpha=0.5):
@@ -103,7 +100,6 @@ train_df, mapping = read_train_file('../input/landmark-recognition-2020/')
 train_df.head(10)
 
 
-# In[4]:
 
 
 def _get_transform_matrix(rotation, shear, hzoom, wzoom, hshift, wshift):
@@ -240,7 +236,6 @@ def create_dataset(df, training, batch_size, input_size):
     return dataset
 
 
-# In[5]:
 
 
 class ArcMarginProduct(tf.keras.layers.Layer):
@@ -472,7 +467,6 @@ class DistributedModel:
         return predictions, confidences
 
 
-# In[6]:
 
 
 
@@ -542,7 +536,6 @@ else:
     
 
 
-# In[ ]:
 
 
 

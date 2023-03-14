@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -14,7 +13,6 @@ from sklearn.preprocessing import normalize
 import matplotlib.pyplot as plt
 
 
-# In[2]:
 
 
 def getPdArr(dir):
@@ -251,7 +249,6 @@ def preprocess(assess_titles, reduce_train, reduce_test):
     return reduce_train, reduce_test, features
 
 
-# In[3]:
 
 
 def qwk(a1, a2):
@@ -305,7 +302,6 @@ def eval_qwk_lgb_regr(y_true, y_pred):
     return 'cappa', qwk(y_true, y_pred), True
 
 
-# In[4]:
 
 
 ## validate
@@ -396,7 +392,6 @@ def eval(testX, model_path):
     
 
 
-# In[5]:
 
 
 from functools import partial
@@ -451,7 +446,6 @@ class OptimizedRounder(object):
         return self.coef_['x']
 
 
-# In[6]:
 
 
 dir = '/kaggle/input/data-science-bowl-2019/'
@@ -472,13 +466,11 @@ cols_to_delete = ['installation_id',
 # Any results you write to the current directory are saved as output.
 
 
-# In[7]:
 
 
 reduce_train.head(5)
 
 
-# In[8]:
 
 
 params = {'n_estimators':2000,
@@ -497,13 +489,11 @@ params = {'n_estimators':2000,
             }
 
 
-# In[9]:
 
 
 reduce_train['accuracy_group'].value_counts(normalize=True)
 
 
-# In[10]:
 
 
 reduce_train_o, reduce_test_o = reduce_train, reduce_test
@@ -513,7 +503,6 @@ reduce_test = normalize(reduce_test, axis=0, norm='l2')
 train_model(reduce_train, y, params)
 
 
-# In[11]:
 
 
 model = lgb.Booster(model_file="./lightGBM0.model")
@@ -527,13 +516,11 @@ opt_preds = optR.predict(pr1.reshape(-1, ), coefficients)
 qwk(y, opt_preds)
 
 
-# In[ ]:
 
 
 
 
 
-# In[12]:
 
 
 model = lgb.Booster(model_file="./lightGBM0.model")
@@ -550,7 +537,6 @@ print("predict over!!!")
 submission['accuracy_group'].value_counts(normalize=True)
 
 
-# In[ ]:
 
 
 

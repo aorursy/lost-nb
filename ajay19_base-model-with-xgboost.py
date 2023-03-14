@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -20,49 +19,41 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# In[2]:
 
 
 get_ipython().run_cell_magic('time', '', 'test = pd.read_csv("/kaggle/input/data-science-bowl-2019/test.csv")\ntrain_labels = pd.read_csv("/kaggle/input/data-science-bowl-2019/train_labels.csv")\ntrain = pd.read_csv("/kaggle/input/data-science-bowl-2019/train.csv")\nspecs = pd.read_csv("/kaggle/input/data-science-bowl-2019/specs.csv")\nsubmission = pd.read_csv("/kaggle/input/data-science-bowl-2019/sample_submission.csv")\nprint("Data Loaded!")')
 
 
-# In[3]:
 
 
 train.head()
 
 
-# In[4]:
 
 
 train_labels.head(4)
 
 
-# In[5]:
 
 
 specs.head()
 
 
-# In[6]:
 
 
 specs['info'][1]
 
 
-# In[7]:
 
 
 test.sample(5)
 
 
-# In[8]:
 
 
 train['title'].nunique()
 
 
-# In[9]:
 
 
 plt.figure(figsize=(15,8))
@@ -72,7 +63,6 @@ sns.set(style="darkgrid")
 ax = sns.countplot(x=train['title'], data=train)
 
 
-# In[10]:
 
 
 countsT = train["type"].value_counts()
@@ -86,7 +76,6 @@ ax1.axis('equal')
 plt.show()
 
 
-# In[11]:
 
 
 countsT = train_labels["accuracy_group"].value_counts()
@@ -100,7 +89,6 @@ ax1.axis('equal')
 plt.show()
 
 
-# In[12]:
 
 
 countsT = train["world"].value_counts()
@@ -114,7 +102,6 @@ ax1.axis('equal')
 ax1.set_title('Title to which Game/Video belongs to')
 
 
-# In[13]:
 
 
 train["timestamp"] = pd.to_datetime(train["timestamp"])
@@ -125,19 +112,16 @@ fig.update_layout(title_text='Time Series for all Events')
 fig.show()
 
 
-# In[14]:
 
 
 train_labels.drop(['num_correct','num_incorrect','accuracy','title'],axis=1,inplace=True)
 
 
-# In[15]:
 
 
 train.drop(['event_data','date'],axis=1,inplace=True)
 
 
-# In[16]:
 
 
 not_req=(set(train.installation_id.unique()) - set(train_labels.installation_id.unique()))
@@ -145,7 +129,6 @@ train = train[~train['installation_id'].isin(not_req)]
 print(train.shape)
 
 
-# In[17]:
 
 
 def extract_time_features(df):
@@ -159,7 +142,6 @@ def extract_time_features(df):
     return df
 
 
-# In[18]:
 
 
 def prepare_data(df):
@@ -182,7 +164,6 @@ def prepare_data(df):
     return join_four
 
 
-# In[19]:
 
 
 join_train=prepare_data(train)
@@ -190,7 +171,6 @@ cols=join_train.columns.to_list()[2:-3]
 join_train[cols]=join_train[cols].astype('int16')
 
 
-# In[20]:
 
 
 join_test=prepare_data(test)
@@ -198,7 +178,6 @@ cols=join_test.columns.to_list()[2:-3]
 join_test[cols]=join_test[cols].astype('int16')
 
 
-# In[21]:
 
 
 cols=join_test.columns[2:-8].to_list()
@@ -206,7 +185,6 @@ cols.append('event_id count')
 cols.append('installation_id')
 
 
-# In[22]:
 
 
 df=join_test[['hour_of_day mean','event_count sum','game_time mean','game_time sum',
@@ -220,7 +198,6 @@ df_three=join_test[['title','type','world','installation_id']].groupby('installa
         
 
 
-# In[23]:
 
 
 final_train=pd.merge(train_labels,join_train,on=['installation_id','game_session'],
@@ -230,7 +207,6 @@ final_train=pd.merge(train_labels,join_train,on=['installation_id','game_session
 final_test=(df.join(df_two)).join(df_three).drop('installation_id',axis=1)
 
 
-# In[24]:
 
 
 df=final_train[['hour_of_day mean','event_count sum','game_time mean','game_time sum','installation_id']].     groupby('installation_id',as_index=False,sort=False).agg('mean')
@@ -243,7 +219,6 @@ df_three=final_train[['accuracy_group','title','type','world','installation_id']
 final_train=(df.join(df_two)).join(df_three).drop('installation_id',axis=1)
 
 
-# In[25]:
 
 
 #concat train and test and Label Encode Categorical Columns
@@ -259,20 +234,17 @@ final_train=final[:len(final_train)]
 final_test=final[len(final_train):]
 
 
-# In[26]:
 
 
 X_train=final_train.drop('accuracy_group',axis=1)
 y_train=final_train['accuracy_group']
 
 
-# In[27]:
 
 
 get_ipython().run_cell_magic('time', '', "\npars = {\n    'colsample_bytree': 0.5,                 \n    'learning_rate': 0.01,\n    'max_depth': 10,\n    'subsample': 0.5,\n    'objective':'multi:softprob',\n    'num_class':4\n}\n\nkf = KFold(n_splits=10, shuffle=True, random_state=42)\ny_pre=np.zeros((len(final_test),4),dtype=float)\nfinal_test=xgb.DMatrix(final_test.drop('accuracy_group',axis=1))\n\n\nfor train_index, val_index in kf.split(X_train):\n    train_X = X_train.iloc[train_index]\n    val_X = X_train.iloc[val_index]\n    train_y = y_train[train_index]\n    val_y = y_train[val_index]\n    xgb_train = xgb.DMatrix(train_X, train_y)\n    xgb_eval = xgb.DMatrix(val_X, val_y)\n    \n    xgb_model = xgb.train(pars,\n                  xgb_train,\n                  num_boost_round=10000,\n                  evals=[(xgb_train, 'train'), (xgb_eval, 'val')],\n                  verbose_eval=False,\n                  early_stopping_rounds=100\n                 )\n    \n    val_X=xgb.DMatrix(val_X)\n    pred_val=[np.argmax(x) for x in xgb_model.predict(val_X)]\n    \n    print('choen_kappa_score :',cohen_kappa_score(pred_val,val_y,weights='quadratic'))\n    \n    pred=xgb_model.predict(final_test)\n    y_pre+=pred\n    \npred = np.asarray([np.argmax(line) for line in y_pre])")
 
 
-# In[28]:
 
 
 sub=pd.DataFrame({'installation_id':submission.installation_id,'accuracy_group':pred})

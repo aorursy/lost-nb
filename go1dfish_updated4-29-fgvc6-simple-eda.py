@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -21,13 +20,11 @@ import math
 import seaborn as sns
 
 
-# In[2]:
 
 
 input_dir = "../input/"
 
 
-# In[3]:
 
 
 def classid2label(class_id):
@@ -35,7 +32,6 @@ def classid2label(class_id):
     return category, attribute
 
 
-# In[4]:
 
 
 def print_dict(dictionary, name_dict):
@@ -45,7 +41,6 @@ def print_dict(dictionary, name_dict):
         print("{:<5}{:^8}{:^40}{:>10}{:>10.3%}".format(i+1, key, name_dict[key], val, val/all_num))
 
 
-# In[5]:
 
 
 def print_img_with_labels(img_name, labels, category_name_dict, attribute_name_dict, ax):
@@ -64,7 +59,6 @@ def print_img_with_labels(img_name, labels, category_name_dict, attribute_name_d
             ax.text(x_pos, y_pos, attribute_name_dict[attribute_id], fontsize=12)
 
 
-# In[6]:
 
 
 def print_img(img_name, ax):
@@ -73,7 +67,6 @@ def print_img(img_name, ax):
     print_img_with_labels(img_name, labels, category_name_dict, attribute_name_dict, ax)
 
 
-# In[7]:
 
 
 def json2df(data):
@@ -84,33 +77,28 @@ def json2df(data):
     return df
 
 
-# In[8]:
 
 
 train_df = pd.read_csv(input_dir + "train.csv")
 
 
-# In[9]:
 
 
 train_df.head()
 
 
-# In[10]:
 
 
 with open(input_dir + "label_descriptions.json") as f:
     label_description = json.load(f)
 
 
-# In[11]:
 
 
 print("this dataset info")
 print(json.dumps(label_description["info"], indent=2))
 
 
-# In[12]:
 
 
 category_df = json2df(label_description["categories"])
@@ -121,40 +109,34 @@ attribute_df["id"] = attribute_df["id"].astype(int)
 attribute_df["level"] = attribute_df["level"].astype(int)
 
 
-# In[13]:
 
 
 print("Category Labels")
 category_df
 
 
-# In[14]:
 
 
 print("Attribute Labels")
 attribute_df
 
 
-# In[15]:
 
 
 print("We have {} categories, and {} attributes.".format(len(label_description['categories']), len(label_description['attributes'])))
 print("Each label　have ID, name, supercategory, and level.")
 
 
-# In[16]:
 
 
 train_df.head(10)
 
 
-# In[17]:
 
 
 image_label_num_df = train_df.groupby("ImageId")["ClassId"].count()
 
 
-# In[18]:
 
 
 fig, ax = plt.subplots(figsize=(25, 7))
@@ -184,7 +166,6 @@ ax.set_xlabel("the number of labels")
 ax.set_ylabel("amout");
 
 
-# In[19]:
 
 
 counter_category = Counter()
@@ -195,19 +176,16 @@ for class_id in train_df["ClassId"]:
     counter_attribute.update(attribute)
 
 
-# In[20]:
 
 
 len(counter_category)
 
 
-# In[21]:
 
 
 len(counter_attribute)
 
 
-# In[22]:
 
 
 category_name_dict = {}
@@ -218,27 +196,23 @@ for i in label_description["attributes"]:
     attribute_name_dict[str(i["id"])] = i["name"]
 
 
-# In[23]:
 
 
 print("Category label frequency")
 print_dict(counter_category, category_name_dict)
 
 
-# In[24]:
 
 
 print("Attribute label frequency")
 print_dict(counter_attribute, attribute_name_dict)
 
 
-# In[25]:
 
 
 train_df.ClassId.max()
 
 
-# In[26]:
 
 
 attribute_num_dict = {}
@@ -258,7 +232,6 @@ for class_id in train_df["ClassId"].values:
         attribute_num_dict[category][attribute] += 1
 
 
-# In[27]:
 
 
 fig, ax = plt.subplots(math.ceil(len(counter_category)/2), 2,                       figsize=(8*2, 6*math.ceil(len(counter_category)/2)), sharey=True)
@@ -273,20 +246,17 @@ for index, key in enumerate(sorted(map(int, attribute_num_dict.keys()))):
 print("the ratio of attribute per category(x=92 means no attribute)")
 
 
-# In[28]:
 
 
 print("The number of training image is {}.".format(len(os.listdir("../input/train/"))))
 print("The number of test image is {}.".format(len(os.listdir("../input/test/"))))
 
 
-# In[29]:
 
 
 image_shape_df = train_df.groupby("ImageId")["Height", "Width"].first()
 
 
-# In[30]:
 
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 5))
@@ -296,7 +266,6 @@ ax2.hist(image_shape_df.Width, bins=100)
 ax2.set_title("Width distribution");
 
 
-# In[31]:
 
 
 img_name = image_shape_df.Height.idxmin()
@@ -306,7 +275,6 @@ fig, ax = plt.subplots()
 print_img(img_name, ax)
 
 
-# In[32]:
 
 
 img_name = image_shape_df.Height.idxmax()
@@ -316,7 +284,6 @@ fig, ax = plt.subplots()
 print_img(img_name, ax)
 
 
-# In[33]:
 
 
 img_name = image_shape_df.Width.idxmin()
@@ -326,7 +293,6 @@ fig, ax = plt.subplots()
 print_img(img_name, ax)
 
 
-# In[34]:
 
 
 img_name = image_shape_df.Width.idxmax()
@@ -336,7 +302,6 @@ fig, ax = plt.subplots()
 print_img(img_name, ax)
 
 
-# In[35]:
 
 
 pallete =  [
@@ -381,7 +346,6 @@ def train_generator(df, batch_size):
             return trn_images, seg_images
 
 
-# In[36]:
 
 
 def cv2plt(img, isColor=True):
@@ -391,7 +355,6 @@ def cv2plt(img, isColor=True):
     return original_img
 
 
-# In[37]:
 
 
 original, segmented = train_generator(train_df, 6)
@@ -403,31 +366,26 @@ for i, (img, seg) in enumerate(zip(original, segmented)):
     ax[i//2, i%2].set_title("Sample {}".format(i))
 
 
-# In[38]:
 
 
 sample_df = pd.read_csv(input_dir + "sample_submission.csv")
 
 
-# In[39]:
 
 
 sample_df.head(20)
 
 
-# In[40]:
 
 
 
 
 
-# In[40]:
 
 
 
 
 
-# In[40]:
 
 
 

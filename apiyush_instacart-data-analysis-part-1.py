@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -11,7 +10,6 @@ from subprocess import check_output
 print(check_output(["ls", "../input"]).decode("utf8"))
 
 
-# In[2]:
 
 
 from plotly.offline import download_plotlyjs, init_notebook_mode, iplot
@@ -21,14 +19,12 @@ import numpy as np
 import pandas as pd
 
 
-# In[3]:
 
 
 # importing Orders file
 orders = pd.read_csv(r"../input/orders.csv")
 
 
-# In[4]:
 
 
 y = pd.DataFrame(orders.groupby(["user_id"]).size(),columns=["ordercount"]).reset_index().groupby("ordercount").size().values
@@ -40,7 +36,6 @@ fig = Figure(data=[data], layout=layout)
 iplot(fig)
 
 
-# In[5]:
 
 
 #ReARRANGING Orders file data for hourly and daily analysis of total orders
@@ -50,7 +45,6 @@ temp = temp.pivot(index='Day', columns='Hour', values='Count')
 temp
 
 
-# In[6]:
 
 
 #Heat map for all weekdays for each hour. This will help in understanding the busiest days and hours
@@ -67,7 +61,6 @@ fig = Figure(data=data, layout=layout)
 iplot(fig)
 
 
-# In[7]:
 
 
 temp = pd.DataFrame({'count':orders.groupby(["order_dow","eval_set"]).size()}).reset_index().pivot(index='order_dow',columns='eval_set',values='count')
@@ -89,7 +82,6 @@ fig = Figure(data=data, layout=layout)
 iplot(fig)
 
 
-# In[8]:
 
 
 order_products_train = pd.read_csv(r"../input/order_products__train.csv")
@@ -103,7 +95,6 @@ df.columns = ["product_id","#oforders"]
 order_count = pd.DataFrame(df.groupby('product_id').agg({'#oforders':np.sum})).reset_index()
 
 
-# In[9]:
 
 
 aisles = pd.read_csv(r"../input/aisles.csv")
@@ -111,13 +102,11 @@ products = pd.read_csv(r"../input/products.csv")
 departments = pd.read_csv(r"../input/departments.csv")
 
 
-# In[10]:
 
 
 products_ordered = order_count.set_index("product_id").join(products.set_index("product_id")).reset_index().set_index("department_id").join(departments.set_index("department_id")).reset_index().set_index("aisle_id").join(aisles.set_index("aisle_id")).reset_index()
 
 
-# In[11]:
 
 
 temp = pd.DataFrame(products_ordered.groupby(["department_id","department"]).agg({"#oforders":np.sum})).reset_index()
@@ -128,7 +117,6 @@ temp1 = pd.DataFrame(products_ordered.groupby(["department_id","department","ais
 temp1.sort_values(by="#oforders", axis=0, ascending=True,inplace=True)
 
 
-# In[12]:
 
 
 colors = {
@@ -169,7 +157,6 @@ colors = {
 1:'rgb(255,237,111)'}
 
 
-# In[13]:
 
 
 import squarify
@@ -254,7 +241,6 @@ figure = dict(data=data,layout=layout)
 iplot(figure, filename='squarify-treemap')
 
 
-# In[14]:
 
 
 order_products_train = pd.read_csv(r"../input/order_products__train.csv")
@@ -267,7 +253,6 @@ df.columns = ["order_id","reordered_items","cart_size"]
 df["%reordered"] = round(df["reordered_items"]*100/df["cart_size"],2)
 
 
-# In[15]:
 
 
 trace0 = Histogram(x=df["%reordered"],
@@ -282,7 +267,6 @@ fig = Figure(data=[trace0],layout=layout)
 iplot(fig)
 
 
-# In[16]:
 
 
 User_Id_Most_orders = orders.groupby("user_id").size().nlargest(10).index.values[0]

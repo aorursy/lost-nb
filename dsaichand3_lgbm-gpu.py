@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('rm -r /opt/conda/lib/python3.6/site-packages/lightgbm')
@@ -9,13 +8,11 @@ get_ipython().system('git clone --recursive https://github.com/Microsoft/LightGB
 get_ipython().system('apt-get install -y -qq libboost-all-dev')
 
 
-# In[2]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cd LightGBM\nrm -r build\nmkdir build\ncd build\ncmake -DUSE_GPU=1 -DOpenCL_LIBRARY=/usr/local/cuda/lib64/libOpenCL.so -DOpenCL_INCLUDE_DIR=/usr/local/cuda/include/ ..\nmake -j$(nproc)')
 
 
-# In[3]:
 
 
 get_ipython().system('cd LightGBM/python-package/;python3 setup.py install --precompile')
@@ -23,7 +20,6 @@ get_ipython().system('mkdir -p /etc/OpenCL/vendors && echo "libnvidia-opencl.so.
 get_ipython().system('rm -r LightGBM')
 
 
-# In[4]:
 
 
 import numpy as np 
@@ -41,14 +37,12 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
         print(os.path.join(dirname, filename))
 
 
-# In[5]:
 
 
 dataset = pd.read_csv("/kaggle/input/new-york-city-taxi-fare-prediction/train.csv", nrows = 25000000)
 dataset = dataset.dropna(how = 'any', axis = 'rows')
 
 
-# In[6]:
 
 
 def clean_df(df):
@@ -60,7 +54,6 @@ dataset = clean_df(dataset)
 dataset.describe()
 
 
-# In[7]:
 
 
 #Training on range of latitude and longitude based on test data
@@ -73,7 +66,6 @@ def select_within_boundingbox(df, BB):
 dataset = dataset[select_within_boundingbox(dataset, BB)]
 
 
-# In[8]:
 
 
 def add_datetime_info(dataset):
@@ -87,7 +79,6 @@ def add_datetime_info(dataset):
     return dataset
 
 
-# In[9]:
 
 
 def sphere_dist(pickup_lat, pickup_lon, dropoff_lat, dropoff_lon):
@@ -169,7 +160,6 @@ def radian_conv(degree):
     return  np.radians(degree)
 
 
-# In[10]:
 
 
 dataset = add_datetime_info(dataset)
@@ -187,26 +177,22 @@ dataset['dropoff_latitude'] = radian_conv(dataset['dropoff_latitude'])
 dataset['dropoff_longitude'] = radian_conv(dataset['dropoff_longitude'])
 
 
-# In[11]:
 
 
 dataset.drop(["pickup_datetime", "key"], axis = 1, inplace = True)
 
 
-# In[12]:
 
 
 y = dataset['fare_amount']
 train = dataset.drop(columns=['fare_amount'])
 
 
-# In[13]:
 
 
 x_train, x_test, y_train, y_test = train_test_split(train, y, random_state = 123, test_size=0.10)
 
 
-# In[14]:
 
 
 del dataset
@@ -216,7 +202,6 @@ import gc
 gc.collect()
 
 
-# In[15]:
 
 
 params = {
@@ -252,7 +237,6 @@ gc.collect()
 model = lgbm.train(params, train_set = train_set, num_boost_round=10000, early_stopping_rounds=500, verbose_eval=500, valid_sets=valid_set)
 
 
-# In[16]:
 
 
 test_df = pd.read_csv('/kaggle/input/new-york-city-taxi-fare-prediction/test.csv')
@@ -281,7 +265,6 @@ submission = pd.DataFrame({
 submission.to_csv("submission.csv", index = False)
 
 
-# In[17]:
 
 
 ax = lgbm.plot_importance(model, figsize=(10,10))

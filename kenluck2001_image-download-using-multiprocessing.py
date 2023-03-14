@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 
@@ -101,7 +100,6 @@ if __name__ == "__main__":
         parallel_solution  (data_type, data )
 
 
-# In[ ]:
 
 
 

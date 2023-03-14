@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,13 +21,11 @@ import os
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 
 
 
-# In[2]:
 
 
 dir_ihme = '/kaggle/input/ihme-projections-for-covid19'
@@ -37,7 +34,6 @@ results_file = '/kaggle/input/covid19-global-forecasting-week-4/train.csv'
 test_file = results_file.replace('train', 'test').replace('-4', '-#')
 
 
-# In[3]:
 
 
 ihme_list = os.listdir(dir_ihme)
@@ -55,13 +51,11 @@ cutoff_dates = ['2020-03-25', '2020-04-01', '2020-04-08', '2020-04-15']
 print(cutoff_dates)
 
 
-# In[ ]:
 
 
 
 
 
-# In[4]:
 
 
 def RMSLE(df, verbose = 0):
@@ -92,7 +86,6 @@ def RMSLE(df, verbose = 0):
         
 
 kaggles
-# In[5]:
 
 
 def get_IHME_merges(r, ihme, date_col, cutoff_date):
@@ -116,7 +109,6 @@ def get_IHME_merges(r, ihme, date_col, cutoff_date):
     return ihme_states, ihme_countries
 
 
-# In[6]:
 
 
 def get_K_merges(r, ks, ihme_states, ihme_countries, cutoff_date):
@@ -138,7 +130,6 @@ def get_K_merges(r, ks, ihme_states, ihme_countries, cutoff_date):
     return k_states, k_countries
 
 
-# In[7]:
 
 
 for idx, _ in enumerate(ks_list):

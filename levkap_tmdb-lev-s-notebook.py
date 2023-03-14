@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import numpy as np
@@ -67,7 +65,6 @@ from sklearn.linear_model import LinearRegression
 from sklearn import linear_model
 
 
-# In[3]:
 
 
 trainAdditionalFeatures = pd.read_csv('../input/tmdb-competition-additional-features/TrainAdditionalFeatures.csv')
@@ -253,19 +250,16 @@ train['release_date'] = train['release_date'].apply(lambda x: fix_date(x))
 test['release_date'] = test['release_date'].apply(lambda x: fix_date(x))
 
 
-# In[4]:
 
 
 train.head(10)
 
 
-# In[5]:
 
 
 train['producer_avg_popularity'].isnull().sum()
 
 
-# In[6]:
 
 
 # Adding new colums ,collection name and collection indication
@@ -280,7 +274,6 @@ train = train.drop(['belongs_to_collection'], axis=1)
 test = test.drop(['belongs_to_collection'], axis=1)
 
 
-# In[7]:
 
 
 # Most of the movies don't have homepage. So we will add new colums of is homepage exist
@@ -293,7 +286,6 @@ train = train.drop(['homepage'], axis=1)
 test = test.drop(['homepage'], axis=1)
 
 
-# In[8]:
 
 
 # checks the unique genres of the movies
@@ -315,13 +307,11 @@ print(genres)
 len(genres)
 
 
-# In[9]:
 
 
 # train['genres'][1][0]['name']
 
 
-# In[10]:
 
 
 # updated the new columns of each genre
@@ -334,7 +324,6 @@ for i in range(len(test)):
              test[test['genres'][i][j]['name']][i] = 1
 
 
-# In[11]:
 
 
 # Adding Producer and Director column to data
@@ -351,14 +340,12 @@ train['DirectorT'] = train['Director'].apply(lambda x: str(x)[2:-2])
 test['DirectorT'] = test['Director'].apply(lambda x: str(x)[2:-2])
 
 
-# In[12]:
 
 
 train[] = train['crew'].apply(lambda x : [i['name'] for i in x if i['department']=='Crew'])
 temp
 
 
-# In[13]:
 
 
 # Delete Poster column
@@ -366,7 +353,6 @@ train = train.drop(['poster_path'], axis=1)
 test = test.drop(['poster_path'], axis=1)
 
 
-# In[14]:
 
 
 # Shows the departments 
@@ -377,7 +363,6 @@ for i in range(len(train['crew'][0])):
 departments
 
 
-# In[15]:
 
 
 # Separate the release date to weekday,month quarter and year
@@ -402,7 +387,6 @@ train = train.drop(['release_date'], axis=1)
 test = test.drop(['release_date'], axis=1)
 
 
-# In[16]:
 
 
 # Creates new dataFrame of each derector, producer and its value
@@ -515,7 +499,6 @@ for i in drop_colums:
     test = test.drop([i], axis=1)
 
 
-# In[17]:
 
 
 # df.loc[unique_directors[0]]['score']/df.loc[unique_directors[0]]['movies_num']
@@ -524,7 +507,6 @@ for i in range(len(unique_directors)):
     df.loc[unique_directors[i]]['score'] = df.loc[unique_directors[i]]['score']/df.loc[unique_directors[i]]['movies_num']
 
 
-# In[18]:
 
 
 # len(train['Producer'][2])
@@ -550,7 +532,6 @@ mn = ab.mean()
 mn
 
 
-# In[19]:
 
 
 # Creates list top twenty producers
@@ -568,7 +549,6 @@ for i in range(len(top_twenty_producers)):
 top_Directors
 
 
-# In[20]:
 
 
 # train.head()
@@ -577,21 +557,18 @@ train['crew_rating'] = train['producer_avg_score'] + train['director_avg_score']
 train['crew_popularity'] = train['producer_avg_popularity'] + train['director_avg_popularity']
 
 
-# In[21]:
 
 
 sns.catplot(x='crew_popularity', y='revenue', data=train);
 plt.title('Revenue for film with and without homepage')
 
 
-# In[22]:
 
 
 sns.catplot(x='producer_avg_popularity', y='revenue', data=train);
 plt.title('Revenue for film with and without homepage')
 
 
-# In[23]:
 
 
 a = train['runtime']
@@ -599,7 +576,6 @@ np.mean(a)
 # sns.distplot(train['runtime'])
 
 
-# In[24]:
 
 
 g = sns.relplot(x="director", y ="revenue", data=train)

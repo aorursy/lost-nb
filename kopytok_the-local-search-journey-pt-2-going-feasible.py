@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -16,13 +15,11 @@ from functools import partial, reduce
 from collections import namedtuple
 
 
-# In[2]:
 
 
 plt.rcParams.update({"font.size": 13, "figure.figsize": (12, 4)})
 
 
-# In[3]:
 
 
 df = pd.read_csv("../input/santa-workshop-tour-2019/family_data.csv", index_col="family_id")
@@ -33,7 +30,6 @@ n_fams = fam_sizes.shape[0]
 n_days = 100
 
 
-# In[4]:
 
 
 MIN_OCCUPANCY, MAX_OCCUPANCY = 125, 300
@@ -314,7 +310,6 @@ class Sleigh (SantasAccountant):
         self.update_cost(imp)
 
 
-# In[5]:
 
 
 def proba(imp, fun):
@@ -352,7 +347,6 @@ def generate_and_plot_fun(max_imp, max_fun, fun_mult, n, n_reset):
     plt.show()
 
 
-# In[6]:
 
 
 feed_dict = dict(
@@ -365,7 +359,6 @@ feed_dict = dict(
 generate_and_plot_fun(**feed_dict)
 
 
-# In[7]:
 
 
 def maybe(p):
@@ -548,7 +541,6 @@ class Reindeer (Sleigh):
             self.ride(moves)
 
 
-# In[8]:
 
 
 class RandomInfeasibleReindeer(Reindeer):
@@ -632,13 +624,11 @@ class RandomInfeasibleReindeer(Reindeer):
             return None
 
 
-# In[9]:
 
 
 get_ipython().run_cell_magic('time', '', 'params = dict(\n    choices   = choices,\n    fam_sizes = fam_sizes,\n    \n    min_fun   = 2e4,\n    max_fun   = 5e5,\n    fun_mult  = .98,\n    patience  = 30,\n)\n\n# Run Prancer 3 times and get any feasible solution\n# lower than $600k, if all costs are higher, the take the last solution\nfor i in range(3):\n    Prancer = RandomInfeasibleReindeer(**params)\n    Prancer.search(n_iter=int(1e5))\n    if Prancer.best_cost < 6e5:\n        best_prancer_place = Prancer.best_days\n        break\n\nif Prancer.best_cost >= 6e5:\n    best_prancer_place = Prancer.best_days\n    \nassert Prancer.is_feasible(best_prancer_place), "Not feasible solution"\nprint(f"Cost at solution, found by Prancer: {Prancer.best_cost:.0f}")\n\nplt.plot(range(len(Prancer.costs)), Prancer.costs)\nplt.show()')
 
 
-# In[10]:
 
 
 def feasible_tunnel(reindeer, mv):
@@ -739,7 +729,6 @@ class FeasibleReindeer (Reindeer):
         return batch_moves[ix]
 
 
-# In[11]:
 
 
 get_ipython().run_cell_magic('time', '', 'donner_params = dict(\n        choices=choices,\n        fam_sizes=fam_sizes,\n        days = best_prancer_place,\n\n        min_fun=.005,\n        max_fun=1,\n        fun_mult=.98,\n\n        drop_prob=.5,\n        fam_batch_size=5,\n        days_batch_size=3,\n        max_imps = 10,\n        patience = 30,\n    )\nDonner = FeasibleReindeer(**donner_params)\nprint(f"Initial Donner cost: {Donner.cost:.0f}")\n\n# That\'s truly slow\nDonner.search(20)\nprint(f"Current best cost: {Donner.best_cost:.0f}")\nassert Donner.is_feasible(), "Not feasible"\n\nplt.plot(range(len(Donner.costs)), Donner.costs)\nplt.show()')

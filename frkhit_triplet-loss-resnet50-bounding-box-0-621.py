@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # install 
@@ -12,7 +11,6 @@ import tensorflow
 tensorflow.__version__
 
 
-# In[2]:
 
 
 import csv
@@ -884,7 +882,6 @@ class WhaleDataUtils(object):
         return feature, file_arr
 
 
-# In[3]:
 
 
 
@@ -1731,7 +1728,6 @@ class TripletSearch(SimpleSearch):
             self.clear_cache()
 
 
-# In[4]:
 
 
 class TripletLossModelCNN(AbstractEstimator):
@@ -2261,7 +2257,6 @@ class TripletLossModelResNet50(TripletLossModelCNN):
         self.data_utils.gen_data_setting["stop_calc_feature"] = False
 
 
-# In[5]:
 
 
 get_ipython().system('cp ../input/whale-triplet-pretrained-model/tripletresnet/tripletResNet ./triplet_triplet -R')
@@ -2311,7 +2306,6 @@ estimator.combine_submission_csv() # create submission csv file: sub_ens.csv
     
 
 
-# In[6]:
 
 
 estimator.show_predict_result(count=10, top_k=5)
@@ -2319,7 +2313,6 @@ estimator.show_predict_result(count=10, top_k=5)
 estimator.show_predict_result(count=10, top_k=3)
 
 
-# In[7]:
 
 
 # exit

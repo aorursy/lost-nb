@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -24,7 +23,6 @@ import csv
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import spacy
@@ -95,7 +93,6 @@ def change_names(data_file):
     return data
 
 
-# In[3]:
 
 
 def create_train_tsv(data_file):
@@ -147,7 +144,6 @@ def create_train_tsv(data_file):
 #Now the len of datafile is doubled with A and B stacked.
 
 
-# In[4]:
 
 
 def create_dev_tsv(data_file):
@@ -199,7 +195,6 @@ def create_dev_tsv(data_file):
 #Now the len of datafile is doubled with A and B stacked.
 
 
-# In[5]:
 
 
 def create_test_tsv(data_file):
@@ -241,7 +236,6 @@ def create_test_tsv(data_file):
 #Now the len of datafile is doubled with A and B stacked.
 
 
-# In[6]:
 
 
 def generate_train_tsv(data_file):
@@ -287,7 +281,6 @@ def generate_train_tsv(data_file):
 #Now the len of datafile is doubled with A and B stacked.
 
 
-# In[7]:
 
 
 def generate_dev_tsv(data_file):
@@ -333,7 +326,6 @@ def generate_dev_tsv(data_file):
 #Now the len of datafile is doubled with A and B stacked.
 
 
-# In[8]:
 
 
 def generate_test_tsv(data_file):
@@ -371,7 +363,6 @@ def generate_test_tsv(data_file):
 #Now the len of datafile is doubled with A and B stacked.
 
 
-# In[9]:
 
 
 #downloading weights and cofiguration file for the model
@@ -381,7 +372,6 @@ with zipfile.ZipFile("uncased_L-12_H-768_A-12.zip","r") as zip_ref:
 get_ipython().system("ls 'uncased_L-12_H-768_A-12'")
 
 
-# In[10]:
 
 
 get_ipython().system('wget https://raw.githubusercontent.com/google-research/bert/master/modeling.py ')
@@ -389,7 +379,6 @@ get_ipython().system('wget https://raw.githubusercontent.com/google-research/ber
 get_ipython().system('wget https://raw.githubusercontent.com/google-research/bert/master/tokenization.py')
 
 
-# In[11]:
 
 
 import modeling
@@ -398,7 +387,6 @@ import tokenization
 import tensorflow as tf
 
 
-# In[12]:
 
 
 get_ipython().system('wget https://raw.githubusercontent.com/google-research-datasets/gap-coreference/master/gap-development.tsv')
@@ -407,7 +395,6 @@ get_ipython().system('wget https://raw.githubusercontent.com/google-research-dat
 get_ipython().system('ls')
 
 
-# In[13]:
 
 
 def compute_offset_no_spaces(text, offset, i):
@@ -433,7 +420,6 @@ def count_length_no_special(text):
 	return count
 
 
-# In[14]:
 
 
 def run_bert(data):
@@ -525,7 +511,6 @@ def run_bert(data):
 	return emb
 
 
-# In[15]:
 
 
 print("Started at ", time.ctime())
@@ -546,7 +531,6 @@ generate_test_tsv(development_data)
 print("Finished at ", time.ctime())
 
 
-# In[16]:
 
 
 from keras import backend, models, layers, initializers, regularizers, constraints, optimizers
@@ -569,7 +553,6 @@ patience = 100
 lambd = 0.1 # L2 regularization
 
 
-# In[17]:
 
 
 def build_mlp_model(input_shape):
@@ -596,7 +579,6 @@ def build_mlp_model(input_shape):
 	return model
 
 
-# In[18]:
 
 
 def parse_json(embeddings):
@@ -637,7 +619,6 @@ def parse_json(embeddings):
 	return X, Y
 
 
-# In[19]:
 
 
 # Read development embeddigns from json file - this is the output of Bert
@@ -651,7 +632,6 @@ def parse_json(embeddings):
 #X_test, Y_test = parse_json(test)
 
 
-# In[20]:
 
 
 # There may be a few NaN values, where the offset of a target word is greater than the max_seq_length of BERT.
@@ -669,7 +649,6 @@ remove_development = [row for row in range(len(X_development)) if np.sum(np.isna
 X_development[remove_development] = np.zeros(3*768+2)
 
 
-# In[21]:
 
 
 # Will train on data from the gap-test and gap-validation files, in total 2454 rows
@@ -680,7 +659,6 @@ Y_train = np.concatenate((Y_test, Y_validation), axis = 0)
 prediction = np.zeros((len(X_development),3)) # testing predictions
 
 
-# In[22]:
 
 
 # Training and cross-validation
@@ -715,7 +693,6 @@ print(scores)
 print("Test score:", log_loss(Y_development,prediction))
 
 
-# In[23]:
 
 
 # Write the prediction to file for submission

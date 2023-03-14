@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import matplotlib.pyplot as plt
@@ -53,7 +52,6 @@ def image_features(image):
     ])
 
 
-# In[2]:
 
 
 labeled_X = np.array([
@@ -62,7 +60,6 @@ labeled_X = np.array([
 ])
 
 
-# In[3]:
 
 
 from sklearn.model_selection import cross_val_score
@@ -70,7 +67,6 @@ from sklearn.model_selection import cross_val_score
 cross_val_score(svm.SVC(C=5), labeled_X, labeled_csv['class_number'], cv=5)
 
 
-# In[4]:
 
 
 from sklearn.model_selection import cross_val_score
@@ -78,7 +74,6 @@ from sklearn.model_selection import cross_val_score
 cross_val_score(svm.SVC(C=10), labeled_X, labeled_csv['class_number'], cv=5)
 
 
-# In[5]:
 
 
 from sklearn.model_selection import cross_val_score
@@ -86,7 +81,6 @@ from sklearn.model_selection import cross_val_score
 cross_val_score(svm.SVC(C=20), labeled_X, labeled_csv['class_number'], cv=5)
 
 
-# In[6]:
 
 
 from sklearn.model_selection import cross_val_score
@@ -94,7 +88,6 @@ from sklearn.model_selection import cross_val_score
 cross_val_score(svm.SVC(C=5), labeled_X, labeled_csv['class_number'], cv=3)
 
 
-# In[7]:
 
 
 from sklearn.model_selection import cross_val_score
@@ -102,7 +95,6 @@ from sklearn.model_selection import cross_val_score
 cross_val_score(svm.SVC(C=10), labeled_X, labeled_csv['class_number'], cv=3)
 
 
-# In[8]:
 
 
 from sklearn.model_selection import cross_val_score
@@ -110,7 +102,6 @@ from sklearn.model_selection import cross_val_score
 cross_val_score(svm.SVC(C=20), labeled_X, labeled_csv['class_number'], cv=3)
 
 
-# In[9]:
 
 
 clf = svm.SVC(C=10)
@@ -118,7 +109,6 @@ clf.fit(labeled_X, labeled_csv['class_number'])
 clf.score(labeled_X, labeled_csv['class_number'])
 
 
-# In[10]:
 
 
 sample_submission_csv = pd.read_csv(root_path + "sample_submission.csv")
@@ -129,7 +119,6 @@ sample_submission_csv['class_number'] = clf.predict(np.array([
 sample_submission_csv.to_csv('/kaggle/working/sample_submission.csv', index=False)
 
 
-# In[11]:
 
 
 model = Sequential([
@@ -165,7 +154,6 @@ with tf.device('/GPU:0'):
     ), epochs=50)
 
 
-# In[12]:
 
 
 model = VGG19(
@@ -204,7 +192,6 @@ with tf.device('/GPU:0'):
     )
 
 
-# In[13]:
 
 
 model = VGG19(
@@ -238,7 +225,6 @@ with tf.device('/GPU:0'):
     )
 
 
-# In[14]:
 
 
 sample_submission_csv = pd.read_csv(root_path + "sample_submission.csv")

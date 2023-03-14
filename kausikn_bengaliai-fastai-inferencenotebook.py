@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('reload_ext', 'autoreload')
@@ -18,7 +17,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[2]:
 
 
 HEIGHT = 137
@@ -41,7 +39,6 @@ df = pd.read_csv(LABELS)
 nunique = list(df.nunique())[1:-1]
 
 
-# In[3]:
 
 
 class Head(nn.Module):
@@ -102,7 +99,6 @@ class Dnet_1ch(nn.Module):
         return x1,x2,x3
 
 
-# In[4]:
 
 
 model = Dnet_1ch(pre=False).cuda()
@@ -110,7 +106,6 @@ model.load_state_dict(torch.load(MODEL, map_location=torch.device('cpu')));
 model.eval();
 
 
-# In[5]:
 
 
 #check https://www.kaggle.com/iafoss/image-preprocessing-128x128
@@ -141,7 +136,6 @@ def crop_resize(img0, size=SIZE, pad=16):
     return cv2.resize(img,(size,size))
 
 
-# In[6]:
 
 
 class GraphemeDataset(Dataset):
@@ -161,7 +155,6 @@ class GraphemeDataset(Dataset):
         return img, name
 
 
-# In[7]:
 
 
 row_id,target = [],[]
@@ -185,7 +178,6 @@ sub_df.to_csv('submission.csv', index=False)
 sub_df.head()
 
 
-# In[ ]:
 
 
 

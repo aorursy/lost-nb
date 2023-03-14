@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -16,13 +15,11 @@ sns.set_style("whitegrid")
 my_pal = sns.color_palette(n_colors=10)
 
 
-# In[2]:
 
 
 get_ipython().system('ls -GFlash ../input/data-science-bowl-2019/')
 
 
-# In[3]:
 
 
 # Read in the data CSV files
@@ -33,7 +30,6 @@ specs = pd.read_csv('../input/data-science-bowl-2019/specs.csv')
 ss = pd.read_csv('../input/data-science-bowl-2019/sample_submission.csv')
 
 
-# In[4]:
 
 
 #print the dataSet shapes
@@ -43,52 +39,44 @@ print(f"test shape: {test.shape}")
 print(f"specs shape: {specs.shape}")
 
 
-# In[5]:
 
 
 train_ = train.sample(1000000, random_state=1) #sample 1M observations
 
 
-# In[6]:
 
 
 train.head()
 
 
-# In[7]:
 
 
 train_labels.head()
 
 
-# In[8]:
 
 
 train_labels.groupby('accuracy_group')['game_session'].count()     .plot(kind='barh', figsize=(15, 5), title='Target (accuracy group)')
 plt.show()
 
 
-# In[9]:
 
 
 sns.pairplot(train_labels, hue='accuracy_group')
 plt.show()
 
 
-# In[10]:
 
 
 train.head()
 
 
-# In[11]:
 
 
 train['event_id_as_int'] = train['event_id'].apply(lambda x: int(x, 16))
 train['game_session_as_int'] = train['game_session'].apply(lambda x: int(x, 16))
 
 
-# In[12]:
 
 
 # Format and make date / hour features
@@ -103,14 +91,12 @@ test['hour'] = test['timestamp'].dt.hour
 test['weekday_name'] = test['timestamp'].dt.weekday_name
 
 
-# In[13]:
 
 
 print(f'Train data has shape: {train.shape}')
 print(f'Test data has shape: {test.shape}')
 
 
-# In[14]:
 
 
 train.groupby('date')['event_id']     .agg('count')     .plot(figsize=(15, 3),
@@ -129,20 +115,17 @@ train.groupby('weekday_name')['event_id']     .agg('count').T[['Monday','Tuesday
 plt.show()
 
 
-# In[15]:
 
 
 print(train['event_data'][4])
 print(train['event_data'][5])
 
 
-# In[16]:
 
 
 train['installation_id'].nunique()
 
 
-# In[17]:
 
 
 train.groupby('installation_id')     .count()['event_id']     .plot(kind='hist',
@@ -153,7 +136,6 @@ train.groupby('installation_id')     .count()['event_id']     .plot(kind='hist',
 plt.show()
 
 
-# In[18]:
 
 
 train.groupby('installation_id')     .count()['event_id']     .apply(np.log1p)     .plot(kind='hist',
@@ -164,13 +146,11 @@ train.groupby('installation_id')     .count()['event_id']     .apply(np.log1p)  
 plt.show()
 
 
-# In[19]:
 
 
 train.groupby('installation_id')     .count()['event_id'].sort_values(ascending=False).head(5)
 
 
-# In[20]:
 
 
 train.query('installation_id == "f1c21eda"')     .set_index('timestamp')['event_code']     .plot(figsize=(15, 5),
@@ -180,7 +160,6 @@ train.query('installation_id == "f1c21eda"')     .set_index('timestamp')['event_
 plt.show()
 
 
-# In[21]:
 
 
 train.groupby('event_code')     .count()['event_id']     .sort_values()     .plot(kind='bar',
@@ -189,7 +168,6 @@ train.groupby('event_code')     .count()['event_id']     .sort_values()     .plo
 plt.show()
 
 
-# In[22]:
 
 
 train['game_time'].apply(np.log1p)     .plot(kind='hist',
@@ -200,7 +178,6 @@ train['game_time'].apply(np.log1p)     .plot(kind='hist',
 plt.show()
 
 
-# In[23]:
 
 
 train.groupby('title')['event_id']     .count()     .sort_values()     .plot(kind='barh',
@@ -209,21 +186,18 @@ train.groupby('title')['event_id']     .count()     .sort_values()     .plot(kin
 plt.show()
 
 
-# In[24]:
 
 
 # Chow Time Video
 HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/tvRtFqOqa-Y" frameborder="0" allow="accelerometer;         autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
 
 
-# In[25]:
 
 
 # Scrub-a-Dub
 HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/kkNzO2QzWaQ" frameborder="0" allow="accelerometer;     autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
 
 
-# In[26]:
 
 
 train.groupby('type')['event_id']     .count()     .sort_values()     .plot(kind='bar',
@@ -233,7 +207,6 @@ train.groupby('type')['event_id']     .count()     .sort_values()     .plot(kind
 plt.show()
 
 
-# In[27]:
 
 
 train.groupby('world')['event_id']     .count()     .sort_values()     .plot(kind='bar',
@@ -243,13 +216,11 @@ train.groupby('world')['event_id']     .count()     .sort_values()     .plot(kin
 plt.show()
 
 
-# In[28]:
 
 
 train['log1p_game_time'] = train['game_time'].apply(np.log1p)
 
 
-# In[29]:
 
 
 fig, ax = plt.subplots(figsize=(15, 5))
@@ -266,19 +237,16 @@ plt.close()
 plt.show()
 
 
-# In[30]:
 
 
 specs.head()
 
 
-# In[31]:
 
 
 specs.describe()
 
 
-# In[32]:
 
 
 # First Attempt... still working to fully understand the problem
@@ -304,7 +272,6 @@ test_aggs.columns = ['_'.join(col).strip() for col in test_aggs.columns.values]
 train_aggs = train_aggs.rename(columns={'installation_id_' : 'installation_id'})
 
 
-# In[33]:
 
 
 # Hmmm... not 1:1

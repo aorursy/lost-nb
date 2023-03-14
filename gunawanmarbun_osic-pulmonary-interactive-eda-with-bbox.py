@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -26,7 +25,6 @@ from ipywidgets import interact, fixed
 from tqdm.auto import tqdm
 
 
-# In[2]:
 
 
 def distplot_numerical(data, cols_num, col_target=None, grid_c=3, w=15, h_factor=3, **kwargs):
@@ -140,7 +138,6 @@ def plot_slices_data(slices_data, n_cols=10, cmap='gray', **kwargs):
             ax.axis('off')
 
 
-# In[3]:
 
 
 def add_first_last_FVC(df_groupby):
@@ -169,7 +166,6 @@ def add_first_last_weeks(df_groupby):
     return df_groupby
 
 
-# In[4]:
 
 
 import re
@@ -192,7 +188,6 @@ def sort_nicely(l):
     l.sort(key=alphanum_key)
 
 
-# In[5]:
 
 
 basepath = "../input/osic-pulmonary-fibrosis-progression/"
@@ -202,34 +197,29 @@ submission_df = pd.read_csv(f"{basepath}sample_submission.csv")
 print(train_df.shape, test_df.shape, submission_df.shape)
 
 
-# In[6]:
 
 
 cols_num = ['Weeks', 'FVC', 'Percent', 'Age']
 cols_cat = ['Sex', 'SmokingStatus']
 
 
-# In[7]:
 
 
 distplot_numerical(train_df, cols_num, grid_c=4)
 distplot_categorical(train_df, cols_cat, grid_c=2)
 
 
-# In[8]:
 
 
 temp_df = train_df    .drop_duplicates(subset=['Patient', 'Weeks'], keep='first')    .groupby('Patient')    .apply(add_first_last_FVC)    .drop_duplicates(subset='Patient', keep='first')    .loc[:, ['Patient', 'is_decline', 'min_obs_FVC', 'max_obs_FVC', 'diff_FVC', 'diff_pct_FVC']]
 temp_df    .groupby('is_decline')[['Patient']].agg(['count'])    .join(temp_df.groupby('is_decline').agg(['mean', 'std']))
 
 
-# In[9]:
 
 
 train_df    .drop_duplicates(subset=['Patient', 'Weeks'], keep='first')    .groupby('Patient')    .apply(add_first_last_weeks)    .drop_duplicates(subset=['Patient'])    .loc[:, ['diff_weeks', 'num_obs', 'rate_obs']]    .agg(['min', 'max', 'mean', 'std'])
 
 
-# In[10]:
 
 
 class DICOMImages:
@@ -327,7 +317,6 @@ class DICOMImages:
         return slice_data
 
 
-# In[11]:
 
 
 cols_image_related = ['Rows', 'Columns', 'Pixel Spacing',
@@ -337,7 +326,6 @@ all_patient_ids = train_df.Patient.unique()
 all_dicoms = [DICOMImages(id) for id in all_patient_ids]
 
 
-# In[12]:
 
 
 def get_unique_dict(df):
@@ -350,26 +338,22 @@ def get_unique_dict(df):
     return dict_unique 
 
 
-# In[13]:
 
 
 uniqued_dicom_df = pd.DataFrame([get_unique_dict(dicom.df) for dicom in tqdm(all_dicoms, leave=False)])
 uniqued_dicom_df.to_csv("uniqued_dicom_df.csv", header=True, index=False)
 
 
-# In[14]:
 
 
 print((uniqued_dicom_df[cols_image_related] == 1).sum(axis=0))
 
 
-# In[15]:
 
 
 uniqued_dicom_df[uniqued_dicom_df['Pixel Spacing'] != 1][['Patient'] + cols_image_related]
 
 
-# In[16]:
 
 
 investigate_id = 'ID00099637202206203080121'
@@ -378,14 +362,12 @@ investigate_df['Pixel Spacing'] = investigate_df['Pixel Spacing'].astype(str)
 investigate_df[cols_image_related].drop_duplicates(subset=['Pixel Spacing'])
 
 
-# In[17]:
 
 
 investigate_slices_data = DICOMImages(investigate_id).slices_data
 plot_slices_data(investigate_slices_data)
 
 
-# In[18]:
 
 
 fig, ax = plt.subplots(2, 1, figsize=(16, 6))
@@ -394,7 +376,6 @@ sns.distplot(uniqued_dicom_df[uniqued_dicom_df['SOP Instance UID'] < 200]['SOP I
 plt.show()
 
 
-# In[19]:
 
 
 all_dicoms_df = pd.DataFrame([
@@ -405,7 +386,6 @@ all_dicoms_df = pd.DataFrame([
 print(all_dicoms_df.shape)
 
 
-# In[20]:
 
 
 cols_pixel_spacing_extra = ['Pixel Spacing (row)', 'Pixel Spacing (col)']
@@ -414,7 +394,6 @@ all_dicoms_df[cols_pixel_spacing_extra] = pd.DataFrame(
 )
 
 
-# In[21]:
 
 
 # Update our `cols_image_related` to include new columns
@@ -422,7 +401,6 @@ cols_image_related = list(set(cols_image_related + cols_pixel_spacing_extra))
 cols_image_related.remove('Pixel Spacing')
 
 
-# In[22]:
 
 
 cols_image_related_num = cols_pixel_spacing_extra
@@ -431,13 +409,11 @@ distplot_numerical(all_dicoms_df, cols_image_related_num, grid_c=2)
 distplot_categorical(all_dicoms_df, cols_image_related_cat, grid_c=4)
 
 
-# In[23]:
 
 
 r_intercept_0_mask = all_dicoms_df['Rescale Intercept'] == 0.0
 
 
-# In[24]:
 
 
 def plot_xy_scatter_sized(df, col_x, col_y):    
@@ -450,13 +426,11 @@ def plot_xy_scatter_sized(df, col_x, col_y):
     plt.show()
 
 
-# In[25]:
 
 
 plot_xy_scatter_sized(all_dicoms_df, 'Rows', 'Columns')
 
 
-# In[26]:
 
 
 not_square_mask = all_dicoms_df['Rows'] != all_dicoms_df['Columns']
@@ -464,7 +438,6 @@ not_square_patient = all_dicoms_df[not_square_mask]['Patient ID'].values[6]
 plot_slices_data(DICOMImages(not_square_patient).sampled_slices_data(24))
 
 
-# In[27]:
 
 
 sample_id_0_intercept = all_dicoms_df[r_intercept_0_mask]['Patient ID'].values[0]
@@ -477,7 +450,6 @@ sampled_slices_data_0_intercept = DICOMImages(sample_id_0_intercept).sampled_sli
 sampled_slices_data_not0_intercept = DICOMImages(sample_id_not0_intercept).sampled_slices_data(n_samples=30)
 
 
-# In[28]:
 
 
 import cv2
@@ -491,21 +463,18 @@ def threshold_slices_data(slices_data, low=-1000, high=-400):
     return copy
 
 
-# In[29]:
 
 
 plot_slices_data(sampled_slices_data_0_intercept)
 plot_slices_data(sampled_slices_data_not0_intercept)
 
 
-# In[30]:
 
 
 plot_slices_data(threshold_slices_data(sampled_slices_data_0_intercept, low=-1000, high=-400))
 plot_slices_data(threshold_slices_data(sampled_slices_data_not0_intercept, low=-1000, high=-400))
 
 
-# In[31]:
 
 
 def watershed_separate_lungs(image, threshold_low=-1000, output_shape=(512, 512), **kwargs):
@@ -630,13 +599,11 @@ def plot_watershed_segmentation(slices_data, cmap='Blues_r'):
         ax.axis('off')
 
 
-# In[32]:
 
 
 get_ipython().run_cell_magic('time', '', 'plot_watershed_segmentation(sampled_slices_data_0_intercept)\nplot_watershed_segmentation(sampled_slices_data_not0_intercept)')
 
 
-# In[33]:
 
 
 from skimage.filters import threshold_otsu, median
@@ -689,19 +656,16 @@ def plot_morphological_closing_segmentation(slices_data):
         ax.axis('off')
 
 
-# In[34]:
 
 
 get_ipython().run_cell_magic('time', '', 'plot_morphological_closing_segmentation(sampled_slices_data_0_intercept)\nplot_morphological_closing_segmentation(sampled_slices_data_not0_intercept)')
 
 
-# In[35]:
 
 
 get_ipython().run_cell_magic('time', '', 'plot_morphological_closing_segmentation(threshold_slices_data(sampled_slices_data_0_intercept))\nplot_morphological_closing_segmentation(threshold_slices_data(sampled_slices_data_not0_intercept))')
 
 
-# In[36]:
 
 
 def allunia_final_segment(slice, hu_max=-320):
@@ -740,13 +704,11 @@ def plot_allunia_segmentation(slices_data, cmap='Blues_r'):
         ax.axis('off')
 
 
-# In[37]:
 
 
 get_ipython().run_cell_magic('time', '', 'plot_allunia_segmentation(sampled_slices_data_0_intercept)\nplot_allunia_segmentation(sampled_slices_data_not0_intercept)')
 
 
-# In[38]:
 
 
 from sklearn.cluster import KMeans
@@ -841,26 +803,22 @@ def plot_raddq_segmentation(slices_data, cmap='Blues_r'):
         ax.axis('off')
 
 
-# In[39]:
 
 
 get_ipython().run_cell_magic('time', '', 'plot_raddq_segmentation(sampled_slices_data_0_intercept)\nplot_raddq_segmentation(sampled_slices_data_not0_intercept)')
 
 
-# In[40]:
 
 
 get_ipython().run_cell_magic('time', '', 'plot_raddq_segmentation(threshold_slices_data(sampled_slices_data_0_intercept))\nplot_raddq_segmentation(threshold_slices_data(sampled_slices_data_not0_intercept))')
 
 
-# In[41]:
 
 
 worst_patient, best_patient = train_df    .loc[train_df['Weeks'] == 0, ['Patient', 'FVC']]    .sort_values(by='FVC')    .iloc[[0, -1]].values
 worst_patient, best_patient
 
 
-# In[42]:
 
 
 worst_patient_slices_data = DICOMImages(worst_patient[0]).sampled_slices_data(30)
@@ -869,7 +827,6 @@ plot_slices_data(threshold_slices_data(worst_patient_slices_data, low=-1000, hig
 plot_slices_data(threshold_slices_data(best_patient_slices_data, low=-1000, high=-400))
 
 
-# In[43]:
 
 
 from skimage.transform import resize
@@ -955,7 +912,6 @@ def plot_preprocess_steps(slice_data):
     plt.show()
 
 
-# In[44]:
 
 
 sample_id_0_intercept = DICOMImages(all_dicoms_df[r_intercept_0_mask]['Patient ID'].sample(1).values[0])
@@ -976,7 +932,6 @@ middle_slice_data_not0_intercept = sample_id_not0_intercept.middle_slice_data
 middle_slice_data_not_square = sample_id_not_square.middle_slice_data
 
 
-# In[45]:
 
 
 binaried_image = middle_slice_data_0_intercept.copy()
@@ -984,13 +939,11 @@ binaried_image[binaried_image == 0] = -1000
 plot_preprocess_steps(threshold_slices_data(binaried_image, low=-1000, high=-400))
 
 
-# In[46]:
 
 
 plot_preprocess_steps(threshold_slices_data(middle_slice_data_not0_intercept, low=-1000, high=-400))
 
 
-# In[47]:
 
 
 binaried_image = middle_slice_data_not_square.copy()
@@ -998,7 +951,6 @@ binaried_image[binaried_image == 0] = -1000
 plot_preprocess_steps(threshold_slices_data(binaried_image, low=-1000, high=-400))
 
 
-# In[48]:
 
 
 import IPython.display as ipd
@@ -1058,7 +1010,6 @@ def crop_recenter(image, bbox, pad_value=-1000):
     return padded_image
 
 
-# In[49]:
 
 
 from ipywidgets import IntSlider, interact, fixed, interact_manual, Text
@@ -1095,7 +1046,6 @@ def manual_bbox(slice_data, image_type, x=None, y=None, x_max=None, y_max=None):
     plt.show()
 
 
-# In[50]:
 
 
 # Define all the 'unique' ids
@@ -1114,7 +1064,6 @@ all_not_zero_intercept_ids = all_dicoms_df[not_bad_ids & ~zero_intercept]['Patie
 all_not_zero_dicoms = [DICOMImages(id) for id in all_not_zero_intercept_ids]
 
 
-# In[51]:
 
 
 threshold_map_zero_intercept = []
@@ -1161,7 +1110,6 @@ for dicoms in all_zero_dicoms:
         more_broken_ids.append(dicoms.id)
 
 
-# In[52]:
 
 
 # df_map_zero = pd.DataFrame(threshold_map_zero_intercept)
@@ -1171,7 +1119,6 @@ for dicoms in all_zero_dicoms:
 # df_map_zero_exceptions.to_csv('threshold_map_zero_exceptions.csv', header=True, index=False)
 
 
-# In[53]:
 
 
 threshold_map_not_zero_intercept = []
@@ -1218,7 +1165,6 @@ for dicoms in all_not_zero_dicoms:
         more_broken_ids.append(dicoms.id)
 
 
-# In[54]:
 
 
 # df_map_not_zero = pd.DataFrame(threshold_map_not_zero_intercept)
@@ -1228,7 +1174,6 @@ for dicoms in all_not_zero_dicoms:
 # df_map_not_zero_exceptions.to_csv('threshold_map_not_zero_exceptions.csv', header=True, index=False)
 
 
-# In[55]:
 
 
 """Interactive Part"""

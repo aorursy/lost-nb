@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -12,7 +11,6 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 # Load images into dictionary where the keys
@@ -47,19 +45,16 @@ def load_cv2_images(folder):
 imgs, masks, img_ids = load_cv2_images('../input/train/')
 
 
-# In[3]:
 
 
 imgs.keys()
 
 
-# In[4]:
 
 
 imgs[1].shape, masks[1].shape
 
 
-# In[5]:
 
 
 # The function below will find any
@@ -85,7 +80,6 @@ for j in range(47):
 len(matches)
 
 
-# In[6]:
 
 
 # Print the matches, avoiding duplicates
@@ -107,7 +101,6 @@ for i, m in enumerate(matches):
     repeats.append(m[3].sum())
 
 
-# In[7]:
 
 
 # Number of cases found

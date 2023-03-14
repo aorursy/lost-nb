@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install lap')
@@ -42,7 +41,6 @@ import time
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[2]:
 
 
 import os
@@ -54,7 +52,6 @@ for idx, img in enumerate(np.random.choice(train_imgs, 12)):
     plt.imshow(im)
 
 
-# In[3]:
 
 
 # load image data
@@ -63,7 +60,6 @@ df = pd.read_csv('../input/humpback-whale-identification/train.csv')
 df.head()
 
 
-# In[4]:
 
 
 print(f'Training examples: {len(df)}')
@@ -74,7 +70,6 @@ print("0.99 quantile: ",training_pts_per_class.quantile(0.99))
 print("Max example a class can have: \n",training_pts_per_class.nlargest(2)) 
 
 
-# In[5]:
 
 
 data = training_pts_per_class.copy()
@@ -85,7 +80,6 @@ plt.title("#classes with different number of images",fontsize=15)
 plt.show()
 
 
-# In[6]:
 
 
 TRAIN_DF = '../input/humpback-whale-identification/train.csv'
@@ -100,7 +94,6 @@ submit = [p for _, p, _ in read_csv(SUB_Df).to_records()]
 join = list(tagged.keys()) + submit
 
 
-# In[7]:
 
 
 def expand_path(p):
@@ -121,7 +114,6 @@ else:
         p2size[p] = size
 
 
-# In[8]:
 
 
 def match(h1, h2):
@@ -186,7 +178,6 @@ for p, h in p2h.items():
     if p not in h2ps[h]: h2ps[h].append(p)
 
 
-# In[9]:
 
 
 def show_whale(imgs, per_row=2):
@@ -203,7 +194,6 @@ def read_raw_image(p):
     return img
 
 
-# In[10]:
 
 
 # For each images id, select the prefered image
@@ -225,7 +215,6 @@ for h, ps in h2ps.items():
 len(h2p), list(h2p.items())[:5]
 
 
-# In[11]:
 
 
 # Read the bounding box data from the bounding box kernel (see reference above)
@@ -241,7 +230,6 @@ anisotropy = 2.15  # The horizontal compression ratio
 crop_margin = 0.05  # The margin added around the bounding box to compensate for bounding box inaccuracy
 
 
-# In[12]:
 
 
 def build_transform(rotation, shear, height_zoom, width_zoom, height_shift, width_shift):
@@ -259,7 +247,6 @@ def build_transform(rotation, shear, height_zoom, width_zoom, height_shift, widt
     return np.dot(np.dot(rotation_matrix, shear_matrix), np.dot(zoom_matrix, shift_matrix))
 
 
-# In[13]:
 
 
 def read_cropped_image(p, augment):
@@ -349,13 +336,11 @@ def read_for_validation(p):
 p = list(tagged.keys())[312]
 
 
-# In[14]:
 
 
 print(p)
 
 
-# In[15]:
 
 
 # # Dependent for SNN Model structure
@@ -374,7 +359,6 @@ print(p)
 # from keras.optimizers import Adam
 
 
-# In[16]:
 
 
 # Here we only should the self-designed cnn layers, the Pretrained layers like dense121 are well packaged.
@@ -475,7 +459,6 @@ def build_model(lr, l2, activation='sigmoid'):
 model, branch_model, head_model = build_model(64e-5, 0)
 
 
-# In[17]:
 
 
 h2ws = {}
@@ -501,7 +484,6 @@ for w, hs in w2hs.items():
         w2hs[w] = sorted(hs)
 
 
-# In[18]:
 
 
 train = []  # A list of training image ids
@@ -527,7 +509,6 @@ for i, t in enumerate(train):
     t2i[t] = i
 
 
-# In[19]:
 
 
 class TrainingData(Sequence):
@@ -611,7 +592,6 @@ data = TrainingData(score)
 (a, b), c = data[0]
 
 
-# In[20]:
 
 
 # A Keras generator to evaluate only the BRANCH MODEL
@@ -669,7 +649,6 @@ class ScoreGen(Sequence):
         return (len(self.ix) + self.batch_size - 1) // self.batch_size
 
 
-# In[21]:
 
 
 def set_lr(model, lr):
@@ -755,7 +734,6 @@ def make_steps(step, ampl):
     histories.append(history)
 
 
-# In[22]:
 
 
 histories = []
@@ -801,13 +779,11 @@ else:
 #     model.save('standard.model')
 
 
-# In[23]:
 
 
 model.summary()
 
 
-# In[24]:
 
 
 def prepare_submission(threshold, filename):
@@ -849,7 +825,6 @@ def prepare_submission(threshold, filename):
     return vtop, vhigh, pos
 
 
-# In[25]:
 
 
 # Find elements from training sets not 'new_whale'
@@ -880,7 +855,6 @@ print("Submission time: ", (toc - tic) / 60.)
 # Here the submission_for_em.csv, we use other way to get upload it get the leaderboard score.
 
 
-# In[26]:
 
 
 # Emsembling we only choose the 4 most different results from 4 different model structure to compute the final result 

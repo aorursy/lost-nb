@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -34,7 +33,6 @@ from sklearn.metrics import fbeta_score
 from tqdm import tqdm
 
 
-# In[2]:
 
 
 train_images = os.listdir("../input/imet-2019-fgvc6/train/")
@@ -44,40 +42,34 @@ print("number of train images: ", len(train_images))
 print("number of test  images: ", len(test_images))
 
 
-# In[3]:
 
 
 train = pd.read_csv("../input/imet-2019-fgvc6/train.csv")
 train.head()
 
 
-# In[4]:
 
 
 labels = pd.read_csv("../input/imet-2019-fgvc6/labels.csv")
 labels.head()
 
 
-# In[5]:
 
 
 labels.tail()
 
 
-# In[6]:
 
 
 cultures = [x for x in labels.attribute_name.values if x.startswith("culture")]
 tags = [x for x in labels.attribute_name.values if x.startswith("tag")]
 
 
-# In[7]:
 
 
 len(cultures), len(tags)
 
 
-# In[8]:
 
 
 def split_culture_tag(x):
@@ -95,7 +87,6 @@ def split_culture_tag(x):
     return " ".join(cultures_), " ".join(tags_)
 
 
-# In[9]:
 
 
 culture_ids = list()
@@ -107,7 +98,6 @@ for v in tqdm(train.attribute_ids.values):
     tag_ids.append(t)
 
 
-# In[10]:
 
 
 train["culture_ids"] = culture_ids
@@ -116,7 +106,6 @@ train["tag_ids"] = tag_ids
 train.head()
 
 
-# In[11]:
 
 
 num_classes_c = len(cultures) + 1
@@ -125,7 +114,6 @@ num_classes_t = len(tags) + 1
 print(num_classes_c, num_classes_t)
 
 
-# In[12]:
 
 
 labels_map = {v:i for i, v in zip(labels.attribute_id.values, labels.attribute_name.values)}
@@ -135,14 +123,12 @@ num_classes = len(labels_map)
 print("{} categories".format(num_classes))
 
 
-# In[13]:
 
 
 submission = pd.read_csv("../input/imet-2019-fgvc6/sample_submission.csv")
 submission.head()
 
 
-# In[14]:
 
 
 def obtain_y_c(ids):
@@ -158,7 +144,6 @@ def obtain_y_t(ids):
     return y
 
 
-# In[15]:
 
 
 paths = ["../input/imet-2019-fgvc6/train/{}.png".format(x) for x in train.id.values]
@@ -167,7 +152,6 @@ targets_c = np.array([obtain_y_c(y) for y in train.culture_ids.values])
 targets_t = np.array([obtain_y_t(y) for y in train.tag_ids.values])
 
 
-# In[16]:
 
 
 class ImageGenerator(Sequence):
@@ -223,7 +207,6 @@ class ImageGenerator(Sequence):
         return image
 
 
-# In[17]:
 
 
 batch_size = 64
@@ -238,7 +221,6 @@ train_gen = ImageGenerator(train_paths, train_targets_c, train_targets_t, batch_
 val_gen = ImageGenerator(val_paths, val_targets_c, val_targets_t, batch_size=batch_size, shape=(224,224,3), augment=False)
 
 
-# In[18]:
 
 
 inp = Input((224, 224, 3))
@@ -260,7 +242,6 @@ y_t = Dense(num_classes_t, activation="sigmoid", name="tags_out")(y_t)
 model = Model(inp, [y_c, y_t])
 
 
-# In[19]:
 
 
 losses = {
@@ -274,7 +255,6 @@ loss_weights = {
 }
 
 
-# In[20]:
 
 
 def f_score(y_true, y_pred, threshold=0.1, beta=2):
@@ -334,7 +314,6 @@ def recall_score(y_true, y_pred, threshold=0.1):
     return tp / (tp + fn)
 
 
-# In[21]:
 
 
 checkpoint = ModelCheckpoint('model.h5', 
@@ -351,7 +330,6 @@ reduce_lr = ReduceLROnPlateau(monitor='val_tags_out_f_score', factor=0.2,
 early_stop = EarlyStopping(monitor="val_tags_out_f_score", mode="max", patience=5)
 
 
-# In[22]:
 
 
 model.compile(
@@ -361,7 +339,6 @@ model.compile(
     metrics=['acc', f_score])
 
 
-# In[23]:
 
 
 history = model.fit_generator(generator=train_gen, 
@@ -372,7 +349,6 @@ history = model.fit_generator(generator=train_gen,
                               callbacks=[checkpoint, reduce_lr, early_stop])
 
 
-# In[24]:
 
 
 plt.rcParams['figure.figsize'] = (6,6)
@@ -397,13 +373,11 @@ plt.legend()
 plt.show()
 
 
-# In[25]:
 
 
 model.load_weights("./model.h5")
 
 
-# In[26]:
 
 
 class TestImageGenerator(Sequence):
@@ -434,7 +408,6 @@ class TestImageGenerator(Sequence):
         return image
 
 
-# In[27]:
 
 
 test_paths = ["../input/imet-2019-fgvc6/test/{}.png".format(x) for x in submission.id.values]
@@ -443,19 +416,16 @@ test_gen = TestImageGenerator(test_paths, batch_size=batch_size, shape=(224,224,
 predicts = model.predict_generator(test_gen, verbose=1)
 
 
-# In[28]:
 
 
 predicts[0].shape, predicts[1].shape
 
 
-# In[29]:
 
 
 val_predicts = model.predict_generator(val_gen, verbose=1)
 
 
-# In[30]:
 
 
 best_threshold_c = 0.
@@ -468,7 +438,6 @@ for threshold in tqdm(np.arange(0, 0.5, 0.01)):
         best_threshold_c = threshold
 
 
-# In[31]:
 
 
 best_threshold_t = 0.
@@ -481,14 +450,12 @@ for threshold in tqdm(np.arange(0, 0.5, 0.01)):
         best_threshold_t = threshold
 
 
-# In[32]:
 
 
 print("culture classifier: best threshold: {} best score: {}".format(best_threshold_c, best_score_c))
 print("tag     classifier: best threshold: {} best score: {}".format(best_threshold_t, best_score_t))
 
 
-# In[33]:
 
 
 def classifier(probs, th_c, th_t):
@@ -511,7 +478,6 @@ def classifier(probs, th_c, th_t):
     return " ".join(c)
 
 
-# In[34]:
 
 
 predictions = list()
@@ -520,13 +486,11 @@ for probs in tqdm(zip(predicts[0], predicts[1])):
     predictions.append(classifier(probs, best_threshold_c, best_threshold_t))
 
 
-# In[35]:
 
 
 len(predictions)
 
 
-# In[36]:
 
 
 n = 6
@@ -547,32 +511,27 @@ for idx in b.tolist():
         print(labels_map_rev[idx + len(cultures)])
 
 
-# In[37]:
 
 
 submission["attribute_ids"] = np.array(predictions)
 submission.head()
 
 
-# In[38]:
 
 
 submission.to_csv('submission.csv', index=False)
 
 
-# In[39]:
 
 
 submission.shape
 
 
-# In[40]:
 
 
 get_ipython().system('head submission.csv')
 
 
-# In[41]:
 
 
 submission_df = submission.copy()

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 ## Importing the necessary libraries
@@ -12,13 +11,11 @@ import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import os, cv2
 
 
-# In[ ]:
 
 
 ls ../input/rsna-pneumonia-detection-challenge
 
 
-# In[ ]:
 
 
 # Importing the training label file
@@ -26,7 +23,6 @@ train_df = pd.read_csv('../input/rsna-pneumonia-detection-challenge/stage_2_trai
 train_df.head()
 
 
-# In[ ]:
 
 
 ## Importing the class labels file
@@ -34,7 +30,6 @@ class_info_df = pd.read_csv('../input/rsna-pneumonia-detection-challenge/stage_2
 class_info_df.head()
 
 
-# In[ ]:
 
 
 ## Check the shape of dataframes
@@ -42,7 +37,6 @@ print(train_df.shape)
 print(class_info_df.shape)
 
 
-# In[ ]:
 
 
 ## Merging dataframes just to check the values
@@ -51,21 +45,18 @@ merged_df = pd.merge(train_df,class_info_df,
                      right_index = True)
 
 
-# In[ ]:
 
 
 ## check the columns
 merged_df.columns
 
 
-# In[ ]:
 
 
 ## delete repeated columns
 merged_df.drop('patientId_y', axis=1, inplace=True)
 
 
-# In[ ]:
 
 
 ## Changing the column names into meaningful names
@@ -73,20 +64,17 @@ merged_df.rename(columns={'patientId_x':'patientId', 'Target':'target',
                          'class':'target_class_desc'}, inplace=True)
 
 
-# In[ ]:
 
 
 ## Check the final merge table
 merged_df.head()
 
 
-# In[ ]:
 
 
 ls ../input/rsna-stage-2-png-converted-files/stage_2_png_converted_files/
 
 
-# In[ ]:
 
 
 train_path = os.path.join('..','input','rsna-stage-2-png-converted-files',
@@ -94,14 +82,12 @@ train_path = os.path.join('..','input','rsna-stage-2-png-converted-files',
 train_path
 
 
-# In[ ]:
 
 
 test_path = os.path.join('..','input','rsna-pneumonia-detection-challenge','stage_2_test_images')
 test_path
 
 
-# In[ ]:
 
 
 '''
@@ -126,7 +112,6 @@ def convert_dicom_to_png():
 '''
 
 
-# In[ ]:
 
 
 ## Function to convert training images to arrays
@@ -162,14 +147,12 @@ def train_images_to_arrays():
     return x,y
 
 
-# In[ ]:
 
 
 ## Obtain X and y as arrays...
 X,y = train_images_to_arrays()
 
 
-# In[ ]:
 
 
 ## Saving arrays for future use

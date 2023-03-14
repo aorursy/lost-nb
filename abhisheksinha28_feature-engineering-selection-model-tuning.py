@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 import sys
@@ -50,7 +48,6 @@ from sklearn.preprocessing import LabelEncoder
 plt.style.use('fivethirtyeight')
 
 
-# In[ ]:
 
 
 train = pd.read_csv('../input/application_train.csv').replace({365243: np.nan})
@@ -71,7 +68,6 @@ del train, test
 gc.collect()
 
 
-# In[ ]:
 
 
 def kde_target(var_name,df):
@@ -83,7 +79,6 @@ def kde_target(var_name,df):
  
 
 
-# In[ ]:
 
 
 def agg_numeric(df, group_var, df_name):
@@ -121,7 +116,6 @@ def agg_numeric(df, group_var, df_name):
     return agg
 
 
-# In[ ]:
 
 
 def target_corrs(df):
@@ -135,7 +129,6 @@ def target_corrs(df):
     return corrs
 
 
-# In[ ]:
 
 
 def agg_categorical(df,group_var,df_name) :
@@ -158,7 +151,6 @@ def agg_categorical(df,group_var,df_name) :
     return categorical
 
 
-# In[ ]:
 
 
 import gc
@@ -178,7 +170,6 @@ def agg_child(df,parent_var,df_name):
     return df_combined
 
 
-# In[ ]:
 
 
 def agg_grandchild(df, parent_df,parent_var, grandparent_var, df_name):
@@ -213,7 +204,6 @@ def agg_grandchild(df, parent_df,parent_var, grandparent_var, df_name):
             
 
 
-# In[ ]:
 
 
 data['LOAN_RATE'] = data['AMT_ANNUITY'] / data['AMT_CREDIT'] 
@@ -224,33 +214,28 @@ data['EXT_SOURCE_MEAN'] = data[['EXT_SOURCE_1', 'EXT_SOURCE_2', 'EXT_SOURCE_3']]
 data['AMT_REQ_SUM'] = data[[x for x in data.columns if 'AMT_REQ_' in x]].sum(axis = 1)
 
 
-# In[ ]:
 
 
 bureau['LOAN_RATE'] = bureau['AMT_ANNUITY'] / bureau['AMT_CREDIT_SUM']
 
 
-# In[ ]:
 
 
 bureau_info = agg_child(bureau, 'SK_ID_CURR', 'BUREAU')
 bureau_info.head()
 
 
-# In[ ]:
 
 
 bureau_info.shape
 
 
-# In[ ]:
 
 
 bureau_balance['PAST_DUE'] = bureau_balance['STATUS'].isin(['1', '2', '3', '4', '5'])
 bureau_balance['ON_TIME'] = bureau_balance['STATUS'] == '0'
 
 
-# In[ ]:
 
 
 bureau_balance_info = agg_grandchild(bureau_balance, bureau, 'SK_ID_BUREAU', 'SK_ID_CURR', 'BB')
@@ -258,13 +243,11 @@ del bureau_balance, bureau
 bureau_balance_info.head()
 
 
-# In[ ]:
 
 
 bureau_balance_info.shape
 
 
-# In[ ]:
 
 
 data = data.set_index('SK_ID_CURR')
@@ -273,7 +256,6 @@ del bureau_info
 data.shape
 
 
-# In[ ]:
 
 
 data = data.merge(bureau_balance_info, on = 'SK_ID_CURR', how = 'left')
@@ -281,7 +263,6 @@ del bureau_balance_info
 data.shape
 
 
-# In[ ]:
 
 
 previous = pd.read_csv('../input/previous_application.csv').replace({365243: np.nan})
@@ -290,14 +271,12 @@ previous['LOAN_RATE'] = previous['AMT_ANNUITY'] / previous['AMT_CREDIT']
 previous["AMT_DIFFERENCE"] = previous['AMT_CREDIT'] - previous['AMT_APPLICATION']
 
 
-# In[ ]:
 
 
 previous_info = agg_child(previous, 'SK_ID_CURR', 'PREVIOUS')
 previous_info.shape
 
 
-# In[ ]:
 
 
 data = data.merge(previous_info, on = 'SK_ID_CURR', how = 'left')
@@ -305,7 +284,6 @@ del previous_info
 data.shape
 
 
-# In[ ]:
 
 
 installments = pd.read_csv('../input/installments_payments.csv').replace({365243: np.nan})
@@ -314,7 +292,6 @@ installments['LATE'] = installments['DAYS_ENTRY_PAYMENT'] > installments['DAYS_I
 installments['LOW_PAYMENT'] = installments['AMT_PAYMENT'] < installments['AMT_INSTALMENT']
 
 
-# In[ ]:
 
 
 installments_info = agg_grandchild(installments,previous,'SK_ID_PREV', 'SK_ID_CURR', 'IN')
@@ -322,7 +299,6 @@ del installments
 installments_info.shape
 
 
-# In[ ]:
 
 
 data = data.merge(installments_info, on = 'SK_ID_CURR', how = 'left')
@@ -330,7 +306,6 @@ del installments_info
 data.shape
 
 
-# In[ ]:
 
 
 cash = pd.read_csv('../input/POS_CASH_balance.csv').replace({365243: np.nan})
@@ -339,7 +314,6 @@ cash['LATE_PAYMENT'] = cash['SK_DPD'] > 0.0
 cash['INSTALLMENTS_PAID'] = cash['CNT_INSTALMENT'] - cash['CNT_INSTALMENT_FUTURE']
 
 
-# In[ ]:
 
 
 cash_info = agg_grandchild(cash, previous, 'SK_ID_PREV', 'SK_ID_CURR', 'CASH')
@@ -347,7 +321,6 @@ del cash
 cash_info.shape
 
 
-# In[ ]:
 
 
 data = data.merge(cash_info, on='SK_ID_CURR', how='left')
@@ -355,7 +328,6 @@ del cash_info
 data.shape
 
 
-# In[ ]:
 
 
 credit = pd.read_csv('../input/credit_card_balance.csv').replace({365243: np.nan})
@@ -366,7 +338,6 @@ credit['LOW_PAYMENT'] = credit['AMT_PAYMENT_CURRENT'] < credit['AMT_INST_MIN_REG
 credit['LATE'] = credit['SK_DPD'] > 0.0
 
 
-# In[ ]:
 
 
 credit_info = agg_grandchild(credit, previous, 'SK_ID_PREV', 'SK_ID_CURR', 'CC')
@@ -374,14 +345,12 @@ del credit, previous
 credit_info.shape
 
 
-# In[ ]:
 
 
 gc.collect()
 gc.enable()
 
 
-# In[ ]:
 
 
 
@@ -389,38 +358,32 @@ data = data.merge(credit_info, on = 'SK_ID_CURR', how = 'left')
 del credit_info
 
 
-# In[ ]:
 
 
 data.shape
 
 
-# In[ ]:
 
 
 print('After manual feature engineering, there are {} features.'.format(data.shape[1] - 2))
 
 
-# In[ ]:
 
 
 gc.enable()
 gc.collect()
 
 
-# In[ ]:
 
 
 print(f'Final size of data {return_size(data)}')
 
 
-# In[ ]:
 
 
 #data.to_csv('clean_manual_features.csv', chunksize = 100)
 
 
-# In[ ]:
 
 
 data.reset_index(inplace = True)
@@ -430,7 +393,6 @@ del data
 gc.collect()
 
 
-# In[ ]:
 
 
 train_labels = np.array(train.pop('TARGET')).reshape((-1, ))
@@ -443,14 +405,12 @@ print('Training shape: ', train.shape)
 print('Testing shape: ', test.shape)
 
 
-# In[ ]:
 
 
 train_df = train[:1000]
 test_df = test[:1000]
 
 
-# In[ ]:
 
 
 train = pd.get_dummies(train)
@@ -466,7 +426,6 @@ test_df = pd.get_dummies(test_df)
 train_df, test_df = train_df.align(test_df, join = 'inner', axis = 1)
 
 
-# In[ ]:
 
 
 cols_with_id = [x for x in train_df.columns if 'SK_ID_CURR' in x]
@@ -482,7 +441,6 @@ print('Training shape: ', train.shape)
 print('Testing shape: ', test.shape)
 
 
-# In[ ]:
 
 
 threshold = 0.9
@@ -492,14 +450,12 @@ corr_matrix = train_df.corr().abs()
 corr_matrix.head()
 
 
-# In[ ]:
 
 
 upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(np.bool))
 upper.head()
 
 
-# In[ ]:
 
 
 to_drop = [column for column in upper.columns if any(upper[column] > threshold)]
@@ -507,7 +463,6 @@ to_drop = [column for column in upper.columns if any(upper[column] > threshold)]
 print('There are %d columns to remove.' % (len(to_drop)))
 
 
-# In[ ]:
 
 
 train = train.drop(columns = to_drop)
@@ -517,21 +472,18 @@ print('Training shape: ', train.shape)
 print('Testing shape: ', test.shape)
 
 
-# In[ ]:
 
 
 train_missing = (train.isnull().sum() / len(train)).sort_values(ascending = False)
 train_missing.head()
 
 
-# In[ ]:
 
 
 test_missing = (test.isnull().sum() / len(test)).sort_values(ascending = False)
 test_missing.head()
 
 
-# In[ ]:
 
 
 train_missing = train_missing.index[train_missing > 0.75]
@@ -541,7 +493,6 @@ all_missing = list(set(set(train_missing) | set(test_missing)))
 print('There are %d columns with more than 75%% missing values' % len(all_missing))
 
 
-# In[ ]:
 
 
 #train_labels = train["TARGET"]
@@ -557,7 +508,6 @@ print('Training set full shape: ', train.shape)
 print('Testing set full shape: ' , test.shape)
 
 
-# In[ ]:
 
 
 import lightgbm as lgb
@@ -567,7 +517,6 @@ feature_importances = np.zeros(train.shape[1])
 model = lgb.LGBMClassifier(objective='binary', boosting_type = 'goss', n_estimators = 10000, class_weight = 'balanced')
 
 
-# In[ ]:
 
 
 train1 = pd.read_csv('../input/application_train.csv')
@@ -577,14 +526,12 @@ train_ids = train1['SK_ID_CURR']
 test_ids = test1['SK_ID_CURR']
 
 
-# In[ ]:
 
 
 del train1 , test1
 gc.collect()
 
 
-# In[ ]:
 
 
 for i in range(2):
@@ -600,7 +547,6 @@ for i in range(2):
     feature_importances += model.feature_importances_
 
 
-# In[ ]:
 
 
 feature_importances = feature_importances / 2
@@ -609,7 +555,6 @@ feature_importances = pd.DataFrame({'feature': list(train.columns), 'importance'
 feature_importances.head()
 
 
-# In[ ]:
 
 
 zero_features = list(feature_importances[feature_importances['importance'] == 0.0]['feature'])
@@ -617,14 +562,12 @@ print('There are %d features with 0.0 importance' % len(zero_features))
 feature_importances.tail()
 
 
-# In[ ]:
 
 
 train = train.drop(columns = zero_features)
 test = test.drop(columns = zero_features)
 
 
-# In[ ]:
 
 
 def plot_feature_importances(df, n = 15, threshold = None):
@@ -694,13 +637,11 @@ def plot_feature_importances(df, n = 15, threshold = None):
     return df
 
 
-# In[ ]:
 
 
 plot_feature_importances(feature_importances, n=15, threshold = 0.9)
 
 
-# In[ ]:
 
 
 train['TARGET'] = train_labels
@@ -708,7 +649,6 @@ train['SK_ID_CURR'] = train_ids
 test['SK_ID_CURR'] = test_ids
 
 
-# In[ ]:
 
 
 features = train
@@ -727,21 +667,18 @@ features = features.drop(columns = ['TARGET', 'SK_ID_CURR'])
 train_features, test_features, trainlabels, testlabels = train_test_split(features, labels, test_size = 6000, random_state = 50)
 
 
-# In[ ]:
 
 
 print("Training features shape: ", train_features.shape)
 print("Testing features shape: ", test_features.shape)
 
 
-# In[ ]:
 
 
 train_set = lgb.Dataset(data = train_features, label = trainlabels)
 test_set = lgb.Dataset(data = test_features, label = testlabels)
 
 
-# In[ ]:
 
 
 default_params = model.get_params()
@@ -756,14 +693,12 @@ cv_results = lgb.cv(default_params, train_set, num_boost_round = 10000, early_st
                     metrics = 'auc', nfold = N_FOLDS, seed = 42)
 
 
-# In[ ]:
 
 
 print('The maximum validation ROC AUC was: {:.5f} with a standard deviation of {:.5f}.'.format(cv_results['auc-mean'][-1], cv_results['auc-stdv'][-1]))
 print('The optimal number of boosting rounds (estimators) was {}.'.format(len(cv_results['auc-mean'])))
 
 
-# In[ ]:
 
 
 from sklearn.metrics import roc_auc_score
@@ -777,7 +712,6 @@ baseline_auc = roc_auc_score(testlabels, preds)
 print('The baseline model scores {:.5f} ROC AUC on the test set.'.format(baseline_auc))
 
 
-# In[ ]:
 
 
 def objective(hyperparameters, iteration):
@@ -800,7 +734,6 @@ def objective(hyperparameters, iteration):
     return [score, hyperparameters, iteration]
 
 
-# In[ ]:
 
 
 score, params, iteration = objective(default_params, 1)
@@ -808,7 +741,6 @@ score, params, iteration = objective(default_params, 1)
 print('The cross-validation ROC AUC was {:.5f}.'.format(score))
 
 
-# In[ ]:
 
 
 # Create a default model
@@ -816,7 +748,6 @@ model = lgb.LGBMModel()
 model.get_params()
 
 
-# In[ ]:
 
 
 param_grid = {
@@ -833,7 +764,6 @@ param_grid = {
 }
 
 
-# In[ ]:
 
 
 import random
@@ -850,7 +780,6 @@ print('Boosting type: ', boosting_type)
 print('Subsample ratio: ', subsample)
 
 
-# In[ ]:
 
 
 import matplotlib.pyplot as plt
@@ -863,7 +792,6 @@ plt.hist(param_grid['learning_rate'], bins = 20, color = 'r', edgecolor = 'k');
 plt.xlabel('Learning Rate', size = 14); plt.ylabel('Count', size = 14); plt.title('Learning Rate Distribution', size = 18);
 
 
-# In[ ]:
 
 
 random_results = pd.DataFrame(columns = ['score', 'params', 'iteration'],
@@ -873,7 +801,6 @@ grid_results = pd.DataFrame(columns = ['score', 'params', 'iteration'],
                               index = list(range(MAX_EVALS)))
 
 
-# In[ ]:
 
 
 import itertools
@@ -916,7 +843,6 @@ def grid_search(param_grid, max_evals = MAX_EVALS):
     return results
 
 
-# In[ ]:
 
 
 ''''
@@ -931,7 +857,6 @@ pprint.pprint(grid_results.loc[0, 'params'])
 ''''
 
 
-# In[ ]:
 
 
 ''''
@@ -947,7 +872,6 @@ print('The best model from grid search scores {:.5f} ROC AUC on the test set.'.f
 ''''
 
 
-# In[ ]:
 
 
 random.seed(50)
@@ -960,7 +884,6 @@ random_params['subsample'] = 1.0 if random_params['boosting_type'] == 'goss' els
 random_params
 
 
-# In[ ]:
 
 
 def random_search(param_grid, max_evals = MAX_EVALS):
@@ -988,7 +911,6 @@ def random_search(param_grid, max_evals = MAX_EVALS):
     return results 
 
 
-# In[ ]:
 
 
 random_results = random_search(param_grid)
@@ -1002,13 +924,11 @@ random_results = random_results.drop(columns='index')
 random_results.to_csv('random_results.csv', header= ['score', 'hyperparameters', 'iteration'] )
 
 
-# In[ ]:
 
 
 random_results
 
 
-# In[ ]:
 
 
 def evaluate(results, name):
@@ -1046,13 +966,11 @@ def evaluate(results, name):
     return hyp_df
 
 
-# In[ ]:
 
 
 random_hyp = evaluate(random_results, name = 'random search')
 
 
-# In[ ]:
 
 
 test_ids = test['SK_ID_CURR']
@@ -1065,7 +983,6 @@ print('Training shape: ', train.shape)
 print('Testing shape: ', test.shape)
 
 
-# In[ ]:
 
 
 train_set = lgb.Dataset(train, label = train_labels)
@@ -1079,7 +996,6 @@ cv_results = lgb.cv(hyperparameters, train_set,
                     metrics = 'auc', nfold = N_FOLDS)
 
 
-# In[ ]:
 
 
 print('The cross validation score on the full dataset = {:.5f} with std: {:.5f}.'.format(
@@ -1087,7 +1003,6 @@ print('The cross validation score on the full dataset = {:.5f} with std: {:.5f}.
 print('Number of estimators = {}.'.format(len(cv_results['auc-mean'])))
 
 
-# In[ ]:
 
 
 # Train the model with the optimal number of estimators from early stopping
@@ -1098,7 +1013,6 @@ model.fit(train, train_labels)
 preds = model.predict_proba(test)[:, 1]
 
 
-# In[ ]:
 
 
 submission = pd.DataFrame({'SK_ID_CURR': test_ids, 'TARGET': preds})

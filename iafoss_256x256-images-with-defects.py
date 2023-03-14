@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import gc
@@ -16,7 +15,6 @@ from PIL import Image
 import matplotlib.pyplot as plt
 
 
-# In[2]:
 
 
 sz = (1600,256) #size of input images
@@ -28,7 +26,6 @@ MASKS_OUT = 'masks.zip'
 IMAGES_N_OUT = 'images_n.zip'
 
 
-# In[3]:
 
 
 def enc2mask(encs, shape=(1600,256)):
@@ -61,7 +58,6 @@ df_masks = pd.DataFrame(df_masks.groupby('id')['EncodedPixels'].apply(list))
 df_masks.head()
 
 
-# In[4]:
 
 
 #list of images with texture from https://www.kaggle.com/ateplyuk/detector-steels-with-texture/data
@@ -217,7 +213,6 @@ TEXTURE_IMGS = set(      ['000789191.jpg', '00d7ae946.jpg', '01b237ab8.jpg', '01
        'ff18dded1.jpg', 'ff3bac947.jpg'])
 
 
-# In[5]:
 
 
 fnames = os.listdir(IMAGES)
@@ -249,7 +244,6 @@ with zipfile.ZipFile(IMAGES_OUT, 'w') as img_out,      zipfile.ZipFile(MASKS_OUT
                 msk_out.writestr(name, mask)
 
 
-# In[6]:
 
 
 #image stats
@@ -258,7 +252,6 @@ img_std =  np.sqrt(np.array(x2_tot).mean() - img_avr**2)
 print('mean:',img_avr, ', std:', img_std)
 
 
-# In[7]:
 
 
 columns, rows = 4,4
@@ -280,7 +273,6 @@ with zipfile.ZipFile(IMAGES_OUT, 'r') as img_arch,      zipfile.ZipFile(MASKS_OU
 plt.show()
 
 
-# In[ ]:
 
 
 

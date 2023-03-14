@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np
@@ -15,20 +14,17 @@ N_LAST_SIGNAL_INDEX = 29048
 N_TOTAL_SIGNALS = N_LAST_SIGNAL_INDEX - N_FISR_SIGNAL_INDEX
 
 
-# In[ ]:
 
 
 idx = N_FISR_SIGNAL_INDEX + np.arange(N_TOTAL_SIGNALS)
 idx
 
 
-# In[ ]:
 
 
 np.random.shuffle(idx) # more fun on each run!
 
 
-# In[ ]:
 
 
 # the whole set is just too big to be read at once, will use data generator instead
@@ -52,14 +48,12 @@ def generator(indexes, batch_size):
             yield signals, signals # shape=(?, 800_000, 3)
 
 
-# In[ ]:
 
 
 from keras.models import Sequential, Model
 from keras.layers import Input, Dense, Conv1D, ELU, BatchNormalization, GRU, Conv2DTranspose, Reshape, Activation
 
 
-# In[ ]:
 
 
 # our toy model
@@ -116,7 +110,6 @@ def make_model(ts=N_MEASUREMENTS,):
     return encoder, decoder, ae
 
 
-# In[ ]:
 
 
 encoder, decoder, ae = make_model()
@@ -127,7 +120,6 @@ optimizer = 'adam' # RMSprop()
 ae.compile(optimizer=optimizer, loss=loss, metrics=[metric])
 
 
-# In[ ]:
 
 
 # keep this low, as each signal is 800K * 3 samples ( or batch_size * 800_000 * 3 * 2 in bytes )
@@ -141,7 +133,6 @@ n_epochs = 10
 print(f'will train on {batch_size * steps_per_epoch * n_epochs} signals')
 
 
-# In[ ]:
 
 
 history = ae.fit_generator(
@@ -153,13 +144,11 @@ history = ae.fit_generator(
         )
 
 
-# In[ ]:
 
 
 import matplotlib.pyplot as plt
 
 
-# In[ ]:
 
 
 def plot_history(history):
@@ -173,14 +162,12 @@ def plot_history(history):
    plt.legend()
 
 
-# In[ ]:
 
 
 # training is hard
 plot_history(history)
 
 
-# In[ ]:
 
 
 def plot_signals(x, y_pred):
@@ -196,7 +183,6 @@ def plot_signals(x, y_pred):
         ax[1][2].plot(y_pred[0, :, ph][n_samples//2:n_samples//2 + n_samples//64])        
 
 
-# In[ ]:
 
 
 signals, _ = next(generator(idx, 2))
@@ -204,7 +190,6 @@ y_pred = ae.predict(signals[0].reshape(1, -1, 3))
 plot_signals(signals[0], y_pred)
 
 
-# In[ ]:
 
 
 

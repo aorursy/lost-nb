@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,14 +19,12 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 THRESHOLD = 73 
 RND_SEED = 56
 
 
-# In[3]:
 
 
 ####### 1. Import training data and extract ids #######
@@ -36,13 +33,11 @@ raw_ids_all = train_data["Id"]
 raw_ids = raw_ids_all.unique()
 
 
-# In[4]:
 
 
 train_data.shape
 
 
-# In[5]:
 
 
 for column in train_data.columns:
@@ -50,7 +45,6 @@ for column in train_data.columns:
 train_data['Id'] = train_data['Id'].astype(np.int32)
 
 
-# In[6]:
 
 
 ####### 2. Remove ids with only NaNs in the "Ref" column #######
@@ -59,14 +53,12 @@ raw_ids_tmp = train_raw_tmp["Id"].unique()
 train_new = train_data[np.in1d(raw_ids_all, raw_ids_tmp)]
 
 
-# In[7]:
 
 
 train_new = train_new.fillna(0.0)
 # train_new = train_new.reset_index(drop=True)
 
 
-# In[8]:
 
 
 ####### 4. Define and exclude outliers from training set #######
@@ -75,13 +67,11 @@ df = pd.DataFrame(train_new_group['Expected'].mean()) # mean, or any value
 meaningful_ids = np.array(df[df['Expected'] < THRESHOLD].index)
 
 
-# In[9]:
 
 
 train_final = train_new[np.in1d(train_new.Id, meaningful_ids)]
 
 
-# In[10]:
 
 
 def pad_series(X, target_len=19):
@@ -92,14 +82,12 @@ def pad_series(X, target_len=19):
     return X, seq_len
 
 
-# In[11]:
 
 
 data_pd_gp = train_final.groupby("Id")
 data_size = len(data_pd_gp)
 
 
-# In[12]:
 
 
 INPUT_WIDTH = 19
@@ -121,14 +109,12 @@ for _, group in data_pd_gp:
 X_train.shape, y_train.shape
 
 
-# In[13]:
 
 
 from keras.layers import RNN, Input, Dense, CuDNNLSTM, AveragePooling1D, TimeDistributed, Bidirectional, Flatten
 from keras.models import Model
 
 
-# In[14]:
 
 
 def get_model_lite(shape=(19,22)):
@@ -145,13 +131,11 @@ def get_model_lite(shape=(19,22)):
     return model
 
 
-# In[15]:
 
 
 m16 = get_model_lite((19,22))
 
 
-# In[16]:
 
 
 from keras.optimizers import SGD
@@ -160,13 +144,11 @@ sgd = SGD(lr=0.01, momentum=0.9, nesterov=True)
 m16.compile(sgd, loss='mae')
 
 
-# In[17]:
 
 
 m16.fit(X_train, y_train,batch_size=32, epochs=1, verbose=1)
 
 
-# In[18]:
 
 
 del train_data
@@ -186,7 +168,6 @@ del y_train
 del seq_lengths
 
 
-# In[19]:
 
 
 ####### 6. Preprocess the test data #######
@@ -220,19 +201,16 @@ for _, group in data_pd_gp:
 X_test.shape
 
 
-# In[20]:
 
 
 output = m16.predict(X_test, batch_size=32,verbose=1)
 
 
-# In[21]:
 
 
 output[:4]
 
 
-# In[22]:
 
 
 my_submission = pd.DataFrame({'Id': np.arange(1,output.shape[0]+1), 'Expected': output[:,0]})
@@ -240,7 +218,6 @@ my_submission = pd.DataFrame({'Id': np.arange(1,output.shape[0]+1), 'Expected': 
 my_submission.to_csv('submission.csv', index=False)
 
 
-# In[23]:
 
 
 

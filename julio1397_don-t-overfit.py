@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -29,7 +28,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
 
-# In[2]:
 
 
 #Loading Data into DF
@@ -38,14 +36,12 @@ df_test = pd.read_csv('../input/test.csv')
 df_train.head()
 
 
-# In[3]:
 
 
 #PREPARE TEST DATA
 x_train,x_test,y_train,y_test = train_test_split(df_train.drop(columns=['target']),df_train['target'],test_size=0.20, random_state=42)
 
 
-# In[4]:
 
 
 
@@ -77,7 +73,6 @@ accuracy = accuracy_score(y_test,predictions)
 print("X_Test Data Accuracy: %2f" % (accuracy * 100))
 
 
-# In[5]:
 
 
 #RANDOM FOREST MODEL
@@ -94,7 +89,6 @@ rf.fit(x_train, y_train);
 print('Finish to create the random forest!')
 
 
-# In[6]:
 
 
 #Hyperparameters tuned for random forest
@@ -107,7 +101,6 @@ print('Finish to create the random forest!')
  'n_estimators': 200}
 
 
-# In[7]:
 
 
 #SCORE Random Forest
@@ -119,7 +112,6 @@ accuracy = accuracy_score(y_test,predictions)
 print("X_Test Data Accuracy: %2f" % (accuracy * 100))
 
 
-# In[8]:
 
 
 #feature importance
@@ -129,7 +121,6 @@ feature_importances = pd.DataFrame(rf.feature_importances_,
 feature_importances.head()
 
 
-# In[9]:
 
 
 #LOGISTIC REGRESSION
@@ -137,7 +128,6 @@ from sklearn.linear_model import LogisticRegression
 clf = LogisticRegression(class_weight='balanced', penalty='l1', C=0.1, solver='liblinear').fit(x_train, y_train)
 
 
-# In[10]:
 
 
 #SCORE Logistic Regression
@@ -148,7 +138,6 @@ accuracy = accuracy_score(y_test,predictions)
 print("X_Test Data Accuracy: %2f" % (accuracy * 100))
 
 
-# In[11]:
 
 
 #Comparing Classifier on this dataset
@@ -216,7 +205,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[12]:
 
 
 #Predict Validation data
@@ -228,7 +216,6 @@ df_submission['target'] = predictions
 df_submission.to_csv('submission.csv',index=False)
 
 
-# In[13]:
 
 
 #Gaussian Naive bayes with parameter inference
@@ -250,7 +237,6 @@ from IPython.core.interactiveshell import InteractiveShell
 InteractiveShell.ast_node_interactivity = "all"
 
 
-# In[14]:
 
 
 get_ipython().system('pip install git+https://github.com/pymc-learn/pymc-learn')
@@ -259,7 +245,6 @@ from pmlearn.naive_bayes import GaussianNB
 print('Running on pymc-learn v{}'.format(pmlearn.__version__))
 
 
-# In[15]:
 
 
 #Instantiate Gaussian Naive Bayesian Classifier based on probabilistic ML
@@ -268,7 +253,6 @@ model.fit(x_train,y_train)
 print(model)
 
 
-# In[16]:
 
 
 #Use for predicting

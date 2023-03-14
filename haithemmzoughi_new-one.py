@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import matplotlib.pyplot as plt 
@@ -11,7 +10,6 @@ import seaborn as sns
 import time
 
 
-# In[2]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -44,7 +42,6 @@ from xgboost import plot_importance
 # Any results you write to the current directory are saved as output.
 
 
-# In[3]:
 
 
 #import sys
@@ -52,7 +49,6 @@ from xgboost import plot_importance
 #from feature_selector import FeatureSelector
 
 
-# In[4]:
 
 
 train= pd.read_csv("../input/train.csv", parse_dates=["first_active_month"])
@@ -61,46 +57,39 @@ print("{} observations and {} features in train set.".format(train.shape[0],trai
 print("{} observations and {} features in test set.".format(test.shape[0],test.shape[1]))
 
 
-# In[5]:
 
 
 print(len(list(test.keys())))
 print(len(list(train.keys())))
 
 
-# In[6]:
 
 
 history = pd.read_csv("../input/historical_transactions.csv", low_memory=True)
 
 
-# In[7]:
 
 
 #history.head(n=5)
 
 
-# In[8]:
 
 
 #fig, ax = plt.subplots(figsize=(12, 3))
 #sns.boxplot(x='target', data=train)
 
 
-# In[9]:
 
 
 #fig, ax = plt.subplots(figsize=(16, 5))
 #sns.distplot(train.target, ax=ax)
 
 
-# In[10]:
 
 
 train['feature_1'].unique()
 
 
-# In[11]:
 
 
 def missing_data_function(frame):
@@ -111,7 +100,6 @@ def missing_data_function(frame):
     return missing_data
 
 
-# In[12]:
 
 
 def reduce_mem_usage_func(df):
@@ -151,55 +139,46 @@ def reduce_mem_usage_func(df):
     return df
 
 
-# In[13]:
 
 
 history=reduce_mem_usage_func(history)
 
 
-# In[14]:
 
 
 history.reset_index(inplace=True)
 
 
-# In[15]:
 
 
 new_transactions = pd.read_csv('../input/new_merchant_transactions.csv',  low_memory=True)
 
 
-# In[16]:
 
 
 new_transactions.head(n=5)
 
 
-# In[17]:
 
 
 new_transactions=reduce_mem_usage_func(new_transactions)
 
 
-# In[18]:
 
 
 #time.sleep(30)
 
 
-# In[19]:
 
 
 new_transactions.reset_index(inplace=True)
 
 
-# In[20]:
 
 
 #history.head()
 
 
-# In[21]:
 
 
 def merge_train_test(train, test , df ):
@@ -210,19 +189,16 @@ def merge_train_test(train, test , df ):
     
 
 
-# In[22]:
 
 
 history['purchase_date'] = pd.to_datetime(history['purchase_date'])
 
 
-# In[23]:
 
 
 new_transactions['purchase_date'] = pd.to_datetime(new_transactions['purchase_date'])
 
 
-# In[24]:
 
 
 def features(df):
@@ -241,19 +217,16 @@ def features(df):
     
 
 
-# In[25]:
 
 
 train=features(train)
 
 
-# In[26]:
 
 
 test=features(test)
 
 
-# In[27]:
 
 
 def deal_missing(df):
@@ -266,19 +239,16 @@ def deal_missing(df):
     return df
 
 
-# In[28]:
 
 
 history=deal_missing(history)
 
 
-# In[29]:
 
 
 new_transactions=deal_missing(new_transactions)
 
 
-# In[30]:
 
 
 def mapping(df):
@@ -288,19 +258,16 @@ def mapping(df):
     return df
 
 
-# In[31]:
 
 
 history=mapping(history)
 
 
-# In[32]:
 
 
 new_transactions=mapping(new_transactions)
 
 
-# In[33]:
 
 
 def new_features(df):
@@ -330,31 +297,26 @@ def new_features(df):
 #
 
 
-# In[34]:
 
 
 history=new_features(history)
 
 
-# In[35]:
 
 
 #history=reduce_mem_usage_func(history)
 
 
-# In[36]:
 
 
 history.head(n=5)
 
 
-# In[37]:
 
 
 new_transactions=new_features(new_transactions)
 
 
-# In[38]:
 
 
 for col in ['category_2','category_3']:
@@ -362,7 +324,6 @@ for col in ['category_2','category_3']:
     new_transactions[col+'_mean'] = new_transactions.groupby([col])['purchase_amount'].transform('mean')
 
 
-# In[39]:
 
 
 def aggregation(frame,name):
@@ -407,92 +368,77 @@ def aggregation(frame,name):
 
 
 
-# In[40]:
 
 
 time.sleep(60)
 
 
-# In[41]:
 
 
 #df = aggregation(history,'history_')
 
 
-# In[42]:
 
 
 train , test = merge_train_test(train, test , aggregation(history,'history_') )
 
 
-# In[43]:
 
 
 time.sleep(30)
 
 
-# In[44]:
 
 
 time.sleep(20)
 
 
-# In[45]:
 
 
 train , test = merge_train_test(train, test ,aggregation(new_transactions,'new_') )
 
 
-# In[46]:
 
 
 new_transactions.head(n=10)
 
 
-# In[47]:
 
 
 new_transactions.keys()
 
 
-# In[48]:
 
 
 
 
 
-# In[48]:
 
 
 
 
 
-# In[48]:
 
 
 #train=train.drop(columns=['amount_mean_x', 'amount_std_x', 'amount_max_x','amount_min_x', 'amount_sum_x','amount_mean_y', 'amount_std_y', 'amount_max_y',
                          # 'amount_min_y', 'amount_sum_y'])
 
 
-# In[49]:
 
 
 train.keys()
 
 
-# In[50]:
 
 
 
 
 
-# In[50]:
 
 
 #istory['installments']=history['installments'].replace({-1:0,999:0}, inplace=True)
 
 
-# In[51]:
 
 
 def shopping_days(df, name):
@@ -504,44 +450,37 @@ def shopping_days(df, name):
     return days_of_shopping
 
 
-# In[52]:
 
 
 history_shopping=shopping_days(history,'history')
 
 
-# In[53]:
 
 
 train , test = merge_train_test(train, test , history_shopping )
 
 
-# In[54]:
 
 
 new_shopping=shopping_days(new_transactions, 'new')
 
 
-# In[55]:
 
 
 new_shopping.head(n=10)
 
 
-# In[56]:
 
 
 train , test =merge_train_test(train, test , new_shopping )
 
 
-# In[57]:
 
 
 
     
 
 
-# In[57]:
 
 
 #history['day_of_week']=history['purchase_date'].dt.weekday
@@ -549,43 +488,36 @@ train , test =merge_train_test(train, test , new_shopping )
 #history['month_of_year']=history['purchase_date'].dt.month
 
 
-# In[58]:
 
 
 #most_frequent_day_of_week=history.groupby('card_id')['day_of_week'].agg(mode).reset_index(name='most_frequent_day_of_week')
 
 
-# In[59]:
 
 
 #train , test = merge_train_test(train, test , most_frequent_day_of_week )
 
 
-# In[60]:
 
 
 #most_frequent_day_of_month=history.groupby('card_id')['day_of_month'].agg(mode).reset_index(name='most_frequent_day_of_month')
 
 
-# In[61]:
 
 
 #train , test = merge_train_test(train, test , most_frequent_day_of_month )
 
 
-# In[62]:
 
 
 #most_frequent_month=history.groupby('card_id')['month_of_year'].agg(mode).reset_index(name='most_frequent_month')
 
 
-# In[63]:
 
 
 #train , test = merge_train_test(train, test , most_frequent_month )
 
 
-# In[64]:
 
 
 last_buy = history.groupby('card_id')['purchase_date'].max()
@@ -593,54 +525,46 @@ last_buy = last_buy.reset_index(name='last_one')
 last_buy['last_one']=(datetime.today() - last_buy['last_one']).dt.days.reset_index()
 
 
-# In[65]:
 
 
 train , test = merge_train_test(train, test , last_buy )
 
 
-# In[66]:
 
 
 First_buy = new_transactions.groupby('card_id')['purchase_date'].min().reset_index(name='first_one')
 First_buy['first_one']=(datetime.today() - First_buy['first_one']).dt.days.reset_index()
 
 
-# In[67]:
 
 
 train , test = merge_train_test(train, test , First_buy )
 
 
-# In[68]:
 
 
 train['between']=train['first_one'] - train['last_one']
 test['between']=test['first_one'] - test['last_one']
 
 
-# In[69]:
 
 
 train['from']=(datetime.today() - train['first_active_month']).dt.days
 test['from']=(datetime.today() - test['first_active_month']).dt.days
 
 
-# In[70]:
 
 
 train['activation_month'] = train["first_active_month"].dt.month
 test['activation_month'] = test ["first_active_month"].dt.month
 
 
-# In[71]:
 
 
 train['activation_year'] = train["first_active_month"].dt.year
 test['activation_year'] = test ["first_active_month"].dt.year
 
 
-# In[72]:
 
 
 def aggregate_per_month(df,history):
@@ -662,40 +586,34 @@ def aggregate_per_month(df,history):
     return final_group
 
 
-# In[73]:
 
 
 import time
 time.sleep(60)
 
 
-# In[74]:
 
 
 train = aggregate_per_month(train,history)
 
 
-# In[75]:
 
 
 import time
 time.sleep(60)
 
 
-# In[76]:
 
 
 test=aggregate_per_month(test,history)
 
 
-# In[77]:
 
 
 import time
 time.sleep(60)
 
 
-# In[78]:
 
 
 def successive_aggregates(tr,df, field1, field2, name ):
@@ -707,13 +625,11 @@ def successive_aggregates(tr,df, field1, field2, name ):
     return tr
 
 
-# In[79]:
 
 
 
 
 
-# In[79]:
 
 
 train = successive_aggregates(train,new_transactions, 'category_1', 'purchase_amount','new')
@@ -742,13 +658,11 @@ train = successive_aggregates(train,new_transactions, 'category_3', 'installment
 test  = successive_aggregates(test,new_transactions, 'category_3', 'installments','new')
 
 
-# In[80]:
 
 
 time.sleep(15)
 
 
-# In[81]:
 
 
 train = successive_aggregates(train,history, 'category_1', 'purchase_amount','history')
@@ -761,14 +675,12 @@ train = successive_aggregates(train,history, 'category_3', 'purchase_amount','hi
 test  = successive_aggregates(test,history, 'category_3', 'purchase_amount','history')
 
 
-# In[82]:
 
 
 import time
 time.sleep(15)
 
 
-# In[83]:
 
 
 train = successive_aggregates(train,history, 'category_1', 'installments','history')
@@ -781,13 +693,11 @@ train = successive_aggregates(train,history, 'category_3', 'installments','histo
 test  = successive_aggregates(test,history, 'category_3', 'installments','history')
 
 
-# In[84]:
 
 
 time.sleep(15)
 
 
-# In[85]:
 
 
 train = successive_aggregates(train,history,  'installments', 'purchase_amount','history')
@@ -797,20 +707,17 @@ train = successive_aggregates(train,history, 'city_id', 'purchase_amount','histo
 test  = successive_aggregates(test,history, 'city_id', 'purchase_amount','history')
 
 
-# In[86]:
 
 
 train['outliers'] = 0
 train.loc[train['target'] < -30, 'outliers'] = 1
 
 
-# In[87]:
 
 
 
 
 
-# In[87]:
 
 
 #for f in ['feature_1','feature_2','feature_3']:
@@ -819,20 +726,17 @@ train.loc[train['target'] < -30, 'outliers'] = 1
 #    test[f+'map'] =  test[f].map(order_label)
 
 
-# In[88]:
 
 
 train.head(n=15)
 
 
-# In[89]:
 
 
 import time
 time.sleep(60)
 
 
-# In[90]:
 
 
 def aggregate_new_transactions(new_trans): 
@@ -859,60 +763,51 @@ def aggregate_new_transactions(new_trans):
     return agg_new_trans
 
 
-# In[91]:
 
 
 #df = aggregate_new_transactions(new_transactions)
 
 
-# In[92]:
 
 
 import time
 time.sleep(20)
 
 
-# In[93]:
 
 
 #train , test = merge_train_test(train, test , df )
 
 
-# In[94]:
 
 
 import time
 time.sleep(10)
 
 
-# In[95]:
 
 
 #train = other_features (train )
 #test= other_features (test )
 
 
-# In[96]:
 
 
 import time
 time.sleep(120)
 
 
-# In[97]:
 
 
 #history = pd.get_dummies(history, columns=['category_2', 'category_3'])
 
 
-# In[98]:
 
 
 import time
 time.sleep(60)
 
 
-# In[99]:
 
 
 def convert(df):
@@ -921,26 +816,22 @@ def convert(df):
     return df 
 
 
-# In[100]:
 
 
 
 
 
-# In[100]:
 
 
 import time
 time.sleep(120)
 
 
-# In[101]:
 
 
 new_transactions.head(n=5)
 
 
-# In[102]:
 
 
 def aggregate_transactions(df,frame,name):
@@ -970,68 +861,57 @@ def aggregate_transactions(df,frame,name):
     return agg_new_trans
 
 
-# In[103]:
 
 
 history.keys()
 
 
-# In[104]:
 
 
 #train.head(n=5)
 
 
-# In[105]:
 
 
 print(test.shape)
 print(train.shape)
 
 
-# In[106]:
 
 
 
 
 
-# In[106]:
 
 
 
 
 
-# In[106]:
 
 
 #train = aggregate_per_month(train,history)
 
 
-# In[107]:
 
 
 #test=aggregate_per_month(test,history)
 
 
-# In[108]:
 
 
 
 
 
-# In[108]:
 
 
 history.keys()
 
 
-# In[109]:
 
 
 history.head(n=10)
 
 
-# In[110]:
 
 
 for f in ['feature_1','feature_2','feature_3']:
@@ -1040,7 +920,6 @@ for f in ['feature_1','feature_2','feature_3']:
     test[f] = test[f].map(order_label)
 
 
-# In[111]:
 
 
 X = train.drop(columns=['first_active_month','target','card_id'])
@@ -1049,114 +928,96 @@ test_X = test.drop(columns=['first_active_month','card_id'])
 Y=train['target']
 
 
-# In[112]:
 
 
 #X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.33, random_state=7)
 X.shape
 
 
-# In[113]:
 
 
 corr_matrix = X.corr().abs()
 
 
-# In[114]:
 
 
 plt.matshow(corr_matrix)
 
 
-# In[115]:
 
 
 upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(np.bool))
 
 
-# In[116]:
 
 
 to_drop = [column for column in upper.columns if any(upper[column] > 0.95)]
 
 
-# In[117]:
 
 
 to_drop
 
 
-# In[118]:
 
 
 #X = X.drop(columns=to_drop)
 #test_X = test_X.drop(columns=to_drop)
 
 
-# In[119]:
 
 
 X.shape
 
 
-# In[120]:
 
 
 test_X.shape
 
 
-# In[121]:
 
 
 
 
 
-# In[121]:
 
 
 
 
 
-# In[121]:
 
 
 from sklearn.model_selection import StratifiedKFold
 
 
-# In[122]:
 
 
 folds = StratifiedKFold(n_splits=5, shuffle=True, random_state=15)
 
 
-# In[123]:
 
 
 for fold_, (trn_idx, val_idx) in enumerate(folds.split(train,train['outliers'].values)):
     print(trn_idx, val_idx)
 
 
-# In[124]:
 
 
 xgb_params = {'eta': 0.01, 'max_depth': 5, 'subsample': 0.8, 'colsample_bytree': 0.8, 'lambda' : 0.1 , 'alpha' : 0.4,'min_child_weight':1,
           'objective': 'reg:linear', 'eval_metric': 'rmse', 'silent': True, 'nthread': 4}
 
 
-# In[125]:
 
 
 #xg_reg = xgb.XGBRegressor(objective ='reg:linear', colsample_bytree = 0.3, learning_rate = 0.1,
                # max_depth = 5, alpha = 10, lamda=2 , n_estimators = 10, eval_metric='rmse')
 
 
-# In[126]:
 
 
 import lightgbm as lgb
 
 
-# In[127]:
 
 
 param = {'num_leaves': 32,
@@ -1176,7 +1037,6 @@ param = {'num_leaves': 32,
          "verbosity": -1}
 
 
-# In[128]:
 
 
 features = [c for c in X.columns if c not in ['card_id', 'first_active_month', 'target','month_lag_mean_y','month_lag_std_y','outliers',
@@ -1184,67 +1044,56 @@ features = [c for c in X.columns if c not in ['card_id', 'first_active_month', '
 categorical_feats = ['feature_1','feature_2','feature_3']
 
 
-# In[129]:
 
 
 len(list(X.keys()))
 
 
-# In[130]:
 
 
 Y.head()
 
 
-# In[131]:
 
 
 #missing_data_function(X)
 
 
-# In[132]:
 
 
 #X=X.fillna(-1)
 
 
-# In[133]:
 
 
 #missing_data_function(test_X)
 
 
-# In[134]:
 
 
 #test_X=test_X.fillna(-1)
 
 
-# In[135]:
 
 
 
 
 
-# In[135]:
 
 
 X.shape
 
 
-# In[136]:
 
 
 X=X.drop(columns=['history_purchase_date_max', 'history_purchase_date_min', 'new_purchase_date_max', 'new_purchase_date_min'])
 
 
-# In[137]:
 
 
 rest=features
 
 
-# In[138]:
 
 
 folds = StratifiedKFold(n_splits=5, shuffle=True, random_state=15)
@@ -1279,13 +1128,11 @@ for fold_, (trn_idx, val_idx) in enumerate(folds.split(train,train['outliers'].v
     predictions_lgbd += clf.predict(test_X[features], num_iteration=clf.best_iteration) / folds.n_splits
 
 
-# In[139]:
 
 
 test_X.keys()
 
 
-# In[140]:
 
 
 folds = KFold(n_splits=5, shuffle=True, random_state=15)
@@ -1316,13 +1163,11 @@ for fold_, (trn_idx, val_idx) in enumerate(folds.split(train,train['outliers'].v
        
 
 
-# In[141]:
 
 
 #predictions_xg
 
 
-# In[142]:
 
 
 param_outliers = {'num_leaves': 8,
@@ -1342,13 +1187,11 @@ param_outliers = {'num_leaves': 8,
          "random_state": 2333}
 
 
-# In[143]:
 
 
 #predictions_xg
 
 
-# In[144]:
 
 
 folds = KFold(n_splits=5, shuffle=True, random_state=15)
@@ -1379,13 +1222,11 @@ for fold_, (trn_idx, val_idx) in enumerate(folds.split(train.values, target.valu
 #print("CV score: {:<8.5f}".format(log_loss(target, oof))
 
 
-# In[145]:
 
 
 from sklearn.linear_model import Ridge
 
 
-# In[146]:
 
 
 train_stack = np.vstack([oof_lgbm, oof_xgb_3,oof_outliers]).transpose()
@@ -1413,13 +1254,11 @@ for fold_, (trn_idx, val_idx) in enumerate(folds.split(train,train['outliers'].v
     #predictions += clf.predict(test_stack) / folds.n_splits"""
 
 
-# In[147]:
 
 
 predictions_xg
 
 
-# In[148]:
 
 
 sub_df = pd.DataFrame({"card_id":test["card_id"].values})
@@ -1427,7 +1266,6 @@ sub_df["target"] =predictions_xg
 sub_df.to_csv("submit.csv", index=False)
 
 
-# In[149]:
 
 
 sub_df.head(n=100)

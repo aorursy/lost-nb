@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import pandas as pd
@@ -9,49 +8,41 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# In[ ]:
 
 
 train_data = pd.read_json('../input/train.json')
 
 
-# In[ ]:
 
 
 train_data.head()
 
 
-# In[ ]:
 
 
 test_data = pd.read_json('../input/train.json')
 
 
-# In[ ]:
 
 
 test_data.head()
 
 
-# In[ ]:
 
 
 train_data['cuisine'].value_counts()
 
 
-# In[ ]:
 
 
 type(train_data)
 
 
-# In[ ]:
 
 
 type(test_data)
 
 
-# In[ ]:
 
 
 all_ingredients_list = []
@@ -62,7 +53,6 @@ for each in all_ingredients_list:
         in_list.append(i)
 
 
-# In[ ]:
 
 
 unique_ing = []
@@ -72,14 +62,12 @@ for each1 in in_list:
 print "Total number of ingredients",len(unique_ing)
 
 
-# In[ ]:
 
 
 from collections import Counter
 Counter(in_list).most_common(50)
 
 
-# In[ ]:
 
 
 total = train_data.isnull().sum().sort_values(ascending = False)
@@ -88,7 +76,6 @@ missing_train_data  = pd.concat([total, percent], axis=1, keys=['Total missing',
 missing_train_data.head(20)
 
 
-# In[ ]:
 
 
 import seaborn as sns
@@ -101,7 +88,6 @@ plt.title("Frequency of Column Name", fontsize=15)
 plt.show()
 
 
-# In[ ]:
 
 
 for each in train_data['ingredients']:
@@ -110,7 +96,6 @@ for each in train_data['ingredients']:
     
 
 
-# In[ ]:
 
 
 # Label Encoding of y - the target kinds of cuisine
@@ -124,13 +109,11 @@ print(y_value)
 print("Total length", len(y_value))
 
 
-# In[ ]:
 
 
 labelencoder.inverse_transform(y_value)
 
 
-# In[ ]:
 
 
 train_data_without_id = train_data.copy()
@@ -139,7 +122,6 @@ test_data_without_id = test_data.copy()
 test_data_without_id.drop(['id'],axis=1,inplace=True)
 
 
-# In[ ]:
 
 
 for each in train_data['ingredients']:
@@ -148,31 +130,26 @@ for each in train_data['ingredients']:
     break
 
 
-# In[ ]:
 
 
 train_data_without_id['ingredients'] = [''.join(each).lower().strip() for each in train_data['ingredients']]
 
 
-# In[ ]:
 
 
 train_data_without_id['ingredients'].value_counts()
 
 
-# In[ ]:
 
 
 test_data_without_id['ingredients'] = [''.join(each).lower().strip() for each in test_data['ingredients']]
 
 
-# In[ ]:
 
 
 test_data_without_id['ingredients'].value_counts()
 
 
-# In[ ]:
 
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -181,39 +158,33 @@ tfidf = TfidfVectorizer()
 X_train = tfidf.fit_transform(train_data_without_id['ingredients'])
 
 
-# In[ ]:
 
 
 X_train
 
 
-# In[ ]:
 
 
 X_test = tfidf.transform(test_data_without_id['ingredients'])
 
 
-# In[ ]:
 
 
 X_test
 
 
-# In[ ]:
 
 
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.multiclass import OneVsRestClassifier
 
 
-# In[ ]:
 
 
 dt = DecisionTreeClassifier()
 model_dt = OneVsRestClassifier(dt, n_jobs=-1)
 
 
-# In[ ]:
 
 
 model_dt.fit(X_train, y_value)
@@ -221,7 +192,6 @@ acc_dt = round(model_dt.score(X_train, y_value) * 100, 2)
 print(acc_dt)
 
 
-# In[ ]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -232,7 +202,6 @@ acc_rf = round(model_rf.score(X_train, y_value) * 100, 2)
 print(acc_rf)
 
 
-# In[ ]:
 
 
 from sklearn.svm import SVC
@@ -243,13 +212,11 @@ acc_svc = round(model_svc.score(X_train, y_value) * 100, 2)
 print(acc_svc)
 
 
-# In[ ]:
 
 
 X_test = test_data['ingredients']
 
 
-# In[ ]:
 
 
 y_test1 = model_rf.predict(X_test)
@@ -257,7 +224,6 @@ y_pred = labelencoder.inverse_transform(y_test1)
 print(y_pred)
 
 
-# In[ ]:
 
 
 
@@ -266,7 +232,6 @@ sub = pd.DataFrame({'id': test_data['id'], 'cuisine': y_pred}, columns=['id', 'c
 sub.to_csv('randomForest_output.csv', index=False)
 
 
-# In[ ]:
 
 
 

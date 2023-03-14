@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -10,7 +9,6 @@ os.listdir("../input/nlp-dataset")
 # 파일의 디렉토리를 확인한다. (압축해제 후 다시 업로드한 데이터셋)
 
 
-# In[2]:
 
 
 import pandas as pd 
@@ -26,7 +24,6 @@ warnings.filterwarnings("ignore")
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[3]:
 
 
 plt.rcParams["axes.unicode_minus"] = False
@@ -34,7 +31,6 @@ fontpath = "../input/koreanfont/a3.ttf"
 fontprop = font_manager.FontProperties(fname = fontpath)
 
 
-# In[4]:
 
 
 df_train = pd.read_csv("../input/nlp-dataset/labeledTrainData.tsv",
@@ -50,25 +46,21 @@ df_train.shape
 # quoting = 3 : 3은 텍스트의 쌍따옴표를 무시하도록 한다.
 
 
-# In[5]:
 
 
 df_train.head()
 
 
-# In[6]:
 
 
 df_test.shape
 
 
-# In[7]:
 
 
 df_test.head()
 
 
-# In[8]:
 
 
 print("Train Columns: ")  
@@ -80,7 +72,6 @@ print(df_test.columns.values)
 # Test 데이터 셋에 없는 Sentiment를 예측한다.
 
 
-# In[9]:
 
 
 df_train.info()
@@ -88,7 +79,6 @@ df_train.info()
 # null value는 없다.
 
 
-# In[10]:
 
 
 df_train.describe()
@@ -96,7 +86,6 @@ df_train.describe()
 # sentiment의 통계값 확인
 
 
-# In[11]:
 
 
 df_train["sentiment"].value_counts()
@@ -104,7 +93,6 @@ df_train["sentiment"].value_counts()
 # sentiment의 클래스가 딱 절반으로 되어있음을 알 수 있다. (부정, 긍정)
 
 
-# In[12]:
 
 
 df_train["review"][0][:700]
@@ -112,13 +100,11 @@ df_train["review"][0][:700]
 # review 컬럼을 700자 까지만 확인해본다.
 
 
-# In[13]:
 
 
 get_ipython().system('pip install BeautifulSoup4')
 
 
-# In[14]:
 
 
 from bs4 import BeautifulSoup
@@ -132,7 +118,6 @@ exam1.get_text()[:700]
 # <br \>과 같은 html 태그들이 사라진 것을 볼 수있다.
 
 
-# In[15]:
 
 
 import re
@@ -145,7 +130,6 @@ letters_only[:700]
 # output을 보면 특수문자들이 전부 공백으로 대체된 것을 볼 수 있다.
 
 
-# In[16]:
 
 
 lower_case = letters_only.lower()
@@ -159,7 +143,6 @@ words[:10]
 # 437개의 토큰으로 이루어져 있다.
 
 
-# In[17]:
 
 
 import nltk
@@ -169,7 +152,6 @@ stopwords.words("english")[:10]
 # NLTK를 불러오고, stopwords까지 불러와서 확인해본다. 
 
 
-# In[18]:
 
 
 words = [w for w in words if not w in stopwords.words("english")]
@@ -181,7 +163,6 @@ words[:10]
 # 토큰이 437개에서 219개로 줄어들었음을 알 수 있다.
 
 
-# In[19]:
 
 
 # 포터 스태머의 사용 예시
@@ -196,7 +177,6 @@ print("Tje stemmed form of run is: {}".format(stemmer.stem("run")))
 # run의 변형어들은 run으로 어간이 추출된다.
 
 
-# In[20]:
 
 
 # 랭커스터 스태머의 사용 예시
@@ -213,7 +193,6 @@ print("Tje stemmed form of run is: {}".format(lanc_stemmer.stem("run")))
 # run의 변형어들은 마찬가지로 run으로 어간이 추출된다.
 
 
-# In[21]:
 
 
 words[:10]
@@ -222,7 +201,6 @@ words[:10]
 # going, started 등 변형된 단어가 있음을 알 수 있다.
 
 
-# In[22]:
 
 
 from nltk.stem.snowball import SnowballStemmer
@@ -236,7 +214,6 @@ words[:10]
 # going, started등 어간이 잘 추출된 것을 확인할 수 있다. 
 
 
-# In[23]:
 
 
 from nltk.stem import WordNetLemmatizer
@@ -254,7 +231,6 @@ words[:10]
 # stemming한 결과와 마찬가지로 출력된다.
 
 
-# In[24]:
 
 
 # 위에서 배운 내용을 바탕을 전체적으로 수행할 수 있도록 함수를 만들어 준다.
@@ -278,7 +254,6 @@ def review_to_words(raw_review):
 # 7. 공백으로 구분된 문자열로 결합하여 결과 반환
 
 
-# In[25]:
 
 
 clean_review = review_to_words(df_train["review"][0])
@@ -288,14 +263,12 @@ clean_review
 # review 문장들이 토큰화되어 깔끔하게 처리되었음을 확인한다.
 
 
-# In[26]:
 
 
 num_reviews = df_train["review"].size
 num_reviews
 
 
-# In[27]:
 
 
 # 적용시간이 오래걸리는 문제로 인해 multiprocessing을 사용하여 함수를 적용시켜준다.
@@ -323,19 +296,16 @@ def apply_by_multiprocessing(df, func, **kwargs):
     return pd.concat(list(result))
 
 
-# In[28]:
 
 
 get_ipython().run_line_magic('time', 'clean_train_reviews = apply_by_multiprocessing(df_train["review"],review_to_words, workers = 4)')
 
 
-# In[29]:
 
 
 get_ipython().run_line_magic('time', 'clean_test_reviews = apply_by_multiprocessing(df_test["review"],review_to_words, workers = 4)')
 
 
-# In[30]:
 
 
 from wordcloud import WordCloud, STOPWORDS
@@ -352,13 +322,11 @@ def displayWordCloud(data = None, backgroundcolor = "black", width = 800, height
     plt.show()
 
 
-# In[31]:
 
 
 displayWordCloud(" ".join(clean_train_reviews))
 
 
-# In[32]:
 
 
 df_train["num_words"] = clean_train_reviews.apply(lambda x : len(str(x).split()))
@@ -368,7 +336,6 @@ df_train["num_uniq_words"] = clean_train_reviews.apply(lambda x: len(set(str(x).
 # 중복을 제거한 unique 단어 개수 컬럼 생성
 
 
-# In[33]:
 
 
 x = clean_train_reviews[0]
@@ -379,7 +346,6 @@ x[:10]
 # 첫 번째 리뷰의 단어를 세어보면 219개이다. 
 
 
-# In[34]:
 
 
 import seaborn as sns
@@ -398,7 +364,6 @@ ax[1].axvline(df_train["num_uniq_words"].median(), linestyle = "dashed")
 ax[1].set_title("리뷰별 고유 단어 수 분포", fontproperties = fontprop)
 
 
-# In[35]:
 
 
 from sklearn.feature_extraction.text import CountVectorizer
@@ -417,17 +382,14 @@ vectorizer = CountVectorizer(analyzer = "word",
 vectorizer
 
 
-# In[36]:
 
 
 # 속도 개선을 위해 파이프라인을 사용하도록 개선
 
-pipeline = Pipeline([
     ("vect", vectorizer),
 ])
 
 
-# In[37]:
 
 
 get_ipython().run_line_magic('time', 'train_data_features = pipeline.fit_transform(clean_train_reviews)')
@@ -435,7 +397,6 @@ get_ipython().run_line_magic('time', 'train_data_features = pipeline.fit_transfo
 train_data_features
 
 
-# In[38]:
 
 
 train_data_features.shape
@@ -443,7 +404,6 @@ train_data_features.shape
 # 25000의 관측치와 위에서 지정해주었던 20000개의 feature로 이루어져 있음.
 
 
-# In[39]:
 
 
 vocab = vectorizer.get_feature_names()
@@ -453,7 +413,6 @@ vocab[:10]
 # feature의 이름 (단어)를 확인
 
 
-# In[40]:
 
 
 dist = np.sum(train_data_features, axis = 0)
@@ -466,7 +425,6 @@ pd.DataFrame(dist, columns = vocab)
 # 단어를 count해줘서 한번에 확인 
 
 
-# In[41]:
 
 
 pd.DataFrame(train_data_features[:10].toarray(), columns = vocab).head()
@@ -474,7 +432,6 @@ pd.DataFrame(train_data_features[:10].toarray(), columns = vocab).head()
 # 각각의 row가 어떤 단어를 포함하고 있는지 확인하기 위함 
 
 
-# In[42]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -483,26 +440,22 @@ model = RandomForestClassifier(n_estimators = 100, random_state = 42, n_jobs =1)
 model
 
 
-# In[43]:
 
 
 get_ipython().run_line_magic('time', 'model = model.fit(train_data_features, df_train["sentiment"])')
 
 
-# In[44]:
 
 
 from sklearn.model_selection import cross_val_score
 get_ipython().run_line_magic('time', 'score = np.mean(cross_val_score(                                     model, train_data_features,                                     df_train["sentiment"], cv = 10,                                     scoring = "roc_auc"))')
 
 
-# In[45]:
 
 
 clean_test_reviews[0]
 
 
-# In[46]:
 
 
 get_ipython().run_line_magic('time', 'test_data_features = pipeline.transform(clean_test_reviews)')
@@ -511,13 +464,11 @@ test_data_features = test_data_features.toarray()
 # test 데이터도 똑같이 파이프라인을 사용하여 벡터화 시켜준다.
 
 
-# In[47]:
 
 
 test_data_features
 
 
-# In[48]:
 
 
 # 벡터화하며 만든 사전에서 해당 단어가 무엇인지 찾아볼 수 있다.
@@ -525,27 +476,23 @@ test_data_features
 vocab[8], vocab[2558], vocab[2559], vocab[2560]
 
 
-# In[49]:
 
 
 y_pred = model.predict(test_data_features)
 y_pred[:10]
 
 
-# In[50]:
 
 
 sub = pd.DataFrame(data = {"id":df_test["id"], "sentiment" : y_pred})
 sub.head()
 
 
-# In[51]:
 
 
 sub.to_csv("./tutorial_1_LB{:.5f}.csv".format(score), index = False, quoting = 3)
 
 
-# In[52]:
 
 
 sub_sent = sub["sentiment"].value_counts()
@@ -555,7 +502,6 @@ sub_sent
 # submission의 부정과 긍정의 차이를 살펴본다.
 
 
-# In[ ]:
 
 
 

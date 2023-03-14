@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +22,6 @@ import os
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[2]:
 
 
 get_ipython().system('pip install dicom')
@@ -35,13 +33,11 @@ from tqdm.auto import tqdm, trange
 import cv2
 
 
-# In[3]:
 
 
 os.chdir('/kaggle/working/')
 
 
-# In[4]:
 
 
 get_ipython().system('pip3 install -U scikit-image')
@@ -49,13 +45,11 @@ get_ipython().system('pip3 install -U cython ')
 get_ipython().system('pip3 install "git+https://github.com/philferriere/cocoapi.git#egg=pycocotools&subdirectory=PythonAPI"')
 
 
-# In[5]:
 
 
 get_ipython().run_cell_magic('bash', '', 'git clone https://github.com/pytorch/vision.git\ncd vision\ngit checkout v0.3.0\ncp references/detection/utils.py ../\ncp references/detection/transforms.py ../\ncp references/detection/coco_eval.py ../\ncp references/detection/engine.py ../\ncp references/detection/coco_utils.py ../')
 
 
-# In[6]:
 
 
 import torch
@@ -77,7 +71,6 @@ import matplotlib.gridspec as gridspec
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[7]:
 
 
 train_path = '/kaggle/input/rsna-pneumonia-detection-challenge/stage_2_train_images/'
@@ -91,7 +84,6 @@ os.mkdir('/kaggle/working/train_labels')
 os.chdir(path)
 
 
-# In[8]:
 
 
 labels_csv = pd.read_csv(os.path.join(path,'stage_2_train_labels.csv'))
@@ -107,7 +99,6 @@ labels_csv['y_max'] = labels_csv['y']+labels_csv['height']
 labels_csv.head()
 
 
-# In[9]:
 
 
 def parse_one_annot(box_coord, filename):
@@ -158,7 +149,6 @@ class RSNA(torch.utils.data.Dataset):
           return len(self.box_coord['patientId'])
 
 
-# In[10]:
 
 
 def train_tfms():
@@ -182,7 +172,6 @@ def val_tfms():
    return T.Compose(transforms)
 
 
-# In[11]:
 
 
 np.random.seed(42)
@@ -193,7 +182,6 @@ val_df = labels_csv[~msk].reset_index()
 len(train_df), len(val_df)
 
 
-# In[12]:
 
 
 train_ds = RSNA(train_path, train_df, transforms=train_tfms())
@@ -202,19 +190,16 @@ val_ds = RSNA(train_path, val_df, transforms=val_tfms())
 len(train_ds), len(val_ds)#, len(test_ds)
 
 
-# In[13]:
 
 
 train_ds.__getitem__(0)
 
 
-# In[14]:
 
 
 batch_size = 8
 
 
-# In[15]:
 
 
 train_dl = DataLoader(train_ds, batch_size, shuffle=True, 
@@ -223,7 +208,6 @@ val_dl = DataLoader(val_ds, batch_size*2,
                     num_workers=2, pin_memory=True, collate_fn=utils.collate_fn)
 
 
-# In[16]:
 
 
 def draw_bounding_box(img, label_boxes):
@@ -245,7 +229,6 @@ def draw_bounding_box(img, label_boxes):
   return T.ToTensor()(all_imgs)
 
 
-# In[17]:
 
 
 def show_batch(dl):
@@ -266,13 +249,11 @@ def show_batch(dl):
         break
 
 
-# In[18]:
 
 
 show_batch(train_dl)
 
 
-# In[19]:
 
 
 def get_model(num_classes):
@@ -286,7 +267,6 @@ def get_model(num_classes):
    return model
 
 
-# In[537]:
 
 
 def get_default_device():
@@ -319,7 +299,6 @@ class DeviceDataLoader():
         return len(self.dl)
 
 
-# In[538]:
 
 
 device = get_default_device()
@@ -328,7 +307,6 @@ train_dl = DeviceDataLoader(train_dl, device)
 val_dl = DeviceDataLoader(val_dl, device)
 
 
-# In[20]:
 
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -347,7 +325,6 @@ lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
                                                gamma=0.1)
 
 
-# In[ ]:
 
 
 # let's train it for 10 epochs
@@ -361,31 +338,26 @@ for epoch in range(num_epochs):
    evaluate(model, val_dl, device=device)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 def parse_data(df):
@@ -439,13 +411,11 @@ def hw_bb(row): return np.array([row['y'], row['x'], row['height']+row['y'], row
 def bb_hw(a): return np.array([a[1],a[0],a[3]-a[1],a[2]-a[0]])
 
 
-# In[ ]:
 
 
 parsed = parse_data(labels_csv)
 
 
-# In[ ]:
 
 
 def from_dicom_to_png(parsed):
@@ -459,20 +429,17 @@ def from_dicom_to_png(parsed):
                 #sleep(0.01)
 
 
-# In[ ]:
 
 
 from_dicom_to_png(parsed)
 
 
-# In[ ]:
 
 
 parsed_test_data = parse_data_test(list(list(i[:-4] for i in os.listdir('stage_2_test_images'))))
 from_dicom_to_png(parsed_test_data)
 
 
-# In[ ]:
 
 
 def save_img_from_dcm(dcm_dir, img_dir, patient_id):
@@ -531,25 +498,21 @@ def save_yolov3_data_from_rsna(dcm_dir, img_dir, label_dir, annots):
         save_img_from_dcm(dcm_dir, img_dir, patient_id)
 
 
-# In[ ]:
 
 
 save_yolov3_data_from_rsna(train_path, '/kaggle/working/train_pngs', '/kaggle/working/train_labels', labels_csv)
 
 
-# In[ ]:
 
 
 len(os.listdir('/kaggle/working/train_pngs'))
 
 
-# In[ ]:
 
 
 len(os.listdir('/kaggle/working/train_labels'))
 
 
-# In[ ]:
 
 
 

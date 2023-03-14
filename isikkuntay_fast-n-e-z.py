@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import os
@@ -54,13 +52,11 @@ from sklearn.model_selection import train_test_split
 import regex as re
 
 
-# In[3]:
 
 
 nlp = spacy.load('en_core_web_sm')
 
 
-# In[4]:
 
 
 def word_locate(sentence, location): 
@@ -74,7 +70,6 @@ def word_locate(sentence, location):
         count_chars += 1 #for space
 
 
-# In[5]:
 
 
 def split_sent_by_comma(sentence):
@@ -98,7 +93,6 @@ def split_sent_by_comma(sentence):
     return list_of_sub_sent
 
 
-# In[6]:
 
 
 def find_name_between_paran(sentence):
@@ -114,7 +108,6 @@ def find_name_between_paran(sentence):
     return capture
 
 
-# In[7]:
 
 
 def find_name_between_commas(sentence):
@@ -128,19 +121,16 @@ def find_name_between_commas(sentence):
     return list_of_names[0]
 
 
-# In[8]:
 
 
 analyze = "Despite this, it failed to chart in any other country. Bonnie Tyler (then known as Gaynor Hopkins) spent seven years performing in local pubs and clubs around South Wales between 1969 and 1976, first as part of Bobbie Wayne & the Dixies, and then with her own band Imagination."
 
 
-# In[9]:
 
 
 print(find_name_between_paran(analyze))
 
 
-# In[10]:
 
 
 def which_name_first(sentence, name1, name2):
@@ -155,7 +145,6 @@ def which_name_first(sentence, name1, name2):
     return name1
 
 
-# In[11]:
 
 
 def curr_prev_sentence(sentence, loc):
@@ -181,7 +170,6 @@ def curr_prev_sentence(sentence, loc):
     return current_sentence, prev_sentence, trunc_curr_sentence, remainder_curr
 
 
-# In[12]:
 
 
 def remove_last_word(sentence):
@@ -190,7 +178,6 @@ def remove_last_word(sentence):
     return " ".join(new_sent)
 
 
-# In[13]:
 
 
 def check_if_name(word):
@@ -200,7 +187,6 @@ def check_if_name(word):
         return False
 
 
-# In[14]:
 
 
 def remove_first_word(sentence):
@@ -209,7 +195,6 @@ def remove_first_word(sentence):
     return " ".join(new_sent)
 
 
-# In[15]:
 
 
 def find_name_words(sentence):
@@ -220,7 +205,6 @@ def find_name_words(sentence):
     return name
 
 
-# In[16]:
 
 
 def find_subject(sentence): #finds last subject
@@ -234,7 +218,6 @@ def find_subject(sentence): #finds last subject
     return subject
 
 
-# In[17]:
 
 
 def find_first_subject(sentence): #finds first subject
@@ -247,7 +230,6 @@ def find_first_subject(sentence): #finds first subject
     return "none"
 
 
-# In[18]:
 
 
 def find_second_subject(sentence): #finds second subject
@@ -264,7 +246,6 @@ def find_second_subject(sentence): #finds second subject
     return subject
 
 
-# In[19]:
 
 
 def find_dobj(sentence): #find first dobj
@@ -275,7 +256,6 @@ def find_dobj(sentence): #find first dobj
     return "none"
 
 
-# In[20]:
 
 
 def find_last_dobj(sentence): #finds last dobj
@@ -287,7 +267,6 @@ def find_last_dobj(sentence): #finds last dobj
     return dobj
 
 
-# In[21]:
 
 
 def find_last_possessing_noun(sentence): #find last poss
@@ -299,7 +278,6 @@ def find_last_possessing_noun(sentence): #find last poss
     return poss
 
 
-# In[22]:
 
 
 def find_possessing_noun(sentence): #find first poss
@@ -310,7 +288,6 @@ def find_possessing_noun(sentence): #find first poss
     return "none"
 
 
-# In[23]:
 
 
 def find_appos(sentence): #returns first appos ; sometimes Spacy mislabels nsubj as appos
@@ -320,7 +297,6 @@ def find_appos(sentence): #returns first appos ; sometimes Spacy mislabels nsubj
             return token.text
 
 
-# In[24]:
 
 
 with open('../input/gap-training-data/gap-development.tsv') as tsvfile:
@@ -418,7 +394,6 @@ with open('../input/gap-training-data/gap-development.tsv') as tsvfile:
         pronoun_offset_list.append(proffset)
 
 
-# In[25]:
 
 
 results_df = pd.DataFrame({"correct":correct_name_list})
@@ -436,43 +411,36 @@ results_df['pronoun'] = pronoun_list
 results_df['offset'] = pronoun_offset_list
 
 
-# In[26]:
 
 
 results_df.head(250)
 
 
-# In[27]:
 
 
 print(text_list[229])
 
 
-# In[28]:
 
 
 analyze = "Despite this, it failed to chart in any other country. Bonnie Tyler (then known as Gaynor Hopkins) spent seven years performing in local pubs and clubs around South Wales between 1969 and 1976, first as part of Bobbie Wayne & the Dixies, and then with her own band Imagination."
 
 
-# In[29]:
 
 
 current, prev, trunc_curr, remainder = curr_prev_sentence(analyze, 246)
 
 
-# In[30]:
 
 
 print(find_first_subject(current))
 
 
-# In[31]:
 
 
 print(find_last_dobj(analyze))
 
 
-# In[32]:
 
 
 doc = nlp(analyze)
@@ -480,19 +448,16 @@ for token in doc:
     print(token.text, token.dep_, token.head.pos_)
 
 
-# In[33]:
 
 
 print(text_list[900:950])
 
 
-# In[34]:
 
 
 out_df = pd.DataFrame({"ID":test_ids})
 
 
-# In[35]:
 
 
 out_df['A'] = results_A
@@ -500,7 +465,6 @@ out_df['B'] = results_B
 out_df['NEITHER'] = results_N
 
 
-# In[36]:
 
 
 out_df.to_csv("submission.csv", index=False)

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -31,7 +30,6 @@ test = map_atom_info(test, 0)
 test = map_atom_info(test, 1)
 
 
-# In[2]:
 
 
 # Engineer a single feature: distance vector between atoms
@@ -48,19 +46,16 @@ test = map_atom_info(test, 1)
 # takes 7+ minutes per run
 
 
-# In[3]:
 
 
 get_ipython().run_cell_magic('timeit', '', "# This block is SPED UP\n\ntrain_p_0 = train[['x_0', 'y_0', 'z_0']].values\ntrain_p_1 = train[['x_1', 'y_1', 'z_1']].values\ntest_p_0 = test[['x_0', 'y_0', 'z_0']].values\ntest_p_1 = test[['x_1', 'y_1', 'z_1']].values\n\ntr_a_min_b = train_p_0 - train_p_1\nte_a_min_b = test_p_0 - test_p_1\ntrain['dist_speedup'] = np.linalg.norm(tr_a_min_b, axis=1)\ntest['dist_speedup'] = np.linalg.norm(te_a_min_b, axis=1)")
 
 
-# In[4]:
 
 
 get_ipython().run_cell_magic('timeit', '', "# This block is SPED UP a little more\n\ntrain_p_0 = train[['x_0', 'y_0', 'z_0']].values\ntrain_p_1 = train[['x_1', 'y_1', 'z_1']].values\ntest_p_0 = test[['x_0', 'y_0', 'z_0']].values\ntest_p_1 = test[['x_1', 'y_1', 'z_1']].values\n\ntr_a_min_b = train_p_0 - train_p_1\nte_a_min_b = test_p_0 - test_p_1\ntrain['dist_speedup_einsum'] = np.sqrt(np.einsum('ij,ij->i', tr_a_min_b, tr_a_min_b))\ntest['dist_speedup_einsum'] = np.sqrt(np.einsum('ij,ij->i', te_a_min_b, te_a_min_b))")
 
 
-# In[5]:
 
 
 # Install rapids component, cuDF
@@ -75,13 +70,11 @@ import cudf
 gputrain = cudf.DataFrame.from_pandas(train)
 
 
-# In[6]:
 
 
 get_ipython().run_cell_magic('timeit', '', "#This block is STRAIGHT UP ACCELERATED\n\ndef get_dist(df):\n    return np.sqrt((df.x_1-df.x_0)**2 +\n                   (df.y_1-df.y_0)**2 +\n                   (df.z_1-df.z_0)**2)\n\ngputrain['dist_rapids'] = get_dist(gputrain)")
 
 
-# In[7]:
 
 
 print(gputrain[['dist_speedup', 'dist_speedup_einsum','dist_rapids']].head())

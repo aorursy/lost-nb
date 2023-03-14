@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
-pip install pycountry_convert
 
 
-# In[2]:
 
 
 #Libraries to import
@@ -34,14 +31,12 @@ from xgboost import plot_importance, plot_tree
 from sklearn.model_selection import GridSearchCV
 
 
-# In[3]:
 
 
 df_train = pd.read_csv('/kaggle/input/covid19-global-forecasting-week-4/train.csv') 
 df_test = pd.read_csv('/kaggle/input/covid19-global-forecasting-week-4/test.csv')
 
 
-# In[4]:
 
 
 display(df_train.head())
@@ -49,14 +44,12 @@ display(df_train.describe())
 display(df_train.info())
 
 
-# In[5]:
 
 
 df_train['Date'] = pd.to_datetime(df_train['Date'], format = '%Y-%m-%d')
 df_test['Date'] = pd.to_datetime(df_test['Date'], format = '%Y-%m-%d')
 
 
-# In[6]:
 
 
 train_date_min = df_train['Date'].min()
@@ -65,7 +58,6 @@ print('Minimum date from training set: {}'.format(train_date_min))
 print('Maximum date from training set: {}'.format(train_date_max))
 
 
-# In[7]:
 
 
 test_date_min = df_test['Date'].min()
@@ -74,7 +66,6 @@ print('Minimum date from test set: {}'.format(test_date_min))
 print('Maximum date from test set: {}'.format(test_date_max))
 
 
-# In[8]:
 
 
 class country_utils():
@@ -139,7 +130,6 @@ class country_utils():
             return self.get_continent(country)
 
 
-# In[9]:
 
 
 df_tm = df_train.copy()
@@ -155,7 +145,6 @@ fig = px.treemap(df_tm, path=['world', 'continent', 'Country_Region','Province_S
 fig.show()
 
 
-# In[10]:
 
 
 fig = px.treemap(df_tm, path=['world', 'continent', 'Country_Region','Province_State'], values='Fatalities',
@@ -164,7 +153,6 @@ fig = px.treemap(df_tm, path=['world', 'continent', 'Country_Region','Province_S
 fig.show()
 
 
-# In[11]:
 
 
 def add_daily_measures(df):
@@ -179,7 +167,6 @@ def add_daily_measures(df):
     return df
 
 
-# In[12]:
 
 
 df_world = df_train.copy()
@@ -187,7 +174,6 @@ df_world = df_world.groupby('Date',as_index=False)['ConfirmedCases','Fatalities'
 df_world = add_daily_measures(df_world)
 
 
-# In[13]:
 
 
 fig = go.Figure(data=[
@@ -199,7 +185,6 @@ fig.update_layout(barmode='overlay', title='Worldwide daily Case and Death count
 fig.show()
 
 
-# In[14]:
 
 
 df_map = df_train.copy()
@@ -207,20 +192,17 @@ df_map['Date'] = df_map['Date'].astype(str)
 df_map = df_map.groupby(['Date','Country_Region'], as_index=False)['ConfirmedCases','Fatalities'].sum()
 
 
-# In[15]:
 
 
 df_map['iso_alpha'] = df_map.apply(lambda x: obj.fetch_iso3(x['Country_Region']), axis=1)
 
 
-# In[16]:
 
 
 df_map['ln(ConfirmedCases)'] = np.log(df_map.ConfirmedCases + 1)
 df_map['ln(Fatalities)'] = np.log(df_map.Fatalities + 1)
 
 
-# In[17]:
 
 
 px.choropleth(df_map, 
@@ -233,7 +215,6 @@ px.choropleth(df_map,
               title='Total Confirmed Cases growth(Logarithmic Scale)')
 
 
-# In[18]:
 
 
 px.choropleth(df_map, 
@@ -246,7 +227,6 @@ px.choropleth(df_map,
               title = 'Total Deaths growth(Logarithmic Scale)')
 
 
-# In[19]:
 
 
 #Get the top 10 countries
@@ -264,37 +244,31 @@ df_trend['ln(Cases)'] = np.log(df_trend['Cases']+1)# Added 1 to remove error due
 df_trend['ln(Deaths)'] = np.log(df_trend['Deaths']+1)
 
 
-# In[20]:
 
 
 px.line(df_trend, x='Date', y='Cases', color='Country', title='COVID19 Total Cases growth for top 10 worst affected countries')
 
 
-# In[21]:
 
 
 px.line(df_trend, x='Date', y='Deaths', color='Country', title='COVID19 Total Deaths growth for top 10 worst affected countries')
 
 
-# In[22]:
 
 
 px.line(df_trend, x='Date', y='ln(Cases)', color='Country', title='COVID19 Total Cases growth for top 10 worst affected countries(Logarithmic Scale)')
 
 
-# In[23]:
 
 
 px.line(df_trend, x='Date', y='ln(Deaths)', color='Country', title='COVID19 Total Deaths growth for top 10 worst affected countries(Logarithmic Scale)')
 
 
-# In[24]:
 
 
 df_map['Mortality Rate%'] = round((df_map.Fatalities/df_map.ConfirmedCases)*100,2)
 
 
-# In[25]:
 
 
 px.choropleth(df_map, 
@@ -307,14 +281,12 @@ px.choropleth(df_map,
                     title = 'Worldwide Daily Variation of Mortality Rate%')
 
 
-# In[26]:
 
 
 df_trend['Mortality Rate%'] = round((df_trend.Deaths/df_trend.Cases)*100,2)
 px.line(df_trend, x='Date', y='Mortality Rate%', color='Country', title='Variation of Mortality Rate% \n(Top 10 worst affected countries)')
 
 
-# In[27]:
 
 
 # Dictionary to get the state codes from state names for US
@@ -378,7 +350,6 @@ us_state_abbrev = {
 }
 
 
-# In[28]:
 
 
 df_us = df_train[df_train['Country_Region']=='US']
@@ -388,7 +359,6 @@ df_us['ln(ConfirmedCases)'] = np.log(df_us.ConfirmedCases + 1)
 df_us['ln(Fatalities)'] = np.log(df_us.Fatalities + 1)
 
 
-# In[29]:
 
 
 px.choropleth(df_us,
@@ -403,7 +373,6 @@ px.choropleth(df_us,
               title = 'Total Cases growth for USA(Logarithmic Scale)')
 
 
-# In[30]:
 
 
 px.choropleth(df_us,
@@ -418,7 +387,6 @@ px.choropleth(df_us,
               title = 'Total deaths growth for USA(Logarithmic Scale)')
 
 
-# In[31]:
 
 
 df_usa = df_train.query("Country_Region=='US'")
@@ -433,14 +401,12 @@ fig.update_layout(barmode='overlay', title='Daily Case and Death count(USA)')
 fig.show()
 
 
-# In[32]:
 
 
 df_train.Province_State.fillna('NaN', inplace=True)
 df_plot = df_train.groupby(['Date','Country_Region','Province_State'], as_index=False)['ConfirmedCases','Fatalities'].sum()
 
 
-# In[33]:
 
 
 df = df_plot.query("Country_Region=='India'")
@@ -456,7 +422,6 @@ fig.update_layout(barmode='overlay', title='Daily Case and Death count(India)',
 fig.show()
 
 
-# In[34]:
 
 
 df_ita = df_plot.query("Country_Region=='Italy'")
@@ -472,7 +437,6 @@ fig.update_layout(barmode='overlay', title='Daily Case and Death count(Italy)',
 fig.show()
 
 
-# In[35]:
 
 
 df_esp = df_plot.query("Country_Region=='Spain'")
@@ -488,27 +452,23 @@ fig.update_layout(barmode='overlay', title='Daily Case and Death count(Spain)',
 fig.show()
 
 
-# In[36]:
 
 
 df_ch = df_plot.query("Country_Region=='China'")
 px.line(df_ch, x='Date', y='ConfirmedCases', color='Province_State', title='Total Cases growth for China')
 
 
-# In[37]:
 
 
 px.line(df_ch, x='Date', y='Fatalities', color='Province_State', title='Total Deaths growth for China')
 
 
-# In[38]:
 
 
 r = requests.get(url='https://raw.githubusercontent.com/deldersveld/topojson/master/countries/china/china-provinces.json')
 topology = r.json()
 
 
-# In[39]:
 
 
 #Convert topology json into geojson
@@ -597,13 +557,11 @@ for id, tf in enumerate(features):
     fc['features'].append(f) 
 
 
-# In[40]:
 
 
 df_ch = df_ch[df_ch['Date']==train_date_max]
 
 
-# In[41]:
 
 
 fig = px.choropleth(df_ch,
@@ -623,7 +581,6 @@ fig.update_layout(height=600, margin={"r":0,"t":30,"l":0,"b":0})
 fig.show()
 
 
-# In[42]:
 
 
 fig = px.choropleth(df_ch,
@@ -643,7 +600,6 @@ fig.update_layout(height=600, margin={"r":0,"t":30,"l":0,"b":0})
 fig.show()
 
 
-# In[43]:
 
 
 df_ch = df_train.query("Country_Region=='China'")
@@ -658,7 +614,6 @@ fig.update_layout(barmode='overlay', title='Daily Case and Death count(China)')
 fig.show()
 
 
-# In[44]:
 
 
 df_pd = pd.read_csv('/kaggle/input/countries-dataset-2020/Pupulation density by countries.csv') 
@@ -669,7 +624,6 @@ df['iso_code3'] = df.apply(lambda x:obj.fetch_iso3(x['Country_Region']), axis=1)
 df = df.merge(df_pd, how='left', on='iso_code3')
 
 
-# In[45]:
 
 
 def convert(pop):
@@ -683,7 +637,6 @@ df['Density pop./km2'].fillna('0', inplace=True)
 df['Density pop./km2'] = df.apply(lambda x: convert(x['Density pop./km2']),axis=1)
 
 
-# In[46]:
 
 
 q3 = np.percentile(df.ConfirmedCases,75)
@@ -695,32 +648,27 @@ df = df[(df['ConfirmedCases']>low) & (df['ConfirmedCases']>high)]
 df['continent'] = df.apply(lambda x: obj.fetch_continent(x['Country_Region']), axis=1)
 
 
-# In[47]:
 
 
 px.scatter(df,x='ConfirmedCases',y='Density pop./km2', size = 'Population', color='continent',hover_data=['Country_Region'], title='Variation of Population density wrt Confirmed Cases')
 
 
-# In[48]:
 
 
 px.scatter(df,x='Fatalities',y='Density pop./km2', size = 'Population', color='continent',hover_data=['Country_Region'],title='Variation of Population density wrt Fatalities')
 
 
-# In[49]:
 
 
 df.corr()
 
 
-# In[50]:
 
 
 #Add continent column to training set
 df_train['Continent'] = df_train.apply(lambda X: obj.fetch_continent(X['Country_Region']), axis=1)
 
 
-# In[51]:
 
 
 def categoricalToInteger(df):
@@ -732,7 +680,6 @@ def categoricalToInteger(df):
     return df
 
 
-# In[52]:
 
 
 def create_features(df):
@@ -745,7 +692,6 @@ def create_features(df):
     return df
 
 
-# In[53]:
 
 
 def train_dev_split(df, days):
@@ -754,14 +700,12 @@ def train_dev_split(df, days):
     return df[df['Date'] <= date], df[df['Date'] > date]
 
 
-# In[54]:
 
 
 def avoid_data_leakage(df, date=test_date_min):
     return df[df['Date']<date]
 
 
-# In[55]:
 
 
 df_train = avoid_data_leakage(df_train)
@@ -769,13 +713,11 @@ df_train = categoricalToInteger(df_train)
 df_train = create_features(df_train)
 
 
-# In[56]:
 
 
 df_train, df_dev = train_dev_split(df_train,0)
 
 
-# In[57]:
 
 
 columns = ['day','month','dayofweek','dayofyear','quarter','weekofyear','Province_State', 'Country_Region','Continent','ConfirmedCases','Fatalities']
@@ -783,7 +725,6 @@ df_train = df_train[columns]
 df_dev = df_dev[columns]
 
 
-# In[58]:
 
 
 #Apply the same transformation to test set that were applied to the training set
@@ -794,7 +735,6 @@ df_test = create_features(df_test)
 columns = ['day','month','dayofweek','dayofyear','quarter','weekofyear','Province_State', 'Country_Region','Continent']
 
 
-# In[59]:
 
 
 submission = []
@@ -831,19 +771,16 @@ for country in df_train.Country_Region.unique():
             submission.append(d)
 
 
-# In[60]:
 
 
 df_submit = pd.DataFrame(submission)
 
 
-# In[61]:
 
 
 df_submit.to_csv(r'submission.csv', index=False)
 
 
-# In[62]:
 
 
 df_forcast = pd.concat([df_test,df_submit.iloc[:,1:]], axis=1)
@@ -852,13 +789,11 @@ df_world_f = df_world_f.groupby('Date',as_index=False)['ConfirmedCases','Fatalit
 df_world_f = add_daily_measures(df_world_f)
 
 
-# In[63]:
 
 
 df_world = avoid_data_leakage(df_world)
 
 
-# In[64]:
 
 
 fig = go.Figure(data=[
@@ -870,7 +805,6 @@ fig.update_layout(barmode='group', title='Worldwide Confirmed Cases + Forcasted 
 fig.show()
 
 
-# In[65]:
 
 
 fig = go.Figure(data=[

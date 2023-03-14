@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
 
 
 # Import necessary modules and set global constants and variables. 
@@ -51,7 +50,6 @@ print('TRAIN_DIR = {}'.format(TRAIN_DIR))
 print('TEST_DIR = {}'.format(TEST_DIR))
 
 
-# In[3]:
 
 
 # Collection of methods for data operations. Implemented are functions to read  
@@ -151,7 +149,6 @@ def load_raw_data(image_size=(IMG_HEIGHT, IMG_WIDTH)):
     
 
 
-# In[4]:
 
 
 # Basic properties of images/masks. 
@@ -164,7 +161,6 @@ print('test_df:')
 print(test_df.describe())
 
 
-# In[5]:
 
 
 # Counting unique image shapes.
@@ -172,7 +168,6 @@ df = pd.DataFrame([[x] for x in zip(train_df['img_height'], train_df['img_width'
 df[0].value_counts()
 
 
-# In[6]:
 
 
 # Overview of train images/masks. There is a lot of variation concerning
@@ -188,7 +183,6 @@ for i in range(4):
         axs[i,j*2+1].set_title('{}. mask'.format(n))       
 
 
-# In[7]:
 
 
 # Read images/masks from files and resize them. Each image and mask 
@@ -196,7 +190,6 @@ for i in range(4):
 x_train, y_train, x_test = load_raw_data()
 
 
-# In[8]:
 
 
 # Study the pixel intensity. On average the red, green and blue channels have similar
@@ -217,7 +210,6 @@ color_df['images'] = ['train']*len(x_train) + ['test']*len(x_test)
 sns.pairplot(color_df, hue = 'images');
 
 
-# In[9]:
 
 
 # Collection of methods for basic data manipulation like normalizing, inverting, 
@@ -308,7 +300,6 @@ def preprocess_raw_data(x_train, y_train, x_test, grayscale=False, invert=False)
     
 
 
-# In[10]:
 
 
 # Normalize all images and masks. There is the possibility to transform images 
@@ -317,7 +308,6 @@ def preprocess_raw_data(x_train, y_train, x_test, grayscale=False, invert=False)
 x_train, y_train, x_test = preprocess_raw_data(x_train, y_train, x_test, invert=True)
 
 
-# In[11]:
 
 
 # Analyze nuclei sizes.
@@ -341,7 +331,6 @@ print(nuclei_sizes_df.describe())
 nuclei_sizes_df.sort_values(by='nucleous_size', ascending=True).head(10)
 
 
-# In[12]:
 
 
 color_df = img_intensity_pairplot(np.concatenate([x_train, x_test]))
@@ -349,7 +338,6 @@ color_df['images'] = ['train']*len(x_train) + ['test']*len(x_test)
 sns.pairplot(color_df, hue = 'images');
 
 
-# In[13]:
 
 
 # Check the image transformation procedure (resizing, normalizing, inverting) 
@@ -371,7 +359,6 @@ n = 617 # np.random.randint(0, len(x_train))
 img_comparison_plot(n)
 
 
-# In[14]:
 
 
 # Generate new images/masks via transformations applied on the original 
@@ -394,7 +381,6 @@ n = 166 # np.random.randint(len(x_train))
 plot_generated_image_mask(n)
 
 
-# In[15]:
 
 
 """ Collection of methods to compute the score.
@@ -624,7 +610,6 @@ def plot_score_summary(y_true, y_pred):
     axs[1,2].imshow(img, cmap='gray');
 
 
-# In[16]:
 
 
 # Check the score metric for one sample. The predicted mask is simulated
@@ -642,7 +627,6 @@ pred_mask = np.pad(pred_mask, ((0, offset), (0, offset)), mode="constant")
 plot_score_summary(true_mask, pred_mask) 
 
 
-# In[17]:
 
 
 # Study how many objects in the masks can be identified. This is a limiting factor
@@ -664,7 +648,6 @@ sum_df = pd.DataFrame(summary, columns=(['true_objects', 'identified_objects', '
 sum_df.describe()
 
 
-# In[18]:
 
 
 class NeuralNetwork():
@@ -1251,7 +1234,6 @@ class NeuralNetwork():
  
 
 
-# In[19]:
 
 
 # In case you want to reload and preprocess the raw data.
@@ -1260,7 +1242,6 @@ if False:
     x_train, y_train, x_test = preprocess_raw_data(x_train, y_train, x_test, grayscale=False)
 
 
-# In[20]:
 
 
 # Create and start training of a new neural network, or continue training of
@@ -1329,7 +1310,6 @@ for i,(train_index, valid_index) in enumerate(kfold.split(x_train)):
 print('Total running time: ', datetime.datetime.now() - start)
 
 
-# In[21]:
 
 
 # Start TensorBoard visualization. All summaries are written into the
@@ -1338,7 +1318,6 @@ if False:
     get_ipython().system('tensorboard --logdir=./logs')
 
 
-# In[22]:
 
 
 # Show intermediate losses and scores during the training session.
@@ -1372,7 +1351,6 @@ plt.ylabel('score')
 plt.xlabel('steps');
 
 
-# In[23]:
 
 
 # Split training and validation data in the same way 
@@ -1388,7 +1366,6 @@ if True:
             y_vld = y_train[valid_index]
 
 
-# In[24]:
 
 
 # Summary of scores for training and validations sets. Note that the score is
@@ -1439,7 +1416,6 @@ if True:
 sess.close()
 
 
-# In[25]:
 
 
 # Tune minimal object size for prediction 
@@ -1462,7 +1438,6 @@ if True:
     min_object_size = tmp
 
 
-# In[26]:
 
 
 # Check one sample prediction in more detail.
@@ -1488,7 +1463,6 @@ axs[2].set_title('{}.) predicted mask'.format(n));
 plot_score_summary(y_true, y_pred)
 
 
-# In[27]:
 
 
 # Collection of methods for run length encoding. 
@@ -1535,7 +1509,6 @@ def rle_to_mask(rle, img_shape):
         
 
 
-# In[28]:
 
 
 # Load neural network, make prediction for test masks, resize predicted
@@ -1583,7 +1556,6 @@ print('test_pred_ids.shape = {}'.format(np.array(test_pred_ids).shape))
 print('test_pred_rle.shape = {}'.format(np.array(test_pred_rle).shape))
 
 
-# In[29]:
 
 
 # Inspect a test prediction and check run length encoding.
@@ -1610,7 +1582,6 @@ axs[1,2].imshow(mask_rec[:,:], cm.gray);
 axs[1,2].set_title('{}.) final mask recovered from run length encoding'.format(n));
 
 
-# In[30]:
 
 
 # Create submission file

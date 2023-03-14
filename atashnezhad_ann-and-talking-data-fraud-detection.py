@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -29,7 +28,6 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 before = time.time()
 
 
-# In[2]:
 
 
 def null_table(df):
@@ -206,7 +204,6 @@ def generate_ip_count(df_train, df_test):
     return ip_count
 
 
-# In[3]:
 
 
 Start_time = time.time()
@@ -240,26 +237,22 @@ colmn_names = ['attributed_time','click_time', 'ip']; df_train = Drop_cols(df_tr
 print('Drop colum and normalize, training data, Done!'); check_memory()
 
 
-# In[4]:
 
 
 df_train
 
 
-# In[5]:
 
 
 '''xlist = ['app', 'device', 'os', 'channel',          'is_attributed', 'day', 'hour',          'minute', 'second', 'clicks_by_ip']
 Plot_Hist_columns(df_train, xlist)'''
 
 
-# In[6]:
 
 
 df_train.head(2)
 
 
-# In[7]:
 
 
 df_columns_name = []
@@ -271,7 +264,6 @@ df_columns_name.remove('is_attributed')
 print(df_columns_name)
 
 
-# In[8]:
 
 
 '''for col1 in df_columns_name:
@@ -280,13 +272,11 @@ print(df_columns_name)
         df_train[name] = df_train[col1]*df_train[col]'''
 
 
-# In[9]:
 
 
 df_train.head(2)
 
 
-# In[10]:
 
 
 '''for col2 in df_columns_name:
@@ -296,13 +286,11 @@ df_train.head(2)
             df_train[name] = df_train[col2]*df_train[col1]*df_train[col]'''
 
 
-# In[11]:
 
 
 df_train.head(2)
 
 
-# In[12]:
 
 
 #Devide training data, X-Y
@@ -313,7 +301,6 @@ print('Cleaning before training'); del df_train; gc.collect(); check_memory()
 print('Begin training...'); check_memory()
 
 
-# In[13]:
 
 
 from keras.models import Sequential
@@ -324,7 +311,6 @@ from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
 
 
-# In[14]:
 
 
 X_training.to_numpy(); y_training.to_numpy(); 
@@ -336,13 +322,11 @@ X_valid = preprocessing.scale(X_valid)
 y_valid = to_categorical(y_valid)
 
 
-# In[15]:
 
 
 X_training
 
 
-# In[16]:
 
 
 #model
@@ -353,7 +337,6 @@ model.add(Dense(2, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 
-# In[17]:
 
 
 '''#model
@@ -368,27 +351,23 @@ model.add(Dense(2, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])'''
 
 
-# In[18]:
 
 
 model.summary()
 
 
-# In[19]:
 
 
 #fitting the model
 history = model.fit(X_training, y_training, validation_data=(X_valid, y_valid), epochs=70, batch_size=1000000)
 
 
-# In[20]:
 
 
 # list all data in history
 #print(history.history.keys())
 
 
-# In[21]:
 
 
 # summarize history for accuracy
@@ -401,7 +380,6 @@ plt.legend(['train', 'test'], loc='upper left')
 plt.show()
 
 
-# In[22]:
 
 
 # summarize history for loss
@@ -414,7 +392,6 @@ plt.legend(['train', 'test'], loc='upper left')
 plt.show()
 
 
-# In[23]:
 
 
 #Read Test data
@@ -479,21 +456,18 @@ print('Drop colum and normalize, test data, Done!'); check_memory()
 print('Cleaning before prediction'); del X, Y, X_training, y_training, X_valid, y_valid, ip_count; gc.collect(); check_memory()
 
 
-# In[24]:
 
 
 #df_test.to_numpy()
 y_pred = model.predict_classes(df_test)
 
 
-# In[25]:
 
 
 y_pred = pd.DataFrame(y_pred)
 y_pred.shape
 
 
-# In[26]:
 
 
 data_to_submit = pd.DataFrame()
@@ -502,19 +476,16 @@ data_to_submit['is_attributed'] = y_pred
 pyplot.hist(data_to_submit['is_attributed'], log = True)
 
 
-# In[27]:
 
 
 data_to_submit
 
 
-# In[28]:
 
 
 data_to_submit.to_csv('Amin_csv_to_submit.csv', index = False)
 
 
-# In[29]:
 
 
 After = time.time()

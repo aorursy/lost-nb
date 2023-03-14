@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -16,7 +15,6 @@ from matplotlib import pyplot as plt
 from plotly import tools
 
 
-# In[ ]:
 
 
 data_df = pd.read_csv("../input/train.csv")
@@ -30,13 +28,11 @@ print_numbers(data_df, 'Training')
 print_numbers(test_df, 'Testing')
 
 
-# In[ ]:
 
 
 data_df.head()
 
 
-# In[ ]:
 
 
 topnan_train = data_df.isnull().sum().sort_values(0, ascending = False)/(data_df.shape[0])*100
@@ -44,7 +40,6 @@ print("Field Name   %NaN")
 print(topnan_train.head())
 
 
-# In[ ]:
 
 
 def remove_strings(val):
@@ -57,7 +52,6 @@ def remove_strings(val):
         return 0
 
 
-# In[ ]:
 
 
 # Making data numerical for easier computations
@@ -67,7 +61,6 @@ data_df['edjefe'] = data_df['edjefe'].apply(remove_strings)
 data_df['edjefa'] = data_df['edjefa'].apply(remove_strings)
 
 
-# In[ ]:
 
 
 # Deleting columns with very less data
@@ -84,7 +77,6 @@ data_df = data_df.T.drop_duplicates().T
 data_df.fillna(data_df.mean(), inplace=True) 
 
 
-# In[ ]:
 
 
 # Dictionary showing way(s) to aggregate each type of column
@@ -236,7 +228,6 @@ for key in pop_list:
     aggregation_dict.pop(key)
 
 
-# In[ ]:
 
 
 # Cross checking assumption of same data across household (where we are taking mean).
@@ -252,7 +243,6 @@ for column_name, agg in aggregation_dict.items():
 # All the households were expected to have different values for all the ones printed below.
 
 
-# In[ ]:
 
 
 family_data_df = data_df.groupby('idhogar', as_index=True).agg(aggregation_dict).reset_index()
@@ -261,7 +251,6 @@ family_data_df.columns = ["_".join(x) for x in family_data_df.columns.ravel()]
 family_data_df.head()
 
 
-# In[ ]:
 
 
 target_sizes = data_df.groupby('Target').size()
@@ -288,13 +277,11 @@ fig = {
 iplot(fig, filename='donut')
 
 
-# In[ ]:
 
 
 target_sizes.values
 
 
-# In[ ]:
 
 
 grouped_houses_data = data_df.groupby('idhogar', as_index=False)
@@ -381,7 +368,6 @@ fig = {
 iplot(fig)
 
 
-# In[ ]:
 
 
 fig = tools.make_subplots(rows=2, cols=2, print_grid=False, subplot_titles=['Bedrooms','Rooms', 'Total household Members', '# Persons Per Room'])
@@ -407,13 +393,11 @@ fig['layout'].update(height=900, title="Household Members/ rooms", barmode="stac
 iplot(fig)
 
 
-# In[ ]:
 
 
 grouped_houses_data.apply(np.mean)
 
 
-# In[ ]:
 
 
 region_fields = ['lugar1', 'lugar2', 'lugar3', 'lugar4', 'lugar5', 'lugar6']
@@ -435,7 +419,6 @@ fig = {
 iplot(fig)
 
 
-# In[ ]:
 
 
 fig = {
@@ -455,13 +438,11 @@ fig = {
 iplot(fig)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

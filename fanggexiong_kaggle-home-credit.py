@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -24,7 +23,6 @@ print('Training data shape: ', app_train.shape)
 app_train.head()
 
 
-# In[2]:
 
 
 app_test = pd.read_csv('../input/home-credit-default-risk/application_test.csv')
@@ -32,19 +30,16 @@ print('Testing data shape: ', app_test.shape)
 app_test.head()
 
 
-# In[3]:
 
 
 app_train['TARGET'].value_counts()
 
 
-# In[4]:
 
 
 app_train['TARGET'].astype(int).plot.hist();
 
 
-# In[5]:
 
 
 def missing_values_table(df):
@@ -80,19 +75,16 @@ missing_values.head(20)
     
 
 
-# In[6]:
 
 
 app_train.dtypes.value_counts()
 
 
-# In[7]:
 
 
 app_train.select_dtypes('object').apply(pd.Series.nunique, axis = 0)
 
 
-# In[8]:
 
 
 #label encoding
@@ -110,7 +102,6 @@ for col in app_train:
 print('%d columns were label encoded.' % le_count)
 
 
-# In[9]:
 
 
 app_train = pd.get_dummies(app_train)
@@ -120,7 +111,6 @@ print('Training Features shape: ', app_train.shape)
 print('Testing Feature shape: ', app_test.shape)
 
 
-# In[10]:
 
 
 train_labels = app_train['TARGET']
@@ -134,26 +124,22 @@ print('Training Features shape: ', app_train.shape)
 print('Testing Features shape: ', app_test.shape)
 
 
-# In[11]:
 
 
 (app_train['DAYS_BIRTH'] / -365).describe()
 
 
-# In[12]:
 
 
 app_train['DAYS_EMPLOYED'].describe()
 
 
-# In[13]:
 
 
 app_train['DAYS_EMPLOYED'].plot.hist(title = 'Days Employment Histogram');
 plt.xlabel('Days Employment');
 
 
-# In[14]:
 
 
 anom = app_train[app_train['DAYS_EMPLOYED'] == 365243]
@@ -167,7 +153,6 @@ print('There are %d anomalous days of employment'
       % len(anom))
 
 
-# In[15]:
 
 
 app_train['DAYS_EMPLOYED_ANOM'] = app_train["DAYS_EMPLOYED"] == 365243
@@ -178,7 +163,6 @@ app_train['DAYS_EMPLOYED'].plot.hist(title = 'Days Employment Histogram');
 plt.xlabel('Days Employment');
 
 
-# In[16]:
 
 
 app_test['DAYS_EMPLOYED_ANOM'] = app_test["DAYS_EMPLOYED"] == 365243
@@ -187,7 +171,6 @@ app_test["DAYS_EMPLOYED"].replace({365243:np.nan}, inplace = True)
 print('There are %d anomalies in the test data out of %d entries' % (app_test["DAYS_EMPLOYED_ANOM"].sum(), len(app_test)))
 
 
-# In[17]:
 
 
 correlations = app_train.corr()['TARGET'].sort_values()
@@ -196,14 +179,12 @@ print('Most Positive Correlations:\n', correlations.tail(15))
 print('\nMost Negative Correlations:\n', correlations.head(15))
 
 
-# In[18]:
 
 
 app_train['DAYS_BIRTH'] = abs(app_train['DAYS_BIRTH'])
 app_train['DAYS_BIRTH'].corr(app_train['TARGET'])
 
 
-# In[19]:
 
 
 plt.style.use('fivethirtyeight')
@@ -212,7 +193,6 @@ plt.hist(app_train['DAYS_BIRTH'] / 365, edgecolor = 'k', bins = 25)
 plt.title('Age of Client'); plt.xlabel('Age(years)'); plt.ylabel('Count');
 
 
-# In[20]:
 
 
 plt.figure(figsize = (10, 8))
@@ -227,7 +207,6 @@ plt.xlabel('Age (years)'); plt.ylabel('Density');
 plt.title('Distribution of Ages');
 
 
-# In[21]:
 
 
 age_data = app_train[['TARGET', 'DAYS_BIRTH']]
@@ -238,14 +217,12 @@ age_data['YEARS_BINNED'] = pd.cut(age_data['YEARS_BIRTH'], bins = np.linspace(20
 age_data.head(10)
 
 
-# In[22]:
 
 
 age_groups  = age_data.groupby('YEARS_BINNED').mean()
 age_groups
 
 
-# In[23]:
 
 
 plt.figure(figsize = (8, 8))
@@ -257,7 +234,6 @@ plt.xticks(rotation = 75); plt.xlabel('Age Group (years)'); plt.ylabel('Failure 
 plt.title('Failure to Repay by Age Group');
 
 
-# In[24]:
 
 
 ext_data = app_train[['TARGET', 'EXT_SOURCE_1', 'EXT_SOURCE_2', 'EXT_SOURCE_3', 'DAYS_BIRTH']]
@@ -265,7 +241,6 @@ ext_data_corrs = ext_data.corr()
 ext_data_corrs
 
 
-# In[25]:
 
 
 plt.figure(figsize = (10, 8))
@@ -273,7 +248,6 @@ sns.heatmap(ext_data_corrs, cmap = plt.cm.RdYlBu_r, vmin = -0.25, annot = True, 
 plt.title('Correlation Heatmap');
 
 
-# In[26]:
 
 
 plt.figure(figsize = (10, 12))
@@ -293,7 +267,6 @@ for i, source in enumerate(['EXT_SOURCE_1', 'EXT_SOURCE_2', 'EXT_SOURCE_3']):
 plt.tight_layout(h_pad = 2.5)
 
 
-# In[27]:
 
 
 plot_data = ext_data.drop(columns = ['DAYS_BIRTH']).copy()
@@ -329,7 +302,6 @@ grid.map_lower(sns.kdeplot, cmap = plt.cm.OrRd_r);
 plt.suptitle('Ext Source and Age Features Pairs Plot', size = 32, y = 1.05);
 
 
-# In[28]:
 
 
 poly_features = app_train[['EXT_SOURCE_1', 'EXT_SOURCE_2', 'EXT_SOURCE_3', 'DAYS_BIRTH', 'TARGET']]
@@ -356,13 +328,11 @@ poly_features_test = poly_transformer.transform(poly_features_test)
 print('Polynomial Features shape: ', poly_features.shape)
 
 
-# In[29]:
 
 
 poly_transformer.get_feature_names(input_features = ['EXT_SOURCE_1', 'EXT_SOURCE_2', 'EXT_SOURCE_3', 'DAYS_BIRTH'])[:15]
 
 
-# In[30]:
 
 
 poly_features = pd.DataFrame(poly_features, 
@@ -377,7 +347,6 @@ print(poly_corrs.head(10))
 print(poly_corrs.tail(5))
 
 
-# In[31]:
 
 
 poly_features_test = pd.DataFrame(poly_features_test, 
@@ -395,7 +364,6 @@ print('Training data with polynomial features shape: ', app_train_poly.shape)
 print('Testing data with polynomial features shape:  ', app_test_poly.shape)
 
 
-# In[32]:
 
 
 app_train_domain = app_train.copy()
@@ -412,7 +380,6 @@ app_test_domain['CREDIT_TERM'] = app_test_domain['AMT_ANNUITY'] / app_test_domai
 app_test_domain['DAYS_EMPLOYED_PERCENT'] = app_test_domain['DAYS_EMPLOYED'] / app_test_domain['DAYS_BIRTH']
 
 
-# In[33]:
 
 
 plt.figure(figsize = (12, 20))
@@ -429,7 +396,6 @@ for i, feature in enumerate(['CREDIT_INCOME_PERCENT', 'ANNUITY_INCOME_PERCENT', 
 plt.tight_layout(h_pad = 2.5)
 
 
-# In[34]:
 
 
 from sklearn.impute import SimpleImputer
@@ -461,7 +427,6 @@ print('Training data shape: ', train.shape)
 print('Testing data shape: ', test.shape)
 
 
-# In[35]:
 
 
 from sklearn.linear_model import LogisticRegression
@@ -473,7 +438,6 @@ log_reg = LogisticRegression(C = 0.0001)
 log_reg.fit(train, train_labels)
 
 
-# In[36]:
 
 
 log_reg_pred = log_reg.predict_proba(test)[:, 1]
@@ -484,13 +448,11 @@ submit['TARGET'] = log_reg_pred
 submit.head()
 
 
-# In[37]:
 
 
 submit.to_csv('log_reg_baseline.csv', index = False)
 
 
-# In[38]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -498,7 +460,6 @@ from sklearn.ensemble import RandomForestClassifier
 random_forest = RandomForestClassifier(n_estimators = 100, random_state = 50, verbose = 1, n_jobs = -1)
 
 
-# In[39]:
 
 
 # Train on the training data
@@ -512,7 +473,6 @@ feature_importances = pd.DataFrame({'feature': features, 'importance': feature_i
 predictions = random_forest.predict_proba(test)[:, 1]
 
 
-# In[40]:
 
 
 submit = app_test[['SK_ID_CURR']]
@@ -521,7 +481,6 @@ submit['TARGET'] = predictions
 submit.to_csv('random_forest_baseline_domain.csv', index = False)
 
 
-# In[41]:
 
 
 def plot_feature_importances(df):
@@ -560,7 +519,6 @@ def plot_feature_importances(df):
     return df
 
 
-# In[42]:
 
 
 feature_importances_sorted = plot_feature_importances(feature_importances)

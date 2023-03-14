@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -13,7 +12,6 @@ plt.style.use('seaborn')
 import seaborn as sns
 
 
-# In[2]:
 
 
 test_labels = pd.read_csv('../input/jigsaw-toxic-comment-classification-challenge/test_labels.csv')
@@ -21,7 +19,6 @@ print(test_labels.shape)
 test_labels.head(2)
 
 
-# In[3]:
 
 
 test_labels = test_labels[(test_labels[['toxic','severe_toxic', 'obscene', 'threat', 
@@ -30,7 +27,6 @@ print(test_labels.shape)
 test_labels.head(2)
 
 
-# In[4]:
 
 
 df_test = pd.read_csv('../input/jigsaw-toxic-comment-classification-challenge/test.csv')
@@ -38,7 +34,6 @@ print(df_test.shape)
 df_test.head(2)
 
 
-# In[5]:
 
 
 # merge with an inner join
@@ -47,60 +42,51 @@ print(test.shape)
 test.head(2)
 
 
-# In[6]:
 
 
 train = pd.read_csv('../input/jigsaw-toxic-comment-classification-challenge/train.csv')
 train.head(2)
 
 
-# In[7]:
 
 
 # check the number of records
 print('The dataset contains', train.shape[0], 'records and', train.shape[1], 'columns.')
 
 
-# In[8]:
 
 
 # check that there are no missing values in either training set
 print('The dataset has', train.isna().sum().sum(), 'missing values.')
 
 
-# In[9]:
 
 
 # check if there are any duplicates
 print('The dataset has', train.duplicated().sum(), 'duplicates.')
 
 
-# In[10]:
 
 
 train['comment_text'][4]
 
 
-# In[11]:
 
 
 train['comment_text'][13]
 
 
-# In[12]:
 
 
 train['comment_text'][1392]
 
 
-# In[13]:
 
 
 # creating a list of column names
 columns = ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
 
 
-# In[14]:
 
 
 # to_frame() converts series to DataFrame
@@ -108,13 +94,11 @@ frequency = train[columns].sum().to_frame().rename(columns={0: 'count'}).sort_va
 frequency.plot.barh(y='count', title='Count of Comments', figsize=(8, 5));
 
 
-# In[15]:
 
 
 train.groupby(columns).size().sort_values(ascending=False).reset_index()                      .rename(columns={0: 'count'}).head(15)
 
 
-# In[16]:
 
 
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -122,7 +106,6 @@ fig.suptitle('Correlation Matrix')
 sns.heatmap(train[columns].corr(), annot=True, cmap="YlGnBu", linewidths=.5, ax=ax);
 
 
-# In[17]:
 
 
 from matplotlib_venn import venn2
@@ -131,7 +114,6 @@ from matplotlib_venn import venn3_circles
 from matplotlib_venn import venn2_circles
 
 
-# In[18]:
 
 
 # build combinations
@@ -161,7 +143,6 @@ vc[1].set_color('skyblue')
 plt.show();
 
 
-# In[19]:
 
 
 # build combinations
@@ -183,7 +164,6 @@ c[1].set_color('skyblue')
 plt.show();
 
 
-# In[20]:
 
 
 # import necessary libraries
@@ -197,7 +177,6 @@ from nltk.corpus import stopwords
 stop = stopwords.words('english')
 
 
-# In[21]:
 
 
 # define an empty dictionary
@@ -209,7 +188,6 @@ def clean_text(text):
     return ' '.join([word for word in text.split() if word not in (stop)])
 
 
-# In[22]:
 
 
 # iterating through all columns in the dataset...
@@ -223,7 +201,6 @@ for col in columns:
     word_counter[col] = pd.DataFrame.from_dict(text, orient='index')                                        .rename(columns={0: 'count'})                                        .sort_values('count', ascending=False)
 
 
-# In[23]:
 
 
 # iterating through new df word_counter and creating a WordCloud for each column
@@ -239,7 +216,6 @@ for col in word_counter:
     plt.show()
 
 
-# In[24]:
 
 
 # importing libraries
@@ -248,7 +224,6 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.preprocessing import text, sequence
 
 
-# In[25]:
 
 
 X_train = train["comment_text"].values
@@ -258,7 +233,6 @@ y_train = train[["toxic", "severe_toxic", "obscene", "threat", "insult", "identi
 y_test  = test[["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]].values
 
 
-# In[26]:
 
 
 # tokenizing the data
@@ -277,7 +251,6 @@ print('X_train shape:', X_train.shape)
 print('X_test shape: ', X_test.shape)
 
 
-# In[27]:
 
 
 from keras import initializers, regularizers, constraints, optimizers, layers
@@ -287,7 +260,6 @@ from keras.layers import Conv1D, Bidirectional, GlobalMaxPool1D, MaxPooling1D, B
 from keras.optimizers import Adam
 
 
-# In[28]:
 
 
 # number of unique words we want to use (or: number of rows in incoming embedding vector)
@@ -300,7 +272,6 @@ max_len = 200
 embedding_dims = 128
 
 
-# In[29]:
 
 
 # instantiate NN model
@@ -325,7 +296,6 @@ base_model.add(Dropout(0.3))
 base_model.add(Dense(6, activation='sigmoid'))
 
 
-# In[30]:
 
 
 base_model.compile(loss='binary_crossentropy',
@@ -335,14 +305,12 @@ base_model.compile(loss='binary_crossentropy',
 base_model.summary()
 
 
-# In[31]:
 
 
 base_hist = base_model.fit(X_train, y_train, batch_size=32, 
                            epochs=3, validation_split=0.1)
 
 
-# In[32]:
 
 
 # evaluate the algorithm on the test dataset
@@ -351,7 +319,6 @@ print('Test Loss:    ', base_test_loss)
 print('Test Accuracy:', base_test_auc)
 
 
-# In[33]:
 
 
 # instantiate CNN model
@@ -384,7 +351,6 @@ cnn_model.add(Dense(50, activation='relu'))
 cnn_model.add(Dense(6, activation='sigmoid'))
 
 
-# In[34]:
 
 
 cnn_model.compile(loss='binary_crossentropy',
@@ -394,14 +360,12 @@ cnn_model.compile(loss='binary_crossentropy',
 cnn_model.summary()
 
 
-# In[35]:
 
 
 cnn_hist = cnn_model.fit(X_train, y_train, batch_size=32, 
                          epochs=3, validation_split=0.1)
 
 
-# In[36]:
 
 
 cnn_test_loss, cnn_test_auc = cnn_model.evaluate(X_test, y_test, batch_size=32)
@@ -409,7 +373,6 @@ print('Test Loss:    ', cnn_test_loss)
 print('Test Accuracy:', cnn_test_auc)
 
 
-# In[37]:
 
 
 # instantiate RNN model
@@ -441,7 +404,6 @@ rnn_model.add(Dense(50, activation='relu'))
 rnn_model.add(Dense(6, activation='sigmoid'))
 
 
-# In[38]:
 
 
 rnn_model.compile(loss='binary_crossentropy',
@@ -451,14 +413,12 @@ rnn_model.compile(loss='binary_crossentropy',
 rnn_model.summary()
 
 
-# In[39]:
 
 
 rnn_hist = rnn_model.fit(X_train, y_train, batch_size=32, 
                           epochs=3, validation_split=0.1)
 
 
-# In[40]:
 
 
 rnn_test_loss, rnn_test_auc = rnn_model.evaluate(X_test, y_test, batch_size=32)
@@ -466,7 +426,6 @@ print('Test Loss:    ', rnn_test_loss)
 print('Test Accuracy:', rnn_test_auc)
 
 
-# In[41]:
 
 
 # load the glove840B embedding
@@ -485,7 +444,6 @@ f.close()
 print('Loaded %s word vectors.' % len(embeddings_index))
 
 
-# In[42]:
 
 
 # create a weight matrix
@@ -497,7 +455,6 @@ for word, i in tokenizer.word_index.items():
         embedding_matrix[i] = embedding_vector
 
 
-# In[43]:
 
 
 # instantiate pretrained glove model
@@ -531,7 +488,6 @@ glove_model.add(Dense(50, activation='relu'))
 glove_model.add(Dense(6, activation='sigmoid'))
 
 
-# In[44]:
 
 
 glove_model.compile(loss='binary_crossentropy',
@@ -541,14 +497,12 @@ glove_model.compile(loss='binary_crossentropy',
 glove_model.summary()
 
 
-# In[45]:
 
 
 glove_hist = glove_model.fit(X_train, y_train, batch_size=32, 
                              epochs=3, validation_split=0.1)
 
 
-# In[46]:
 
 
 glove_test_loss, glove_test_auc = glove_model.evaluate(X_test, y_test, batch_size=32)
@@ -556,7 +510,6 @@ print('Test Loss:    ', glove_test_loss)
 print('Test Accuracy:', glove_test_auc)
 
 
-# In[47]:
 
 
 # instantiate pretrained glove model
@@ -589,7 +542,6 @@ glove_2_model.add(Dense(50, activation='relu'))
 glove_2_model.add(Dense(6, activation='sigmoid'))
 
 
-# In[48]:
 
 
 glove_2_model.compile(loss='binary_crossentropy',
@@ -599,14 +551,12 @@ glove_2_model.compile(loss='binary_crossentropy',
 glove_2_model.summary()
 
 
-# In[49]:
 
 
 glove_2_hist = glove_2_model.fit(X_train, y_train, batch_size=32, 
                                  epochs=3, validation_split=0.1)
 
 
-# In[50]:
 
 
 glove_2_test_loss, glove_2_test_auc = glove_2_model.evaluate(X_test, y_test, batch_size=32)
@@ -614,7 +564,6 @@ print('Test Loss:    ', glove_2_test_loss)
 print('Test Accuracy:', glove_2_test_auc)
 
 
-# In[51]:
 
 
 # concat all training, validation and testing accuracy scores
@@ -649,7 +598,6 @@ comparison = pd.DataFrame([accuracy_nn])
 comparison = comparison.append([accuracy_cnn, accuracy_rnn, accuracy_glove, accuracy_glove_2])
 
 
-# In[52]:
 
 
 # beautify the new dataframe

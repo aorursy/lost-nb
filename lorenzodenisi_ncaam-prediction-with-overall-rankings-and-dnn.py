@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -21,7 +20,6 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import log_loss
 
 
-# In[2]:
 
 
 teams = pd.read_csv("../input/google-cloud-ncaa-march-madness-2020-division-1-mens-tournament/MDataFiles_Stage1/MTeams.csv")
@@ -32,7 +30,6 @@ regular_results = pd.read_csv("../input/google-cloud-ncaa-march-madness-2020-div
 tourney_results = pd.read_csv("../input/google-cloud-ncaa-march-madness-2020-division-1-mens-tournament/MDataFiles_Stage1/MNCAATourneyCompactResults.csv")
 
 
-# In[3]:
 
 
 fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(15,5))
@@ -41,7 +38,6 @@ regular_results.groupby(['Season']).mean().drop(["DayNum", "WTeamID", "LTeamID",
 tourney_results.groupby(['Season']).mean().drop(["DayNum", "WTeamID", "LTeamID", "NumOT"], axis=1).plot(title="Average Point Scored (NCAA tourney)", ax = axes[1]).grid()
 
 
-# In[4]:
 
 
 ax = regular_results.drop(["DayNum", "WTeamID", "WScore", "LTeamID", "LScore", "NumOT"], axis=1).groupby(['Season', "WLoc"]).size().unstack(fill_value=0).plot.area(title="Location of winning team")
@@ -49,20 +45,17 @@ ax = regular_results.drop(["DayNum", "WTeamID", "WScore", "LTeamID", "LScore", "
 ax.legend(["AWAY", "HOME", "NEUTRAL"]);
 
 
-# In[5]:
 
 
 tourney_results[tourney_results["DayNum"]==154].drop(["Season", "DayNum", "WScore", "LTeamID", "LScore", "NumOT", "WLoc"], axis=1).merge(teams, left_on="WTeamID", right_on="TeamID", how="left").groupby(["TeamName"]).size().sort_values()[-10:].plot(kind='barh', title="Top 10 NCAAM winners form 1985");
 
 
-# In[6]:
 
 
 print("\nTop 10 NCAAM participants according to average ranking (from 2003)")
 rankings.drop(["SystemName", "RankingDayNum", "Season"], axis=1).merge(teams[["TeamID", "TeamName"]], on="TeamID").groupby(["TeamName"]).mean().sort_values(by="OrdinalRank").drop(["TeamID"], axis=1)[:10]
 
 
-# In[7]:
 
 
 final_rankings = rankings[(rankings["RankingDayNum"]==133)]
@@ -71,7 +64,6 @@ final_rankings = final_rankings.pivot_table(index=["TeamID", "Season"], columns=
 mean_ranks = rankings.groupby(["TeamID", "Season", "RankingDayNum"]).mean()
 
 
-# In[8]:
 
 
 def get_final_ranking(team_id, season, mean_ranks):
@@ -91,7 +83,6 @@ def get_final_ranking(team_id, season, mean_ranks):
             return 1000
 
 
-# In[9]:
 
 
 rounds = [[134, 135], [136, 137], [138, 139], [143, 144], [145, 146], [152], [154]]
@@ -113,7 +104,6 @@ def get_round(day):
     return -1
 
 
-# In[10]:
 
 
 def get_matches(seeds, season):
@@ -125,7 +115,6 @@ def get_matches(seeds, season):
     return matches
 
 
-# In[11]:
 
 
 def get_mean(values):
@@ -138,7 +127,6 @@ overall_seeds = seeds.groupby("TeamID").agg({'Seed': get_mean})
 overall_seeds = overall_seeds.astype('float64')
 
 
-# In[12]:
 
 
 train_tourney_results = tourney_results[(tourney_results.Season>2002)&(tourney_results.Season<2015)]
@@ -147,7 +135,6 @@ train_regular_results = regular_results[(regular_results.Season>2002)&(regular_r
 test_tourney_results = tourney_results[(tourney_results.Season>=2015)]
 
 
-# In[13]:
 
 
 regular_wins = train_regular_results.groupby(["WTeamID", "WLoc"]).count()        .unstack().drop(["DayNum", "WScore", "LTeamID", "LScore", "NumOT"], axis=1)
@@ -157,7 +144,6 @@ regular_losses = train_regular_results.groupby(["LTeamID", "WLoc"]).count()     
 regular_losses.columns=['H', 'A', "N"]
 
 
-# In[14]:
 
 
 winners = regular_results[['Season', "WTeamID", "WScore"]]
@@ -170,7 +156,6 @@ overall_scores = overall_scores.groupby(["Season", "TeamID"]).sum()
 overall_scores
 
 
-# In[15]:
 
 
 columns = ['Ranking A', 'Ranking B', 'Ranking diff', "H2H Tourney A0", "H2H Tourney A1", "H2H Tourney A2", "H2H Tourney A3", "H2H Tourney A4", "H2H Tourney A5", "H2H Tourney A6", "H2H Tourney B0", "H2H Tourney B1", "H2H Tourney B2", "H2H Tourney B3", "H2H Tourney B4", "H2H Tourney B5", "H2H Tourney B6", "Seed A", "Seed B", "Seed diff", "ScoreA", "ScoreB", "Score diff"]
@@ -240,7 +225,6 @@ def extract_features(results, tourney_results, regular_results, final_rankings, 
     return train_features_df, labels
 
 
-# In[16]:
 
 
 #features extraction
@@ -250,7 +234,6 @@ joblib.dump(X_train, "features.joblib")
 joblib.dump(y_train, "labels.joblib")
 
 
-# In[17]:
 
 
 X_test, y_test = extract_features(test_tourney_results, train_tourney_results, train_regular_results, mean_ranks, seeds)
@@ -259,14 +242,12 @@ joblib.dump(X_test, "test_features.joblib")
 joblib.dump(y_test, "test_labels.joblib")
 
 
-# In[18]:
 
 
 pd.set_option('display.max_columns', 100)
 X_train
 
 
-# In[19]:
 
 
 print("Features correlation matrix")
@@ -284,7 +265,6 @@ ax.set_yticklabels(columns, fontsize=12)
 fig.colorbar(cax);
 
 
-# In[20]:
 
 
 from keras.models import Sequential
@@ -292,7 +272,6 @@ from keras.layers import Dense, Dropout, BatchNormalization
 from tensorflow.keras.optimizers import Adam, Adadelta, SGD, Adagrad, Nadam, Adamax, RMSprop
 
 
-# In[21]:
 
 
 # build model
@@ -318,13 +297,11 @@ model.compile(optimizer=Adam(0.0001), loss='binary_crossentropy', metrics=['accu
 model.summary()
 
 
-# In[22]:
 
 
 model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=300)
 
 
-# In[23]:
 
 
 def get_results(matches, model):
@@ -340,7 +317,6 @@ def get_results(matches, model):
     return X, labels
 
 
-# In[24]:
 
 
 def dump_results(matches, labels, filename):
@@ -354,7 +330,6 @@ def dump_results(matches, labels, filename):
         
 
 
-# In[25]:
 
 
 matches = []
@@ -369,7 +344,6 @@ predictions /= np.max(predictions) #normalization
 dump_results(matches, predictions, "predictions.csv")
 
 
-# In[26]:
 
 
 dump_results(matches, predictions, "predictions.csv")

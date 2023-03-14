@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from __future__ import absolute_import, division, print_function, unicode_literals
@@ -33,7 +32,6 @@ from itertools import product                    # some useful functions
 from tqdm import tqdm_notebook
 
 
-# In[2]:
 
 
 air_res = pd.read_csv('../input/recruit-restaurant-visitor-forecasting/air_reserve.csv')
@@ -44,80 +42,67 @@ air_visit = pd.read_csv('../input/recruit-restaurant-visitor-forecasting/air_vis
 id_rel = pd.read_csv('../input/recruit-restaurant-visitor-forecasting/store_id_relation.csv')
 
 
-# In[3]:
 
 
 air_res.head()
 
 
-# In[4]:
 
 
 air_res.info()
 
 
-# In[5]:
 
 
 air_store.head()
 
 
-# In[6]:
 
 
 air_store.info()
 
 
-# In[7]:
 
 
 air_visit.head()
 
 
-# In[8]:
 
 
 air_visit.info()
 
 
-# In[9]:
 
 
 hpg_res.info()
 
 
-# In[10]:
 
 
 id_rel.head()
 
 
-# In[11]:
 
 
 air_res.air_store_id.nunique() # number of unique restaurants in air system
 
 
-# In[12]:
 
 
 hpg_res.hpg_store_id.nunique() # number of unique restaurants in hpg system
 
 
-# In[13]:
 
 
 id_rel.air_store_id.nunique() # number of unique restaurants that are in both systems at once
 
 
-# In[14]:
 
 
 # Rename some columns before merging
 # air_store.rename(columns={"air_genre_name": "genre_name", " B": "c"})
 
 
-# In[15]:
 
 
 # Merge tables
@@ -125,7 +110,6 @@ air = pd.merge(air_res, air_store, on='air_store_id')
 hpg = pd.merge(hpg_res, hpg_store, on='hpg_store_id')
 
 
-# In[16]:
 
 
 air_rel = pd.merge(air, id_rel, how='left', on='air_store_id')
@@ -133,14 +117,12 @@ hpg_rel = pd.merge(hpg, id_rel, how='left', on='hpg_store_id')
 full = pd.merge(air_rel, hpg_rel, how='outer')
 
 
-# In[17]:
 
 
 print("In air reservations are: %d \nIn hpg reservations are: %d \nIn both systems at once there are: %d" %       (air.shape[0], hpg.shape[0], id_rel.shape[0]))
 print("So, totally must be: %d reservations."       % (full.shape[0]))
 
 
-# In[18]:
 
 
 # Then we need to convert columns 'visit_datetime' and 'reserve_datetime' from object type -> to data/time type
@@ -148,13 +130,11 @@ full['visit_datetime'] = pd.to_datetime(full['visit_datetime'])
 full['reserve_datetime'] = pd.to_datetime(full['reserve_datetime'])
 
 
-# In[19]:
 
 
 full.info()
 
 
-# In[20]:
 
 
 # Split converted date-time columns to year, month, date, day of week and time separate coluns of dataset
@@ -165,7 +145,6 @@ full['visit_weekday'] = pd.Series(full.visit_datetime.dt.weekday)
 full['visit_time'] = pd.Series(full.visit_datetime.dt.time)
 
 
-# In[21]:
 
 
 full['reserve_year'] = pd.Series(full.reserve_datetime.dt.year)
@@ -175,13 +154,11 @@ full['reserve_weekday'] = pd.Series(full.reserve_datetime.dt.weekday)
 full['reserve_time'] = pd.Series(full.reserve_datetime.dt.time)
 
 
-# In[22]:
 
 
 full.head()
 
 
-# In[23]:
 
 
 # Fill NaNs to ease operations with ids and creation new columns
@@ -191,7 +168,6 @@ full['air_genre_name'] = full['air_genre_name'].fillna('0')
 full['hpg_genre_name'] = full['hpg_genre_name'].fillna('0')
 
 
-# In[24]:
 
 
 # Now lets put our data in order
@@ -214,13 +190,11 @@ full.loc[(full['air_genre_name'] == '0'), 'area_name'] = full['hpg_area_name']
 full['air_hpg_link'] = full['air_hpg_link'].fillna('0')
 
 
-# In[25]:
 
 
 full.head()
 
 
-# In[26]:
 
 
 fullhist = full.groupby(['visit_datetime'],as_index=False).count().sort_values(by=['visit_datetime'])
@@ -247,7 +221,6 @@ plt.grid(True)
 plt.show()
 
 
-# In[27]:
 
 
 monthshist = full.groupby(['visit_month'],as_index=False).count().sort_values(by=['visit_month'])
@@ -272,13 +245,11 @@ plt.xlabel("Time")
 plt.show()
 
 
-# In[28]:
 
 
 full.head(1)
 
 
-# In[29]:
 
 
 # Create dataset combined by visit date from full data
@@ -290,7 +261,6 @@ datehist = datehist.groupby(['visit_date_full'],as_index=False).count().sort_val
 datehist.tail()
 
 
-# In[30]:
 
 
 # Create dataset combined by visit date from months data
@@ -298,7 +268,6 @@ date_mnth_hist = datehist.loc[datehist['visit_date_full'] < pd.to_datetime('2016
 date_mnth_hist.tail()
 
 
-# In[31]:
 
 
 # Importing everything from above
@@ -306,7 +275,6 @@ from sklearn.metrics import r2_score, median_absolute_error, mean_absolute_error
 from sklearn.metrics import median_absolute_error, mean_squared_error, mean_squared_log_error
 
 
-# In[32]:
 
 
 # Calculate average of last n observations
@@ -320,13 +288,11 @@ def moving_average(data, n):
 moving_average(datehist.store_id, 10)
 
 
-# In[33]:
 
 
 moving_average(date_mnth_hist.store_id, 10)
 
 
-# In[34]:
 
 
 # Or use Pandas implementation - DataFrame.rolling(window).mean(), that provides rolling window calculations.
@@ -369,35 +335,30 @@ def plotMovingAverage(data, window_size, plot_intervals=False, scale=1.96, plot_
     plt.grid(True)
 
 
-# In[35]:
 
 
 rolling_mean = date_mnth_hist.rolling(window=4).mean()
 rolling_mean.tail()
 
 
-# In[36]:
 
 
 # Let's smooth by the previous 7 days so we get weekly trend more clearly.
 plotMovingAverage(date_mnth_hist.store_id, 7)
 
 
-# In[37]:
 
 
 # Let's smooth by the previous 2 days so we get trend more clearly without loosing extra high values of visitors on weekends.
 plotMovingAverage(date_mnth_hist.store_id, 2)
 
 
-# In[38]:
 
 
 # Plot confidence intervals for our smoothed values for a full period
 plotMovingAverage(datehist.store_id, 7, plot_intervals=True)
 
 
-# In[39]:
 
 
 def weighted_average(data, weights):
@@ -415,7 +376,6 @@ def weighted_average(data, weights):
 weighted_average(date_mnth_hist.store_id, [0.6, 0.4, 0.2, 0.1])
 
 
-# In[40]:
 
 
 def exponential_smoothing(data, alpha):
@@ -429,7 +389,6 @@ def exponential_smoothing(data, alpha):
     return result
 
 
-# In[41]:
 
 
 def plotExponentialSmoothing(data, alphas):
@@ -450,13 +409,11 @@ def plotExponentialSmoothing(data, alphas):
         plt.grid(True);
 
 
-# In[42]:
 
 
 plotExponentialSmoothing(date_mnth_hist.store_id, [0.5, 0.3, 0.05])
 
 
-# In[43]:
 
 
 def double_exponential_smoothing(data, alpha, beta):
@@ -480,7 +437,6 @@ def double_exponential_smoothing(data, alpha, beta):
     return result
 
 
-# In[44]:
 
 
 def plotDoubleExponentialSmoothing(data, alphas, betas):
@@ -503,21 +459,18 @@ def plotDoubleExponentialSmoothing(data, alphas, betas):
         plt.grid(True)
 
 
-# In[45]:
 
 
 # Let's smooth full data with different settings of parameters (alpha and beta) so we cas see which of them performs the best.
 plotDoubleExponentialSmoothing(datehist.store_id, alphas=[0.9, 0.02], betas=[0.9, 0.02])
 
 
-# In[46]:
 
 
 # Then try to smooth weekly data with different settings of parameters (alpha and beta).
 plotDoubleExponentialSmoothing(fullhist_week.reset_index().store_id, alphas=[0.9, 0.02], betas=[0.9, 0.02])
 
 
-# In[47]:
 
 
 def initial_trend(series, season_len):
@@ -531,7 +484,6 @@ def initial_trend(series, season_len):
     return summ / season_len  
 
 
-# In[48]:
 
 
 def initial_seasonal_components(series, season_len):
@@ -555,7 +507,6 @@ def initial_seasonal_components(series, season_len):
     return seasonals   
 
 
-# In[49]:
 
 
 def triple_exponential_smoothing(series, season_len, alpha, beta, gamma, n_preds, scaling_factor=1.96):
@@ -611,7 +562,6 @@ def triple_exponential_smoothing(series, season_len, alpha, beta, gamma, n_preds
     return[result, LowerBond, UpperBond]
 
 
-# In[50]:
 
 
 with plt.style.context('seaborn-white'): 
@@ -624,7 +574,6 @@ with plt.style.context('seaborn-white'):
         plt.grid(True)
 
 
-# In[51]:
 
 
 from sklearn.model_selection import TimeSeriesSplit # you have time seriaes splitting already done for you
@@ -656,14 +605,12 @@ def timeseriesCVscore(params, series, loss_function=mean_squared_error, season_l
     return np.mean(np.array(errors))
 
 
-# In[52]:
 
 
 # leave some data for testing = one month
 test_period_len = 30
 
 
-# In[53]:
 
 
 from scipy.optimize import minimize              # for function minimization
@@ -685,14 +632,12 @@ print("Best alpha=%f, best beta=%f, best gamma=%f" % (alpha_final, beta_final, g
 ret = triple_exponential_smoothing(data, season_len = 7, alpha = alpha_final, beta = beta_final, gamma = gamma_final, n_preds = 7, scaling_factor = 3) 
 
 
-# In[54]:
 
 
 def mean_absolute_percentage_error(y_true, y_pred): 
     return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 
 
-# In[55]:
 
 
 def plotHoltWinters(series, returned, plot_intervals=False, plot_anomalies=False):
@@ -727,13 +672,11 @@ def plotHoltWinters(series, returned, plot_intervals=False, plot_anomalies=False
     plt.legend(loc="best", fontsize=13);
 
 
-# In[56]:
 
 
 plotHoltWinters(datehist.store_id[:-test_period_len], ret, plot_intervals=True, plot_anomalies=True)
 
 
-# In[57]:
 
 
 def tsplot(y, lags=None, figsize=(12, 7), style='bmh'):
@@ -768,14 +711,12 @@ def tsplot(y, lags=None, figsize=(12, 7), style='bmh'):
 tsplot(datehist.store_id, lags=30)
 
 
-# In[58]:
 
 
 data_diff1 = datehist.store_id.diff(periods=1).dropna()
 tsplot(data_diff1, lags=30)
 
 
-# In[59]:
 
 
 m = data_diff1.index[len(data_diff1.index)//2+1]
@@ -784,13 +725,11 @@ r2 = sm.stats.DescrStatsW(data_diff1[:m])
 print('p-value: ', sm.stats.CompareMeans(r1,r2).ttest_ind()[1]) 
 
 
-# In[60]:
 
 
 tsplot(data_diff1, lags=30)
 
 
-# In[61]:
 
 
 # setting initial values and some bounds for them
@@ -808,7 +747,6 @@ parameters_list = list(parameters)
 len(parameters_list)
 
 
-# In[62]:
 
 
 def optimizeSARIMA(parameters_list, d, D, s):
@@ -846,14 +784,12 @@ def optimizeSARIMA(parameters_list, d, D, s):
     return result_table
 
 
-# In[63]:
 
 
 # %time
 # result_table = optimizeSARIMA(parameters_list, d, D, s)
 
 
-# In[64]:
 
 
 # set the parameters that give the lowest AIC
@@ -865,7 +801,6 @@ Q = 3
 print("p = %f, q = %f, P = %f, Q = %f" % (p, q, P, Q))
 
 
-# In[65]:
 
 
 best_model=sm.tsa.statespace.SARIMAX(data_diff1, order=(p, d, q), 
@@ -873,14 +808,12 @@ best_model=sm.tsa.statespace.SARIMAX(data_diff1, order=(p, d, q),
 print(best_model.summary())
 
 
-# In[66]:
 
 
 # Firstly let's inspect the residuals of the model.
 tsplot(best_model.resid[7+1:], lags=30)
 
 
-# In[67]:
 
 
 #  resid, хранит остатки модели, qstat=True, означает что применяем указынный тест к коэф-ам
@@ -890,7 +823,6 @@ acf_scores = pd.DataFrame({'Q-stat':q_test[1], 'p-value':q_test[2]})
 acf_scores
 
 
-# In[68]:
 
 
 data = pd.DataFrame.from_dict({'actual':data_diff1})
@@ -901,7 +833,6 @@ forecast = data.sarima_model.append(forecast)
 data.sarima_model.shape
 
 
-# In[69]:
 
 
 def plotSARIMA(series, model, n_steps):
@@ -942,7 +873,6 @@ def plotSARIMA(series, model, n_steps):
 plotSARIMA(data_diff1, best_model, 14)
 
 
-# In[70]:
 
 
 # Create dataset combined by visit date from full data
@@ -953,7 +883,6 @@ plotSARIMA(data_diff1, best_model, 14)
 # dthist = dthist.groupby(['visit_date_full'],as_index=False).count().sort_values(by=['visit_date_full'])
 
 
-# In[71]:
 
 
 # Creating a copy of the initial datagrame to make various transformations 
@@ -966,7 +895,6 @@ for i in range(7, 22):
 data.tail()
 
 
-# In[72]:
 
 
 def timeseries_train_test_split(X, y, test_size):
@@ -984,7 +912,6 @@ def timeseries_train_test_split(X, y, test_size):
     return X_train, X_test, y_train, y_test
 
 
-# In[73]:
 
 
 from sklearn.linear_model import LinearRegression
@@ -1004,7 +931,6 @@ lr = LinearRegression()
 lr.fit(X_train, y_train)
 
 
-# In[74]:
 
 
 def plotModelResults(model, X_train=X_train, X_test=X_test, plot_intervals=False, plot_anomalies=False):
@@ -1043,7 +969,6 @@ def plotModelResults(model, X_train=X_train, X_test=X_test, plot_intervals=False
         plt.grid(True)
 
 
-# In[75]:
 
 
 def plotCoefficients(model):
@@ -1062,14 +987,12 @@ def plotCoefficients(model):
         plt.hlines(y=0, xmin=0, xmax=len(coefs), linestyles='dashed')
 
 
-# In[76]:
 
 
 plotModelResults(lr, plot_intervals=True)
 plotCoefficients(lr)
 
 
-# In[77]:
 
 
 data.index = pd.to_datetime(data.index)
@@ -1081,7 +1004,6 @@ data['is_holiday'] = data.index.isin(holidays)*1
 data.tail()
 
 
-# In[78]:
 
 
 def plotFeatures(df, features):
@@ -1099,14 +1021,12 @@ def plotFeatures(df, features):
         plt.legend(loc="best")
 
 
-# In[79]:
 
 
 ftrs = ['weekday', 'is_weekend', 'is_holiday']
 plotFeatures(data, ftrs)
 
 
-# In[80]:
 
 
 from sklearn.preprocessing import StandardScaler
@@ -1129,7 +1049,6 @@ plotModelResults(lr, X_train=X_train_scaled, X_test=X_test_scaled, plot_interval
 plotCoefficients(lr)
 
 
-# In[81]:
 
 
 def code_mean(data, cat_feature, real_feature):
@@ -1140,7 +1059,6 @@ def code_mean(data, cat_feature, real_feature):
     return dict(data.groupby(cat_feature)[real_feature].mean())
 
 
-# In[82]:
 
 
 average_wd = code_mean(data, 'weekday', "y")
@@ -1150,7 +1068,6 @@ pd.DataFrame.from_dict(average_wd, orient='index')[0].plot()
 plt.grid(True);
 
 
-# In[83]:
 
 
 # Finally, let's put all the transformations together in a single function .
@@ -1210,7 +1127,6 @@ def prepareData(series, lag_start, lag_end, test_size, target_encoding=False):
     return X_train, X_test, y_train, y_test
 
 
-# In[84]:
 
 
 datehist_timeidx = datehist.set_index('visit_date_full')
@@ -1226,14 +1142,12 @@ plotModelResults(lr, X_train=X_train_scaled, X_test=X_test_scaled, plot_interval
 plotCoefficients(lr)
 
 
-# In[85]:
 
 
 plt.figure(figsize=(15, 10))
 sns.heatmap(X_train.corr());
 
 
-# In[86]:
 
 
 from sklearn.linear_model import LassoCV, RidgeCV
@@ -1246,13 +1160,11 @@ plotModelResults(ridge, X_train=X_train_scaled, X_test=X_test_scaled, plot_inter
 plotCoefficients(ridge)
 
 
-# In[87]:
 
 
 ridge.alpha_
 
 
-# In[88]:
 
 
 lasso = LassoCV(cv=tscv)
@@ -1262,13 +1174,11 @@ plotModelResults(lasso,  X_train=X_train_scaled, X_test=X_test_scaled,plot_inter
 plotCoefficients(lasso)
 
 
-# In[89]:
 
 
 lasso.alpha_ 
 
 
-# In[90]:
 
 
 from xgboost import XGBRegressor 

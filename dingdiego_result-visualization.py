@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 def rle_decode(rle_mask):
@@ -56,13 +54,11 @@ def rle_encode(im):
     return ' '.join(str(x) for x in runs)
 
 
-# In[ ]:
 
 
 ls ../input
 
 
-# In[ ]:
 
 
 valid_pred=pd.read_csv('../input/valid-result/valid_1000_1.csv',index_col='id')
@@ -73,19 +69,16 @@ valid_truth=pd.read_csv('../input/tgs-salt-identification-challenge/train.csv',i
 valid_truth=valid_truth.loc[valid_ids,:]
 
 
-# In[ ]:
 
 
 valid_pred.head()
 
 
-# In[ ]:
 
 
 valid_truth.head()
 
 
-# In[ ]:
 
 
 nan_mask=[]
@@ -99,7 +92,6 @@ print(len(pred_mask))
     
 
 
-# In[ ]:
 
 
 import matplotlib.pyplot as plt
@@ -113,7 +105,6 @@ for i in range(391):
         count+=1
 
 
-# In[ ]:
 
 
 def iou_metric(y_true_in, y_pred_in, print_table=False):
@@ -178,7 +169,6 @@ def iou_metric_batch(y_true_in, y_pred_in):
     return np.mean(metric)
 
 
-# In[ ]:
 
 
 truth=[]
@@ -196,7 +186,6 @@ for pixel_thres in [5,10,20,30,40,50,60,70,80,90,100]:
     print('zero out iou for mask under '+str(pixel_thres)+' pixels: '+str(iou_metric_batch(truth,pred)))
 
 
-# In[ ]:
 
 
 

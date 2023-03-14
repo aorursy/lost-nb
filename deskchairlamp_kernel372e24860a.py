@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -72,19 +71,16 @@ convert_train_to_json(train_df)
 convert_test_to_json(test_df)
 
 
-# In[ ]:
 
 
 
 
 
-# In[2]:
 
 
 get_ipython().system('python /kaggle/input/transformers/transformers/examples/question-answering/run_squad.py --model_type roberta --model_name_or_path roberta-large --do_lower_case --do_train --do_eval --data_dir ./data --cache_dir /kaggle/input/robertacache/cache --train_file train.json --predict_file test.json --learning_rate 5e-5 --num_train_epochs 4 --max_seq_length 192 --doc_stride 64 --output_dir /kaggle/working --per_gpu_eval_batch_size=8 --per_gpu_train_batch_size=16 --save_steps=100000 --overwrite_output_dir')
 
 
-# In[3]:
 
 
 predictions = json.load(open('/kaggle/working/predictions_.json', 'r'))
@@ -99,7 +95,6 @@ for i in range(len(submission)):
 submission.to_csv('submission.csv', index=False)
 
 
-# In[4]:
 
 
 # import os

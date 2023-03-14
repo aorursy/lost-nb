@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -24,13 +23,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-# In[2]:
 
 
 get_ipython().system('pip install --upgrade git+git://github.com/carloalbertobarbano/pytorch-train-utils')
 
 
-# In[3]:
 
 
 from pytorchtrainutils import trainer
@@ -38,7 +35,6 @@ from pytorchtrainutils import metrics
 from pytorchtrainutils import utils
 
 
-# In[4]:
 
 
 def plot_cm(logs):
@@ -94,7 +90,6 @@ def plot_roc_auc(logs):
     plt.show()
 
 
-# In[5]:
 
 
 seed = 42
@@ -111,13 +106,11 @@ arch = 'resnet18'
 mean, std = [0.485, 0.456, 0.406], [0.229, 0.224, 0.225] #Imagenet
 
 
-# In[6]:
 
 
 get_ipython().system('ls /kaggle/input')
 
 
-# In[7]:
 
 
 dataset_path = '/kaggle/input/plantpathology2020fgvc7pickles/plant-pathology-2020-fgvc7-pickles'
@@ -125,7 +118,6 @@ train_df = pd.read_csv(os.path.join(dataset_path, 'train.csv'))
 test_df = pd.read_csv(os.path.join(dataset_path, 'test.csv'))
 
 
-# In[8]:
 
 
 def preprocess_df(df):
@@ -134,20 +126,17 @@ def preprocess_df(df):
     return df
 
 
-# In[9]:
 
 
 train_df = preprocess_df(train_df)
 train_df.head()
 
 
-# In[10]:
 
 
 train_df.iloc[:, 1:].sum()
 
 
-# In[11]:
 
 
 class PlantDataset(torch.utils.data.dataset.Dataset):
@@ -172,13 +161,11 @@ class PlantDataset(torch.utils.data.dataset.Dataset):
         return img, entry.values[1:5].astype('float64')
 
 
-# In[12]:
 
 
 train_df, val_df = train_test_split(train_df, test_size=0.3, random_state=seed, stratify=train_df.label)
 
 
-# In[13]:
 
 
 train_weight = val_weight = torch.tensor([
@@ -189,14 +176,12 @@ train_weight = val_weight = torch.tensor([
 ]).to(device)
 
 
-# In[14]:
 
 
 class_weights = torch.tensor([1., 1.3, 1.1, 1.])
 sampler_weights = class_weights[train_df.label.values]
 
 
-# In[15]:
 
 
 def stack_image(image, **kwargs):
@@ -243,7 +228,6 @@ def get_transform(img_size, crop_size):
     return lambda_train, lambda_valid, lambda_tta
 
 
-# In[16]:
 
 
 model = torchvision.models.resnet18(pretrained=True)
@@ -252,7 +236,6 @@ model.fc = torch.nn.Linear(in_features=num_ft, out_features=4, bias=True)
 model = model.to(device)
 
 
-# In[17]:
 
 
 class Softmaxer(torch.nn.Module):
@@ -265,7 +248,6 @@ class Softmaxer(torch.nn.Module):
         return F.softmax(x, dim=1)
 
 
-# In[18]:
 
 
 def bce(preds, targets, weight=None):    
@@ -278,7 +260,6 @@ def bce(preds, targets, weight=None):
     return loss.mean()
 
 
-# In[19]:
 
 
 img_size = 250
@@ -287,7 +268,6 @@ name = f'{arch}-{crop_size}'
 print(f'{name} image size: {img_size}, crop size: {crop_size}')
 
 
-# In[20]:
 
 
 train_transform, valid_transform, tta_transform = get_transform(img_size=img_size, crop_size=crop_size)
@@ -303,7 +283,6 @@ val_dataset = PlantDataset(val_df, dataset_path, valid_transform)
 val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=10, num_workers=4, shuffle=False)
 
 
-# In[21]:
 
 
 criterion = bce
@@ -311,7 +290,6 @@ optimizer = torch.optim.SGD(model.parameters(), lr=lr, weight_decay=1e-5)
 lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=3, verbose=True)
 
 
-# In[22]:
 
 
 tracked_metrics = [
@@ -329,7 +307,6 @@ best_model = trainer.fit(
 )
 
 
-# In[23]:
 
 
 tracked_metrics = [
@@ -348,38 +325,32 @@ val_logs = trainer.test(softmaxer, criterion=criterion, test_dataloader=val_load
 best_val_logs = trainer.test(softmaxer_best, criterion=criterion, test_dataloader=val_loader, metrics=tracked_metrics, weight=val_weight, device=device, tta=True)
 
 
-# In[24]:
 
 
 print(f'Final {name} val:', trainer.summarize_metrics(val_logs))
 print(f'Best {name} val:', trainer.summarize_metrics(best_val_logs))
 
 
-# In[25]:
 
 
 ax = sns.heatmap(val_logs['cm'].get(normalized=True), annot=True, fmt=".2f", vmin=0., vmax=1.)
 
 
-# In[26]:
 
 
 ax = sns.heatmap(best_val_logs['cm'].get(normalized=True), annot=True, fmt=".2f", vmin=0., vmax=1.)
 
 
-# In[27]:
 
 
 plot_cm(best_val_logs)
 
 
-# In[28]:
 
 
 plot_roc_auc(best_val_logs)
 
 
-# In[29]:
 
 
 img_size *= 2
@@ -388,7 +359,6 @@ name = f'{arch}-{crop_size}'
 print(f'{name} image size: {img_size}, crop size: {crop_size}')
 
 
-# In[30]:
 
 
 train_transform, valid_transform, tta_transform = get_transform(img_size=img_size, crop_size=crop_size)
@@ -404,7 +374,6 @@ val_dataset = PlantDataset(val_df, dataset_path,  valid_transform)
 val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=10, num_workers=4, shuffle=False)
 
 
-# In[31]:
 
 
 criterion = bce
@@ -412,7 +381,6 @@ optimizer = torch.optim.SGD(model.parameters(), lr=lr, weight_decay=1e-5)
 lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=3, verbose=True)
 
 
-# In[32]:
 
 
 tracked_metrics = [
@@ -430,7 +398,6 @@ best_model = trainer.fit(
 )
 
 
-# In[33]:
 
 
 tracked_metrics = [
@@ -449,45 +416,38 @@ val_logs = trainer.test(softmaxer, criterion=criterion, test_dataloader=val_load
 best_val_logs = trainer.test(softmaxer_best, criterion=criterion, test_dataloader=val_loader, metrics=tracked_metrics, weight=val_weight, device=device, tta=True)
 
 
-# In[34]:
 
 
 print(f'Final {name} val:', trainer.summarize_metrics(val_logs))
 print(f'Best {name} val:', trainer.summarize_metrics(best_val_logs))
 
 
-# In[35]:
 
 
 ax = sns.heatmap(val_logs['cm'].get(normalized=True), annot=True, fmt=".2f", vmin=0., vmax=1.)
 
 
-# In[36]:
 
 
 ax = sns.heatmap(best_val_logs['cm'].get(normalized=True), annot=True, fmt=".2f", vmin=0., vmax=1.)
 
 
-# In[37]:
 
 
 plot_cm(best_val_logs)
 
 
-# In[38]:
 
 
 plot_roc_auc(best_val_logs)
 
 
-# In[39]:
 
 
 test_dataset = PlantDataset(test_df, dataset_path, tta_transform)
 test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=10, shuffle=False)
 
 
-# In[40]:
 
 
 def get_test_preds(model, test_loader):
@@ -503,7 +463,6 @@ def get_test_preds(model, test_loader):
     return torch.cat(outputs, dim=0).numpy()
 
 
-# In[41]:
 
 
 def make_submission_df(df, preds):
@@ -513,7 +472,6 @@ def make_submission_df(df, preds):
     return df
 
 
-# In[42]:
 
 
 softmaxer.eval()
@@ -522,7 +480,6 @@ test_submission = make_submission_df(test_df, test_preds)
 test_submission.to_csv(f'submission-{name}.csv', index=False)
 
 
-# In[43]:
 
 
 softmaxer_best.eval()
@@ -531,13 +488,11 @@ test_submission = make_submission_df(test_df, test_preds)
 test_submission.to_csv(f'submission-best-{name}.csv', index=False)
 
 
-# In[44]:
 
 
 pd.read_csv(f'submission-{name}.csv').head()
 
 
-# In[45]:
 
 
 pd.read_csv(f'submission-best-{name}.csv').head()

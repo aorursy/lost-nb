@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 def resize_data(dataset): 
@@ -34,86 +32,72 @@ def resize_data(dataset):
     return dataset
 
 
-# In[3]:
 
 
 reader = pd.read_csv('../input/train_ver2.csv', chunksize=10000)
 df = pd.concat([resize_data(chunk) for chunk in reader])
 
 
-# In[4]:
 
 
 df.
 
 
-# In[5]:
 
 
 
 
 
-# In[5]:
 
 
 
 
 
-# In[5]:
 
 
 
 
 
-# In[5]:
 
 
 
 
 
-# In[5]:
 
 
 
 
 
-# In[5]:
 
 
 
 
 
-# In[5]:
 
 
 
 
 
-# In[5]:
 
 
 
 
 
-# In[5]:
 
 
 
 
 
-# In[5]:
 
 
 
 
 
-# In[5]:
 
 
 
 
 
-# In[5]:
 
 
 

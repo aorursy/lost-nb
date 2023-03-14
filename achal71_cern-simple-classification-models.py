@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(os.listdir("../input/"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[ ]:
 
 
 import pandas as pd
@@ -31,7 +29,6 @@ from sklearn.ensemble import GradientBoostingClassifier
 import featuretools as ft
 
 
-# In[ ]:
 
 
 def __rolling_window(data, window_size):
@@ -165,40 +162,34 @@ def roc_auc_truncated(labels, predictions, tpr_thresholds=(0.2, 0.4, 0.6, 0.8),
     return area
 
 
-# In[ ]:
 
 
 folder = "../input/"
 train = pd.read_csv(folder+'training.csv', index_col='id')
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 test = pd.read_csv(folder + 'test.csv', index_col='id')
 test.shape
 
 
-# In[ ]:
 
 
 # visualize the relationship between the features and the response using scatterplots
 sns.pairplot(train, x_vars=['LifeTime','dira','FlightDistance','FlightDistanceError'], y_vars='signal', size=7, aspect=0.7)
 
 
-# In[ ]:
 
 
 sns.pairplot(train, x_vars=['LifeTime','dira','FlightDistance'], y_vars='FlightDistanceError', size=7, aspect=0.7)
 
 
-# In[ ]:
 
 
 removeFeatures = ('signal','production','mass','min_ANNmuon')
@@ -206,51 +197,43 @@ trTarget = train.loc[:,'signal']
 trTarget.head()
 
 
-# In[ ]:
 
 
 trainNew = train.drop(columns=['signal','production','mass','min_ANNmuon'])
 trainNew.head()
 
 
-# In[ ]:
 
 
 trainNew.shape
 
 
-# In[ ]:
 
 
 trainNew.tail(1)
 
 
-# In[ ]:
 
 
 test.head(1)
 
 
-# In[ ]:
 
 
 sns.boxplot( y=trainNew["pt"] )
 
 
-# In[ ]:
 
 
 trainNew['pt'].describe()
 
 
-# In[ ]:
 
 
 combi = pd.concat([trainNew, test])
 combi.shape
 
 
-# In[ ]:
 
 
 def convertNum2Bin(x):
@@ -261,13 +244,11 @@ def convertNum2Bin(x):
 combi['ptBin'] = combi['pt'].apply(convertNum2Bin)
 
 
-# In[ ]:
 
 
 trainNew['LifeTime'].describe()
 
 
-# In[ ]:
 
 
 def convertLT2Bin(x):
@@ -278,13 +259,11 @@ def convertLT2Bin(x):
 combi['LifeTimeBin'] = combi['LifeTime'].apply(convertLT2Bin)
 
 
-# In[ ]:
 
 
 trainNew['FlightDistance'].describe()
 
 
-# In[ ]:
 
 
 def convertFD2Bin(x):
@@ -295,13 +274,11 @@ def convertFD2Bin(x):
 combi['FDBin'] = combi['FlightDistance'].apply(convertFD2Bin)
 
 
-# In[ ]:
 
 
 trainNew['FlightDistanceError'].describe()
 
 
-# In[ ]:
 
 
 def convertFDE2Bin(x):
@@ -312,13 +289,11 @@ def convertFDE2Bin(x):
 combi['FDEBin'] = combi['FlightDistanceError'].apply(convertFDE2Bin)
 
 
-# In[ ]:
 
 
 combi.shape
 
 
-# In[ ]:
 
 
 
@@ -335,20 +310,17 @@ combi.shape
 #feature_matrix.head()
 
 
-# In[ ]:
 
 
 #feature_matrix.columns
 #feature_matrix.shape
 
 
-# In[ ]:
 
 
 #combi.shape
 
 
-# In[ ]:
 
 
 #combi['id']=combi.reset_index().index
@@ -358,13 +330,11 @@ test= combi.iloc[67553:,:]
 trainNew.shape
 
 
-# In[ ]:
 
 
 test.shape
 
 
-# In[ ]:
 
 
 from sklearn.preprocessing import StandardScaler
@@ -374,14 +344,12 @@ trainScaled = scaler.fit_transform(trainNew)
 trainScaled[0:2,]
 
 
-# In[ ]:
 
 
 testScaled = scaler.transform(test)
 testScaled[0:2,]
 
 
-# In[ ]:
 
 
 from sklearn.decomposition import PCA
@@ -391,7 +359,6 @@ train_pca = pca.transform(trainScaled)
 test_pca = pca.transform(testScaled)
 
 
-# In[ ]:
 
 
 def pca_summary(pca, standardized_data, out=True):
@@ -408,13 +375,11 @@ def pca_summary(pca, standardized_data, out=True):
     return summary
 
 
-# In[ ]:
 
 
 summary = pca_summary(pca, train_pca)
 
 
-# In[ ]:
 
 
 import matplotlib.pyplot as plt
@@ -430,21 +395,18 @@ def screeplot(pca, standardized_values):
 screeplot(pca, trainScaled)
 
 
-# In[ ]:
 
 
 pcatrain = pd.DataFrame(train_pca[:,0:31])
 pcatrain.head()
 
 
-# In[ ]:
 
 
 pcatest = pd.DataFrame(test_pca[:,0:31])
 pcatest.head()
 
 
-# In[ ]:
 
 
 baseline = GradientBoostingClassifier(n_estimators=40, learning_rate=0.01, subsample=0.7,
@@ -453,7 +415,6 @@ baseline.fit(pcatrain, trTarget)
 #baseline.fit(train[variables], train['signal'])
 
 
-# In[ ]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -478,13 +439,11 @@ grid_search.fit(pcatrain, trTarget)
 grid_search.best_params_
 
 
-# In[ ]:
 
 
 best_gridRFCModel = grid_search.best_estimator_
 
 
-# In[ ]:
 
 
 import xgboost as xgb
@@ -494,34 +453,29 @@ clfXGB = xgb.XGBClassifier(learning_rate =0.1, n_estimators=1000, max_depth=5,ra
 clfXGB.fit(pcatrain, trTarget)
 
 
-# In[ ]:
 
 
 clfXGB2 = xgb.XGBClassifier(n_estimators=40, learning_rate=0.01, subsample=0.7,min_samples_leaf=10, max_depth=7, random_state=11)
 clfXGB2.fit(pcatrain, trTarget)
 
 
-# In[ ]:
 
 
 clfXGB3 = xgb.XGBClassifier(n_estimators=50, max_depth = 9, learning_rate=0.01, subsample=0.75, random_state=11)
 clfXGB3.fit(pcatrain, trTarget)
 
 
-# In[ ]:
 
 
 check_agreement = pd.read_csv(folder + 'check_agreement.csv', index_col='id')
 check_agreement.shape
 
 
-# In[ ]:
 
 
 check_agreement.head(2)
 
 
-# In[ ]:
 
 
 check_agreement_sig_wt = check_agreement.loc[:,['signal','weight']]
@@ -531,7 +485,6 @@ check_agreement_var = check_agreement.drop(columns=['signal','weight'])
 check_agreement_var.head(2)
 
 
-# In[ ]:
 
 
 check_agreement_var['ptBin'] = check_agreement_var['pt'].apply(convertNum2Bin)
@@ -546,7 +499,6 @@ pcaAgreement = pd.DataFrame(agreement_pca[:,0:31])
 pcaAgreement.head(2)
 
 
-# In[ ]:
 
 
 #agreement_probs = baseline.predict_proba(check_agreement[variables])[:, 1]
@@ -560,7 +512,6 @@ ks = compute_ks(
 print ('KS metric', ks, ks < 0.09)
 
 
-# In[ ]:
 
 
 agreement_probs = best_gridRFCModel.predict_proba(pcaAgreement)[:, 1]
@@ -573,7 +524,6 @@ ks = compute_ks(
 print ('KS metric', ks, ks < 0.09)
 
 
-# In[ ]:
 
 
 agreement_probs = clfXGB.predict_proba(pcaAgreement)[:, 1]
@@ -586,7 +536,6 @@ ks = compute_ks(
 print ('KS metric', ks, ks < 0.09)
 
 
-# In[ ]:
 
 
 agreement_probs = clfXGB2.predict_proba(pcaAgreement)[:, 1]
@@ -599,7 +548,6 @@ ks = compute_ks(
 print ('KS metric', ks, ks < 0.09)
 
 
-# In[ ]:
 
 
 agreement_probs = clfXGB3.predict_proba(pcaAgreement)[:, 1]
@@ -612,7 +560,6 @@ ks = compute_ks(
 print ('KS metric', ks, ks < 0.09)
 
 
-# In[ ]:
 
 
 check_correlation = pd.read_csv(folder + 'check_correlation.csv', index_col='id')
@@ -620,7 +567,6 @@ check_correlation.shape
 check_correlation.head(1)
 
 
-# In[ ]:
 
 
 check_correlation_mass = check_correlation.loc[:,'mass']
@@ -630,13 +576,11 @@ check_correlation_var = check_correlation.drop('mass',axis = 1)
 check_correlation_var.head(2)
 
 
-# In[ ]:
 
 
 check_correlation_var.shape
 
 
-# In[ ]:
 
 
 check_correlation_var['ptBin'] = check_correlation_var['pt'].apply(convertNum2Bin)
@@ -651,7 +595,6 @@ pcaCorrelation = pd.DataFrame(correlation_pca[:,0:31])
 pcaCorrelation.head(2)
 
 
-# In[ ]:
 
 
 correlation_probs = baseline.predict_proba(pcaCorrelation)[:, 1]
@@ -659,7 +602,6 @@ cvm = compute_cvm(correlation_probs, check_correlation_mass)
 print ('CvM metric', cvm, cvm < 0.002)
 
 
-# In[ ]:
 
 
 correlation_probs = best_gridRFCModel.predict_proba(pcaCorrelation)[:, 1]
@@ -667,7 +609,6 @@ cvm = compute_cvm(correlation_probs, check_correlation_mass)
 print ('CvM metric', cvm, cvm < 0.002)
 
 
-# In[ ]:
 
 
 correlation_probs = clfXGB2.predict_proba(pcaCorrelation)[:, 1]
@@ -675,7 +616,6 @@ cvm = compute_cvm(correlation_probs, check_correlation_mass)
 print ('CvM metric', cvm, cvm < 0.002)
 
 
-# In[ ]:
 
 
 correlation_probs = clfXGB3.predict_proba(pcaCorrelation)[:, 1]
@@ -683,7 +623,6 @@ cvm = compute_cvm(correlation_probs, check_correlation_mass)
 print ('CvM metric', cvm, cvm < 0.002)
 
 
-# In[ ]:
 
 
 train_eval = train[train['min_ANNmuon'] > 0.4]
@@ -702,7 +641,6 @@ pcaTrainEval = pd.DataFrame(trainEval_pca[:,0:31])
 pcaTrainEval.head(2)
 
 
-# In[ ]:
 
 
 train_probs = baseline.predict_proba(pcaTrainEval)[:, 1]
@@ -710,7 +648,6 @@ AUC = roc_auc_truncated(trainEvalSignal, train_probs)
 print ('AUC', AUC)
 
 
-# In[ ]:
 
 
 train_probs = clfXGB2.predict_proba(pcaTrainEval)[:, 1]
@@ -718,7 +655,6 @@ AUC = roc_auc_truncated(trainEvalSignal, train_probs)
 print ('AUC', AUC)
 
 
-# In[ ]:
 
 
 train_probs = clfXGB3.predict_proba(pcaTrainEval)[:, 1]
@@ -726,14 +662,12 @@ AUC = roc_auc_truncated(trainEvalSignal, train_probs)
 print ('AUC', AUC)
 
 
-# In[ ]:
 
 
 result = pd.DataFrame({'id': test.index})
 result['prediction'] = clfXGB3.predict_proba(pcatest)[:, 1]
 
 
-# In[ ]:
 
 
 sub = result.to_csv('Achal_baseline_5.csv', index=False, sep=',')

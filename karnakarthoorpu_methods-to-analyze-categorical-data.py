@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -28,51 +27,43 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 test_data = pd.read_csv('/kaggle/input/cat-in-the-dat/test.csv')
 train_data = pd.read_csv('/kaggle/input/cat-in-the-dat/train.csv')
 
 
-# In[3]:
 
 
 test_data.head()
 
 
-# In[4]:
 
 
 train_data.head()
 
 
-# In[5]:
 
 
 test_data['target'] = -1
 full_data = pd.concat([train_data,test_data],axis = 0)
 
 
-# In[6]:
 
 
 (train_data.shape,test_data.shape)
 
 
-# In[7]:
 
 
 (full_data[full_data['target'] != -1 ].shape, full_data[full_data['target'] == -1].shape)
 
 
-# In[8]:
 
 
 full_data.dtypes
 
 
-# In[9]:
 
 
 columns1 = ['bin_0','bin_1','bin_2','bin_3','bin_4','nom_0','nom_1','nom_2','nom_3','nom_4',
@@ -84,126 +75,108 @@ for variable, subplot in zip(columns1, ax.flatten()):
         label.set_rotation(45)
 
 
-# In[10]:
 
 
 ax = full_data.groupby(['target','bin_0']).size().unstack()      .plot(kind='bar', stacked=True, figsize=(18, 7))
 ax.set_xlabel("bin_0 Vs target")
 
 
-# In[11]:
 
 
 ax = full_data.groupby(['target','bin_1']).size().unstack()      .plot(kind='bar', stacked=True, figsize=(18, 7))
 ax.set_xlabel("bin_1 Vs target")
 
 
-# In[12]:
 
 
 ax = full_data.groupby(['target','bin_2']).size().unstack()      .plot(kind='bar', stacked=True, figsize=(18, 7))
 ax.set_xlabel("bin_2 Vs target")
 
 
-# In[13]:
 
 
 ax = full_data.groupby(['target','bin_3']).size().unstack()      .plot(kind='bar', stacked=True, figsize=(18, 7))
 ax.set_xlabel("bin_3 Vs target")
 
 
-# In[14]:
 
 
 ax = full_data.groupby(['target','bin_4']).size().unstack()      .plot(kind='bar', stacked=True, figsize=(18, 7))
 ax.set_xlabel("bin_4 Vs target")
 
 
-# In[15]:
 
 
 ax = full_data.groupby(['target','nom_0']).size().unstack()      .plot(kind='bar', stacked=True, figsize=(18, 7))
 ax.set_xlabel("nom_0 Vs target")
 
 
-# In[16]:
 
 
 ax = full_data.groupby(['target','nom_1']).size().unstack()      .plot(kind='bar', stacked=True, figsize=(18, 7))
 ax.set_xlabel("nom_1 Vs target")
 
 
-# In[17]:
 
 
 ax = full_data.groupby(['target','nom_2']).size().unstack()      .plot(kind='bar', stacked=True, figsize=(18, 7))
 ax.set_xlabel("nom_2 Vs target")
 
 
-# In[18]:
 
 
 ax = full_data.groupby(['target','nom_3']).size().unstack()      .plot(kind='bar', stacked=True, figsize=(18, 7))
 ax.set_xlabel("nom_3 Vs target")
 
 
-# In[19]:
 
 
 ax = full_data.groupby(['target','nom_4']).size().unstack()      .plot(kind='bar', stacked=True, figsize=(18, 7))
 ax.set_xlabel("nom_4 Vs target")
 
 
-# In[20]:
 
 
 ax = full_data.groupby(['target','ord_0']).size().unstack()      .plot(kind='bar', stacked=True, figsize=(18, 7))
 ax.set_xlabel("ord_0 Vs target")
 
 
-# In[21]:
 
 
 ax = full_data.groupby(['target','ord_1']).size().unstack()      .plot(kind='bar', stacked=True, figsize=(18, 7))
 ax.set_xlabel("ord_1 Vs target")
 
 
-# In[22]:
 
 
 ax = full_data.groupby(['target','ord_2']).size().unstack()      .plot(kind='bar', stacked=True, figsize=(18, 7))
 ax.set_xlabel("ord_2 Vs target")
 
 
-# In[23]:
 
 
 ax = full_data.groupby(['target','ord_3']).size().unstack()      .plot(kind='bar', stacked=True, figsize=(18, 7))
 ax.set_xlabel("ord_3 Vs target")
 
 
-# In[24]:
 
 
 ax = full_data.groupby(['target','ord_4']).size().unstack()      .plot(kind='bar', stacked=True, figsize=(18, 7))
 ax.set_xlabel("ord_4 Vs target")
 
 
-# In[25]:
 
 
 ax = full_data.groupby(['target','day']).size().unstack()      .plot(kind='bar', stacked=True, figsize=(18, 7))
 ax.set_xlabel("day Vs target")
 
 
-# In[26]:
 
 
 ax = full_data.groupby(['target','month']).size().unstack()      .plot(kind='bar', stacked=True, figsize=(18, 7))
 ax.set_xlabel("mont Vs target")
 
 
-# In[27]:
 
 
 import scipy.stats as ss
@@ -248,7 +221,6 @@ def categorical_ass(dataset, nominal_columns=None, mark_columns=False, theil_u=T
         return corr
 
 
-# In[28]:
 
 
 
@@ -258,7 +230,6 @@ corr = categorical_ass(dataset = full_data[columns1])
 print(corr)
 
 
-# In[29]:
 
 
 full_data = full_data[['bin_0','bin_1','bin_2','bin_3','bin_4','nom_0','nom_1','nom_2','nom_3','nom_4','ord_0','ord_1','ord_2','day','month','target']]
@@ -266,21 +237,18 @@ cols = ['bin_0','bin_1','bin_2','bin_3','bin_4','nom_0','nom_1','nom_2','nom_3',
 full_data = pd.get_dummies(full_data,prefix = cols,columns = cols)
 
 
-# In[30]:
 
 
 train_x_data = full_data[full_data['target'] != -1].copy()
 test_y_data = full_data[full_data['target'] == -1].copy()
 
 
-# In[31]:
 
 
 x_data = train_x_data.drop('target',axis = 1)
 y_data = train_x_data[['target']]
 
 
-# In[32]:
 
 
 from sklearn.model_selection import train_test_split ,GridSearchCV

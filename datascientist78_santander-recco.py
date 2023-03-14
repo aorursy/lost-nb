@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -27,7 +26,6 @@ import math
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 chunksize = 2000000
@@ -129,7 +127,6 @@ print(date_list)
 cust_dict
 
 
-# In[3]:
 
 
 customer_trend = {}
@@ -246,13 +243,11 @@ for chunk in pd.read_csv(filename, usecols=use_cols_ori, dtype=dtype_dict, chunk
 customer_trend
 
 
-# In[4]:
 
 
 df_target['total_products'].unique()
 
 
-# In[5]:
 
 
 #list(customer_trend.values())
@@ -274,7 +269,6 @@ plt.grid(True)
 plt.show()
 
 
-# In[6]:
 
 
 # An indicator variable is one which takes a few, usually 2 values (1/0, True/False)
@@ -295,7 +289,6 @@ for v in dftouse.columns:
     
 
 
-# In[7]:
 
 
 #dftouse['product_id'] = ''
@@ -329,7 +322,6 @@ print(final[0:10])
    
 
 
-# In[8]:
 
 
 similarity = {}
@@ -351,7 +343,6 @@ for i in product_list:
 similarity
 
 
-# In[9]:
 
 
 #sorted([(key,value) for (key,value) in total_count.items()])

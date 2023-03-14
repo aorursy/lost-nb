@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import cv2
@@ -13,7 +12,6 @@ import matplotlib.pyplot as plt
 import keras
 
 
-# In[2]:
 
 
 from keras.applications import DenseNet121
@@ -23,14 +21,12 @@ from keras import layers, optimizers
 from sklearn.model_selection import train_test_split
 
 
-# In[3]:
 
 
 image_parent_url = '/kaggle/input/bengaliai/256_train/256/'
 metadata_url     = '/kaggle/input/bengaliai-cv19/train.csv'
 
 
-# In[4]:
 
 
 def load_metadata(url):
@@ -39,7 +35,6 @@ def load_metadata(url):
     return train
 
 
-# In[5]:
 
 
 ## importing the metadata of the image
@@ -47,7 +42,6 @@ train = load_metadata(metadata_url)
 train.head()
 
 
-# In[6]:
 
 
 ## adding corresponding image path to the metadata
@@ -56,7 +50,6 @@ train.head()
 train['filename'] = train.image_id.apply(lambda filename: image_parent_url + filename + '.png')
 
 
-# In[7]:
 
 
 print(train.head()['grapheme'][2])
@@ -64,7 +57,6 @@ img1 = cv2.imread(train.head()['filename'][2])
 plt.imshow(img1)
 
 
-# In[8]:
 
 
 print(train.head()['grapheme'][3])
@@ -73,7 +65,6 @@ plt.imshow(img)
 ## so all the image is mapped perfectly
 
 
-# In[9]:
 
 
 img.shape ## wso we can see that the image is rgb 
@@ -81,7 +72,6 @@ img.shape ## wso we can see that the image is rgb
 ### have to convert to gray scale
 
 
-# In[10]:
 
 
 ## there is more space and random size with random padding 
@@ -102,14 +92,12 @@ def get_pad_width(im, new_shape, is_rgb=True):
     return pad_width
 
 
-# In[11]:
 
 
 ## testing
 get_pad_width(img,220)
 
 
-# In[12]:
 
 
 ## the image have unnecessary space even the padding is reduced 
@@ -120,7 +108,6 @@ get_pad_width(img,220)
 ## and we consider the image as a square
 
 
-# In[13]:
 
 
 def test_image(img, thresh=220, maxval=255, square=True):
@@ -161,37 +148,31 @@ def test_image(img, thresh=220, maxval=255, square=True):
     return crop
 
 
-# In[14]:
 
 
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
-# In[15]:
 
 
 plt.imshow(gray,cmap="gray")
 
 
-# In[16]:
 
 
 retval, thresh_gray = cv2.threshold(gray, thresh=220, maxval=225, type=cv2.THRESH_BINARY_INV)
 
 
-# In[17]:
 
 
 plt.imshow(thresh_gray,cmap="binary")
 
 
-# In[18]:
 
 
 contours, hierarchy = cv2.findContours(thresh_gray,cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
 
-# In[19]:
 
 
 mx = (0,0,0,0)      # biggest bounding box so far
@@ -212,45 +193,38 @@ x,y,w,h = mx
 crop = img[y:y+h, x:x+w]
 
 
-# In[20]:
 
 
 plt.imshow(crop)
 
 
-# In[21]:
 
 
 pad_width = get_pad_width(crop, max(crop.shape))
 crop = np.pad(crop, pad_width=pad_width, mode='constant', constant_values=255)
 
 
-# In[22]:
 
 
 plt.imshow(crop)
 
 
-# In[23]:
 
 
 plt.imshow(test_image(img))
 
 
-# In[24]:
 
 
 plt.imshow(test_image(img)/255)
 
 
-# In[25]:
 
 
 
 plt.imshow(test_image(img1))
 
 
-# In[26]:
 
 
 def crop_object(img, thresh=220, maxval=255, square=True):
@@ -290,7 +264,6 @@ def crop_object(img, thresh=220, maxval=255, square=True):
     return crop
 
 
-# In[27]:
 
 
 ## image shuffling
@@ -327,7 +300,6 @@ def data_generator(filenames, y, batch_size=64, shape=(128, 128, 1), random_stat
             yield X_batch, [y_batch[:, i] for i in range(y_batch.shape[1])]
 
 
-# In[28]:
 
 
 def build_model(densenet):
@@ -361,21 +333,18 @@ def build_model(densenet):
     return model
 
 
-# In[29]:
 
 
 
 densenet = DenseNet121(include_top=False, input_shape=(128, 128, 3))
 
 
-# In[30]:
 
 
 model = build_model(densenet)
 model.summary()
 
 
-# In[31]:
 
 
 train_files, valid_files, y_train, y_valid = train_test_split(
@@ -386,7 +355,6 @@ train_files, valid_files, y_train, y_valid = train_test_split(
 )
 
 
-# In[32]:
 
 
 batch_size = 128
@@ -398,7 +366,6 @@ train_steps = round(len(train_files) / batch_size) + 1
 valid_steps = round(len(valid_files) / batch_size) + 1
 
 
-# In[33]:
 
 
 ## do not run this in your computer
@@ -416,7 +383,6 @@ train_history = model.fit_generator(
 )
 
 
-# In[34]:
 
 
 plt.plot(train_history.history['val_grapheme_loss'])
@@ -428,7 +394,6 @@ plt.xlabel('epoch')
 plt.show()
 
 
-# In[35]:
 
 
 plt.plot(train_history.history['val_grapheme_accuracy'])
@@ -440,7 +405,6 @@ plt.ylabel('accuracy')
 plt.xlabel('epoch')
 
 
-# In[36]:
 
 
 def build_model1(densenet):
@@ -474,20 +438,17 @@ def build_model1(densenet):
     return model
 
 
-# In[37]:
 
 
 model1 = build_model1(densenet)
 model1.summary()
 
 
-# In[ ]:
 
 
 
 
 
-# In[38]:
 
 
 def build_model2(densenet):
@@ -521,14 +482,12 @@ def build_model2(densenet):
     return model
 
 
-# In[39]:
 
 
 model2 = build_model2(densenet)
 model2.summary()
 
 
-# In[40]:
 
 
 train_files, valid_files, y_train, y_valid = train_test_split(
@@ -558,7 +517,6 @@ train_history = model1.fit_generator(
 )
 
 
-# In[41]:
 
 
 plt.plot(train_history.history['val_grapheme_accuracy'])
@@ -570,7 +528,6 @@ plt.ylabel('accuracy')
 plt.xlabel('epoch')
 
 
-# In[42]:
 
 
 plt.plot(train_history.history['val_grapheme_loss'])
@@ -582,14 +539,12 @@ plt.xlabel('epoch')
 plt.show()
 
 
-# In[43]:
 
 
 del model
 del model1
 
 
-# In[44]:
 
 
 train_files, valid_files, y_train, y_valid = train_test_split(
@@ -619,7 +574,6 @@ train_history = model2.fit_generator(
 )
 
 
-# In[45]:
 
 
 plt.plot(train_history.history['val_grapheme_accuracy'])
@@ -631,7 +585,6 @@ plt.ylabel('accuracy')
 plt.xlabel('epoch')
 
 
-# In[46]:
 
 
 plt.plot(train_history.history['val_grapheme_loss'])

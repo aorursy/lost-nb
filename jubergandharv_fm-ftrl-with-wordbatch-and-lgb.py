@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,7 +21,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import pandas as pd
@@ -64,13 +62,11 @@ from scipy.stats import uniform as sp_uniform
 from sklearn.model_selection import RandomizedSearchCV
 
 
-# In[3]:
 
 
 data_train = pd.read_csv('../input/mercari-price-suggestion-challenge/train.tsv', delimiter='\t')
 
 
-# In[4]:
 
 
 ####split data train test first
@@ -83,21 +79,18 @@ del(X, y ,data_train)
 gc.collect()
 
 
-# In[5]:
 
 
 X_train.drop('train_id', axis=1, inplace=True)
 X_cv.drop('train_id', axis=1, inplace=True)
 
 
-# In[6]:
 
 
 def rmsle(y, y0):
     return np.sqrt(np.mean(np.power(np.log1p(y)-np.log1p(y0), 2)))
 
 
-# In[7]:
 
 
 # https://gist.github.com/sebleier/554280
@@ -105,7 +98,6 @@ def rmsle(y, y0):
 stopwords= ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', "you're", "you've",            "you'll", "you'd", 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself',             'she', "she's", 'her', 'hers', 'herself', 'it', "it's", 'its', 'itself', 'they', 'them', 'their',            'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', "that'll", 'these', 'those',             'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does',             'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of',             'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after',            'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further',            'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more',            'most', 'other', 'some', 'such', 'only', 'own', 'same', 'so', 'than', 'too', 'very',             's', 't', 'can', 'will', 'just', 'don', "don't", 'should', "should've", 'now', 'd', 'll', 'm', 'o', 're',             've', 'y', 'ain', 'aren', "aren't", 'couldn', "couldn't", 'didn', "didn't", 'doesn', "doesn't", 'hadn',            "hadn't", 'hasn', "hasn't", 'haven', "haven't", 'isn', "isn't", 'ma', 'mightn', "mightn't", 'mustn',            "mustn't", 'needn', "needn't", 'shan', "shan't", 'shouldn', "shouldn't", 'wasn', "wasn't", 'weren', "weren't",             'won', "won't", 'wouldn', "wouldn't"]
 
 
-# In[8]:
 
 
 import re
@@ -241,7 +233,6 @@ def fill_brand(df):
     return(df)
 
 
-# In[9]:
 
 
 def preprocessing(df):
@@ -322,40 +313,34 @@ def adding_new_features(df):
     return(df)
 
 
-# In[10]:
 
 
 preprocessing(X_train)
 adding_new_features(X_train)
 
 
-# In[11]:
 
 
 X_train.head(5)
 
 
-# In[12]:
 
 
 #check for the NAN values
 X_train.columns[X_train.isna().any()].tolist()
 
 
-# In[13]:
 
 
 preprocessing(X_cv)
 adding_new_features(X_cv)
 
 
-# In[14]:
 
 
 X_cv.columns[X_cv.isna().any()].tolist()
 
 
-# In[15]:
 
 
 total_cols = set(X_train.columns.values)
@@ -373,7 +358,6 @@ text_cols = {'name', 'item_description'}
 categorical_cols = {'item_condition_id','brand_name','shipping','main_category','sub_category_1','sub_category_2','name_first'}
 
 
-# In[16]:
 
 
 from sklearn.preprocessing import Normalizer
@@ -382,7 +366,6 @@ normalizer = Normalizer(copy=False)
 normalizer.fit(X_train[list(cols_to_normalize)])
 
 
-# In[17]:
 
 
 import pickle
@@ -392,7 +375,6 @@ del(normalizer)
 gc.collect()
 
 
-# In[18]:
 
 
 def normalize_dataframe(df):
@@ -406,14 +388,12 @@ def normalize_dataframe(df):
     return df
 
 
-# In[19]:
 
 
 normalize_dataframe(X_train)
 normalize_dataframe(X_cv)
 
 
-# In[20]:
 
 
 wb_desc = wordbatch.WordBatch(normalize_text, extractor=(WordBag, {"hash_ngrams": 2,
@@ -425,7 +405,6 @@ wb_desc = wordbatch.WordBatch(normalize_text, extractor=(WordBag, {"hash_ngrams"
 wb_desc.dictionary_freeze = True
 
 
-# In[21]:
 
 
 wb_desc.fit(X_train['item_description'])
@@ -433,34 +412,29 @@ X_description_train_wb = wb_desc.transform(X_train['item_description'])
 X_description_cv_wb = wb_desc.fit_transform(X_cv['item_description'])
 
 
-# In[22]:
 
 
 mask_desc = np.where(X_description_train_wb.getnnz(axis=0) > 3)[0]
 
 
-# In[23]:
 
 
 X_description_train_wb = X_description_train_wb[:, mask_desc]
 X_description_cv_wb = X_description_cv_wb[:, mask_desc]
 
 
-# In[24]:
 
 
 X_description_train_wb.shape
 X_description_cv_wb.shape
 
 
-# In[25]:
 
 
 model_desc = Ridge(solver="sag", fit_intercept=True, random_state=205, alpha=5)
 model_desc.fit(X_description_train_wb, Y_train)
 
 
-# In[26]:
 
 
 pred_train_1 = model_desc.predict(X_description_train_wb)
@@ -469,7 +443,6 @@ print("Train rmsle: "+str(rmsle(10 ** Y_train-1, 10 ** pred_train_1-1)))
 print("CV rmsle: "+str(rmsle(10 ** Y_cv-1, 10 ** pred_cv_1-1)))
 
 
-# In[27]:
 
 
 import pickle 
@@ -478,7 +451,6 @@ pickle.dump(wb_desc, open("wb_desc.pickle", "wb"),protocol=4)
 pickle.dump(model_desc, open("model_desc.pickle", "wb"),protocol=4)
 
 
-# In[28]:
 
 
 mask_desc = None
@@ -488,7 +460,6 @@ del(mask_desc,wb_desc,model_desc)
 gc.collect()
 
 
-# In[29]:
 
 
 wb_name = wordbatch.WordBatch(normalize_text, extractor=(WordBag, {"hash_ngrams": 2,
@@ -501,7 +472,6 @@ wb_name = wordbatch.WordBatch(normalize_text, extractor=(WordBag, {"hash_ngrams"
 wb_name.dictionary_freeze = True
 
 
-# In[30]:
 
 
 wb_name.fit(X_train['name'])
@@ -509,41 +479,35 @@ X_name_train_wb = wb_name.transform(X_train['name'])
 X_name_cv_wb = wb_name.fit_transform(X_cv['name'])
 
 
-# In[31]:
 
 
 mask_name = np.where(X_name_train_wb.getnnz(axis=0) > 3)[0]
 
 
-# In[32]:
 
 
 X_name_train_wb = X_name_train_wb[:, mask_name]
 X_name_cv_wb = X_name_cv_wb[:, mask_name]
 
 
-# In[33]:
 
 
 model_name = Ridge(solver="sag", fit_intercept=True, random_state=205, alpha= 5)
 model_name.fit(X_name_train_wb, Y_train)
 
 
-# In[34]:
 
 
 pred_train_2 = model_name.predict(X_name_train_wb)
 pred_cv_2 = model_name.predict(X_name_cv_wb)
 
 
-# In[35]:
 
 
 print("Train rmsle: "+str(rmsle(10 ** Y_train-1, 10 ** pred_train_2-1)))
 print("CV rmsle: "+str(rmsle(10 ** Y_cv-1, 10 ** pred_cv_2-1)))
 
 
-# In[36]:
 
 
 import pickle
@@ -553,7 +517,6 @@ pickle.dump(wb_name, open("wb_name.pickle", "wb"),protocol=4)
 pickle.dump(model_name, open("model_name.pickle", "wb"),protocol=4)
 
 
-# In[37]:
 
 
 mask_name = None
@@ -563,7 +526,6 @@ del(mask_name,wb_name,model_name)
 gc.collect()
 
 
-# In[38]:
 
 
 lb_brand_name = LabelBinarizer(sparse_output=True)
@@ -573,7 +535,6 @@ X_brand_train = lb_brand_name.fit_transform(X_train['brand_name'])
 X_brand_cv = lb_brand_name.transform(X_cv['brand_name'])
 
 
-# In[39]:
 
 
 lb_main_category = LabelBinarizer(sparse_output=True)
@@ -583,7 +544,6 @@ X_main_cat_train = lb_main_category.fit_transform(X_train['main_category'])
 X_main_cat_cv = lb_main_category.transform(X_cv['main_category'])
 
 
-# In[40]:
 
 
 lb_sub_category_1 = LabelBinarizer(sparse_output=True)
@@ -593,7 +553,6 @@ X_main_sub_cat_1_train = lb_sub_category_1.fit_transform(X_train['sub_category_1
 X_main_sub_cat_1_cv = lb_sub_category_1.transform(X_cv['sub_category_1'])
 
 
-# In[41]:
 
 
 lb_sub_category_2 = LabelBinarizer(sparse_output=True)
@@ -603,7 +562,6 @@ X_main_sub_cat_2_train = lb_sub_category_2.fit_transform(X_train['sub_category_2
 X_main_sub_cat_2_cv = lb_sub_category_2.transform(X_cv['sub_category_2'])
 
 
-# In[42]:
 
 
 X_dummies_train = csr_matrix(
@@ -615,7 +573,6 @@ X_dummies_train_1 = csr_matrix(
                    sparse=True).values)
 
 
-# In[43]:
 
 
 X_dummies_cv = csr_matrix(
@@ -627,21 +584,18 @@ X_dummies_cv_1 = csr_matrix(
                    sparse=True).values)
 
 
-# In[44]:
 
 
 sparse_merge_train = hstack((X_name_train_wb , X_description_train_wb, X_brand_train, X_main_cat_train,
                              X_main_sub_cat_1_train, X_main_sub_cat_2_train,X_dummies_train,X_dummies_train_1)).tocsr()
 
 
-# In[45]:
 
 
 sparse_merge_cv = hstack(( X_name_cv_wb,X_description_cv_wb,X_brand_cv,X_main_cat_cv,
                              X_main_sub_cat_1_cv,X_main_sub_cat_2_cv,X_dummies_cv,X_dummies_cv_1)).tocsr()
 
 
-# In[46]:
 
 
 X_dummies_train = None
@@ -660,14 +614,12 @@ del(X_dummies_cv, X_description_cv_wb,X_name_cv_wb)
 gc.collect()
 
 
-# In[47]:
 
 
 print(sparse_merge_train.shape)
 print(sparse_merge_cv.shape)
 
 
-# In[48]:
 
 
 import pickle
@@ -678,7 +630,6 @@ pickle.dump(lb_sub_category_1, open("lb_sub_category_1.pickle", "wb"),protocol=4
 pickle.dump(lb_sub_category_2, open("lb_sub_category_2.pickle", "wb"),protocol=4)
 
 
-# In[49]:
 
 
 lb_brand_name = None
@@ -689,7 +640,6 @@ del(lb_brand_name,lb_main_category,lb_sub_category_1,lb_sub_category_2)
 gc.collect()
 
 
-# In[50]:
 
 
 model_FM_FTRL = FM_FTRL(alpha=0.035, beta=0.001, L1=0.00001, L2=0.15, D=sparse_merge_train.shape[1],
@@ -698,21 +648,18 @@ model_FM_FTRL = FM_FTRL(alpha=0.035, beta=0.001, L1=0.00001, L2=0.15, D=sparse_m
 model_FM_FTRL.fit(sparse_merge_train, Y_train)
 
 
-# In[51]:
 
 
 pred_train_3 = model_FM_FTRL.predict(sparse_merge_train)
 pred_cv_3 = model_FM_FTRL.predict(sparse_merge_cv)
 
 
-# In[52]:
 
 
 print("Train rmsle: "+str(rmsle(10 ** Y_train-1, 10 ** pred_train_3-1)))
 print("CV rmsle: "+str(rmsle(10 ** Y_cv-1, 10 ** pred_cv_3-1)))
 
 
-# In[53]:
 
 
 import pickle
@@ -723,14 +670,12 @@ del(model_FM_FTRL)
 gc.collect()
 
 
-# In[54]:
 
 
 print(sparse_merge_train.shape)
 print(sparse_merge_cv.shape)
 
 
-# In[55]:
 
 
 fselect = SelectKBest(f_regression, k=48000)
@@ -738,7 +683,6 @@ train_kbest_features = fselect.fit_transform(sparse_merge_train, Y_train)
 cv_kbest_features = fselect.transform(sparse_merge_cv)
 
 
-# In[56]:
 
 
 import pickle
@@ -748,13 +692,11 @@ del(fselect)
 gc.collect()
 
 
-# In[57]:
 
 
 cv_kbest_features.shape
 
 
-# In[58]:
 
 
 sparse_merge_train= None
@@ -763,7 +705,6 @@ del(sparse_merge_train,sparse_merge_cv)
 gc.collect()
 
 
-# In[59]:
 
 
 tfidf_desc = TfidfVectorizer(max_features=500000,
@@ -772,13 +713,11 @@ tfidf_desc = TfidfVectorizer(max_features=500000,
 X_desc_train_tfidf = tfidf_desc.fit_transform(X_train['item_description'])
 
 
-# In[60]:
 
 
 X_desc_cv_tfidf = tfidf_desc.transform(X_cv['item_description'])
 
 
-# In[61]:
 
 
 pickle.dump(tfidf_desc, open("tfidf_desc.pickle", "wb"),protocol=4)
@@ -787,7 +726,6 @@ del(tfidf_desc)
 gc.collect()
 
 
-# In[62]:
 
 
 tfidf_name = TfidfVectorizer(max_features=250000,
@@ -796,13 +734,11 @@ tfidf_name = TfidfVectorizer(max_features=250000,
 X_name_train_tfidf = tfidf_name.fit_transform(X_train['name'])
 
 
-# In[63]:
 
 
 X_name_cv_tfidf =tfidf_name.transform(X_cv['name'])
 
 
-# In[64]:
 
 
 pickle.dump(tfidf_name, open("tfidf_name.pickle", "wb"),protocol=4)
@@ -811,14 +747,12 @@ del(tfidf_name)
 gc.collect()
 
 
-# In[65]:
 
 
 sparse_merge_train_1 = hstack((X_name_train_tfidf , X_desc_train_tfidf, X_brand_train, X_main_cat_train,
                              X_main_sub_cat_1_train, X_main_sub_cat_2_train,X_dummies_train_1)).tocsr()
 
 
-# In[66]:
 
 
 X_dummies_train_1 = None
@@ -832,14 +766,12 @@ del(X_dummies_train_1, X_brand_train, X_main_cat_train,                         
 gc.collect()
 
 
-# In[67]:
 
 
 sparse_merge_cv_1 = hstack((X_name_cv_tfidf , X_desc_cv_tfidf, X_brand_cv, X_main_cat_cv,
                              X_main_sub_cat_1_cv, X_main_sub_cat_2_cv,X_dummies_cv_1)).tocsr()
 
 
-# In[68]:
 
 
 X_dummies_cv_1 = None
@@ -853,14 +785,12 @@ del(X_dummies_cv_1, X_brand_cv, X_main_cat_cv,                            X_main
 gc.collect()
 
 
-# In[69]:
 
 
 model_Ridge_set_2 = Ridge(solver="sag", fit_intercept=True, random_state=205, alpha=5)
 model_Ridge_set_2.fit(sparse_merge_train_1, Y_train)
 
 
-# In[70]:
 
 
 pred_train_4 = model_Ridge_set_2.predict(sparse_merge_train_1)
@@ -869,13 +799,11 @@ print("Train rmsle: "+str(rmsle(10 ** Y_train-1, 10 ** pred_train_4-1)))
 print("CV rmsle: "+str(rmsle(10 ** Y_cv-1, 10 ** pred_cv_4-1)))
 
 
-# In[71]:
 
 
 sparse_merge_train_1.shape
 
 
-# In[72]:
 
 
 pickle.dump(model_Ridge_set_2, open("model_Ridge_set_2.pickle", "wb"),protocol=4)
@@ -884,14 +812,12 @@ del(model_Ridge_set_2)
 gc.collect()
 
 
-# In[73]:
 
 
 model_MNB_set_2 = MultinomialNB(alpha=1.0, fit_prior=True)
 model_MNB_set_2.fit(sparse_merge_train_1, Y_train >= 4)
 
 
-# In[74]:
 
 
 pred_train_5 = model_MNB_set_2.predict(sparse_merge_train_1)
@@ -900,7 +826,6 @@ print("Train rmsle: "+str(rmsle(10 ** Y_train-1, 10 ** pred_train_5-1)))
 print("CV rmsle: "+str(rmsle(10 ** Y_cv-1, 10 ** pred_cv_5-1)))
 
 
-# In[75]:
 
 
 pickle.dump(model_MNB_set_2, open("model_MNB_set_2.pickle", "wb"),protocol=4)
@@ -912,13 +837,11 @@ del(sparse_merge_train_1,sparse_merge_cv_1)
 gc.collect()
 
 
-# In[76]:
 
 
 f_cats = ['brand_name', 'main_category', 'sub_category_1', 'sub_category_2', 'name_first']
 
 
-# In[77]:
 
 
 from category_encoders.target_encoder import TargetEncoder
@@ -926,38 +849,32 @@ from category_encoders.target_encoder import TargetEncoder
 targetencoder = TargetEncoder(min_samples_leaf=100, smoothing=10,cols=f_cats,return_df=False)
 
 
-# In[78]:
 
 
 targetencoder.fit(X_train[f_cats],Y_train)
 
 
-# In[79]:
 
 
 X_train_target_encode = targetencoder.transform(X_train[f_cats])
 
 
-# In[80]:
 
 
 X_cv_target_encode = targetencoder.transform(X_cv[f_cats])
 
 
-# In[81]:
 
 
 def add_noise(series, noise_level):
     return series * (1 + noise_level * np.random.randn(len(series)))
 
 
-# In[82]:
 
 
 X_train_target_encode[:,0].shape
 
 
-# In[83]:
 
 
 X_train_target_encode[:,0] = add_noise(X_train_target_encode[:,0],noise_level=0.01)
@@ -967,13 +884,11 @@ X_train_target_encode[:,3] = add_noise(X_train_target_encode[:,3],noise_level=0.
 X_train_target_encode[:,4] = add_noise(X_train_target_encode[:,4],noise_level=0.01)
 
 
-# In[84]:
 
 
 X_train_target_encode[0,:]
 
 
-# In[85]:
 
 
 pickle.dump(targetencoder, open("targetencoder.pickle", "wb"),protocol=4)
@@ -982,26 +897,22 @@ del(targetencoder)
 gc.collect()
 
 
-# In[86]:
 
 
 train_features = hstack((pred_train_1.reshape(-1,1),                         pred_train_2.reshape(-1,1),                         pred_train_3.reshape(-1,1),                         pred_train_4.reshape(-1,1),                         pred_train_5.reshape(-1,1),                         X_train_target_encode,                         train_kbest_features)).tocsr()
 
 
-# In[87]:
 
 
 cv_features = hstack((pred_cv_1.reshape(-1,1),                      pred_cv_2.reshape(-1,1),                      pred_cv_3.reshape(-1,1),                      pred_cv_4.reshape(-1,1),                      pred_cv_5.reshape(-1,1),                      X_cv_target_encode,                      cv_kbest_features)).tocsr()
 
 
-# In[88]:
 
 
 pickle.dump(train_features, open("train_features.pickle", "wb"),protocol=4)
 pickle.dump(cv_features, open("cv_features.pickle", "wb"),protocol=4)
 
 
-# In[89]:
 
 
 pred_train_1 = None
@@ -1026,7 +937,6 @@ del(pred_cv_1,    pred_cv_2,    pred_cv_3,    pred_cv_4,    pred_cv_5,    X_cv_t
 gc.collect()
 
 
-# In[90]:
 
 
 d_train = lgb.Dataset(train_features, label=Y_train)
@@ -1034,7 +944,6 @@ d_valid = lgb.Dataset(cv_features, label=Y_cv)
 watchlist = [d_train, d_valid]
 
 
-# In[91]:
 
 
 params = {
@@ -1056,7 +965,6 @@ params = {
          }
 
 
-# In[92]:
 
 
 model_lgb_final = lgb.train(params,
@@ -1066,21 +974,18 @@ model_lgb_final = lgb.train(params,
                   verbose_eval=200,early_stopping_rounds=100)
 
 
-# In[93]:
 
 
 pred_train_6 = model_lgb_final.predict(train_features)
 pred_cv_6 = model_lgb_final.predict(cv_features)
 
 
-# In[94]:
 
 
 print("Train rmsle: "+str(rmsle(10 ** Y_train-1, 10 ** pred_train_6-1)))
 print("CV rmsle: "+str(rmsle(10 ** Y_cv-1, 10 ** pred_cv_6-1)))
 
 
-# In[95]:
 
 
 pickle.dump(model_lgb_final, open("model_lgb_final.pickle", "wb"),protocol=4)
@@ -1089,7 +994,6 @@ del(model_lgb_final)
 gc.collect()
 
 
-# In[96]:
 
 
 train_features= None
@@ -1102,7 +1006,6 @@ del(train_features,cv_features,d_train,d_valid,watchlist)
 gc.collect()
 
 
-# In[97]:
 
 
 X_train = None
@@ -1113,14 +1016,12 @@ del(X_train,X_cv,Y_train,Y_cv)
 gc.collect()
 
 
-# In[98]:
 
 
 test_id = []
 prediction = []
 
 
-# In[99]:
 
 
 def predict_final(df):
@@ -1308,7 +1209,6 @@ def predict_final(df):
     gc.collect()
 
 
-# In[100]:
 
 
 chunksize = 10 ** 6
@@ -1316,7 +1216,6 @@ for chunk in pd.read_csv('../input/mercari-price-suggestion-challenge/test_stg2.
     predict_final(chunk)
 
 
-# In[101]:
 
 
 submission = pd.DataFrame()

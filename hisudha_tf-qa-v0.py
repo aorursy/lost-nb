@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().system('pip install --upgrade ../input/tokenizers-repo/tokenizers-0.0.11-cp36-cp36m-manylinux1_x86_64.whl')
@@ -9,7 +8,6 @@ get_ipython().system('pip install --upgrade ../input/sacremoses-repo/sacremoses-
 get_ipython().system('pip install --upgrade ../input/transformers-repo/transformers-2.3.0-py3-none-any.whl')
 
 
-# In[2]:
 
 
 # coding=utf-8
@@ -1440,13 +1438,11 @@ def main():
 main()
 
 
-# In[3]:
 
 
 get_ipython().system('head submission.csv')
 
 
-# In[ ]:
 
 
 

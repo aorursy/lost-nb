@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -24,7 +23,6 @@ tf.config.optimizer.set_experimental_options(
     {"auto_mixed_precision": True})
 
 
-# In[2]:
 
 
 from tensorflow.keras.callbacks import *
@@ -104,7 +102,6 @@ class CyclicLR(Callback):
         K.set_value(self.model.optimizer.lr, self.clr())
 
 
-# In[3]:
 
 
 # read csv files
@@ -128,7 +125,6 @@ TOKENIZER = BertWordPieceTokenizer(f"{PATH}/vocab.txt", lowercase=True, add_spec
 train_df.head(10)
 
 
-# In[4]:
 
 
 
@@ -259,7 +255,6 @@ class TweetSentimentDataset(tf.data.Dataset):
         
 
 
-# In[5]:
 
 
 class BertQAModel(TFBertPreTrainedModel):
@@ -406,7 +401,6 @@ def jaccard(str1, str2):
     return float(len(c)) / (len(a) + len(b) - len(c))
 
 
-# In[6]:
 
 
 num_folds = 4
@@ -491,7 +485,6 @@ submission_df.loc[:, 'selected_text'] = selected_text_pred
 submission_df.to_csv("submission.csv", index=False)
 
 
-# In[ ]:
 
 
 

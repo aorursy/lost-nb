@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import os, keras
@@ -24,7 +23,6 @@ from tqdm import tqdm
 from tensorflow.keras.preprocessing.image import load_img, ImageDataGenerator, img_to_array, array_to_img
 
 
-# In[ ]:
 
 
 #Set some directories
@@ -32,7 +30,6 @@ trainHQ_zip_path = '/kaggle/input/carvana-image-masking-challenge/train_hq.zip'
 masks_zip_path = '/kaggle/input/carvana-image-masking-challenge/train_masks.zip'
 
 
-# In[ ]:
 
 
 import zipfile
@@ -47,7 +44,6 @@ print('Number of train images: ', len(os.listdir('/kaggle/working/train_hq')))
 print('Number of train masks: ', len(os.listdir('/kaggle/working/train_masks')))
 
 
-# In[ ]:
 
 
 #Display ids for images and masks.
@@ -59,7 +55,6 @@ for i in rnd_ind:
     print("Car image id: '{}' -- Corressponding Mask id '{}'".format(car_ids[i], mask_ids[i]))
 
 
-# In[ ]:
 
 
 #Pick the 1553th car&mask ids from ids lists.
@@ -82,7 +77,6 @@ ax[1].axis('off')
 ax[1].title.set_text('Car Mask')
 
 
-# In[ ]:
 
 
 main_image = cv2.imread('/kaggle/working/train_hq/' + car_id)
@@ -90,56 +84,47 @@ main_image = load_img('/kaggle/working/train_hq/' + car_id)
 main_image = np.asarray(main_image)
 
 
-# In[ ]:
 
 
 main_image.shape
 
 
-# In[ ]:
 
 
 plt.imshow(main_image)
 
 
-# In[ ]:
 
 
 mask_image = Image.open('/kaggle/working/train_masks/' + mask_id)
 #mask_image = load_img('/kaggle/working/train_masks/' + mask_id)
 
 
-# In[ ]:
 
 
 mask_image = np.asarray(mask_image)
 
 
-# In[ ]:
 
 
 plt.imshow(mask_image)
 
 
-# In[ ]:
 
 
 img_masked = cv2.bitwise_and(main_image, main_image, mask=mask_image)
 
 
-# In[ ]:
 
 
 plt.imshow(img_masked)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 #Randomly split car&mask ids list to training and validation lists.
@@ -153,7 +138,6 @@ print('Training images size: ', X_train_size)
 print('Validation images size: ', X_val_size)
 
 
-# In[ ]:
 
 
 #Input size could be 128 or 256 or 512 or 1024.
@@ -184,7 +168,6 @@ def data_generator(images_path, masks_path, image_ids, mask_ids, batch_size, img
         yield np.array(imgs, dtype=np.float16) / 255., np.array(masks, dtype=np.float16) / 255.
 
 
-# In[ ]:
 
 
 #Try out the generator, generate data samples from the validation set.
@@ -196,7 +179,6 @@ print('Images batch shape: ', imgs.shape)
 print('Masks batch shape: ', masks.shape)
 
 
-# In[ ]:
 
 
 #Plot output samples of the generator.
@@ -214,7 +196,6 @@ for i, (car, mask) in enumerate(zip(car_samples, mask_samples)):
 plt.show()
 
 
-# In[ ]:
 
 
 def dice_coef(y_true, y_pred):
@@ -245,7 +226,6 @@ def bce_dice_loss(y_true, y_pred):
     return loss
 
 
-# In[ ]:
 
 
 def get_unet_128(input_shape=(128, 128, 3),
@@ -360,7 +340,6 @@ def get_unet_128(input_shape=(128, 128, 3),
 uNet = get_unet_128()
 
 
-# In[ ]:
 
 
 #Prepare callbacks
@@ -368,7 +347,6 @@ LR_callback = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', patience=2, 
 EarlyStop_callback = keras.callbacks.EarlyStopping(monitor='val_loss',patience=10, restore_best_weights=True)
 
 
-# In[ ]:
 
 
 #Perpare data generators.
@@ -379,7 +357,6 @@ val_gen = data_generator('/kaggle/working/train_hq/', '/kaggle/working/train_mas
                            X_val_ids, y_val_ids, batch_size=batch_size)
 
 
-# In[ ]:
 
 
 history = uNet.fit_generator(train_gen, steps_per_epoch=int(X_train_size/batch_size),
@@ -388,20 +365,17 @@ history = uNet.fit_generator(train_gen, steps_per_epoch=int(X_train_size/batch_s
                              callbacks=[LR_callback, EarlyStop_callback])
 
 
-# In[ ]:
 
 
 uNet.save('unet_main1.h5')
 
 
-# In[ ]:
 
 
 uNet = tf.keras.models.load_model('../input/sir-unet/sir_unet.h5', custom_objects={'bce_dice_loss': bce_dice_loss, 'dice_coef':dice_coef})
 #load_model(modelPath, custom_objects={'mean_squared_abs_error': mean_squared_abs_error})
 
 
-# In[ ]:
 
 
 # Plot the loss and accuracy curves for training and validation
@@ -415,14 +389,12 @@ ax[1].plot(history.history['val_dice_coef'], color='r',label="Validation dice lo
 legend = ax[1].legend(loc='best', shadow=True)
 
 
-# In[ ]:
 
 
 #Perdict some imgs.
 pred_masks = uNet.predict(imgs)
 
 
-# In[ ]:
 
 
 fig, ax = plt.subplots(32, 3, figsize=(20,150))
@@ -442,7 +414,6 @@ for i in range(32):
 plt.show()
 
 
-# In[ ]:
 
 
 import shutil # for removing the directory
@@ -450,32 +421,27 @@ shutil.rmtree('/kaggle/working/train_hq')
 shutil.rmtree('/kaggle/working/train_masks')
 
 
-# In[ ]:
 
 
 # Prediction
 
 
-# In[ ]:
 
 
 input_image = imgs[0].astype('float32')
 input_image = np.asarray(input_image)
 
 
-# In[ ]:
 
 
 plt.imshow(input_image)
 
 
-# In[ ]:
 
 
 plt.imshow(masks[0, :, :, 0].astype('float32'))
 
 
-# In[ ]:
 
 
 pred_mask_image = np.reshape(pred_masks[0], (128, 128))
@@ -483,62 +449,52 @@ pred_mask_image = pred_mask_image > 0.5
 pred_mask_image = np.asarray(Image.fromarray(pred_mask_image, 'L'))
 
 
-# In[ ]:
 
 
 plt.imshow(pred_mask_image)
 
 
-# In[ ]:
 
 
 pred_masked_image = cv2.bitwise_and(input_image, input_image, mask=pred_mask_image)
 
 
-# In[ ]:
 
 
 plt.imshow(pred_masked_image)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 # Prediction
 
 
-# In[ ]:
 
 
 images = [cv2.imread(image) for image in glob.glob('../input/inputcar/input car/*.*')]
 #images = [cv2.imread(file) for file in glob.glob('path/to/files/*.jpg')]
 
 
-# In[ ]:
 
 
 images2 = images.copy()
 
 
-# In[ ]:
 
 
 images2[0].shape
 
 
-# In[ ]:
 
 
 #size_images = [cv2.imread(image) for image in glob.glob('../input/inputcar/input car/*.*')]
 
 
-# In[ ]:
 
 
 #image = PIL.Image.open("../input/inputcar/input car/0010-000222-before.jpg")
@@ -547,31 +503,26 @@ images2[0].shape
 #width, height = image.size
 
 
-# In[ ]:
 
 
 names = glob.glob('../input/inputcar/input car/*.*')
 
 
-# In[ ]:
 
 
 names[0]
 
 
-# In[ ]:
 
 
 names[0].split('/')[-1].split('.')[0]
 
 
-# In[ ]:
 
 
 len(images)
 
 
-# In[ ]:
 
 
 images = []
@@ -588,7 +539,6 @@ images.append(img_to_array(img))
 images = np.array(images, dtype=np.float32) / 255.
 
 
-# In[ ]:
 
 
 for i in range(len(images)):
@@ -598,37 +548,31 @@ for i in range(len(images)):
     images[i] = np.array(images[i]) / 255.
 
 
-# In[ ]:
 
 
 images = np.array(images)
 
 
-# In[ ]:
 
 
 images.shape
 
 
-# In[ ]:
 
 
 pred_masks = uNet.predict(images)
 
 
-# In[ ]:
 
 
 plt.imshow(pred_masks[0, :, :, 0])
 
 
-# In[ ]:
 
 
 plt.imshow(images2[0])
 
 
-# In[ ]:
 
 
 #pred_mask_image = np.reshape(pred_masks[0], (3200, 2400))
@@ -649,55 +593,46 @@ pred_mask_image = pred_mask_image > 0.5
 pred_mask_image = np.asarray(Image.fromarray(pred_mask_image, 'L'))
 
 
-# In[ ]:
 
 
 plt.imshow(pred_mask_image)
 
 
-# In[ ]:
 
 
 pred_mask_image = cv2.adaptiveThreshold(pred_mask_image, max_output_value, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, neighborhood_size, subtract_from_mean)
 
 
-# In[ ]:
 
 
 main_image = images2[0]
 
 
-# In[ ]:
 
 
 plt.imshow(main_image)
 
 
-# In[ ]:
 
 
 pred_masked_image = cv2.bitwise_and(main_image, main_image, mask=pred_mask_image)
 
 
-# In[ ]:
 
 
 plt.imshow(pred_masked_image)
 
 
-# In[ ]:
 
 
 pred_masked_image = cv2.resize(pred_masked_image, (3200, 2400))
 
 
-# In[ ]:
 
 
 matplotlib.pyplot.imsave('abc.jpeg', pred_masked_image)
 
 
-# In[ ]:
 
 
 for i in range(5, len(pred_masks)):
@@ -716,13 +651,11 @@ for i in range(5, len(pred_masks)):
     print(i)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 '''
@@ -733,37 +666,31 @@ Chirag Verma
 '''
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import os
@@ -17,7 +16,6 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[ ]:
 
 
 # Loading all the datasets provided on the competition
@@ -31,26 +29,22 @@ pos_cash_balance = pd.read_csv('../input/POS_CASH_balance.csv')
 previous_application = pd.read_csv('../input/previous_application.csv')
 
 
-# In[ ]:
 
 
 train.head()
 
 
-# In[ ]:
 
 
 train.info()
 
 
-# In[ ]:
 
 
 # Ploting how many clients with payment difficulties on the train dataset
 graph = sns.countplot(x="TARGET",data=train, palette='muted')
 
 
-# In[ ]:
 
 
 # Calculating how many clients with payment difficulties on the train dataset
@@ -60,7 +54,6 @@ print('Clients with payment difficulty: %s' % pay_diff)
 print('Clients with payment ok: %s' % pay_ok)
 
 
-# In[ ]:
 
 
 # Selecting only the numerical features in the Train dataset
@@ -99,33 +92,28 @@ numerical_features = train[['TARGET', 'SK_ID_CURR', 'CNT_CHILDREN', 'AMT_INCOME_
                             'AMT_REQ_CREDIT_BUREAU_QRT', 'AMT_REQ_CREDIT_BUREAU_YEAR']]
 
 
-# In[ ]:
 
 
 # Calculating the corelation between numerical features and the TARGET on the training dataset
 corelation = numerical_features.corr()['TARGET']
 
 
-# In[ ]:
 
 
 # Sorting the correlation to check wich feature is better correlated with the TARGET 
 corelation.abs().sort_values(ascending = False)[0:10]
 
 
-# In[ ]:
 
 
 bureau.head()
 
 
-# In[ ]:
 
 
 bureau.info()
 
 
-# In[ ]:
 
 
 # Ploting the histogram of the previous client accounts in other institutions
@@ -135,14 +123,12 @@ graph = sns.distplot(bureau_account_n)
 graph.set_xlabel("Number of Previous Credit Loans per Client")
 
 
-# In[ ]:
 
 
 # Describing the stats of the graph
 bureau_account_n.describe()
 
 
-# In[ ]:
 
 
 # Selecting only clients with active credit loans accounts on the Bureau dataset
@@ -151,7 +137,6 @@ bureau_active_account = active_account[active_account['CREDIT_ACTIVE'] == 'Activ
 bureau_active_account_n = bureau_active_account['CREDIT_ACTIVE'].groupby(bureau_active_account['SK_ID_CURR']).count()
 
 
-# In[ ]:
 
 
 # Ploting the histogram of the clients with active credit loans accounts
@@ -159,21 +144,18 @@ graph = sns.distplot(bureau_active_account_n)
 graph.set_xlabel("Number of Previous Active Credit Loans per Client")
 
 
-# In[ ]:
 
 
 # Describing the stats of the graph
 bureau_active_account_n.describe()
 
 
-# In[ ]:
 
 
 # Checking for null values on the debt amount feature
 print('There are %i accounts with null debt amount' %bureau['AMT_CREDIT_SUM_DEBT'].isnull().sum())
 
 
-# In[ ]:
 
 
 # Elimitating null values to better visualize the data and grouping by client SK_ID_CURR
@@ -182,7 +164,6 @@ bureau_client_debt = bureau_client_debt[bureau_client_debt['AMT_CREDIT_SUM_DEBT'
 bureau_client_debt_amount = bureau_client_debt.groupby(bureau_client_debt['SK_ID_CURR']).sum()
 
 
-# In[ ]:
 
 
 # Defining bins to better visualize the current debt per client
@@ -204,14 +185,12 @@ def amount_bins_debt(amount):
     return amount
 
 
-# In[ ]:
 
 
 # Transforming the total debt amount in bin sizes
 bureau_client_debt_bins = bureau_client_debt_amount['AMT_CREDIT_SUM_DEBT'].apply(amount_bins_debt)
 
 
-# In[ ]:
 
 
 # Ploting the current debt amount per client on all previous accounts
@@ -239,7 +218,6 @@ handles = [(h.get_text(),c.get_fc()) for h,c in zip(t,graph.patches)]
 graph.legend(handles, labels, handler_map={tuple : TextHandler()})
 
 
-# In[ ]:
 
 
 # Selecting due and overdue clients
@@ -256,7 +234,6 @@ graph.set_ylabel("Number of Clients")
 print('Due Clients: %s\nOverdue Clients: %s' %(bureau_due_n, bureau_overdue_n))
 
 
-# In[ ]:
 
 
 # Ploting the maximum days overdue of the clients
@@ -265,14 +242,12 @@ graph = sns.distplot(bureau_max_client_overdue)
 graph.set_xlabel("Maximum Days Overdue per Client")
 
 
-# In[ ]:
 
 
 # Describing the stats of the graph
 bureau_max_client_overdue.describe()
 
 
-# In[ ]:
 
 
 # Defining bins to better visualize the current amount past due per client
@@ -294,7 +269,6 @@ def amount_bins_overdue(overdue):
     return overdue
 
 
-# In[ ]:
 
 
 # Calculating the total current amount overdue per client
@@ -305,7 +279,6 @@ bureau_sum_amount_overdue = bureau_amount_overdue.sum()
 bureau_sum_amount_overdue_bins = bureau_sum_amount_overdue.apply(amount_bins_overdue)
 
 
-# In[ ]:
 
 
 # Ploting the current amount overdue per client
@@ -333,7 +306,6 @@ handles = [(h.get_text(),c.get_fc()) for h,c in zip(t,graph.patches)]
 graph.legend(handles, labels, handler_map={tuple : TextHandler()})
 
 
-# In[ ]:
 
 
 # Ploting the number of times credit was prolonged per client in all previous loan credit accounts
@@ -344,26 +316,22 @@ graph = sns.distplot(bureau_credit_prolong_client_n)
 graph.set_xlabel("Number of Credit Prolongued per Client")
 
 
-# In[ ]:
 
 
 # Describing the stats of the graph
 bureau_credit_prolong_client_n.describe()
 
 
-# In[ ]:
 
 
 previous_application.head()
 
 
-# In[ ]:
 
 
 previous_application.info()
 
 
-# In[ ]:
 
 
 # Ploting the histogram of the number of previous client accounts in Home Credit
@@ -372,14 +340,12 @@ graph = sns.distplot(prev_app_acc_n)
 graph.set_xlabel("Number of Previous Credit Loans per Client")
 
 
-# In[ ]:
 
 
 # Describing the stats of the graph
 prev_app_acc_n.describe()
 
 
-# In[ ]:
 
 
 # Grouping, sorting and selecting the top five credit purpose
@@ -391,7 +357,6 @@ graph = sns.barplot(y=most_common_purpose.index,x=most_common_purpose.values, pa
 graph.set_ylabel("Number of Application")
 
 
-# In[ ]:
 
 
 application_status = previous_application['SK_ID_PREV'].groupby(previous_application['NAME_CONTRACT_STATUS']).count()
@@ -401,14 +366,12 @@ graph = sns.barplot(y=application_status.index,x=application_status.values, pale
 graph.set_ylabel("Number of Application")
 
 
-# In[ ]:
 
 
 # Filtering the previous application with only refused previous applications
 refused_application = previous_application[previous_application['NAME_CONTRACT_STATUS'] == 'Refused']
 
 
-# In[ ]:
 
 
 # Printing the number and percentage of clients with previous refused applications
@@ -424,26 +387,22 @@ graph = sns.distplot(prev_app_refused_n)
 graph.set_xlabel("Number of Previous Refused Credit Loans per Client")
 
 
-# In[ ]:
 
 
 # Describing the stats of the graph
 prev_app_refused_n.describe()
 
 
-# In[ ]:
 
 
 installments_payments.head()
 
 
-# In[ ]:
 
 
 installments_payments.info()
 
 
-# In[ ]:
 
 
 # Filtering the installment days
@@ -457,7 +416,6 @@ day_payment['DELAYED'] = day_payment['DAYS_ENTRY_PAYMENT'] - day_payment['DAYS_I
 day_payment.head()
 
 
-# In[ ]:
 
 
 # Counting clients that delayed or not the payment
@@ -472,7 +430,6 @@ graph.set_ylabel("Number of Clients")
 print('Not_Delayed_Clients: %s\nDelayed_Clients: %s' %(inst_paym_not_delayed_clients_n, inst_paym_delayed_clients_n))
 
 
-# In[ ]:
 
 
 # Filtering the installment payment
@@ -490,7 +447,6 @@ amt_payment['AMT_DEBT'] = debt_instalment
 amt_payment.head()
 
 
-# In[ ]:
 
 
 # Calculating the total debt per client
@@ -505,19 +461,16 @@ print('With Installment Debt Clients: %s\nWithout Installment Debt Clients: %s' 
                                                                                    without_debt_client_n))
 
 
-# In[ ]:
 
 
 credit_card_balance.head()
 
 
-# In[ ]:
 
 
 credit_card_balance.info()
 
 
-# In[ ]:
 
 
 # selecting the credit card payment columns
@@ -541,7 +494,6 @@ amt_credit_payment['AMT_DEBT'] = amt_credit_payment['AMT_RECEIVABLE_PRINCIPAL'] 
 amt_credit_payment.head()
 
 
-# In[ ]:
 
 
 # Calculating the total debt per client
@@ -557,7 +509,6 @@ print('With Credit Card Debt Clients: %s\nWithout Credit Card Debt Clients: %s' 
                                                                                    without_credit_debt_client_n))
 
 
-# In[ ]:
 
 
 # Selecting only clients with credit card debit
@@ -569,7 +520,6 @@ debt = debt * -1
 graph = sns.distplot(debt)
 
 
-# In[ ]:
 
 
 # Descibing the stats of the graph
@@ -578,7 +528,6 @@ debt_df['Debt'] = debt
 debt_df.describe()
 
 
-# In[ ]:
 
 
 # Counting clients that delayed or not the payment
@@ -587,7 +536,6 @@ credit_overdue_clients_n = (dpd_credit_card.values > 0).sum()
 credit_due_clients_n = (dpd_credit_card.values == 0).sum()
 
 
-# In[ ]:
 
 
 # Ploting the result
@@ -597,19 +545,16 @@ graph.set_ylabel("Number of Clients")
 print('Due Credit Card Clients: %s\nOverdue Credit Card Clients: %s' %(credit_due_clients_n, credit_overdue_clients_n))
 
 
-# In[ ]:
 
 
 pos_cash_balance.head()
 
 
-# In[ ]:
 
 
 pos_cash_balance.info()
 
 
-# In[ ]:
 
 
 # Counting clients that are due and overdue with the cash loan
@@ -618,7 +563,6 @@ cash_loan_overdue_clients_n = (dpd_cash_loan.values > 0).sum()
 cash_loan_due_clients_n = (dpd_cash_loan.values == 0).sum()
 
 
-# In[ ]:
 
 
 # Ploting the result
@@ -628,14 +572,12 @@ graph.set_ylabel("Number of Clients")
 print('Due Cash Loan Clients: %s\nOverdue Cash Loan Clients: %s' %(cash_loan_due_clients_n, cash_loan_overdue_clients_n))
 
 
-# In[ ]:
 
 
 # Creating a new train dataset with the new features from other datasets
 new_train = numerical_features
 
 
-# In[ ]:
 
 
 # Joining with the new features from bureau dataset
@@ -665,7 +607,6 @@ new_train = new_train.join(bureau_credit_prolong_client_n, on='SK_ID_CURR')
 new_train.rename(columns={'CREDIT_CREDIT_PROLONG':'CNT_DAYS_PROLONG_BUREAU'}, inplace=True)
 
 
-# In[ ]:
 
 
 # Joining with the new features from previous application dataset
@@ -678,7 +619,6 @@ new_train = new_train.join(prev_app_refused_n, on='SK_ID_CURR')
 new_train.rename(columns={'SK_ID_PREV':'CNT_REFUSED_HC'}, inplace=True)
 
 
-# In[ ]:
 
 
 # Joining with the new features from instalment payment dataset
@@ -693,7 +633,6 @@ new_train = new_train.join(inst_paym_debt_client, on='SK_ID_CURR')
 new_train.rename(columns={'AMT_DEBT':'AMT_DEBT_INSTALLMENT_HC'}, inplace=True)
 
 
-# In[ ]:
 
 
 # Joining with the new features from credit card balance dataset
@@ -707,7 +646,6 @@ new_train = new_train.join(dpd_credit_card, on='SK_ID_CURR')
 new_train.rename(columns={'SK_DPD':'CNT_DPD_CREDIT_CARD_HC'}, inplace=True)
 
 
-# In[ ]:
 
 
 # Joining with the new features from pos cash balance dataset
@@ -716,7 +654,6 @@ new_train = new_train.join(dpd_cash_loan, on='SK_ID_CURR')
 new_train.rename(columns={'SK_DPD':'CNT_DPD_CASH_LOAN_HC'}, inplace=True)
 
 
-# In[ ]:
 
 
 # Dealing with missing values
@@ -724,14 +661,12 @@ new_train.rename(columns={'SK_DPD':'CNT_DPD_CASH_LOAN_HC'}, inplace=True)
 new_train[new_train.columns[106 :]] = new_train[new_train.columns[106 :]].fillna(0)
 
 
-# In[ ]:
 
 
 # Filling the numerical missing values with mean value
 new_train = new_train.fillna(new_train.mean())
 
 
-# In[ ]:
 
 
 # Spliting the new_train into features X and target Y components
@@ -739,7 +674,6 @@ y_train = new_train['TARGET']
 X_train = new_train.drop(['TARGET'], axis=1)
 
 
-# In[ ]:
 
 
 # Standardizing all the features to a normal distribution 
@@ -747,7 +681,6 @@ sc = StandardScaler()
 X_train_std = sc.fit_transform(X_train)
 
 
-# In[ ]:
 
 
 # Using PCA from silkit learn
@@ -755,7 +688,6 @@ pca = PCA()
 X_train_pca = pca.fit_transform(X_train_std)
 
 
-# In[ ]:
 
 
 # Ploting the individual and cumulative explained variance of the features
@@ -770,7 +702,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[ ]:
 
 
 # Ploting the result of the cumulative variance with 40 features
@@ -789,7 +720,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[ ]:
 
 
 

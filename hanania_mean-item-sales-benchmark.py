@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # To begin the competition, I tried to submit the average per item and per store.
@@ -16,7 +15,6 @@
 # Isn't this weird?
 
 
-# In[2]:
 
 
 import numpy as np # linear algebra
@@ -24,7 +22,6 @@ import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import datetime
 
 
-# In[3]:
 
 
 # reading the data and turning negative numbers of unit sales to 0
@@ -33,7 +30,6 @@ test_df = pd.read_csv('../input/test.csv')
 train_df['unit_sales'] = train_df['unit_sales'].apply(lambda x: max(0,x))
 
 
-# In[4]:
 
 
 # creating dictionaries of 3 types:
@@ -55,7 +51,6 @@ mean_dict_store = dict(zip(mean_per_store['store_nbr'], mean_per_item['unit_sale
 mean_all = np.mean(list(mean_dict_item.values()))
 
 
-# In[5]:
 
 
 # function which receives an instance and returns the most "specific" mean 
@@ -74,14 +69,12 @@ def calc_mean(x):
                 return mean_all
 
 
-# In[6]:
 
 
 # creating "predictions" using the function from the previous cell
 test_df['unit_sales'] = test_df[['store_nbr','item_nbr']].apply(calc_mean, axis=1)
 
 
-# In[7]:
 
 
 # saving to file

@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
 os.environ['OMP_NUM_THREADS'] = '4'
 
 
-# In[2]:
 
 
 # used for developing deep learning models
@@ -22,7 +20,6 @@ from torchvision import transforms, utils
 import torch.nn.functional as F
 
 
-# In[3]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -42,7 +39,6 @@ import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import time          #to get the system time
 
 
-# In[4]:
 
 
 import matplotlib.pyplot as plt
@@ -53,44 +49,37 @@ from sklearn.model_selection import train_test_split
 import math
 
 
-# In[5]:
 
 
 train = pd.read_csv('../input/train.tsv', sep='\t')
 test = pd.read_csv('../input/test.tsv', sep='\t')
 
 
-# In[6]:
 
 
 train.describe()
 
 
-# In[7]:
 
 
 test.describe()
 
 
-# In[8]:
 
 
 train.head()
 
 
-# In[9]:
 
 
 train.isnull().sum()
 
 
-# In[10]:
 
 
 test.isnull().sum()
 
 
-# In[11]:
 
 
 print("There are %d unique values in the category column." % train['category_name'].nunique())
@@ -100,7 +89,6 @@ print(train['category_name'].value_counts()[:5])
 print("There are %d items that do not have a label." % train['category_name'].isnull().sum())
 
 
-# In[12]:
 
 
 # reference: BuryBuryZymon at https://www.kaggle.com/maheshdadhich/i-will-sell-everything-for-free-0-55
@@ -109,7 +97,6 @@ def split_cat(text):
     except: return ("None", "None", "None")
 
 
-# In[13]:
 
 
 train['general_cat'], train['subcat_1'], train['subcat_2'] = zip(*train['category_name'].apply(lambda x: split_cat(x)))
@@ -118,7 +105,6 @@ test['general_cat'], test['subcat_1'], test['subcat_2'] = zip(*test['category_na
 test.head()
 
 
-# In[14]:
 
 
 print("There are %d unique first sub-categories." % train['general_cat'].nunique())
@@ -126,7 +112,6 @@ print("There are %d unique first sub-categories." % train['subcat_1'].nunique())
 print("There are %d unique second sub-categories." % train['subcat_2'].nunique())
 
 
-# In[15]:
 
 
 ### Plotting some histograms of categorical Variables
@@ -153,20 +138,17 @@ plt.xlabel("Class")
 plt.ylabel("Frequency")
 
 
-# In[16]:
 
 
 print("There are %d unique brand names in the training dataset." % train['brand_name'].nunique())
 
 
-# In[17]:
 
 
 fig, ax = plt.subplots(1, 1, figsize=(11, 7), sharex=True)
 sns.distplot(np.log(train['price'].values+1))
 
 
-# In[18]:
 
 
 def rmsle(y, y_pred):
@@ -176,7 +158,6 @@ def rmsle(y, y_pred):
 #Source: https://www.kaggle.com/marknagelberg/rmsle-function
 
 
-# In[19]:
 
 
 #HANDLE MISSING VALUES
@@ -194,7 +175,6 @@ print(train.shape)
 print(test.shape)
 
 
-# In[20]:
 
 
 train.isnull().sum()
@@ -202,7 +182,6 @@ train.isnull().sum()
 # category name into general, sub cat1 and sub cat2
 
 
-# In[21]:
 
 
 #PROCESS CATEGORICAL DATA
@@ -214,7 +193,6 @@ def encode_text(column):
     test[column+'_index'] = le.transform(test[column])
 
 
-# In[22]:
 
 
 encode_text('brand_name')
@@ -224,13 +202,11 @@ encode_text('subcat_2')
 encode_text('category_name')
 
 
-# In[23]:
 
 
 test.head()
 
 
-# In[24]:
 
 
 class Category:
@@ -255,7 +231,6 @@ class Category:
             self.word2count[word] += 1
 
 
-# In[25]:
 
 
 # Turn a Unicode string to plain ASCII, thanks to
@@ -281,7 +256,6 @@ def normalizeLine(sentence):
     return [normalizeString(s) for s in sentence.split('\t')]
 
 
-# In[26]:
 
 
 def prepareData(lang1,data):
@@ -295,7 +269,6 @@ def prepareData(lang1,data):
     return input_cat
 
 
-# In[27]:
 
 
 def indexesFromSentence(lang, sentence):
@@ -307,7 +280,6 @@ def variableFromSentence(lang, sentence):
     return indexes
 
 
-# In[28]:
 
 
 def token_fit(column):
@@ -319,25 +291,21 @@ def token_fit(column):
     test[column + '_seq'] = [variableFromSentence(cat1,normalizeLine(sentence.lower())[0])                                                       for sentence in test[column]]
 
 
-# In[29]:
 
 
 token_fit('name')
 
 
-# In[30]:
 
 
 token_fit('item_description')
 
 
-# In[31]:
 
 
 train.head()
 
 
-# In[32]:
 
 
 #SEQUENCES VARIABLES ANALYSIS
@@ -348,7 +316,6 @@ print("max name seq "+str(max_name_seq))
 print("max item desc seq "+str(max_item_description_seq))
 
 
-# In[33]:
 
 
 #EMBEDDINGS MAX VALUE
@@ -367,13 +334,11 @@ MAX_CONDITION = np.max([train.item_condition_id.max(), test.item_condition_id.ma
 MAX_CATEGORY_NAME = np.max([train.category_name_index.max(), test.category_name_index.max()])+1
 
 
-# In[34]:
 
 
 MAX_BRAND
 
 
-# In[35]:
 
 
 #SCALE target variable
@@ -383,19 +348,16 @@ train["target"] = target_scaler.fit_transform(train.target.values.reshape(-1,1))
 pd.DataFrame(train.target).hist()
 
 
-# In[36]:
 
 
 print (target_scaler.scale_,target_scaler.min_,target_scaler.data_min_,target_scaler.data_max_)
 
 
-# In[37]:
 
 
 train.head()
 
 
-# In[38]:
 
 
 #EXTRACT DEVELOPTMENT TEST
@@ -404,7 +366,6 @@ print(dtrain.shape)
 print(dvalid.shape)
 
 
-# In[39]:
 
 
 def pad(tensor, length):
@@ -414,7 +375,6 @@ def pad(tensor, length):
         return torch.split(tensor, length, dim=0)[0]
 
 
-# In[40]:
 
 
 class ToTensor(object):
@@ -435,7 +395,6 @@ class ToTensor(object):
                'target':torch.from_numpy(np.asarray(target))}
 
 
-# In[41]:
 
 
 # Define the Dataset to use in a DataLoader
@@ -483,7 +442,6 @@ class MercariDataset(Dataset):
         return sample
 
 
-# In[42]:
 
 
 mercari_datasets = {'train': MercariDataset(dtrain,transform=transforms.Compose([ToTensor()])), 
@@ -492,20 +450,17 @@ mercari_datasets = {'train': MercariDataset(dtrain,transform=transforms.Compose(
 dataset_sizes = {x: len(mercari_datasets[x]) for x in ['train', 'val']}
 
 
-# In[43]:
 
 
 mercari_dataloaders = {x: torch.utils.data.DataLoader(mercari_datasets[x], batch_size=50, shuffle=True) 
                                                            for x in ['train', 'val']}
 
 
-# In[44]:
 
 
 mercari_dataloaders
 
 
-# In[45]:
 
 
 # Some Useful Time functions
@@ -523,7 +478,6 @@ def timeSince(since, percent):
     return '%s (- %s)' % (asMinutes(s), asMinutes(rs))
 
 
-# In[46]:
 
 
 # Definition of the Pytorch Model
@@ -618,7 +572,6 @@ max_sizes = {'max_text':MAX_TEXT,'max_name_seq':MAX_NAME_SEQ,'max_item_desc_seq'
 deep_learn_model = RegressionNeural(max_sizes)
 
 
-# In[47]:
 
 
 # Training model function that uses the dataloader to load the data by Batch
@@ -695,7 +648,6 @@ def train_model(model, criterion, optimizer, num_epochs=1, print_every = 100):
     return model                         
 
 
-# In[48]:
 
 
 # Set the optimizer Criterion and train the model
@@ -711,7 +663,6 @@ train_model(deep_learn_model,criterion,optimizer_ft)
 # get a loss below 0.0341.  
 
 
-# In[49]:
 
 
 # Function to calculate the RMSLE on the validation data
@@ -721,7 +672,6 @@ def rmsle(y, y_pred):
     return (sum(to_sum) * (1.0/len(y))) ** 0.5
 
 
-# In[50]:
 
 
 # Validate the model results against validation data
@@ -775,14 +725,12 @@ def validate(model, print_every = 20, phase = 'val'):
     return y_pred_full, y_true_full
 
 
-# In[51]:
 
 
 # You can see the RMSE loss on validation data is very poor.  
 y_pred_val, y_true_val = validate(deep_learn_model)
 
 
-# In[52]:
 
 
 axes = plt.gca()
@@ -790,13 +738,11 @@ axes.set_ylim([0,100])
 plt.scatter(y_pred_val,y_true_val)
 
 
-# In[53]:
 
 
 y_pred_val.mean()
 
 
-# In[54]:
 
 
 y_true_val.mean()

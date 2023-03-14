@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 ###lafossのモデル　nakayaさんのものをほぼ使う。
 
 
-# In[2]:
 
 
 class CFG:
@@ -23,7 +21,6 @@ class CFG:
     n_fold=4
 
 
-# In[3]:
 
 
 import os
@@ -32,7 +29,6 @@ import pandas as pd
 os.listdir('../input/prostate-cancer-grade-assessment')
 
 
-# In[4]:
 
 
 train = pd.read_csv('../input/prostate-cancer-grade-assessment/train.csv')
@@ -40,31 +36,26 @@ test = pd.read_csv('../input/prostate-cancer-grade-assessment/test.csv')
 sample = pd.read_csv('../input/prostate-cancer-grade-assessment/sample_submission.csv')
 
 
-# In[5]:
 
 
 train.head()
 
 
-# In[6]:
 
 
 test.head()
 
 
-# In[7]:
 
 
 sample.head()
 
 
-# In[8]:
 
 
 train['isup_grade'].hist()
 
 
-# In[9]:
 
 
 # ====================================================
@@ -113,7 +104,6 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device
 
 
-# In[10]:
 
 
 # ====================================================
@@ -162,7 +152,6 @@ def seed_torch(seed=42):
 seed_torch(seed=42)
 
 
-# In[11]:
 
 
 def tile(img, sz=120, N=16):
@@ -236,7 +225,6 @@ class TestDataset_lafoss(Dataset):
         return images
 
 
-# In[12]:
 
 
 def get_transforms1(*, data):
@@ -265,7 +253,6 @@ def get_transforms1(*, data):
         ])
 
 
-# In[13]:
 
 
 import matplotlib.pyplot as plt
@@ -275,13 +262,11 @@ train_dataset = TrainDataset_lafoss(train, train[CFG.target_col], transform1=get
 train_loader = DataLoader(train_dataset, batch_size=1, shuffle=False)
 
 
-# In[14]:
 
 
 get_ipython().run_cell_magic('time', '', '\nfor img, label in train_loader:\n    for j in range(img.shape[1]):\n        plt.imshow(img[0][j])\n\n        plt.show()\n    break')
 
 
-# In[15]:
 
 
 if CFG.debug:
@@ -290,7 +275,6 @@ else:
     folds = train.copy()
 
 
-# In[16]:
 
 
 train_labels = folds[CFG.target_col].values
@@ -302,7 +286,6 @@ folds.to_csv('folds.csv', index=None)
 folds.head()
 
 
-# In[17]:
 
 
 import sys
@@ -310,7 +293,6 @@ sys.path.insert(0, '/kaggle/input/pytorch-efnet-ns/')
 import geffnet
 
 
-# In[18]:
 
 
 import torch
@@ -353,7 +335,6 @@ def fix_model_state_dict(state_dict):
     return new_state_dict
 
 
-# In[19]:
 
 
 weights_path = "/kaggle/input/panda-efnetb2-180-weight/fold0_efnet_2020-09-05-114528.pth"
@@ -363,7 +344,6 @@ model.load_state_dict(state_dict)
 print(model)
 
 
-# In[20]:
 
 
 from sklearn.metrics import cohen_kappa_score
@@ -420,13 +400,11 @@ class OptimizedRounder():
         return self.coef_['x']
 
 
-# In[ ]:
 
 
 
 
 
-# In[21]:
 
 
 Ng = 6
@@ -437,7 +415,6 @@ def Kloss(x, target,df):
     return 1.0 - (2.0*((x-y_shift)*(target-y_shift)).sum() - 1e-3)/        (((x-y_shift)**2).sum() + ((target-y_shift)**2).sum() + 1e-3)
 
 
-# In[22]:
 
 
 def train_fn(fold):
@@ -559,7 +536,6 @@ def train_fn(fold):
     #return preds, valid_labels
 
 
-# In[23]:
 
 
 """
@@ -572,7 +548,6 @@ for fold in range(CFG.n_fold):
     valid_labels.append(_valid_labels)"""
 
 
-# In[24]:
 
 
 """
@@ -590,7 +565,6 @@ score = quadratic_weighted_kappa(valid_labels, final_preds)
 LOGGER.debug(f'CV QWK: {score}')"""
 
 
-# In[25]:
 
 
 def inference(model, test_loader, device):
@@ -616,13 +590,11 @@ def inference(model, test_loader, device):
     return probs
 
 
-# In[26]:
 
 
 coefficients=np.array([0.5060126 ,1.50290319, 2.56765878, 3.3614414, 4.60342127])
 
 
-# In[27]:
 
 
 def submit_l(sample, coefficients, dir_name='test_images'):
@@ -646,7 +618,6 @@ def submit_l(sample, coefficients, dir_name='test_images'):
     return sample
 
 
-# In[28]:
 
 
 # check using train_images
@@ -658,7 +629,6 @@ submission['isup_grade'] = submission['isup_grade'].astype(int)
 submission.head()
 
 
-# In[29]:
 
 
 # test submission
@@ -668,7 +638,6 @@ submission.to_csv('submission.csv', index=False)
 submission.head()
 
 
-# In[ ]:
 
 
 

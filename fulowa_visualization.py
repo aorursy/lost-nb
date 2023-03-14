@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 
@@ -12,19 +11,16 @@ import os
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 df_train = pd.read_csv('../input/train.csv')
 
 
-# In[3]:
 
 
 df_structures = pd.read_csv('../input/structures.csv')
 
 
-# In[4]:
 
 
 import plotly.graph_objs as go
@@ -71,7 +67,6 @@ def plot(adjacency_list: dict, elements: list, x_coordinates: list,
     #offline.plot(fig, show_link=False, filename=plot_name + '.html')
 
 
-# In[5]:
 
 
 import re
@@ -144,7 +139,6 @@ class Graph:
             self.x_coordinates[position], self.y_coordinates[position], self.z_coordinates[position])
 
 
-# In[6]:
 
 
 """Molecular graph constructor.
@@ -173,45 +167,38 @@ molecule = Graph()
 #     y_coordinates=molecule.y_coordinates, z_coordinates=molecule.z_coordinates)
 
 
-# In[7]:
 
 
 df_structures.head()
 
 
-# In[8]:
 
 
 file = '../input/structures/dsgdb9nsd_028960.xyz'
 
 
-# In[9]:
 
 
 molecule.read_file(file)
 
 
-# In[10]:
 
 
 from plotly.offline import init_notebook_mode, iplot
 init_notebook_mode(connected=True)
 
 
-# In[11]:
 
 
 plot(adjacency_list=molecule.adjacency_list, elements=molecule.elements, x_coordinates=molecule.x_coordinates,
      y_coordinates=molecule.y_coordinates, z_coordinates=molecule.z_coordinates)
 
 
-# In[12]:
 
 
 len(molecule)
 
 
-# In[13]:
 
 
 molecule.elements

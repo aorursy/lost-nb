@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import pandas as pd
@@ -29,26 +28,22 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[2]:
 
 
 path = '../input/'
 
 
-# In[3]:
 
 
 train = pd.read_csv(path + 'train.csv')
 test = pd.read_csv(path + 'test.csv')
 
 
-# In[4]:
 
 
 print(str(train.shape) + ' | ' + str(test.shape))
 
 
-# In[5]:
 
 
 fig = plt.figure(figsize=(10, 8))
@@ -56,26 +51,22 @@ plt.title("Distribution of NA")
 train.isna().sum().sort_values(ascending=True).plot(kind='barh',colors='Blue', fontsize=12)
 
 
-# In[6]:
 
 
 pd.set_option("display.max_columns",100)
 train.head(3)
 
 
-# In[7]:
 
 
 train.dropna().shape
 
 
-# In[8]:
 
 
 train[['revenue', 'budget', 'runtime']].describe()
 
 
-# In[9]:
 
 
 train.loc[train['id'] == 16,'revenue'] = 192864          # Skinning
@@ -107,7 +98,6 @@ train.loc[train['id'] == 2696,'budget'] = 10000000       # Nurse 3-D
 train.loc[train['id'] == 2801,'budget'] = 10000000       # Fracture
 
 
-# In[10]:
 
 
 test.loc[test['id'] == 3889,'budget'] = 15000000       # Colossal
@@ -122,7 +112,6 @@ test.loc[test['id'] == 5591,'budget'] = 4000000        # The Orphanage
 test.loc[test['id'] == 4282,'budget'] = 20000000       # Big Top Pee-wee
 
 
-# In[11]:
 
 
 # TRAIN 
@@ -152,7 +141,6 @@ test.runtime[test.id == 6804] = 145 #Chaahat Ek Nasha..
 test.runtime[test.id == 7321] = 87 #El truco del manco
 
 
-# In[12]:
 
 
 power_six = train.id[train.budget > 1000][train.revenue < 100]
@@ -161,7 +149,6 @@ for k in power_six :
     train.loc[train['id'] == k,'revenue'] =  train.loc[train['id'] == k,'revenue'] * 1000000
 
 
-# In[13]:
 
 
 def visualize_distribution(y):
@@ -178,14 +165,12 @@ def visualize_probplot(y):
     plt.show()
 
 
-# In[14]:
 
 
 visualize_distribution(test.budget)
 visualize_probplot(test.budget)
 
 
-# In[15]:
 
 
 train['budget'] = np.log1p(train['budget'])
@@ -195,28 +180,24 @@ train['popularity'] = np.log1p(train['popularity'])
 test['popularity'] = np.log1p(test['popularity'])
 
 
-# In[16]:
 
 
 visualize_distribution(train.budget)
 visualize_probplot(train.budget)
 
 
-# In[17]:
 
 
 visualize_distribution(train.revenue)
 visualize_probplot(train.revenue)
 
 
-# In[18]:
 
 
 train = train.drop(['imdb_id', 'poster_path'], axis = 1)
 test = test.drop(['imdb_id', 'poster_path'], axis = 1)
 
 
-# In[19]:
 
 
 train.loc[train["cast"].notnull(),"cast"]=train.loc[train["cast"].notnull(),"cast"].apply(lambda x : ast.literal_eval(x))
@@ -226,7 +207,6 @@ test.loc[test["cast"].notnull(),"cast"]=test.loc[test["cast"].notnull(),"cast"].
 test.loc[test["crew"].notnull(),"crew"]=test.loc[test["crew"].notnull(),"crew"].apply(lambda x : ast.literal_eval(x))
 
 
-# In[20]:
 
 
 train.loc[train["cast"].notnull(),"cast"]=train.loc[train["cast"].notnull(),"cast"].apply(lambda x : [y["name"] for y in x if y["order"]<6]) 
@@ -234,7 +214,6 @@ train.loc[train["cast"].notnull(),"cast"]=train.loc[train["cast"].notnull(),"cas
 test.loc[test["cast"].notnull(),"cast"]=test.loc[test["cast"].notnull(),"cast"].apply(lambda x : [y["name"] for y in x if y["order"]<6]) 
 
 
-# In[21]:
 
 
 def get_DirProdExP(df):
@@ -251,40 +230,34 @@ def get_DirProdExP(df):
     return df
 
 
-# In[22]:
 
 
 train = get_DirProdExP(train)
 test = get_DirProdExP(test)
 
 
-# In[23]:
 
 
 train.head(3)
 
 
-# In[24]:
 
 
 train.describe()
 
 
-# In[25]:
 
 
 print ('budget: ' + str(sum(train['budget'].isna())) + ', popularity: ' + str(sum(train['popularity'].isna())) + 
       ', runtime: ' + str(sum(train['runtime'].isna())) + ', revenue: ' + str(sum(train['revenue'].isna())))
 
 
-# In[26]:
 
 
 f = ['budget', 'popularity', 'runtime', 'revenue']
 sns.pairplot(train[f].dropna())
 
 
-# In[27]:
 
 
 print("raw format:", train['spoken_languages'].iloc[0])
@@ -295,7 +268,6 @@ test['spoken_languages'] = test['spoken_languages'].apply(lambda x: list(map(lam
 train.head().spoken_languages
 
 
-# In[28]:
 
 
 train['nb_spoken_languages'] = train.spoken_languages.apply(len)
@@ -305,20 +277,17 @@ train['english_spoken'] = train.spoken_languages.apply(lambda x: 'en' in x)
 test['english_spoken'] = test.spoken_languages.apply(lambda x: 'en' in x)
 
 
-# In[29]:
 
 
 train['nb_spoken_languages'].value_counts()
 
 
-# In[30]:
 
 
 all_languages = pd.concat([train.original_language, test.original_language], axis=0).value_counts()
 all_languages[all_languages > 10]
 
 
-# In[31]:
 
 
 # Here are the main languages
@@ -336,7 +305,6 @@ train['language'] = train.original_language.apply(lambda x: dict_language[x])
 test['language'] = test.original_language.apply(lambda x: dict_language[x])
 
 
-# In[32]:
 
 
 # Apply the same preprocessing on the string values
@@ -346,46 +314,39 @@ test.genres = test.genres.apply(lambda x: list(map(lambda d: list(d.values())[1]
 train.genres.head()
 
 
-# In[33]:
 
 
 plt.bar(train.genres.apply(len).value_counts().sort_index().keys(), train.genres.apply(len).value_counts().sort_index())
 
 
-# In[34]:
 
 
 for v in train[train.genres.apply(len)==7][['title', 'genres']].values:
     print('film:', v[0], '\ngenres:', *v[1], '\n')
 
 
-# In[35]:
 
 
 genres = Counter(itertools.chain.from_iterable(pd.concat((train.genres, test.genres), axis=0).values))
 genres
 
 
-# In[36]:
 
 
 get_ipython().run_cell_magic('time', '', "temp_train = train[['id', 'genres']]\ntemp_test = test[['id', 'genres']]\n\nfor g in genres:\n    temp_train[g] = temp_train.genres.apply(lambda x: 1 if g in x else 0)\n    temp_test[g] = temp_test.genres.apply(lambda x: 1 if g in x else 0)\n    \nX_train = temp_train.drop(['genres', 'id'], axis=1).values\nX_test = temp_test.drop(['genres', 'id'], axis=1).values\n\n# Number of features we want for genres\nn_comp_genres = 3\n\n# Build the SVD pipeline\nsvd = make_pipeline(\n    TruncatedSVD(n_components=n_comp_genres),\n    Normalizer(norm='l2', copy=False)\n)\n\n# Here are our new features\nf_train = svd.fit_transform(X_train)\nf_test = svd.transform(X_test)")
 
 
-# In[37]:
 
 
 temp_train.head(3)
 
 
-# In[38]:
 
 
 my_genres = [g for g in genres if g != 'TV Movie']
 my_genres
 
 
-# In[39]:
 
 
 train = pd.concat([train, temp_train.iloc[:,1:]], axis=1) 
@@ -395,86 +356,73 @@ test = pd.concat([test, temp_test.iloc[:,1:]], axis=1)
 test.drop(test.columns[-1], axis=1, inplace = True)
 
 
-# In[40]:
 
 
 train.Keywords = train.Keywords.apply(lambda x: list(map(lambda d: list(d.values())[1], ast.literal_eval(x)) if isinstance(x, str) else []))
 test.Keywords = test.Keywords.apply(lambda x: list(map(lambda d: list(d.values())[1], ast.literal_eval(x)) if isinstance(x, str) else []))
 
 
-# In[41]:
 
 
 train['nb_keywords'] = train.Keywords.apply(len)
 test['nb_keywords'] = test.Keywords.apply(len)
 
 
-# In[42]:
 
 
 train.production_companies = train.production_companies.apply(lambda x: list(map(lambda d: list(d.values())[0], ast.literal_eval(x)) if isinstance(x, str) else []))
 test.production_companies = test.production_companies.apply(lambda x: list(map(lambda d: list(d.values())[0], ast.literal_eval(x)) if isinstance(x, str) else []))
 
 
-# In[43]:
 
 
 production_companies = Counter(itertools.chain.from_iterable(pd.concat((train.production_companies, test.production_companies), axis=0).values))
 print("Number of different production companies:", len(production_companies))
 
 
-# In[44]:
 
 
 train['nb_production_companies'] = train.production_companies.apply(len)
 test['nb_production_companies'] = test.production_companies.apply(len)
 
 
-# In[45]:
 
 
 get_ipython().run_cell_magic('time', '', "print('Applying SVD on production companies to create reduced features')\n\n# Factorizing all the little production companies into an 'other' variable\nbig_companies = [p for p in production_companies if production_companies[p] > 30]\ntrain.production_companies = train.production_companies.apply(lambda l: list(map(lambda x: x if x in big_companies else 'other', l)))\n\ntemp_train = train[['id', 'production_companies']]\ntemp_test = test[['id', 'production_companies']]\n\nfor p in big_companies + ['other']:\n    temp_train[p] = temp_train.production_companies.apply(lambda x: 1 if p in x else 0)\n    temp_test[p] = temp_test.production_companies.apply(lambda x: 1 if p in x else 0)\n    \nX_train = temp_train.drop(['production_companies', 'id'], axis=1).values\nX_test = temp_test.drop(['production_companies', 'id'], axis=1).values\n\n# Number of features we want for genres\nn_comp_production_companies = 3\n\n# Build the SVD pipeline\nsvd = make_pipeline(\n    TruncatedSVD(n_components=n_comp_production_companies),\n    Normalizer(norm='l2', copy=False)\n)\n\n# Here are our new features\nf_train = svd.fit_transform(X_train)\nf_test = svd.transform(X_test)\n\nfor i in range(n_comp_production_companies):\n    train['production_companies_reduced_{}'.format(i)] = f_train[:, i]\n    test['production_companies_reduced_{}'.format(i)] = f_test[:, i]")
 
 
-# In[46]:
 
 
 train[['production_companies_reduced_0', 'production_companies_reduced_1', 'production_companies_reduced_2']].head(3)
 
 
-# In[47]:
 
 
 train.production_countries = train.production_countries.apply(lambda x: list(map(lambda d: list(d.values())[0], ast.literal_eval(x)) if isinstance(x, str) else []))
 test.production_countries = test.production_countries.apply(lambda x: list(map(lambda d: list(d.values())[0], ast.literal_eval(x)) if isinstance(x, str) else []))
 
 
-# In[48]:
 
 
 production_countries = Counter(itertools.chain.from_iterable(pd.concat((train.production_countries, test.production_countries), axis=0).values))
 print("Number of different production companies:", len(production_countries))
 
 
-# In[49]:
 
 
 get_ipython().run_cell_magic('time', '', "print('Applying SVD on production countries to create reduced features')\n\n# Factorizing all the little production companies into an 'other' variable\nbig_countries = [p for p in production_countries if production_countries[p] > 30]\ntrain.production_countries = train.production_countries.apply(lambda l: list(map(lambda x: x if x in big_countries else 'other', l)))\n\ntemp_train = train[['id', 'production_countries']]\ntemp_test = test[['id', 'production_countries']]\n\nfor p in big_countries + ['other']:\n    temp_train[p] = temp_train.production_countries.apply(lambda x: 1 if p in x else 0)\n    temp_test[p] = temp_test.production_countries.apply(lambda x: 1 if p in x else 0)\n    \nX_train = temp_train.drop(['production_countries', 'id'], axis=1).values\nX_test = temp_test.drop(['production_countries', 'id'], axis=1).values\n\n# Number of features we want for genres\nn_comp_production_countries = 3\n\n# Build the SVD pipeline\nsvd = make_pipeline(\n    TruncatedSVD(n_components=n_comp_production_countries),\n    Normalizer(norm='l2', copy=False)\n)\n\n# Here are our new features\nf_train = svd.fit_transform(X_train)\nf_test = svd.transform(X_test)\n\nfor i in range(n_comp_production_countries):\n    train['production_countries_reduced_{}'.format(i)] = f_train[:, i]\n    test['production_countries_reduced_{}'.format(i)] = f_test[:, i]")
 
 
-# In[50]:
 
 
 train[['production_countries_reduced_0', 'production_countries_reduced_1', 'production_countries_reduced_2']].head(3)
 
 
-# In[51]:
 
 
 test.loc[test.release_date.isna(), 'release_date'] = '05/01/00'
 
 
-# In[52]:
 
 
 #Train
@@ -493,7 +441,6 @@ test['dayofweek'] = test.release_date.dt.dayofweek
 test['quarter'] = test.release_date.dt.quarter  
 
 
-# In[53]:
 
 
 dummies = pd.get_dummies(train['Month'] ,drop_first=True).rename(columns=lambda x: 'Month' + str(x))
@@ -502,7 +449,6 @@ train = pd.concat([train, dummies], axis=1)
 test = pd.concat([test, dummies2], axis = 1)
 
 
-# In[54]:
 
 
 ddow = pd.get_dummies(train['dayofweek'] ,drop_first=True).rename(columns=lambda x: 'dayofweek' + str(x))
@@ -511,13 +457,11 @@ train = pd.concat([train, ddow], axis=1)
 test = pd.concat([test, ddow2], axis = 1)
 
 
-# In[55]:
 
 
 print ('Train: ' + str(max(train.Year)) + ' Test: ' + str(max(test.Year)))
 
 
-# In[56]:
 
 
 #Train
@@ -526,13 +470,11 @@ train.loc[train['Year'] > 2018, 'Year'] = train.loc[train['Year'] > 2018, 'Year'
 test.loc[test['Year'] > 2018, 'Year'] = test.loc[test['Year'] > 2018, 'Year'].apply(lambda x: x - 100)
 
 
-# In[57]:
 
 
 test.Year.describe()
 
 
-# In[58]:
 
 
 data_plot = train[['revenue', 'Year']]
@@ -546,7 +488,6 @@ plt.xticks(np.arange(1960,2015,5))
 plt.show()
 
 
-# In[59]:
 
 
 f,ax = plt.subplots(figsize=(18, 10))
@@ -556,7 +497,6 @@ plt.ylabel("revenue")
 plt.show()
 
 
-# In[60]:
 
 
 f,ax = plt.subplots(figsize=(15, 10))
@@ -566,7 +506,6 @@ plt.ylabel("revenue")
 plt.show()
 
 
-# In[61]:
 
 
 def lazzy_feat(df):
@@ -582,14 +521,12 @@ def lazzy_feat(df):
     return df
 
 
-# In[62]:
 
 
 train = lazzy_feat(train)
 test = lazzy_feat(test)
 
 
-# In[63]:
 
 
 # NAs
@@ -612,7 +549,6 @@ train['isReleased'] = np.where(train['status'] != 'Released', 0, 1)
 test['isReleased'] = np.where(test['status'] != 'Released', 0, 1)
 
 
-# In[64]:
 
 
 features = ['budget', 
@@ -632,7 +568,6 @@ features = ['budget',
             'Month8', 'Month9',  'Month10', 'Month11', 'Month12']
 
 
-# In[65]:
 
 
 features += [col for col in train.columns if 'dayofweek' in col and col != "dayofweek"]
@@ -643,13 +578,11 @@ X = train[features]
 X['revenue'] = train.revenue
 
 
-# In[66]:
 
 
 X.columns
 
 
-# In[67]:
 
 
 cor_features = X[['revenue', 'budget',  'popularity', 'runtime', 'nb_spoken_languages', 'nb_production_companies',
@@ -659,13 +592,11 @@ sns.heatmap(cor_features.corr(), annot=True, linewidths=.7, fmt= '.2f',ax=ax)
 plt.show()
 
 
-# In[68]:
 
 
 X.columns
 
 
-# In[69]:
 
 
 X = X.drop(['revenue'], axis = 1)
@@ -673,7 +604,6 @@ y = train.revenue.apply(np.log1p)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=12, shuffle=True)
 
 
-# In[70]:
 
 
 params = {'objective': 'reg:linear', 
@@ -690,14 +620,12 @@ params = {'objective': 'reg:linear',
 }
 
 
-# In[71]:
 
 
 # create dataset for xgboost
 xgb_data = [(xgb.DMatrix(X_train, y_train), 'train'), (xgb.DMatrix(X_test, y_test), 'valid')]
 
 
-# In[72]:
 
 
 print('Starting training...')
@@ -710,7 +638,6 @@ xgb_model = xgb.train(params,
                   early_stopping_rounds=200)
 
 
-# In[73]:
 
 
 xgb_model_full = xgb.XGBRegressor(objective  = 'reg:linear', 
@@ -725,13 +652,11 @@ xgb_model_full = xgb.XGBRegressor(objective  = 'reg:linear',
           seed = 12, n_estimators = 2000)
 
 
-# In[74]:
 
 
 xgb_model_full.fit (X.values, y)
 
 
-# In[75]:
 
 
 catmodel = catb.CatBoostRegressor(iterations=10000, 
@@ -745,7 +670,6 @@ catmodel = catb.CatBoostRegressor(iterations=10000,
                                  random_seed=12)
 
 
-# In[76]:
 
 
 ti=time.time()
@@ -760,7 +684,6 @@ cat_pred_train=catmodel.predict(X)
 cat_pred_train[cat_pred_train<0]=0
 
 
-# In[77]:
 
 
 # Feature Importance CATB
@@ -770,7 +693,6 @@ fea_imp.plot(kind='barh', x='col', y='imp', figsize=(20, 12))
 plt.savefig('catboost_feature_importance.png')   
 
 
-# In[78]:
 
 
 fig, ax = plt.subplots(figsize=(20,12))
@@ -779,7 +701,6 @@ plt.title('XGBOOST Features (avg over folds)')
 plt.show()
 
 
-# In[79]:
 
 
 train_pred = xgb_model.predict(xgb.DMatrix(X), ntree_limit=xgb_model.best_ntree_limit)
@@ -791,7 +712,6 @@ plt.title("Real and predicted revenue of first 500 entries of train set",fontsiz
 plt.show()
 
 
-# In[80]:
 
 
 plt.figure(figsize=(32,15))
@@ -802,7 +722,6 @@ plt.title("Real and predicted revenue of first 500 entries of train set",fontsiz
 plt.show()
 
 
-# In[81]:
 
 
 plt.figure(figsize=(35,18))
@@ -814,7 +733,6 @@ plt.title("Real and predicted revenue of first 500 entries of train set",fontsiz
 plt.show()
 
 
-# In[82]:
 
 
 X_test = test[features]
@@ -822,13 +740,11 @@ xgb_pred = np.expm1(xgb_model.predict(xgb.DMatrix(X_test), ntree_limit=xgb_model
 pd.DataFrame({'id': test.id, 'revenue': xgb_pred}).to_csv('xgbsubmission.csv', index=False)
 
 
-# In[83]:
 
 
 xgb_pred[0]
 
 
-# In[84]:
 
 
 xgb_pred_f = np.expm1(xgb_model_full.predict(X_test.values))
@@ -836,7 +752,6 @@ pd.DataFrame({'id': test.id, 'revenue': xgb_pred_f}).to_csv('xgbfullsubmission.c
 xgb_pred_f[0]
 
 
-# In[85]:
 
 
 X_test = test[features]
@@ -844,26 +759,22 @@ catb_pred = np.expm1(catmodel.predict(X_test.values))
 pd.DataFrame({'id': test.id, 'revenue': catb_pred}).to_csv('catbsubmission.csv', index=False)
 
 
-# In[86]:
 
 
 catb_pred[0]
 
 
-# In[87]:
 
 
 ens_pred = 0.3*xgb_pred_f + 0.7*catb_pred
 pd.DataFrame({'id': test.id, 'revenue': ens_pred}).to_csv('enssubmission.csv', index=False)
 
 
-# In[88]:
 
 
 ens_pred[0]
 
 
-# In[89]:
 
 
 pd.DataFrame({'id': test.id, 'revenue': ens_pred}).head()

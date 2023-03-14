@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -14,7 +13,6 @@ import re
 print(os.listdir("../input"))
 
 
-# In[2]:
 
 
 get_ipython().system('wget https://storage.googleapis.com/bert_models/2018_10_18/uncased_L-12_H-768_A-12.zip')
@@ -23,7 +21,6 @@ with zipfile.ZipFile("uncased_L-12_H-768_A-12.zip","r") as zip_ref:
 get_ipython().system("ls 'uncased_L-12_H-768_A-12'")
 
 
-# In[3]:
 
 
 get_ipython().system('wget https://raw.githubusercontent.com/google-research/bert/master/modeling.py ')
@@ -31,7 +28,6 @@ get_ipython().system('wget https://raw.githubusercontent.com/google-research/ber
 get_ipython().system('wget https://raw.githubusercontent.com/google-research/bert/master/tokenization.py')
 
 
-# In[4]:
 
 
 import modeling
@@ -42,7 +38,6 @@ import spacy
 nlp = spacy.load('en_core_web_lg')
 
 
-# In[5]:
 
 
 test_df  = pd.read_table('../input/gap-coreference/gap-development.tsv')
@@ -51,7 +46,6 @@ val_df   = pd.read_table('../input/gap-coreference/gap-validation.tsv')
 test_df.head()
 
 
-# In[6]:
 
 
 #This code is referenced from 
@@ -135,7 +129,6 @@ def extract_dist_features(df):
     return dist_df
 
 
-# In[7]:
 
 
 test_dist_df = extract_dist_features(test_df)
@@ -146,7 +139,6 @@ train_dist_df = extract_dist_features(train_df)
 train_dist_df.to_csv('train_dist_df.csv', index=False)
 
 
-# In[8]:
 
 
 def count_char(text, offset):   
@@ -228,7 +220,6 @@ def embed_by_bert(df):
     return emb     
 
 
-# In[9]:
 
 
 test_emb = embed_by_bert(test_df)
@@ -239,7 +230,6 @@ train_emb = embed_by_bert(train_df)
 train_emb.to_json("contextual_embeddings_gap_train.json", orient = 'columns')
 
 
-# In[10]:
 
 
 from keras.layers import *
@@ -304,7 +294,6 @@ class End2End_NCR():
         return model
 
 
-# In[11]:
 
 
 def create_input(embed_df, dist_df):
@@ -346,7 +335,6 @@ def create_input(embed_df, dist_df):
             np.expand_dims(np.asarray(all_dist_PB),axis=1)],all_label
 
 
-# In[12]:
 
 
 new_emb_df = pd.concat([train_emb, validation_emb])
@@ -357,27 +345,23 @@ new_dist_df = new_dist_df.reset_index(drop=True)
 new_emb_df.head()
 
 
-# In[13]:
 
 
 X_train, y_train = create_input(new_emb_df, new_dist_df)
 X_test, y_test = create_input(test_emb, test_dist_df)
 
 
-# In[14]:
 
 
 model = End2End_NCR(word_input_shape=X_train[0].shape[1], dist_shape=X_train[3].shape[1]).build()
 model.summary()
 
 
-# In[15]:
 
 
 SVG(model_to_dot(model).create(prog='dot', format='svg'))
 
 
-# In[16]:
 
 
 min_loss = 1.0
@@ -407,13 +391,11 @@ for fold_n, (train_index, valid_index) in enumerate(kfold.split(X_train[0])):
         best_model = fold_n + 1
 
 
-# In[17]:
 
 
 del model
 
 
-# In[18]:
 
 
 #Use best model to predict
@@ -430,7 +412,6 @@ sub_df.loc[:, 'NEITHER'] = pd.Series(pred[:, 2])
 sub_df.head(20)
 
 
-# In[19]:
 
 
 from sklearn.metrics import log_loss
@@ -440,7 +421,6 @@ for i in range(len(y_test)):
 log_loss(y_one_hot, pred) # Calculate the log loss 
 
 
-# In[20]:
 
 
 sub_df.to_csv("submission.csv", index=False)

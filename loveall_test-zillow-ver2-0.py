@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np # linear algebra
@@ -157,7 +156,6 @@ print( submission.head() )
 submission.to_csv('final_solution_0.csv', float_format='%.6f',index=False)
 
 
-# In[2]:
 
 
 

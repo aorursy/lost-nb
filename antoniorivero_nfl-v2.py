@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 from sklearn.linear_model import LogisticRegression
@@ -18,26 +17,22 @@ import seaborn as sns
 # from scipy.spatial import distance_matrix
 
 
-# In[2]:
 
 
 pd.options.display.max_columns = 50
 pd.options.display.max_rows = 200
 
 
-# In[3]:
 
 
 train_data = pd.read_csv('/kaggle/input/nfl-big-data-bowl-2020/train.csv')
 
 
-# In[4]:
 
 
 train_data.head()
 
 
-# In[5]:
 
 
 plt.figure(figsize = (18,8))
@@ -49,14 +44,12 @@ plt.title('Yard Distribution for all Plays (with less than 40 Yards gained)')
 sns.boxplot(train_data.Yards[lambda x: x < 40])
 
 
-# In[6]:
 
 
 plt.figure(figsize = (40,8))
 sns.boxplot(x = 'WindSpeed', y = 'Yards', data = train_data.sample(frac = 0.2))
 
 
-# In[7]:
 
 
 # explore variables to see which have too much levels
@@ -79,7 +72,6 @@ plt.title('Categorical Variables with less than 300 levels')
 plt.tight_layout()
 
 
-# In[8]:
 
 
 def is_offense(row):
@@ -118,7 +110,6 @@ def off_vs_def_position_stats(row):
         
 
 
-# In[9]:
 
 
 def data_prep(data):
@@ -177,7 +168,6 @@ def data_prep(data):
     return data
 
 
-# In[10]:
 
 
 def train_model(data):
@@ -206,7 +196,6 @@ def train_model(data):
     return model, labels
 
 
-# In[11]:
 
 
 def make_prediction(test_df, sample_sub, model, labels):
@@ -219,14 +208,12 @@ def make_prediction(test_df, sample_sub, model, labels):
     return sample_sub
 
 
-# In[12]:
 
 
 from kaggle.competitions import nflrush
 env = nflrush.make_env()
 
 
-# In[13]:
 
 
 print('Preping Data')
@@ -236,7 +223,6 @@ print('Training')
 model, labels = train_model(preped_train_data)
 
 
-# In[14]:
 
 
 print('Predicting')

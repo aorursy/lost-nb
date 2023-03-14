@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import os
@@ -42,7 +41,6 @@ warnings.filterwarnings("ignore")
 pd.set_option('max_columns', None)
 
 
-# In[2]:
 
 
 path1 = '/kaggle/input/nfl-big-data-bowl-2020/train.csv'
@@ -57,7 +55,6 @@ else:
 df.info()
 
 
-# In[3]:
 
 
 plt.figure(figsize=(10, 5))
@@ -65,13 +62,11 @@ sns.distplot(df['Yards'], kde=True)
 plt.axvline(df['Yards'].mean(), 0, 1, c='r')
 
 
-# In[4]:
 
 
 df.head(22)
 
 
-# In[5]:
 
 
 def process_unique_features(df, fillna=-999):
@@ -205,7 +200,6 @@ def process_unique_features(df, fillna=-999):
     return static_features
 
 
-# In[6]:
 
 
 def defense_features(df):
@@ -307,7 +301,6 @@ def back_direction(orientation):
         return 0
 
 
-# In[7]:
 
 
 def process_player_acc(df):
@@ -392,7 +385,6 @@ def std_features(df):
     return tmp[['GameId', 'PlayId', 'dist_x_std']]
 
 
-# In[8]:
 
 
 def create_feature(df, fix_ori,
@@ -452,7 +444,6 @@ def create_feature(df, fix_ori,
     return table
 
 
-# In[9]:
 
 
 def get_crps(y_pred, y_valid):
@@ -463,7 +454,6 @@ def get_crps(y_pred, y_valid):
     return crps
 
 
-# In[10]:
 
 
 class CRPSCallback(Callback):
@@ -501,7 +491,6 @@ class CRPSCallback(Callback):
     
 
 
-# In[11]:
 
 
 def get_nn_model(x_tr,y_tr,x_val,y_val,step):
@@ -541,7 +530,6 @@ def get_nn_model(x_tr,y_tr,x_val,y_val,step):
     return model, crps, hist
 
 
-# In[12]:
 
 
 def train(X, yards, yards_label, step=2, fold=5):
@@ -567,7 +555,6 @@ def train(X, yards, yards_label, step=2, fold=5):
     return models, crpses, hists
 
 
-# In[13]:
 
 
 def get_y(yards):
@@ -577,7 +564,6 @@ def get_y(yards):
     return y
 
 
-# In[14]:
 
 
 def predict(x_te, models):
@@ -592,7 +578,6 @@ def predict(x_te, models):
     return y_pred
 
 
-# In[15]:
 
 
 fillna = -999
@@ -614,13 +599,11 @@ print('[*]input_df create')
 print(input_df.shape)
 
 
-# In[16]:
 
 
 input_df.head()
 
 
-# In[17]:
 
 
 scaler = StandardScaler()
@@ -631,7 +614,6 @@ yards_label = np.array([df['Yards_Label'][i] for i in range(0,df.shape[0],22)])
 models, crpses, hist = train(X, yards, yards_label=yards_label, step=2, fold=5)
 
 
-# In[18]:
 
 
 # x y std info
@@ -644,7 +626,6 @@ for i in range(10):
 print('loss mean: ', loss_sum/10)
 
 
-# In[19]:
 
 
 if  TRAIN_OFFLINE==True:
@@ -690,7 +671,6 @@ elif  TRAIN_OFFLINE==False:
 print('done')
 
 
-# In[ ]:
 
 
 

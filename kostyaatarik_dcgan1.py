@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 INPUT_HEIGHT = INPUT_WIDTH = 64
@@ -30,7 +29,6 @@ CONV_K = 7
 TRAINING_TIME_LIMIT = 32000
 
 
-# In[2]:
 
 
 import cv2
@@ -50,7 +48,6 @@ from itertools import chain, islice, count
 from IPython.core.display import display, HTML
 
 
-# In[3]:
 
 
 class batch_norm(object):
@@ -152,7 +149,6 @@ def add_coordinates(input_tensor):
     return tf.concat([input_tensor, coords], axis=-1)
 
 
-# In[4]:
 
 
 def timestamp(template='%Y%m%d_%H%M%S', ts=None):
@@ -163,7 +159,6 @@ def conv_out_size_same(size, stride):
     return int(np.ceil(float(size) / float(stride)))
 
 
-# In[5]:
 
 
 def transform_X(x):
@@ -171,7 +166,6 @@ def transform_X(x):
     return tf.image.random_flip_left_right(x)
 
 
-# In[6]:
 
 
 class DCGAN(object):
@@ -436,7 +430,6 @@ class DCGAN(object):
         print(f'{time.time() - start_time:.1f}s to generate {n_images} images')
 
 
-# In[7]:
 
 
 def get_bboxes(annotation_file):
@@ -480,7 +473,6 @@ def load_data():
 DOGS, BREEDS = load_data()
 
 
-# In[8]:
 
 
 def show_all_variables(verbose=False):
@@ -497,7 +489,6 @@ def show_flops():
     print('{:.3f} TFLOPs in graph.'.format(flops.total_float_ops / 10**12))
 
 
-# In[9]:
 
 
 tf.reset_default_graph()
@@ -509,13 +500,11 @@ show_all_variables()
 show_flops()
 
 
-# In[10]:
 
 
 gan.train()
 
 
-# In[11]:
 
 
 gan.generate_zip()

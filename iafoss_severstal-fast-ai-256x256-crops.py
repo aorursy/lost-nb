@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 get_ipython().run_line_magic('reload_ext', 'autoreload')
@@ -25,7 +24,6 @@ warnings.filterwarnings("ignore")
 fastai.__version__
 
 
-# In[2]:
 
 
 sz = 256
@@ -50,7 +48,6 @@ seed_everything(SEED)
 torch.backends.cudnn.benchmark = True
 
 
-# In[3]:
 
 
 #the code below modifies fast.ai functions to incorporate Hcolumns into fast.ai Dynamic Unet
@@ -147,7 +144,6 @@ def unet_learner(data:DataBunch, arch:Callable, pretrained:bool=True, blur_final
     return learn
 
 
-# In[4]:
 
 
 def dice(input:Tensor, targs:Tensor, iou:bool=False, eps:float=1e-8)->Rank0Tensor:
@@ -164,7 +160,6 @@ def dice(input:Tensor, targs:Tensor, iou:bool=False, eps:float=1e-8)->Rank0Tenso
     else: return ((intersect + eps) / (union - intersect + eps)).mean()
 
 
-# In[5]:
 
 
 class SegmentationLabelList(SegmentationLabelList):
@@ -195,7 +190,6 @@ def open_mask(fn:PathOrStr, div:bool=True, convert_mode:str='L', cls:type=ImageS
     return cls(x)
 
 
-# In[6]:
 
 
 df = pd.read_csv(HARD_NEGATIVE)
@@ -204,7 +198,6 @@ df.plot(x='index', y='pixels', kind = 'line');
 plt.yscale('log')
 
 
-# In[7]:
 
 
 stats = ([0.396,0.396,0.396], [0.179,0.179,0.179])
@@ -246,7 +239,6 @@ def get_data(fold):
 get_data(0).show_batch()
 
 
-# In[8]:
 
 
 @dataclass
@@ -283,7 +275,6 @@ class CSVLogger(LearnerCallback):
         self.file.write(str_stats + '\n')
 
 
-# In[9]:
 
 
 # Prediction with flip TTA
@@ -335,7 +326,6 @@ def dice_np(pred, targs, noise_th = 0, eps=1e-7):
     return np.array(dices).mean()
 
 
-# In[10]:
 
 
 dices = []
@@ -377,7 +367,6 @@ with zipfile.ZipFile('val_masks_tta.zip', 'w') as archive_out:
 dices = np.array(dices).mean(0)
 
 
-# In[11]:
 
 
 best_dice = dices.max()
@@ -389,7 +378,6 @@ plt.text(best_thr+50, best_dice-0.01, f'DICE = {best_dice:.3f}', fontsize=14);
 plt.show()
 
 
-# In[ ]:
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -20,7 +19,6 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 IDIR = '../input/'
@@ -61,7 +59,6 @@ print('orders {}: {}'.format(orders.shape, ', '.join(orders.columns)))
 print('train {}: {}'.format(train.shape, ', '.join(train.columns)))
 
 
-# In[3]:
 
 
 print('computing product f')
@@ -73,13 +70,11 @@ products = products.join(prods, on='product_id')
 products.set_index('product_id', drop=False, inplace=True)
 
 
-# In[4]:
 
 
 del prods
 
 
-# In[5]:
 
 
 print('add order info to priors')
@@ -88,7 +83,6 @@ priors = priors.join(orders, on='order_id', rsuffix='_')
 priors.drop('order_id_', inplace=True, axis=1)
 
 
-# In[6]:
 
 
 print('computing user f')
@@ -97,7 +91,6 @@ usr['average_days_between_orders'] = orders.groupby('user_id')['days_since_prior
 usr['nb_orders'] = orders.groupby('user_id').size().astype(np.int16)
 
 
-# In[7]:
 
 
 users = pd.DataFrame()
@@ -106,7 +99,6 @@ users['all_products'] = priors.groupby('user_id')['product_id'].apply(set)
 users['total_distinct_items'] = (users.all_products.map(len)).astype(np.int16)
 
 
-# In[8]:
 
 
 users = users.join(usr)
@@ -114,13 +106,11 @@ del usr
 users['average_basket'] = (users.total_items / users.nb_orders).astype(np.float32)
 
 
-# In[9]:
 
 
 get_ipython().run_cell_magic('time', '', "userXproduct = priors.copy()\nuserXproduct['user_product'] = userXproduct.product_id + userXproduct.user_id * 100000\nuserXproduct = userXproduct.sort_values('order_number')\nuserXproduct = userXproduct \\\n    .groupby('user_product', sort=False) \\\n    .agg({'order_id': ['size', 'last'], 'add_to_cart_order': 'sum'})\nuserXproduct.columns = ['nb_orders', 'last_order_id', 'sum_pos_in_cart']\nuserXproduct.astype(\n    {'nb_orders': np.int16, 'last_order_id': np.int32, 'sum_pos_in_cart': np.int16}, \n    inplace=True)\ndel priors")
 
 
-# In[10]:
 
 
 test_orders = orders[orders.eval_set == 'test']
@@ -128,7 +118,6 @@ train_orders = orders[orders.eval_set == 'train']
 train.set_index(['order_id', 'product_id'], inplace=True, drop=False)
 
 
-# In[11]:
 
 
 def features(selected_orders, labels_given=False):
@@ -194,25 +183,21 @@ def features(selected_orders, labels_given=False):
     return (df, labels)
 
 
-# In[12]:
 
 
 df_train, labels = features(train_orders, labels_given=True)
 
 
-# In[13]:
 
 
 meanValues = df_train.mean(axis=0)
 
 
-# In[14]:
 
 
 list(zip(df_train.columns, meanValues.tolist()))
 
 
-# In[15]:
 
 
 

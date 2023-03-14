@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -15,7 +14,6 @@ pd.set_option('display.max_columns', 50)
 pd.set_option('display.max_rows', 150)
 
 
-# In[2]:
 
 
 from keras.layers import Dense
@@ -24,7 +22,6 @@ from keras.callbacks import Callback, EarlyStopping
 from keras.layers import Dropout
 
 
-# In[3]:
 
 
 import os
@@ -33,7 +30,6 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
         print(os.path.join(dirname, filename))
 
 
-# In[4]:
 
 
 train = pd.read_csv('/kaggle/input/nfl-big-data-bowl-2020/train.csv', usecols=['GameId', 'PlayId', 'Team', 'X', 'Y', 'S', 'A', 'Dis',
@@ -44,13 +40,11 @@ train = pd.read_csv('/kaggle/input/nfl-big-data-bowl-2020/train.csv', usecols=['
                                                                                'PlayDirection', 'TimeHandoff', 'TimeSnap', 'Yards'])
 
 
-# In[5]:
 
 
 outcomes = train[['GameId','PlayId','Yards']].drop_duplicates()
 
 
-# In[6]:
 
 
 def create_features(df, deploy=False):
@@ -170,13 +164,11 @@ def create_features(df, deploy=False):
     return basetable
 
 
-# In[7]:
 
 
 get_ipython().run_line_magic('time', 'train_basetable = create_features(train, False)')
 
 
-# In[8]:
 
 
 X = train_basetable.copy()
@@ -189,27 +181,23 @@ for idx, target in enumerate(list(yards)):
 X.drop(['GameId','PlayId','Yards'], axis=1, inplace=True)
 
 
-# In[9]:
 
 
 scaler = StandardScaler()
 X = scaler.fit_transform(X)
 
 
-# In[10]:
 
 
 X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.15, random_state=12345)
 
 
-# In[11]:
 
 
 print(X_train.shape, X_val.shape)
 print(y_train.shape, y_val.shape)
 
 
-# In[12]:
 
 
 class Metric(Callback):
@@ -250,7 +238,6 @@ class Metric(Callback):
             callback.on_epoch_end(batch, logs)
 
 
-# In[13]:
 
 
 model = Sequential()
@@ -261,19 +248,16 @@ model.add(Dropout(0.2)) #dropout is a type of regularisation. Regularisation hel
 model.add(Dense(199, activation='softmax'))
 
 
-# In[14]:
 
 
 model.summary()
 
 
-# In[15]:
 
 
 model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=[])
 
 
-# In[16]:
 
 
 es = EarlyStopping(monitor='val_CRPS', 
@@ -284,19 +268,16 @@ es = EarlyStopping(monitor='val_CRPS',
 es.set_model(model)
 
 
-# In[17]:
 
 
 metric = Metric(model, [es], [(X_train,y_train), (X_val,y_val)])
 
 
-# In[18]:
 
 
 get_ipython().run_cell_magic('time', '', 'model.fit(X_train, y_train, callbacks=[metric], epochs=250, batch_size=1024)')
 
 
-# In[19]:
 
 
 class GP:
@@ -594,7 +575,6 @@ class GP:
                 0.250000*np.tanh(((((((((data[:,18]) + ((((data[:,4]) + (data[:,18]))/2.0)))) / 2.0)) + ((((data[:,18]) + (data[:,4]))/2.0)))) * (data[:,4])))    )
 
 
-# In[20]:
 
 
 import warnings

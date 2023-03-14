@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 import numpy as np
@@ -13,25 +12,21 @@ import pydensecrf.densecrf as dcrf
 from pydensecrf.utils import unary_from_labels, create_pairwise_bilateral, unary_from_softmax, create_pairwise_gaussian
 
 
-# In[ ]:
 
 
 ls ../input -a
 
 
-# In[ ]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[ ]:
 
 
 H = W = 96
 
 
-# In[ ]:
 
 
 def iou(y_true, y_pred):
@@ -41,7 +36,6 @@ def iou(y_true, y_pred):
     return(1 - jaccard(y_true, y_pred))
 
 
-# In[ ]:
 
 
 images = np.load('../input/validation-set/x.npy')
@@ -49,7 +43,6 @@ true_masks = np.load('../input/validation-set/y.npy')[..., 0]
 mask_probabilities = np.load('../input/validation-set/preds_valid.npy')[..., 0]
 
 
-# In[ ]:
 
 
 ix = np.random.randint(images.shape[0])
@@ -60,14 +53,12 @@ mask_proba = mask_probabilities[ix]
 mask_probas = np.rollaxis(np.stack([1 - mask_proba, mask_proba], axis = 2), 2, 0)
 
 
-# In[ ]:
 
 
 threshold = 0.69
 mask_pred = np.int32(mask_proba > threshold)
 
 
-# In[ ]:
 
 
 f, (ax1, ax2) = plt.subplots(2, 2, sharey=True,sharex=True)
@@ -80,48 +71,41 @@ ax2[1].imshow(mask_pred); ax2[1].axis('off'); ax2[1].set_title('Mask Prediction'
 plt.show()
 
 
-# In[ ]:
 
 
 initial_iou = iou(mask, mask_pred)
 
 
-# In[ ]:
 
 
 d_l = dcrf.DenseCRF2D(H, W, 2)
 d_p = dcrf.DenseCRF2D(H, W, 2)
 
 
-# In[ ]:
 
 
 U_from_labels = unary_from_labels(mask_pred, 2, gt_prob=0.7, zero_unsure=False)
 U_from_proba = unary_from_softmax(mask_probas)
 
 
-# In[ ]:
 
 
 d_l.setUnaryEnergy(U_from_labels)
 d_p.setUnaryEnergy(U_from_proba)
 
 
-# In[ ]:
 
 
 Q_l = d_l.inference(10)
 Q_p = d_p.inference(10)
 
 
-# In[ ]:
 
 
 map_l = np.argmax(Q_l, axis=0).reshape((H, W))
 map_p = np.argmax(Q_p, axis=0).reshape((H, W))
 
 
-# In[ ]:
 
 
 f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
@@ -129,13 +113,11 @@ ax1.imshow(U_from_labels.reshape((2, H,W))[0]); ax1.axis('off'); ax1.set_title('
 ax2.imshow(map_l); ax2.axis('off'); ax2.set_title('MAP from labels');
 
 
-# In[ ]:
 
 
 iou(mask, map_l) - initial_iou
 
 
-# In[ ]:
 
 
 f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
@@ -143,26 +125,22 @@ ax1.imshow(U_from_proba.reshape((2, H,W))[0]); ax1.axis('off'); ax1.set_title('U
 ax2.imshow(map_p); ax2.axis('off'); ax2.set_title('MAP from proba');
 
 
-# In[ ]:
 
 
 iou(mask, map_p) - initial_iou
 
 
-# In[ ]:
 
 
 pairwise_bilateral = create_pairwise_bilateral(sdims=(5, 5), schan=(0.01,), img=np.expand_dims(img, -1), chdim=2)
 
 
-# In[ ]:
 
 
 d_l = dcrf.DenseCRF2D(H, W, 2)
 d_p = dcrf.DenseCRF2D(H, W, 2)
 
 
-# In[ ]:
 
 
 d_l.setUnaryEnergy(U_from_labels)
@@ -172,7 +150,6 @@ d_p.setUnaryEnergy(U_from_proba)
 d_p.addPairwiseEnergy(pairwise_bilateral, compat=10)
 
 
-# In[ ]:
 
 
 def run_inference(d):
@@ -194,7 +171,6 @@ def run_inference(d):
     return(map_soln1, kl1, map_soln2, kl2, map_soln3, kl3)
 
 
-# In[ ]:
 
 
 map_soln1, kl1, map_soln2, kl2, map_soln3, kl3 = run_inference(d_l)
@@ -209,13 +185,11 @@ plt.subplot(1,3,3); plt.imshow(map_soln3);
 plt.title('MAP Solution with DenseCRF\n(16 steps, KL={:.2f})'.format(kl3)); plt.axis('off');
 
 
-# In[ ]:
 
 
 iou(mask, map_soln3) - initial_iou
 
 
-# In[ ]:
 
 
 map_soln1, kl1, map_soln2, kl2, map_soln3, kl3 = run_inference(d_p)
@@ -230,7 +204,6 @@ plt.subplot(1,3,3); plt.imshow(map_soln3);
 plt.title('MAP Solution with DenseCRF\n(16 steps, KL={:.2f})'.format(kl3)); plt.axis('off');
 
 
-# In[ ]:
 
 
 iou(mask, map_soln3) - initial_iou

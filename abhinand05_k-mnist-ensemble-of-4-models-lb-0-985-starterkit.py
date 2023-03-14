@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 import numpy as np
@@ -22,7 +21,6 @@ PATH = Path('../input/Kannada-MNIST/')
 os.listdir(PATH)
 
 
-# In[2]:
 
 
 # Setting Global Random Seed
@@ -35,14 +33,12 @@ def random_seed(seed_value, use_cuda):
 random_seed(42, True)
 
 
-# In[3]:
 
 
 train_csv = pd.read_csv(PATH/'train.csv')
 train_csv.head().T
 
 
-# In[4]:
 
 
 def get_data_labels(csv,label):
@@ -57,20 +53,17 @@ test_data, test_labels = get_data_labels(PATH/'test.csv','id')
 other_data, other_labels = get_data_labels(PATH/'Dig-MNIST.csv','label')
 
 
-# In[5]:
 
 
 print(f' Train:\tdata shape {train_data.shape}\tlabel shape {train_labels.shape}\n Test:\tdata shape {test_data.shape}\tlabel shape {test_labels.shape}\n Other:\tdata shape {other_data.shape}\tlabel shape {other_labels.shape}')
 
 
-# In[6]:
 
 
 plt.title(f'Training Label: {train_labels[43]}')
 plt.imshow(train_data[43,0],cmap='gray');
 
 
-# In[7]:
 
 
 np.random.seed(42)
@@ -83,7 +76,6 @@ valid_20_labels = train_labels[ran_20_pct_idx]
 valid_20_data = train_data[ran_20_pct_idx]
 
 
-# In[8]:
 
 
 class ArrayDataset(Dataset):
@@ -99,7 +91,6 @@ class ArrayDataset(Dataset):
         return self.x[i], self.y[i]
 
 
-# In[9]:
 
 
 train_ds = ArrayDataset(train_80_data,train_80_labels)
@@ -108,26 +99,22 @@ other_ds = ArrayDataset(other_data, other_labels)
 test_ds = ArrayDataset(test_data, test_labels)
 
 
-# In[10]:
 
 
 bs = 64 # Batch Size
 data = DataBunch.create(train_ds, valid_ds, test_ds=test_ds, bs=bs)
 
 
-# In[11]:
 
 
 get_ipython().system('mkdir models')
 
 
-# In[12]:
 
 
 MODEL_DIR = Path('../working/models/')
 
 
-# In[13]:
 
 
 class ConvNet1(nn.Module):
@@ -193,7 +180,6 @@ class ConvNet1(nn.Module):
         return out
 
 
-# In[14]:
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -203,7 +189,6 @@ conv_net_1 = ConvNet1()
 conv_net_1 = conv_net_1.to(device)
 
 
-# In[15]:
 
 
 class ConvNet2(nn.Module):
@@ -234,7 +219,6 @@ class ConvNet2(nn.Module):
         return out
 
 
-# In[16]:
 
 
 # Move to GPU
@@ -242,14 +226,12 @@ conv_net_2 = ConvNet2()
 conv_net_2 = conv_net_2.to(device)
 
 
-# In[17]:
 
 
 # Helper Function for Model 3
 def conv2(ni,nf,stride=2,ks=3): return conv_layer(ni,nf,stride=stride,ks=ks)
 
 
-# In[18]:
 
 
 conv_net_3 = nn.Sequential(
@@ -272,13 +254,11 @@ conv_net_3 = nn.Sequential(
 )
 
 
-# In[19]:
 
 
 get_ipython().system('ls ../input/pytorch-pretrained-models')
 
 
-# In[20]:
 
 
 rn18 = models.resnet18(pretrained=False)
@@ -286,7 +266,6 @@ rn18.load_state_dict(torch.load('../input/pytorch-pretrained-models/resnet18-5c1
 rn18.conv1 = Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
 
 
-# In[21]:
 
 
 learner1 = Learner(data, 
@@ -298,32 +277,27 @@ learner1 = Learner(data,
                  )
 
 
-# In[22]:
 
 
 learner1.lr_find()
 learner1.recorder.plot(suggestion=True)
 
 
-# In[23]:
 
 
 get_ipython().run_cell_magic('time', '', "learner1.fit_one_cycle(50, \n                      slice(1e-03),\n                      callbacks=[SaveModelCallback(learner1, \n                                                   every='improvement', \n                                                   monitor='accuracy', \n                                                   name='best_model_1')]\n                     ) ")
 
 
-# In[24]:
 
 
 learner1.recorder.plot_losses(skip_start=800)
 
 
-# In[25]:
 
 
 learner1.recorder.plot_metrics(skip_start=800)
 
 
-# In[26]:
 
 
 learner1.load('best_model_1')
@@ -335,7 +309,6 @@ submission_1.to_csv("submission.csv", index=False)
 submission_1.to_csv("submission_1.csv", index=False)
 
 
-# In[27]:
 
 
 learner2 = Learner(data, 
@@ -347,32 +320,27 @@ learner2 = Learner(data,
                  )
 
 
-# In[28]:
 
 
 learner2.lr_find()
 learner2.recorder.plot(suggestion=True)
 
 
-# In[29]:
 
 
 get_ipython().run_cell_magic('time', '', "learner2.fit_one_cycle(50, \n                      slice(1e-03),\n                      callbacks=[SaveModelCallback(learner2, \n                                                   every='improvement', \n                                                   monitor='accuracy', \n                                                   name='best_model_2')]\n                     ) ")
 
 
-# In[30]:
 
 
 learner2.recorder.plot_losses(skip_start=800)
 
 
-# In[31]:
 
 
 learner2.recorder.plot_metrics(skip_start=800)
 
 
-# In[32]:
 
 
 learner2.load('best_model_2')
@@ -383,7 +351,6 @@ submission_2 = pd.DataFrame({ 'id': ids,'label': y })
 submission_2.to_csv("submission_2.csv", index=False)
 
 
-# In[33]:
 
 
 learner3 = Learner(data, 
@@ -395,32 +362,27 @@ learner3 = Learner(data,
                  )
 
 
-# In[34]:
 
 
 learner3.lr_find()
 learner3.recorder.plot(suggestion=True)
 
 
-# In[35]:
 
 
 get_ipython().run_cell_magic('time', '', "learner3.fit_one_cycle(50, \n                      slice(8e-03),\n                      callbacks=[SaveModelCallback(learner3, \n                                                   every='improvement', \n                                                   monitor='accuracy', \n                                                   name='best_model_3')]\n                     ) ")
 
 
-# In[36]:
 
 
 learner3.recorder.plot_losses(skip_start=800)
 
 
-# In[37]:
 
 
 learner3.recorder.plot_metrics(skip_start=800)
 
 
-# In[38]:
 
 
 learner3.load('best_model_3')
@@ -431,7 +393,6 @@ submission_3 = pd.DataFrame({ 'id': ids,'label': y })
 submission_3.to_csv("submission_3.csv", index=False)
 
 
-# In[39]:
 
 
 learner4 = Learner(data, 
@@ -443,32 +404,27 @@ learner4 = Learner(data,
                  )
 
 
-# In[40]:
 
 
 learner4.lr_find()
 learner4.recorder.plot(suggestion=True)
 
 
-# In[41]:
 
 
 get_ipython().run_cell_magic('time', '', "learner4.fit_one_cycle(50, \n                      slice(1e-03),\n                      callbacks=[SaveModelCallback(learner4, \n                                                   every='improvement', \n                                                   monitor='accuracy', \n                                                   name='best_model_4')]\n                     ) ")
 
 
-# In[42]:
 
 
 learner4.recorder.plot_losses(skip_start=800)
 
 
-# In[43]:
 
 
 learner4.recorder.plot_metrics(skip_start=800)
 
 
-# In[44]:
 
 
 learner4.load('best_model_4')
@@ -479,7 +435,6 @@ submission_4 = pd.DataFrame({ 'id': ids,'label': y })
 submission_4.to_csv("submission_4.csv", index=False)
 
 
-# In[45]:
 
 
 flatten = lambda l: [np.float32(item) for sublist in l for item in sublist]
@@ -489,7 +444,6 @@ metrics_list_3 = flatten(learner3.recorder.metrics)
 metrics_list_4 = flatten(learner4.recorder.metrics)
 
 
-# In[46]:
 
 
 losses_1 = pd.DataFrame({'loss':learner1.recorder.val_losses, 'accuracy': metrics_list_1})
@@ -507,7 +461,6 @@ losses_4['loss'].sort_index().plot(ax=ax)
 ax.legend(['Model 2', 'Model 3', 'Model 4'])
 
 
-# In[47]:
 
 
 fig, ax = plt.subplots(1,1,figsize=(14, 6))
@@ -517,7 +470,6 @@ losses_1['loss'].sort_index().plot(ax=ax)
 ax.legend(['Model 1'])
 
 
-# In[48]:
 
 
 fig, ax = plt.subplots(1,1,figsize=(14, 6))
@@ -530,7 +482,6 @@ losses_4['accuracy'].sort_index().plot(ax=ax)
 ax.legend(['Model 1', 'Model 2', 'Model 3', 'Model 4'])
 
 
-# In[49]:
 
 
 preds_1 = (submission_1.label.value_counts()).rename('Model_1')
@@ -546,7 +497,6 @@ fig = sns.catplot(x='category', y='preds', hue='model',data=preds_data, kind='ba
 fig.set(title='Distribution of predictions for each model per category')
 
 
-# In[50]:
 
 
 blended_preds = np.round((submission_1['label'] + submission_2['label'] + 

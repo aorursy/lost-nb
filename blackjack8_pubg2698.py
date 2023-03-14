@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 #importing Libraries
@@ -11,50 +10,42 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-# In[2]:
 
 
 df_train = pd.read_csv("../input/pubg-finish-placement-prediction/train_V2.csv")
 
 
-# In[3]:
 
 
 df_train.head()
 
 
-# In[4]:
 
 
 df_train.shape
 
 
-# In[5]:
 
 
 df_train.info()
 
 
-# In[6]:
 
 
 df_train.isna().sum()
 
 
-# In[7]:
 
 
 df_train = df_train.dropna()
 df_train.shape
 
 
-# In[8]:
 
 
 df_train.describe()
 
 
-# In[9]:
 
 
 def show_countplot(col):
@@ -67,19 +58,16 @@ def show_distplot(col):
     plt.show()
 
 
-# In[10]:
 
 
 show_countplot('kills')
 
 
-# In[11]:
 
 
 df_train[df_train['kills']>=45]
 
 
-# In[12]:
 
 
 df_train['headshot_rate'] = df_train['headshotKills'] / df_train['kills']
@@ -87,115 +75,96 @@ df_train['headshot_rate'] = df_train['headshot_rate'].fillna(0)
 show_distplot('headshot_rate')
 
 
-# In[13]:
 
 
 df_train[(df_train['headshot_rate']==1) & (df_train['kills'] >=10)]
 
 
-# In[14]:
 
 
 df_train['longestKill'].describe()
 
 
-# In[15]:
 
 
 show_distplot('longestKill')
 
 
-# In[16]:
 
 
 df_train[df_train['longestKill']>=1050]
 
 
-# In[17]:
 
 
 show_countplot('teamKills')
 
 
-# In[18]:
 
 
 df_train[df_train['teamKills']>=5]
 
 
-# In[19]:
 
 
 df_train[['walkDistance', 'rideDistance', 'swimDistance']].describe()
 
 
-# In[20]:
 
 
 show_distplot('walkDistance')
 
 
-# In[21]:
 
 
 df_train[df_train['walkDistance']>=15000]
 
 
-# In[22]:
 
 
 show_distplot('rideDistance')
 
 
-# In[23]:
 
 
 df_train[df_train['rideDistance']>=35000]
 
 
-# In[24]:
 
 
 show_countplot('weaponsAcquired')
 
 
-# In[25]:
 
 
 df_train[df_train['weaponsAcquired']>=60]
 
 
-# In[26]:
 
 
 show_countplot('heals')
 
 
-# In[27]:
 
 
 df_train[(df_train['heals']>60)]
 
 
-# In[28]:
 
 
 df_train.drop(df_train[(df_train['kills']>=45) | (df_train['headshot_rate']==1) & (df_train['kills'] >=10)             | (df_train['longestKill']>=1050)|(df_train['teamKills']>=5) | (df_train['walkDistance']>=15000)            |(df_train['rideDistance']>=35000)|(df_train['weaponsAcquired']>=60)            |(df_train['heals']>60)  ].index,inplace=True)
 
 
-# In[29]:
 
 
 df_train.shape #we removed 162 rows
 
 
-# In[30]:
 
 
 print("The average person kills {:.4f} players, 99% of people have kill {} or less,while the most kill recorded is: {}".format(df_train['kills'].mean(),df_train['kills'].quantile(0.99)                                                     ,df_train['kills'].max()))
 
 
-# In[31]:
 
 
 data = df_train.copy()
@@ -206,19 +175,16 @@ plt.title("Kill Count",fontsize=15)
 plt.show()
 
 
-# In[32]:
 
 
 whos
 
 
-# In[33]:
 
 
 del data
 
 
-# In[34]:
 
 
 data = df_train[['kills','damageDealt']].copy()
@@ -230,53 +196,45 @@ plt.show()
 del data
 
 
-# In[35]:
 
 
 print("{} players ({:.4f}%) have won without single kill!! ".format(len(df_train[(df_train['kills']==0)                            &(df_train['winPlacePerc']==1)]),100*len(df_train[(df_train['kills']==0)                            &(df_train['winPlacePerc']==1)])/len(df_train)))
 print("{} players ({:.4f}%) have won without giving Zero Damage!! ".format(len(df_train[(df_train['damageDealt']==0)                            &(df_train['winPlacePerc']==1)]),100*len(df_train[(df_train['damageDealt']==0)                            &(df_train['winPlacePerc']==1)])/len(df_train)))
 
 
-# In[36]:
 
 
 sns.jointplot(x="winPlacePerc", y="kills", data=df_train, height=10, ratio=3, color="r")
 plt.show()
 
 
-# In[37]:
 
 
 16666/len(df_train)
 
 
-# In[38]:
 
 
 print("The average person walks for {:.1f}m, 99% of people have walked {}m or less, while the marathoner champion walked for {}m.".format(df_train['walkDistance'].mean(), df_train['walkDistance'].quantile(0.99), df_train['walkDistance'].max()))
 
 
-# In[39]:
 
 
 show_distplot('walkDistance')
 
 
-# In[40]:
 
 
 sns.jointplot(x="winPlacePerc", y="walkDistance",  data=df_train, height=10, ratio=3, color="lime")
 plt.show()
 
 
-# In[41]:
 
 
 sns.jointplot(x="winPlacePerc", y="rideDistance", data=df_train, height=10, ratio=3, color="y")
 plt.show()
 
 
-# In[42]:
 
 
 data = df_train.copy()
@@ -288,14 +246,12 @@ plt.show()
 del data
 
 
-# In[43]:
 
 
 print("The average person uses {:.1f} heal items, 99% of people use {} or less, while the doctor used {}.".format(df_train['heals'].mean(), df_train['heals'].quantile(0.99), df_train['heals'].max()))
 print("The average person uses {:.1f} boost items, 99% of people use {} or less, while the doctor used {}.".format(df_train['boosts'].mean(), df_train['boosts'].quantile(0.99), df_train['boosts'].max()))
 
 
-# In[44]:
 
 
 data = df_train.copy()
@@ -303,7 +259,6 @@ data = data[data['heals'] < data['heals'].quantile(0.99)]
 data = data[data['boosts'] < data['boosts'].quantile(0.99)]
 
 
-# In[45]:
 
 
 plt.figure(figsize=(12,5))
@@ -316,14 +271,12 @@ plt.show()
 del data
 
 
-# In[46]:
 
 
 sns.jointplot(x="winPlacePerc", y="heals", data=df_train, height=10, ratio=3, color="lime")
 plt.show()
 
 
-# In[47]:
 
 
 solo = df_train[df_train['numGroups']>50]
@@ -333,7 +286,6 @@ squad = df_train[(df_train['numGroups']<=25)]
 print("{} are solo,{} are duo,{} are squads".format(len(solo['kills']),len(duo['kills']),len(squad['kills'])))
 
 
-# In[48]:
 
 
 plt.figure(figsize=(12,5))
@@ -347,7 +299,6 @@ plt.grid()
 plt.show()
 
 
-# In[49]:
 
 
 f,ax1 = plt.subplots(figsize =(20,10))
@@ -370,7 +321,6 @@ plt.grid()
 plt.show()
 
 
-# In[50]:
 
 
 f,ax = plt.subplots(figsize=(15, 15))
@@ -378,7 +328,6 @@ sns.heatmap(df_train.corr(), annot=True, linewidths=.5, fmt= '.1f',ax=ax)
 plt.show()
 
 
-# In[51]:
 
 
 k = 5 #number of variables for heatmap
@@ -390,7 +339,6 @@ hm = sns.heatmap(cm, cbar=True, annot=True, square=True,                  fmt='.
 plt.show()
 
 
-# In[52]:
 
 
 # sns.set()
@@ -399,14 +347,12 @@ plt.show()
 # plt.show()
 
 
-# In[53]:
 
 
 # Since there is no var which tells us no. of player joined. So create one
 df_train['playersJoined'] = df_train.groupby('matchId')['matchId'].transform('count')
 
 
-# In[54]:
 
 
 plt.figure(figsize=(17,4))
@@ -414,7 +360,6 @@ sns.countplot(df_train[df_train['playersJoined']>49]['playersJoined'])
 plt.show()
 
 
-# In[55]:
 
 
 df_train['killsNorm'] = df_train['kills']*((100-df_train['playersJoined'])/100 + 1)
@@ -422,14 +367,12 @@ df_train['damageDealtNorm'] = df_train['damageDealt']*((100-df_train['playersJoi
 df_train[['playersJoined', 'kills', 'killsNorm', 'damageDealt', 'damageDealtNorm']][5:8]
 
 
-# In[56]:
 
 
 df_train['healsAndBoosts'] = df_train['heals']+df_train['boosts']
 df_train['totalDistance'] = df_train['walkDistance']+df_train['rideDistance']+df_train['swimDistance']
 
 
-# In[57]:
 
 
 df_train['boostsPerWalkDistance'] = df_train['boosts']/(df_train['walkDistance']+1) #The +1 is to avoid infinity
@@ -441,7 +384,6 @@ df_train['healsAndBoostsPerWalkDistance'].fillna(0, inplace=True)
 df_train[['walkDistance', 'boosts', 'boostsPerWalkDistance' ,'heals',  'healsPerWalkDistance', 'healsAndBoosts', 'healsAndBoostsPerWalkDistance']][40:45]
 
 
-# In[58]:
 
 
 df_train['killsPerWalkDistance'] = df_train['kills']/(df_train['walkDistance']+1) #The +1 is to avoid infinity
@@ -449,20 +391,17 @@ df_train['killsPerWalkDistance'].fillna(0, inplace=True)
 df_train[['kills', 'walkDistance', 'rideDistance', 'killsPerWalkDistance', 'winPlacePerc']].sort_values(by='killsPerWalkDistance').tail(10)
 
 
-# In[59]:
 
 
 df_train['team'] = [1 if i>50 else 2 if (i>25 & i<=50) else 4 for i in df_train['numGroups']]
 
 
-# In[60]:
 
 
 X = df_train.drop(columns=["winPlacePerc",'Id','groupId','matchId','matchType'],axis=1)
 y = df_train['winPlacePerc']
 
 
-# In[61]:
 
 
 from sklearn.model_selection import train_test_split
@@ -471,27 +410,23 @@ X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,random_state=
 reg = RandomForestRegressor(max_depth = 7,n_jobs  = -1)
 
 
-# In[62]:
 
 
 X.to_csv("X.csv")
 y.to_csv("y.csv")
 
 
-# In[63]:
 
 
 reg.fit(X_train,y_train)
 
 
-# In[64]:
 
 
 import pickle
 pickle.dump(reg,open("model",'wb'))
 
 
-# In[65]:
 
 
 
@@ -499,20 +434,17 @@ test = pd.read_csv('../input/pubg-finish-placement-prediction/train_V2.csv')
 score = reg.score(X_test,y_test)
 
 
-# In[66]:
 
 
 test.head()
 
 
-# In[67]:
 
 
 test = test.drop(columns = ['Id','groupId','matchId','matchType'],axis = 1)
 pred = reg.predict(test)
 
 
-# In[68]:
 
 
 print("Model Accuracy:{}".format(score))

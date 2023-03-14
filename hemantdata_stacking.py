@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -22,26 +21,22 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
 
 
 import pandas as pd
 import numpy as np
 
 
-# In[3]:
 
 
 df=pd.read_csv("../input/talkingdata-adtracking-fraud-detection/train_sample.csv")
 
 
-# In[4]:
 
 
 del df['attributed_time']
 
 
-# In[5]:
 
 
 # Convert click_time into time,month,year and day
@@ -54,37 +49,31 @@ df['time']=df[value].dt.hour
 df['day_week']=df[value].dt.weekday_name
 
 
-# In[6]:
 
 
 del df['click_time']
 
 
-# In[7]:
 
 
 df.head()
 
 
-# In[8]:
 
 
 df.tail()
 
 
-# In[9]:
 
 
 df.is_attributed.unique()
 
 
-# In[10]:
 
 
 df.is_attributed.value_counts()
 
 
-# In[11]:
 
 
 from sklearn.utils import shuffle
@@ -92,7 +81,6 @@ df = shuffle(df)
 df
 
 
-# In[12]:
 
 
 #Select the variables to be one-hot encoded
@@ -102,7 +90,6 @@ one_hot_encoded = pd.get_dummies(df[one_hot_features],drop_first=True)
 one_hot_encoded.info(verbose=True, memory_usage=True, null_counts=True)
 
 
-# In[13]:
 
 
 # Replacing categorical columns with dummies
@@ -110,27 +97,23 @@ fdf = df.drop(one_hot_features,axis=1)
 train = pd.concat([df, one_hot_encoded] ,axis=1)
 
 
-# In[14]:
 
 
 train.info()
 
 
-# In[15]:
 
 
 ones=train['is_attributed']==1
 zeros=train['is_attributed']==0
 
 
-# In[16]:
 
 
 ones=train[ones]
 zeros=train[zeros]
 
 
-# In[17]:
 
 
 import random
@@ -139,55 +122,46 @@ import random
 sample_zeros=zeros.sample(n=2043)
 
 
-# In[18]:
 
 
 ones.head()
 
 
-# In[19]:
 
 
 zeros.head()
 
 
-# In[20]:
 
 
 ones.shape
 
 
-# In[21]:
 
 
 sample_zeros.shape
 
 
-# In[22]:
 
 
 train_dataset=  pd.concat([ones, sample_zeros] ,axis=0)
 
 
-# In[23]:
 
 
 train_dataset.shape
 
 
-# In[24]:
 
 
 train_dataset['click_id'] = range(1, len(train_dataset)+1)
 
 
-# In[25]:
 
 
 train_dataset.head()
 
 
-# In[26]:
 
 
 #Standardize rows into uniform scale
@@ -196,19 +170,16 @@ X = train_dataset.drop(['is_attributed','click_id'],axis=1)
 y = train_dataset['is_attributed']
 
 
-# In[27]:
 
 
 del X['day_week']
 
 
-# In[28]:
 
 
 y.value_counts()
 
 
-# In[29]:
 
 
 # Importing Models
@@ -234,7 +205,6 @@ from sklearn.pipeline import Pipeline
 from sklearn.calibration import CalibratedClassifierCV
 
 
-# In[30]:
 
 
 # Defining random seed
@@ -280,7 +250,6 @@ skf = model_selection.ShuffleSplit(n_splits = n_folds, test_size = .3, train_siz
 std_sca = StandardScaler()
 
 
-# In[31]:
 
 
 MLA_columns = ['MLA Name', 'MLA Parameters','MLA Train Accuracy Mean', 'MLA Test Accuracy Mean', 'MLA Time']
@@ -315,7 +284,6 @@ for n, model in enumerate(first_models):
         
 
 
-# In[32]:
 
 
 #print and sort table: https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.sort_values.html
@@ -324,7 +292,6 @@ MLA_compare.sort_values(by = ['Differenec'], ascending = False, inplace = True)
 MLA_compare
 
 
-# In[33]:
 
 
 feature_names = X.columns
@@ -346,7 +313,6 @@ feat_imp_df['Light GBM'] = lgbm.feature_importances_
 feat_imp_df
 
 
-# In[34]:
 
 
 # http://www.menucool.com/rgba-color-picker
@@ -376,25 +342,21 @@ ax.grid(False)
 ax.set_title('Feature Importances for all Models');
 
 
-# In[35]:
 
 
 list(scaled_fi[:10].index)
 
 
-# In[36]:
 
 
 X =  X[list(scaled_fi[:10].index)].head()
 
 
-# In[37]:
 
 
 ordered_ranking.index[:-3:-1]
 
 
-# In[38]:
 
 
 train_v2 = train_dataset.drop(ordered_ranking.index[:-3:-1], axis=1)
@@ -403,20 +365,17 @@ X_v1 = train_v2.drop(['is_attributed'],axis=1)
 y_v1 = train_v2['is_attributed']
 
 
-# In[39]:
 
 
 X_v1.head()
 
 
-# In[40]:
 
 
 del X_v1['day_week']
 del X_v1['click_id']
 
 
-# In[41]:
 
 
 MLA_columns = ['MLA Name', 'MLA Parameters','MLA Train Accuracy Mean', 'MLA Test Accuracy Mean', 'MLA Time']
@@ -456,7 +415,6 @@ for n, model in enumerate(first_models):
       
 
 
-# In[42]:
 
 
 #print and sort table: https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.sort_values.html
@@ -465,14 +423,12 @@ MLA_compare.sort_values(by = ['Differenec'], ascending = False, inplace = True)
 MLA_compare
 
 
-# In[43]:
 
 
 first_models = [rf,lgbm,knn]
 first_model_names = ['rf','lgbm', 'knn'] 
 
 
-# In[44]:
 
 
 LGBM_param_grid = {'lgbm__learning_rate': [0.1],
@@ -514,7 +470,6 @@ KNN_param_grid = {
 }
 
 
-# In[45]:
 
 
 from sklearn.model_selection import GridSearchCV
@@ -552,31 +507,26 @@ for n,alg in enumerate(first_models):
 after_model_compare
 
 
-# In[46]:
 
 
 after_model_compare['Difference'] = (after_model_compare['Test Accuracy']-after_model_compare['Train Accuracy Mean'])*100
 
 
-# In[47]:
 
 
 after_model_compare
 
 
-# In[48]:
 
 
 X_v1.shape
 
 
-# In[49]:
 
 
 X_v1.head()
 
 
-# In[50]:
 
 
 vote_est = [
@@ -621,13 +571,11 @@ print("Soft Voting Test w/bin score 3*std: +/- {:.2f}". format(vote_soft_cv['tes
 print('-'*10)
 
 
-# In[51]:
 
 
 df_test=pd.read_csv("../input/talkingdata-adtracking-fraud-detection/test.csv")
 
 
-# In[52]:
 
 
 # Convert click_time into time,month,year and day
@@ -640,26 +588,22 @@ df_test['time']=df_test[value].dt.hour
 df_test['day_week']=df_test[value].dt.weekday_name
 
 
-# In[53]:
 
 
 del df_test['click_time']
 del df_test['click_id']
 
 
-# In[54]:
 
 
 df_test.head()
 
 
-# In[55]:
 
 
 del df_test['day_week']
 
 
-# In[56]:
 
 
 data={'day_week_Tuesday': np.zeros(df_test.shape[0], dtype='int'),
@@ -669,80 +613,67 @@ day = pd.DataFrame(data, columns = ['day_week_Thursday','day_week_Tuesday','day_
 day
 
 
-# In[57]:
 
 
 test = pd.concat([df_test, day] ,axis=1)
 
 
-# In[58]:
 
 
 test.head()
 
 
-# In[59]:
 
 
 del test['year']
 del test['month']
 
 
-# In[60]:
 
 
 test.head()
 
 
-# In[61]:
 
 
 submission=pd.read_csv("../input/talkingdata-adtracking-fraud-detection/sample_submission.csv")
 
 
-# In[62]:
 
 
 submission.shape
 
 
-# In[63]:
 
 
 submission.head()
 
 
-# In[64]:
 
 
 submission['is_attributed']=vote_soft.predict(test)
 
 
-# In[65]:
 
 
 submission.head()
 
 
-# In[66]:
 
 
 submission.shape
 
 
-# In[67]:
 
 
 submission.to_csv("submission.csv",index=False)
 
 
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
 
 
