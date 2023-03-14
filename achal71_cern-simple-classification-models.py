@@ -304,7 +304,7 @@ combi.shape
 
 # Run deep feature synthesis with transformation primitives
 #feature_matrix, feature_defs = ft.dfs(entityset = es, target_entity = 'TrainAndTest', max_depth = 2, verbose = 1,
-                                      agg_primitives = ['count','mean'])
+                                    #   agg_primitives = ['count','mean'])
 #                                      trans_primitives = ['add', 'multiply'])
 
 #feature_matrix.head()

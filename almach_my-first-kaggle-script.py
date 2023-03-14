@@ -31,7 +31,3 @@ from sklearn.ensemble import RandomForestRegressor
 model = RandomForestRegressor(n_estimators=100)
 
 model.fit(train_X, train_Y)
-
-train.Descript.
-
-

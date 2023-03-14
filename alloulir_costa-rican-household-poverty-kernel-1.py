@@ -825,8 +825,6 @@ submission_base.shape
 features = list(train_set.columns)
 # Imputation avec la médiane
 
-                      ('scaler', MinMaxScaler())])
-
 # Fit and transform training data
 train_set = pipeline.fit_transform(train_set)
 test_set = pipeline.transform(test_set)
@@ -867,7 +865,6 @@ print(f'10 Fold Cross Validation F1 Score = {round(cv_score_smote.mean(), 4)} wi
 
 model_no_smote.fit(train_set, train_labels)
 
-# Varibales importantes sur le jeu de données non rééquilibré
 feature_importances_no_smote = pd.DataFrame({'feature': features, 'importance': model_no_smote.feature_importances_})
 feature_importances_no_smote.head()
 
@@ -876,7 +873,6 @@ feature_importances_no_smote.head()
 
 model_smote.fit(train_set_balanced, train_labels_balanced)
 
-# Varibales importantes sur le jeu de données rééquilibré
 feature_importances_smote = pd.DataFrame({'feature': features, 'importance': model_smote.feature_importances_})
 feature_importances_smote.head()
 
@@ -938,7 +934,7 @@ def plot_feature_importances(df, n = 10, threshold = None):
         plt.figure(figsize = (8, 6))
         plt.plot(list(range(len(df))), df['cumulative_importance'], 'b-')
         plt.xlabel('Number of Features', size = 16); plt.ylabel('Cumulative Importance', size = 16); 
-        plt.title('Cumulative Feature Importance', size = 18);
+        plt.title('Cumulative Feature Importance', size = 18)
         
         # Number of features needed for threshold cumulative importance
         # This is the index (will need to add 1 for the actual number)
@@ -946,7 +942,7 @@ def plot_feature_importances(df, n = 10, threshold = None):
         
         # Add vertical line to plot
         plt.vlines(importance_index + 1, ymin = 0, ymax = 1.05, linestyles = '--', colors = 'red')
-        plt.show();
+        plt.show()
         
         print('{} features required for {:.0f}% of cumulative importance.'.format(importance_index + 1, 
                                                                                   100 * threshold))

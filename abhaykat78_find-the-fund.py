@@ -211,13 +211,6 @@ labelencoder_X = LabelEncoder()
 status = labelencoder_X.fit_transform(status)
 
 
-
-
-
-
-
-
-
 import keras
 
 
@@ -383,14 +376,6 @@ from sklearn.ensemble import RandomForestClassifier
 from IPython.display import display
 from sklearn import metrics
 
-
-
-
-new
-
-
-
-
 m = RandomForestRegressor(n_jobs=-1)
 m.fit(new.drop([848], axis=1), new[848])
 
@@ -431,11 +416,11 @@ def preprocess(df,b):
     multi_label = np.zeros((len(df[:,0]),len(b)))
     print(multi_label.shape)
     for i in range(len(df[:,0])):
-        x = df[i,1]
-        l = x.split("|")
-        for y in l:
-          if i in b.keys():
-            multi_label[i,b[y]]=1
+      x = df[i,1]
+      l = x.split("|")
+      for y in l:
+        if i in b.keys():
+          multi_label[i,b[y]]=1
     print(df.shape)
     df = np.delete(df, 1, axis=1)
     df = np.hstack((multi_label,df))
@@ -459,7 +444,7 @@ def preprocess(df,b):
     new = new.drop([841],axis=1)
     new[843] = new[843].fillna(new[843].mean())
     for i in range(4):
-        new[844+i] = new[844+i].fillna(new[844+i].mean())
+      new[844+i] = new[844+i].fillna(new[844+i].mean())
 
     return new
 

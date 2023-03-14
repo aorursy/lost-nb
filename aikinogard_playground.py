@@ -56,6 +56,4 @@ np.reshape(mat.values, (x_range, y_range))
 
 mat.values.shape
 
-place_mat = [[mat["ix] for j in range(y_range)] for i in range(x_range)]
-
 

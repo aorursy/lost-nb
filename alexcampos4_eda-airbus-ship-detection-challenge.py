@@ -24,12 +24,6 @@ plt.rc('ytick', labelsize=20)
 
 
 
-
-ls ../input
-
-
-
-
 # Read Data
 df = pd.read_csv('../input/airbus-ship-detection/train_ship_segmentations.csv')
 df.head()

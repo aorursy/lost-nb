@@ -329,14 +329,6 @@ head = ["id","toxic","severe_toxic","obscene","threat","insult","identity_hate"]
 df_new.to_csv('cv_gru_output.csv', columns = head, index=False)
 
 
-
-
-for id, p in enumerate(prediction):
-    
-
-
-
-
 MODEL_NAME = 'cnn_wiki_tox_v3'
 wiki_model = ToxModel()
 wiki_model.train(wiki['train'], wiki['dev'], text_column = 'comment', label_column = 'is_toxic', model_name = MODEL_NAME)

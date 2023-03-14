@@ -198,7 +198,7 @@ model.fit_generator(train_gen,
 
 
 
-Fine Tune some inception modules:
+# Fine Tune some inception modules:
 
 
 

@@ -62,14 +62,14 @@ pixels_example = trdf.EncodedPixels.values[0]
 
 fig, ax = plt.subplots(1, 2)
 fig.set_size_inches((12, 4))
-ax[0].hist(trdf.Height);
-ax[1].hist(trdf.Width);
+ax[0].hist(trdf.Height)
+ax[1].hist(trdf.Width)
 
 
 
 
 img = plt.imread(train_path + train_names[0])
-plt.imshow(img);
+plt.imshow(img)
 
 
 

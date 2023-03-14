@@ -56,32 +56,6 @@ get_ipython().system('ls')
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import pathlib
 from fastai.vision import *
 from fastai.metrics import error_rate , accuracy
@@ -132,22 +106,7 @@ print(os.listdir("/content/data/Coins"))
 get_ipython().system('mv /content/newdata/val /content/newdata/valid ')
 print(os.listdir("../content/newdata"))
 
-
-
-
-rm -rf /content/newdata/train/*
-
-
-
-
 print(os.listdir("../content/newdata/train"))
-
-
-
-
-mv  -v /content/data/Coins/* /content/newdata/train/
-
-
 
 
 print(os.listdir("../content/newdata/train/taiwan"))

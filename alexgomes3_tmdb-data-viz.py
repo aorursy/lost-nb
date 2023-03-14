@@ -64,7 +64,7 @@ df_train.isna().mean()
 df_aux = df_train.copy()
 df_aux['release_date'] = pd.to_datetime(df_aux.release_date)
 df_dates_to_correct = df_aux['release_date'] > pd.datetime(2019, 2, 1)
-df_aux.loc[df_dates_to_correct, 'release_date'] = df_aux.loc[df_dates_to_correct, 'release_date']                                                            .apply(lambda t: pd.datetime(t.year-100, t.month, t.day))
+df_aux.loc[df_dates_to_correct, 'release_date'] = df_aux.loc[df_dates_to_correct, 'release_date'].apply(lambda t: pd.datetime(t.year-100, t.month, t.day))
 df_aux = df_aux.set_index("release_date").sort_index()
 # df_aux.resample("Y").mean().revenue.plot()
 df_aux["is_american"] = df_aux.production_countries.str.contains("United States of America")
@@ -262,7 +262,7 @@ def apply_custom_transformations(df):
     df_res["belongs_to_a_collection"] = (~df_res.belongs_to_collection.isna()).astype(np.float)
     df_res['release_date'] = pd.to_datetime(df_res.release_date)
     df_dates_to_correct = df_res['release_date'] > ref_date
-    df_res.loc[df_dates_to_correct, 'release_date'] = df_res.loc[df_dates_to_correct, 'release_date']                                                                .apply(lambda t: pd.datetime(t.year-100, t.month, t.day))
+    df_res.loc[df_dates_to_correct, 'release_date'] = df_res.loc[df_dates_to_correct, 'release_date'].apply(lambda t: pd.datetime(t.year-100, t.month, t.day))
     df_res['days_since_release'] = (df_res.release_date - ref_date).dt.days
     df_res = df_res.select_dtypes(np.number).set_index("id")
     
@@ -291,17 +291,7 @@ sns.heatmap(df_FE.corr())
 
 X, y = split_x_y(df_train)
 logy = np.log(y)
-
-
-
-
-                    ElasticNetCV(cv = 5, n_jobs=2))
 cross_val_pipeline(pipe, X, logy)
-
-
-
-
-                    XGBRegressor(booster='gblinear', n_estimators=500, n_jobs=2))
 cross_val_pipeline(pipe, X, logy)
 
 

@@ -170,19 +170,6 @@ dfa.columns
 
 
 
-dfa.iloc[0:2][[col for col in dfa.columns if col not in ['B', 'C']] ]
-
-
-
-
-col for col in df_train.columns if col not in ['target', 'ID_code']
-
-
-
-
-
-
-
 
 
 

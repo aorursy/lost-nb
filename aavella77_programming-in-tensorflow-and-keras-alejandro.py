@@ -5,9 +5,9 @@
 
 # Intro
 
-**This is Lesson 3 in the [Deep Learning](https://www.kaggle.com/learn/deep-learning) track**  
+# **This is Lesson 3 in the [Deep Learning](https://www.kaggle.com/learn/deep-learning) track**  
 
-At the end of this lesson, you will be able to write TensorFlow and Keras code to use one of the best models in computer vision.
+# At the end of this lesson, you will be able to write TensorFlow and Keras code to use one of the best models in computer vision.
 
 # Lesson
 

@@ -3,112 +3,39 @@
 
 
 
-#足し算
-3+2
+print("出力したい内容")
 
 
-
-
-
-
-
-
-
-#引き算
-3-2
-
-
-
-
-#掛け算
-3*2
-
-
-
-
-#割り算
-3/2
-
-
-
-
-print("出力したい内容")#とします
-
-
-
-
-#指数
 print(2**3)
 print(10**9+7)
 
-#nで割ったあまり
 print(5%3)
 print(7%3)
 
-#切り捨て割り算
 print(7//2)
 
-
-
-
-#変数を使うと便利
-
-#xに3を代入
 x=3
 print(x)
 print(x+10,x*20,x**30)
 
-#xの値を更新（xにx+1を再代入）
 x=x+1
 print(x)
-#これは省略して以下のようにかける
 x+=1
 
-
-
-
-'''
-重要！！！！！！！！！！！
-"1"　と　1　は異なる
-
-上は数字の１と２であるが、
-下は「１」「２」という文字である
-'''
 print(1+2)#3
 print("1"+"2")#12
-#このちがいがわかりましたでしょうか？
 
-
-
-
-#↑のようにpythonではstring同士の足し算が可能
 print('あいう'+'えお')
 
-#しかし文字を''で囲まずにprintするとエラー
-print(あいうえお)
+print("あいうえお")
 
-
-
-
-#「Hello,World!」という文字列を出力してみよう
 print("Hello,World!")
 
-
-
-
-#tips:割り算に注意
-
-#割り算の答えは勝手にfloatになる
 print(6/2)
 
-#防止するには
-print(6//2)
+print(6/2)
 
-#あるいは
 print(int(6/2))
-
-
-
 
 x=10000
 
@@ -133,95 +60,48 @@ else:
 
 print(x!=y)
 
-#「同じかどうか」の判定には==を使う、否定の場合は!=
-
-
-
-
-#nが偶数なら２で割って、奇数ならそのまま出力するコードを書こう
 n=12345
-
-
-
 
 lstr=['a','b','c']
 lint=[1,1,2,3,5,8]
 
-
-
-
-#長さの取得...なんこのデータが入っているのか
 print(len(lint))
 
-#要素（リストに入っているデータ）へのアクセス
-#pythonでは、前から0,1,2番目..と数える
 print(lstr[1])
 
 if lint[3]+lint[4]==lint[5]:
     print('fivo')
 
 
-
-
-#要素の書き換え
 lint[2]+=100
 print(lint)
 
-#要素の追加
 lstr.append('d')
 print(lstr)
 
-#strのlist化
 st='あいうえお'
 lstr2=list(st)
 print(lstr2)
 
-
-
-
-#データがかの確認
 a = "abcd"
 print(type(a))
 b = 1234
 print(type(b))
 
-
-
-
-#スライス
-#[左端:右端+1:何個飛ばし]でリストの一部を切り出せる
 print(lstr2[1:4])
 
-
-
-
-#tips:リストの反転
 #list[::-1]
 print(lstr2[::-1])
 
-
-
-
-#tips:整数のリストはrangeで作れる
-#range(スタート,ゴール+1,何個飛ばし)
 lnum=list(range(1,15,2))
 print(lnum)
 
-#スタート、何個飛ばしは省略可
 lnum2=list(range(5))
 print(lnum2)
-
-
-
 
 for i in range(1,10):
     if i%2==0:
     print(i)
-
-#変数iにリストの中身を一つずつ代入してその都度下のコードを実行している
-
-
-
 
 su=0
 fact=1
@@ -231,43 +111,19 @@ for j in range(1,20):
 print(su,fact)
 
 
-
-
 list=['x','y','z']
 s=''
 for i in list:
     s+=i
 print(s)
 
-
-
-
-#ある動作をn回やりたいときに重宝
-
 for i in range(10):
     print('WOW!')
 
-
-
-
-#条件を満たしている間繰り返し続ける while もある(遅い)
 n=100
 while n>0:
     n-=1
     print(n)
-
-
-
-
-#3
-
-
-
-
-#4
-
-
-
 
 def po(a,b):
     return a*b
@@ -278,267 +134,108 @@ print(c*3)
 
 
 def po(a,b):
-    print(a**b)#aのb乗
+    print(a**b)
 po(a,b)
 
 
-
-
 import os
-#今いるディレクトリの表示
+
 print(os.getcwd())
 
-
-#パス（住所のようなもの）で指定したディレクトリの配下にあるものをリストで表示
 x = os.listdir("/kaggle/input")
 print(x)
 print("データ型",type(x))
 
-
-
-
-#パス（住所のようなもの）で指定したディレクトリに移動
 os.chdir("/kaggle/input/house-prices-dataset")
-print(os.getcwd())#移動したかわかる
+print(os.getcwd())
 
 
-
-
-#パス（住所のようなもの）で指定したディレクトリを新規に作成
 os.mkdir("/kaggle/working/new_dir")
-print(os.listdir("/kaggle/working"))#できた
-
-
-
-
-#ここで
-
-
-
-
-
-
-
-
-
-
-
-
-
+print(os.listdir("/kaggle/working"))
 
 os.chdir("/kaggle/input/house-prices-dataset")
 get_ipython().system('ls')
 
-
-
-
-#まずは読み込み
 import pandas as pd
 
 house=pd.read_csv("/kaggle/input/house-prices-dataset/train.csv")
-print(type(house))#DataFrameというデータ型です。
+print(type(house))#DataFrame
 print(len(house))
-
-
-
 
 house.shape
 
-
-
-
-house.head(10)#上からK行のデータを参照できます。
-
-
-
+house.head(10)
 
 df_1 = pd.DataFrame({'Bob': ['I liked it.', 'It was awful.'], 'Sue': ['Pretty good.', 'Bland.']})
 
-
-
-
-#DataFrame.shapeで大きさを得ます。
 df_1.shape
 
-
-
-
-df_1.head()#DataFrameは自作できます。{}はdictというデータ型です。
-
-
-
+df_1.head()#DataFrame
 
 s_1 = pd.Series([1, 2, 3, 4, 5])
-#これは自分でdfを作成するときにちょっと使ったりします。
-
-
-
 
 house.LotArea
 
-
-
-
 house["LotArea"]
 
-
-
-
-house["LotArea"][0]#0行目
-
-
-
+house["LotArea"][0]
 
 house.iloc[0]
 
-
-
-
-house.iloc[:, 0]#スライスにおいて『 : 』は”任意の”を表します。この場合は全ての行とそれに対応する0列目を取ってきている。という意味です。
-
-
-
-
-#ここに
-
-
-
+house.iloc[:, 0]
 
 a = [1,4,6]
-house.iloc[a, 0]#indexにはlistを入れても良いです。
-
-
-
+house.iloc[a, 0]
 
 house.loc[:, ['MSSubClass', 'Utilities', 'LotShape']]
 
-
-
-
 house.iloc[:, 0:10]
-
-
-
 
 house.loc[:, 0:10]
 
-
-
-
 house.loc[house["LotShape"] == 'Reg']
-
-
-
 
 reviews.loc[(house["LotShape"] == 'Reg') & (house["MiscVal"] >= 10)]
 
-
-
-
-house.YrSold#dtype: int64なので格納されているのは整数です。
-
-
-
+house.YrSold#dtype: int64
 
 house.loc[house.YrSold.isin([2006, 2007])]
 
-
-
-
 house["new_column_1"]="WOW"
-
-
-
-
-#ここに
-
-
-
 
 house.describe()
 
-
-
-
-house.mean()#統計値の一つを見ることもできます。
-
-
-
+house.mean()
 
 house["SaleCondition"].unique()#
 
-
-
-
 house["SaleCondition"]..value_counts()
 
-
-
-
 house_SalePrice_mean = house.SalePrice.mean()
-house["SalePrice"].map(lambda p: p - house_SalePrice_mean)#順に適応していく
+house["SalePrice"].map(lambda p: p - house_SalePrice_mean)
 
-
-
-
-#各行に対して自作の関数を適応させる（細かいことをさせるために）ときはapply
 def remean_points(row):
     row.SalePrice = row.SalePrice - house_SalePrice_mean
     return row
 
 house.apply(remean_points, axis="SalePrice")
 
-
-
-
 house.head()
-
-
-
-
-#ここに
-
-
-
 
 house.groupby("SaleCondition").SaleCondition.count()
 
-
-
-
 house.groupby("SaleCondition").count()
 
-
-
-
 df_ = house.groupby("SaleCondition")
-df_.head()#df.groupby(列)はdfを列で集計した新しい表これに集計関数を.func()でつけて使う
-
-
-
+df_.head()
 
 df_.apply(lambda df: df.MSZoning.iloc[0])?
 
-
-
-
 house=pd.read_csv("/kaggle/input/house-prices-dataset/train.csv")
-#複数の列について集計...列名をlistで囲う
+
 house.groupby(['SalePrice', 'MoSold']).max()
 
-
-
-
-#複数の関数を適応
 house.groupby(['SalePrice']).price.agg([len, min, max])
-
-
-
-
-#並べ替え...df.sort_values(by="列の名前")大きい順にするのは調べてください『python df　sort』
-
-
-
 
 import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplitlib', 'inline#notebookで画像などを表示させるための宣言')
@@ -580,10 +277,6 @@ print(img.shape)
 plt.imshow(img)
 plt.show()
 
-
-
-
-#画像の反転
 flip0=cv2.flip(img,0)
 plt.imshow(flip0)
 plt.show()
@@ -596,9 +289,6 @@ flip2=cv2.flip(img,-1)
 plt.imshow(flip2)
 plt.show()
 
-
-
-
 #resize
 print(img.shape)
 resize =cv2.resize(img,(224,224))
@@ -606,10 +296,6 @@ print(resize.shape)
 plt.imshow(resize)
 plt.show()
 
-
-
-
-#回転
 import cv2
 height=img.shape[0]
 width=img.shape[1]
@@ -622,25 +308,10 @@ plt.show()
 
 
 
-
-#トリミング
 clip=img[40:height-20,40:width-20]
 print(clip.shape)
 plt.imshow(clip)
 plt.show()
-
-
-
-
-#ここに白黒化
-
-
-
-
-
-
-
-
 
 import numpy as np
 import pandas as pd
@@ -655,7 +326,7 @@ import glob
 
 get_ipython().run_line_magic('matplotlib', 'inline')
 
-def crop(image): #引数は画像の相対パス
+def crop(image):
     # 
     img = cv2.imread(image)
     
@@ -678,33 +349,24 @@ def crop(image): #引数は画像の相対パス
     contours = cv2.findContours(img2, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[0]
 
     # 
-    x1 = [] #x座標の最小値
-    y1 = [] #y座標の最小値
-    x2 = [] #x座標の最大値
-    y2 = [] #y座標の最大値
-    for i in range(1, len(contours)):# i = 1 は画像全体の外枠になるのでカウントに入れない
+    x1 = [] 
+    y1 = [] 
+    x2 = []
+    y2 = [] 
+    for i in range(1, len(contours)):# i = 1 
         ret = cv2.boundingRect(contours[i])
         x1.append(ret[0])
         y1.append(ret[1])
         x2.append(ret[0] + ret[2])
         y2.append(ret[1] + ret[3])
 
-    # 輪郭の一番外枠を切り抜き
+
     x1_min = min(x1)
     y1_min = min(y1)
     x2_max = max(x2)
     y2_max = max(y2)
     croparea = cv2.rectangle(bgr, (x1_min, y1_min), (x2_max, y2_max), (255, 0, 0), 3)
 
-
-
-
-#csvの読み込みをして、train_csvについてhead()を表示してください
-
-
-
-
-#モデルがしっかり動くかどうかの確認のために何件かとってくる
 train = train.sample(n=100, random_state=2020)
 
 
@@ -713,20 +375,9 @@ train = train.sample(n=100, random_state=2020)
 train.head()
 
 
-
-
-
-
-
-
-
 labels = train.iloc[:,1:]
 labels.head()
 
-
-
-
-#使いそうなライブラリ
 from sklearn.model_selection import KFold,StratifiedKFold
 from sklearn.model_selection import train_test_split
 from keras import backend as K
@@ -749,9 +400,6 @@ from keras.utils import np_utils
 import cv2
 
 
-
-
-#使うモデル
 vgg16_model=VGG16(include_top=False, weights='imagenet', input_tensor=None, input_shape=None)
 
 
@@ -775,7 +423,6 @@ def get_images_from_df(df):
     #print(images_paths[0])
     for i in tqdm(range(len(images_paths))):
         img=cv2.imread("/kaggle/input/plant-pathology-2020-fgvc7/images/{}".format(images_paths[i]))
-        #画像サイズを224*224*3にしてください
         #print(img.shape)
         img = cv2.resize(img,(224,224))
         images[i, :, :, :] = img
@@ -796,31 +443,24 @@ train.head()
 y = get_one_hot_form_df(train)
 
 
-
-
-
-
-
-
-
-def get_model_finetune(base_model,input_shape=[None,None,3], num_classes=4):#num_classesは今回何ですか？
+def get_model_finetune(base_model,input_shape=[None,None,3], num_classes=4):
     base = base_model
     for layer in base_model.layers:
-        layer.trainable = True#これはなんでしょうか？
+        layer.trainable = True
     x = base_model.output
-    x = GlobalAveragePooling2D()(x) # GlobalAveragePooling2DをGlobalMaxPooling2Dに変更...https://qiita.com/mine820/items/1e49bca6d215ce88594a 全結合層の代わりに働き軽い。
+    x = GlobalAveragePooling2D()(x) 
     x = Dense(1024, activation='relu')(x)
     x = Dropout(0.5)(x)
     x = Dense(1024, activation='relu')(x)
     x = Dropout(0.5)(x)
-    prediction = Dense(num_classes, activation='sigmoid')(x)#最終層の活性化関数を適切に変更してください
+    prediction = Dense(num_classes, activation='sigmoid')(x)
 
     model = Model(input=base_model.input, output=prediction)
     model.compile(
         loss='binary_crossentropy',
         optimizer=Adam(lr=1e-4),
         metrics=['accuracy']
-    )#『keras loss』で調べてbinary_crossentropyを直してください
+    )
     return model
 
 
@@ -830,16 +470,6 @@ test = pd.read_csv("/kaggle/input/plant-pathology-2020-fgvc7/test.csv")
 test["image_id"] = test["image_id"]+".jpg"
 test.head()
 test_x = get_images_from_df(test)
-
-
-
-
-def auc(array):
-    
-    
-
-
-
 
 #start_weight=model_test.get_weights()
 cnt=0
@@ -859,17 +489,6 @@ for train_index, eval_index in kf.split(train):
     pred =model.predict(test_x)
     
     preds.append(pred)
-
-
-
-
-
-    
-    
-    
-
-
-
 
 sub = pd.read_csv("/kaggle/input/plant-pathology-2020-fgvc7/sample_submission.csv")
 sub.head()

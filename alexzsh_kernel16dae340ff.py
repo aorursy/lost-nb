@@ -19,31 +19,7 @@ print(os.listdir("../input"))
 # Any results you write to the current directory are saved as output.
 
 
-
-
-ls
-
-
-
-
-cd ../input/daguan-cups-dataset/new_data/
-
-
-
-
 get_ipython().system('nvidia-smi')
-
-
-
-
-cd new_data/
-
-
-
-
-ls
-
-
 
 
 import os
@@ -102,12 +78,6 @@ label=(train['class']-1).astype(int)
 label, feature = shuffle(label, feature, random_state=1)
 x_train, x_test, y_train, y_test = train_test_split(feature, label, test_size=0.20, random_state=0)
 print("data over")
-
-
-
-
-
-
 
 
 

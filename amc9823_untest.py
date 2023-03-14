@@ -26,5 +26,4 @@ for i in range(10):
     
 import pandas as pd
 
-file= /APTOS2019
 

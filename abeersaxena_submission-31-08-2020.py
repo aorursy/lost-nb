@@ -60,9 +60,6 @@ for i in range(len(data.index)) :
 
 mis_val_percent = 100 * data.isnull().sum() / len(data)
 
-Creating table for missing value and their percentage in various columns
-
-
 def tableformissingvalues(df):
  
         missingvalues = df.isnull().sum()
@@ -278,11 +275,6 @@ train.shape
 
 Y1 = train['Classifier'] # dependent variable
 X1 = train.drop('Classifier', axis=1)
-
-vif  = [variance_inflation_factor(X1.values, i) for i in range(X1.shape[1])]
-
-
-
 
 vif
 

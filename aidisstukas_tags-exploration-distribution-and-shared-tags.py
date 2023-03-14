@@ -40,14 +40,6 @@ def load_train_data():
 train_data = load_train_data()
 train_data.head()
 
-
-
-
-
-
-
-
-
 # Summary about tags
 tag_lists = [t.strip().split() for t in train_data['tags'].values]
 all_tags = list(itertools.chain(*tag_lists))
@@ -111,13 +103,6 @@ d = d[d.weight > 10]
 
 
 g = nx.from_pandas_dataframe(d, 'source', 'target', ['weight'])
-
-
-
-
-nx.node_connectivity(g)bnvhn
-
-
 
 
 import matplotlib.pyplot as plt

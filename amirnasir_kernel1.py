@@ -459,34 +459,32 @@ def prepare_data(df, config, data_dir):
     invalid=['77b925c2.wav','f76181c4.wav', '6a1f682a.wav', 'c7db12aa.wav', '7752cc8a.wav','1d44b0bd.wav']
     for i, fname in enumerate(df.index):
             
-            if fname not in invalid:
+        if fname not in invalid:
                 
-                file_path = data_dir + fname
-                data, _ = librosa.core.load(file_path, sr=config.sampling_rate, res_type="kaiser_fast")
+            file_path = data_dir + fname
+            data, _ = librosa.core.load(file_path, sr=config.sampling_rate, res_type="kaiser_fast")
 
-               # print('data_shape: ',data.shape)
-                # Random offset / Padding
-                if len(data) > input_length:
-                    max_offset = len(data) - input_length
+            # print('data_shape: ',data.shape)
+            # Random offset / Padding
+            if len(data) > input_length:
+                max_offset = len(data) - input_length
+                offset = np.random.randint(max_offset)
+                data = data[offset:(input_length+offset)]
+            else:
+                if input_length > len(data):
+                    max_offset = input_length - len(data)
                     offset = np.random.randint(max_offset)
-                    data = data[offset:(input_length+offset)]
                 else:
-                    if input_length > len(data):
-                        max_offset = input_length - len(data)
-                        offset = np.random.randint(max_offset)
-                    else:
-                        offset = 0
+                    offset = 0
                     #pad with zeros
-                    data = np.pad(data, (offset, input_length - len(data) - offset), "constant")
+                data = np.pad(data, (offset, input_length - len(data) - offset), "constant")
                 #print('before spec: ',data.shape)
                # data = librosa.feature.mfcc(data, sr=config.sampling_rate, n_mfcc=config.n_mfcc,**MEL_KWARGS).T
-                data = librosa.feature.melspectrogram(data,**MEL_KWARGS).T
-                data = lbr.amplitude_to_db(abs(data))
+            data = librosa.feature.melspectrogram(data,**MEL_KWARGS).T
+            data = lbr.amplitude_to_db(abs(data))
                 #print('after padding')
                # print(data.shape)
-                X[i,] = data
-            else:
-                print(fname)
+            X[i,] = data
     return X
     
 

@@ -37,12 +37,6 @@ a = ci.groupby('class')
 
 
 
-
-a.
-
-
-
-
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import Imputer
 from sklearn.pipeline import Pipeline

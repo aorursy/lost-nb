@@ -63,8 +63,8 @@ import matplotlib.pyplot as plt
 
 dscont=dstrain.iloc[:,116:]
 
-for i in range(14)
+for i in range(14):
     fg,ax=plt,subplots(nrow-1,ncols=1,figsize=(12,16))
-    for j in range(1)
+    for j in range(1):
         sns.violinplot(y=cols[i+j],data=dscont,ax=ax[j])
 

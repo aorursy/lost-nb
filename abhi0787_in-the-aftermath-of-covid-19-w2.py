@@ -29,11 +29,11 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 
 
 
-COVID-19 Analysis/Exploratory Data Analysis Week-2 kaggle Data
+# COVID-19 Analysis/Exploratory Data Analysis Week-2 kaggle Data
 
-Various locations across the world. Data includes the Week-2 data for the month of March along with January and February.
+# Various locations across the world. Data includes the Week-2 data for the month of March along with January and February.
 
-A note about using filters and link to the data used: https://github.com/amukher3/COVID-19/blob/master/README.md
+# A note about using filters and link to the data used: https://github.com/amukher3/COVID-19/blob/master/README.md
 
 
 

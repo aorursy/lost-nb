@@ -76,6 +76,4 @@ get_ipython().system('mkdir test_4channel')
 
 for idx in tqdm(test_ids):
     data = open_rgby(TEST_PATH, idx)
-    with open("./test_4channel/"+idx+".npz", 'wb') as f:
-        #np.save(f, data)
 
