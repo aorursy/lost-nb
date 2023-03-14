@@ -216,7 +216,7 @@ for df in [df_train,df_test]:
     df['elapsed_time'] = (datetime.datetime.today() - df['first_active_month']).dt.days
     df['hist_first_buy'] = (df['hist_purchase_date_min'] - df['first_active_month']).dt.days
     df['new_hist_first_buy'] = (df['new_hist_purchase_date_min'] - df['first_active_month']).dt.days
-    for f in ['hist_purchase_date_max','hist_purchase_date_min','new_hist_purchase_date_max',                     'new_hist_purchase_date_min']:
+    for f in ['hist_purchase_date_max','hist_purchase_date_min','new_hist_purchase_date_max', 'new_hist_purchase_date_min']:
         df[f] = df[f].astype(np.int64) * 1e-9
     df['card_id_total'] = df['new_hist_card_id_size']+df['hist_card_id_size']
     df['purchase_amount_total'] = df['new_hist_purchase_amount_sum']+df['hist_purchase_amount_sum']
@@ -329,7 +329,7 @@ start = time.time()
 
 
 for fold_, (trn_idx, val_idx) in enumerate(folds.split(df_train.values, target.values)):
-    print("fold n°{}".format(fold_))
+    print("fold n{}".format(fold_))
     trn_data = lgb.Dataset(df_train.iloc[trn_idx][features], label=target.iloc[trn_idx], categorical_feature=categorical_feats)
     val_data = lgb.Dataset(df_train.iloc[val_idx][features], label=target.iloc[val_idx], categorical_feature=categorical_feats)
 
