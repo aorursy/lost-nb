@@ -75,7 +75,7 @@ def kde_target(var_name,df):
     sns.kdeplot(df.ix[df['TARGET']==0, var_name], label = 'target ==0')
     sns.kdeplot(df.ix[df['TARGET']==1, var_name], label= 'target ==1')
     plt.xlabel(var_name); plt.ylabel('Density'); plt.title('%s Distribution' % var_name)
-    plt.legend();
+    plt.legend()
  
 
 
@@ -614,7 +614,7 @@ def plot_feature_importances(df, n = 15, threshold = None):
                             x = 'feature', color = 'blue', edgecolor = 'k', figsize = (12, 8),
                             legend = False)
 
-    plt.xlabel('Normalized Importance', size = 18); plt.ylabel(''); 
+    plt.xlabel('Normalized Importance', size = 18)
     plt.title(f'Top {n} Most Important Features', size = 18)
     plt.gca().invert_yaxis()
     
@@ -623,14 +623,14 @@ def plot_feature_importances(df, n = 15, threshold = None):
         plt.figure(figsize = (8, 6))
         plt.plot(list(range(len(df))), df['cumulative_importance'], 'b-')
         plt.xlabel('Number of Features', size = 16); plt.ylabel('Cumulative Importance', size = 16); 
-        plt.title('Cumulative Feature Importance', size = 18);
+        plt.title('Cumulative Feature Importance', size = 18)
         
         # Number of features needed for threshold cumulative importance
         importance_index = np.min(np.where(df['cumulative_importance'] > threshold))
         
         # Add vertical line to plot
         plt.vlines(importance_index + 1, ymin = 0, ymax = 1.2, linestyles = '--', colors = 'red')
-        plt.show();
+        plt.show()
         
         print('{} features required for {:.0f}% of cumulative importance.'.format(importance_index + 1, 100 * threshold))
     
@@ -788,8 +788,8 @@ import seaborn as sns
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 # Learning rate histogram
-plt.hist(param_grid['learning_rate'], bins = 20, color = 'r', edgecolor = 'k');
-plt.xlabel('Learning Rate', size = 14); plt.ylabel('Count', size = 14); plt.title('Learning Rate Distribution', size = 18);
+plt.hist(param_grid['learning_rate'], bins = 20, color = 'r', edgecolor = 'k')
+plt.xlabel('Learning Rate', size = 14); plt.ylabel('Count', size = 14); plt.title('Learning Rate Distribution', size = 18)
 
 
 

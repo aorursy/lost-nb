@@ -166,8 +166,6 @@ df3 = pd.read_csv('../input/test.csv')
 # Kaggle needs the submission to have a certain format;
 # see https://www.kaggle.com/c/titanic-gettingStarted/download/gendermodel.csv
 # for an example of what it's supposed to look like.
-submission = pd.DataFrame({ 'id': df3.id,
-                            'trip_duration': y_predicted_submission })
 submission.to_csv("submission.csv", index=False)
 
 

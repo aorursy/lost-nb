@@ -246,13 +246,6 @@ ref_means = [np.mean(ref_colors[i]) for i in range(3)]
 ref_stds = [np.std(ref_colors[i]) for i in range(3)]
 
 
-
-
-And now, we have a function that can calibrate any raw image reasonably well:
-
-
-
-
 def calibrate_image(rgb_image):
     # Transform test image to 32-bit floats to avoid 
     # surprises when doing arithmetic with it 
@@ -307,15 +300,6 @@ for i in range(len(sampled_images)):
         plt.imshow(calibrate_image(jpg_img))
     except:
         continue
-        
-        
-
-
-
-
-You might want to rotate, flip, or otherwise modify the images for training purposes. Note that the dimensions of the image changes:
-
-
 
 
 fig = plt.figure()

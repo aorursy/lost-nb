@@ -182,10 +182,6 @@ model.fit(X_train, y_train,
 model = keras.models.load_model('model.h5')
 
 
-
-
-X_test = test_df.loc[:, test_df.columns[1:]].values)
-
 X_test = X_test.reshape(X_test.shape[0],28,28,1)
 
 

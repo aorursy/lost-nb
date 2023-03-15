@@ -72,28 +72,6 @@ img = plt.imread(train_path + train_names[0])
 plt.imshow(img)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def img_generator(img_dir):
     img_names = os.listdir(img_dir)
     for name in img_names:
@@ -132,13 +110,6 @@ os.makedirs("test_resize")
 os.listdir(".")
 
 
-
-
-rm "test_resize/" -r
-
-
-
-
 im_p = test_path +"/" + test_names[233]
 img = plt.imread(im_p)
 plt.imsave("test.jpg", img)
@@ -149,14 +120,3 @@ plt.imsave("test.jpg", img)
 
 df = pd.DataFrame([1, 1, 1])
 df.to_csv("test.model")
-
-
-
-
-ls
-
-
-
-
-
-

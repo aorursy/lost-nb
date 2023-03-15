@@ -207,7 +207,7 @@ house.describe()
 
 house.mean()
 
-house["SaleCondition"].unique()#
+house["SaleCondition"].unique()
 
 house["SaleCondition"]..value_counts()
 
@@ -229,7 +229,7 @@ house.groupby("SaleCondition").count()
 df_ = house.groupby("SaleCondition")
 df_.head()
 
-df_.apply(lambda df: df.MSZoning.iloc[0])?
+df_.apply(lambda df: df.MSZoning.iloc[0])
 
 house=pd.read_csv("/kaggle/input/house-prices-dataset/train.csv")
 
@@ -258,13 +258,6 @@ file_paths = train["image_id"].values[:]
 
 import glob
 x = glob.glob("/kaggle/input/plant-pathology-2020-fgvc7/images/*")
-
-
-
-
-path
-
-
 
 
 import cv2

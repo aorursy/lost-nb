@@ -31,16 +31,9 @@ dtStations = dtDate[,!grepl("L",colnames(dtDate)),with=F]
 dtStationsM = melt(dtStations,id.vars=c("Id"))
 
 #join with numeric to have Response
-dtStationsM %>%
-  left_join(dtNum, by = "Id") -> dtStationsM
 
-#remove NA entries - these are plentiful as after melting each station-job combination has its own row
-dtStationsM %>%
-  filter(!is.na(value)) -> dtStationsMFiltered
 
 #sort entries by ascending time
-dtStationsMFiltered %>%
-  arrange(value) -> dtStationsMFiltered
 
 #imports for plotting
 require(GGally)

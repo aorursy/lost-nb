@@ -50,15 +50,15 @@ plt.imshow(slice, cmap=plt.cm.gray)
 
 def read_ct_scan(folder_name):
         # Read the slices from the dicom file
-        slices = [dicom.read_file(folder_name + filename) for filename in os.listdir(folder_name)]
+    slices = [dicom.read_file(folder_name + filename) for filename in os.listdir(folder_name)]
         
         # Sort the dicom slices in their respective order
-        slices.sort(key=lambda x: int(x.InstanceNumber))
+    slices.sort(key=lambda x: int(x.InstanceNumber))
         
         # Get the pixel values for all the slices
-        slices = np.stack([s.pixel_array for s in slices])
-        slices[slices == -2000] = 0
-        return slices
+    slices = np.stack([s.pixel_array for s in slices])
+    slices[slices == -2000] = 0
+    return slices
 
 
 
@@ -119,7 +119,7 @@ def get_segmented_lungs(im, plot=False):
         for region in regionprops(label_image):
             if region.area < areas[-2]:
                 for coordinates in region.coords:                
-                       label_image[coordinates[0], coordinates[1]] = 0
+                    label_image[coordinates[0], coordinates[1]] = 0
     binary = label_image > 0
     if plot == True:
         plots[3].axis('off')

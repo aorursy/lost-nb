@@ -144,11 +144,11 @@ train_df.head()
 
 
 # for i in range(20):
-    xg = XGBRegressor(n_estimators = 10*1000 , random_state = 0 , max_depth = 15)
-    xg.fit(X,cases)
+xg = XGBRegressor(n_estimators = 10*1000 , random_state = 0 , max_depth = 15)
+xg.fit(X,cases)
 
-    cases_pred = xg.predict(x_test)
-    cases_pred[cases_pred < 0] = 0
+cases_pred = xg.predict(x_test)
+cases_pred[cases_pred < 0] = 0
 #     print("error",'\t',mean_squared_log_error(y_valid, cases_pred))
 
 

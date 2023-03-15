@@ -87,11 +87,11 @@ for t in all_cervix_images['type'].unique():
     plt.title('sample for cervix {}'.format(t))
     
     i+=1
-     img = cv2.imread('f',0)
-        px = img[100,100]
-        print(px)
-        blue = img[100,100,0]
-        print(blue)
+    img = cv2.imread('f',0)
+    px = img[100,100]
+    print(px)
+    blue = img[100,100,0]
+    print(blue)
     
 
 

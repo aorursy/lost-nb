@@ -121,16 +121,16 @@ train.replace(0, np.nan)
 test.replace(0,np.nan)
 #fillna() to replace missing values with the mean value for each column,
 
-train.fillna(train.mean(), inplace=True);
-print(train.isnull().sum());
+train.fillna(train.mean(), inplace=True)
+print(train.isnull().sum())
 
 train.shape
 
 
 
 
-test.fillna(test.mean(), inplace=True);
-print(test.isnull().sum());
+test.fillna(test.mean(), inplace=True)
+print(test.isnull().sum())
 
 test.shape
 
@@ -166,13 +166,6 @@ train.drop(['Id','idhogar'], inplace = True, axis =1)
 test.drop(['Id','idhogar'], inplace = True, axis =1)
 
 
-
-
-Perform data visualisation
-
-
-
-
 #Relationship of continous variable with the target--Density plots
 import seaborn as sns
 target_values = [1,2,3,4]
@@ -195,42 +188,12 @@ for target in target_values:
 plt.show()
 
 
-
-
-Feature-Target Relationships
-
-
-
-
 sns.countplot("Target", data=train)
-
-
-
-
-Feature-Feature Relationships The final important relationship to explore is that of the relationships between the attributes.
-
-We can review the relationships between attributes by looking at the distribution of the interactions of each pair of attributes.
-
-This uses a built function to create a matrix of scatter plots of all attributes versus all attributes. The diagonal where each attribute would be plotted against itself shows the Kernel Density Estimation of the attribute instead.
-
-
-
 
 sns.countplot(x="r4t3",hue="Target",data=train)
 
-
-
-
 from pandas.plotting import scatter_matrix
 scatter_matrix(train.select_dtypes('float'), alpha=0.2, figsize=(26, 20), diagonal='kde')
-
-
-
-
-The below are Distribution plots using seaborn
-
-
-
 
 from collections import OrderedDict
 
@@ -291,14 +254,6 @@ X_train, X_test, y_train, y_test = train_test_split(
 #X_test.shape #(1912, 140)
 #y_train.shape #(7645,)
 y_test.shape #(1912,)
-
-
-
-
-Model 1 : Modelling with XGBoosterClassifier
-
-
-
 
 modelxgb=XGBClassifier()
 
@@ -400,13 +355,6 @@ bayes_cv_tuner.score(X_test, y_test)
 
 
 bayes_cv_tuner.cv_results_['params']
-
-
-
-
-Model 2 : Random Forest
-
-
 
 
 modelrf = rf()

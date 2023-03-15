@@ -501,7 +501,7 @@ for c in ['P_emaildomain', 'R_emaildomain']:
     df_test[c + '_bin'] = df_test[c].map(emails)
     
     df_train[c + '_suffix'] = df_train[c].map(lambda x: str(x).split('.')[-1])
-  df_test[c + '_suffix'] = df_test[c].map(lambda x: str(x).split('.')[-1])
+    df_test[c + '_suffix'] = df_test[c].map(lambda x: str(x).split('.')[-1])
     
     df_train[c + '_suffix'] = df_train[c + '_suffix'].map(lambda x: x if str(x) not in us_emails else 'us')
     df_test[c + '_suffix'] = df_test[c + '_suffix'].map(lambda x: x if str(x) not in us_emails else 'us')

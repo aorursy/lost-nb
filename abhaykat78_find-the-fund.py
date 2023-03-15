@@ -394,7 +394,7 @@ files.upload()
 
 
 def preprocess(df,b):
-    df = df.drop(["ID","comp_name","website","founded_on","hq_country_code","hq_state_code","hq_region"],axis=1)
+  df = df.drop(["ID","comp_name","website","founded_on","hq_country_code","hq_state_code","hq_region"],axis=1)
     ''' domains = df["domain"]
     domains = domains.values
     domains = domains.astype(str)
@@ -410,43 +410,43 @@ def preprocess(df,b):
               continue
     dictOfWords = { i : unique[i] for i in range(0, len(unique) ) }
     b = dict([(value,key) for (key,value) in dictOfWords.items()])'''
-    print(df.values.shape)
-    df = df.values
-    df[:,1]=df[:,1].astype(str)
-    multi_label = np.zeros((len(df[:,0]),len(b)))
-    print(multi_label.shape)
-    for i in range(len(df[:,0])):
-      x = df[i,1]
-      l = x.split("|")
-      for y in l:
-        if i in b.keys():
-          multi_label[i,b[y]]=1
-    print(df.shape)
-    df = np.delete(df, 1, axis=1)
-    df = np.hstack((multi_label,df))
-    print(df.shape)
-    new = pd.DataFrame.from_records(df)
-    new
-    new = new.drop([841,842],axis=1)
-    status = new[837].values
-    from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-    labelencoder_X = LabelEncoder()
-    status = labelencoder_X.fit_transform(status)
-    import keras
-    from keras.utils import to_categorical
-    status_o = to_categorical(status)
-    print(new[837])
-    new1=new.drop([837],axis=1)
-    new1 = new1.values
-    new1 = np.hstack((status_o,new1))
-    new = pd.DataFrame.from_records(new1)
-    new[842] = new[842].fillna(new[842].mean())
-    new = new.drop([841],axis=1)
-    new[843] = new[843].fillna(new[843].mean())
-    for i in range(4):
-      new[844+i] = new[844+i].fillna(new[844+i].mean())
+  print(df.values.shape)
+  df = df.values
+  df[:,1]=df[:,1].astype(str)
+  multi_label = np.zeros((len(df[:,0]),len(b)))
+  print(multi_label.shape)
+  for i in range(len(df[:,0])):
+    x = df[i,1]
+    l = x.split("|")
+    for y in l:
+      if i in b.keys():
+        multi_label[i,b[y]]=1
+  print(df.shape)
+  df = np.delete(df, 1, axis=1)
+  df = np.hstack((multi_label,df))
+  print(df.shape)
+  new = pd.DataFrame.from_records(df)
+  new
+  new = new.drop([841,842],axis=1)
+  status = new[837].values
+  from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+  labelencoder_X = LabelEncoder()
+  status = labelencoder_X.fit_transform(status)
+  import keras
+  from keras.utils import to_categorical
+  status_o = to_categorical(status)
+  print(new[837])
+  new1=new.drop([837],axis=1)
+  new1 = new1.values
+  new1 = np.hstack((status_o,new1))
+  new = pd.DataFrame.from_records(new1)
+  new[842] = new[842].fillna(new[842].mean())
+  new = new.drop([841],axis=1)
+  new[843] = new[843].fillna(new[843].mean())
+  for i in range(4):
+    new[844+i] = new[844+i].fillna(new[844+i].mean())
 
-    return new
+  return new
 
 
       

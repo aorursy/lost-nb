@@ -52,8 +52,6 @@ get_ipython().system('mkdir train_4channel')
 
 for idx in tqdm(data.Id.values):
     data = open_rgby(TRAIN_PATH, idx)
-    with open("./train_4channel/"+idx+".npz", 'wb') as f:
-        #np.save(f, data)
 
 
 
