@@ -152,13 +152,6 @@ getDetails(train)
 getDetails (test)
 
 
-
-
-Dropping unnecesary columns
-
-
-
-
 ID=test['Id']
 
 train.drop(['Id','idhogar'], inplace = True, axis =1)
@@ -498,7 +491,7 @@ bayes_cv_tuner = BayesSearchCV(
     {"metric": ["euclidean", "cityblock"]},
     n_iter=32,            # How many points to sample
     cv = 2            # Number of cross-validation folds
-   )
+)
 
 
 
